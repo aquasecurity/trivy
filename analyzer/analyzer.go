@@ -1,8 +1,7 @@
 package analyzer
 
 import (
-	"os"
-	"path/filepath"
+	"io"
 
 	"github.com/knqyf263/fanal/extractor"
 	"github.com/pkg/errors"
@@ -59,11 +58,9 @@ func RequiredFilenames() []string {
 	return filenames
 }
 
-func Analyze(dir string) (filesMap extractor.FilesMap, err error) {
+func Analyze(r io.ReadCloser) (filesMap extractor.FilesMap, err error) {
 	extractor := extractor.DockerExtractor{}
-	file, _ := os.Open(filepath.Join(dir, "layer.tar"))
-
-	filesMap, err = extractor.ExtractFiles(file, RequiredFilenames())
+	filesMap, err = extractor.Extract(r, RequiredFilenames())
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to extract files")
 	}
