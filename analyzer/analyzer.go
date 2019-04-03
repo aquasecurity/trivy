@@ -88,5 +88,8 @@ func GetPackages(filesMap extractor.FilesMap) ([]Package, error) {
 		return pkgs, nil
 	}
 	return nil, ErrUnknownOS
+}
 
+func CheckPackage(pkg *Package) bool {
+	return pkg.Name != "" && pkg.Version != ""
 }
