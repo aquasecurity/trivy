@@ -16,9 +16,9 @@ func init() {
 
 type alpinePkgAnalyzer struct{}
 
-func (a alpinePkgAnalyzer) Analyze(filesMap extractor.FilesMap) ([]analyzer.Package, error) {
+func (a alpinePkgAnalyzer) Analyze(fileMap extractor.FileMap) ([]analyzer.Package, error) {
 	for _, filename := range a.RequiredFiles() {
-		file, ok := filesMap[filename]
+		file, ok := fileMap[filename]
 		if !ok {
 			continue
 		}

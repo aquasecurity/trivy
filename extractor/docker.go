@@ -5,9 +5,16 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
-	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/knqyf263/nested"
+	"golang.org/x/xerrors"
+)
+
+const (
+	opq string = ".wh..wh..opq"
+	wh  string = ".wh."
 )
 
 type manifest struct {
@@ -16,11 +23,14 @@ type manifest struct {
 	Layers   []string `json:"Layers"`
 }
 
+type opqDirs []string
 type DockerExtractor struct{}
 
-func (d DockerExtractor) Extract(r io.ReadCloser, filenames []string) (FilesMap, error) {
+func (d DockerExtractor) Extract(r io.ReadCloser, filenames []string) (FileMap, error) {
 	manifests := make([]manifest, 0)
-	filesInLayers := make(map[string]FilesMap)
+	filesInLayers := make(map[string]FileMap)
+	opqInLayers := make(map[string]opqDirs)
+
 	tr := tar.NewReader(r)
 	for {
 		header, err := tr.Next()
@@ -37,32 +47,63 @@ func (d DockerExtractor) Extract(r io.ReadCloser, filenames []string) (FilesMap,
 			}
 		case strings.HasSuffix(header.Name, ".tar"):
 			layerID := filepath.Base(filepath.Dir(header.Name))
-			files, err := d.ExtractFiles(tr, filenames)
+			files, opqDirs, err := d.ExtractFiles(tr, filenames)
 			if err != nil {
 				return nil, err
 			}
 			filesInLayers[layerID] = files
-		//case strings.HasSuffix(header.Name, ".json"):
-		//	if err := json.NewDecoder(tr).Decode(&imageMeta); err != nil {
-		//		return nil, err
-		//	}
-		//	imageMetas[header.Name] = imageMeta
+			opqInLayers[layerID] = opqDirs
 		default:
 		}
 	}
-	filesMap := map[string][]byte{}
+
+	if len(manifests) == 0 {
+		return nil, xerrors.New("Invalid image")
+	}
+
+	// Merge all layers
+	sep := "/"
+	nestedMap := nested.Nested{}
 	for _, layerID := range manifests[0].Layers {
-		layerID := strings.Split(layerID, "/")[0]
-		for k, v := range filesInLayers[layerID] {
-			filesMap[k] = v
+		layerID := strings.Split(layerID, sep)[0]
+		for _, opqDir := range opqInLayers[layerID] {
+			nestedMap.DeleteByString(opqDir, sep)
+		}
+
+		for filePath, content := range filesInLayers[layerID] {
+			fileName := filepath.Base(filePath)
+			fileDir := filepath.Dir(filePath)
+			switch {
+			case strings.HasPrefix(fileName, wh):
+				fname := strings.TrimPrefix(fileName, wh)
+				fpath := filepath.Join(fileDir, fname)
+				nestedMap.DeleteByString(fpath, sep)
+			default:
+				nestedMap.SetByString(filePath, sep, content)
+			}
 		}
 	}
 
-	return filesMap, nil
+	fileMap := FileMap{}
+	walkFn := func(keys []string, value interface{}) error {
+		content, ok := value.([]byte)
+		if !ok {
+			return nil
+		}
+		path := strings.Join(keys, "/")
+		fileMap[path] = content
+		return nil
+	}
+	if err := nestedMap.Walk(walkFn); err != nil {
+		return nil, xerrors.Errorf("failed to walk nested map: %w", err)
+	}
+
+	return fileMap, nil
 
 }
-func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (FilesMap, error) {
+func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (FileMap, opqDirs, error) {
 	data := make(map[string][]byte)
+	opqDirs := opqDirs{}
 
 	tr := tar.NewReader(layer)
 	for {
@@ -71,17 +112,23 @@ func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (File
 			break
 		}
 		if err != nil {
-			return data, ErrCouldNotExtract
+			return data, nil, ErrCouldNotExtract
 		}
 
-		// Get element filename
-		filename := hdr.Name
-		filename = path.Clean(filename)
+		filePath := hdr.Name
+		filePath = filepath.Clean(filePath)
+		fileName := filepath.Base(filePath)
+
+		// e.g. etc/.wh..wh..opq
+		if opq == fileName {
+			opqDirs = append(opqDirs, filepath.Dir(filePath))
+			continue
+		}
 
 		// Determine if we should extract the element
 		extract := false
 		for _, s := range filenames {
-			if s == filename {
+			if s == filePath || strings.HasPrefix(fileName, wh) {
 				extract = true
 				break
 			}
@@ -93,11 +140,14 @@ func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (File
 
 		// Extract the element
 		if hdr.Typeflag == tar.TypeSymlink || hdr.Typeflag == tar.TypeLink || hdr.Typeflag == tar.TypeReg {
-			d, _ := ioutil.ReadAll(tr)
-			data[filename] = d
+			d, err := ioutil.ReadAll(tr)
+			if err != nil {
+				return nil, nil, xerrors.Errorf("failed to read file: %w", err)
+			}
+			data[filePath] = d
 		}
 	}
 
-	return data, nil
+	return data, opqDirs, nil
 
 }
