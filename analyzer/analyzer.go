@@ -1,7 +1,9 @@
 package analyzer
 
 import (
+	"context"
 	"io"
+	"time"
 
 	"github.com/knqyf263/fanal/extractor"
 	"github.com/pkg/errors"
@@ -58,9 +60,18 @@ func RequiredFilenames() []string {
 	return filenames
 }
 
-func Analyze(r io.ReadCloser) (filesMap extractor.FileMap, err error) {
-	extractor := extractor.DockerExtractor{}
-	filesMap, err = extractor.Extract(r, RequiredFilenames())
+func Analyze(ctx context.Context, imageName string) (filesMap extractor.FileMap, err error) {
+	e := extractor.NewDockerExtractor(extractor.DockerOption{Timeout: 600 * time.Second})
+	filesMap, err = e.Extract(ctx, imageName, RequiredFilenames())
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to extract files")
+	}
+	return filesMap, nil
+}
+
+func AnalyzeFromFile(ctx context.Context, r io.ReadCloser) (filesMap extractor.FileMap, err error) {
+	e := extractor.NewDockerExtractor(extractor.DockerOption{})
+	filesMap, err = e.ExtractFromFile(ctx, r, RequiredFilenames())
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to extract files")
 	}
