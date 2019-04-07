@@ -18,12 +18,12 @@ var (
 )
 
 type OSAnalyzer interface {
-	Analyze(extractor.FilesMap) (OS, error)
+	Analyze(extractor.FileMap) (OS, error)
 	RequiredFiles() []string
 }
 
 type PkgAnalyzer interface {
-	Analyze(extractor.FilesMap) ([]Package, error)
+	Analyze(extractor.FileMap) ([]Package, error)
 	RequiredFiles() []string
 }
 
@@ -58,7 +58,7 @@ func RequiredFilenames() []string {
 	return filenames
 }
 
-func Analyze(r io.ReadCloser) (filesMap extractor.FilesMap, err error) {
+func Analyze(r io.ReadCloser) (filesMap extractor.FileMap, err error) {
 	extractor := extractor.DockerExtractor{}
 	filesMap, err = extractor.Extract(r, RequiredFilenames())
 	if err != nil {
@@ -67,7 +67,7 @@ func Analyze(r io.ReadCloser) (filesMap extractor.FilesMap, err error) {
 	return filesMap, nil
 }
 
-func GetOS(filesMap extractor.FilesMap) (OS, error) {
+func GetOS(filesMap extractor.FileMap) (OS, error) {
 	for _, analyzer := range osAnalyzers {
 		os, err := analyzer.Analyze(filesMap)
 		if err != nil {
@@ -79,7 +79,7 @@ func GetOS(filesMap extractor.FilesMap) (OS, error) {
 
 }
 
-func GetPackages(filesMap extractor.FilesMap) ([]Package, error) {
+func GetPackages(filesMap extractor.FileMap) ([]Package, error) {
 	for _, analyzer := range pkgAnalyzers {
 		pkgs, err := analyzer.Analyze(filesMap)
 		if err != nil {

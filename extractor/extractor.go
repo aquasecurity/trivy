@@ -11,8 +11,8 @@ var (
 	ErrCouldNotExtract = errors.New("Could not extract the archive")
 )
 
-type FilesMap map[string][]byte
+type FileMap map[string][]byte
 
 type Extractor interface {
-	ExtractFiles(layer io.ReadCloser, filenames []string) (FilesMap, error)
+	Extract(r io.ReadCloser, filenames []string) (FileMap, error)
 }
