@@ -1,6 +1,7 @@
 package extractor
 
 import (
+	"context"
 	"io"
 
 	"github.com/pkg/errors"
@@ -14,5 +15,6 @@ var (
 type FileMap map[string][]byte
 
 type Extractor interface {
-	Extract(r io.ReadCloser, filenames []string) (FileMap, error)
+	Extract(ctx context.Context, imageName string, filenames []string) (FileMap, error)
+	ExtractFromFile(ctx context.Context, r io.ReadCloser, filenames []string) (FileMap, error)
 }

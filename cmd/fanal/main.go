@@ -1,18 +1,33 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
 
+	"github.com/knqyf263/fanal/analyzer"
+
 	"golang.org/x/crypto/ssh/terminal"
 
-	"github.com/knqyf263/fanal/analyzer"
 	_ "github.com/knqyf263/fanal/analyzer/os/alpine"
 	_ "github.com/knqyf263/fanal/analyzer/pkg/apk"
 )
 
 func main() {
+	ctx := context.Background()
+	imageName := os.Args[1]
+
+	files, err := analyzer.Analyze(ctx, imageName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	analyzer.GetOS(files)
+	analyzer.GetPackages(files)
+}
+
+func main2() {
+	ctx := context.Background()
 	tarPath := flag.String("f", "-", "layer.tar path")
 	flag.Parse()
 	rc, err := openStream(*tarPath)
@@ -20,7 +35,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	files, _ := analyzer.Analyze(rc)
+	files, err := analyzer.AnalyzeFromFile(ctx, rc)
+	if err != nil {
+		log.Fatal(err)
+	}
 	analyzer.GetOS(files)
 	analyzer.GetPackages(files)
 }
