@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestExtract(t *testing.T) {
+func TestExtractFromFile(t *testing.T) {
 	vectors := []struct {
 		file      string   // Test input file
 		filenames []string // Target files
@@ -52,7 +52,7 @@ func TestExtract(t *testing.T) {
 			defer f.Close()
 
 			d := DockerExtractor{}
-			fm, err := d.Extract(f, v.filenames)
+			fm, err := d.ExtractFromFile(nil, f, v.filenames)
 			if v.err != err {
 				t.Errorf("err: got %v, want %v", v.err, err)
 			}

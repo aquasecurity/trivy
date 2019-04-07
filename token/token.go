@@ -5,9 +5,9 @@ import (
 	"encoding/base64"
 	"strings"
 
-	"github.com/prometheus/common/log"
-
 	"golang.org/x/xerrors"
+
+	"log"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ecr"
@@ -34,7 +34,7 @@ func GetToken(ctx context.Context, auth types.AuthConfig) types.AuthConfig {
 		username, password, err = GetGCRAuthorizationToken(ctx)
 	}
 	if err != nil {
-		log.Debugf("failed to get token: %w", err)
+		log.Printf("failed to get token: %s", err)
 	}
 	auth.Username = username
 	auth.Password = password
