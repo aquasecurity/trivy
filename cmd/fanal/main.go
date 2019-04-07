@@ -7,11 +7,9 @@ import (
 	"os"
 
 	"github.com/knqyf263/fanal/analyzer"
-
-	"golang.org/x/crypto/ssh/terminal"
-
 	_ "github.com/knqyf263/fanal/analyzer/os/alpine"
 	_ "github.com/knqyf263/fanal/analyzer/pkg/apk"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 func main() {

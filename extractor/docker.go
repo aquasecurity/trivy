@@ -7,17 +7,18 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
+	"log"
 	"path/filepath"
 	"strings"
 	"time"
 
-	digest "github.com/opencontainers/go-digest"
-
 	"github.com/docker/distribution/manifest/schema2"
-
 	"github.com/genuinetools/reg/registry"
 	"github.com/genuinetools/reg/repoutils"
+	"github.com/knqyf263/fanal/cache"
+	"github.com/knqyf263/fanal/token"
 	"github.com/knqyf263/nested"
+	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 )
 
@@ -108,6 +109,7 @@ func (d DockerExtractor) createRegistryClient(ctx context.Context, domain string
 	if err != nil {
 		return nil, err
 	}
+	auth = token.GetToken(ctx, auth)
 
 	// Prevent non-ssl unless explicitly forced
 	if !d.Option.NonSSL && strings.HasPrefix(auth.ServerAddress, "http:") {
@@ -154,13 +156,21 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 	for _, ref := range m.Manifest.Layers {
 		layerIDs = append(layerIDs, string(ref.Digest))
 		go func(d digest.Digest) {
-			// Download the layer.
-			content, err := r.DownloadLayer(ctx, image.Path, d)
-			if err != nil {
-				errCh <- xerrors.Errorf("failed to download the layer(%s): %w", d, err)
-				return
+			// Use cache
+			rc := cache.Get(string(d))
+			if rc == nil {
+				// Download the layer.
+				rc, err = r.DownloadLayer(ctx, image.Path, d)
+				if err != nil {
+					errCh <- xerrors.Errorf("failed to download the layer(%s): %w", d, err)
+					return
+				}
+				rc, err = cache.Set(string(d), rc)
+				if err != nil {
+					log.Print(err)
+				}
 			}
-			gzipReader, err := gzip.NewReader(content)
+			gzipReader, err := gzip.NewReader(rc)
 			if err != nil {
 				errCh <- xerrors.Errorf("invalid gzip: %w", err)
 				return
