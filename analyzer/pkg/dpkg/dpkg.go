@@ -3,6 +3,7 @@ package dpkg
 import (
 	"bufio"
 	"bytes"
+	"log"
 	"regexp"
 	"strings"
 
@@ -13,7 +14,6 @@ import (
 	clairDpkg "github.com/coreos/clair/ext/versionfmt/dpkg"
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/fanal/extractor"
-	"github.com/labstack/gommon/log"
 )
 
 var (
@@ -27,9 +27,9 @@ func init() {
 
 type debianPkgAnalyzer struct{}
 
-func (a debianPkgAnalyzer) Analyze(filesMap extractor.FilesMap) (pkgs []analyzer.Package, err error) {
+func (a debianPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Package, err error) {
 	for _, filename := range a.RequiredFiles() {
-		file, ok := filesMap[filename]
+		file, ok := fileMap[filename]
 		if !ok {
 			continue
 		}
@@ -117,7 +117,7 @@ func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (binPkg *analyze
 
 	if name != "" && version != "" {
 		if err := versionfmt.Valid(clairDpkg.ParserName, version); err != nil {
-			log.Warnf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", name, version)
+			log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", name, version)
 		} else {
 			binPkg = &analyzer.Package{Name: name, Version: version, Type: analyzer.TypeBinary}
 		}
@@ -139,7 +139,7 @@ func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (binPkg *analyze
 
 	if sourceName != "" && sourceVersion != "" {
 		if err := versionfmt.Valid(dpkg.ParserName, version); err != nil {
-			log.Warnf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", name, version)
+			log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", name, version)
 		} else {
 			srcPkg = &analyzer.Package{Name: sourceName, Version: sourceVersion, Type: analyzer.TypeSource}
 		}

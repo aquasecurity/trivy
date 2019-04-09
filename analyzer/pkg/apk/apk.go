@@ -3,8 +3,7 @@ package apk
 import (
 	"bufio"
 	"bytes"
-
-	"github.com/labstack/gommon/log"
+	"log"
 
 	"github.com/coreos/clair/ext/versionfmt"
 	clairDpkg "github.com/coreos/clair/ext/versionfmt/dpkg"
@@ -19,7 +18,7 @@ func init() {
 
 type alpinePkgAnalyzer struct{}
 
-func (a alpinePkgAnalyzer) Analyze(filesMap extractor.FilesMap) (pkgs []analyzer.Package, err error) {
+func (a alpinePkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Package, err error) {
 	var parsedPkgs []analyzer.Package
 	for _, filename := range a.RequiredFiles() {
 		file, ok := fileMap[filename]
@@ -54,7 +53,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []analyzer
 			version := string(line[2:])
 			err = versionfmt.Valid(clairDpkg.ParserName, version)
 			if err != nil {
-				log.Warnf("Invalid Version Found : OS %s, Package %s, Version %s", "alpine", pkg.Name, version)
+				log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "alpine", pkg.Name, version)
 				continue
 			} else {
 				pkg.Version = version
