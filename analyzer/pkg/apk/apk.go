@@ -22,7 +22,7 @@ type alpinePkgAnalyzer struct{}
 func (a alpinePkgAnalyzer) Analyze(filesMap extractor.FilesMap) (pkgs []analyzer.Package, err error) {
 	var parsedPkgs []analyzer.Package
 	for _, filename := range a.RequiredFiles() {
-		file, ok := filesMap[filename]
+		file, ok := fileMap[filename]
 		if !ok {
 			continue
 		}

@@ -1,7 +1,9 @@
 package analyzer
 
 import (
+	"context"
 	"io"
+	"time"
 
 	"github.com/knqyf263/fanal/extractor"
 	"github.com/pkg/errors"
@@ -18,12 +20,12 @@ var (
 )
 
 type OSAnalyzer interface {
-	Analyze(extractor.FilesMap) (OS, error)
+	Analyze(extractor.FileMap) (OS, error)
 	RequiredFiles() []string
 }
 
 type PkgAnalyzer interface {
-	Analyze(extractor.FilesMap) ([]Package, error)
+	Analyze(extractor.FileMap) ([]Package, error)
 	RequiredFiles() []string
 }
 
@@ -70,16 +72,25 @@ func RequiredFilenames() []string {
 	return filenames
 }
 
-func Analyze(r io.ReadCloser) (filesMap extractor.FilesMap, err error) {
-	extractor := extractor.DockerExtractor{}
-	filesMap, err = extractor.Extract(r, RequiredFilenames())
+func Analyze(ctx context.Context, imageName string) (filesMap extractor.FileMap, err error) {
+	e := extractor.NewDockerExtractor(extractor.DockerOption{Timeout: 600 * time.Second})
+	filesMap, err = e.Extract(ctx, imageName, RequiredFilenames())
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to extract files")
 	}
 	return filesMap, nil
 }
 
-func GetOS(filesMap extractor.FilesMap) (OS, error) {
+func AnalyzeFromFile(ctx context.Context, r io.ReadCloser) (filesMap extractor.FileMap, err error) {
+	e := extractor.NewDockerExtractor(extractor.DockerOption{})
+	filesMap, err = e.ExtractFromFile(ctx, r, RequiredFilenames())
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to extract files")
+	}
+	return filesMap, nil
+}
+
+func GetOS(filesMap extractor.FileMap) (OS, error) {
 	for _, analyzer := range osAnalyzers {
 		os, err := analyzer.Analyze(filesMap)
 		if err != nil {
@@ -91,7 +102,7 @@ func GetOS(filesMap extractor.FilesMap) (OS, error) {
 
 }
 
-func GetPackages(filesMap extractor.FilesMap) ([]Package, error) {
+func GetPackages(filesMap extractor.FileMap) ([]Package, error) {
 	for _, analyzer := range pkgAnalyzers {
 		pkgs, err := analyzer.Analyze(filesMap)
 		if err != nil {

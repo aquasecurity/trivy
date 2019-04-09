@@ -16,9 +16,9 @@ func init() {
 
 type alpineOSAnalyzer struct{}
 
-func (a alpineOSAnalyzer) Analyze(filesMap extractor.FilesMap) (analyzer.OS, error) {
+func (a alpineOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error) {
 	for _, filename := range a.RequiredFiles() {
-		file, ok := filesMap[filename]
+		file, ok := fileMap[filename]
 		if !ok {
 			continue
 		}
