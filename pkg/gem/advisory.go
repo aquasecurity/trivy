@@ -18,6 +18,8 @@ var (
 type Advisory struct {
 	Gem                string
 	Cve                string
+	Osvdb              string
+	Title              string
 	Url                string
 	PatchedVersions    []string `yaml:"patched_versions"`
 	UnaffectedVersions []string `yaml:"unaffected_versions"`
