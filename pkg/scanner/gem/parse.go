@@ -2,15 +2,14 @@ package gem
 
 import (
 	"bufio"
-	"os"
 	"strings"
 
 	"github.com/knqyf263/trivy/pkg/types"
 )
 
-func ParseLockfile(f *os.File) ([]types.Library, error) {
-	scanner := bufio.NewScanner(f)
-	libs := []types.Library{}
+func (g *Scanner) ParseLockfile() ([]types.Library, error) {
+	var libs []types.Library
+	scanner := bufio.NewScanner(g.file)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if countLeadingSpace(line) == 4 {

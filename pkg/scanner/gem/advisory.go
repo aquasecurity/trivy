@@ -5,14 +5,15 @@ import (
 	"os"
 	"path/filepath"
 
-	git "gopkg.in/src-d/go-git.v4"
-	yaml "gopkg.in/yaml.v2"
+	"github.com/knqyf263/trivy/pkg/git"
+	"gopkg.in/yaml.v2"
 )
 
 type AdvisoryDB map[string][]Advisory
 
-var (
+const (
 	repoPath = "/tmp/foo"
+	dbURL    = "https://github.com/rubysec/ruby-advisory-db.git"
 )
 
 type Advisory struct {
@@ -31,40 +32,12 @@ type Related struct {
 	Url []string
 }
 
-func UpdateDB() (AdvisoryDB, error) {
-	_, err := git.PlainClone(repoPath, false, &git.CloneOptions{
-		URL:      "https://github.com/rubysec/ruby-advisory-db.git",
-		Progress: os.Stdout,
-	})
-	if err != nil && err != git.ErrRepositoryAlreadyExists {
-		return nil, err
-	}
-	if err = pull(); err != nil {
-		return nil, err
-	}
-	return walk()
-}
-
-func pull() error {
-	r, err := git.PlainOpen(repoPath)
-	if err != nil {
+func (g *Scanner) UpdateDB() (err error) {
+	if err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return err
 	}
-
-	w, err := r.Worktree()
-	if err != nil {
-		return err
-	}
-
-	err = w.Pull(&git.PullOptions{RemoteName: "origin"})
-	if err != nil && err != git.NoErrAlreadyUpToDate {
-		return err
-	}
-
-	// Print the latest commit that was just pulled
-	//ref, err := r.Head()
-	//pp.Println(ref)
-	return nil
+	g.db, err = walk()
+	return err
 }
 
 func walk() (AdvisoryDB, error) {

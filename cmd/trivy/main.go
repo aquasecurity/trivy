@@ -4,9 +4,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/knqyf263/trivy/pkg/gem"
-	"github.com/knqyf263/trivy/pkg/types"
-	"github.com/olekukonko/tablewriter"
+	"github.com/knqyf263/trivy/pkg/logger"
+	"github.com/knqyf263/trivy/pkg/scanner"
+	"github.com/knqyf263/trivy/pkg/scanner/composer"
+	"github.com/knqyf263/trivy/pkg/scanner/gem"
 )
 
 func main() {
@@ -16,33 +17,29 @@ func main() {
 }
 
 func run() error {
+	if err := logger.InitLogger(); err != nil {
+		return err
+	}
 
 	//fileName := os.Args[1]
-	fileName := "Gemfile.lock"
+	//fileName := "Gemfile.lock"
+	fileName := "composer.lock"
 	f, err := os.Open(fileName)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	var vulns []types.Vulnerability
 	switch fileName {
 	case "Gemfile.lock":
-		vulns, err = gem.Scan(f)
-		if err != nil {
-			return err
-		}
+		scanner.Register(gem.NewGemScanner(f))
+	case "composer.lock":
+		scanner.Register(composer.NewComposerScanner(f))
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Library", "Vulnerability ID", "Title"})
-
-	for _, v := range vulns {
-		table.Append([]string{v.LibraryName, v.VulnerabilityID, v.Title})
+	if err = scanner.Scan(); err != nil {
+		return err
 	}
-	table.SetAutoMergeCells(true)
-	table.SetRowLine(true)
-	table.Render()
 
 	return nil
 }
