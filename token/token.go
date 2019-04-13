@@ -5,6 +5,10 @@ import (
 	"encoding/base64"
 	"strings"
 
+	"github.com/GoogleCloudPlatform/docker-credential-gcr/config"
+	"github.com/GoogleCloudPlatform/docker-credential-gcr/credhelper"
+	"github.com/GoogleCloudPlatform/docker-credential-gcr/store"
+
 	"golang.org/x/xerrors"
 
 	"log"
@@ -31,11 +35,12 @@ func GetToken(ctx context.Context, auth types.AuthConfig) types.AuthConfig {
 	case strings.HasSuffix(auth.ServerAddress, ecrURL):
 		username, password, err = GetECRAuthorizationToken(ctx)
 	case strings.HasSuffix(auth.ServerAddress, gcrURL):
-		username, password, err = GetGCRAuthorizationToken(ctx)
+		username, password, err = GetGCRAuthorizationToken(ctx, auth)
 	}
 	if err != nil {
 		log.Printf("failed to get token: %s", err)
 	}
+
 	auth.Username = username
 	auth.Password = password
 	return auth
@@ -67,6 +72,15 @@ func GetECRAuthorizationToken(ctx context.Context) (username, password string, e
 	return "", "", nil
 }
 
-func GetGCRAuthorizationToken(ctx context.Context) (username, password string, err error) {
-	return "", "", nil
+func GetGCRAuthorizationToken(ctx context.Context, auth types.AuthConfig) (string, string, error) {
+	store, err := store.DefaultGCRCredStore()
+	if err != nil {
+		return "", "", err
+	}
+	userCfg, err := config.LoadUserConfig()
+	if err != nil {
+		return "", "", err
+	}
+	helper := credhelper.NewGCRCredentialHelper(store, userCfg)
+	return helper.Get(auth.ServerAddress)
 }
