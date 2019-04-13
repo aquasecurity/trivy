@@ -2,7 +2,7 @@ go 1.12
 
 require (
 	cloud.google.com/go v0.37.4 // indirect
-	github.com/GoogleCloudPlatform/docker-credential-gcr v1.5.0 // indirect
+	github.com/GoogleCloudPlatform/docker-credential-gcr v1.5.0
 	github.com/aws/aws-sdk-go v1.19.11
 	github.com/coreos/clair v0.0.0-20180919182544-44ae4bc9590a
 	github.com/d4l3k/messagediff v1.2.1
