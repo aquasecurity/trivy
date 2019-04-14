@@ -10,12 +10,13 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type AdvisoryDB map[string][]Advisory
 
 const (
 	repoPath = "/tmp/composer"
 	dbURL    = "https://github.com/FriendsOfPHP/security-advisories"
 )
+
+type AdvisoryDB map[string][]Advisory
 
 type Advisory struct {
 	Cve       string

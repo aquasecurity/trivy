@@ -9,12 +9,13 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type AdvisoryDB map[string][]Advisory
 
 const (
 	repoPath = "/tmp/foo"
 	dbURL    = "https://github.com/rubysec/ruby-advisory-db.git"
 )
+
+type AdvisoryDB map[string][]Advisory
 
 type Advisory struct {
 	Gem                string
