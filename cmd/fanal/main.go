@@ -8,7 +8,14 @@ import (
 
 	"github.com/knqyf263/fanal/analyzer"
 	_ "github.com/knqyf263/fanal/analyzer/os/alpine"
+	_ "github.com/knqyf263/fanal/analyzer/os/amazonlinux"
+	_ "github.com/knqyf263/fanal/analyzer/os/debian"
+	_ "github.com/knqyf263/fanal/analyzer/os/opensuse"
+	_ "github.com/knqyf263/fanal/analyzer/os/redhatbase"
+	_ "github.com/knqyf263/fanal/analyzer/os/ubuntu"
 	_ "github.com/knqyf263/fanal/analyzer/pkg/apk"
+	_ "github.com/knqyf263/fanal/analyzer/pkg/dpkg"
+	_ "github.com/knqyf263/fanal/analyzer/pkg/rpm"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
