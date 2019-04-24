@@ -4,7 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"fmt"
+
+	"github.com/knqyf263/fanal/analyzer/os"
 
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/fanal/extractor"
@@ -24,9 +25,8 @@ func (a alpineOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error
 		}
 		scanner := bufio.NewScanner(bytes.NewBuffer(file))
 		for scanner.Scan() {
-			// TODO
 			line := scanner.Text()
-			fmt.Println(line)
+			return analyzer.OS{Family: os.Alpine, Name: line}, nil
 		}
 	}
 	return analyzer.OS{}, errors.New("alpine: Not match")
