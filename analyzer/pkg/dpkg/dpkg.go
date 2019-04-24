@@ -3,6 +3,8 @@ package dpkg
 import (
 	"bufio"
 	"bytes"
+	"errors"
+	"fmt"
 	"log"
 	"regexp"
 	"strings"
@@ -28,15 +30,21 @@ func init() {
 type debianPkgAnalyzer struct{}
 
 func (a debianPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Package, err error) {
+	detected := false
 	for _, filename := range a.RequiredFiles() {
 		file, ok := fileMap[filename]
+		fmt.Println(filename)
 		if !ok {
 			continue
 		}
 		scanner := bufio.NewScanner(bytes.NewBuffer(file))
 		pkgs = a.parseDpkginfo(scanner)
+		detected = true
 	}
-	return pkgs, err
+	if !detected {
+		return pkgs, errors.New("No package detected")
+	}
+	return pkgs, nil
 }
 
 func (a debianPkgAnalyzer) parseDpkginfo(scanner *bufio.Scanner) (pkgs []analyzer.Package) {
@@ -88,6 +96,7 @@ func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (binPkg *analyze
 		if line == "" {
 			break
 		}
+		fmt.Println(line)
 
 		if strings.HasPrefix(line, "Package: ") {
 			name = strings.TrimSpace(strings.TrimPrefix(line, "Package: "))

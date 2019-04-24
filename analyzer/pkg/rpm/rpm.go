@@ -2,6 +2,7 @@ package rpm
 
 import (
 	"bufio"
+	"errors"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -22,6 +23,7 @@ type rpmPkgAnalyzer struct{}
 
 func (a rpmPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Package, err error) {
 	var parsedPkgs []analyzer.Package
+	detected := false
 	for _, filename := range a.RequiredFiles() {
 		file, ok := fileMap[filename]
 		if !ok {
@@ -29,6 +31,10 @@ func (a rpmPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Pack
 		}
 		parsedPkgs, err = a.parsePkgInfo(file)
 		pkgs = append(pkgs, parsedPkgs...)
+		detected = true
+	}
+	if !detected {
+		return pkgs, errors.New("No package detected")
 	}
 	return pkgs, err
 }
