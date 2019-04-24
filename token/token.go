@@ -2,9 +2,8 @@ package token
 
 import (
 	"context"
-	"strings"
-
 	"log"
+	"strings"
 
 	"github.com/docker/docker/api/types"
 )
@@ -28,6 +27,8 @@ func GetToken(ctx context.Context, auth types.AuthConfig, credPath string) types
 		registry = NewECR()
 	case strings.HasSuffix(auth.ServerAddress, gcrURL):
 		registry = NewGCR(auth, credPath)
+	default:
+		registry = NewDocker()
 	}
 	var err error
 	auth.Username, auth.Password, err = registry.GetCredential(ctx)
