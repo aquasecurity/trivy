@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"log"
 
+	"github.com/pkg/errors"
+
 	"github.com/coreos/clair/ext/versionfmt"
 	clairDpkg "github.com/coreos/clair/ext/versionfmt/dpkg"
 
@@ -20,6 +22,7 @@ type alpinePkgAnalyzer struct{}
 
 func (a alpinePkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Package, err error) {
 	var parsedPkgs []analyzer.Package
+	detected := false
 	for _, filename := range a.RequiredFiles() {
 		file, ok := fileMap[filename]
 		if !ok {
@@ -28,8 +31,12 @@ func (a alpinePkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.P
 		scanner := bufio.NewScanner(bytes.NewBuffer(file))
 		parsedPkgs, err = a.parseApkInfo(scanner)
 		pkgs = append(pkgs, parsedPkgs...)
+		detected = true
 	}
-	return pkgs, err
+	if !detected {
+		return pkgs, errors.New("No package detected")
+	}
+	return pkgs, nil
 }
 
 func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []analyzer.Package, err error) {
