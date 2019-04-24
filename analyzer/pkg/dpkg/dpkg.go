@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"fmt"
 	"log"
 	"regexp"
 	"strings"
@@ -33,7 +32,6 @@ func (a debianPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.P
 	detected := false
 	for _, filename := range a.RequiredFiles() {
 		file, ok := fileMap[filename]
-		fmt.Println(filename)
 		if !ok {
 			continue
 		}
@@ -96,8 +94,6 @@ func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (binPkg *analyze
 		if line == "" {
 			break
 		}
-		fmt.Println(line)
-
 		if strings.HasPrefix(line, "Package: ") {
 			name = strings.TrimSpace(strings.TrimPrefix(line, "Package: "))
 		} else if strings.HasPrefix(line, "Source: ") {
