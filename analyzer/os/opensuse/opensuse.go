@@ -53,5 +53,8 @@ func (a opensuseOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, err
 }
 
 func (a opensuseOSAnalyzer) RequiredFiles() []string {
-	return []string{"etc/os-release"}
+	return []string{
+		"usr/lib/os-release",
+		"etc/os-release",
+	}
 }

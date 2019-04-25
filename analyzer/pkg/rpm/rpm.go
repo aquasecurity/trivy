@@ -107,5 +107,8 @@ func outputPkgInfo(dir string) (out []byte, err error) {
 }
 
 func (a rpmPkgAnalyzer) RequiredFiles() []string {
-	return []string{"var/lib/rpm/Packages"}
+	return []string{
+		"usr/lib/sysimage/rpm/Packages",
+		"var/lib/rpm/Packages",
+	}
 }
