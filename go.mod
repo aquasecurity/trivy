@@ -11,7 +11,6 @@ require (
 	github.com/docker/docker v0.0.0-20180924202107-a9c061deec0f
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/genuinetools/reg v0.16.1
-	github.com/google/subcommands v1.0.1 // indirect
 	github.com/knqyf263/nested v0.0.1
 	github.com/opencontainers/go-digest v0.0.0-20180430190053-c9281466c8b2
 	github.com/pkg/errors v0.8.1

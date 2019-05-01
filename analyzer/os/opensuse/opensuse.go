@@ -18,8 +18,7 @@ func init() {
 
 type opensuseOSAnalyzer struct{}
 
-// TODO : opensuse/tumbleweed, opensuse/leap のimageのときうまくいかないので調査
-//        そもそも os-release のファイル自体が認識されていない
+// TODO : need investigation
 func (a opensuseOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error) {
 	for _, filename := range a.RequiredFiles() {
 		file, ok := fileMap[filename]

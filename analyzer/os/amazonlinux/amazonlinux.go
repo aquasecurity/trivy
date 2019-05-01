@@ -29,7 +29,7 @@ func (a amazonlinuxOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, 
 		for scanner.Scan() {
 			line := scanner.Text()
 			fields := strings.Fields(line)
-			// Amazon Linuxという名称が確認できたときのみ
+			// Only Amazon Linux Prefix
 			if strings.HasPrefix(line, "Amazon Linux release 2") {
 				return analyzer.OS{
 					Family: os.Amazon,
