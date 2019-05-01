@@ -266,7 +266,7 @@ func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (File
 		// Determine if we should extract the element
 		extract := false
 		for _, s := range filenames {
-			if s == filePath || strings.HasPrefix(fileName, wh) {
+			if s == filePath || s == fileName || strings.HasPrefix(fileName, wh) {
 				extract = true
 				break
 			}

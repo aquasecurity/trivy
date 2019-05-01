@@ -5,13 +5,17 @@ import (
 	"io"
 	"time"
 
+	"golang.org/x/xerrors"
+
 	"github.com/knqyf263/fanal/extractor"
+	"github.com/knqyf263/go-dep-parser/pkg/types"
 	"github.com/pkg/errors"
 )
 
 var (
 	osAnalyzers  []OSAnalyzer
 	pkgAnalyzers []PkgAnalyzer
+	libAnalyzers []LibraryAnalyzer
 
 	// ErrUnknownOS occurs when unknown OS is analyzed.
 	ErrUnknownOS = errors.New("Unknown OS")
@@ -26,6 +30,13 @@ type OSAnalyzer interface {
 
 type PkgAnalyzer interface {
 	Analyze(extractor.FileMap) ([]Package, error)
+	RequiredFiles() []string
+}
+
+type FilePath string
+
+type LibraryAnalyzer interface {
+	Analyze(extractor.FileMap) (map[FilePath][]types.Library, error)
 	RequiredFiles() []string
 }
 
@@ -61,12 +72,19 @@ func RegisterPkgAnalyzer(analyzer PkgAnalyzer) {
 	pkgAnalyzers = append(pkgAnalyzers, analyzer)
 }
 
+func RegisterLibraryAnalyzer(analyzer LibraryAnalyzer) {
+	libAnalyzers = append(libAnalyzers, analyzer)
+}
+
 func RequiredFilenames() []string {
 	filenames := []string{}
 	for _, analyzer := range osAnalyzers {
 		filenames = append(filenames, analyzer.RequiredFiles()...)
 	}
 	for _, analyzer := range pkgAnalyzers {
+		filenames = append(filenames, analyzer.RequiredFiles()...)
+	}
+	for _, analyzer := range libAnalyzers {
 		filenames = append(filenames, analyzer.RequiredFiles()...)
 	}
 	return filenames
@@ -115,4 +133,19 @@ func GetPackages(filesMap extractor.FileMap) ([]Package, error) {
 
 func CheckPackage(pkg *Package) bool {
 	return pkg.Name != "" && pkg.Version != ""
+}
+
+func GetLibraries(filesMap extractor.FileMap) (map[FilePath][]types.Library, error) {
+	results := map[FilePath][]types.Library{}
+	for _, analyzer := range libAnalyzers {
+		libMap, err := analyzer.Analyze(filesMap)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to analyze libraries: %w", err)
+		}
+
+		for filePath, libs := range libMap {
+			results[filePath] = libs
+		}
+	}
+	return results, nil
 }
