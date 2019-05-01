@@ -12,3 +12,5 @@
 *.out
 .idea
 main
+
+vendor

@@ -44,14 +44,15 @@ type DockerExtractor struct {
 }
 
 type DockerOption struct {
-	AuthURL  string
-	UserName string
-	Password string
-	Insecure bool
-	Debug    bool
-	SkipPing bool
-	NonSSL   bool
-	Timeout  time.Duration
+	AuthURL    string
+	UserName   string
+	Password   string
+	Credential string
+	Insecure   bool
+	Debug      bool
+	SkipPing   bool
+	NonSSL     bool
+	Timeout    time.Duration
 }
 
 func NewDockerExtractor(option DockerOption) DockerExtractor {
@@ -109,8 +110,7 @@ func (d DockerExtractor) createRegistryClient(ctx context.Context, domain string
 	if err != nil {
 		return nil, err
 	}
-	auth = token.GetToken(ctx, auth)
-
+	auth = token.GetToken(ctx, auth, d.Option.Credential)
 	// Prevent non-ssl unless explicitly forced
 	if !d.Option.NonSSL && strings.HasPrefix(auth.ServerAddress, "http:") {
 		return nil, xerrors.New("attempted to use insecure protocol! Use force-non-ssl option to force")

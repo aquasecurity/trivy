@@ -39,6 +39,18 @@ type Package struct {
 	Version string
 	Release string
 	Epoch   int
+	Type    string
+}
+
+var (
+	TypeBinary = "binary"
+	TypeSource = "source"
+)
+
+type SrcPackage struct {
+	Name        string   `json:"name"`
+	Version     string   `json:"version"`
+	BinaryNames []string `json:"binaryNames"`
 }
 
 func RegisterOSAnalyzer(analyzer OSAnalyzer) {
@@ -99,5 +111,8 @@ func GetPackages(filesMap extractor.FileMap) ([]Package, error) {
 		return pkgs, nil
 	}
 	return nil, ErrUnknownOS
+}
 
+func CheckPackage(pkg *Package) bool {
+	return pkg.Name != "" && pkg.Version != ""
 }
