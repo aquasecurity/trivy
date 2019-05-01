@@ -12,3 +12,4 @@ addons:
   apt:
     packages: 
       - rpm
+      - libdb-dev
