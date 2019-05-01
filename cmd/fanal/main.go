@@ -3,10 +3,15 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/knqyf263/fanal/analyzer"
+	_ "github.com/knqyf263/fanal/analyzer/library/bundler"
+	_ "github.com/knqyf263/fanal/analyzer/library/composer"
+	_ "github.com/knqyf263/fanal/analyzer/library/npm"
+	_ "github.com/knqyf263/fanal/analyzer/library/pipenv"
 	_ "github.com/knqyf263/fanal/analyzer/os/alpine"
 	_ "github.com/knqyf263/fanal/analyzer/os/amazonlinux"
 	_ "github.com/knqyf263/fanal/analyzer/os/debian"
@@ -16,36 +21,61 @@ import (
 	_ "github.com/knqyf263/fanal/analyzer/pkg/apk"
 	_ "github.com/knqyf263/fanal/analyzer/pkg/dpkg"
 	_ "github.com/knqyf263/fanal/analyzer/pkg/rpm"
+	"github.com/knqyf263/fanal/extractor"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
 func main() {
-	ctx := context.Background()
-	imageName := os.Args[1]
-
-	files, err := analyzer.Analyze(ctx, imageName)
-	if err != nil {
+	if err := run(); err != nil {
 		log.Fatal(err)
 	}
-	analyzer.GetOS(files)
-	analyzer.GetPackages(files)
 }
 
-func main2() {
+func run() (err error) {
 	ctx := context.Background()
 	tarPath := flag.String("f", "-", "layer.tar path")
 	flag.Parse()
-	rc, err := openStream(*tarPath)
-	if err != nil {
-		log.Fatal(err)
+
+	args := flag.Args()
+
+	var files extractor.FileMap
+	if len(args) > 0 {
+		files, err = analyzer.Analyze(ctx, args[1])
+		if err != nil {
+			return err
+		}
+	} else {
+		rc, err := openStream(*tarPath)
+		if err != nil {
+			return err
+		}
+
+		files, err = analyzer.AnalyzeFromFile(ctx, rc)
+		if err != nil {
+			return err
+		}
 	}
 
-	files, err := analyzer.AnalyzeFromFile(ctx, rc)
+	os, err := analyzer.GetOS(files)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	analyzer.GetOS(files)
-	analyzer.GetPackages(files)
+	fmt.Printf("%+v\n", os)
+
+	pkgs, err := analyzer.GetPackages(files)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Packages: %d\n", len(pkgs))
+
+	libs, err := analyzer.GetLibraries(files)
+	if err != nil {
+		return err
+	}
+	for filepath, libList := range libs {
+		fmt.Printf("%s: %d\n", filepath, len(libList))
+	}
+	return nil
 }
 
 func openStream(path string) (*os.File, error) {
