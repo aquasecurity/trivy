@@ -1,11 +1,9 @@
-package pkg
+package remic
 
 import (
 	l "log"
 	"os"
 	"strings"
-
-	"github.com/knqyf263/trivy/pkg/vulnsrc"
 
 	"github.com/urfave/cli"
 	"golang.org/x/xerrors"
@@ -25,7 +23,7 @@ func Run(c *cli.Context) (err error) {
 
 	args := c.Args()
 	if len(args) == 0 {
-		return xerrors.New(`trivy" requires at least 1 argument.`)
+		return xerrors.New(`remic" requires at least 1 argument.`)
 	}
 
 	o := c.String("output")
@@ -49,13 +47,9 @@ func Run(c *cli.Context) (err error) {
 		return err
 	}
 
-	//if err = nvd.Update(); err != nil {
-	//	return err
-	//}
-	if err = vulnsrc.Update(); err != nil {
+	if err = nvd.Update(); err != nil {
 		return err
 	}
-	return nil
 
 	fileName := args[0]
 	f, err := os.Open(fileName)

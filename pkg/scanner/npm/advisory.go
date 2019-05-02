@@ -31,7 +31,7 @@ type Advisory struct {
 }
 
 func (n *Scanner) UpdateDB() (err error) {
-	if err := git.CloneOrPull(dbURL, repoPath); err != nil {
+	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return err
 	}
 	n.db, err = walk()

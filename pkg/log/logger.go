@@ -18,18 +18,18 @@ func InitLogger(debug bool) (err error) {
 
 func newLogger(debug bool) (*zap.SugaredLogger, error) {
 	level := zap.NewAtomicLevel()
-	if debug{
+	if debug {
 		level.SetLevel(zapcore.DebugLevel)
-	}else{
+	} else {
 		level.SetLevel(zapcore.InfoLevel)
 	}
 
 	myConfig := zap.Config{
-		Level: level,
-		Encoding: "console",
-		Development: debug,
+		Level:             level,
+		Encoding:          "console",
+		Development:       debug,
 		DisableStacktrace: !debug,
-		DisableCaller: !debug,
+		DisableCaller:     !debug,
 		EncoderConfig: zapcore.EncoderConfig{
 			TimeKey:        "Time",
 			LevelKey:       "Level",

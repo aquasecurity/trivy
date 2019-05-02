@@ -10,7 +10,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-
 const (
 	repoPath = "/tmp/composer"
 	dbURL    = "https://github.com/FriendsOfPHP/security-advisories"
@@ -31,7 +30,7 @@ type Branch struct {
 }
 
 func (c *Scanner) UpdateDB() (err error) {
-	if err := git.CloneOrPull(dbURL, repoPath); err != nil {
+	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return err
 	}
 	c.db, err = walk()

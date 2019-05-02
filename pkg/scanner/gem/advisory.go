@@ -9,7 +9,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-
 const (
 	repoPath = "/tmp/foo"
 	dbURL    = "https://github.com/rubysec/ruby-advisory-db.git"
@@ -34,7 +33,7 @@ type Related struct {
 }
 
 func (g *Scanner) UpdateDB() (err error) {
-	if err := git.CloneOrPull(dbURL, repoPath); err != nil {
+	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return err
 	}
 	g.db, err = walk()
