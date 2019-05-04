@@ -5,6 +5,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+
+	"github.com/knqyf263/trivy/pkg/report"
+	"github.com/knqyf263/trivy/pkg/scanner"
 	"github.com/knqyf263/trivy/pkg/vulnsrc"
 
 	"github.com/urfave/cli"
@@ -12,9 +16,6 @@ import (
 
 	"github.com/knqyf263/trivy/pkg/db"
 	"github.com/knqyf263/trivy/pkg/log"
-	"github.com/knqyf263/trivy/pkg/report"
-	"github.com/knqyf263/trivy/pkg/scanner"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/nvd"
 )
 
 func Run(c *cli.Context) (err error) {
@@ -36,9 +37,9 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
-	var severities []nvd.Severity
+	var severities []vulnerability.Severity
 	for _, s := range strings.Split(c.String("severity"), ",") {
-		severity, err := nvd.NewSeverity(s)
+		severity, err := vulnerability.NewSeverity(s)
 		if err != nil {
 			return err
 		}
@@ -49,13 +50,9 @@ func Run(c *cli.Context) (err error) {
 		return err
 	}
 
-	//if err = nvd.Update(); err != nil {
-	//	return err
-	//}
 	if err = vulnsrc.Update(); err != nil {
 		return err
 	}
-	return nil
 
 	fileName := args[0]
 	f, err := os.Open(fileName)
@@ -64,7 +61,7 @@ func Run(c *cli.Context) (err error) {
 	}
 	defer f.Close()
 
-	vulns, err := scanner.Scan(f, severities)
+	vulns, err := scanner.ScanImage("", fileName, severities)
 	if err != nil {
 		return err
 	}

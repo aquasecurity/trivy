@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/knqyf263/trivy/pkg/vulnsrc/nvd"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
 	"github.com/urfave/cli"
 
@@ -43,7 +43,7 @@ OPTIONS:
 		},
 		cli.StringFlag{
 			Name:  "severity, s",
-			Value: strings.Join(nvd.SeverityNames, ","),
+			Value: strings.Join(vulnerability.SeverityNames, ","),
 			Usage: "severity of vulnerabilities to be displayed",
 		},
 		cli.StringFlag{

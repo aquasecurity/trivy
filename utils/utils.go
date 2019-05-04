@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -92,6 +93,7 @@ func Exec(command string, args []string) (string, error) {
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 	if err := cmd.Run(); err != nil {
+		fmt.Println(stderrBuf)
 		return "", xerrors.Errorf("failed to exec: %w", err)
 	}
 	return stdoutBuf.String(), nil

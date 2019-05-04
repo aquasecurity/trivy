@@ -9,21 +9,22 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+
 	"github.com/knqyf263/trivy/pkg/log"
 
+	bolt "github.com/etcd-io/bbolt"
 	"github.com/knqyf263/trivy/pkg/db"
-
-	"golang.org/x/xerrors"
-
 	"github.com/knqyf263/trivy/utils"
+	"golang.org/x/xerrors"
 )
 
 const (
-	redhatDir = "redhat"
+	redhatDir      = "redhat"
+	platformFormat = "Red Hat Enterprise Linux %s"
 )
 
 var (
-	platformFormat  = "Red Hat Enterprise Linux %d"
 	targetPlatforms = []string{"Red Hat Enterprise Linux 5", "Red Hat Enterprise Linux 6", "Red Hat Enterprise Linux 7"}
 	targetStatus    = []string{"Affected", "Fix deferred", "Will not fix"}
 )
@@ -104,102 +105,96 @@ type pkg map[string]advisory
 type advisory map[string]interface{}
 
 func save(cves []RedhatCVE) error {
-	data := platform{}
-	for _, cve := range cves {
-		for _, affected := range cve.AffectedRelease {
-			if affected.Package == "" {
-				continue
-			}
-			// e.g. Red Hat Enterprise Linux 7
-			platform := affected.ProductName
-			if !utils.StringInSlice(affected.ProductName, targetPlatforms) {
-				continue
-			}
-
-			pkgName, version := splitPkgName(affected.Package)
-			p, ok := data[platform]
-			if !ok {
-				data[platform] = pkg{}
-				p = data[platform]
-			}
-
-			a, ok := p[pkgName]
-			if !ok {
-				p[pkgName] = advisory{}
-				a = p[pkgName]
-			}
-
-			a[cve.Name] = Advisory{
-				CveID:     cve.Name,
-				Version:   version,
-				CvssScore: extractScore(cve.Cvss, cve.Cvss3),
-			}
-		}
-
-		for _, pkgState := range cve.PackageState {
-			pkgName := pkgState.PackageName
-			if pkgName == "" {
-				continue
-			}
-			// e.g. Red Hat Enterprise Linux 7
-			platform := pkgState.ProductName
-			if !utils.StringInSlice(platform, targetPlatforms) {
-				continue
-			}
-			if !utils.StringInSlice(pkgState.FixState, targetStatus) {
-				continue
-			}
-
-			p, ok := data[platform]
-			if !ok {
-				data[platform] = pkg{}
-				p = data[platform]
-			}
-
-			a, ok := p[pkgName]
-			if !ok {
-				p[pkgName] = advisory{}
-				a = p[pkgName]
-			}
-
-			a[cve.Name] = ""
-			a[cve.Name] = Advisory{
-				CveID: cve.Name,
-				// this means all versions
-				Version:   "",
-				CvssScore: extractScore(cve.Cvss, cve.Cvss3),
-			}
-		}
-	}
-
 	log.Logger.Debug("Saving RedHat DB")
-	for platform, pkgs := range data {
-		bucketKV := map[string]map[string]interface{}{}
-		for pkg, advisory := range pkgs {
-			bucketKV[pkg] = map[string]interface{}(advisory)
+	err := db.BatchUpdate(func(tx *bolt.Tx) error {
+		for _, cve := range cves {
+			for _, affected := range cve.AffectedRelease {
+				if affected.Package == "" {
+					continue
+				}
+				// e.g. Red Hat Enterprise Linux 7
+				platformName := affected.ProductName
+				if !utils.StringInSlice(affected.ProductName, targetPlatforms) {
+					continue
+				}
+
+				pkgName, version := splitPkgName(affected.Package)
+				advisory := vulnerability.Advisory{
+					VulnerabilityID: cve.Name,
+					FixedVersion:    version,
+				}
+				if err := db.PutNestedBucket(tx, platformName, pkgName, cve.Name, advisory); err != nil {
+					return xerrors.Errorf("failed to save Red Hat advisory: %w", err)
+				}
+
+			}
+
+			for _, pkgState := range cve.PackageState {
+				pkgName := pkgState.PackageName
+				if pkgName == "" {
+					continue
+				}
+				// e.g. Red Hat Enterprise Linux 7
+				platformName := pkgState.ProductName
+				if !utils.StringInSlice(platformName, targetPlatforms) {
+					continue
+				}
+				if !utils.StringInSlice(pkgState.FixState, targetStatus) {
+					continue
+				}
+
+				advisory := vulnerability.Advisory{
+					// this means all versions
+					FixedVersion:    "",
+					VulnerabilityID: cve.Name,
+				}
+				if err := db.PutNestedBucket(tx, platformName, pkgName, cve.Name, advisory); err != nil {
+					return xerrors.Errorf("failed to save Red Hat advisory: %w", err)
+				}
+
+			}
+
+			cvssScore, _ := strconv.ParseFloat(cve.Cvss.CvssBaseScore, 64)
+			cvss3Score, _ := strconv.ParseFloat(cve.Cvss3.Cvss3BaseScore, 64)
+
+			title := strings.TrimPrefix(strings.TrimSpace(cve.Bugzilla.Description), cve.Name)
+
+			vuln := vulnerability.Vulnerability{
+				CvssScore:   cvssScore,
+				CvssScoreV3: cvss3Score,
+				Severity:    severityFromThreat(cve.ThreatSeverity),
+				References:  cve.References,
+				Title:       strings.TrimSpace(title),
+				Description: strings.TrimSpace(strings.Join(cve.Details, "")),
+			}
+			if err := vulnerability.Put(tx, cve.Name, vulnerability.RedHat, vuln); err != nil {
+				return xerrors.Errorf("failed to save Red Hat vulnerability: %w", err)
+			}
 		}
-		if err := db.BatchUpdate(platform, bucketKV); err != nil {
-			return xerrors.Errorf("error in db batch update: %w", err)
-		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+
 	return nil
 }
 
-func Get(majorVersion int, pkgName string) ([]Advisory, error) {
+func Get(majorVersion string, pkgName string) ([]vulnerability.Advisory, error) {
 	bucket := fmt.Sprintf(platformFormat, majorVersion)
 	advisories, err := db.ForEach(bucket, pkgName)
 	if err != nil {
-		return nil, xerrors.Errorf("error in RedHat foreach: %w", err)
+		return nil, xerrors.Errorf("error in Red Hat foreach: %w", err)
 	}
 	if len(advisories) == 0 {
 		return nil, nil
 	}
 
-	var results []Advisory
+	var results []vulnerability.Advisory
 	for _, v := range advisories {
-		var advisory Advisory
+		var advisory vulnerability.Advisory
 		if err = json.Unmarshal(v, &advisory); err != nil {
-			return nil, xerrors.Errorf("failed to unmarshal RedHat JSON: %w", err)
+			return nil, xerrors.Errorf("failed to unmarshal Red Hat JSON: %w", err)
 		}
 		results = append(results, advisory)
 	}
@@ -229,13 +224,16 @@ func splitPkgName(pkgName string) (string, string) {
 	return pkgName, version
 }
 
-func extractScore(cvss RedhatCvss, cvssv3 RedhatCvss3) float64 {
-	score, err := strconv.ParseFloat(cvssv3.Cvss3BaseScore, 64)
-	if err != nil {
-		score, err = strconv.ParseFloat(cvss.CvssBaseScore, 64)
-		if err != nil {
-			return 0
-		}
+func severityFromThreat(sev string) vulnerability.Severity {
+	switch strings.Title(sev) {
+	case "Low":
+		return vulnerability.SeverityLow
+	case "Moderate":
+		return vulnerability.SeverityMedium
+	case "Important":
+		return vulnerability.SeverityHigh
+	case "Critical":
+		return vulnerability.SeverityCritical
 	}
-	return score
+	return vulnerability.SeverityUnknown
 }

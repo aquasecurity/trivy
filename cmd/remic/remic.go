@@ -4,9 +4,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/knqyf263/trivy/pkg/remic"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/nvd"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
+	"github.com/knqyf263/trivy/pkg/remic"
 	"github.com/urfave/cli"
 
 	"github.com/knqyf263/trivy/pkg/log"
@@ -29,7 +29,7 @@ OPTIONS:
   {{end}}{{$option}}{{end}}{{end}}
 `
 	app := cli.NewApp()
-	app.Name = "trivy"
+	app.Name = "remic"
 	app.Version = "0.0.1"
 	app.ArgsUsage = "file"
 
@@ -43,7 +43,7 @@ OPTIONS:
 		},
 		cli.StringFlag{
 			Name:  "severity, s",
-			Value: strings.Join(nvd.SeverityNames, ","),
+			Value: strings.Join(vulnerability.SeverityNames, ","),
 			Usage: "severity of vulnerabilities to be displayed",
 		},
 		cli.StringFlag{

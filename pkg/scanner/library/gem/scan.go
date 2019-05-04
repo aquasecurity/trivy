@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/knqyf263/go-version"
-	t "github.com/knqyf263/trivy/pkg/scanner/types"
 	"github.com/knqyf263/trivy/pkg/scanner/utils"
 	"github.com/knqyf263/trivy/pkg/types"
 )
@@ -17,7 +16,7 @@ type Scanner struct {
 	db   AdvisoryDB
 }
 
-func NewScanner(f *os.File) t.Scanner {
+func NewScanner(f *os.File) *Scanner {
 	return &Scanner{file: f}
 }
 

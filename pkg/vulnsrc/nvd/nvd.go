@@ -5,10 +5,15 @@ import (
 	"io"
 	"path/filepath"
 
+	"github.com/knqyf263/trivy/pkg/log"
+
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+
 	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/trivy/utils"
 
+	bolt "github.com/etcd-io/bbolt"
 	"github.com/knqyf263/trivy/pkg/db"
 )
 
@@ -25,9 +30,9 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 		return xerrors.Errorf("failed to filter target files: %w", err)
 	}
 
-	var items []Item
+	var items []vulnerability.Item
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, _ string) error {
-		item := Item{}
+		item := vulnerability.Item{}
 		if err := json.NewDecoder(r).Decode(&item); err != nil {
 			return xerrors.Errorf("failed to decode NVD JSON: %w", err)
 		}
@@ -45,30 +50,30 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	return nil
 }
 
-func save(items []Item) error {
-	data := map[string]interface{}{}
-	for _, item := range items {
-		cveID := item.Cve.Meta.ID
-		data[cveID] = item
-	}
-	d := map[string]map[string]interface{}{
-		nestedBucket: data,
-	}
-	return db.BatchUpdate(rootBucket, d)
-}
+func save(items []vulnerability.Item) error {
+	log.Logger.Debug("NVD batch update")
+	err := vulnerability.BatchUpdate(func(b *bolt.Bucket) error {
+		for _, item := range items {
+			cveID := item.Cve.Meta.ID
+			severity, _ := vulnerability.NewSeverity(item.Impact.BaseMetricV2.Severity)
+			severityV3, _ := vulnerability.NewSeverity(item.Impact.BaseMetricV3.CvssV3.BaseSeverity)
+			vuln := vulnerability.Vulnerability{
+				Severity:   severity,
+				SeverityV3: severityV3,
+				// TODO
+				References:  []string{},
+				Title:       "",
+				Description: "",
+			}
 
-func Get(cveID string) (*Item, error) {
-	value, err := db.Get(rootBucket, nestedBucket, cveID)
+			if err := db.Put(b, cveID, vulnerability.Nvd, vuln); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, xerrors.Errorf("error in NVD get: %w", err)
+		return xerrors.Errorf("error in batch update: %w", err)
 	}
-	if len(value) == 0 {
-		return nil, nil
-	}
-
-	var item *Item
-	if err = json.Unmarshal(value, &item); err != nil {
-		return nil, xerrors.Errorf("failed to unmarshal NVD JSON: %w", err)
-	}
-	return item, nil
+	return nil
 }

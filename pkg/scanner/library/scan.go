@@ -1,23 +1,30 @@
-package scanner
+package library
 
 import (
 	"fmt"
 	"os"
 
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+
 	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/go-version"
 	"github.com/knqyf263/trivy/pkg/log"
-	"github.com/knqyf263/trivy/pkg/scanner/composer"
-	"github.com/knqyf263/trivy/pkg/scanner/gem"
-	"github.com/knqyf263/trivy/pkg/scanner/npm"
-	t "github.com/knqyf263/trivy/pkg/scanner/types"
+	"github.com/knqyf263/trivy/pkg/scanner/library/composer"
+	"github.com/knqyf263/trivy/pkg/scanner/library/gem"
+	"github.com/knqyf263/trivy/pkg/scanner/library/npm"
 	"github.com/knqyf263/trivy/pkg/types"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/nvd"
 )
 
-func Scan(f *os.File, severities []nvd.Severity) ([]types.Vulnerability, error) {
-	var scanner t.Scanner
+type Scanner interface {
+	UpdateDB() error
+	ParseLockfile() ([]types.Library, error)
+	Detect(string, *version.Version) ([]types.Vulnerability, error)
+}
+
+func Scan(f *os.File, severities []vulnerability.Severity) ([]types.Vulnerability, error) {
+	var scanner Scanner
 	switch f.Name() {
 	case "Gemfile.lock":
 		scanner = gem.NewScanner(f)
@@ -54,12 +61,12 @@ func Scan(f *os.File, severities []nvd.Severity) ([]types.Vulnerability, error) 
 		}
 		for _, vuln := range vulns {
 			severity := scoreToSeverity(vuln.Score)
-			if severity == nvd.SeverityUnknown {
+			if severity == vulnerability.SeverityUnknown {
 				s, err := getSeverity(vuln.VulnerabilityID)
 				if err != nil {
 					return nil, err
 				}
-				severity, _ = nvd.NewSeverity(s)
+				severity, _ = vulnerability.NewSeverity(s)
 			}
 
 			// Filter vulnerabilities by severity
@@ -82,7 +89,7 @@ func getSeverity(vulnID string) (string, error) {
 		return "", err
 	}
 	if nvdItem == nil {
-		return fmt.Sprint(nvd.SeverityUnknown), nil
+		return fmt.Sprint(vulnerability.SeverityUnknown), nil
 	}
 	if nvdItem.Impact.BaseMetricV3.CvssV3.BaseSeverity == "" {
 		return nvdItem.Impact.BaseMetricV2.Severity, nil
@@ -91,15 +98,15 @@ func getSeverity(vulnID string) (string, error) {
 
 }
 
-func scoreToSeverity(score float64) nvd.Severity {
+func scoreToSeverity(score float64) vulnerability.Severity {
 	if score >= 9.0 {
-		return nvd.SeverityCritical
+		return vulnerability.SeverityCritical
 	} else if score >= 7.0 {
-		return nvd.SeverityHigh
+		return vulnerability.SeverityHigh
 	} else if score >= 4.0 {
-		return nvd.SeverityMedium
+		return vulnerability.SeverityMedium
 	} else if score > 0.0 {
-		return nvd.SeverityLow
+		return vulnerability.SeverityLow
 	}
-	return nvd.SeverityUnknown
+	return vulnerability.SeverityUnknown
 }

@@ -32,48 +32,64 @@ func Init() (err error) {
 
 func Update(rootBucket, nestedBucket, key string, value interface{}) error {
 	err := db.Update(func(tx *bolt.Tx) error {
-		root, err := tx.CreateBucketIfNotExists([]byte(rootBucket))
-		if err != nil {
-			return err
-		}
-		nested, err := root.CreateBucketIfNotExists([]byte(nestedBucket))
-		if err != nil {
-			return err
-		}
-		v, err := json.Marshal(value)
-		if err != nil {
-			return err
-		}
-		return nested.Put([]byte(key), v)
+		return PutNestedBucket(tx, rootBucket, nestedBucket, key, value)
 	})
 	return err
 }
 
-func BatchUpdate(rootBucket string, bucketKV map[string]map[string]interface{}) error {
-	err := db.Batch(func(tx *bolt.Tx) error {
-		root, err := tx.CreateBucketIfNotExists([]byte(rootBucket))
-		if err != nil {
-			return err
-		}
-		for nestedBucket, kv := range bucketKV {
-			nested, err := root.CreateBucketIfNotExists([]byte(nestedBucket))
-			if err != nil {
-				return xerrors.Errorf("failed to get bucket: %w", err)
-			}
-			for k, v := range kv {
-				value, err := json.Marshal(v)
-				if err != nil {
-					return xerrors.Errorf("failed to marshal json: %w", err)
-				}
-				if err = nested.Put([]byte(k), value); err != nil {
-					return err
-				}
-			}
-		}
-		return nil
-	})
-	return err
+func PutNestedBucket(tx *bolt.Tx, rootBucket, nestedBucket, key string, value interface{}) error {
+	root, err := tx.CreateBucketIfNotExists([]byte(rootBucket))
+	if err != nil {
+		return err
+	}
+	return Put(root, nestedBucket, key, value)
 }
+func Put(root *bolt.Bucket, nestedBucket, key string, value interface{}) error {
+	nested, err := root.CreateBucketIfNotExists([]byte(nestedBucket))
+	if err != nil {
+		return err
+	}
+	v, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+	return nested.Put([]byte(key), v)
+}
+func BatchUpdate(fn func(tx *bolt.Tx) error) error {
+	err := db.Batch(func(tx *bolt.Tx) error {
+		return fn(tx)
+	})
+	if err != nil {
+		return xerrors.Errorf("error in batch update: %w", err)
+	}
+	return nil
+}
+
+//func BatchUpdate(rootBucket string, bucketKV map[string]map[string]interface{}) error {
+//	err := db.Batch(func(tx *bolt.Tx) error {
+//		root, err := tx.CreateBucketIfNotExists([]byte(rootBucket))
+//		if err != nil {
+//			return err
+//		}
+//		for nestedBucket, kv := range bucketKV {
+//			nested, err := root.CreateBucketIfNotExists([]byte(nestedBucket))
+//			if err != nil {
+//				return xerrors.Errorf("failed to get bucket: %w", err)
+//			}
+//			for k, v := range kv {
+//				value, err := json.Marshal(v)
+//				if err != nil {
+//					return xerrors.Errorf("failed to marshal json: %w", err)
+//				}
+//				if err = nested.Put([]byte(k), value); err != nil {
+//					return err
+//				}
+//			}
+//		}
+//		return nil
+//	})
+//	return err
+//}
 
 func Get(rootBucket, nestedBucket, key string) (value []byte, err error) {
 	err = db.View(func(tx *bolt.Tx) error {

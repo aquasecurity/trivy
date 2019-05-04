@@ -18,7 +18,7 @@ import (
 )
 
 func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
-	exists, err := utils.Exists(repoPath)
+	exists, err := utils.Exists(filepath.Join(repoPath, ".git"))
 	if err != nil {
 		return nil, err
 	}

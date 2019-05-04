@@ -6,7 +6,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/knqyf263/trivy/pkg/vulnsrc/nvd"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
 	"github.com/knqyf263/trivy/pkg/types"
 	"github.com/olekukonko/tablewriter"
@@ -27,16 +27,17 @@ type TableWriter struct {
 
 func (tw TableWriter) Write(result *Result) error {
 	table := tablewriter.NewWriter(tw.Output)
-	table.SetHeader([]string{"Library", "Vulnerability ID", "Severity", "Title"})
+	table.SetHeader([]string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version", "Title"})
 
 	severityCount := map[string]int{}
 	for _, v := range result.Vulnerabilities {
 		severityCount[v.Severity]++
-		table.Append([]string{v.LibraryName, v.VulnerabilityID, nvd.ColorizeSeverity(v.Severity), v.Title})
+		table.Append([]string{v.PkgName, v.VulnerabilityID, vulnerability.ColorizeSeverity(v.Severity),
+			v.InstalledVersion, v.FixedVersion, v.Title})
 	}
 
 	var results []string
-	for _, severity := range nvd.SeverityNames {
+	for _, severity := range vulnerability.SeverityNames {
 		r := fmt.Sprintf("%s: %d", severity, severityCount[severity])
 		results = append(results, r)
 	}

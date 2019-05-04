@@ -7,14 +7,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/knqyf263/trivy/pkg/vulnsrc/nvd"
-
+	bolt "github.com/etcd-io/bbolt"
 	"github.com/knqyf263/trivy/pkg/db"
 	"github.com/knqyf263/trivy/pkg/log"
-
-	"golang.org/x/xerrors"
-
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 	"github.com/knqyf263/trivy/utils"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -22,7 +20,17 @@ const (
 )
 
 var (
-	platformFormat = "debian %s"
+	// e.g. debian 8
+	platformFormat        = "debian %s"
+	DebianReleasesMapping = map[string]string{
+		// Code names
+		"squeeze": "6",
+		"wheezy":  "7",
+		"jessie":  "8",
+		"stretch": "9",
+		"buster":  "10",
+		"sid":     "unstable",
+	}
 )
 
 func Update(dir string, updatedFiles map[string]struct{}) error {
@@ -36,7 +44,7 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, path string) error {
 		var cve DebianCVE
 		if err = json.NewDecoder(r).Decode(&cve); err != nil {
-			return xerrors.Errorf("failed to decode RedHat JSON: %w", err)
+			return xerrors.Errorf("failed to decode Debian JSON: %w", err)
 		}
 
 		cve.VulnerabilityID = strings.TrimSuffix(filepath.Base(path), ".json")
@@ -56,59 +64,49 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	return nil
 }
 
-// platformName: pkgStatus
-type platform map[string]pkg
-
-// pkgName: advisoryStatus
-type pkg map[string]advisory
-
-// cveID: version
-type advisory map[string]interface{}
-
 func save(cves []DebianCVE) error {
-	data := platform{}
-	for _, cve := range cves {
-		for _, release := range cve.Releases {
-			if release.Status != "open" {
-				continue
-			}
-			for platformName := range release.Repositories {
-				platformName = fmt.Sprintf(platformFormat, platformName)
-				p, ok := data[platformName]
-				if !ok {
-					data[platformName] = pkg{}
-					p = data[platformName]
-				}
-
-				pkgName := cve.Package
-				a, ok := p[pkgName]
-				if !ok {
-					p[pkgName] = advisory{}
-					a = p[pkgName]
-				}
-
-				a[cve.VulnerabilityID] = Advisory{
-					VulnerabilityID: cve.VulnerabilityID,
-					Severity:        severityFromUrgency(release.Urgency),
-				}
-			}
-		}
-	}
-
 	log.Logger.Debug("Saving Debian DB")
-	for platform, pkgs := range data {
-		bucketKV := map[string]map[string]interface{}{}
-		for pkg, advisory := range pkgs {
-			bucketKV[pkg] = map[string]interface{}(advisory)
+	err := db.BatchUpdate(func(tx *bolt.Tx) error {
+		for _, cve := range cves {
+			for _, release := range cve.Releases {
+				for releaseStr := range release.Repositories {
+					majorVersion, ok := DebianReleasesMapping[releaseStr]
+					if !ok {
+						continue
+					}
+					platformName := fmt.Sprintf(platformFormat, majorVersion)
+					if release.Status != "open" {
+						continue
+					}
+					advisory := vulnerability.Advisory{
+						VulnerabilityID: cve.VulnerabilityID,
+						//Severity:        severityFromUrgency(release.Urgency),
+					}
+					if err := db.PutNestedBucket(tx, platformName, cve.Package, cve.VulnerabilityID, advisory); err != nil {
+						return xerrors.Errorf("failed to save Debian advisory: %w", err)
+					}
+
+					vuln := vulnerability.Vulnerability{
+						Severity:    severityFromUrgency(release.Urgency),
+						Description: cve.Description,
+					}
+
+					if err := vulnerability.Put(tx, cve.VulnerabilityID, vulnerability.Debian, vuln); err != nil {
+						return xerrors.Errorf("failed to save Debian vulnerability: %w", err)
+					}
+				}
+			}
 		}
-		if err := db.BatchUpdate(platform, bucketKV); err != nil {
-			return xerrors.Errorf("error in db batch update: %w", err)
-		}
+		return nil
+	})
+	if err != nil {
+		return xerrors.Errorf("error in batch update: %w", err)
 	}
+
 	return nil
 }
 
-func Get(release string, pkgName string) ([]Advisory, error) {
+func Get(release string, pkgName string) ([]vulnerability.Advisory, error) {
 	bucket := fmt.Sprintf(platformFormat, release)
 	advisories, err := db.ForEach(bucket, pkgName)
 	if err != nil {
@@ -118,9 +116,9 @@ func Get(release string, pkgName string) ([]Advisory, error) {
 		return nil, nil
 	}
 
-	var results []Advisory
+	var results []vulnerability.Advisory
 	for _, v := range advisories {
-		var advisory Advisory
+		var advisory vulnerability.Advisory
 		if err = json.Unmarshal(v, &advisory); err != nil {
 			return nil, xerrors.Errorf("failed to unmarshal Debian JSON: %w", err)
 		}
@@ -129,20 +127,20 @@ func Get(release string, pkgName string) ([]Advisory, error) {
 	return results, nil
 }
 
-func severityFromUrgency(urgency string) nvd.Severity {
+func severityFromUrgency(urgency string) vulnerability.Severity {
 	switch urgency {
 	case "not yet assigned":
-		return nvd.SeverityUnknown
+		return vulnerability.SeverityUnknown
 
 	case "end-of-life", "unimportant", "low", "low*", "low**":
-		return nvd.SeverityLow
+		return vulnerability.SeverityLow
 
 	case "medium", "medium*", "medium**":
-		return nvd.SeverityMedium
+		return vulnerability.SeverityMedium
 
 	case "high", "high*", "high**":
-		return nvd.SeverityHigh
+		return vulnerability.SeverityHigh
 	default:
-		return nvd.SeverityUnknown
+		return vulnerability.SeverityUnknown
 	}
 }

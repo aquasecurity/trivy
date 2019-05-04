@@ -78,9 +78,3 @@ type RedhatPackageState struct {
 	PackageName string `json:"package_name"`
 	Cpe         string `json:"cpe"`
 }
-
-type Advisory struct {
-	CveID     string
-	Version   string
-	CvssScore float64
-}
