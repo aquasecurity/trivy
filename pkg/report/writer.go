@@ -12,20 +12,30 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
+type Results []Result
+
 type Result struct {
 	FileName        string `json:"file"`
 	Vulnerabilities []types.Vulnerability
 }
 
 type Writer interface {
-	Write(*Result) error
+	Write(Results) error
 }
 
 type TableWriter struct {
 	Output io.Writer
 }
 
-func (tw TableWriter) Write(result *Result) error {
+func (tw TableWriter) Write(results Results) error {
+	for _, result := range results {
+		if err := tw.write(result); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (tw TableWriter) write(result Result) error {
 	table := tablewriter.NewWriter(tw.Output)
 	table.SetHeader([]string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version", "Title"})
 
@@ -56,8 +66,12 @@ type JsonWriter struct {
 	Output io.Writer
 }
 
-func (jw JsonWriter) Write(result *Result) error {
-	output, err := json.MarshalIndent(result, "", "  ")
+func (jw JsonWriter) Write(results Results) error {
+	out := map[string][]types.Vulnerability{}
+	for _, result := range results {
+		out[result.FileName] = result.Vulnerabilities
+	}
+	output, err := json.MarshalIndent(out, "", "  ")
 	if err != nil {
 		return err
 	}

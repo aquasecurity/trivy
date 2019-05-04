@@ -7,12 +7,17 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/knqyf263/trivy/utils"
+
 	"github.com/knqyf263/trivy/pkg/git"
 )
 
 const (
-	repoPath = "/tmp/npm"
-	dbURL    = "https://github.com/nodejs/security-wg.git"
+	dbURL = "https://github.com/nodejs/security-wg.git"
+)
+
+var (
+	repoPath = filepath.Join(utils.CacheDir(), "nodejs-security-wg")
 )
 
 type AdvisoryDB map[string][]Advisory
@@ -30,11 +35,11 @@ type Advisory struct {
 	CvssScore          float64
 }
 
-func (n *Scanner) UpdateDB() (err error) {
+func (s *Scanner) UpdateDB() (err error) {
 	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return err
 	}
-	n.db, err = walk()
+	s.db, err = walk()
 	return err
 }
 
@@ -54,6 +59,7 @@ func walk() (AdvisoryDB, error) {
 		if err = json.NewDecoder(f).Decode(&advisory); err != nil {
 			return err
 		}
+		advisory.ModuleName = strings.ToLower(advisory.ModuleName)
 
 		// `cvss_score` returns float or string like "4.8 (MEDIUM)"
 		s := strings.Split(advisory.CvssScoreNumber.String(), " ")

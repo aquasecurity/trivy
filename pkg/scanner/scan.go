@@ -6,6 +6,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/knqyf263/trivy/pkg/log"
+
+	"github.com/knqyf263/trivy/pkg/report"
+
+	"github.com/knqyf263/trivy/pkg/scanner/library"
+
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
 	"github.com/knqyf263/trivy/pkg/types"
@@ -19,17 +25,21 @@ import (
 	"github.com/knqyf263/fanal/extractor"
 )
 
-func ScanImage(imageName, filePath string, severities []vulnerability.Severity) ([]types.Vulnerability, error) {
+func ScanImage(imageName, filePath string, severities []vulnerability.Severity) (report.Results, error) {
+	var results report.Results
 	var err error
 	ctx := context.Background()
 
+	var target string
 	var files extractor.FileMap
 	if imageName != "" {
+		target = imageName
 		files, err = analyzer.Analyze(ctx, imageName)
 		if err != nil {
 			return nil, err
 		}
 	} else if filePath != "" {
+		target = filePath
 		rc, err := openStream(filePath)
 		if err != nil {
 			return nil, err
@@ -43,18 +53,35 @@ func ScanImage(imageName, filePath string, severities []vulnerability.Severity) 
 		return nil, xerrors.New("image name or image file must be specified")
 	}
 
-	vulns, err := ospkg.Scan(files)
+	osFamily, osVersion, osVulns, err := ospkg.Scan(files)
 	if err != nil {
 		return nil, err
 
 	}
 
+	results = append(results, report.Result{
+		FileName:        fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion),
+		Vulnerabilities: processVulnerabilties(osVulns, severities),
+	})
+
+	libVulns, err := library.Scan(files)
+	if err != nil {
+		return nil, err
+	}
+	for path, vulns := range libVulns {
+		results = append(results, report.Result{
+			FileName:        path,
+			Vulnerabilities: processVulnerabilties(vulns, severities),
+		})
+	}
+
+	return results, nil
+}
+
+func processVulnerabilties(vulns []types.Vulnerability, severities []vulnerability.Severity) []types.Vulnerability {
 	var vulnerabilities []types.Vulnerability
 	for _, vuln := range vulns {
-		sev, title, err := getDetail(vuln.VulnerabilityID)
-		if err != nil {
-			return nil, err
-		}
+		sev, title := getDetail(vuln.VulnerabilityID)
 
 		// Filter vulnerabilities by severity
 		for _, s := range severities {
@@ -66,8 +93,7 @@ func ScanImage(imageName, filePath string, severities []vulnerability.Severity) 
 			}
 		}
 	}
-
-	return vulnerabilities, nil
+	return vulnerabilities
 }
 
 func openStream(path string) (*os.File, error) {
@@ -82,14 +108,17 @@ func openStream(path string) (*os.File, error) {
 	return os.Open(path)
 }
 
-func getDetail(vulnID string) (vulnerability.Severity, string, error) {
+func getDetail(vulnID string) (vulnerability.Severity, string) {
 	details, err := vulnerability.Get(vulnID)
 	if err != nil {
-		return vulnerability.SeverityUnknown, "", err
+		log.Logger.Debug(err)
+		return vulnerability.SeverityUnknown, ""
+	} else if len(details) == 0 {
+		return vulnerability.SeverityUnknown, ""
 	}
 	severity := getSeverity(details)
 	title := getTitle(details)
-	return severity, title, nil
+	return severity, title
 }
 
 func getSeverity(details map[string]vulnerability.Vulnerability) vulnerability.Severity {

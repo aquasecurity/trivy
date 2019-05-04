@@ -1,29 +1,35 @@
 package npm
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
 
+	"golang.org/x/xerrors"
+
+	"github.com/knqyf263/go-dep-parser/pkg/npm"
+	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
 	"github.com/knqyf263/go-version"
 	"github.com/knqyf263/trivy/pkg/scanner/utils"
 	"github.com/knqyf263/trivy/pkg/types"
 )
 
+const (
+	scannerType = "npm"
+)
+
 type Scanner struct {
-	file *os.File
-	db   AdvisoryDB
+	db AdvisoryDB
 }
 
-func NewScanner(f *os.File) *Scanner {
-	return &Scanner{file: f}
+func NewScanner() *Scanner {
+	return &Scanner{}
 }
 
-func (n *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Vulnerability, error) {
+func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Vulnerability, error) {
 	replacer := strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc", " <", ", <", " >", ", >")
 	var vulns []types.Vulnerability
-	for _, advisory := range n.db[pkgName] {
+	for _, advisory := range s.db[pkgName] {
 		// e.g. <= 2.15.0 || >= 3.0.0 <= 3.8.2
 		//  => {"<=2.15.0", ">= 3.0.0, <= 3.8.2"}
 		var vulnerableVersions []string
@@ -52,10 +58,12 @@ func (n *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Vulne
 
 		for _, cveID := range advisory.Cves {
 			vuln := types.Vulnerability{
-				VulnerabilityID: cveID,
-				LibraryName:     pkgName,
-				Title:           strings.TrimSpace(advisory.Title),
-				Score:           advisory.CvssScore,
+				VulnerabilityID:  cveID,
+				PkgName:          pkgName,
+				Title:            strings.TrimSpace(advisory.Title),
+				InstalledVersion: pkgVer.String(),
+				FixedVersion:     strings.Join(patchedVersions, ", "),
+				//Score:           advisory.CvssScore,
 			}
 			vulns = append(vulns, vuln)
 		}
@@ -63,28 +71,13 @@ func (n *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Vulne
 	return vulns, nil
 }
 
-type LockFile struct {
-	Dependencies map[string]Dependency
-}
-type Dependency struct {
-	Version string
-	Dev     bool
-}
-
-func (n *Scanner) ParseLockfile() ([]types.Library, error) {
-	var lockFile LockFile
-	decoder := json.NewDecoder(n.file)
-	err := decoder.Decode(&lockFile)
+func (s *Scanner) ParseLockfile(f *os.File) ([]ptypes.Library, error) {
+	libs, err := npm.Parse(f)
 	if err != nil {
-		return nil, err
-	}
-
-	var libs []types.Library
-	for pkgName, dependency := range lockFile.Dependencies {
-		libs = append(libs, types.Library{
-			Name:    pkgName,
-			Version: dependency.Version,
-		})
+		return nil, xerrors.Errorf("invalid package-lock.json format: %w", err)
 	}
 	return libs, nil
+}
+func (s *Scanner) Type() string {
+	return scannerType
 }

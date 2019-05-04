@@ -6,13 +6,18 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/knqyf263/trivy/utils"
+
 	"github.com/knqyf263/trivy/pkg/git"
 	"gopkg.in/yaml.v2"
 )
 
 const (
-	repoPath = "/tmp/composer"
-	dbURL    = "https://github.com/FriendsOfPHP/security-advisories"
+	dbURL = "https://github.com/FriendsOfPHP/security-advisories"
+)
+
+var (
+	repoPath = filepath.Join(utils.CacheDir(), "php-security-advisories")
 )
 
 type AdvisoryDB map[string][]Advisory
@@ -29,11 +34,11 @@ type Branch struct {
 	Versions []string
 }
 
-func (c *Scanner) UpdateDB() (err error) {
+func (s *Scanner) UpdateDB() (err error) {
 	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return err
 	}
-	c.db, err = walk()
+	s.db, err = walk()
 	return err
 }
 

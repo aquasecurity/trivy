@@ -28,6 +28,7 @@ require (
 	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/knqyf263/fanal v0.0.0-20190501134735-2deffba5fffe
 	github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b
+	github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/knqyf263/go-version v1.1.1
 	github.com/mattn/go-colorable v0.1.1 // indirect

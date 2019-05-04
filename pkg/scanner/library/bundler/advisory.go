@@ -1,4 +1,4 @@
-package gem
+package bundler
 
 import (
 	"io/ioutil"
@@ -6,12 +6,16 @@ import (
 	"path/filepath"
 
 	"github.com/knqyf263/trivy/pkg/git"
+	"github.com/knqyf263/trivy/utils"
 	"gopkg.in/yaml.v2"
 )
 
 const (
-	repoPath = "/tmp/foo"
-	dbURL    = "https://github.com/rubysec/ruby-advisory-db.git"
+	dbURL = "https://github.com/rubysec/ruby-advisory-db.git"
+)
+
+var (
+	repoPath = filepath.Join(utils.CacheDir(), "ruby-advisory-db")
 )
 
 type AdvisoryDB map[string][]Advisory
@@ -32,11 +36,11 @@ type Related struct {
 	Url []string
 }
 
-func (g *Scanner) UpdateDB() (err error) {
+func (s *Scanner) UpdateDB() (err error) {
 	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return err
 	}
-	g.db, err = walk()
+	s.db, err = walk()
 	return err
 }
 

@@ -23,10 +23,10 @@ type Scanner interface {
 	Detect(string, []analyzer.Package) ([]types.Vulnerability, error)
 }
 
-func Scan(files extractor.FileMap) ([]types.Vulnerability, error) {
+func Scan(files extractor.FileMap) (string, string, []types.Vulnerability, error) {
 	os, err := analyzer.GetOS(files)
 	if err != nil {
-		return nil, err
+		return "", "", nil, err
 	}
 
 	var s Scanner
@@ -40,17 +40,17 @@ func Scan(files extractor.FileMap) ([]types.Vulnerability, error) {
 	case fos.RedHat, fos.CentOS:
 		s = redhat.NewScanner()
 	default:
-		return nil, xerrors.New("unsupported os")
+		return "", "", nil, xerrors.New("unsupported os")
 	}
 	pkgs, err := analyzer.GetPackages(files)
 	if err != nil {
-		return nil, err
+		return "", "", nil, err
 	}
 
 	vulns, err := s.Detect(os.Name, pkgs)
 	if err != nil {
-		return nil, err
+		return "", "", nil, err
 	}
 
-	return vulns, nil
+	return os.Family, os.Name, vulns, nil
 }

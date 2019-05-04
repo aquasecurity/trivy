@@ -1,31 +1,43 @@
 package composer
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
 
+	"golang.org/x/xerrors"
+
+	"github.com/knqyf263/go-dep-parser/pkg/composer"
+	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
 	"github.com/knqyf263/go-version"
 	"github.com/knqyf263/trivy/pkg/scanner/utils"
 	"github.com/knqyf263/trivy/pkg/types"
 )
 
+const (
+	scannerType = "composer"
+)
+
 type Scanner struct {
-	file *os.File
-	db   AdvisoryDB
+	db AdvisoryDB
 }
 
-func NewScanner(f *os.File) *Scanner {
-	return &Scanner{file: f}
+func NewScanner() *Scanner {
+	return &Scanner{}
 }
 
-func (c *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Vulnerability, error) {
+func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Vulnerability, error) {
 	var vulns []types.Vulnerability
 	ref := fmt.Sprintf("composer://%s", pkgName)
-	for _, advisory := range c.db[ref] {
+	for _, advisory := range s.db[ref] {
 		var affectedVersions []string
+		var patchedVersions []string
 		for _, branch := range advisory.Branches {
+			for _, version := range branch.Versions {
+				if !strings.HasPrefix(version, "<=") && strings.HasPrefix(version, "<") {
+					patchedVersions = append(patchedVersions, strings.Trim(version, "<"))
+				}
+			}
 			affectedVersions = append(affectedVersions, strings.Join(branch.Versions, ", "))
 		}
 
@@ -34,38 +46,25 @@ func (c *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Vulne
 		}
 
 		vuln := types.Vulnerability{
-			VulnerabilityID: advisory.Cve,
-			LibraryName:     pkgName,
-			Title:           strings.TrimSpace(advisory.Title),
-			Url:             advisory.Link,
+			VulnerabilityID:  advisory.Cve,
+			PkgName:          pkgName,
+			Title:            strings.TrimSpace(advisory.Title),
+			InstalledVersion: pkgVer.String(),
+			FixedVersion:     strings.Join(patchedVersions, ", "),
+			//Url:             advisory.Link,
 		}
 		vulns = append(vulns, vuln)
 	}
 	return vulns, nil
 }
 
-type LockFile struct {
-	Packages []Package
-}
-type Package struct {
-	Name    string
-	Version string
-}
-
-func (c *Scanner) ParseLockfile() ([]types.Library, error) {
-	var lockFile LockFile
-	decoder := json.NewDecoder(c.file)
-	err := decoder.Decode(&lockFile)
+func (s *Scanner) ParseLockfile(f *os.File) ([]ptypes.Library, error) {
+	libs, err := composer.Parse(f)
 	if err != nil {
-		return nil, err
-	}
-
-	var libs []types.Library
-	for _, pkg := range lockFile.Packages {
-		libs = append(libs, types.Library{
-			Name:    pkg.Name,
-			Version: pkg.Version,
-		})
+		return nil, xerrors.Errorf("invalid composer.lock format: %w", err)
 	}
 	return libs, nil
+}
+func (s *Scanner) Type() string {
+	return scannerType
 }
