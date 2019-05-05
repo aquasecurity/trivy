@@ -12,14 +12,23 @@ jobs:
       - checkout
       - run:
           command: |
+            go test ./...
+jobs:
+  release:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          command: |
             apt-get -y update
             apt-get -y install rpm # for nfpm
       - run:
           command: |
-            goreleaser --rm-dist
+            goreleaser --snapshot --rm-dist
 
 workflows:
   version: 2
   release:
     jobs:  
+      - test
       - release
