@@ -1,5 +1,5 @@
 defaults: &defaults
-  docke :
+  docker :
       - image: knqyf263/ci-trivy:latest
   environment:
     CGO_ENABLED: "1"
