@@ -61,11 +61,11 @@ func Run(c *cli.Context) (err error) {
 	}
 	defer f.Close()
 
-	vulns, err := libscanner.Scan(f, severities)
+	vulns, err := libscanner.ScanFile(f)
 	if err != nil {
 		return err
 	}
-	result := &report.Result{
+	result := report.Result{
 		FileName:        f.Name(),
 		Vulnerabilities: vulns,
 	}
@@ -80,7 +80,7 @@ func Run(c *cli.Context) (err error) {
 		xerrors.New("unknown format")
 	}
 
-	if err = writer.Write(result); err != nil {
+	if err = writer.Write([]report.Result{result}); err != nil {
 		return err
 	}
 
