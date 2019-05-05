@@ -9,7 +9,6 @@ import (
 	_ "github.com/knqyf263/fanal/analyzer/os/ubuntu"
 	_ "github.com/knqyf263/fanal/analyzer/pkg/apk"
 	_ "github.com/knqyf263/fanal/analyzer/pkg/dpkg"
-	_ "github.com/knqyf263/fanal/analyzer/pkg/rpm"
 	"github.com/knqyf263/fanal/extractor"
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg/alpine"
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg/debian"
