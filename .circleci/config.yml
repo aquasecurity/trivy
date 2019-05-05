@@ -4,15 +4,6 @@ defaults: &defaults
   environment:
     CGO_ENABLED: "1"
 
-version: 2
-jobs:
-  release:
-    <<: *defaults
-    steps:
-      - checkout
-      - run:
-          command: |
-            go test ./...
 jobs:
   release:
     <<: *defaults
@@ -30,5 +21,4 @@ workflows:
   version: 2
   release:
     jobs:  
-      - test
       - release
