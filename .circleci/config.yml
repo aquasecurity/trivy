@@ -1,0 +1,25 @@
+defaults: &defaults
+  docker:
+      - image: bepsays/ci-goreleaser:1.12-2
+  environment:
+    CGO_ENABLED: "1"
+
+version: 2
+jobs:
+  release:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          command: |
+            apt-get -y update
+            apt-get -y install rpm # for nfpm
+      - run:
+          command: |
+            goreleaser --rm-dist
+
+workflows:
+  version: 2
+  release:
+    jobs:  
+      - release
