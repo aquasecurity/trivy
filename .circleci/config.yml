@@ -1,6 +1,6 @@
 defaults: &defaults
-  docker:
-      - image: bepsays/ci-goreleaser:1.12-2
+  docke :
+      - image: knqyf263/ci-trivy:latest
   environment:
     CGO_ENABLED: "1"
 
@@ -9,20 +9,6 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            apt-get -y update
-            apt-get -y install rpm
-      - run:
-          name: Install Berkeley DB
-          command: |
-            wget https://dl.bintray.com/homebrew/mirror/berkeley-db-18.1.32.tar.gz
-            tar zxvf berkeley-db-18.1.32.tar.gz
-            cd db-18.1.32/build_unix
-            ../dist/configure --prefix=/usr/local --host=x86_64-apple-darwin15
-            make
-            make install
       - run:
           command: |
             goreleaser --snapshot --rm-dist --skip-publish

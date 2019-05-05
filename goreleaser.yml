@@ -80,3 +80,13 @@ archive:
   files:
     - README.md
     - LICENSE
+brew:
+  github:
+    owner: knqyf263
+    name: homebrew-trivy
+
+  homepage: "https://github.com/knqyf263/trivy"
+  description: ""
+
+  test: |
+    system "#{bin}/program --version"
