@@ -10,13 +10,18 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            goreleaser --rm-dist
+          name: Release
+          command: goreleaser --rm-dist
       - run:
-          command: |
-            git clone git@github.com:knqyf263/trivy-repo.git
-            cd trivy-repo
-
+          name: Clone trivy repository
+          command: git clone git@github.com:knqyf263/trivy-repo.git
+      - run:
+          name: Create rpm repository
+          command: ci/deploy-rpm.sh
+      - run:
+          name: Create deb repository
+          command: ci/deploy-deb.sh
+            
 workflows:
   version: 2
   release:
