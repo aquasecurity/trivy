@@ -1,6 +1,6 @@
 defaults: &defaults
   docker :
-      - image: knqyf263/ci-trivy:latest
+    - image: knqyf263/ci-trivy:latest
   environment:
     CGO_ENABLED: "1"
 
@@ -11,10 +11,15 @@ jobs:
       - checkout
       - run:
           command: |
-            goreleaser --snapshot --rm-dist --skip-publish
+            goreleaser --rm-dist
 
 workflows:
   version: 2
   release:
     jobs:  
-      - release
+      - release:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
