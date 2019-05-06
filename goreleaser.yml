@@ -50,6 +50,8 @@ archive:
   format_overrides:
     - goos: windows
       format: zip
+  dependencies:
+    - rpm
   name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
   replacements:
     amd64: 64bit
@@ -72,7 +74,7 @@ brew:
     owner: knqyf263
     name: homebrew-trivy
   dependencies:
-    - berkeley-db
+    - rpm
   homepage: "https://github.com/knqyf263/trivy"
   description: ""
   test: |
