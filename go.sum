@@ -202,8 +202,8 @@ github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0Q=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
-github.com/tomoyamachi/reg v0.16.1 h1:p/FGr6iRkJ74VG3PrUVFRPGyo2r/rQf+g5uDdjzOaKQ=
-github.com/tomoyamachi/reg v0.16.1/go.mod h1:12Fe9EIvK3dG/qWhNk5e9O96I8SGmCKLsJ8GsXUbk+Y=
+github.com/tomoyamachi/reg v0.16.2-0.20190418055600-c6010b917a55 h1:O7Xl4zpk6zjYnwxUd7lubrx7xdzQ+PqfTgaxLE9nF+o=
+github.com/tomoyamachi/reg v0.16.2-0.20190418055600-c6010b917a55/go.mod h1:12Fe9EIvK3dG/qWhNk5e9O96I8SGmCKLsJ8GsXUbk+Y=
 github.com/urfave/cli v1.20.0 h1:fDqGv3UG/4jbVl/QkFwEdddtEDjh/5Ov6X+0B/3bPaw=
 github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijbERA=
 github.com/xanzy/ssh-agent v0.2.0/go.mod h1:0NyE30eGUDliuLEHJgYte/zncp2zdTStcOnWhgSqHD8=

@@ -6,7 +6,6 @@ require (
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/etcd-io/bbolt v1.3.2
 	github.com/fatih/color v1.7.0
-	github.com/genuinetools/reg v0.16.1 // indirect
 	github.com/gliderlabs/ssh v0.1.3 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/knqyf263/fanal v0.0.0-20190506110705-2b5cb3000ff6
@@ -35,4 +34,4 @@ require (
 	gopkg.in/yaml.v2 v2.2.2
 )
 
-replace github.com/genuinetools/reg => github.com/tomoyamachi/reg v0.16.1
+replace github.com/genuinetools/reg => github.com/tomoyamachi/reg v0.16.2-0.20190418055600-c6010b917a55
