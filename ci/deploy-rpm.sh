@@ -8,12 +8,11 @@ mkdir -p rpm/releases/6/x86_64
 mkdir -p rpm/releases/7/x86_64
 
 cd rpm
-echo $RPM_EL6
 cp ../../dist/*64bit.rpm releases/6/x86_64/${RPM_EL6}
 cp ../../dist/*64bit.rpm releases/7/x86_64/${RPM_EL7}
 
-createrepo releases/6/x86_64/
-createrepo releases/7/x86_64/
+createrepo --update releases/6/x86_64/
+createrepo --update releases/7/x86_64/
 
 git add .
 git commit -m "Update rpm packages"
