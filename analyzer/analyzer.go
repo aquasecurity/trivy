@@ -9,7 +9,6 @@ import (
 
 	"github.com/knqyf263/fanal/extractor"
 	"github.com/knqyf263/go-dep-parser/pkg/types"
-	"github.com/pkg/errors"
 )
 
 var (
@@ -18,9 +17,9 @@ var (
 	libAnalyzers []LibraryAnalyzer
 
 	// ErrUnknownOS occurs when unknown OS is analyzed.
-	ErrUnknownOS = errors.New("Unknown OS")
+	ErrUnknownOS = xerrors.New("Unknown OS")
 	// ErrPkgAnalysis occurs when the analysis of packages is failed.
-	ErrPkgAnalysis = errors.New("Failed to analyze packages")
+	ErrPkgAnalysis = xerrors.New("Failed to analyze packages")
 )
 
 type OSAnalyzer interface {
@@ -92,9 +91,19 @@ func RequiredFilenames() []string {
 
 func Analyze(ctx context.Context, imageName string) (filesMap extractor.FileMap, err error) {
 	e := extractor.NewDockerExtractor(extractor.DockerOption{Timeout: 600 * time.Second})
-	filesMap, err = e.Extract(ctx, imageName, RequiredFilenames())
+	r, err := e.SaveLocalImage(ctx, imageName)
 	if err != nil {
-		return nil, errors.Wrap(err, "Failed to extract files")
+		// when no docker daemon is installed or no image exists in the local machine
+		filesMap, err = e.Extract(ctx, imageName, RequiredFilenames())
+		if err != nil {
+			return nil, xerrors.Errorf("failed to extract files: %w", err)
+		}
+		return filesMap, nil
+	}
+
+	filesMap, err = e.ExtractFromFile(ctx, r, RequiredFilenames())
+	if err != nil {
+		return nil, xerrors.Errorf("failed to extract files from saved tar: %w", err)
 	}
 	return filesMap, nil
 }
@@ -103,7 +112,7 @@ func AnalyzeFromFile(ctx context.Context, r io.ReadCloser) (filesMap extractor.F
 	e := extractor.NewDockerExtractor(extractor.DockerOption{})
 	filesMap, err = e.ExtractFromFile(ctx, r, RequiredFilenames())
 	if err != nil {
-		return nil, errors.Wrap(err, "Failed to extract files")
+		return nil, xerrors.Errorf("failed to extract files from tar: %w", err)
 	}
 	return filesMap, nil
 }
