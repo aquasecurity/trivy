@@ -26,6 +26,8 @@ nfpm:
   formats:
     - deb
     - rpm
+  dependencies:
+    - rpm
   vendor: "knqyf263"
   homepage: "https://github.com/knqyf263"
   maintainer: "Teppei Fukuda <knqyf263@gmail.com>"
@@ -50,8 +52,6 @@ archive:
   format_overrides:
     - goos: windows
       format: zip
-  dependencies:
-    - rpm
   name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
   replacements:
     amd64: 64bit
