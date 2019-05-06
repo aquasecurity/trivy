@@ -191,19 +191,19 @@ func TestParseApkInfo(t *testing.T) {
 		},
 	}
 	a := debianPkgAnalyzer{}
-	for i, v := range tests {
+	for testname, v := range tests {
 		read, err := os.Open(v.path)
 		if err != nil {
-			t.Errorf("%s : can't open file %s", i, v.path)
+			t.Errorf("%s : can't open file %s", testname, v.path)
 		}
 		scanner := bufio.NewScanner(read)
 		pkgs := a.parseDpkginfo(scanner)
 		if err != nil {
-			t.Errorf("%s : catch the error : %v", i, err)
+			t.Errorf("%s : catch the error : %v", testname, err)
 		}
 		diff, equal := messagediff.PrettyDiff(v.pkgs, sortPkgByName(pkgs))
 		if !equal {
-			t.Errorf("[%s]\n diff: %v", i, diff)
+			t.Errorf("[%s]\n diff: %v", testname, diff)
 		}
 	}
 }

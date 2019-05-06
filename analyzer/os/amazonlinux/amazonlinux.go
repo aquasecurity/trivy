@@ -3,9 +3,10 @@ package amazonlinux
 import (
 	"bufio"
 	"bytes"
-	"errors"
 	"fmt"
 	"strings"
+
+	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/fanal/analyzer/os"
 
@@ -43,7 +44,7 @@ func (a amazonlinuxOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, 
 			}
 		}
 	}
-	return analyzer.OS{}, errors.New("amzn: Not match")
+	return analyzer.OS{}, xerrors.Errorf("amazon linux: %w", os.AnalyzeOSError)
 }
 
 func (a amazonlinuxOSAnalyzer) RequiredFiles() []string {

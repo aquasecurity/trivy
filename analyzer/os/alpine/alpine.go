@@ -3,7 +3,8 @@ package alpine
 import (
 	"bufio"
 	"bytes"
-	"errors"
+
+	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/fanal/analyzer/os"
 
@@ -29,7 +30,7 @@ func (a alpineOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error
 			return analyzer.OS{Family: os.Alpine, Name: line}, nil
 		}
 	}
-	return analyzer.OS{}, errors.New("alpine: Not match")
+	return analyzer.OS{}, xerrors.Errorf("alpine: %w", os.AnalyzeOSError)
 }
 
 func (a alpineOSAnalyzer) RequiredFiles() []string {

@@ -1,5 +1,7 @@
 package os
 
+import "golang.org/x/xerrors"
+
 const (
 	// RedHat is done
 	RedHat = "redhat"
@@ -41,3 +43,5 @@ const (
 	// Alpine is done
 	Alpine = "alpine"
 )
+
+var AnalyzeOSError = xerrors.New("no target os")

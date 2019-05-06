@@ -32,18 +32,18 @@ func TestParseApkInfo(t *testing.T) {
 		},
 	}
 	a := alpinePkgAnalyzer{}
-	for i, v := range tests {
+	for testname, v := range tests {
 		read, err := os.Open(v.path)
 		if err != nil {
-			t.Errorf("%s : can't open file %s", i, v.path)
+			t.Errorf("%s : can't open file %s", testname, v.path)
 		}
 		scanner := bufio.NewScanner(read)
 		pkgs, err := a.parseApkInfo(scanner)
 		if err != nil {
-			t.Errorf("%s : catch the error : %v", i, err)
+			t.Errorf("%s : catch the error : %v", testname, err)
 		}
 		if !reflect.DeepEqual(v.pkgs, pkgs) {
-			t.Errorf("[%s]\nexpected : %v\nactual : %v", i, v.pkgs, pkgs)
+			t.Errorf("[%s]\nexpected : %v\nactual : %v", testname, v.pkgs, pkgs)
 		}
 	}
 }

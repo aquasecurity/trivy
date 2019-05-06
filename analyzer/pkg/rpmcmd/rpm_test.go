@@ -201,17 +201,17 @@ func TestParseRpmInfo(t *testing.T) {
 		},
 	}
 	a := rpmCmdPkgAnalyzer{}
-	for i, v := range tests {
+	for testname, v := range tests {
 		bytes, err := ioutil.ReadFile(v.path)
 		if err != nil {
-			t.Errorf("%s : can't open file %s", i, v.path)
+			t.Errorf("%s : can't open file %s", testname, v.path)
 		}
 		pkgs, err := a.parsePkgInfo(bytes)
 		if err != nil {
-			t.Errorf("%s : catch the error : %v", i, err)
+			t.Errorf("%s : catch the error : %v", testname, err)
 		}
 		if !reflect.DeepEqual(v.pkgs, pkgs) {
-			t.Errorf("[%s]\nexpected : %v\nactual : %v", i, v.pkgs, pkgs)
+			t.Errorf("[%s]\nexpected : %v\nactual : %v", testname, v.pkgs, pkgs)
 		}
 	}
 }
