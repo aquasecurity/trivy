@@ -4,33 +4,12 @@ builds:
     binary: trivy
     ldflags: 
       - -s -w
-    env:
-      - CGO_ENABLED=1
-      - CC=o64-clang
-      - CXX=o64-clang++
-    goos:
-      - darwin
-    goarch:
-      - amd64
-  - main: cmd/trivy/main.go
-    binary: trivy
-    ldflags: 
-      - -s -w
-      - "-extldflags '-static'"
-    env:
-      - CGO_ENABLED=1
-    goos:
-      - linux
-    goarch:
-      - amd64
-  - main: cmd/trivy/main.go
-    binary: trivy
-    ldflags: 
-      - -s -w
       - "-extldflags '-static'"
     env:
       - CGO_ENABLED=0
     goos:
+      - darwin
+      - linux
       - windows
       - freebsd
       - netbsd
