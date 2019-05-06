@@ -9,12 +9,12 @@ RUN apt-get -y update \
     && cd db-18.1.32/build_unix \
 
     # Linux
-    && ../dist/configure --prefix=/usr/local --host=x86_64-linux \
+    && ../dist/configure --disable-shared --prefix=/usr/local --host=x86_64-linux \
     && make \
     && make install \
 
     # Darwin
     && make clean \
-    && ../dist/configure --prefix=/usr/local --host=x86_64-apple-darwin15 \
+    && ../dist/configure --disable-shared --prefix=/usr/local --host=x86_64-apple-darwin15 \
     && make \
     && make install

@@ -2,7 +2,9 @@ project_name: trivy
 builds:
   - main: cmd/trivy/main.go
     binary: trivy
-    ldflags: -s -w
+    ldflags: 
+      - -s -w
+      - "-extldflags '-static'"
     env:
       - CGO_ENABLED=1
       - CC=o64-clang
@@ -13,7 +15,9 @@ builds:
       - amd64
   - main: cmd/trivy/main.go
     binary: trivy
-    ldflags: -s -w
+    ldflags: 
+      - -s -w
+      - "-extldflags '-static'"
     env:
       - CGO_ENABLED=1
     goos:
