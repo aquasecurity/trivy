@@ -12,6 +12,10 @@ import (
 	"github.com/knqyf263/trivy/pkg/log"
 )
 
+var (
+	version = "dev"
+)
+
 func main() {
 	cli.AppHelpTemplate = `NAME:
   {{.Name}}{{if .Usage}} - {{.Usage}}{{end}}
@@ -30,7 +34,7 @@ OPTIONS:
 `
 	app := cli.NewApp()
 	app.Name = "trivy"
-	app.Version = "0.0.1"
+	app.Version = version
 	app.ArgsUsage = "image_name"
 
 	app.Usage = "A simple and fast tool for detecting vulnerabilities in application dependencies"
