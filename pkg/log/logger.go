@@ -3,6 +3,7 @@ package log
 import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"golang.org/x/xerrors"
 )
 
 var Logger *zap.SugaredLogger
@@ -45,11 +46,10 @@ func newLogger(debug bool) (*zap.SugaredLogger, error) {
 		OutputPaths:      []string{"stdout"},
 		ErrorOutputPaths: []string{"stderr"},
 	}
-	logger, _ := myConfig.Build()
+	logger, err := myConfig.Build()
+	if err != nil {
+		return nil, xerrors.Errorf("failed to build zap config: %w", err)
+	}
 
-	//logger, err := zap.NewDevelopment()
-	//if err != nil {
-	//	return nil, err
-	//}
 	return logger.Sugar(), nil
 }
