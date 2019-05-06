@@ -1,7 +1,7 @@
 FROM bepsays/ci-goreleaser:1.12-2
 
 RUN apt-get -y update \
-    && apt-get -y install rpm \
+    && apt-get -y install rpm reprepro createrepo \
     && wget https://dl.bintray.com/homebrew/mirror/berkeley-db-18.1.32.tar.gz \
 
     # Berkeley DB

@@ -12,6 +12,10 @@ jobs:
       - run:
           command: |
             goreleaser --rm-dist
+      - run:
+          command: |
+            git clone git@github.com:knqyf263/trivy-repo.git
+            cd trivy-repo
 
 workflows:
   version: 2
