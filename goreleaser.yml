@@ -4,7 +4,6 @@ builds:
     binary: trivy
     ldflags: 
       - -s -w
-      - "-extldflags '-static'"
     env:
       - CGO_ENABLED=1
       - CC=o64-clang
@@ -17,6 +16,7 @@ builds:
     binary: trivy
     ldflags: 
       - -s -w
+      - "-extldflags '-static'"
     env:
       - CGO_ENABLED=1
     goos:
@@ -42,6 +42,7 @@ builds:
       - arm64
     goarm:
       - 7
+
 nfpm:
   formats:
     - deb
@@ -64,6 +65,7 @@ nfpm:
     netbsd: NetBSD
     freebsd: FreeBSD
     dragonfly: DragonFlyBSD
+
 archive:
   format: tar.gz
   format_overrides:
@@ -85,13 +87,14 @@ archive:
   files:
     - README.md
     - LICENSE
+
 brew:
   github:
     owner: knqyf263
     name: homebrew-trivy
-
+  dependencies:
+    - berkeley-db
   homepage: "https://github.com/knqyf263/trivy"
   description: ""
-
   test: |
     system "#{bin}/program --version"
