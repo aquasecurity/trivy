@@ -10,7 +10,7 @@ require (
 	github.com/docker/distribution v0.0.0-20180920194744-16128bbac47f
 	github.com/docker/docker v0.0.0-20180924202107-a9c061deec0f
 	github.com/docker/go-connections v0.4.0 // indirect
-	github.com/genuinetools/reg v0.16.1
+	github.com/genuinetools/reg v0.16.0
 	github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790
 	github.com/knqyf263/go-rpmdb v0.0.0-20190501070121-10a1c42a10dc
 	github.com/knqyf263/nested v0.0.1
@@ -20,6 +20,6 @@ require (
 	golang.org/x/xerrors v0.0.0-20190410155217-1f06c39b4373
 )
 
-replace github.com/genuinetools/reg => github.com/tomoyamachi/reg v0.16.1
+replace github.com/genuinetools/reg => github.com/tomoyamachi/reg v0.16.2-0.20190418055600-c6010b917a55
 
 module github.com/knqyf263/fanal

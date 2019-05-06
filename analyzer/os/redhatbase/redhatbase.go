@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	"github.com/knqyf263/fanal/analyzer/os"
 
 	"github.com/knqyf263/fanal/analyzer"
@@ -80,7 +82,7 @@ func (a redhatOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error
 		}
 	}
 
-	return analyzer.OS{}, errors.New("redhatbase : Not match")
+	return analyzer.OS{}, xerrors.Errorf("redhatbase: %w", os.AnalyzeOSError)
 }
 
 func parseFedoraRelease(file []byte) (analyzer.OS, error) {
@@ -97,7 +99,7 @@ func parseFedoraRelease(file []byte) (analyzer.OS, error) {
 			return analyzer.OS{Family: os.Fedora, Name: result[2]}, nil
 		}
 	}
-	return analyzer.OS{}, errors.New("cent: Invalid fedora-release")
+	return analyzer.OS{}, xerrors.Errorf("redhatbase: %w", os.AnalyzeOSError)
 }
 
 func (a redhatOSAnalyzer) RequiredFiles() []string {

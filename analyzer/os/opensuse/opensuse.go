@@ -3,8 +3,9 @@ package opensuse
 import (
 	"bufio"
 	"bytes"
-	"errors"
 	"strings"
+
+	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/fanal/analyzer/os"
 
@@ -48,7 +49,7 @@ func (a opensuseOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, err
 			}
 		}
 	}
-	return analyzer.OS{}, errors.New("opensuse: Not match")
+	return analyzer.OS{}, xerrors.Errorf("opensuse: %w", os.AnalyzeOSError)
 }
 
 func (a opensuseOSAnalyzer) RequiredFiles() []string {
