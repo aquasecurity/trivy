@@ -19,6 +19,9 @@ jobs:
           name: Create rpm repository
           command: ci/deploy-rpm.sh
       - run:
+          name: Import GPG key
+          command: echo -e "$GPG_KEY" | gpg --import
+      - run:
           name: Create deb repository
           command: ci/deploy-deb.sh
             
