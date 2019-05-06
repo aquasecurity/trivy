@@ -11,7 +11,7 @@ var Logger *zap.SugaredLogger
 func InitLogger(debug bool) (err error) {
 	Logger, err = newLogger(debug)
 	if err != nil {
-		return err
+		return xerrors.Errorf("error in new logger: %w", err)
 	}
 	return nil
 

@@ -112,7 +112,6 @@ github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7V
 github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e h1:RgQk53JHp/Cjunrr1WlsXSZpqXn+uREuHvUVcK82CV8=
 github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e/go.mod h1:CT57kijsi8u/K/BOFA39wgDQJ9CxiF4nAY/ojJ6r6mM=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
-github.com/knqyf263/berkeleydb v0.0.0-20190501065933-fafe01fb9662 h1:UGS0RbPHwXJkq8tcba8OD0nvVUWLf2h7uUJznuHPPB0=
 github.com/knqyf263/berkeleydb v0.0.0-20190501065933-fafe01fb9662/go.mod h1:bu1CcN4tUtoRcI/B/RFHhxMNKFHVq/c3SV+UTyduoXg=
 github.com/knqyf263/fanal v0.0.0-20190506110705-2b5cb3000ff6 h1:iSztZNfwEPMN2CvUX1SxNEclRZn+rwRMdsnAegxRJk4=
 github.com/knqyf263/fanal v0.0.0-20190506110705-2b5cb3000ff6/go.mod h1:OiuWIClssf5WzbMcR8lfspdBVaP+vRQndY4kHeFgrDw=
@@ -122,7 +121,6 @@ github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790 h1:c02gG0yR
 github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790/go.mod h1:CtT+dtv38jSz5EYYCX21LgtVXP+J3soF2fzQT8lHCfY=
 github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936 h1:HDjRqotkViMNcGMGicb7cgxklx8OwnjtCBmyWEqrRvM=
 github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936/go.mod h1:i4sF0l1fFnY1aiw08QQSwVAFxHEm311Me3WsU/X7nL0=
-github.com/knqyf263/go-rpmdb v0.0.0-20190501070121-10a1c42a10dc h1:pumO9pqmRAjvic6oove22RGh9wDZQnj96XQjJSbSEPs=
 github.com/knqyf263/go-rpmdb v0.0.0-20190501070121-10a1c42a10dc/go.mod h1:MrSSvdMpTSymaQWk1yFr9sxFSyQmKMj6jkbvGrchBV8=
 github.com/knqyf263/go-version v1.1.1 h1:+MpcBC9b7rk5ihag8Y/FLG8get1H2GjniwKQ+9DxI2o=
 github.com/knqyf263/go-version v1.1.1/go.mod h1:0tBvHvOBSf5TqGNcY+/ih9o8qo3R16iZCpB9rP0D3VM=

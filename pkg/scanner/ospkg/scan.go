@@ -24,7 +24,7 @@ type Scanner interface {
 func Scan(files extractor.FileMap) (string, string, []types.Vulnerability, error) {
 	os, err := analyzer.GetOS(files)
 	if err != nil {
-		return "", "", nil, err
+		return "", "", nil, xerrors.Errorf("failed to analyze OS: %w", err)
 	}
 
 	var s Scanner
@@ -42,12 +42,12 @@ func Scan(files extractor.FileMap) (string, string, []types.Vulnerability, error
 	}
 	pkgs, err := analyzer.GetPackages(files)
 	if err != nil {
-		return "", "", nil, err
+		return "", "", nil, xerrors.Errorf("failed to analyze OS packages: %w", err)
 	}
 
 	vulns, err := s.Detect(os.Name, pkgs)
 	if err != nil {
-		return "", "", nil, err
+		return "", "", nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 	}
 
 	return os.Family, os.Name, vulns, nil

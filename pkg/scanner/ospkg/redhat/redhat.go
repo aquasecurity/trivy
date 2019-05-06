@@ -3,6 +3,8 @@ package redhat
 import (
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	"github.com/knqyf263/trivy/pkg/scanner/utils"
 
 	"github.com/knqyf263/go-rpm-version"
@@ -29,7 +31,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnera
 	for _, pkg := range pkgs {
 		advisories, err := redhat.Get(osVer, pkg.Name)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
 		}
 
 		installed := utils.FormatVersion(pkg)

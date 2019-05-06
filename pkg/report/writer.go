@@ -6,6 +6,8 @@ import (
 	"io"
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
 	"github.com/knqyf263/trivy/pkg/types"
@@ -29,13 +31,11 @@ type TableWriter struct {
 
 func (tw TableWriter) Write(results Results) error {
 	for _, result := range results {
-		if err := tw.write(result); err != nil {
-			return err
-		}
+		tw.write(result)
 	}
 	return nil
 }
-func (tw TableWriter) write(result Result) error {
+func (tw TableWriter) write(result Result) {
 	table := tablewriter.NewWriter(tw.Output)
 	table.SetHeader([]string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version", "Title"})
 
@@ -57,13 +57,13 @@ func (tw TableWriter) write(result Result) error {
 	fmt.Printf("Total: %d (%s)\n\n", len(result.Vulnerabilities), strings.Join(results, ", "))
 
 	if len(result.Vulnerabilities) == 0 {
-		return nil
+		return
 	}
 
 	table.SetAutoMergeCells(true)
 	table.SetRowLine(true)
 	table.Render()
-	return nil
+	return
 }
 
 type JsonWriter struct {
@@ -77,11 +77,11 @@ func (jw JsonWriter) Write(results Results) error {
 	}
 	output, err := json.MarshalIndent(out, "", "  ")
 	if err != nil {
-		return err
+		return xerrors.Errorf("failed to marshal json: %w", err)
 	}
 
 	if _, err = fmt.Fprint(jw.Output, string(output)); err != nil {
-		return err
+		return xerrors.Errorf("failed to write json: %w", err)
 	}
 	return nil
 }

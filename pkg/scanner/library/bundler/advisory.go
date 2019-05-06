@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"golang.org/x/xerrors"
+
 	"github.com/knqyf263/trivy/pkg/git"
 	"github.com/knqyf263/trivy/utils"
 	"gopkg.in/yaml.v2"
@@ -38,7 +40,7 @@ type Related struct {
 
 func (s *Scanner) UpdateDB() (err error) {
 	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
-		return err
+		return xerrors.Errorf("error in %s security DB update: %w", s.Type(), err)
 	}
 	s.db, err = walk()
 	return err
@@ -54,13 +56,13 @@ func walk() (AdvisoryDB, error) {
 		}
 		buf, err := ioutil.ReadFile(path)
 		if err != nil {
-			return err
+			return xerrors.Errorf("failed to read a file: %w", err)
 		}
 
 		advisory := Advisory{}
 		err = yaml.Unmarshal(buf, &advisory)
 		if err != nil {
-			return err
+			return xerrors.Errorf("failed to unmarshal YAML: %w", err)
 		}
 
 		advisories, ok := advisoryDB[advisory.Gem]
@@ -72,7 +74,7 @@ func walk() (AdvisoryDB, error) {
 		return nil
 	})
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("error in file wakl: %w", err)
 	}
 	return advisoryDB, nil
 }

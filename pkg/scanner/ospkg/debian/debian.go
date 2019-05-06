@@ -3,6 +3,8 @@ package debian
 import (
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	"github.com/knqyf263/go-deb-version"
 	"github.com/knqyf263/trivy/pkg/scanner/utils"
 
@@ -32,7 +34,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnera
 		}
 		advisories, err := debianoval.Get(osVer, pkg.Name)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to get debian OVAL: %w", err)
 		}
 
 		installed := utils.FormatVersion(pkg)

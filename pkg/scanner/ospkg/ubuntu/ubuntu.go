@@ -3,6 +3,7 @@ package ubuntu
 import (
 	"github.com/knqyf263/go-deb-version"
 	"github.com/knqyf263/trivy/pkg/scanner/utils"
+	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/trivy/pkg/log"
@@ -23,7 +24,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnera
 	for _, pkg := range pkgs {
 		advisories, err := ubuntu.Get(osVer, pkg.Name)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to get Ubuntu advisories: %w", err)
 		}
 
 		installed := utils.FormatVersion(pkg)
