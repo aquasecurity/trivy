@@ -31,7 +31,7 @@ OPTIONS:
 	app := cli.NewApp()
 	app.Name = "trivy"
 	app.Version = "0.0.1"
-	app.ArgsUsage = "file"
+	app.ArgsUsage = "image_name"
 
 	app.Usage = "A simple and fast tool for detecting vulnerabilities in application dependencies"
 
@@ -40,6 +40,11 @@ OPTIONS:
 			Name:  "format, f",
 			Value: "table",
 			Usage: "format (table, json)",
+		},
+		cli.StringFlag{
+			Name:  "input, i",
+			Value: "",
+			Usage: "input file path instead of image name",
 		},
 		cli.StringFlag{
 			Name:  "severity, s",

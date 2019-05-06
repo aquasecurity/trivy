@@ -25,15 +25,16 @@ func Run(c *cli.Context) (err error) {
 	}
 
 	args := c.Args()
-	if len(args) == 0 {
-		return xerrors.New(`trivy" requires at least 1 argument.`)
+	filePath := c.String("input")
+	if filePath == "" && len(args) == 0 {
+		return xerrors.New(`trivy" requires at least 1 argument or --input option.`)
 	}
 
 	o := c.String("output")
 	output := os.Stdout
 	if o != "" {
 		if output, err = os.Create(o); err != nil {
-			return err
+			return xerrors.Errorf("failed to create an output file: %w", err)
 		}
 	}
 
@@ -41,29 +42,26 @@ func Run(c *cli.Context) (err error) {
 	for _, s := range strings.Split(c.String("severity"), ",") {
 		severity, err := vulnerability.NewSeverity(s)
 		if err != nil {
-			return err
+			return xerrors.Errorf("error in severity option: %w", err)
 		}
 		severities = append(severities, severity)
 	}
 
 	if err = db.Init(); err != nil {
-		return err
+		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 
 	if err = vulnsrc.Update(); err != nil {
-		return err
+		return xerrors.Errorf("error in vulnerability DB update: %w", err)
 	}
 
-	fileName := args[0]
-	f, err := os.Open(fileName)
-	if err != nil {
-		return err
+	var imageName string
+	if filePath == "" {
+		imageName = args[0]
 	}
-	defer f.Close()
-
-	results, err := scanner.ScanImage("", fileName, severities)
+	results, err := scanner.ScanImage(imageName, filePath, severities)
 	if err != nil {
-		return err
+		return xerrors.Errorf("error in image scan: %w", err)
 	}
 
 	var writer report.Writer

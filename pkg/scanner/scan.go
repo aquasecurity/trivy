@@ -42,7 +42,7 @@ func ScanImage(imageName, filePath string, severities []vulnerability.Severity) 
 		target = filePath
 		rc, err := openStream(filePath)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to open stream: %w", err)
 		}
 
 		files, err = analyzer.AnalyzeFromFile(ctx, rc)
@@ -76,6 +76,18 @@ func ScanImage(imageName, filePath string, severities []vulnerability.Severity) 
 	}
 
 	return results, nil
+}
+
+func ScanFile(f *os.File, severities []vulnerability.Severity) (report.Result, error) {
+	vulns, err := library.ScanFile(f)
+	if err != nil {
+		return report.Result{}, err
+	}
+	result := report.Result{
+		FileName:        f.Name(),
+		Vulnerabilities: processVulnerabilties(vulns, severities),
+	}
+	return result, nil
 }
 
 func processVulnerabilties(vulns []types.Vulnerability, severities []vulnerability.Severity) []types.Vulnerability {

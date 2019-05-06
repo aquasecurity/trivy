@@ -6,11 +6,10 @@ require (
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/etcd-io/bbolt v1.3.2
 	github.com/fatih/color v1.7.0
+	github.com/genuinetools/reg v0.16.1 // indirect
 	github.com/gliderlabs/ssh v0.1.3 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
-	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
-	github.com/k0kubun/pp v3.0.1+incompatible
-	github.com/knqyf263/fanal v0.0.0-20190501134735-2deffba5fffe
+	github.com/knqyf263/fanal v0.0.0-20190506110705-2b5cb3000ff6
 	github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b
 	github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936

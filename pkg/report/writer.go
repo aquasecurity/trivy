@@ -56,6 +56,10 @@ func (tw TableWriter) write(result Result) error {
 	fmt.Println(strings.Repeat("=", len(result.FileName)))
 	fmt.Printf("Total: %d (%s)\n\n", len(result.Vulnerabilities), strings.Join(results, ", "))
 
+	if len(result.Vulnerabilities) == 0 {
+		return nil
+	}
+
 	table.SetAutoMergeCells(true)
 	table.SetRowLine(true)
 	table.Render()

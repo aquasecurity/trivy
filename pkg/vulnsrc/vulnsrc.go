@@ -3,8 +3,12 @@ package vulnsrc
 import (
 	"path/filepath"
 
-	"github.com/k0kubun/pp"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/alpine"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/debian"
+	debianoval "github.com/knqyf263/trivy/pkg/vulnsrc/debian-oval"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/nvd"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/redhat"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/ubuntu"
 
 	"github.com/knqyf263/trivy/pkg/git"
 	"github.com/knqyf263/trivy/pkg/log"
@@ -40,44 +44,41 @@ func Update() (err error) {
 		return nil
 	}
 
-	//// Update NVD
-	//log.Logger.Info("Updating NVD data...")
-	//if err = nvd.Update(dir, updatedFiles); err != nil {
-	//	return xerrors.Errorf("error in NVD update: %w", err)
-	//}
-	//
-	//// Update Alpine OVAL
-	//log.Logger.Info("Updating Alpine data...")
-	//if err = alpine.Update(dir, updatedFiles); err != nil {
-	//	return xerrors.Errorf("error in Alpine OVAL update: %w", err)
-	//}
+	// Update NVD
+	log.Logger.Info("Updating NVD data...")
+	if err = nvd.Update(dir, updatedFiles); err != nil {
+		return xerrors.Errorf("error in NVD update: %w", err)
+	}
 
-	// Update RedHat
-	//log.Logger.Info("Updating RedHat data...")
-	//if err = redhat.Update(dir, updatedFiles); err != nil {
-	//	return xerrors.Errorf("error in RedHat update: %w", err)
-	//}
+	// Update Alpine OVAL
+	log.Logger.Info("Updating Alpine data...")
+	if err = alpine.Update(dir, updatedFiles); err != nil {
+		return xerrors.Errorf("error in Alpine OVAL update: %w", err)
+	}
 
-	//// Update Debian
-	//log.Logger.Info("Updating Debian data...")
-	//if err = debian.Update(dir, updatedFiles); err != nil {
-	//	return xerrors.Errorf("error in Debian update: %w", err)
-	//}
-	//
-	//// Update Debian OVAL
-	//log.Logger.Info("Updating Debian OVAL data...")
-	//if err = debianoval.Update(dir, updatedFiles); err != nil {
-	//	return xerrors.Errorf("error in Debian OVAL update: %w", err)
-	//}
+	//Update RedHat
+	log.Logger.Info("Updating RedHat data...")
+	if err = redhat.Update(dir, updatedFiles); err != nil {
+		return xerrors.Errorf("error in RedHat update: %w", err)
+	}
 
-	// Update Ubuntu
-	//log.Logger.Info("Updating Ubuntu data...")
-	//if err = ubuntu.Update(dir, updatedFiles); err != nil {
-	//	return xerrors.Errorf("error in Ubuntu update: %w", err)
-	//}
+	// Update Debian
+	log.Logger.Info("Updating Debian data...")
+	if err = debian.Update(dir, updatedFiles); err != nil {
+		return xerrors.Errorf("error in Debian update: %w", err)
+	}
 
-	vuln, _ := vulnerability.Get("CVE-2018-1301")
-	pp.Println(vuln)
+	// Update Debian OVAL
+	log.Logger.Info("Updating Debian OVAL data...")
+	if err = debianoval.Update(dir, updatedFiles); err != nil {
+		return xerrors.Errorf("error in Debian OVAL update: %w", err)
+	}
+
+	//Update Ubuntu
+	log.Logger.Info("Updating Ubuntu data...")
+	if err = ubuntu.Update(dir, updatedFiles); err != nil {
+		return xerrors.Errorf("error in Ubuntu update: %w", err)
+	}
 
 	return nil
 }

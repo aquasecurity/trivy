@@ -8,6 +8,7 @@ import (
 	_ "github.com/knqyf263/fanal/analyzer/library/bundler"
 	_ "github.com/knqyf263/fanal/analyzer/library/composer"
 	_ "github.com/knqyf263/fanal/analyzer/library/npm"
+	_ "github.com/knqyf263/fanal/analyzer/library/pipenv"
 	"github.com/knqyf263/fanal/extractor"
 	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
 	"github.com/knqyf263/go-version"
@@ -15,6 +16,7 @@ import (
 	"github.com/knqyf263/trivy/pkg/scanner/library/bundler"
 	"github.com/knqyf263/trivy/pkg/scanner/library/composer"
 	"github.com/knqyf263/trivy/pkg/scanner/library/npm"
+	"github.com/knqyf263/trivy/pkg/scanner/library/pipenv"
 	"github.com/knqyf263/trivy/pkg/types"
 	"golang.org/x/xerrors"
 )
@@ -35,6 +37,8 @@ func NewScanner(filename string) Scanner {
 		scanner = composer.NewScanner()
 	case "package-lock.json":
 		scanner = npm.NewScanner()
+	case "Pipfile.lock":
+		scanner = pipenv.NewScanner()
 	default:
 		return nil
 	}

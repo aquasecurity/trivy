@@ -20,7 +20,7 @@ import (
 func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
 	exists, err := utils.Exists(filepath.Join(repoPath, ".git"))
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to check if a file exists: %w", err)
 	}
 
 	updatedFiles := map[string]struct{}{}
@@ -28,7 +28,7 @@ func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
 		log.Logger.Debug("git pull")
 		files, err := pull(repoPath)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to pull repository: %w", err)
 		}
 
 		for _, filename := range files {
@@ -36,10 +36,10 @@ func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
 		}
 	} else {
 		if err = os.MkdirAll(repoPath, 0700); err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to mkdir: %w", err)
 		}
 		if err := clone(url, repoPath); err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to clone repository: %w", err)
 		}
 
 		err = filepath.Walk(repoPath, func(path string, info os.FileInfo, err error) error {
@@ -50,7 +50,7 @@ func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
 			return nil
 		})
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("error in file walk: %w", err)
 		}
 	}
 
@@ -66,7 +66,7 @@ func clone(url, repoPath string) error {
 		Progress: os.Stdout,
 	})
 	if err != nil && err != git.ErrRepositoryAlreadyExists {
-		return err
+		return xerrors.Errorf("unexpected error in git clone: %w", err)
 	}
 	return nil
 }
@@ -101,7 +101,7 @@ func pull(repoPath string) ([]string, error) {
 	log.Logger.Debug("Get the working directory for the repository")
 	w, err := r.Worktree()
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to get the working directory: %w", err)
 	}
 
 	log.Logger.Debug("Pull the latest changes from the origin remote and merge into the current branch")
@@ -156,20 +156,20 @@ func pullByOSCommand(repoPath string) ([]string, error) {
 	revParseCmd := []string{"rev-parse", "HEAD"}
 	output, err := utils.Exec("git", append(commandArgs, revParseCmd...))
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("error in git rev-parse: %w", err)
 	}
 	commitHash := strings.TrimSpace(output)
 
 	pullCmd := []string{"pull", "origin", "master"}
 	_, err = utils.Exec("git", append(commandArgs, pullCmd...))
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("error in git pull: %w", err)
 	}
 
 	diffCmd := []string{"diff", commitHash, "HEAD", "--name-only"}
 	output, err = utils.Exec("git", append(commandArgs, diffCmd...))
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("error in git diff: %w", err)
 	}
 	updatedFiles := strings.Split(strings.TrimSpace(output), "\n")
 	return updatedFiles, nil

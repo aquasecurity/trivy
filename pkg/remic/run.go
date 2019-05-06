@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/knqyf263/trivy/pkg/scanner"
+
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
 	"github.com/knqyf263/trivy/pkg/vulnsrc"
@@ -15,7 +17,6 @@ import (
 	"github.com/knqyf263/trivy/pkg/db"
 	"github.com/knqyf263/trivy/pkg/log"
 	"github.com/knqyf263/trivy/pkg/report"
-	libscanner "github.com/knqyf263/trivy/pkg/scanner/library"
 )
 
 func Run(c *cli.Context) (err error) {
@@ -61,13 +62,9 @@ func Run(c *cli.Context) (err error) {
 	}
 	defer f.Close()
 
-	vulns, err := libscanner.ScanFile(f)
+	result, err := scanner.ScanFile(f, severities)
 	if err != nil {
 		return err
-	}
-	result := report.Result{
-		FileName:        f.Name(),
-		Vulnerabilities: vulns,
 	}
 
 	var writer report.Writer

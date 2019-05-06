@@ -19,13 +19,13 @@ var (
 func Init() (err error) {
 	dbDir := filepath.Join(utils.CacheDir(), "db")
 	if err = os.MkdirAll(dbDir, 0700); err != nil {
-		return err
+		return xerrors.Errorf("failed to mkdir: %w", err)
 	}
 
 	dbPath := filepath.Join(dbDir, "trivy.db")
 	db, err = bolt.Open(dbPath, 0600, nil)
 	if err != nil {
-		return err
+		return xerrors.Errorf("failed to open db: %w", err)
 	}
 	return nil
 }
@@ -34,24 +34,27 @@ func Update(rootBucket, nestedBucket, key string, value interface{}) error {
 	err := db.Update(func(tx *bolt.Tx) error {
 		return PutNestedBucket(tx, rootBucket, nestedBucket, key, value)
 	})
+	if err != nil {
+		return xerrors.Errorf("error in db update: %w", err)
+	}
 	return err
 }
 
 func PutNestedBucket(tx *bolt.Tx, rootBucket, nestedBucket, key string, value interface{}) error {
 	root, err := tx.CreateBucketIfNotExists([]byte(rootBucket))
 	if err != nil {
-		return err
+		return xerrors.Errorf("failed to create a bucket: %w", err)
 	}
 	return Put(root, nestedBucket, key, value)
 }
 func Put(root *bolt.Bucket, nestedBucket, key string, value interface{}) error {
 	nested, err := root.CreateBucketIfNotExists([]byte(nestedBucket))
 	if err != nil {
-		return err
+		return xerrors.Errorf("failed to create a bucket: %w", err)
 	}
 	v, err := json.Marshal(value)
 	if err != nil {
-		return err
+		return xerrors.Errorf("failed to unmarshal JSON: %w", err)
 	}
 	return nested.Put([]byte(key), v)
 }
@@ -64,32 +67,6 @@ func BatchUpdate(fn func(tx *bolt.Tx) error) error {
 	}
 	return nil
 }
-
-//func BatchUpdate(rootBucket string, bucketKV map[string]map[string]interface{}) error {
-//	err := db.Batch(func(tx *bolt.Tx) error {
-//		root, err := tx.CreateBucketIfNotExists([]byte(rootBucket))
-//		if err != nil {
-//			return err
-//		}
-//		for nestedBucket, kv := range bucketKV {
-//			nested, err := root.CreateBucketIfNotExists([]byte(nestedBucket))
-//			if err != nil {
-//				return xerrors.Errorf("failed to get bucket: %w", err)
-//			}
-//			for k, v := range kv {
-//				value, err := json.Marshal(v)
-//				if err != nil {
-//					return xerrors.Errorf("failed to marshal json: %w", err)
-//				}
-//				if err = nested.Put([]byte(k), value); err != nil {
-//					return err
-//				}
-//			}
-//		}
-//		return nil
-//	})
-//	return err
-//}
 
 func Get(rootBucket, nestedBucket, key string) (value []byte, err error) {
 	err = db.View(func(tx *bolt.Tx) error {
@@ -105,7 +82,7 @@ func Get(rootBucket, nestedBucket, key string) (value []byte, err error) {
 		return nil
 	})
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to get data from db: %w", err)
 	}
 	return value, nil
 }
@@ -126,12 +103,12 @@ func ForEach(rootBucket, nestedBucket string) (value map[string][]byte, err erro
 			return nil
 		})
 		if err != nil {
-			return err
+			return xerrors.Errorf("error in db foreach: %w", err)
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to get all key/value in the specified bucket: %w", err)
 	}
 	return value, nil
 }
