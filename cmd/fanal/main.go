@@ -39,7 +39,7 @@ func run() (err error) {
 
 	var files extractor.FileMap
 	if len(args) > 0 {
-		files, err = analyzer.Analyze(ctx, args[1])
+		files, err = analyzer.Analyze(ctx, args[0])
 		if err != nil {
 			return err
 		}
