@@ -36,6 +36,8 @@ func Run(c *cli.Context) (err error) {
 		cli.ShowAppHelpAndExit(c, 1)
 	}
 
+	utils.Quiet = c.Bool("quiet")
+
 	clean := c.Bool("clean")
 	if clean {
 		log.Logger.Info("Cleaning caches...")

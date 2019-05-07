@@ -74,6 +74,10 @@ OPTIONS:
 			Usage: "clean all cache",
 		},
 		cli.BoolFlag{
+			Name:  "quiet, q",
+			Usage: "suppress progress bar",
+		},
+		cli.BoolFlag{
 			Name:  "debug, d",
 			Usage: "debug mode",
 		},

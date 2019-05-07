@@ -4,9 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
-	"github.com/briandowns/spinner"
 	"github.com/knqyf263/trivy/pkg/log"
 	"github.com/knqyf263/trivy/pkg/utils"
 	"golang.org/x/xerrors"
@@ -38,8 +36,8 @@ func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
 		}
 		log.Logger.Debug("remove an existed directory")
 
-		s := spinner.New(spinner.CharSets[36], 100*time.Millisecond)
-		s.Suffix = " The first time will take a while..."
+		suffix := " The first time will take a while..."
+		s := utils.NewSpinner(suffix)
 		s.Start()
 		defer s.Stop()
 
