@@ -2,12 +2,19 @@ package npm
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 
+	"github.com/etcd-io/bbolt"
+
+	"github.com/knqyf263/trivy/pkg/db"
+	"golang.org/x/xerrors"
+
 	"github.com/knqyf263/trivy/pkg/utils"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
 	"github.com/knqyf263/trivy/pkg/git"
 )
@@ -29,6 +36,7 @@ type Advisory struct {
 	Cves               []string
 	VulnerableVersions string `json:"vulnerable_versions"`
 	PatchedVersions    string `json:"patched_versions"`
+	Overview           string
 	Recommendation     string
 	References         []string
 	CvssScoreNumber    json.Number `json:"cvss_score"`
@@ -39,12 +47,13 @@ func (s *Scanner) UpdateDB() (err error) {
 	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return err
 	}
-	s.db, err = walk()
+	s.db, err = s.walk()
 	return err
 }
 
-func walk() (AdvisoryDB, error) {
+func (s *Scanner) walk() (AdvisoryDB, error) {
 	advisoryDB := AdvisoryDB{}
+	var vulns []vulnerability.Vulnerability
 	err := filepath.Walk(filepath.Join(repoPath, "vuln"), func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() || !strings.HasSuffix(info.Name(), ".json") {
 			return nil
@@ -68,16 +77,46 @@ func walk() (AdvisoryDB, error) {
 			advisory.CvssScore = -1
 		}
 
+		// for detecting vulnerabilities
 		advisories, ok := advisoryDB[advisory.ModuleName]
 		if !ok {
 			advisories = []Advisory{}
 		}
 		advisoryDB[advisory.ModuleName] = append(advisories, advisory)
 
+		// for displaying vulnerability detail
+		vulnerabilityIDs := advisory.Cves
+		if len(vulnerabilityIDs) == 0 {
+			vulnerabilityIDs = []string{fmt.Sprintf("NSWG-ECO-%d", advisory.ID)}
+		}
+		for _, vulnID := range vulnerabilityIDs {
+			vulns = append(vulns, vulnerability.Vulnerability{
+				ID:          vulnID,
+				CvssScore:   advisory.CvssScore,
+				References:  advisory.References,
+				Title:       advisory.Title,
+				Description: advisory.Overview,
+			})
+		}
+
 		return nil
 	})
 	if err != nil {
+		return nil, xerrors.Errorf("error in file walk: %w", err)
+	}
+	if err = s.saveVulnerabilities(vulns); err != nil {
 		return nil, err
 	}
 	return advisoryDB, nil
+}
+
+func (s Scanner) saveVulnerabilities(vulns []vulnerability.Vulnerability) error {
+	return vulnerability.BatchUpdate(func(b *bbolt.Bucket) error {
+		for _, vuln := range vulns {
+			if err := db.Put(b, vuln.ID, vulnerability.NodejsSecurityWg, vuln); err != nil {
+				return xerrors.Errorf("failed to save %s vulnerability: %w", s.Type(), err)
+			}
+		}
+		return nil
+	})
 }

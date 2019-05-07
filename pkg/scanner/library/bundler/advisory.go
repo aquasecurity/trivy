@@ -1,9 +1,15 @@
 package bundler
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/etcd-io/bbolt"
+
+	"github.com/knqyf263/trivy/pkg/db"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
 	"golang.org/x/xerrors"
 
@@ -28,6 +34,9 @@ type Advisory struct {
 	Osvdb              string
 	Title              string
 	Url                string
+	Description        string
+	CvssV2             float64  `yaml:"cvss_v2"`
+	CvssV3             float64  `yaml:"cvss_v3"`
 	PatchedVersions    []string `yaml:"patched_versions"`
 	UnaffectedVersions []string `yaml:"unaffected_versions"`
 	Related            Related
@@ -42,14 +51,15 @@ func (s *Scanner) UpdateDB() (err error) {
 	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return xerrors.Errorf("error in %s security DB update: %w", s.Type(), err)
 	}
-	s.db, err = walk()
+	s.db, err = s.walk()
 	return err
 }
 
-func walk() (AdvisoryDB, error) {
+func (s *Scanner) walk() (AdvisoryDB, error) {
 	advisoryDB := AdvisoryDB{}
 	root := filepath.Join(repoPath, "gems")
 
+	var vulns []vulnerability.Vulnerability
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
@@ -65,16 +75,48 @@ func walk() (AdvisoryDB, error) {
 			return xerrors.Errorf("failed to unmarshal YAML: %w", err)
 		}
 
+		// for detecting vulnerabilities
 		advisories, ok := advisoryDB[advisory.Gem]
 		if !ok {
 			advisories = []Advisory{}
 		}
 		advisoryDB[advisory.Gem] = append(advisories, advisory)
 
+		// for displaying vulnerability detail
+		var vulnerabilityID string
+		if advisory.Cve != "" {
+			vulnerabilityID = fmt.Sprintf("CVE-%s", advisory.Cve)
+		} else if advisory.Osvdb != "" {
+			vulnerabilityID = fmt.Sprintf("OSVDB-%s", advisory.Osvdb)
+		}
+		vulns = append(vulns, vulnerability.Vulnerability{
+			ID:          vulnerabilityID,
+			CvssScore:   advisory.CvssV2,
+			CvssScoreV3: advisory.CvssV3,
+			References:  append([]string{advisory.Url}, advisory.Related.Url...),
+			Title:       advisory.Title,
+			Description: advisory.Description,
+		})
+
 		return nil
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("error in file wakl: %w", err)
+		return nil, xerrors.Errorf("error in file walk: %w", err)
+	}
+
+	if err = s.saveVulnerabilities(vulns); err != nil {
+		return nil, err
 	}
 	return advisoryDB, nil
+}
+
+func (s *Scanner) saveVulnerabilities(vulns []vulnerability.Vulnerability) error {
+	return vulnerability.BatchUpdate(func(b *bbolt.Bucket) error {
+		for _, vuln := range vulns {
+			if err := db.Put(b, vuln.ID, vulnerability.RubySec, vuln); err != nil {
+				return xerrors.Errorf("failed to save %s vulnerability: %w", s.Type(), err)
+			}
+		}
+		return nil
+	})
 }
