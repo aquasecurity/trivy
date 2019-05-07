@@ -37,7 +37,7 @@ OPTIONS:
 	app.Version = version
 	app.ArgsUsage = "image_name"
 
-	app.Usage = "A simple and fast tool for detecting vulnerabilities in application dependencies"
+	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -53,7 +53,7 @@ OPTIONS:
 		cli.StringFlag{
 			Name:  "severity, s",
 			Value: strings.Join(vulnerability.SeverityNames, ","),
-			Usage: "severity of vulnerabilities to be displayed",
+			Usage: "severities of vulnerabilities to be displayed (comma separated)",
 		},
 		cli.StringFlag{
 			Name:  "output, o",

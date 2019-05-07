@@ -1,13 +1,14 @@
 package vulnsrc
 
 import (
+	"path/filepath"
+
 	"github.com/knqyf263/trivy/pkg/vulnsrc/alpine"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/debian"
 	debianoval "github.com/knqyf263/trivy/pkg/vulnsrc/debian-oval"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/nvd"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/redhat"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/ubuntu"
-	"path/filepath"
 
 	"github.com/knqyf263/trivy/pkg/git"
 	"github.com/knqyf263/trivy/pkg/log"

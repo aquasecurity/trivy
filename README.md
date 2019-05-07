@@ -34,7 +34,7 @@ Replace `[CODE_NAME]` with your code name
 CODE_NAME: wheezy, jessie, stretch, buster, trusty, xenial, bionic
 
 ```
-$ sudo apt-get install apt-transport-https
+$ sudo apt-get install apt-transport-https gnupg
 $ wget -qO - https://knqyf263.github.io/trivy-repo/deb/public.key | sudo apt-key add -
 $ echo deb https://knqyf263.github.io/trivy-repo/deb [CODE_NAME] main | sudo tee -a /etc/apt/sources.list
 $ sudo apt-get update

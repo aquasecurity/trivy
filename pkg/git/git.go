@@ -4,16 +4,15 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/knqyf263/trivy/pkg/log"
-
-	"gopkg.in/src-d/go-git.v4/plumbing/storer"
-
-	"gopkg.in/src-d/go-git.v4/plumbing/object"
-
 	"github.com/knqyf263/trivy/pkg/utils"
 	"golang.org/x/xerrors"
-	"gopkg.in/src-d/go-git.v4"
+	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
+	"gopkg.in/src-d/go-git.v4/plumbing/storer"
 )
 
 func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
@@ -34,7 +33,11 @@ func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
 			updatedFiles[strings.TrimSpace(filename)] = struct{}{}
 		}
 	} else {
-		log.Logger.Info("The first time will take a while...")
+		s := spinner.New(spinner.CharSets[36], 100*time.Millisecond)
+		s.Suffix = " The first time will take a while..."
+		s.Start()
+		defer s.Stop()
+
 		if err = os.MkdirAll(repoPath, 0700); err != nil {
 			return nil, xerrors.Errorf("failed to mkdir: %w", err)
 		}
@@ -62,6 +65,8 @@ func clone(url, repoPath string) error {
 	if utils.IsCommandAvailable("git") {
 		return cloneByOSCommand(url, repoPath)
 	}
+	log.Logger.Warn("Recommend installing git (if not, DB update is very slow)")
+
 	_, err := git.PlainClone(repoPath, false, &git.CloneOptions{
 		URL:      url,
 		Progress: os.Stdout,

@@ -3,6 +3,7 @@ module github.com/knqyf263/trivy
 go 1.12
 
 require (
+	github.com/briandowns/spinner v0.0.0-20190319032542-ac46072a5a91
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/etcd-io/bbolt v1.3.2
 	github.com/fatih/color v1.7.0

@@ -24,6 +24,8 @@ github.com/aws/aws-sdk-go v1.19.11 h1:tqaTGER6Byw3QvsjGW0p018U2UOqaJPeJuzoaF7jjo
 github.com/aws/aws-sdk-go v1.19.11/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973 h1:xJ4a3vCFaGF/jqvzLMYoU8P317H5OQ+Via4RmuPwCS0=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
+github.com/briandowns/spinner v0.0.0-20190319032542-ac46072a5a91 h1:GMmnK0dvr0Sf0gx3DvTbln0c8DE07B7sPVD9dgHOqo4=
+github.com/briandowns/spinner v0.0.0-20190319032542-ac46072a5a91/go.mod h1:hw/JEQBIE+c/BLI4aKM8UU8v+ZqrD3h7HC27kKt8JQU=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/containerd/continuity v0.0.0-20180921161001-7f53d412b9eb h1:qSMRxG547z/BgQmyVyADxaMADQXVAD9uleP2sQeClbo=
 github.com/containerd/continuity v0.0.0-20180921161001-7f53d412b9eb/go.mod h1:GL3xCUCBDV3CZiTSEKksMWbLE66hEyuu9qyDOOqM47Y=
