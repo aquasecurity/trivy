@@ -6,7 +6,13 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/etcd-io/bbolt"
+
+	"github.com/knqyf263/trivy/pkg/db"
+	"golang.org/x/xerrors"
+
 	"github.com/knqyf263/trivy/pkg/utils"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
 	"github.com/knqyf263/trivy/pkg/git"
 	"gopkg.in/yaml.v2"
@@ -38,12 +44,13 @@ func (s *Scanner) UpdateDB() (err error) {
 	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return err
 	}
-	s.db, err = walk()
+	s.db, err = s.walk()
 	return err
 }
 
-func walk() (AdvisoryDB, error) {
+func (s *Scanner) walk() (AdvisoryDB, error) {
 	advisoryDB := AdvisoryDB{}
+	var vulns []vulnerability.Vulnerability
 	err := filepath.Walk(repoPath, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() || !strings.HasPrefix(info.Name(), "CVE-") {
 			return nil
@@ -58,16 +65,39 @@ func walk() (AdvisoryDB, error) {
 		if err != nil {
 			return err
 		}
+
+		// for detecting vulnerabilities
 		advisories, ok := advisoryDB[advisory.Reference]
 		if !ok {
 			advisories = []Advisory{}
 		}
 		advisoryDB[advisory.Reference] = append(advisories, advisory)
 
+		// for displaying vulnerability detail
+		vulns = append(vulns, vulnerability.Vulnerability{
+			ID:         advisory.Cve,
+			References: []string{advisory.Link},
+			Title:      advisory.Title,
+		})
+
 		return nil
 	})
 	if err != nil {
+		return nil, xerrors.Errorf("error in file walk: %w", err)
+	}
+	if err = s.saveVulnerabilities(vulns); err != nil {
 		return nil, err
 	}
 	return advisoryDB, nil
+}
+
+func (s Scanner) saveVulnerabilities(vulns []vulnerability.Vulnerability) error {
+	return vulnerability.BatchUpdate(func(b *bbolt.Bucket) error {
+		for _, vuln := range vulns {
+			if err := db.Put(b, vuln.ID, vulnerability.PhpSecurityAdvisories, vuln); err != nil {
+				return xerrors.Errorf("failed to save %s vulnerability: %w", s.Type(), err)
+			}
+		}
+		return nil
+	})
 }

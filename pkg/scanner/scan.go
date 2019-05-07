@@ -25,6 +25,12 @@ import (
 	"github.com/knqyf263/fanal/extractor"
 )
 
+var (
+	sources = []string{vulnerability.Nvd, vulnerability.RedHat, vulnerability.Debian,
+		vulnerability.DebianOVAL, vulnerability.Alpine, vulnerability.RubySec, vulnerability.PhpSecurityAdvisories,
+		vulnerability.NodejsSecurityWg, vulnerability.PythonSafetyDB}
+)
+
 func ScanImage(imageName, filePath string, severities []vulnerability.Severity) (report.Results, error) {
 	var results report.Results
 	var err error
@@ -134,8 +140,7 @@ func getDetail(vulnID string) (vulnerability.Severity, string) {
 }
 
 func getSeverity(details map[string]vulnerability.Vulnerability) vulnerability.Severity {
-	for _, source := range []string{vulnerability.Nvd, vulnerability.RedHat, vulnerability.Debian,
-		vulnerability.DebianOVAL, vulnerability.Alpine} {
+	for _, source := range sources {
 		d, ok := details[source]
 		if !ok {
 			continue
@@ -154,8 +159,7 @@ func getSeverity(details map[string]vulnerability.Vulnerability) vulnerability.S
 }
 
 func getTitle(details map[string]vulnerability.Vulnerability) string {
-	for _, source := range []string{vulnerability.Nvd, vulnerability.RedHat, vulnerability.Debian,
-		vulnerability.DebianOVAL, vulnerability.Alpine} {
+	for _, source := range sources {
 		d, ok := details[source]
 		if !ok {
 			continue
