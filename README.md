@@ -29,6 +29,12 @@ $ sudo yum -y update
 $ sudo yum -y install trivy
 ```
 
+or
+
+```
+$ rpm -ivh https://github.com/knqyf263/trivy/releases/download/v0.0.3/trivy_0.0.3_Linux-64bit.rpm
+```
+
 ## Debian/Ubuntu
 
 Replace `[CODE_NAME]` with your code name
@@ -41,6 +47,14 @@ $ wget -qO - https://knqyf263.github.io/trivy-repo/deb/public.key | sudo apt-key
 $ echo deb https://knqyf263.github.io/trivy-repo/deb [CODE_NAME] main | sudo tee -a /etc/apt/sources.list
 $ sudo apt-get update
 $ sudo apt-get install trivy
+```
+
+or
+
+```
+$ sudo apt-get install rpm
+$ wget https://github.com/knqyf263/trivy/releases/download/v0.0.3/trivy_0.0.3_Linux-64bit.deb
+$ sudo dpkg -i trivy_0.0.3_Linux-64bit.deb
 ```
 
 ## Mac OS X / Homebrew
@@ -60,6 +74,69 @@ $ go get -u github.com/knqyf263/trivy
 ```
 
 # Examples
+## Continuous Integration (CI)
+Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0` .
+
+**Note**: The first time take a while (faster by cache after the second time)
+### Travis CI
+
+```
+$ cat .travis.yml
+services:
+  - docker
+
+before_install:
+  - docker build -t trivy-ci-test:latest .
+  - wget https://github.com/knqyf263/trivy/releases/download/v0.0.3/trivy_0.0.3_Linux-64bit.tar.gz
+  - tar zxvf trivy_0.0.3_Linux-64bit.tar.gz
+script:
+  - ./trivy --exit-code 1 --quiet trivy-ci-test:latest
+cache:
+  directories:
+    - $HOME/.cache/trivy
+```
+
+example: https://travis-ci.org/knqyf263/trivy-ci-test  
+repository: https://github.com/knqyf263/trivy-ci-test
+
+### Circle CI
+
+```
+$ cat .circleci/config.yml
+jobs:
+  build:
+    docker:
+      - image: docker:18.09-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache:
+          key: vulnerability-db
+      - run:
+          name: Build image
+          command: docker build -t trivy-ci-test:latest .
+      - run:
+          name: Install trivy
+          command: |
+            wget https://github.com/knqyf263/trivy/releases/download/v0.0.4/trivy_0.0.4_Linux-64bit.tar.gz
+            tar zxvf trivy_0.0.4_Linux-64bit.tar.gz
+            mv trivy /usr/local/bin
+      - run:
+          name: Scan the local image with trivy
+          command: trivy --exit-code 1 --quiet trivy-ci-test:latest
+      - save_cache:
+          key: vulnerability-db
+          paths:
+            - $HOME/.cache/trivy
+workflows:
+  version: 2
+  release:
+    jobs:
+      - build
+```
+
+example: https://circleci.com/gh/knqyf263/trivy-ci-test  
+repository: https://github.com/knqyf263/trivy-ci-test
 
 # Usage
 
@@ -70,17 +147,20 @@ NAME:
 USAGE:
   main [options] image_name
 VERSION:
-  0.0.1
+  0.0.3
 OPTIONS:
   --format value, -f value    format (table, json) (default: "table")
   --input value, -i value     input file path instead of image name
-  --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN")
+  --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
   --output value, -o value    output file name
+  --exit-code value           Exit code when vulnerabilities were found (default: 0)
   --skip-update               skip db update
   --clean, -c                 clean all cache
+  --quiet, -q                 suppress progress bar
   --debug, -d                 debug mode
   --help, -h                  show help
   --version, -v               print the version
+
 ```
 
 # Q&A
