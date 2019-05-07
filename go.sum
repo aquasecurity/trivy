@@ -117,6 +117,8 @@ github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+o
 github.com/knqyf263/berkeleydb v0.0.0-20190501065933-fafe01fb9662/go.mod h1:bu1CcN4tUtoRcI/B/RFHhxMNKFHVq/c3SV+UTyduoXg=
 github.com/knqyf263/fanal v0.0.0-20190506110705-2b5cb3000ff6 h1:iSztZNfwEPMN2CvUX1SxNEclRZn+rwRMdsnAegxRJk4=
 github.com/knqyf263/fanal v0.0.0-20190506110705-2b5cb3000ff6/go.mod h1:OiuWIClssf5WzbMcR8lfspdBVaP+vRQndY4kHeFgrDw=
+github.com/knqyf263/fanal v0.0.0-20190507123206-ceab60083e70 h1:L27WBZxk7N70WilG91kgvs0EnV+JVCoOTsNQa8tMBJs=
+github.com/knqyf263/fanal v0.0.0-20190507123206-ceab60083e70/go.mod h1:OiuWIClssf5WzbMcR8lfspdBVaP+vRQndY4kHeFgrDw=
 github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b h1:DiDMmSwuY27PJxA2Gs0+uI/bQ/ehKARaGXRdlp+wFis=
 github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b/go.mod h1:o8sgWoz3JADecfc/cTYD92/Et1yMqMy0utV1z+VaZao=
 github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790 h1:c02gG0yRNr25lcLOH+678SuuxxMUq36i48PQnmAweWk=
