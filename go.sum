@@ -128,6 +128,8 @@ github.com/knqyf263/go-version v1.1.1 h1:+MpcBC9b7rk5ihag8Y/FLG8get1H2GjniwKQ+9D
 github.com/knqyf263/go-version v1.1.1/go.mod h1:0tBvHvOBSf5TqGNcY+/ih9o8qo3R16iZCpB9rP0D3VM=
 github.com/knqyf263/nested v0.0.1 h1:Sv26CegUMhjt19zqbBKntjwESdxe5hxVPSk0+AKjdUc=
 github.com/knqyf263/nested v0.0.1/go.mod h1:zwhsIhMkBg90DTOJQvxPkKIypEHPYkgWHs4gybdlUmk=
+github.com/knqyf263/tablewriter v0.0.2 h1:lGaBruL/oJt8FAlMVy9KU0oQ/6NXAJjvK7wBgZyc+Og=
+github.com/knqyf263/tablewriter v0.0.2/go.mod h1:NDOJQAZxabBL3e13jQVktkvbr6bxXXPon8Lyh7fRPPc=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1 h1:mweAR1A6xJ3oS2pRaGiHgQ4OO8tzTaLawm8vnODuwDk=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515/go.mod h1:+0opPa2QZZtGFBFZlji/RkVcI2GknAs/DXo4wKdlNEc=

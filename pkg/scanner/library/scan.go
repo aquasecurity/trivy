@@ -96,7 +96,7 @@ func scan(scanner Scanner, pkgs []ptypes.Library) ([]types.Vulnerability, error)
 		return nil, xerrors.Errorf("failed to update %s advisories: %w", scanner.Type(), err)
 	}
 
-	log.Logger.Infof("Detect %s vulnerabilities", scanner.Type())
+	log.Logger.Infof("Detecting %s vulnerabilities...", scanner.Type())
 	var vulnerabilities []types.Vulnerability
 	for _, pkg := range pkgs {
 		v, err := version.NewVersion(pkg.Version)

@@ -37,3 +37,5 @@ require (
 )
 
 replace github.com/genuinetools/reg => github.com/tomoyamachi/reg v0.16.2-0.20190418055600-c6010b917a55
+
+replace github.com/olekukonko/tablewriter => github.com/knqyf263/tablewriter v0.0.2
