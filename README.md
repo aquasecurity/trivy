@@ -1,7 +1,7 @@
 # trivy
 
 [![GitHub release](https://img.shields.io/github/release/knqyf263/trivy.svg)](https://github.com/knqyf263/trivy/releases/latest)
-[![Build Status](https://travis-ci.org/knqyf263/trivy.svg?branch=master)](https://travis-ci.org/knqyf263/trivy)
+[![CircleCI](https://circleci.com/gh/knqyf263/trivy.svg?style=svg)](https://circleci.com/gh/knqyf263/trivy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/knqyf263/trivy)](https://goreportcard.com/report/github.com/knqyf263/trivy)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/knqyf263/trivy/blob/master/LICENSE)
 
@@ -116,6 +116,14 @@ $ brew unlink trivy && brew uninstall trivy
 $ brew install knqyf263/trivy/trivy
 ```
 
+## Others
+### Unknown error
+Try again with `--clean` option
+
+```
+$ trivy --clean alpine:3.8
+```
+
 # Contribute
 
 1. fork a repository: github.com/knqyf263/trivy to github.com/you/repo
@@ -128,6 +136,9 @@ $ brew install knqyf263/trivy/trivy
 - see [GitHub and Go: forking, pull requests, and go-getting](http://blog.campoy.cat/2014/03/github-and-go-forking-pull-requests-and.html)
 
 ----
+
+# Credits
+Special thanks to [Tomoya Amachi](https://github.com/tomoyamachi)
 
 # License
 MIT
