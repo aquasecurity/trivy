@@ -33,6 +33,9 @@ func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
 			updatedFiles[strings.TrimSpace(filename)] = struct{}{}
 		}
 	} else {
+		if !utils.IsCommandAvailable("git") {
+			log.Logger.Warn("Recommend installing git (if not, DB update is very slow)")
+		}
 		log.Logger.Debug("remove an existed directory")
 
 		s := spinner.New(spinner.CharSets[36], 100*time.Millisecond)
@@ -74,7 +77,6 @@ func clone(url, repoPath string) error {
 	if utils.IsCommandAvailable("git") {
 		return cloneByOSCommand(url, repoPath)
 	}
-	log.Logger.Warn("Recommend installing git (if not, DB update is very slow)")
 
 	_, err := git.PlainClone(repoPath, false, &git.CloneOptions{
 		URL: url,

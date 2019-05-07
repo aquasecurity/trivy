@@ -58,7 +58,8 @@ func Run(c *cli.Context) (err error) {
 	for _, s := range strings.Split(c.String("severity"), ",") {
 		severity, err := vulnerability.NewSeverity(s)
 		if err != nil {
-			return xerrors.Errorf("error in severity option: %w", err)
+			log.Logger.Infof("error in severity option: %s", err)
+			cli.ShowAppHelpAndExit(c, 1)
 		}
 		severities = append(severities, severity)
 	}
@@ -93,7 +94,13 @@ func Run(c *cli.Context) (err error) {
 	}
 
 	if err = writer.Write(results); err != nil {
-		return err
+		return xerrors.Errorf("failed to write results: %w", err)
+	}
+
+	for _, result := range results {
+		if len(result.Vulnerabilities) > 0 {
+			os.Exit(c.Int("exit-code"))
+		}
 	}
 
 	return nil
