@@ -1,0 +1,69 @@
+package composer
+
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"golang.org/x/xerrors"
+
+	"github.com/knqyf263/go-dep-parser/pkg/composer"
+	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
+	"github.com/knqyf263/go-version"
+	"github.com/knqyf263/trivy/pkg/scanner/utils"
+	"github.com/knqyf263/trivy/pkg/types"
+)
+
+const (
+	scannerType = "composer"
+)
+
+type Scanner struct {
+	db AdvisoryDB
+}
+
+func NewScanner() *Scanner {
+	return &Scanner{}
+}
+
+func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Vulnerability, error) {
+	var vulns []types.Vulnerability
+	ref := fmt.Sprintf("composer://%s", pkgName)
+	for _, advisory := range s.db[ref] {
+		var affectedVersions []string
+		var patchedVersions []string
+		for _, branch := range advisory.Branches {
+			for _, version := range branch.Versions {
+				if !strings.HasPrefix(version, "<=") && strings.HasPrefix(version, "<") {
+					patchedVersions = append(patchedVersions, strings.Trim(version, "<"))
+				}
+			}
+			affectedVersions = append(affectedVersions, strings.Join(branch.Versions, ", "))
+		}
+
+		if !utils.MatchVersions(pkgVer, affectedVersions) {
+			continue
+		}
+
+		vuln := types.Vulnerability{
+			VulnerabilityID:  advisory.Cve,
+			PkgName:          pkgName,
+			Title:            strings.TrimSpace(advisory.Title),
+			InstalledVersion: pkgVer.String(),
+			FixedVersion:     strings.Join(patchedVersions, ", "),
+		}
+		vulns = append(vulns, vuln)
+	}
+	return vulns, nil
+}
+
+func (s *Scanner) ParseLockfile(f *os.File) ([]ptypes.Library, error) {
+	libs, err := composer.Parse(f)
+	if err != nil {
+		return nil, xerrors.Errorf("invalid composer.lock format: %w", err)
+	}
+	return libs, nil
+}
+func (s *Scanner) Type() string {
+	return scannerType
+}

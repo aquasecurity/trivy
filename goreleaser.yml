@@ -1,0 +1,81 @@
+project_name: trivy
+builds:
+  - main: cmd/trivy/main.go
+    binary: trivy
+    ldflags: 
+      - -s -w
+      - "-extldflags '-static'"
+      - -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+      - freebsd
+      - openbsd
+    goarch:
+      - amd64
+      - 386
+      - arm
+      - arm64
+    goarm:
+      - 7
+
+nfpm:
+  formats:
+    - deb
+    - rpm
+  dependencies:
+    - rpm
+  vendor: "knqyf263"
+  homepage: "https://github.com/knqyf263"
+  maintainer: "Teppei Fukuda <knqyf263@gmail.com>"
+  description: "A Fast Vulnerability Scanner for Containers"
+  license: "MIT"
+  name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+  replacements:
+    amd64: 64bit
+    386: 32bit
+    arm: ARM
+    arm64: ARM64
+    darwin: macOS
+    linux: Linux
+    windows: Windows
+    openbsd: OpenBSD
+    netbsd: NetBSD
+    freebsd: FreeBSD
+    dragonfly: DragonFlyBSD
+
+archive:
+  format: tar.gz
+  format_overrides:
+    - goos: windows
+      format: zip
+  name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+  replacements:
+    amd64: 64bit
+    386: 32bit
+    arm: ARM
+    arm64: ARM64
+    darwin: macOS
+    linux: Linux
+    windows: Windows
+    openbsd: OpenBSD
+    netbsd: NetBSD
+    freebsd: FreeBSD
+    dragonfly: DragonFlyBSD
+  files:
+    - README.md
+    - LICENSE
+
+brew:
+  github:
+    owner: knqyf263
+    name: homebrew-trivy
+  dependencies:
+    - rpm
+  homepage: "https://github.com/knqyf263/trivy"
+  description: ""
+  test: |
+    system "#{bin}/program --version"

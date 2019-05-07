@@ -1,0 +1,42 @@
+defaults: &defaults
+  docker :
+    - image: knqyf263/ci-trivy:latest
+  environment:
+    CGO_ENABLED: "1"
+
+jobs:
+  release:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Release
+          command: goreleaser --rm-dist
+      - run:
+          name: Clone trivy repository
+          command: git clone git@github.com:knqyf263/trivy-repo.git
+      - run:
+          name: Setup git settings
+          command: |
+            git config --global user.email "knqyf263@gmail.com"
+            git config --global user.name "Teppei Fukuda"
+      - run:
+          name: Create rpm repository
+          command: ci/deploy-rpm.sh
+      - run:
+          name: Import GPG key
+          command: echo -e "$GPG_KEY" | gpg --import
+      - run:
+          name: Create deb repository
+          command: ci/deploy-deb.sh
+            
+workflows:
+  version: 2
+  release:
+    jobs:  
+      - release:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
