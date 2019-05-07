@@ -9,7 +9,7 @@ require (
 	github.com/fatih/color v1.7.0
 	github.com/gliderlabs/ssh v0.1.3 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
-	github.com/knqyf263/fanal v0.0.0-20190506110705-2b5cb3000ff6
+	github.com/knqyf263/fanal v0.0.0-20190507123206-ceab60083e70
 	github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b
 	github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
