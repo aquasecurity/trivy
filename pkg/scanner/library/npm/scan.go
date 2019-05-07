@@ -63,7 +63,6 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Vulne
 				Title:            strings.TrimSpace(advisory.Title),
 				InstalledVersion: pkgVer.String(),
 				FixedVersion:     strings.Join(patchedVersions, ", "),
-				//Score:           advisory.CvssScore,
 			}
 			vulns = append(vulns, vuln)
 		}

@@ -58,13 +58,13 @@ func Run(c *cli.Context) (err error) {
 	fileName := args[0]
 	f, err := os.Open(fileName)
 	if err != nil {
-		return err
+		return xerrors.Errorf("failed to open a file: %w", err)
 	}
 	defer f.Close()
 
 	result, err := scanner.ScanFile(f, severities)
 	if err != nil {
-		return err
+		return xerrors.Errorf("failed to scan a file: %w", err)
 	}
 
 	var writer report.Writer
@@ -74,11 +74,11 @@ func Run(c *cli.Context) (err error) {
 	case "json":
 		writer = &report.JsonWriter{Output: output}
 	default:
-		xerrors.New("unknown format")
+		return xerrors.New("unknown format")
 	}
 
 	if err = writer.Write([]report.Result{result}); err != nil {
-		return err
+		return xerrors.Errorf("failed to write results: %w", err)
 	}
 
 	return nil

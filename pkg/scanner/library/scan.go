@@ -48,11 +48,12 @@ func NewScanner(filename string) Scanner {
 func Scan(files extractor.FileMap) (map[string][]types.Vulnerability, error) {
 	results, err := analyzer.GetLibraries(files)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to analyze libraries: %w", err)
 	}
 
 	vulnerabilities := map[string][]types.Vulnerability{}
 	for path, pkgs := range results {
+		log.Logger.Debugf("Detecting library vulnerabilities, path: %s", path)
 		scanner := NewScanner(filepath.Base(string(path)))
 		if scanner == nil {
 			return nil, xerrors.New("unknown file type")
@@ -60,7 +61,7 @@ func Scan(files extractor.FileMap) (map[string][]types.Vulnerability, error) {
 
 		vulns, err := scan(scanner, pkgs)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to scan %s vulnerabilities: %w", scanner.Type(), err)
 		}
 
 		if len(vulns) != 0 {
@@ -92,7 +93,7 @@ func scan(scanner Scanner, pkgs []ptypes.Library) ([]types.Vulnerability, error)
 	log.Logger.Infof("Updating %s Security DB...", scanner.Type())
 	err := scanner.UpdateDB()
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to update %s advisories: %w", scanner.Type(), err)
 	}
 
 	log.Logger.Infof("Detect %s vulnerabilities", scanner.Type())
@@ -106,7 +107,7 @@ func scan(scanner Scanner, pkgs []ptypes.Library) ([]types.Vulnerability, error)
 
 		vulns, err := scanner.Detect(pkg.Name, v)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to detect %s vulnerabilities: %w", scanner.Type(), err)
 		}
 		vulnerabilities = append(vulnerabilities, vulns...)
 	}

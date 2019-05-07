@@ -22,10 +22,12 @@ func NewScanner() *Scanner {
 }
 
 func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnerability, error) {
+	log.Logger.Info("Detecting RHEL/CentOS vulnerabilities...")
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
-	log.Logger.Debugf("redhat version: %s", osVer)
+	log.Logger.Debugf("redhat: os version: %s", osVer)
+	log.Logger.Debugf("redhat: the number of packages: %s", len(pkgs))
 
 	var vulns []types.Vulnerability
 	for _, pkg := range pkgs {

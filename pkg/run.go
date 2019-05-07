@@ -30,7 +30,8 @@ func Run(c *cli.Context) (err error) {
 	args := c.Args()
 	filePath := c.String("input")
 	if filePath == "" && len(args) == 0 {
-		return xerrors.New(`trivy" requires at least 1 argument or --input option.`)
+		log.Logger.Info(`trivy" requires at least 1 argument or --input option.`)
+		cli.ShowAppHelpAndExit(c, 1)
 	}
 
 	clean := c.Bool("clean")

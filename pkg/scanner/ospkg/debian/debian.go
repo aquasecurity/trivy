@@ -22,10 +22,13 @@ func NewScanner() *Scanner {
 }
 
 func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnerability, error) {
+	log.Logger.Info("Detecting Debian vulnerabilities...")
+
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
-	log.Logger.Debugf("debian version: %s", osVer)
+	log.Logger.Debugf("debian: os version: %s", osVer)
+	log.Logger.Debugf("debian: the number of packages: %s", len(pkgs))
 
 	var vulns []types.Vulnerability
 	for _, pkg := range pkgs {
@@ -63,7 +66,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnera
 		}
 		advisories, err = debian.Get(osVer, pkg.Name)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to get debian advisory: %w", err)
 		}
 		for _, adv := range advisories {
 			vuln := types.Vulnerability{

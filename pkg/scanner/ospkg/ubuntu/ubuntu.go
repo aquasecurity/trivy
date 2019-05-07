@@ -18,7 +18,9 @@ func NewScanner() *Scanner {
 }
 
 func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnerability, error) {
-	log.Logger.Debugf("ubuntu version: %s", osVer)
+	log.Logger.Info("Detecting Ubuntu vulnerabilities...")
+	log.Logger.Debugf("ubuntu: os version: %s", osVer)
+	log.Logger.Debugf("ubuntu: the number of packages: %s", len(pkgs))
 
 	var vulns []types.Vulnerability
 	for _, pkg := range pkgs {
