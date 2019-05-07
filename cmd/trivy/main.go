@@ -60,6 +60,14 @@ OPTIONS:
 			Usage: "output file name",
 		},
 		cli.BoolFlag{
+			Name:  "skip-update",
+			Usage: "skip db update",
+		},
+		cli.BoolFlag{
+			Name:  "clean, c",
+			Usage: "clean all cache",
+		},
+		cli.BoolFlag{
 			Name:  "debug, d",
 			Usage: "debug mode",
 		},

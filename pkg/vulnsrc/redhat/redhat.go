@@ -15,7 +15,7 @@ import (
 
 	bolt "github.com/etcd-io/bbolt"
 	"github.com/knqyf263/trivy/pkg/db"
-	"github.com/knqyf263/trivy/utils"
+	"github.com/knqyf263/trivy/pkg/utils"
 	"golang.org/x/xerrors"
 )
 
@@ -34,7 +34,11 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	targets, err := utils.FilterTargets(redhatDir, updatedFiles)
 	if err != nil {
 		return xerrors.Errorf("failed to filter target files: %w", err)
+	} else if len(targets) == 0 {
+		log.Logger.Debug("Red Hat: no updated file")
+		return nil
 	}
+	log.Logger.Debugf("Red Hat updated files: %d", len(targets))
 
 	var cves []RedhatCVE
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, _ string) error {

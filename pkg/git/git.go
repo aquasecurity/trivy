@@ -2,7 +2,6 @@ package git
 
 import (
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -12,9 +11,9 @@ import (
 
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 
-	"github.com/knqyf263/trivy/utils"
+	"github.com/knqyf263/trivy/pkg/utils"
 	"golang.org/x/xerrors"
-	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4"
 )
 
 func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
@@ -35,6 +34,7 @@ func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
 			updatedFiles[strings.TrimSpace(filename)] = struct{}{}
 		}
 	} else {
+		log.Logger.Info("The first time will take a while...")
 		if err = os.MkdirAll(repoPath, 0700); err != nil {
 			return nil, xerrors.Errorf("failed to mkdir: %w", err)
 		}
@@ -46,6 +46,7 @@ func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
 			if info.IsDir() {
 				return nil
 			}
+			path = strings.TrimPrefix(path, repoPath+"/")
 			updatedFiles[path] = struct{}{}
 			return nil
 		})
@@ -73,11 +74,9 @@ func clone(url, repoPath string) error {
 
 func cloneByOSCommand(url, repoPath string) error {
 	commandAndArgs := []string{"clone", url, repoPath}
-	cmd := exec.Command("git", commandAndArgs...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		return xerrors.Errorf("failed to clone: %w", err)
+	_, err := utils.Exec("git", commandAndArgs)
+	if err != nil {
+		return xerrors.Errorf("error in git clone: %w", err)
 	}
 	return nil
 }

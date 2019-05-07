@@ -1,18 +1,17 @@
 package vulnsrc
 
 import (
-	"path/filepath"
-
 	"github.com/knqyf263/trivy/pkg/vulnsrc/alpine"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/debian"
 	debianoval "github.com/knqyf263/trivy/pkg/vulnsrc/debian-oval"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/nvd"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/redhat"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/ubuntu"
+	"path/filepath"
 
 	"github.com/knqyf263/trivy/pkg/git"
 	"github.com/knqyf263/trivy/pkg/log"
-	"github.com/knqyf263/trivy/utils"
+	"github.com/knqyf263/trivy/pkg/utils"
 	"golang.org/x/xerrors"
 )
 
@@ -29,15 +28,7 @@ func Update() (err error) {
 	if err != nil {
 		return xerrors.Errorf("error in vulnsrc clone or pull: %w", err)
 	}
-
-	//filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-	//	if info.IsDir() {
-	//		return nil
-	//	}
-	//	path = strings.TrimPrefix(path, dir+"/")
-	//	updatedFiles[path] = struct{}{}
-	//	return nil
-	//})
+	log.Logger.Debugf("total updated files: %d", len(updatedFiles))
 
 	// Only last_updated.txt
 	if len(updatedFiles) <= 1 {

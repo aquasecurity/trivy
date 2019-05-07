@@ -9,6 +9,7 @@ import (
 	_ "github.com/knqyf263/fanal/analyzer/pkg/apk"
 	_ "github.com/knqyf263/fanal/analyzer/pkg/dpkg"
 	"github.com/knqyf263/fanal/extractor"
+	"github.com/knqyf263/trivy/pkg/log"
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg/alpine"
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg/debian"
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg/redhat"
@@ -26,6 +27,7 @@ func Scan(files extractor.FileMap) (string, string, []types.Vulnerability, error
 	if err != nil {
 		return "", "", nil, xerrors.Errorf("failed to analyze OS: %w", err)
 	}
+	log.Logger.Debugf("OS family: %s, OS version: %s", os.Family, os.Name)
 
 	var s Scanner
 	switch os.Family {
@@ -44,6 +46,7 @@ func Scan(files extractor.FileMap) (string, string, []types.Vulnerability, error
 	if err != nil {
 		return "", "", nil, xerrors.Errorf("failed to analyze OS packages: %w", err)
 	}
+	log.Logger.Debugf("the number of packages: %d", len(pkgs))
 
 	vulns, err := s.Detect(os.Name, pkgs)
 	if err != nil {

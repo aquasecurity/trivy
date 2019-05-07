@@ -15,7 +15,7 @@ import (
 	"github.com/knqyf263/trivy/pkg/db"
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/trivy/utils"
+	"github.com/knqyf263/trivy/pkg/utils"
 )
 
 const (
@@ -49,7 +49,11 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	targets, err := utils.FilterTargets(ubuntuDir, updatedFiles)
 	if err != nil {
 		return xerrors.Errorf("failed to filter target files: %w", err)
+	} else if len(targets) == 0 {
+		log.Logger.Debug("Ubuntu: no updated file")
+		return nil
 	}
+	log.Logger.Debugf("Ubuntu OVAL updated files: %d", len(targets))
 
 	var cves []UbuntuCVE
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, path string) error {

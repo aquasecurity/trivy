@@ -18,7 +18,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/trivy/utils"
+	"github.com/knqyf263/trivy/pkg/utils"
 )
 
 var (
@@ -33,8 +33,10 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	if err != nil {
 		return xerrors.Errorf("failed to filter target files: %w", err)
 	} else if len(targets) == 0 {
+		log.Logger.Debug("Debian OVAL: no updated file")
 		return nil
 	}
+	log.Logger.Debugf("Debian OVAL updated files: %d", len(targets))
 
 	var cves []DebianOVAL
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, path string) error {

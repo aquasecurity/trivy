@@ -11,7 +11,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/trivy/utils"
+	"github.com/knqyf263/trivy/pkg/utils"
 
 	bolt "github.com/etcd-io/bbolt"
 	"github.com/knqyf263/trivy/pkg/db"
@@ -28,7 +28,11 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	targets, err := utils.FilterTargets(nvdDir, updatedFiles)
 	if err != nil {
 		return xerrors.Errorf("failed to filter target files: %w", err)
+	} else if len(targets) == 0 {
+		log.Logger.Debug("NVD: no updated file")
+		return nil
 	}
+	log.Logger.Debugf("NVD updated files: %d", len(targets))
 
 	var items []vulnerability.Item
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, _ string) error {

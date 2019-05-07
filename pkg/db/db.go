@@ -2,12 +2,13 @@ package db
 
 import (
 	"encoding/json"
+	"github.com/knqyf263/trivy/pkg/log"
 	"os"
 	"path/filepath"
 
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/trivy/utils"
+	"github.com/knqyf263/trivy/pkg/utils"
 
 	bolt "github.com/etcd-io/bbolt"
 )
@@ -23,6 +24,7 @@ func Init() (err error) {
 	}
 
 	dbPath := filepath.Join(dbDir, "trivy.db")
+	log.Logger.Debugf("db path: %s", dbPath)
 	db, err = bolt.Open(dbPath, 0600, nil)
 	if err != nil {
 		return xerrors.Errorf("failed to open db: %w", err)

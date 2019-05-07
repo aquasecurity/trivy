@@ -8,7 +8,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/trivy/pkg/git"
-	"github.com/knqyf263/trivy/utils"
+	"github.com/knqyf263/trivy/pkg/utils"
 	"gopkg.in/yaml.v2"
 )
 

@@ -10,8 +10,8 @@ import (
 	bolt "github.com/etcd-io/bbolt"
 	"github.com/knqyf263/trivy/pkg/db"
 	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/knqyf263/trivy/pkg/utils"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
-	"github.com/knqyf263/trivy/utils"
 	"golang.org/x/xerrors"
 )
 
@@ -38,7 +38,11 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	targets, err := utils.FilterTargets(debianDir, updatedFiles)
 	if err != nil {
 		return xerrors.Errorf("failed to filter target files: %w", err)
+	} else if len(targets) == 0 {
+		log.Logger.Debug("Debian: no updated file")
+		return nil
 	}
+	log.Logger.Debugf("Debian updated files: %d", len(targets))
 
 	var cves []DebianCVE
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, path string) error {

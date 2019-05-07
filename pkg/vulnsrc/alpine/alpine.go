@@ -14,7 +14,7 @@ import (
 	"golang.org/x/xerrors"
 
 	bolt "github.com/etcd-io/bbolt"
-	"github.com/knqyf263/trivy/utils"
+	"github.com/knqyf263/trivy/pkg/utils"
 )
 
 const (
@@ -31,8 +31,10 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	if err != nil {
 		return xerrors.Errorf("failed to filter target files: %w", err)
 	} else if len(targets) == 0 {
+		log.Logger.Debug("Alpine: no updated file")
 		return nil
 	}
+	log.Logger.Debugf("Alpine updated files: %d", len(targets))
 
 	var cves []AlpineCVE
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, path string) error {

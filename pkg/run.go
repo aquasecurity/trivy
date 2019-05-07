@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/knqyf263/trivy/pkg/utils"
+
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
 	"github.com/knqyf263/trivy/pkg/report"
@@ -23,6 +25,7 @@ func Run(c *cli.Context) (err error) {
 	if err = log.InitLogger(debug); err != nil {
 		l.Fatal(err)
 	}
+	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
 	args := c.Args()
 	filePath := c.String("input")
@@ -30,6 +33,12 @@ func Run(c *cli.Context) (err error) {
 		return xerrors.New(`trivy" requires at least 1 argument or --input option.`)
 	}
 
+	clean := c.Bool("clean")
+	if clean {
+		if err = os.RemoveAll(utils.CacheDir()); err != nil {
+			return xerrors.New("failed to remove cache")
+		}
+	}
 	o := c.String("output")
 	output := os.Stdout
 	if o != "" {
@@ -51,8 +60,10 @@ func Run(c *cli.Context) (err error) {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 
-	if err = vulnsrc.Update(); err != nil {
-		return xerrors.Errorf("error in vulnerability DB update: %w", err)
+	if !c.Bool("skip-update") {
+		if err = vulnsrc.Update(); err != nil {
+			return xerrors.Errorf("error in vulnerability DB update: %w", err)
+		}
 	}
 
 	var imageName string

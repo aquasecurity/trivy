@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/knqyf263/trivy/utils"
+	"github.com/knqyf263/trivy/pkg/utils"
 
 	"github.com/knqyf263/trivy/pkg/git"
 )
