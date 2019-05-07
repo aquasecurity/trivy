@@ -1,6 +1,7 @@
 package main
 
 import (
+	l "log"
 	"os"
 	"strings"
 
@@ -59,6 +60,11 @@ OPTIONS:
 			Name:  "output, o",
 			Usage: "output file name",
 		},
+		cli.IntFlag{
+			Name:  "exit-code",
+			Usage: "Exit code when vulnerabilities were found",
+			Value: 0,
+		},
 		cli.BoolFlag{
 			Name:  "skip-update",
 			Usage: "skip db update",
@@ -79,6 +85,9 @@ OPTIONS:
 
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Logger.Fatal(err)
+		if log.Logger != nil {
+			log.Logger.Fatal(err)
+		}
+		l.Fatal(err)
 	}
 }
