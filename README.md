@@ -61,6 +61,26 @@ $ go get -u github.com/knqyf263/trivy
 
 # Usage
 
+```
+$ trivy -h
+NAME:
+  trivy - A simple and comprehensive vulnerability scanner for containers
+USAGE:
+  main [options] image_name
+VERSION:
+  0.0.1
+OPTIONS:
+  --format value, -f value    format (table, json) (default: "table")
+  --input value, -i value     input file path instead of image name
+  --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN")
+  --output value, -o value    output file name
+  --skip-update               skip db update
+  --clean, -c                 clean all cache
+  --debug, -d                 debug mode
+  --help, -h                  show help
+  --version, -v               print the version
+```
+
 # Q&A
 ## Homebrew
 ### Error: Your macOS keychain GitHub credentials do not have sufficient scope!

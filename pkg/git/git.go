@@ -33,10 +33,16 @@ func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
 			updatedFiles[strings.TrimSpace(filename)] = struct{}{}
 		}
 	} else {
+		log.Logger.Debug("remove an existed directory")
+
 		s := spinner.New(spinner.CharSets[36], 100*time.Millisecond)
 		s.Suffix = " The first time will take a while..."
 		s.Start()
 		defer s.Stop()
+
+		if err = os.RemoveAll(repoPath); err != nil {
+			return nil, xerrors.Errorf("failed to remove an existed directory: %w", err)
+		}
 
 		if err = os.MkdirAll(repoPath, 0700); err != nil {
 			return nil, xerrors.Errorf("failed to mkdir: %w", err)
@@ -49,8 +55,11 @@ func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
 			if info.IsDir() {
 				return nil
 			}
-			path = strings.TrimPrefix(path, repoPath+"/")
-			updatedFiles[path] = struct{}{}
+			rel, err := filepath.Rel(repoPath, path)
+			if err != nil {
+				return xerrors.Errorf("failed to get a relative path: %w", err)
+			}
+			updatedFiles[rel] = struct{}{}
 			return nil
 		})
 		if err != nil {
@@ -68,8 +77,7 @@ func clone(url, repoPath string) error {
 	log.Logger.Warn("Recommend installing git (if not, DB update is very slow)")
 
 	_, err := git.PlainClone(repoPath, false, &git.CloneOptions{
-		URL:      url,
-		Progress: os.Stdout,
+		URL: url,
 	})
 	if err != nil && err != git.ErrRepositoryAlreadyExists {
 		return xerrors.Errorf("unexpected error in git clone: %w", err)

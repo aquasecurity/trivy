@@ -2,6 +2,7 @@ package nvd
 
 import (
 	"encoding/json"
+	"gopkg.in/cheggaaa/pb.v1"
 	"io"
 	"path/filepath"
 
@@ -34,6 +35,8 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	}
 	log.Logger.Debugf("NVD updated files: %d", len(targets))
 
+	bar := pb.StartNew(len(targets))
+	defer bar.Finish()
 	var items []vulnerability.Item
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, _ string) error {
 		item := vulnerability.Item{}
@@ -41,6 +44,7 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 			return xerrors.Errorf("failed to decode NVD JSON: %w", err)
 		}
 		items = append(items, item)
+		bar.Increment()
 		return nil
 	})
 	if err != nil {

@@ -3,6 +3,7 @@ package debian
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/cheggaaa/pb.v1"
 	"io"
 	"path/filepath"
 	"strings"
@@ -44,6 +45,9 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	}
 	log.Logger.Debugf("Debian updated files: %d", len(targets))
 
+	bar := pb.StartNew(len(targets))
+	defer bar.Finish()
+
 	var cves []DebianCVE
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, path string) error {
 		var cve DebianCVE
@@ -55,6 +59,7 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 		cve.Package = filepath.Base(filepath.Dir(path))
 		cves = append(cves, cve)
 
+		bar.Increment()
 		return nil
 	})
 	if err != nil {

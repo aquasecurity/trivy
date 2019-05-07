@@ -1,19 +1,17 @@
 package vulnsrc
 
 import (
-	"path/filepath"
-
+	"github.com/knqyf263/trivy/pkg/git"
+	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/knqyf263/trivy/pkg/utils"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/alpine"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/debian"
 	debianoval "github.com/knqyf263/trivy/pkg/vulnsrc/debian-oval"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/nvd"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/redhat"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/ubuntu"
-
-	"github.com/knqyf263/trivy/pkg/git"
-	"github.com/knqyf263/trivy/pkg/log"
-	"github.com/knqyf263/trivy/pkg/utils"
 	"golang.org/x/xerrors"
+	"path/filepath"
 )
 
 const (
@@ -31,7 +29,7 @@ func Update() (err error) {
 	}
 	log.Logger.Debugf("total updated files: %d", len(updatedFiles))
 
-	// Only last_updated.txt
+	// Only last_updated.json
 	if len(updatedFiles) <= 1 {
 		return nil
 	}

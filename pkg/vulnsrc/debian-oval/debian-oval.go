@@ -3,6 +3,7 @@ package debianoval
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/cheggaaa/pb.v1"
 	"io"
 	"os"
 	"path/filepath"
@@ -38,6 +39,9 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	}
 	log.Logger.Debugf("Debian OVAL updated files: %d", len(targets))
 
+	bar := pb.StartNew(len(targets))
+	defer bar.Finish()
+
 	var cves []DebianOVAL
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, path string) error {
 		var cve DebianOVAL
@@ -52,6 +56,7 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 		}
 		cve.Release = dirs[len(dirs)-3]
 		cves = append(cves, cve)
+		bar.Increment()
 		return nil
 	})
 	if err != nil {

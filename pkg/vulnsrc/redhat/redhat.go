@@ -3,6 +3,7 @@ package redhat
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/cheggaaa/pb.v1"
 	"io"
 	"io/ioutil"
 	"path/filepath"
@@ -39,6 +40,9 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 		return nil
 	}
 	log.Logger.Debugf("Red Hat updated files: %d", len(targets))
+
+	bar := pb.StartNew(len(targets))
+	defer bar.Finish()
 
 	var cves []RedhatCVE
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, _ string) error {
@@ -86,6 +90,7 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 			return xerrors.New("unknown package_state type")
 		}
 		cves = append(cves, cve)
+		bar.Increment()
 		return nil
 	})
 	if err != nil {

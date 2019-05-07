@@ -3,6 +3,7 @@ package alpine
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/cheggaaa/pb.v1"
 	"io"
 	"path/filepath"
 
@@ -36,6 +37,9 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	}
 	log.Logger.Debugf("Alpine updated files: %d", len(targets))
 
+	bar := pb.StartNew(len(targets))
+	defer bar.Finish()
+
 	var cves []AlpineCVE
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, path string) error {
 		var cve AlpineCVE
@@ -43,6 +47,7 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 			return xerrors.Errorf("failed to decode Alpine JSON: %w", err)
 		}
 		cves = append(cves, cve)
+		bar.Increment()
 		return nil
 	})
 	if err != nil {

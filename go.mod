@@ -29,6 +29,7 @@ require (
 	golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3 // indirect
 	golang.org/x/sys v0.0.0-20190405154228-4b34438f7a67 // indirect
 	golang.org/x/xerrors v0.0.0-20190410155217-1f06c39b4373
+	gopkg.in/cheggaaa/pb.v1 v1.0.28
 	gopkg.in/src-d/go-billy.v4 v4.3.0 // indirect
 	gopkg.in/src-d/go-git-fixtures.v3 v3.4.0 // indirect
 	gopkg.in/src-d/go-git.v4 v4.10.0
