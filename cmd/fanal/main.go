@@ -7,6 +7,10 @@ import (
 	"log"
 	"os"
 
+	"golang.org/x/xerrors"
+
+	"github.com/knqyf263/fanal/cache"
+
 	"github.com/knqyf263/fanal/analyzer"
 	_ "github.com/knqyf263/fanal/analyzer/library/bundler"
 	_ "github.com/knqyf263/fanal/analyzer/library/composer"
@@ -33,7 +37,14 @@ func main() {
 func run() (err error) {
 	ctx := context.Background()
 	tarPath := flag.String("f", "-", "layer.tar path")
+	clearCache := flag.Bool("clear", false, "clear cache")
 	flag.Parse()
+
+	if *clearCache {
+		if err = cache.Clear(); err != nil {
+			return xerrors.Errorf("error in cache clear: %w", err)
+		}
+	}
 
 	args := flag.Args()
 

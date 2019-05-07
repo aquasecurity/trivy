@@ -5,20 +5,13 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/knqyf263/fanal/utils"
+
 	"golang.org/x/xerrors"
 )
 
-func init() {
-	d, err := os.UserCacheDir()
-	if err != nil {
-		d = os.TempDir()
-	}
-	cacheDir = filepath.Join(d, "fanal")
-	os.MkdirAll(cacheDir, os.ModePerm)
-}
-
 var (
-	cacheDir string
+	cacheDir = utils.CacheDir()
 )
 
 func Get(key string) io.Reader {
@@ -32,6 +25,9 @@ func Get(key string) io.Reader {
 
 func Set(key string, file io.Reader) (io.Reader, error) {
 	filePath := filepath.Join(cacheDir, key)
+	if err := os.MkdirAll(cacheDir, os.ModePerm); err != nil {
+		return nil, xerrors.Errorf("failed to mkdir all: %w", err)
+	}
 	cacheFile, err := os.Create(filePath)
 	if err != nil {
 		return file, xerrors.Errorf("failed to create cache file: %w", err)
@@ -39,4 +35,11 @@ func Set(key string, file io.Reader) (io.Reader, error) {
 
 	tee := io.TeeReader(file, cacheFile)
 	return tee, nil
+}
+
+func Clear() error {
+	if err := os.RemoveAll(utils.CacheDir()); err != nil {
+		return xerrors.New("failed to remove cache")
+	}
+	return nil
 }
