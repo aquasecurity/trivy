@@ -2,9 +2,16 @@ defaults: &defaults
   docker :
     - image: knqyf263/ci-trivy:latest
   environment:
-    CGO_ENABLED: "1"
+    CGO_ENABLED: "0"
 
 jobs:
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Test
+          command: go test ./...
   release:
     <<: *defaults
     steps:
@@ -34,6 +41,7 @@ workflows:
   version: 2
   release:
     jobs:  
+      - test
       - release:
           filters:
             branches:
