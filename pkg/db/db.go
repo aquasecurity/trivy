@@ -2,9 +2,10 @@ package db
 
 import (
 	"encoding/json"
-	"github.com/knqyf263/trivy/pkg/log"
 	"os"
 	"path/filepath"
+
+	"github.com/knqyf263/trivy/pkg/log"
 
 	"golang.org/x/xerrors"
 
@@ -14,11 +15,11 @@ import (
 )
 
 var (
-	db *bolt.DB
+	db    *bolt.DB
+	dbDir = filepath.Join(utils.CacheDir(), "db")
 )
 
 func Init() (err error) {
-	dbDir := filepath.Join(utils.CacheDir(), "db")
 	if err = os.MkdirAll(dbDir, 0700); err != nil {
 		return xerrors.Errorf("failed to mkdir: %w", err)
 	}
@@ -28,6 +29,33 @@ func Init() (err error) {
 	db, err = bolt.Open(dbPath, 0600, nil)
 	if err != nil {
 		return xerrors.Errorf("failed to open db: %w", err)
+	}
+	return nil
+}
+
+func Reset() error {
+	if err := os.RemoveAll(dbDir); err != nil {
+		return xerrors.Errorf("failed to reset DB: %w", err)
+	}
+	return nil
+}
+
+func GetVersion() string {
+	var version string
+	value, err := Get("trivy", "metadata", "version")
+	if err != nil {
+		return ""
+	}
+	if err = json.Unmarshal(value, &version); err != nil {
+		return ""
+	}
+	return version
+}
+
+func SetVersion(version string) error {
+	err := Update("trivy", "metadata", "version", version)
+	if err != nil {
+		return xerrors.Errorf("failed to save DB version: %w", err)
 	}
 	return nil
 }

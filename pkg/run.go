@@ -23,6 +23,8 @@ import (
 )
 
 func Run(c *cli.Context) (err error) {
+	cliVersion := c.App.Version
+
 	debug := c.Bool("debug")
 	if err = log.InitLogger(debug); err != nil {
 		l.Fatal(err)
@@ -68,8 +70,20 @@ func Run(c *cli.Context) (err error) {
 		severities = append(severities, severity)
 	}
 
+	if c.Bool("refresh") {
+		log.Logger.Info("Resetting DB...")
+		if err = db.Reset(); err != nil {
+			return xerrors.Errorf("error in refresh DB: %w", err)
+		}
+	}
+
 	if err = db.Init(); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
+	}
+
+	dbVersion := db.GetVersion()
+	if dbVersion != "" && dbVersion != cliVersion {
+		log.Logger.Fatal("Detected version update of trivy. Please try again with --refresh option")
 	}
 
 	if !c.Bool("skip-update") {
@@ -103,9 +117,16 @@ func Run(c *cli.Context) (err error) {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
 
-	for _, result := range results {
-		if len(result.Vulnerabilities) > 0 {
-			os.Exit(c.Int("exit-code"))
+	if err = db.SetVersion(cliVersion); err != nil {
+		return xerrors.Errorf("unexpected error: %w", err)
+	}
+
+	exitCode := c.Int("exit-code")
+	if exitCode != 0 {
+		for _, result := range results {
+			if len(result.Vulnerabilities) > 0 {
+				os.Exit(exitCode)
+			}
 		}
 	}
 
