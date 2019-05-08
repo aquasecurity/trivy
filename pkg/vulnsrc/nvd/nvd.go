@@ -18,9 +18,7 @@ import (
 )
 
 const (
-	nvdDir       = "nvd"
-	rootBucket   = "NVD"
-	nestedBucket = "dummy"
+	nvdDir = "nvd"
 )
 
 func Update(dir string, updatedFiles map[string]struct{}) error {
@@ -36,9 +34,9 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 
 	bar := utils.PbStartNew(len(targets))
 	defer bar.Finish()
-	var items []vulnerability.Item
+	var items []Item
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, _ string) error {
-		item := vulnerability.Item{}
+		item := Item{}
 		if err := json.NewDecoder(r).Decode(&item); err != nil {
 			return xerrors.Errorf("failed to decode NVD JSON: %w", err)
 		}
@@ -57,20 +55,33 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	return nil
 }
 
-func save(items []vulnerability.Item) error {
+func save(items []Item) error {
 	log.Logger.Debug("NVD batch update")
 	err := vulnerability.BatchUpdate(func(b *bolt.Bucket) error {
 		for _, item := range items {
 			cveID := item.Cve.Meta.ID
 			severity, _ := vulnerability.NewSeverity(item.Impact.BaseMetricV2.Severity)
 			severityV3, _ := vulnerability.NewSeverity(item.Impact.BaseMetricV3.CvssV3.BaseSeverity)
+
+			var references []string
+			for _, ref := range item.Cve.References.ReferenceDataList {
+				references = append(references, ref.URL)
+			}
+
+			var description string
+			for _, d := range item.Cve.Description.DescriptionDataList {
+				if d.Value != "" {
+					description = d.Value
+					break
+				}
+			}
+
 			vuln := vulnerability.Vulnerability{
-				Severity:   severity,
-				SeverityV3: severityV3,
-				// TODO
-				References:  []string{},
+				Severity:    severity,
+				SeverityV3:  severityV3,
+				References:  references,
 				Title:       "",
-				Description: "",
+				Description: description,
 			}
 
 			if err := db.Put(b, cveID, vulnerability.Nvd, vuln); err != nil {

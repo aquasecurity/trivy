@@ -29,15 +29,6 @@ func Run(c *cli.Context) (err error) {
 	}
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
-	args := c.Args()
-	filePath := c.String("input")
-	if filePath == "" && len(args) == 0 {
-		log.Logger.Info(`trivy" requires at least 1 argument or --input option.`)
-		cli.ShowAppHelpAndExit(c, 1)
-	}
-
-	utils.Quiet = c.Bool("quiet")
-
 	clean := c.Bool("clean")
 	if clean {
 		log.Logger.Info("Cleaning caches...")
@@ -47,7 +38,18 @@ func Run(c *cli.Context) (err error) {
 		if err = os.RemoveAll(utils.CacheDir()); err != nil {
 			return xerrors.New("failed to remove cache")
 		}
+		return nil
 	}
+
+	args := c.Args()
+	filePath := c.String("input")
+	if filePath == "" && len(args) == 0 {
+		log.Logger.Info(`trivy" requires at least 1 argument or --input option.`)
+		cli.ShowAppHelpAndExit(c, 1)
+	}
+
+	utils.Quiet = c.Bool("quiet")
+
 	o := c.String("output")
 	output := os.Stdout
 	if o != "" {

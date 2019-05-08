@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/knqyf263/trivy/pkg/log"
 
@@ -148,6 +149,13 @@ func getDetail(vulnID string) (vulnerability.Severity, string) {
 	}
 	severity := getSeverity(details)
 	title := getTitle(details)
+	if title == "" {
+		title = getDescription(details)
+	}
+	splittedTitle := strings.Split(title, " ")
+	if len(splittedTitle) >= 12 {
+		title = strings.Join(splittedTitle[:12], " ") + "..."
+	}
 	return severity, title
 }
 
@@ -178,6 +186,19 @@ func getTitle(details map[string]vulnerability.Vulnerability) string {
 		}
 		if d.Title != "" {
 			return d.Title
+		}
+	}
+	return ""
+}
+
+func getDescription(details map[string]vulnerability.Vulnerability) string {
+	for _, source := range sources {
+		d, ok := details[source]
+		if !ok {
+			continue
+		}
+		if d.Description != "" {
+			return d.Description
 		}
 	}
 	return ""
