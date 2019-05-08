@@ -78,6 +78,10 @@ OPTIONS:
 			Usage: "suppress progress bar",
 		},
 		cli.BoolFlag{
+			Name:  "ignore-unfixed",
+			Usage: "display only fixed vulnerabilities",
+		},
+		cli.BoolFlag{
 			Name:  "debug, d",
 			Usage: "debug mode",
 		},
