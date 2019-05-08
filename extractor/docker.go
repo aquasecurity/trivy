@@ -128,7 +128,25 @@ func (d DockerExtractor) createRegistryClient(ctx context.Context, domain string
 	})
 }
 
-func (d DockerExtractor) SaveLocalImage(ctx context.Context, imageName string) (io.ReadCloser, error) {
+func (d DockerExtractor) SaveLocalImage(ctx context.Context, imageName string) (io.Reader, error) {
+	var err error
+	r := cache.Get(imageName)
+	if r == nil {
+		// Save the image
+		r, err = d.saveLocalImage(ctx, imageName)
+		if err != nil {
+			return nil, err
+		}
+		r, err = cache.Set(imageName, r)
+		if err != nil {
+			log.Print(err)
+		}
+	}
+
+	return r, nil
+}
+
+func (d DockerExtractor) saveLocalImage(ctx context.Context, imageName string) (io.ReadCloser, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		return nil, xerrors.New("error in docker NewClient")
@@ -216,7 +234,7 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 	return applyLayers(layerIDs, filesInLayers, opqInLayers)
 }
 
-func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.ReadCloser, filenames []string) (FileMap, error) {
+func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filenames []string) (FileMap, error) {
 	manifests := make([]manifest, 0)
 	filesInLayers := make(map[string]FileMap)
 	opqInLayers := make(map[string]opqDirs)
