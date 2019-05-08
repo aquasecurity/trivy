@@ -7,6 +7,8 @@ import (
 	"os"
 	"sort"
 
+	"github.com/genuinetools/reg/registry"
+
 	"github.com/knqyf263/trivy/pkg/log"
 
 	"github.com/knqyf263/trivy/pkg/report"
@@ -36,6 +38,14 @@ func ScanImage(imageName, filePath string, severities []vulnerability.Severity, 
 	var results report.Results
 	var err error
 	ctx := context.Background()
+
+	image, err := registry.ParseImage(imageName)
+	if err != nil {
+		return nil, xerrors.Errorf("invalid image: %w", err)
+	}
+	if image.Tag == "latest" {
+		log.Logger.Warn("You should avoid using the :latest tag as it is cached. You need to specify '--clean' option when :latest image is changed")
+	}
 
 	var target string
 	var files extractor.FileMap

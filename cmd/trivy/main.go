@@ -82,6 +82,10 @@ OPTIONS:
 			Usage: "display only fixed vulnerabilities",
 		},
 		cli.BoolFlag{
+			Name:  "refresh",
+			Usage: "refresh DB (usually used after version update of trivy)",
+		},
+		cli.BoolFlag{
 			Name:  "debug, d",
 			Usage: "debug mode",
 		},

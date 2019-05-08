@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/knqyf263/trivy/pkg/db"
+
 	"github.com/knqyf263/trivy/pkg/log"
 	"github.com/knqyf263/trivy/pkg/utils"
 	"golang.org/x/xerrors"
@@ -52,6 +54,10 @@ func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
 			return nil, xerrors.Errorf("failed to clone repository: %w", err)
 		}
 
+	}
+
+	// Need to refresh all vulnerabilities
+	if db.GetVersion() == "" {
 		err = filepath.Walk(repoPath, func(path string, info os.FileInfo, err error) error {
 			if info.IsDir() {
 				return nil
