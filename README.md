@@ -5,12 +5,31 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/knqyf263/trivy)](https://goreportcard.com/report/github.com/knqyf263/trivy)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/knqyf263/trivy/blob/master/LICENSE)
 
-A Simple and Comprehensive Vulnerability Scanner for Containers
+A Simple and Comprehensive Vulnerability Scanner for Containers, Compatible with CI
 
 # Abstract
-Scan containers
+`Trivy` is a simple and comprehensive vulnerability scanner for containers.
+`Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, etc.).
+`Trivy` is easy to use. Just install the binary and you're ready to scan. It can be scanned just by specifying a container image name.
+
+It is considered to be used in CI. Before pushing to a container registry, you can scan your local container image easily.
+See [here](#continuous-integration-ci) for details.
+
 
 # Features
+- Detect comprehensive vulnerabilities
+  - OS packages (Alpine, Red Hat Enterprise Linux, CentOS, Debian, Ubuntu)
+  - **Application dependencies** (Bundler, Composer, Pipenv, npm)
+- Simple
+  - Specify only an image name
+- Easy installation
+  - **No need for prerequirements** such as installation of DB, libraries, etc.
+  - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](#installation))
+- High accuracy
+  - Especially Alpine
+- **Compatible with CI**
+  - See [CI Example](#continuous-integration-ci)
+
 
 # Installation
 
@@ -141,11 +160,10 @@ repository: https://github.com/knqyf263/trivy-ci-test
 # Usage
 
 ```
-$ trivy -h
 NAME:
   trivy - A simple and comprehensive vulnerability scanner for containers
 USAGE:
-  main [options] image_name
+  trivy [options] image_name
 VERSION:
   0.0.3
 OPTIONS:
@@ -157,10 +175,11 @@ OPTIONS:
   --skip-update               skip db update
   --clean, -c                 clean all cache
   --quiet, -q                 suppress progress bar
+  --ignore-unfixed            display only fixed vulnerabilities
+  --refresh                   refresh DB (usually used after version update of trivy
   --debug, -d                 debug mode
   --help, -h                  show help
   --version, -v               print the version
-
 ```
 
 # Q&A
@@ -199,11 +218,18 @@ $ brew install knqyf263/trivy/trivy
 ```
 
 ## Others
+### Detected version update of trivy. Please try again with --refresh option
+Try again with `--refresh` option
+
+```
+$ trivy --refresh alpine:3.9
+```
+
 ### Unknown error
 Try again with `--clean` option
 
 ```
-$ trivy --clean alpine:3.8
+$ trivy --clean
 ```
 
 # Contribute
