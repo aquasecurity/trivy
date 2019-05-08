@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"sort"
-	"strings"
 
 	"github.com/knqyf263/trivy/pkg/log"
 
@@ -101,13 +100,15 @@ func ScanFile(f *os.File, severities []vulnerability.Severity) (report.Result, e
 func processVulnerabilties(vulns []types.Vulnerability, severities []vulnerability.Severity, ignoreUnfixed bool) []types.Vulnerability {
 	var vulnerabilities []types.Vulnerability
 	for _, vuln := range vulns {
-		sev, title := getDetail(vuln.VulnerabilityID)
+		sev, title, description, references := getDetail(vuln.VulnerabilityID)
 
 		// Filter vulnerabilities by severity
 		for _, s := range severities {
 			if s == sev {
 				vuln.Severity = fmt.Sprint(sev)
 				vuln.Title = title
+				vuln.Description = description
+				vuln.References = references
 
 				// Ignore unfixed vulnerabilities
 				if ignoreUnfixed && vuln.FixedVersion == "" {
@@ -139,24 +140,15 @@ func openStream(path string) (*os.File, error) {
 	return os.Open(path)
 }
 
-func getDetail(vulnID string) (vulnerability.Severity, string) {
+func getDetail(vulnID string) (vulnerability.Severity, string, string, []string) {
 	details, err := vulnerability.Get(vulnID)
 	if err != nil {
 		log.Logger.Debug(err)
-		return vulnerability.SeverityUnknown, ""
+		return vulnerability.SeverityUnknown, "", "", nil
 	} else if len(details) == 0 {
-		return vulnerability.SeverityUnknown, ""
+		return vulnerability.SeverityUnknown, "", "", nil
 	}
-	severity := getSeverity(details)
-	title := getTitle(details)
-	if title == "" {
-		title = getDescription(details)
-	}
-	splittedTitle := strings.Split(title, " ")
-	if len(splittedTitle) >= 12 {
-		title = strings.Join(splittedTitle[:12], " ") + "..."
-	}
-	return severity, title
+	return getSeverity(details), getTitle(details), getDescription(details), getReferences(details)
 }
 
 func getSeverity(details map[string]vulnerability.Vulnerability) vulnerability.Severity {
@@ -202,6 +194,24 @@ func getDescription(details map[string]vulnerability.Vulnerability) string {
 		}
 	}
 	return ""
+}
+
+func getReferences(details map[string]vulnerability.Vulnerability) []string {
+	references := map[string]struct{}{}
+	for _, source := range sources {
+		d, ok := details[source]
+		if !ok {
+			continue
+		}
+		for _, ref := range d.References {
+			references[ref] = struct{}{}
+		}
+	}
+	var refs []string
+	for ref := range references {
+		refs = append(refs, ref)
+	}
+	return refs
 }
 
 func scoreToSeverity(score float64) vulnerability.Severity {
