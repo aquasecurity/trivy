@@ -76,11 +76,13 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
+	ignoreUnfixed := c.Bool("ignore-unfixed")
+
 	var imageName string
 	if filePath == "" {
 		imageName = args[0]
 	}
-	results, err := scanner.ScanImage(imageName, filePath, severities)
+	results, err := scanner.ScanImage(imageName, filePath, severities, ignoreUnfixed)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}

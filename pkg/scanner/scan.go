@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
 
 	"github.com/knqyf263/trivy/pkg/log"
 
@@ -31,7 +32,7 @@ var (
 		vulnerability.NodejsSecurityWg, vulnerability.PythonSafetyDB}
 )
 
-func ScanImage(imageName, filePath string, severities []vulnerability.Severity) (report.Results, error) {
+func ScanImage(imageName, filePath string, severities []vulnerability.Severity, ignoreUnfixed bool) (report.Results, error) {
 	var results report.Results
 	var err error
 	ctx := context.Background()
@@ -67,7 +68,7 @@ func ScanImage(imageName, filePath string, severities []vulnerability.Severity) 
 
 	results = append(results, report.Result{
 		FileName:        fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion),
-		Vulnerabilities: processVulnerabilties(osVulns, severities),
+		Vulnerabilities: processVulnerabilties(osVulns, severities, ignoreUnfixed),
 	})
 
 	libVulns, err := library.Scan(files)
@@ -77,7 +78,7 @@ func ScanImage(imageName, filePath string, severities []vulnerability.Severity) 
 	for path, vulns := range libVulns {
 		results = append(results, report.Result{
 			FileName:        path,
-			Vulnerabilities: processVulnerabilties(vulns, severities),
+			Vulnerabilities: processVulnerabilties(vulns, severities, ignoreUnfixed),
 		})
 	}
 
@@ -91,12 +92,12 @@ func ScanFile(f *os.File, severities []vulnerability.Severity) (report.Result, e
 	}
 	result := report.Result{
 		FileName:        f.Name(),
-		Vulnerabilities: processVulnerabilties(vulns, severities),
+		Vulnerabilities: processVulnerabilties(vulns, severities, false),
 	}
 	return result, nil
 }
 
-func processVulnerabilties(vulns []types.Vulnerability, severities []vulnerability.Severity) []types.Vulnerability {
+func processVulnerabilties(vulns []types.Vulnerability, severities []vulnerability.Severity, ignoreUnfixed bool) []types.Vulnerability {
 	var vulnerabilities []types.Vulnerability
 	for _, vuln := range vulns {
 		sev, title := getDetail(vuln.VulnerabilityID)
@@ -106,11 +107,22 @@ func processVulnerabilties(vulns []types.Vulnerability, severities []vulnerabili
 			if s == sev {
 				vuln.Severity = fmt.Sprint(sev)
 				vuln.Title = title
+
+				// Ignore unfixed vulnerabilities
+				if ignoreUnfixed && vuln.FixedVersion == "" {
+					continue
+				}
 				vulnerabilities = append(vulnerabilities, vuln)
 				break
 			}
 		}
 	}
+	sort.Slice(vulnerabilities, func(i, j int) bool {
+		if vulnerabilities[i].PkgName != vulnerabilities[j].PkgName {
+			return vulnerabilities[i].PkgName < vulnerabilities[j].PkgName
+		}
+		return vulnerability.CompareSeverityString(vulnerabilities[j].Severity, vulnerabilities[i].Severity)
+	})
 	return vulnerabilities
 }
 
