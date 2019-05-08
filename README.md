@@ -4,6 +4,7 @@
 [![CircleCI](https://circleci.com/gh/knqyf263/trivy.svg?style=svg)](https://circleci.com/gh/knqyf263/trivy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/knqyf263/trivy)](https://goreportcard.com/report/github.com/knqyf263/trivy)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/knqyf263/trivy/blob/master/LICENSE)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fknqyf263%2Ftrivy.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fknqyf263%2Ftrivy?ref=badge_shield)
 
 A Simple and Comprehensive Vulnerability Scanner for Containers, Compatible with CI
 
@@ -250,6 +251,9 @@ Special thanks to [Tomoya Amachi](https://github.com/tomoyamachi)
 
 # License
 MIT
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fknqyf263%2Ftrivy.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fknqyf263%2Ftrivy?ref=badge_large)
 
 # Author
 Teppei Fukuda (knqyf263)
