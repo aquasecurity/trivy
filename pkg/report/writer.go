@@ -42,8 +42,17 @@ func (tw TableWriter) write(result Result) {
 	severityCount := map[string]int{}
 	for _, v := range result.Vulnerabilities {
 		severityCount[v.Severity]++
+
+		title := v.Title
+		if title == "" {
+			title = v.Description
+		}
+		splittedTitle := strings.Split(title, " ")
+		if len(splittedTitle) >= 12 {
+			title = strings.Join(splittedTitle[:12], " ") + "..."
+		}
 		table.Append([]string{v.PkgName, v.VulnerabilityID, vulnerability.ColorizeSeverity(v.Severity),
-			v.InstalledVersion, v.FixedVersion, v.Title})
+			v.InstalledVersion, v.FixedVersion, title})
 	}
 
 	var results []string
