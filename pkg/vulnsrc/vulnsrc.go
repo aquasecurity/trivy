@@ -1,6 +1,8 @@
 package vulnsrc
 
 import (
+	"path/filepath"
+
 	"github.com/knqyf263/trivy/pkg/git"
 	"github.com/knqyf263/trivy/pkg/log"
 	"github.com/knqyf263/trivy/pkg/utils"
@@ -11,7 +13,6 @@ import (
 	"github.com/knqyf263/trivy/pkg/vulnsrc/redhat"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/ubuntu"
 	"golang.org/x/xerrors"
-	"path/filepath"
 )
 
 const (
