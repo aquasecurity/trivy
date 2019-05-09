@@ -5,10 +5,13 @@ import (
 	"io"
 	"time"
 
+	"github.com/knqyf263/fanal/types"
+
 	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/fanal/extractor"
-	"github.com/knqyf263/go-dep-parser/pkg/types"
+	"github.com/knqyf263/fanal/extractor/docker"
+	godeptypes "github.com/knqyf263/go-dep-parser/pkg/types"
 )
 
 var (
@@ -35,7 +38,7 @@ type PkgAnalyzer interface {
 type FilePath string
 
 type LibraryAnalyzer interface {
-	Analyze(extractor.FileMap) (map[FilePath][]types.Library, error)
+	Analyze(extractor.FileMap) (map[FilePath][]godeptypes.Library, error)
 	RequiredFiles() []string
 }
 
@@ -89,8 +92,16 @@ func RequiredFilenames() []string {
 	return filenames
 }
 
-func Analyze(ctx context.Context, imageName string) (filesMap extractor.FileMap, err error) {
-	e := extractor.NewDockerExtractor(extractor.DockerOption{Timeout: 600 * time.Second})
+func Analyze(ctx context.Context, imageName string, opts ...types.DockerOption) (filesMap extractor.FileMap, err error) {
+	// default docker option
+	opt := types.DockerOption{
+		Timeout: 600 * time.Second,
+	}
+	if len(opts) > 0 {
+		opt = opts[0]
+	}
+
+	e := docker.NewDockerExtractor(opt)
 	r, err := e.SaveLocalImage(ctx, imageName)
 	if err != nil {
 		// when no docker daemon is installed or no image exists in the local machine
@@ -109,7 +120,7 @@ func Analyze(ctx context.Context, imageName string) (filesMap extractor.FileMap,
 }
 
 func AnalyzeFromFile(ctx context.Context, r io.ReadCloser) (filesMap extractor.FileMap, err error) {
-	e := extractor.NewDockerExtractor(extractor.DockerOption{})
+	e := docker.NewDockerExtractor(types.DockerOption{})
 	filesMap, err = e.ExtractFromFile(ctx, r, RequiredFilenames())
 	if err != nil {
 		return nil, xerrors.Errorf("failed to extract files from tar: %w", err)
@@ -144,8 +155,8 @@ func CheckPackage(pkg *Package) bool {
 	return pkg.Name != "" && pkg.Version != ""
 }
 
-func GetLibraries(filesMap extractor.FileMap) (map[FilePath][]types.Library, error) {
-	results := map[FilePath][]types.Library{}
+func GetLibraries(filesMap extractor.FileMap) (map[FilePath][]godeptypes.Library, error) {
+	results := map[FilePath][]godeptypes.Library{}
 	for _, analyzer := range libAnalyzers {
 		libMap, err := analyzer.Analyze(filesMap)
 		if err != nil {

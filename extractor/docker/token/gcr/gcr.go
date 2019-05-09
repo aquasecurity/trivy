@@ -1,10 +1,12 @@
-package token
+package gcr
 
 import (
 	"context"
-	"fmt"
+	"strings"
 
-	"github.com/docker/docker/api/types"
+	"github.com/knqyf263/fanal/types"
+
+	"golang.org/x/xerrors"
 
 	"github.com/GoogleCloudPlatform/docker-credential-gcr/config"
 	"github.com/GoogleCloudPlatform/docker-credential-gcr/credhelper"
@@ -12,18 +14,21 @@ import (
 )
 
 type GCR struct {
-	Store store.GCRCredStore
-	Auth  types.AuthConfig
+	Store  store.GCRCredStore
+	domain string
 }
 
-func NewGCR(auth types.AuthConfig, credPath string) *GCR {
-	if credPath != "" {
-		return &GCR{
-			Store: store.NewGCRCredStore(credPath),
-			Auth:  auth,
-		}
+const gcrURL = "gcr.io"
+
+func (g *GCR) CheckOptions(domain string, d types.DockerOption) error {
+	if !strings.HasSuffix(domain, gcrURL) {
+		return xerrors.Errorf("GCR : %w", types.InvalidURLPattern)
 	}
-	return &GCR{Auth: auth}
+	g.domain = domain
+	if d.GcpCredPath != "" {
+		g.Store = store.NewGCRCredStore(d.GcpCredPath)
+	}
+	return nil
 }
 
 func (g *GCR) GetCredential(ctx context.Context) (username, password string, err error) {
@@ -40,7 +45,6 @@ func (g *GCR) GetCredential(ctx context.Context) (username, password string, err
 	if err != nil {
 		return "", "", err
 	}
-	fmt.Printf("%v, %v \n", credStore, userCfg)
 	helper := credhelper.NewGCRCredentialHelper(credStore, userCfg)
-	return helper.Get(g.Auth.ServerAddress)
+	return helper.Get(g.domain)
 }

@@ -1,4 +1,4 @@
-package extractor
+package docker
 
 import (
 	"archive/tar"
@@ -10,16 +10,18 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
-	"time"
+
+	"github.com/knqyf263/fanal/extractor"
+	"github.com/knqyf263/fanal/extractor/docker/token/ecr"
+	"github.com/knqyf263/fanal/extractor/docker/token/gcr"
+	"github.com/knqyf263/fanal/types"
 
 	"github.com/docker/distribution/manifest/schema2"
 	"github.com/docker/docker/client"
 	"github.com/genuinetools/reg/registry"
-	"github.com/genuinetools/reg/repoutils"
 	"github.com/knqyf263/fanal/cache"
-	"github.com/knqyf263/fanal/token"
 	"github.com/knqyf263/nested"
-	digest "github.com/opencontainers/go-digest"
+	"github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 )
 
@@ -40,27 +42,18 @@ type layer struct {
 }
 
 type opqDirs []string
+
 type DockerExtractor struct {
-	Option DockerOption
+	Option types.DockerOption
 }
 
-type DockerOption struct {
-	AuthURL    string
-	UserName   string
-	Password   string
-	Credential string
-	Insecure   bool
-	Debug      bool
-	SkipPing   bool
-	NonSSL     bool
-	Timeout    time.Duration
-}
-
-func NewDockerExtractor(option DockerOption) DockerExtractor {
+func NewDockerExtractor(option types.DockerOption) DockerExtractor {
+	RegisterRegistry(&gcr.GCR{})
+	RegisterRegistry(&ecr.ECR{})
 	return DockerExtractor{Option: option}
 }
 
-func applyLayers(layerIDs []string, filesInLayers map[string]FileMap, opqInLayers map[string]opqDirs) (FileMap, error) {
+func applyLayers(layerIDs []string, filesInLayers map[string]extractor.FileMap, opqInLayers map[string]opqDirs) (extractor.FileMap, error) {
 	sep := "/"
 	nestedMap := nested.Nested{}
 	for _, layerID := range layerIDs {
@@ -83,7 +76,7 @@ func applyLayers(layerIDs []string, filesInLayers map[string]FileMap, opqInLayer
 		}
 	}
 
-	fileMap := FileMap{}
+	fileMap := extractor.FileMap{}
 	walkFn := func(keys []string, value interface{}) error {
 		content, ok := value.([]byte)
 		if !ok {
@@ -102,16 +95,11 @@ func applyLayers(layerIDs []string, filesInLayers map[string]FileMap, opqInLayer
 }
 
 func (d DockerExtractor) createRegistryClient(ctx context.Context, domain string) (*registry.Registry, error) {
-	// Use the auth-url domain if provided.
-	authDomain := d.Option.AuthURL
-	if authDomain == "" {
-		authDomain = domain
-	}
-	auth, err := repoutils.GetAuthConfig(d.Option.UserName, d.Option.Password, authDomain)
+	auth, err := GetToken(ctx, domain, d.Option)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get auth config: %w", err)
 	}
-	auth = token.GetToken(ctx, auth, d.Option.Credential)
+
 	// Prevent non-ssl unless explicitly forced
 	if !d.Option.NonSSL && strings.HasPrefix(auth.ServerAddress, "http:") {
 		return nil, xerrors.New("attempted to use insecure protocol! Use force-non-ssl option to force")
@@ -159,7 +147,7 @@ func (d DockerExtractor) saveLocalImage(ctx context.Context, imageName string) (
 	return r, nil
 }
 
-func (d DockerExtractor) Extract(ctx context.Context, imageName string, filenames []string) (FileMap, error) {
+func (d DockerExtractor) Extract(ctx context.Context, imageName string, filenames []string) (extractor.FileMap, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), d.Option.Timeout)
 	defer cancel()
 
@@ -211,7 +199,7 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 		}(ref.Digest)
 	}
 
-	filesInLayers := make(map[string]FileMap)
+	filesInLayers := make(map[string]extractor.FileMap)
 	opqInLayers := make(map[string]opqDirs)
 	for i := 0; i < len(m.Manifest.Layers); i++ {
 		var l layer
@@ -234,9 +222,9 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 	return applyLayers(layerIDs, filesInLayers, opqInLayers)
 }
 
-func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filenames []string) (FileMap, error) {
+func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filenames []string) (extractor.FileMap, error) {
 	manifests := make([]manifest, 0)
-	filesInLayers := make(map[string]FileMap)
+	filesInLayers := make(map[string]extractor.FileMap)
 	opqInLayers := make(map[string]opqDirs)
 
 	tr := tar.NewReader(r)
@@ -246,7 +234,7 @@ func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filen
 			break
 		}
 		if err != nil {
-			return nil, ErrCouldNotExtract
+			return nil, extractor.ErrCouldNotExtract
 		}
 		switch {
 		case header.Name == "manifest.json":
@@ -271,7 +259,8 @@ func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filen
 
 	return applyLayers(manifests[0].Layers, filesInLayers, opqInLayers)
 }
-func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (FileMap, opqDirs, error) {
+
+func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extractor.FileMap, opqDirs, error) {
 	data := make(map[string][]byte)
 	opqDirs := opqDirs{}
 
@@ -282,7 +271,7 @@ func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (File
 			break
 		}
 		if err != nil {
-			return data, nil, ErrCouldNotExtract
+			return data, nil, extractor.ErrCouldNotExtract
 		}
 
 		filePath := hdr.Name
