@@ -1,41 +1,43 @@
-package extractor
+package docker
 
 import (
 	"os"
 	"path"
 	"reflect"
 	"testing"
+
+	"github.com/knqyf263/fanal/extractor"
 )
 
 func TestExtractFromFile(t *testing.T) {
 	vectors := []struct {
-		file      string   // Test input file
-		filenames []string // Target files
-		fileMap   FileMap  // Expected output
-		err       error    // Expected error to occur
+		file      string            // Test input file
+		filenames []string          // Target files
+		FileMap   extractor.FileMap // Expected output
+		err       error             // Expected error to occur
 	}{
 		{
 			file:      "testdata/image1.tar",
 			filenames: []string{"var/foo", "etc/test/bar"},
-			fileMap:   FileMap{"etc/test/bar": []byte("bar\n")},
+			FileMap:   extractor.FileMap{"etc/test/bar": []byte("bar\n")},
 			err:       nil,
 		},
 		{
 			file:      "testdata/image2.tar",
 			filenames: []string{"home/app/Gemfile", "home/app2/Gemfile"},
-			fileMap:   FileMap{"home/app2/Gemfile": []byte("gem")},
+			FileMap:   extractor.FileMap{"home/app2/Gemfile": []byte("gem")},
 			err:       nil,
 		},
 		{
 			file:      "testdata/image3.tar",
 			filenames: []string{"home/app/Gemfile", "home/app2/Pipfile", "home/app/Pipfile"},
-			fileMap:   FileMap{"home/app/Pipfile": []byte("pip")},
+			FileMap:   extractor.FileMap{"home/app/Pipfile": []byte("pip")},
 			err:       nil,
 		},
 		{
 			file:      "testdata/image4.tar",
 			filenames: []string{".abc", ".def", "foo/.abc", "foo/.def", ".foo/.abc"},
-			fileMap: FileMap{
+			FileMap: extractor.FileMap{
 				".def":     []byte("def"),
 				"foo/.abc": []byte("abc"),
 			},
@@ -56,8 +58,8 @@ func TestExtractFromFile(t *testing.T) {
 			if v.err != err {
 				t.Errorf("err: got %v, want %v", v.err, err)
 			}
-			if !reflect.DeepEqual(fm, v.fileMap) {
-				t.Errorf("FilesMap: got %v, want %v", fm, v.fileMap)
+			if !reflect.DeepEqual(fm, v.FileMap) {
+				t.Errorf("FilesMap: got %v, want %v", fm, v.FileMap)
 			}
 		})
 	}
@@ -65,23 +67,23 @@ func TestExtractFromFile(t *testing.T) {
 
 func TestExtractFiles(t *testing.T) {
 	vectors := []struct {
-		file      string   // Test input file
-		filenames []string // Target files
-		fileMap   FileMap  // Expected output
-		opqDirs   opqDirs  // Expected output
-		err       error    // Expected error to occur
+		file      string            // Test input file
+		filenames []string          // Target files
+		FileMap   extractor.FileMap // Expected output
+		opqDirs   opqDirs           // Expected output
+		err       error             // Expected error to occur
 	}{
 		{
 			file:      "testdata/normal.tar",
 			filenames: []string{"var/foo"},
-			fileMap:   FileMap{"var/foo": []byte{}},
+			FileMap:   extractor.FileMap{"var/foo": []byte{}},
 			opqDirs:   []string{},
 			err:       nil,
 		},
 		{
 			file:      "testdata/opq.tar",
 			filenames: []string{"var/foo"},
-			fileMap: FileMap{
+			FileMap: extractor.FileMap{
 				"var/.wh.foo": []byte{},
 			},
 			opqDirs: []string{"etc/test"},
@@ -90,7 +92,7 @@ func TestExtractFiles(t *testing.T) {
 		{
 			file:      "testdata/opq2.tar",
 			filenames: []string{"var/foo", "etc/test/bar"},
-			fileMap: FileMap{
+			FileMap: extractor.FileMap{
 				"etc/test/bar": []byte("bar\n"),
 				"var/.wh.foo":  []byte{},
 			},
@@ -115,8 +117,8 @@ func TestExtractFiles(t *testing.T) {
 			if !reflect.DeepEqual(opqDirs, v.opqDirs) {
 				t.Errorf("opqDirs: got %v, want %v", opqDirs, v.opqDirs)
 			}
-			if !reflect.DeepEqual(fm, v.fileMap) {
-				t.Errorf("FilesMap: got %v, want %v", fm, v.fileMap)
+			if !reflect.DeepEqual(fm, v.FileMap) {
+				t.Errorf("FilesMap: got %v, want %v", fm, v.FileMap)
 			}
 		})
 	}
