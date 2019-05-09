@@ -93,14 +93,12 @@ func RequiredFilenames() []string {
 }
 
 func Analyze(ctx context.Context, imageName string, opts ...types.DockerOption) (filesMap extractor.FileMap, err error) {
-	var opt types.DockerOption
+	// default docker option
+	opt := types.DockerOption{
+		Timeout: 600 * time.Second,
+	}
 	if len(opts) > 0 {
 		opt = opts[0]
-	} else {
-		// default docker option
-		opt = types.DockerOption{
-			Timeout: 600 * time.Second,
-		}
 	}
 
 	e := docker.NewDockerExtractor(opt)
