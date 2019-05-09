@@ -32,8 +32,8 @@ func (g *GCR) CheckOptions(domain string, d docker.DockerOption) error {
 	}
 
 	g.Auth = types.AuthConfig{}
-	if d.GCRCredPath != "" {
-		g.Store = store.NewGCRCredStore(d.GCRCredPath)
+	if d.GcpCredPath != "" {
+		g.Store = store.NewGCRCredStore(d.GcpCredPath)
 	}
 	return nil
 }
