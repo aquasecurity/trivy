@@ -5,10 +5,10 @@ import (
 	"encoding/base64"
 	"strings"
 
+	"github.com/knqyf263/fanal/types"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
-
-	"github.com/knqyf263/fanal/extractor/docker"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ecr"
@@ -18,15 +18,11 @@ import (
 
 const ecrURL = "amazonaws.com"
 
-func init() {
-	docker.RegisterRegistry(&ECR{})
-}
-
 type ECR struct {
 	Client ecriface.ECRAPI
 }
 
-func getSession(option docker.DockerOption) (*session.Session, error) {
+func getSession(option types.DockerOption) (*session.Session, error) {
 	// create custom credential information if option is valid
 	if option.AwsSecretKey != "" && option.AwsAccessKey != "" && option.AwsRegion != "" {
 		return session.NewSessionWithOptions(
@@ -48,7 +44,7 @@ func getSession(option docker.DockerOption) (*session.Session, error) {
 	})
 }
 
-func (e *ECR) CheckOptions(domain string, option docker.DockerOption) error {
+func (e *ECR) CheckOptions(domain string, option types.DockerOption) error {
 	if !strings.HasSuffix(domain, ecrURL) {
 		return xerrors.New("invalid ECR url pattern")
 	}
