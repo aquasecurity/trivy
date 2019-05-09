@@ -36,8 +36,8 @@ func TestCheckOptions(t *testing.T) {
 	}
 
 	for testname, v := range tests {
-		a := &GCR{}
-		err := a.CheckOptions(v.domain, v.opt)
+		g := &GCR{}
+		err := g.CheckOptions(v.domain, v.opt)
 		if v.wantErr != nil {
 			if err == nil {
 				t.Errorf("%s : expected error but no error", testname)
@@ -48,8 +48,8 @@ func TestCheckOptions(t *testing.T) {
 			}
 			continue
 		}
-		if !reflect.DeepEqual(v.gcr, a) {
-			t.Errorf("[%s]\nexpected : %v\nactual : %v", testname, v.gcr, a)
+		if !reflect.DeepEqual(v.gcr, g) {
+			t.Errorf("[%s]\nexpected : %v\nactual : %v", testname, v.gcr, g)
 		}
 	}
 }

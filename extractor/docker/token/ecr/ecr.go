@@ -46,7 +46,7 @@ func getSession(option types.DockerOption) (*session.Session, error) {
 
 func (e *ECR) CheckOptions(domain string, option types.DockerOption) error {
 	if !strings.HasSuffix(domain, ecrURL) {
-		return xerrors.New("invalid ECR url pattern")
+		return xerrors.Errorf("ECR : %w", types.InvalidURLPattern)
 	}
 	sess := session.Must(getSession(option))
 	svc := ecr.New(sess)
