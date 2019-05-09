@@ -37,9 +37,8 @@ func GetToken(ctx context.Context, domain string, opt types.DockerOption) (auth 
 		if err != nil {
 			// only skip check registry if error occured
 			break
-		} else {
-			return auth, nil
 		}
+		return auth, nil
 	}
 	return repoutils.GetAuthConfig(opt.UserName, opt.Password, authDomain)
 }
