@@ -48,7 +48,7 @@ type DockerOption struct {
 	AuthURL      string
 	UserName     string
 	Password     string
-	GCRCredPath  string
+	GcpCredPath  string
 	AwsAccessKey string
 	AwsSecretKey string
 	AwsRegion    string
