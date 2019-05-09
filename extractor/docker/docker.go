@@ -112,7 +112,7 @@ func (d DockerExtractor) createRegistryClient(ctx context.Context, domain string
 
 	// Prevent non-ssl unless explicitly forced
 	if !d.Option.NonSSL && strings.HasPrefix(auth.ServerAddress, "http:") {
-		return nil, xerrors.New("attempted to us1e insecure protocol! Use force-non-ssl option to force")
+		return nil, xerrors.New("attempted to use insecure protocol! Use force-non-ssl option to force")
 	}
 
 	// Create the registry client.
