@@ -1,8 +1,11 @@
-package token
+package ecr
 
 import (
 	"context"
 	"testing"
+
+	"github.com/knqyf263/fanal/types"
+	"golang.org/x/xerrors"
 
 	"github.com/aws/aws-sdk-go/aws/request"
 
@@ -10,6 +13,35 @@ import (
 	"github.com/aws/aws-sdk-go/service/ecr"
 	"github.com/aws/aws-sdk-go/service/ecr/ecriface"
 )
+
+func TestCheckOptions(t *testing.T) {
+	var tests = map[string]struct {
+		domain  string
+		opt     types.DockerOption
+		wantErr error
+	}{
+		"InvalidURL": {
+			domain:  "alpine:3.9",
+			opt:     types.DockerOption{},
+			wantErr: types.InvalidURLPattern,
+		},
+		"NoOption": {
+			domain: "xxx.ecr.ap-northeast-1.amazonaws.com",
+			opt:    types.DockerOption{},
+		},
+	}
+
+	for testname, v := range tests {
+		a := &ECR{}
+		err := a.CheckOptions(v.domain, v.opt)
+		if err != nil {
+			if !xerrors.Is(err, v.wantErr) {
+				t.Errorf("[%s]\nexpected error based on %v\nactual : %v", testname, v.wantErr, err)
+			}
+			continue
+		}
+	}
+}
 
 type mockedECR struct {
 	ecriface.ECRAPI
