@@ -3,8 +3,9 @@ package docker
 import (
 	"context"
 
-	"github.com/docker/docker/api/types"
+	dockertypes "github.com/docker/docker/api/types"
 	"github.com/genuinetools/reg/repoutils"
+	"github.com/knqyf263/fanal/types"
 )
 
 var (
@@ -12,7 +13,7 @@ var (
 )
 
 type Registry interface {
-	CheckOptions(domain string, option DockerOption) error
+	CheckOptions(domain string, option types.DockerOption) error
 	GetCredential(ctx context.Context) (string, string, error)
 }
 
@@ -20,7 +21,7 @@ func RegisterRegistry(registry Registry) {
 	registries = append(registries, registry)
 }
 
-func GetToken(ctx context.Context, domain string, opt DockerOption) (auth types.AuthConfig, err error) {
+func GetToken(ctx context.Context, domain string, opt types.DockerOption) (auth dockertypes.AuthConfig, err error) {
 	authDomain := opt.AuthURL
 	if authDomain == "" {
 		authDomain = domain

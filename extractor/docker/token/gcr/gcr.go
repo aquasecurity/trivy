@@ -4,11 +4,9 @@ import (
 	"context"
 	"strings"
 
+	"github.com/knqyf263/fanal/types"
+
 	"golang.org/x/xerrors"
-
-	"github.com/knqyf263/fanal/extractor/docker"
-
-	"github.com/docker/docker/api/types"
 
 	"github.com/GoogleCloudPlatform/docker-credential-gcr/config"
 	"github.com/GoogleCloudPlatform/docker-credential-gcr/credhelper"
@@ -16,22 +14,17 @@ import (
 )
 
 type GCR struct {
-	Store store.GCRCredStore
-	Auth  types.AuthConfig
+	Store  store.GCRCredStore
+	domain string
 }
 
 const gcrURL = "gcr.io"
 
-func init() {
-	docker.RegisterRegistry(&GCR{})
-}
-
-func (g *GCR) CheckOptions(domain string, d docker.DockerOption) error {
+func (g *GCR) CheckOptions(domain string, d types.DockerOption) error {
 	if !strings.HasSuffix(domain, gcrURL) {
 		return xerrors.New("invalid GCR url pattern")
 	}
-
-	g.Auth = types.AuthConfig{}
+	g.domain = domain
 	if d.GcpCredPath != "" {
 		g.Store = store.NewGCRCredStore(d.GcpCredPath)
 	}
@@ -53,5 +46,5 @@ func (g *GCR) GetCredential(ctx context.Context) (username, password string, err
 		return "", "", err
 	}
 	helper := credhelper.NewGCRCredentialHelper(credStore, userCfg)
-	return helper.Get(g.Auth.ServerAddress)
+	return helper.Get(g.domain)
 }

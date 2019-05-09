@@ -10,9 +10,11 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/knqyf263/fanal/extractor"
+	"github.com/knqyf263/fanal/extractor/docker/token/ecr"
+	"github.com/knqyf263/fanal/extractor/docker/token/gcr"
+	"github.com/knqyf263/fanal/types"
 
 	"github.com/docker/distribution/manifest/schema2"
 	"github.com/docker/docker/client"
@@ -40,26 +42,14 @@ type layer struct {
 }
 
 type opqDirs []string
+
 type DockerExtractor struct {
-	Option DockerOption
+	Option types.DockerOption
 }
 
-type DockerOption struct {
-	AuthURL      string
-	UserName     string
-	Password     string
-	GcpCredPath  string
-	AwsAccessKey string
-	AwsSecretKey string
-	AwsRegion    string
-	Insecure     bool
-	Debug        bool
-	SkipPing     bool
-	NonSSL       bool
-	Timeout      time.Duration
-}
-
-func NewDockerExtractor(option DockerOption) DockerExtractor {
+func NewDockerExtractor(option types.DockerOption) DockerExtractor {
+	RegisterRegistry(&gcr.GCR{})
+	RegisterRegistry(&ecr.ECR{})
 	return DockerExtractor{Option: option}
 }
 
@@ -269,6 +259,7 @@ func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filen
 
 	return applyLayers(manifests[0].Layers, filesInLayers, opqInLayers)
 }
+
 func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extractor.FileMap, opqDirs, error) {
 	data := make(map[string][]byte)
 	opqDirs := opqDirs{}
