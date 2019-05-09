@@ -22,7 +22,7 @@ const gcrURL = "gcr.io"
 
 func (g *GCR) CheckOptions(domain string, d types.DockerOption) error {
 	if !strings.HasSuffix(domain, gcrURL) {
-		return xerrors.New("invalid GCR url pattern")
+		return xerrors.Errorf("GCR : %w", types.InvalidURLPattern)
 	}
 	g.domain = domain
 	if d.GcpCredPath != "" {
