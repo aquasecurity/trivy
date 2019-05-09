@@ -8,6 +8,9 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/fanal/extractor"
+	"github.com/knqyf263/fanal/extractor/docker"
+	_ "github.com/knqyf263/fanal/extractor/docker/token/ecr"
+	_ "github.com/knqyf263/fanal/extractor/docker/token/gcr"
 	"github.com/knqyf263/go-dep-parser/pkg/types"
 )
 
@@ -89,8 +92,18 @@ func RequiredFilenames() []string {
 	return filenames
 }
 
-func Analyze(ctx context.Context, imageName string) (filesMap extractor.FileMap, err error) {
-	e := extractor.NewDockerExtractor(extractor.DockerOption{Timeout: 600 * time.Second})
+func Analyze(ctx context.Context, imageName string, opts ...docker.DockerOption) (filesMap extractor.FileMap, err error) {
+	var opt docker.DockerOption
+	if len(opts) > 0 {
+		opt = opts[0]
+	} else {
+		// default docker option
+		opt = docker.DockerOption{
+			Timeout: 600 * time.Second,
+		}
+	}
+
+	e := docker.NewDockerExtractor(opt)
 	r, err := e.SaveLocalImage(ctx, imageName)
 	if err != nil {
 		// when no docker daemon is installed or no image exists in the local machine
@@ -109,7 +122,7 @@ func Analyze(ctx context.Context, imageName string) (filesMap extractor.FileMap,
 }
 
 func AnalyzeFromFile(ctx context.Context, r io.ReadCloser) (filesMap extractor.FileMap, err error) {
-	e := extractor.NewDockerExtractor(extractor.DockerOption{})
+	e := docker.NewDockerExtractor(docker.DockerOption{})
 	filesMap, err = e.ExtractFromFile(ctx, r, RequiredFilenames())
 	if err != nil {
 		return nil, xerrors.Errorf("failed to extract files from tar: %w", err)
