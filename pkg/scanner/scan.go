@@ -30,7 +30,7 @@ import (
 
 var (
 	sources = []string{vulnerability.Nvd, vulnerability.RedHat, vulnerability.Debian,
-		vulnerability.DebianOVAL, vulnerability.Alpine, vulnerability.RubySec, vulnerability.PhpSecurityAdvisories,
+		vulnerability.DebianOVAL, vulnerability.Alpine, vulnerability.RubySec, vulnerability.RustSec, vulnerability.PhpSecurityAdvisories,
 		vulnerability.NodejsSecurityWg, vulnerability.PythonSafetyDB}
 )
 
