@@ -95,14 +95,14 @@ func ScanImage(imageName, filePath string, severities []vulnerability.Severity, 
 	return results, nil
 }
 
-func ScanFile(f *os.File, severities []vulnerability.Severity) (report.Result, error) {
+func ScanFile(f *os.File, severities []vulnerability.Severity, ignoreUnfixed bool) (report.Result, error) {
 	vulns, err := library.ScanFile(f)
 	if err != nil {
 		return report.Result{}, xerrors.Errorf("failed to scan libraries in file: %w", err)
 	}
 	result := report.Result{
 		FileName:        f.Name(),
-		Vulnerabilities: processVulnerabilties(vulns, severities, false),
+		Vulnerabilities: processVulnerabilties(vulns, severities, ignoreUnfixed),
 	}
 	return result, nil
 }
