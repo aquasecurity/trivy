@@ -4,6 +4,7 @@ cloud.google.com/go v0.37.4 h1:glPeL3BQJsbF6aIIYfZizMwc5LTYz250bDMjttbBGAU=
 cloud.google.com/go v0.37.4/go.mod h1:NHPJ89PdicEuT9hdPXMROBD91xc5uRDxsMtSB16k7hw=
 github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 h1:w+iIsaOQNcT7OZ575w+acHgRric5iCyQh+xv+KJ4HB8=
 github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78/go.mod h1:LmzpDX56iTiv29bbRTIsUNlaFfuhWRQBWjQdVyAevI8=
+github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/GoogleCloudPlatform/docker-credential-gcr v1.5.0 h1:wykTgKwhVr2t2qs+xI020s6W5dt614QqCHV+7W9dg64=
 github.com/GoogleCloudPlatform/docker-credential-gcr v1.5.0/go.mod h1:BB1eHdMLYEFuFdBlRMb0N7YGVdM5s6Pt0njxgvfbGGs=
@@ -95,6 +96,8 @@ github.com/knqyf263/berkeleydb v0.0.0-20190501065933-fafe01fb9662 h1:UGS0RbPHwXJ
 github.com/knqyf263/berkeleydb v0.0.0-20190501065933-fafe01fb9662/go.mod h1:bu1CcN4tUtoRcI/B/RFHhxMNKFHVq/c3SV+UTyduoXg=
 github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790 h1:c02gG0yRNr25lcLOH+678SuuxxMUq36i48PQnmAweWk=
 github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790/go.mod h1:CtT+dtv38jSz5EYYCX21LgtVXP+J3soF2fzQT8lHCfY=
+github.com/knqyf263/go-dep-parser v0.0.0-20190511063217-d5d543bfc261 h1:RPgPsbEsYj6LuOjZnKl2DvbfodNWRuWKZfWJkrD7l8s=
+github.com/knqyf263/go-dep-parser v0.0.0-20190511063217-d5d543bfc261/go.mod h1:gSiqSkOFPstUZu/qZ4wnNJS69PtQQnPl397vxKHJ5mQ=
 github.com/knqyf263/go-rpmdb v0.0.0-20190501070121-10a1c42a10dc h1:pumO9pqmRAjvic6oove22RGh9wDZQnj96XQjJSbSEPs=
 github.com/knqyf263/go-rpmdb v0.0.0-20190501070121-10a1c42a10dc/go.mod h1:MrSSvdMpTSymaQWk1yFr9sxFSyQmKMj6jkbvGrchBV8=
 github.com/knqyf263/nested v0.0.1 h1:Sv26CegUMhjt19zqbBKntjwESdxe5hxVPSk0+AKjdUc=
