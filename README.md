@@ -11,7 +11,7 @@ Static Analysis Library for Containers
 - Detect OS
 - Extract OS packages
 - Extract libraries used by an application
-  - Bundler, Composer, npm, Pipenv
+  - Bundler, Composer, npm, Pipenv, Cargo
 
 ## Example
 See `cmd/fanal/`
@@ -35,6 +35,7 @@ import (
 	_ "github.com/knqyf263/fanal/analyzer/library/composer"
 	_ "github.com/knqyf263/fanal/analyzer/library/npm"
 	_ "github.com/knqyf263/fanal/analyzer/library/pipenv"
+	_ "github.com/knqyf263/fanal/analyzer/library/cargo"
 	_ "github.com/knqyf263/fanal/analyzer/os/alpine"
 	_ "github.com/knqyf263/fanal/analyzer/os/amazonlinux"
 	_ "github.com/knqyf263/fanal/analyzer/os/debianbase"
