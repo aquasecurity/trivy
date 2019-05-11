@@ -27,7 +27,8 @@ func Run(c *cli.Context) (err error) {
 
 	args := c.Args()
 	if len(args) == 0 {
-		return xerrors.New(`remic" requires at least 1 argument.`)
+		log.Logger.Info(`remic" requires at least 1 argument.`)
+		cli.ShowAppHelpAndExit(c, 1)
 	}
 
 	o := c.String("output")
@@ -51,8 +52,10 @@ func Run(c *cli.Context) (err error) {
 		return err
 	}
 
-	if err = vulnsrc.Update(); err != nil {
-		return err
+	if !c.Bool("skip-update") {
+		if err = vulnsrc.Update(); err != nil {
+			return xerrors.Errorf("error in vulnerability DB update: %w", err)
+		}
 	}
 
 	fileName := args[0]
@@ -62,7 +65,8 @@ func Run(c *cli.Context) (err error) {
 	}
 	defer f.Close()
 
-	result, err := scanner.ScanFile(f, severities)
+	ignoreUnfixed := c.Bool("ignore-unfixed")
+	result, err := scanner.ScanFile(f, severities, ignoreUnfixed)
 	if err != nil {
 		return xerrors.Errorf("failed to scan a file: %w", err)
 	}
@@ -79,6 +83,15 @@ func Run(c *cli.Context) (err error) {
 
 	if err = writer.Write([]report.Result{result}); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
+	}
+
+	exitCode := c.Int("exit-code")
+	if exitCode != 0 {
+		for _, result := range []report.Result{result} {
+			if len(result.Vulnerabilities) > 0 {
+				os.Exit(exitCode)
+			}
+		}
 	}
 
 	return nil

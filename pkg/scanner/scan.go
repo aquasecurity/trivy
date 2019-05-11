@@ -72,7 +72,7 @@ func ScanImage(imageName, filePath string, severities []vulnerability.Severity, 
 
 	osFamily, osVersion, osVulns, err := ospkg.Scan(files)
 	if err != nil {
-		return nil, xerrors.New("failed to scan image")
+		return nil, xerrors.Errorf("failed to scan image: %w", err)
 
 	}
 
@@ -83,7 +83,7 @@ func ScanImage(imageName, filePath string, severities []vulnerability.Severity, 
 
 	libVulns, err := library.Scan(files)
 	if err != nil {
-		return nil, xerrors.New("failed to scan libraries")
+		return nil, xerrors.Errorf("failed to scan libraries: %w", err)
 	}
 	for path, vulns := range libVulns {
 		results = append(results, report.Result{
@@ -95,14 +95,14 @@ func ScanImage(imageName, filePath string, severities []vulnerability.Severity, 
 	return results, nil
 }
 
-func ScanFile(f *os.File, severities []vulnerability.Severity) (report.Result, error) {
+func ScanFile(f *os.File, severities []vulnerability.Severity, ignoreUnfixed bool) (report.Result, error) {
 	vulns, err := library.ScanFile(f)
 	if err != nil {
-		return report.Result{}, xerrors.New("failed to scan libraries in file")
+		return report.Result{}, xerrors.Errorf("failed to scan libraries in file: %w", err)
 	}
 	result := report.Result{
 		FileName:        f.Name(),
-		Vulnerabilities: processVulnerabilties(vulns, severities, false),
+		Vulnerabilities: processVulnerabilties(vulns, severities, ignoreUnfixed),
 	}
 	return result, nil
 }

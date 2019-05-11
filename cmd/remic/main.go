@@ -50,6 +50,19 @@ OPTIONS:
 			Name:  "output, o",
 			Usage: "output file name",
 		},
+		cli.IntFlag{
+			Name:  "exit-code",
+			Usage: "Exit code when vulnerabilities were found",
+			Value: 0,
+		},
+		cli.BoolFlag{
+			Name:  "skip-update",
+			Usage: "skip db update",
+		},
+		cli.BoolFlag{
+			Name:  "ignore-unfixed",
+			Usage: "display only fixed vulnerabilities",
+		},
 		cli.BoolFlag{
 			Name:  "debug, d",
 			Usage: "debug mode",
