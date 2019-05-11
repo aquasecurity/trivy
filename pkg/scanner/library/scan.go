@@ -72,7 +72,7 @@ func Scan(files extractor.FileMap) (map[string][]types.Vulnerability, error) {
 }
 
 func ScanFile(f *os.File) ([]types.Vulnerability, error) {
-	scanner := NewScanner(f.Name())
+	scanner := NewScanner(filepath.Base(f.Name()))
 	if scanner == nil {
 		return nil, xerrors.New("unknown file type")
 	}
