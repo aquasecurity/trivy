@@ -116,16 +116,10 @@ github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e h1:RgQk53JHp
 github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e/go.mod h1:CT57kijsi8u/K/BOFA39wgDQJ9CxiF4nAY/ojJ6r6mM=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/knqyf263/berkeleydb v0.0.0-20190501065933-fafe01fb9662/go.mod h1:bu1CcN4tUtoRcI/B/RFHhxMNKFHVq/c3SV+UTyduoXg=
-github.com/knqyf263/fanal v0.0.0-20190506110705-2b5cb3000ff6 h1:iSztZNfwEPMN2CvUX1SxNEclRZn+rwRMdsnAegxRJk4=
-github.com/knqyf263/fanal v0.0.0-20190506110705-2b5cb3000ff6/go.mod h1:OiuWIClssf5WzbMcR8lfspdBVaP+vRQndY4kHeFgrDw=
-github.com/knqyf263/fanal v0.0.0-20190507123206-ceab60083e70 h1:L27WBZxk7N70WilG91kgvs0EnV+JVCoOTsNQa8tMBJs=
-github.com/knqyf263/fanal v0.0.0-20190507123206-ceab60083e70/go.mod h1:OiuWIClssf5WzbMcR8lfspdBVaP+vRQndY4kHeFgrDw=
-github.com/knqyf263/fanal v0.0.0-20190511083500-dd50facc184b h1:mctpQ38lbNk6ZNXaLU0b7J/ayM/GXIatK3FspvW8n+M=
-github.com/knqyf263/fanal v0.0.0-20190511083500-dd50facc184b/go.mod h1:oD0qDmkCnzXx6SWoQ1H9r05EWhqYIo9/fVzdpTBzh6c=
+github.com/knqyf263/fanal v0.0.0-20190512185615-15c98acdb6d6 h1:3BtIyAGnDQ4wZG315PRgCwRSYDPISjKJEeLL6RrzrQE=
+github.com/knqyf263/fanal v0.0.0-20190512185615-15c98acdb6d6/go.mod h1:/3MJJHzCSQm4xQMUnBAGx7aI5zvWA98twxekdDcLzbY=
 github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b h1:DiDMmSwuY27PJxA2Gs0+uI/bQ/ehKARaGXRdlp+wFis=
 github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b/go.mod h1:o8sgWoz3JADecfc/cTYD92/Et1yMqMy0utV1z+VaZao=
-github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790 h1:c02gG0yRNr25lcLOH+678SuuxxMUq36i48PQnmAweWk=
-github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790/go.mod h1:CtT+dtv38jSz5EYYCX21LgtVXP+J3soF2fzQT8lHCfY=
 github.com/knqyf263/go-dep-parser v0.0.0-20190511063217-d5d543bfc261 h1:RPgPsbEsYj6LuOjZnKl2DvbfodNWRuWKZfWJkrD7l8s=
 github.com/knqyf263/go-dep-parser v0.0.0-20190511063217-d5d543bfc261/go.mod h1:gSiqSkOFPstUZu/qZ4wnNJS69PtQQnPl397vxKHJ5mQ=
 github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936 h1:HDjRqotkViMNcGMGicb7cgxklx8OwnjtCBmyWEqrRvM=
@@ -160,8 +154,6 @@ github.com/mitchellh/go-homedir v1.1.0 h1:lukF9ziXFxDFPkA1vsr5zpc1XuPDn/wFntq5mG
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/go-wordwrap v1.0.0/go.mod h1:ZXFpozHsX6DPmq2I0TCekCxypsnAUbP2oI0UX1GXzOo=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
-github.com/olekukonko/tablewriter v0.0.1 h1:b3iUnf1v+ppJiOfNX4yxxqfWKMQPZR5yoh8urCTFX88=
-github.com/olekukonko/tablewriter v0.0.1/go.mod h1:vsDQFd/mU46D+Z4whnwzcISnGGzXWMclvtLoiIKAKIo=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
 github.com/onsi/ginkgo v1.7.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
 github.com/onsi/gomega v1.4.2/go.mod h1:ex+gbHU/CVuBBDIJjb2X0qEXbFg53c61hWP/1CpauHY=
