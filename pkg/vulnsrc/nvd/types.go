@@ -25,7 +25,12 @@ type Impact struct {
 }
 
 type BaseMetricV2 struct {
+	CvssV2   CvssV2
 	Severity string
+}
+
+type CvssV2 struct {
+	BaseScore float64
 }
 
 type BaseMetricV3 struct {
@@ -33,6 +38,7 @@ type BaseMetricV3 struct {
 }
 
 type CvssV3 struct {
+	BaseScore    float64
 	BaseSeverity string
 }
 

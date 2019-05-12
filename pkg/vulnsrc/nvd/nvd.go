@@ -77,6 +77,8 @@ func save(items []Item) error {
 			}
 
 			vuln := vulnerability.Vulnerability{
+				CvssScore:   item.Impact.BaseMetricV2.CvssV2.BaseScore,
+				CvssScoreV3: item.Impact.BaseMetricV3.CvssV3.BaseScore,
 				Severity:    severity,
 				SeverityV3:  severityV3,
 				References:  references,
