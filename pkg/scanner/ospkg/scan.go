@@ -1,7 +1,9 @@
 package ospkg
 
 import (
+	"github.com/k0kubun/pp"
 	"github.com/knqyf263/fanal/analyzer"
+	_ "github.com/knqyf263/fanal/analyzer/command/apk"
 	fos "github.com/knqyf263/fanal/analyzer/os"
 	_ "github.com/knqyf263/fanal/analyzer/os/alpine"
 	_ "github.com/knqyf263/fanal/analyzer/os/debianbase"
@@ -48,10 +50,34 @@ func Scan(files extractor.FileMap) (string, string, []types.Vulnerability, error
 	}
 	log.Logger.Debugf("the number of packages: %d", len(pkgs))
 
+	pkgsFromCommands, err := analyzer.GetPackagesFromCommands(os, files)
+	if err != nil {
+		return "", "", nil, xerrors.Errorf("failed to analyze OS packages: %w", err)
+	}
+	log.Logger.Debugf("the number of packages from commands: %d", len(pkgsFromCommands))
+
+	pkgs = mergePkgs(pkgs, pkgsFromCommands)
+	log.Logger.Debugf("the number of packages: %d", len(pkgs))
+	pp.Println(pkgs)
+
 	vulns, err := s.Detect(os.Name, pkgs)
 	if err != nil {
 		return "", "", nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 	}
 
 	return os.Family, os.Name, vulns, nil
+}
+
+func mergePkgs(pkgs, pkgsFromCommands []analyzer.Package) []analyzer.Package {
+	uniqPkgs := map[string]struct{}{}
+	for _, pkg := range pkgs {
+		uniqPkgs[pkg.Name] = struct{}{}
+	}
+	for _, pkg := range pkgsFromCommands {
+		if _, ok := uniqPkgs[pkg.Name]; ok {
+			continue
+		}
+		pkgs = append(pkgs, pkg)
+	}
+	return pkgs
 }

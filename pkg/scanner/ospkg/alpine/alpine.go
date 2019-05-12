@@ -28,7 +28,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnera
 		osVer = osVer[:strings.LastIndex(osVer, ".")]
 	}
 	log.Logger.Debugf("alpine: os version: %s", osVer)
-	log.Logger.Debugf("alpine: the number of packages: %s", len(pkgs))
+	log.Logger.Debugf("alpine: the number of packages: %d", len(pkgs))
 
 	var vulns []types.Vulnerability
 	for _, pkg := range pkgs {
