@@ -167,14 +167,14 @@ func getSeverity(details map[string]vulnerability.Vulnerability) vulnerability.S
 		if !ok {
 			continue
 		}
-		if d.Severity != 0 {
-			return d.Severity
-		} else if d.SeverityV3 != 0 {
-			return d.SeverityV3
-		} else if d.CvssScore > 0 {
+		if d.CvssScore > 0 {
 			return scoreToSeverity(d.CvssScore)
 		} else if d.CvssScoreV3 > 0 {
 			return scoreToSeverity(d.CvssScoreV3)
+		} else if d.Severity != 0 {
+			return d.Severity
+		} else if d.SeverityV3 != 0 {
+			return d.SeverityV3
 		}
 	}
 	return vulnerability.SeverityUnknown

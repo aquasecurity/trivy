@@ -1,7 +1,6 @@
 package ospkg
 
 import (
-	"github.com/k0kubun/pp"
 	"github.com/knqyf263/fanal/analyzer"
 	_ "github.com/knqyf263/fanal/analyzer/command/apk"
 	fos "github.com/knqyf263/fanal/analyzer/os"
@@ -58,7 +57,6 @@ func Scan(files extractor.FileMap) (string, string, []types.Vulnerability, error
 
 	pkgs = mergePkgs(pkgs, pkgsFromCommands)
 	log.Logger.Debugf("the number of packages: %d", len(pkgs))
-	pp.Println(pkgs)
 
 	vulns, err := s.Detect(os.Name, pkgs)
 	if err != nil {
