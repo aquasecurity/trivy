@@ -448,3 +448,93 @@ m:Natanael Copa <ncopa@alpinelinux.org>
 t:1461934274
 c:e3725c0af137717d6883265a92db3838900b5cee
 D:musl-utils
+
+C:Q15iQqwpWJyKhKSxebSR6nwp/OZqk=
+P:pkgconf
+V:1.6.0-r0
+A:x86_64
+S:43001
+I:143360
+T:development framework configuration tools
+U:https://git.dereferenced.org/pkgconf/pkgconf
+L:ISC
+o:pkgconf
+m:William Pitcock <nenolod@dereferenced.org>
+t:1547496958
+c:810b2b4cab3aad63cb338988d9d976012b6ad062
+D:so:libc.musl-x86_64.so.1
+p:pkgconfig=1 so:libpkgconf.so.3=3.0.0 cmd:pkg-config cmd:pkgconf
+r:pkgconfig
+F:usr
+F:usr/bin
+R:pkgconf
+a:0:0:755
+Z:Q1h2xvgvvUejQFBbqDvOMhcdazFGI=
+R:pkg-config
+a:0:0:777
+Z:Q18oszBu4K1Rwi+tYKAA91sDfWTzE=
+F:usr/lib
+R:libpkgconf.so.3.0.0
+a:0:0:755
+Z:Q1HQLOx86sW3RRtphIYcWcBBmJo6M=
+R:libpkgconf.so.3
+a:0:0:777
+Z:Q1NQYO0TsKR3JRQxUrYhF/izzKEOU=
+F:usr/share
+F:usr/share/aclocal
+R:pkg.m4
+Z:Q1pVlmIMTTArohUPZPu3OCLGaH+e0=
+
+C:Q1FGSUbDpfDdWmfKGvkw/BevenRHQ=
+P:sqlite-libs
+V:3.26.0-r3
+A:x86_64
+S:481468
+I:917504
+T:Sqlite3 library
+U:http://www.sqlite.org
+L:Public-Domain
+o:sqlite
+m:Carlo Landmeter <clandmeter@gmail.com>
+t:1546255353
+c:856c64b1dc1f9b8176c60e28808482f8503c4e98
+D:so:libc.musl-x86_64.so.1
+p:so:libsqlite3.so.0=0.8.6
+r:sqlite
+F:usr
+F:usr/lib
+R:libsqlite3.so.0
+a:0:0:777
+Z:Q1MZwGMEis9uc78EhxmxyozT2ZxZM=
+R:libsqlite3.so.0.8.6
+a:0:0:755
+Z:Q1BOGonxBB2SdxbKENvJNl9ifknaE=
+
+C:Q18L8xXsVIKBiJEOSmZcALxIvb3X0=
+P:sqlite-dev
+V:3.26.0-r3
+A:x86_64
+S:151185
+I:618496
+T:C library that implements an SQL database engine (development files)
+U:http://www.sqlite.org
+L:Public-Domain
+o:sqlite
+m:Carlo Landmeter <clandmeter@gmail.com>
+t:1546255353
+c:856c64b1dc1f9b8176c60e28808482f8503c4e98
+D:pkgconfig sqlite-libs=3.26.0-r3
+p:pc:sqlite3=3.26.0
+F:usr
+F:usr/lib
+R:libsqlite3.so
+a:0:0:777
+Z:Q1MZwGMEis9uc78EhxmxyozT2ZxZM=
+F:usr/lib/pkgconfig
+R:sqlite3.pc
+Z:Q1Gu7uz+QOw0X+WZ8MKc8iNVSnsBA=
+F:usr/include
+R:sqlite3ext.h
+Z:Q1riWNHq9ufQzhyMXm7raBW+ZL9z0=
+R:sqlite3.h
+Z:Q11MT2xE8JuMfBRYu6BDTz2PY95Vw=

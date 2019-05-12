@@ -41,6 +41,7 @@ func (a alpinePkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.P
 
 func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []analyzer.Package, err error) {
 	var pkg analyzer.Package
+	var version string
 	for scanner.Scan() {
 		line := scanner.Text()
 
@@ -57,13 +58,20 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []analyzer
 		case "P:":
 			pkg.Name = line[2:]
 		case "V:":
-			version := string(line[2:])
-			err = versionfmt.Valid(clairDpkg.ParserName, version)
-			if err != nil {
+			version = string(line[2:])
+			if err = versionfmt.Valid(clairDpkg.ParserName, version); err != nil {
 				log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "alpine", pkg.Name, version)
 				continue
-			} else {
-				pkg.Version = version
+			}
+			pkg.Version = version
+		case "o:":
+			origin := string(line[2:])
+			originPkg := analyzer.Package{
+				Name:    origin,
+				Version: version,
+			}
+			if analyzer.CheckPackage(&originPkg) {
+				pkgs = append(pkgs, originPkg)
 			}
 		}
 	}
@@ -72,7 +80,18 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []analyzer
 		pkgs = append(pkgs, pkg)
 	}
 
-	return pkgs, nil
+	return a.uniquePkgs(pkgs), nil
+}
+func (a alpinePkgAnalyzer) uniquePkgs(pkgs []analyzer.Package) (uniqPkgs []analyzer.Package) {
+	uniq := map[string]struct{}{}
+	for _, pkg := range pkgs {
+		if _, ok := uniq[pkg.Name]; ok {
+			continue
+		}
+		uniqPkgs = append(uniqPkgs, pkg)
+		uniq[pkg.Name] = struct{}{}
+	}
+	return uniqPkgs
 }
 
 func (a alpinePkgAnalyzer) RequiredFiles() []string {
