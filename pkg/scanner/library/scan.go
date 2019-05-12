@@ -6,14 +6,16 @@ import (
 
 	"github.com/knqyf263/fanal/analyzer"
 	_ "github.com/knqyf263/fanal/analyzer/library/bundler"
+	_ "github.com/knqyf263/fanal/analyzer/library/cargo"
 	_ "github.com/knqyf263/fanal/analyzer/library/composer"
 	_ "github.com/knqyf263/fanal/analyzer/library/npm"
 	_ "github.com/knqyf263/fanal/analyzer/library/pipenv"
 	"github.com/knqyf263/fanal/extractor"
 	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
-	"github.com/knqyf263/go-version"
+	version "github.com/knqyf263/go-version"
 	"github.com/knqyf263/trivy/pkg/log"
 	"github.com/knqyf263/trivy/pkg/scanner/library/bundler"
+	"github.com/knqyf263/trivy/pkg/scanner/library/cargo"
 	"github.com/knqyf263/trivy/pkg/scanner/library/composer"
 	"github.com/knqyf263/trivy/pkg/scanner/library/npm"
 	"github.com/knqyf263/trivy/pkg/scanner/library/pipenv"
@@ -33,6 +35,8 @@ func NewScanner(filename string) Scanner {
 	switch filename {
 	case "Gemfile.lock":
 		scanner = bundler.NewScanner()
+	case "Cargo.lock":
+		scanner = cargo.NewScanner()
 	case "composer.lock":
 		scanner = composer.NewScanner()
 	case "package-lock.json":

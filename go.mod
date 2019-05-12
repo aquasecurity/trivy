@@ -3,15 +3,17 @@ module github.com/knqyf263/trivy
 go 1.12
 
 require (
+	github.com/BurntSushi/toml v0.3.1
 	github.com/briandowns/spinner v0.0.0-20190319032542-ac46072a5a91
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/etcd-io/bbolt v1.3.2
 	github.com/fatih/color v1.7.0
+	github.com/genuinetools/reg v0.16.0
 	github.com/gliderlabs/ssh v0.1.3 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
-	github.com/knqyf263/fanal v0.0.0-20190507123206-ceab60083e70
+	github.com/knqyf263/fanal v0.0.0-20190511083500-dd50facc184b
 	github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b
-	github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790
+	github.com/knqyf263/go-dep-parser v0.0.0-20190511063217-d5d543bfc261
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/knqyf263/go-version v1.1.1
 	github.com/mattn/go-colorable v0.1.1 // indirect
