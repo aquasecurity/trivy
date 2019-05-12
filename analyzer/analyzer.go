@@ -15,9 +15,10 @@ import (
 )
 
 var (
-	osAnalyzers  []OSAnalyzer
-	pkgAnalyzers []PkgAnalyzer
-	libAnalyzers []LibraryAnalyzer
+	osAnalyzers      []OSAnalyzer
+	pkgAnalyzers     []PkgAnalyzer
+	libAnalyzers     []LibraryAnalyzer
+	commandAnalyzers []CommandAnalyzer
 
 	// ErrUnknownOS occurs when unknown OS is analyzed.
 	ErrUnknownOS = xerrors.New("Unknown OS")
@@ -32,6 +33,11 @@ type OSAnalyzer interface {
 
 type PkgAnalyzer interface {
 	Analyze(extractor.FileMap) ([]Package, error)
+	RequiredFiles() []string
+}
+
+type CommandAnalyzer interface {
+	Analyze(OS, extractor.FileMap) ([]Package, error)
 	RequiredFiles() []string
 }
 
@@ -74,6 +80,10 @@ func RegisterPkgAnalyzer(analyzer PkgAnalyzer) {
 	pkgAnalyzers = append(pkgAnalyzers, analyzer)
 }
 
+func RegisterCommandAnalyzer(analyzer CommandAnalyzer) {
+	commandAnalyzers = append(commandAnalyzers, analyzer)
+}
+
 func RegisterLibraryAnalyzer(analyzer LibraryAnalyzer) {
 	libAnalyzers = append(libAnalyzers, analyzer)
 }
@@ -92,7 +102,7 @@ func RequiredFilenames() []string {
 	return filenames
 }
 
-func Analyze(ctx context.Context, imageName string, opts ...types.DockerOption) (filesMap extractor.FileMap, err error) {
+func Analyze(ctx context.Context, imageName string, opts ...types.DockerOption) (fileMap extractor.FileMap, err error) {
 	// default docker option
 	opt := types.DockerOption{
 		Timeout: 600 * time.Second,
@@ -105,27 +115,27 @@ func Analyze(ctx context.Context, imageName string, opts ...types.DockerOption) 
 	r, err := e.SaveLocalImage(ctx, imageName)
 	if err != nil {
 		// when no docker daemon is installed or no image exists in the local machine
-		filesMap, err = e.Extract(ctx, imageName, RequiredFilenames())
+		fileMap, err = e.Extract(ctx, imageName, RequiredFilenames())
 		if err != nil {
 			return nil, xerrors.Errorf("failed to extract files: %w", err)
 		}
-		return filesMap, nil
+		return fileMap, nil
 	}
 
-	filesMap, err = e.ExtractFromFile(ctx, r, RequiredFilenames())
+	fileMap, err = e.ExtractFromFile(ctx, r, RequiredFilenames())
 	if err != nil {
 		return nil, xerrors.Errorf("failed to extract files from saved tar: %w", err)
 	}
-	return filesMap, nil
+	return fileMap, nil
 }
 
-func AnalyzeFromFile(ctx context.Context, r io.ReadCloser) (filesMap extractor.FileMap, err error) {
+func AnalyzeFromFile(ctx context.Context, r io.ReadCloser) (fileMap extractor.FileMap, err error) {
 	e := docker.NewDockerExtractor(types.DockerOption{})
-	filesMap, err = e.ExtractFromFile(ctx, r, RequiredFilenames())
+	fileMap, err = e.ExtractFromFile(ctx, r, RequiredFilenames())
 	if err != nil {
 		return nil, xerrors.Errorf("failed to extract files from tar: %w", err)
 	}
-	return filesMap, nil
+	return fileMap, nil
 }
 
 func GetOS(filesMap extractor.FileMap) (OS, error) {
@@ -149,6 +159,17 @@ func GetPackages(filesMap extractor.FileMap) ([]Package, error) {
 		return pkgs, nil
 	}
 	return nil, ErrUnknownOS
+}
+
+func GetPackagesFromCommands(targetOS OS, filesMap extractor.FileMap) ([]Package, error) {
+	for _, analyzer := range commandAnalyzers {
+		pkgs, err := analyzer.Analyze(targetOS, filesMap)
+		if err != nil {
+			continue
+		}
+		return pkgs, nil
+	}
+	return nil, nil
 }
 
 func CheckPackage(pkg *Package) bool {
