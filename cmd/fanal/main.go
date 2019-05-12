@@ -12,6 +12,7 @@ import (
 	"github.com/knqyf263/fanal/cache"
 
 	"github.com/knqyf263/fanal/analyzer"
+	_ "github.com/knqyf263/fanal/analyzer/command/apk"
 	_ "github.com/knqyf263/fanal/analyzer/library/bundler"
 	_ "github.com/knqyf263/fanal/analyzer/library/cargo"
 	_ "github.com/knqyf263/fanal/analyzer/library/composer"
@@ -74,6 +75,12 @@ func run() (err error) {
 	fmt.Printf("%+v\n", os)
 
 	pkgs, err := analyzer.GetPackages(files)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Packages: %d\n", len(pkgs))
+
+	pkgs, err = analyzer.GetPackagesFromCommands(os, files)
 	if err != nil {
 		return err
 	}

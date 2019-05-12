@@ -10,6 +10,9 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
+	"time"
+
+	digest "github.com/opencontainers/go-digest"
 
 	"github.com/knqyf263/fanal/extractor"
 	"github.com/knqyf263/fanal/extractor/docker/token/ecr"
@@ -21,7 +24,6 @@ import (
 	"github.com/genuinetools/reg/registry"
 	"github.com/knqyf263/fanal/cache"
 	"github.com/knqyf263/nested"
-	"github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 )
 
@@ -34,6 +36,20 @@ type manifest struct {
 	Config   string   `json:"Config"`
 	RepoTags []string `json:"RepoTags"`
 	Layers   []string `json:"Layers"`
+}
+
+type Config struct {
+	ContainerConfig containerConfig `json:"container_config"`
+	History         []History
+}
+
+type containerConfig struct {
+	Env []string
+}
+
+type History struct {
+	Created   time.Time
+	CreatedBy string `json:"created_by"`
 }
 
 type layer struct {
@@ -219,12 +235,31 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 		opqInLayers[layerID] = opqDirs
 	}
 
-	return applyLayers(layerIDs, filesInLayers, opqInLayers)
+	fileMap, err := applyLayers(layerIDs, filesInLayers, opqInLayers)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to apply layers: %w", err)
+	}
+
+	// download config file
+	rc, err := r.DownloadLayer(ctx, image.Path, m.Manifest.Config.Digest)
+	if err != nil {
+		return nil, xerrors.Errorf("error in layer download: %w", err)
+	}
+	config, err := ioutil.ReadAll(rc)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to decode config JSON: %w", err)
+	}
+
+	// special file for command analyzer
+	fileMap["/config"] = config
+
+	return fileMap, nil
 }
 
 func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filenames []string) (extractor.FileMap, error) {
 	manifests := make([]manifest, 0)
-	filesInLayers := make(map[string]extractor.FileMap)
+	filesInLayers := map[string]extractor.FileMap{}
+	tmpJSONs := extractor.FileMap{}
 	opqInLayers := make(map[string]opqDirs)
 
 	tr := tar.NewReader(r)
@@ -239,6 +274,12 @@ func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filen
 		switch {
 		case header.Name == "manifest.json":
 			if err := json.NewDecoder(tr).Decode(&manifests); err != nil {
+				return nil, err
+			}
+		case strings.HasSuffix(header.Name, ".json"):
+			// save all JSON temporarily for config JSON
+			tmpJSONs[header.Name], err = ioutil.ReadAll(tr)
+			if err != nil {
 				return nil, err
 			}
 		case strings.HasSuffix(header.Name, ".tar"):
@@ -257,7 +298,15 @@ func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filen
 		return nil, xerrors.New("Invalid image")
 	}
 
-	return applyLayers(manifests[0].Layers, filesInLayers, opqInLayers)
+	fileMap, err := applyLayers(manifests[0].Layers, filesInLayers, opqInLayers)
+	if err != nil {
+		return nil, err
+	}
+
+	// special file for command analyzer
+	fileMap["/config"] = tmpJSONs[manifests[0].Config]
+
+	return fileMap, nil
 }
 
 func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extractor.FileMap, opqDirs, error) {
@@ -297,7 +346,6 @@ func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extr
 			continue
 		}
 
-		// Extract the element
 		if hdr.Typeflag == tar.TypeSymlink || hdr.Typeflag == tar.TypeLink || hdr.Typeflag == tar.TypeReg {
 			d, err := ioutil.ReadAll(tr)
 			if err != nil {

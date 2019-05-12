@@ -14,6 +14,7 @@ require (
 	github.com/knqyf263/go-dep-parser v0.0.0-20190511063217-d5d543bfc261
 	github.com/knqyf263/go-rpmdb v0.0.0-20190501070121-10a1c42a10dc
 	github.com/knqyf263/nested v0.0.1
+	github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348
 	github.com/opencontainers/go-digest v0.0.0-20180430190053-c9281466c8b2
 	github.com/pkg/errors v0.8.1
 	golang.org/x/crypto v0.0.0-20190404164418-38d8ce5564a5
