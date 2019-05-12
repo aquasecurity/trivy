@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/kylelemons/godebug/pretty"
+
 	"github.com/knqyf263/fanal/analyzer"
 )
 
@@ -22,12 +24,19 @@ func TestParseApkInfo(t *testing.T) {
 				{Name: "alpine-baselayout", Version: "3.0.3-r0"},
 				{Name: "alpine-keys", Version: "1.1-r0"},
 				{Name: "zlib", Version: "1.2.8-r2"},
+				{Name: "openssl", Version: "1.0.2h-r1"},
 				{Name: "libcrypto1.0", Version: "1.0.2h-r1"},
 				{Name: "libssl1.0", Version: "1.0.2h-r1"},
 				{Name: "apk-tools", Version: "2.6.7-r0"},
+				{Name: "pax-utils", Version: "1.1.6-r0"},
 				{Name: "scanelf", Version: "1.1.6-r0"},
 				{Name: "musl-utils", Version: "1.1.14-r10"},
+				{Name: "libc-dev", Version: "0.7-r0"},
 				{Name: "libc-utils", Version: "0.7-r0"},
+				{Name: "pkgconf", Version: "1.6.0-r0"},
+				{Name: "sqlite", Version: "3.26.0-r3"},
+				{Name: "sqlite-libs", Version: "3.26.0-r3"},
+				{Name: "sqlite-dev", Version: "3.26.0-r3"},
 			},
 		},
 	}
@@ -43,7 +52,7 @@ func TestParseApkInfo(t *testing.T) {
 			t.Errorf("%s : catch the error : %v", testname, err)
 		}
 		if !reflect.DeepEqual(v.pkgs, pkgs) {
-			t.Errorf("[%s]\nexpected : %v\nactual : %v", testname, v.pkgs, pkgs)
+			t.Errorf("[%s]\n%s", testname, pretty.Compare(v.pkgs, pkgs))
 		}
 	}
 }

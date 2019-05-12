@@ -95,8 +95,6 @@ github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7V
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/knqyf263/berkeleydb v0.0.0-20190501065933-fafe01fb9662 h1:UGS0RbPHwXJkq8tcba8OD0nvVUWLf2h7uUJznuHPPB0=
 github.com/knqyf263/berkeleydb v0.0.0-20190501065933-fafe01fb9662/go.mod h1:bu1CcN4tUtoRcI/B/RFHhxMNKFHVq/c3SV+UTyduoXg=
-github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790 h1:c02gG0yRNr25lcLOH+678SuuxxMUq36i48PQnmAweWk=
-github.com/knqyf263/go-dep-parser v0.0.0-20190429154931-c377a5391790/go.mod h1:CtT+dtv38jSz5EYYCX21LgtVXP+J3soF2fzQT8lHCfY=
 github.com/knqyf263/go-dep-parser v0.0.0-20190511063217-d5d543bfc261 h1:RPgPsbEsYj6LuOjZnKl2DvbfodNWRuWKZfWJkrD7l8s=
 github.com/knqyf263/go-dep-parser v0.0.0-20190511063217-d5d543bfc261/go.mod h1:gSiqSkOFPstUZu/qZ4wnNJS69PtQQnPl397vxKHJ5mQ=
 github.com/knqyf263/go-rpmdb v0.0.0-20190501070121-10a1c42a10dc h1:pumO9pqmRAjvic6oove22RGh9wDZQnj96XQjJSbSEPs=
