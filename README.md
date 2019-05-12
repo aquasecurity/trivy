@@ -19,7 +19,7 @@ See [here](#continuous-integration-ci) for details.
 # Features
 - Detect comprehensive vulnerabilities
   - OS packages (Alpine, Red Hat Enterprise Linux, CentOS, Debian, Ubuntu)
-  - **Application dependencies** (Bundler, Composer, Pipenv, npm)
+  - **Application dependencies** (Bundler, Composer, Pipenv, npm, Cargo)
 - Simple
   - Specify only an image name
 - Easy installation
@@ -84,7 +84,7 @@ $ brew install knqyf263/trivy/trivy
 ```
 
 ## Binary (Including Windows)
-Go to [the releases page](https://github.com/knqyf263/trivy/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on. 
+Go to [the releases page](https://github.com/knqyf263/trivy/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
 
 ## From source
 
@@ -198,7 +198,7 @@ echo 'export HOMEBREW_GITHUB_API_TOKEN=your_token_here' >> ~/.zshrc
 
 Try:
 ```
-$ printf "protocol=https\nhost=github.com\n" | git credential-osxkeychain erase 
+$ printf "protocol=https\nhost=github.com\n" | git credential-osxkeychain erase
 ```
 
 ### Error: knqyf263/trivy/trivy 64 already installed
