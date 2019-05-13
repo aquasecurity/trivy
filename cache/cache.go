@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/knqyf263/fanal/utils"
 
@@ -12,10 +13,11 @@ import (
 
 var (
 	cacheDir = utils.CacheDir()
+	replacer = strings.NewReplacer("/", "_")
 )
 
 func Get(key string) io.Reader {
-	filePath := filepath.Join(cacheDir, key)
+	filePath := filepath.Join(cacheDir, replacer.Replace(key))
 	f, err := os.Open(filePath)
 	if err != nil {
 		return nil
@@ -24,7 +26,7 @@ func Get(key string) io.Reader {
 }
 
 func Set(key string, file io.Reader) (io.Reader, error) {
-	filePath := filepath.Join(cacheDir, key)
+	filePath := filepath.Join(cacheDir, replacer.Replace(key))
 	if err := os.MkdirAll(cacheDir, os.ModePerm); err != nil {
 		return nil, xerrors.Errorf("failed to mkdir all: %w", err)
 	}
