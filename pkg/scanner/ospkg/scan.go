@@ -15,15 +15,15 @@ import (
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg/debian"
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg/redhat"
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg/ubuntu"
-	"github.com/knqyf263/trivy/pkg/types"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 	"golang.org/x/xerrors"
 )
 
 type Scanner interface {
-	Detect(string, []analyzer.Package) ([]types.Vulnerability, error)
+	Detect(string, []analyzer.Package) ([]vulnerability.DetectedVulnerability, error)
 }
 
-func Scan(files extractor.FileMap) (string, string, []types.Vulnerability, error) {
+func Scan(files extractor.FileMap) (string, string, []vulnerability.DetectedVulnerability, error) {
 	os, err := analyzer.GetOS(files)
 	if err != nil {
 		return "", "", nil, xerrors.Errorf("failed to analyze OS: %w", err)

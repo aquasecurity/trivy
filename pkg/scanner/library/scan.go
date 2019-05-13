@@ -4,6 +4,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+
 	"github.com/knqyf263/fanal/analyzer"
 	_ "github.com/knqyf263/fanal/analyzer/library/bundler"
 	_ "github.com/knqyf263/fanal/analyzer/library/cargo"
@@ -12,21 +14,20 @@ import (
 	_ "github.com/knqyf263/fanal/analyzer/library/pipenv"
 	"github.com/knqyf263/fanal/extractor"
 	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
-	version "github.com/knqyf263/go-version"
+	"github.com/knqyf263/go-version"
 	"github.com/knqyf263/trivy/pkg/log"
 	"github.com/knqyf263/trivy/pkg/scanner/library/bundler"
 	"github.com/knqyf263/trivy/pkg/scanner/library/cargo"
 	"github.com/knqyf263/trivy/pkg/scanner/library/composer"
 	"github.com/knqyf263/trivy/pkg/scanner/library/npm"
 	"github.com/knqyf263/trivy/pkg/scanner/library/pipenv"
-	"github.com/knqyf263/trivy/pkg/types"
 	"golang.org/x/xerrors"
 )
 
 type Scanner interface {
 	UpdateDB() error
 	ParseLockfile(*os.File) ([]ptypes.Library, error)
-	Detect(string, *version.Version) ([]types.Vulnerability, error)
+	Detect(string, *version.Version) ([]vulnerability.DetectedVulnerability, error)
 	Type() string
 }
 
@@ -49,13 +50,13 @@ func NewScanner(filename string) Scanner {
 	return scanner
 }
 
-func Scan(files extractor.FileMap) (map[string][]types.Vulnerability, error) {
+func Scan(files extractor.FileMap) (map[string][]vulnerability.DetectedVulnerability, error) {
 	results, err := analyzer.GetLibraries(files)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to analyze libraries: %w", err)
 	}
 
-	vulnerabilities := map[string][]types.Vulnerability{}
+	vulnerabilities := map[string][]vulnerability.DetectedVulnerability{}
 	for path, pkgs := range results {
 		log.Logger.Debugf("Detecting library vulnerabilities, path: %s", path)
 		scanner := NewScanner(filepath.Base(string(path)))
@@ -75,7 +76,7 @@ func Scan(files extractor.FileMap) (map[string][]types.Vulnerability, error) {
 	return vulnerabilities, nil
 }
 
-func ScanFile(f *os.File) ([]types.Vulnerability, error) {
+func ScanFile(f *os.File) ([]vulnerability.DetectedVulnerability, error) {
 	scanner := NewScanner(filepath.Base(f.Name()))
 	if scanner == nil {
 		return nil, xerrors.New("unknown file type")
@@ -93,7 +94,7 @@ func ScanFile(f *os.File) ([]types.Vulnerability, error) {
 	return vulns, nil
 }
 
-func scan(scanner Scanner, pkgs []ptypes.Library) ([]types.Vulnerability, error) {
+func scan(scanner Scanner, pkgs []ptypes.Library) ([]vulnerability.DetectedVulnerability, error) {
 	log.Logger.Infof("Updating %s Security DB...", scanner.Type())
 	err := scanner.UpdateDB()
 	if err != nil {
@@ -101,7 +102,7 @@ func scan(scanner Scanner, pkgs []ptypes.Library) ([]types.Vulnerability, error)
 	}
 
 	log.Logger.Infof("Detecting %s vulnerabilities...", scanner.Type())
-	var vulnerabilities []types.Vulnerability
+	var vulnerabilities []vulnerability.DetectedVulnerability
 	for _, pkg := range pkgs {
 		v, err := version.NewVersion(pkg.Version)
 		if err != nil {

@@ -4,13 +4,14 @@ import (
 	"os"
 	"strings"
 
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+
 	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/go-dep-parser/pkg/pipenv"
 	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
 	"github.com/knqyf263/go-version"
 	"github.com/knqyf263/trivy/pkg/scanner/utils"
-	"github.com/knqyf263/trivy/pkg/types"
 )
 
 const (
@@ -25,8 +26,8 @@ func NewScanner() *Scanner {
 	return &Scanner{}
 }
 
-func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Vulnerability, error) {
-	var vulns []types.Vulnerability
+func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]vulnerability.DetectedVulnerability, error) {
+	var vulns []vulnerability.DetectedVulnerability
 	for _, advisory := range s.db[pkgName] {
 		if !utils.MatchVersions(pkgVer, advisory.Specs) {
 			continue
@@ -37,7 +38,7 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Vulne
 			vulnerabilityID = advisory.ID
 		}
 
-		vuln := types.Vulnerability{
+		vuln := vulnerability.DetectedVulnerability{
 			VulnerabilityID:  vulnerabilityID,
 			PkgName:          pkgName,
 			Title:            strings.TrimSpace(advisory.Advisory),
