@@ -5,13 +5,12 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"sort"
+
+	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/genuinetools/reg/registry"
 
 	"github.com/knqyf263/trivy/pkg/log"
-
-	"github.com/knqyf263/trivy/pkg/report"
 
 	"github.com/knqyf263/trivy/pkg/scanner/library"
 
@@ -19,22 +18,15 @@ import (
 
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg"
 
-	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/fanal/extractor"
 )
 
-var (
-	sources = []string{vulnerability.Nvd, vulnerability.RedHat, vulnerability.Debian,
-		vulnerability.DebianOVAL, vulnerability.Alpine, vulnerability.RubySec, vulnerability.RustSec, vulnerability.PhpSecurityAdvisories,
-		vulnerability.NodejsSecurityWg, vulnerability.PythonSafetyDB}
-)
-
-func ScanImage(imageName, filePath string, severities []vulnerability.Severity, ignoreUnfixed bool) (report.Results, error) {
-	var results report.Results
+func ScanImage(imageName, filePath string) (map[string][]vulnerability.DetectedVulnerability, error) {
 	var err error
+	results := map[string][]vulnerability.DetectedVulnerability{}
 	ctx := context.Background()
 
 	image, err := registry.ParseImage(imageName)
@@ -73,67 +65,29 @@ func ScanImage(imageName, filePath string, severities []vulnerability.Severity, 
 		return nil, xerrors.Errorf("failed to scan image: %w", err)
 
 	}
-
-	results = append(results, report.Result{
-		FileName:        fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion),
-		Vulnerabilities: processVulnerabilties(osVulns, severities, ignoreUnfixed),
-	})
+	imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion)
+	results[imageDetail] = osVulns
 
 	libVulns, err := library.Scan(files)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to scan libraries: %w", err)
 	}
 	for path, vulns := range libVulns {
-		results = append(results, report.Result{
-			FileName:        path,
-			Vulnerabilities: processVulnerabilties(vulns, severities, ignoreUnfixed),
-		})
+		results[path] = vulns
 	}
 
 	return results, nil
 }
 
-func ScanFile(f *os.File, severities []vulnerability.Severity, ignoreUnfixed bool) (report.Result, error) {
+func ScanFile(f *os.File) (map[string][]vulnerability.DetectedVulnerability, error) {
 	vulns, err := library.ScanFile(f)
 	if err != nil {
-		return report.Result{}, xerrors.Errorf("failed to scan libraries in file: %w", err)
+		return nil, xerrors.Errorf("failed to scan libraries in file: %w", err)
 	}
-	result := report.Result{
-		FileName:        f.Name(),
-		Vulnerabilities: processVulnerabilties(vulns, severities, ignoreUnfixed),
+	results := map[string][]vulnerability.DetectedVulnerability{
+		f.Name(): vulns,
 	}
-	return result, nil
-}
-
-func processVulnerabilties(vulns []vulnerability.DetectedVulnerability, severities []vulnerability.Severity, ignoreUnfixed bool) []vulnerability.DetectedVulnerability {
-	var vulnerabilities []vulnerability.DetectedVulnerability
-	for _, vuln := range vulns {
-		sev, title, description, references := getDetail(vuln.VulnerabilityID)
-
-		// Filter vulnerabilities by severity
-		for _, s := range severities {
-			if s == sev {
-				vuln.Severity = fmt.Sprint(sev)
-				vuln.Title = title
-				vuln.Description = description
-				vuln.References = references
-
-				// Ignore unfixed vulnerabilities
-				if ignoreUnfixed && vuln.FixedVersion == "" {
-					continue
-				}
-				vulnerabilities = append(vulnerabilities, vuln)
-				break
-			}
-		}
-	}
-	sort.Slice(vulnerabilities, func(i, j int) bool {
-		if vulnerabilities[i].PkgName != vulnerabilities[j].PkgName {
-			return vulnerabilities[i].PkgName < vulnerabilities[j].PkgName
-		}
-		return vulnerability.CompareSeverityString(vulnerabilities[j].Severity, vulnerabilities[i].Severity)
-	})
-	return vulnerabilities
+	return results, nil
 }
 
 func openStream(path string) (*os.File, error) {
@@ -146,91 +100,4 @@ func openStream(path string) (*os.File, error) {
 		}
 	}
 	return os.Open(path)
-}
-
-func getDetail(vulnID string) (vulnerability.Severity, string, string, []string) {
-	details, err := vulnerability.Get(vulnID)
-	if err != nil {
-		log.Logger.Debug(err)
-		return vulnerability.SeverityUnknown, "", "", nil
-	} else if len(details) == 0 {
-		return vulnerability.SeverityUnknown, "", "", nil
-	}
-	return getSeverity(details), getTitle(details), getDescription(details), getReferences(details)
-}
-
-func getSeverity(details map[string]vulnerability.Vulnerability) vulnerability.Severity {
-	for _, source := range sources {
-		d, ok := details[source]
-		if !ok {
-			continue
-		}
-		if d.CvssScore > 0 {
-			return scoreToSeverity(d.CvssScore)
-		} else if d.CvssScoreV3 > 0 {
-			return scoreToSeverity(d.CvssScoreV3)
-		} else if d.Severity != 0 {
-			return d.Severity
-		} else if d.SeverityV3 != 0 {
-			return d.SeverityV3
-		}
-	}
-	return vulnerability.SeverityUnknown
-}
-
-func getTitle(details map[string]vulnerability.Vulnerability) string {
-	for _, source := range sources {
-		d, ok := details[source]
-		if !ok {
-			continue
-		}
-		if d.Title != "" {
-			return d.Title
-		}
-	}
-	return ""
-}
-
-func getDescription(details map[string]vulnerability.Vulnerability) string {
-	for _, source := range sources {
-		d, ok := details[source]
-		if !ok {
-			continue
-		}
-		if d.Description != "" {
-			return d.Description
-		}
-	}
-	return ""
-}
-
-func getReferences(details map[string]vulnerability.Vulnerability) []string {
-	references := map[string]struct{}{}
-	for _, source := range sources {
-		d, ok := details[source]
-		if !ok {
-			continue
-		}
-		for _, ref := range d.References {
-			references[ref] = struct{}{}
-		}
-	}
-	var refs []string
-	for ref := range references {
-		refs = append(refs, ref)
-	}
-	return refs
-}
-
-func scoreToSeverity(score float64) vulnerability.Severity {
-	if score >= 9.0 {
-		return vulnerability.SeverityCritical
-	} else if score >= 7.0 {
-		return vulnerability.SeverityHigh
-	} else if score >= 4.0 {
-		return vulnerability.SeverityMedium
-	} else if score > 0.0 {
-		return vulnerability.SeverityLow
-	}
-	return vulnerability.SeverityUnknown
 }

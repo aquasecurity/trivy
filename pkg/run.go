@@ -98,9 +98,17 @@ func Run(c *cli.Context) (err error) {
 	if filePath == "" {
 		imageName = args[0]
 	}
-	results, err := scanner.ScanImage(imageName, filePath, severities, ignoreUnfixed)
+	vulns, err := scanner.ScanImage(imageName, filePath)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
+	}
+
+	var results report.Results
+	for path, vuln := range vulns {
+		results = append(results, report.Result{
+			FileName:        path,
+			Vulnerabilities: vulnerability.FillAndFilter(vuln, severities, ignoreUnfixed),
+		})
 	}
 
 	var writer report.Writer
