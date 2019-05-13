@@ -7,10 +7,12 @@
 
 A Simple and Comprehensive Vulnerability Scanner for Containers, Compatible with CI
 
+<img src="imgs/usage.gif" width="700">
+
 # Abstract
 `Trivy` is a simple and comprehensive vulnerability scanner for containers.
 `Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, etc.).
-`Trivy` is easy to use. Just install the binary and you're ready to scan. It can be scanned just by specifying a container image name.
+`Trivy` is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify a container image name.
 
 It is considered to be used in CI. Before pushing to a container registry, you can scan your local container image easily.
 See [here](#continuous-integration-ci) for details.
@@ -26,8 +28,10 @@ See [here](#continuous-integration-ci) for details.
   - **No need for prerequirements** such as installation of DB, libraries, etc.
   - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](#installation))
 - High accuracy
-  - Especially Alpine
-- **Compatible with CI**
+  - **Especially Alpine** (See [Comparison with other scanners](#comparison-with-other-scanners))
+  - Other OSes are also high
+- Continuous Integration
+  - **Compatible with CI** such as Travis CI, CircleCI, Jenkins, etc.
   - See [CI Example](#continuous-integration-ci)
 
 
@@ -51,7 +55,7 @@ $ sudo yum -y install trivy
 or
 
 ```
-$ rpm -ivh https://github.com/knqyf263/trivy/releases/download/v0.0.3/trivy_0.0.3_Linux-64bit.rpm
+$ rpm -ivh https://github.com/knqyf263/trivy/releases/download/v0.0.11/trivy_0.0.11_Linux-64bit.rpm
 ```
 
 ## Debian/Ubuntu
@@ -72,8 +76,8 @@ or
 
 ```
 $ sudo apt-get install rpm
-$ wget https://github.com/knqyf263/trivy/releases/download/v0.0.3/trivy_0.0.3_Linux-64bit.deb
-$ sudo dpkg -i trivy_0.0.3_Linux-64bit.deb
+$ wget https://github.com/knqyf263/trivy/releases/download/v0.0.11/trivy_0.0.11_Linux-64bit.deb
+$ sudo dpkg -i trivy_0.0.11_Linux-64bit.deb
 ```
 
 ## Mac OS X / Homebrew
@@ -86,6 +90,8 @@ $ brew install knqyf263/trivy/trivy
 ## Binary (Including Windows)
 Go to [the releases page](https://github.com/knqyf263/trivy/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
 
+You need to install `rpm` command for scanning RHEL/CentOS.
+
 ## From source
 
 ```sh
@@ -93,6 +99,86 @@ $ go get -u github.com/knqyf263/trivy
 ```
 
 # Examples
+## Basic Usage
+### Scan an image
+Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with cache.**
+
+```
+$ trivy nginx:1.16.0-alpine
+```
+
+### Scan an image file
+
+```
+$ docker save ruby:2.4.6-alpine3.9 -o ruby-2.4.6.tar
+$ trivy --input ruby-2.4.6.tar
+```
+
+### Save the results as JSON
+
+```
+$ trivy -f json -o results.json composer:1.7.2
+```
+
+### Filter the vulnerabilities by severities
+
+```
+$ trivy --severity HIGH,CRITICAL python:3.7-alpine3.9
+```
+
+### Skip an update of vulnerability DB 
+`Trivy` updates vulnerability database every time it is run. This is usually fast as it is a difference update. But if you want to skip even that, use the `--skip-update` option.
+
+```
+$ trivy --skip-update alpine:3.9
+```
+
+### Ignore unfixed vulnerabilities
+By default, `Trivy` also detects unpatched/unfixed vulnerabilities. This means you can't fix these vulnerabilities even if you update all packages.
+If you would like to ignore them, use the `--ignore-unfixed` option.
+
+
+```
+$ trivy --exit-code 1 httpd:2.4.39
+```
+
+### Specify exit code
+By default, `Trivy` exits with code 0 even when vulnerabilities are detected.
+Use the `--exit-code` option if you want to exit with a non-zero exit code.
+
+```
+$ trivy --exit-code 1 httpd:2.4.39
+```
+
+This option is useful for CI/CD. In the following example, the test will fail only when a critical vulnerability is found.
+
+```
+$ trivy --exit-code 0 --severity MEDIUM,HIGH httpd:2.4.39
+$ trivy --exit-code 1 --severity CRITICAL httpd:2.4.39
+```
+
+### Ignore the specified vulnerabilities
+Use `.trivyignore`.
+
+```
+$ cat .trivyignore
+# Accept the risk
+CVE-2018-14618
+
+# No impact in our settings
+CVE-2019-3855
+
+$ trivy composer:1.7.2 
+```
+
+### Clean all caches
+The `--clean` option remove all caches. After this, it takes a long time as the vulnerability database needs to be rebuilt locally.
+
+```
+$ trivy --clean
+```
+
+
 ## Continuous Integration (CI)
 Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0` .
 
@@ -106,10 +192,11 @@ services:
 
 before_install:
   - docker build -t trivy-ci-test:latest .
-  - wget https://github.com/knqyf263/trivy/releases/download/v0.0.3/trivy_0.0.3_Linux-64bit.tar.gz
-  - tar zxvf trivy_0.0.3_Linux-64bit.tar.gz
+  - wget https://github.com/knqyf263/trivy/releases/download/v0.0.11/trivy_0.0.11_Linux-64bit.tar.gz
+  - tar zxvf trivy_0.0.11_Linux-64bit.tar.gz
 script:
-  - ./trivy --exit-code 1 --quiet trivy-ci-test:latest
+  - ./trivy --exit-code 0 --severity HIGH --quiet trivy-ci-test:latest
+  - ./trivy --exit-code 1 --severity CRITICAL --quiet trivy-ci-test:latest
 cache:
   directories:
     - $HOME/.cache/trivy
@@ -137,8 +224,8 @@ jobs:
       - run:
           name: Install trivy
           command: |
-            wget https://github.com/knqyf263/trivy/releases/download/v0.0.4/trivy_0.0.4_Linux-64bit.tar.gz
-            tar zxvf trivy_0.0.4_Linux-64bit.tar.gz
+            wget https://github.com/knqyf263/trivy/releases/download/v0.0.11/trivy_0.0.11_Linux-64bit.tar.gz
+            tar zxvf trivy_0.0.11_Linux-64bit.tar.gz
             mv trivy /usr/local/bin
       - run:
           name: Scan the local image with trivy
@@ -165,7 +252,7 @@ NAME:
 USAGE:
   trivy [options] image_name
 VERSION:
-  0.0.3
+  0.0.11
 OPTIONS:
   --format value, -f value    format (table, json) (default: "table")
   --input value, -i value     input file path instead of image name
@@ -181,6 +268,62 @@ OPTIONS:
   --help, -h                  show help
   --version, -v               print the version
 ```
+
+# Comparison with other scanners
+## Overview
+The following table shows a result of scanning `composer:1.7.2` (selected randomly).
+In this case, the union of vulnerabilities detected by all vulnerability scanners is used as a data set.
+Of course, there may be vulnerabilities that all scanners could not detect.
+
+See [spreadsheet](https://docs.google.com/spreadsheets/d/16uj9vGh2PHMcVwb_D4h0nYUSvzCAxcnUz9UgQaDCYs4/edit#gid=0) for details.
+
+Date: 2019/05/12
+
+| Scanner   | Clair | Quay | MircoScanner | Docker Hub | Anchore Engine | Trivy |
+|-----------|-------|------|--------------|------------|---------------|-------|
+| Accuracy  | 75%   | 75%  | 66%          | 22%        | 74%           | **85%**   |
+| Precision | 100%  | 100% | 89%          | 26%        | 100%          | **100%**  |
+
+Reference: [Clair](https://github.com/coreos/clair), [Quay](https://quay.io/), [MicroScanner(Free)](https://github.com/aquasecurity/microscanner), [Docker Hub](https://hub.docker.com/), [Anchore Engine](https://anchore.com/engine/)
+
+`Trivy` has high accuracy and high precision, especially in the case of Alpine Linux.
+In the case of other OS, the result is similar to other container scanners.
+
+## vs Clair, Quay
+[Clair](https://github.com/coreos/clair) and [Quay](https://quay.io/) uses [alpine-secdb](https://github.com/alpinelinux/alpine-secdb/).
+However, the purpose of this database is to make it possible to know what packages has backported fixes.
+As README says, it is not a complete database of all security issues in Alpine.
+
+`Trivy` collects vulnerability information in Alpine Linux from [Alpine LInux Redmine](https://bugs.alpinelinux.org/projects/alpine/issues).
+Then, those vulnerabilities will be saved on [vuln-list](https://github.com/knqyf263/vuln-list/tree/master/alpine)
+
+`alpine-secdb` has 6959 vulnerabilities (as of 2019/05/12).
+`vuln-list` has 11101 vulnerabilities related with Alpine Linux (as of 2019/05/12).
+There is a difference in detection accuracy because the number of vulnerabilities is nearly doubled.
+
+In addition, `Trivy` analyzes the middle layer as well and find out which version of the library was used for static linking.
+
+`Clair` can not handle the following cases because it analyzes the image after applying the all layers.
+
+```
+RUN apk add --no-cache sqlite-dev \
+    && wget https://xxx/yyy.tar.gz \
+    && tar zxvf yyy.tar.gz && cd yyy \
+    && make && make install \
+    && apk del sqlite-dev
+```
+
+Finally, `Trivy` can also detect vulnerabilities in application dependent libraries such as Bundler, Composer, Pipenv, etc.
+
+## vs Anchore Engine
+Similar to Clair, there is a difference in detection accuracy on Alpine Linux. Also, Anchore Engine needs some steps to start scanning.
+`Trivy` is much easier to use.
+
+## vs Docker Hub, GCR
+Docker Hub can scan only official images. GCR hardly detects vulnerability on Alpine Linux. Also, it is locked to a specific registry.
+
+`Trivy` does not depend on the registry. In addition, it is easy to be integrated with CI/CD services.
+
 
 # Q&A
 ## Homebrew
