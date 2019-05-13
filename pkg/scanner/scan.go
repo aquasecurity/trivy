@@ -17,8 +17,6 @@ import (
 
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
-	"github.com/knqyf263/trivy/pkg/types"
-
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg"
 
 	"golang.org/x/crypto/ssh/terminal"
@@ -107,8 +105,8 @@ func ScanFile(f *os.File, severities []vulnerability.Severity, ignoreUnfixed boo
 	return result, nil
 }
 
-func processVulnerabilties(vulns []types.Vulnerability, severities []vulnerability.Severity, ignoreUnfixed bool) []types.Vulnerability {
-	var vulnerabilities []types.Vulnerability
+func processVulnerabilties(vulns []vulnerability.DetectedVulnerability, severities []vulnerability.Severity, ignoreUnfixed bool) []vulnerability.DetectedVulnerability {
+	var vulnerabilities []vulnerability.DetectedVulnerability
 	for _, vuln := range vulns {
 		sev, title, description, references := getDetail(vuln.VulnerabilityID)
 

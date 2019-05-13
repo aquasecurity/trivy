@@ -10,7 +10,6 @@ import (
 
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
-	"github.com/knqyf263/trivy/pkg/types"
 	"github.com/olekukonko/tablewriter"
 )
 
@@ -18,7 +17,7 @@ type Results []Result
 
 type Result struct {
 	FileName        string `json:"file"`
-	Vulnerabilities []types.Vulnerability
+	Vulnerabilities []vulnerability.DetectedVulnerability
 }
 
 type Writer interface {
@@ -80,7 +79,7 @@ type JsonWriter struct {
 }
 
 func (jw JsonWriter) Write(results Results) error {
-	out := map[string][]types.Vulnerability{}
+	out := map[string][]vulnerability.DetectedVulnerability{}
 	for _, result := range results {
 		out[result.FileName] = result.Vulnerabilities
 	}

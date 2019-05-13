@@ -1,13 +1,13 @@
 package ubuntu
 
 import (
-	"github.com/knqyf263/go-deb-version"
+	version "github.com/knqyf263/go-deb-version"
 	"github.com/knqyf263/trivy/pkg/scanner/utils"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/trivy/pkg/log"
-	"github.com/knqyf263/trivy/pkg/types"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/ubuntu"
 )
 
@@ -17,12 +17,12 @@ func NewScanner() *Scanner {
 	return &Scanner{}
 }
 
-func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnerability, error) {
+func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Ubuntu vulnerabilities...")
 	log.Logger.Debugf("ubuntu: os version: %s", osVer)
 	log.Logger.Debugf("ubuntu: the number of packages: %s", len(pkgs))
 
-	var vulns []types.Vulnerability
+	var vulns []vulnerability.DetectedVulnerability
 	for _, pkg := range pkgs {
 		advisories, err := ubuntu.Get(osVer, pkg.Name)
 		if err != nil {
@@ -37,7 +37,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnera
 		}
 
 		for _, adv := range advisories {
-			vuln := types.Vulnerability{
+			vuln := vulnerability.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,

@@ -3,14 +3,16 @@ package debian
 import (
 	"strings"
 
+	version "github.com/knqyf263/go-deb-version"
+
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/go-deb-version"
 	"github.com/knqyf263/trivy/pkg/scanner/utils"
 
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/trivy/pkg/log"
-	"github.com/knqyf263/trivy/pkg/types"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/debian"
 	debianoval "github.com/knqyf263/trivy/pkg/vulnsrc/debian-oval"
 )
@@ -21,7 +23,7 @@ func NewScanner() *Scanner {
 	return &Scanner{}
 }
 
-func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnerability, error) {
+func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Debian vulnerabilities...")
 
 	if strings.Count(osVer, ".") > 0 {
@@ -30,7 +32,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnera
 	log.Logger.Debugf("debian: os version: %s", osVer)
 	log.Logger.Debugf("debian: the number of packages: %s", len(pkgs))
 
-	var vulns []types.Vulnerability
+	var vulns []vulnerability.DetectedVulnerability
 	for _, pkg := range pkgs {
 		if pkg.Type != analyzer.TypeSource {
 			continue
@@ -55,7 +57,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnera
 			}
 
 			if installedVersion.LessThan(fixedVersion) {
-				vuln := types.Vulnerability{
+				vuln := vulnerability.DetectedVulnerability{
 					VulnerabilityID:  adv.VulnerabilityID,
 					PkgName:          pkg.Name,
 					InstalledVersion: installed,
@@ -69,7 +71,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Vulnera
 			return nil, xerrors.Errorf("failed to get debian advisory: %w", err)
 		}
 		for _, adv := range advisories {
-			vuln := types.Vulnerability{
+			vuln := vulnerability.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
