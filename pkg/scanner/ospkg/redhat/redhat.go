@@ -38,13 +38,15 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 		for _, adv := range advisories {
 			fixedVersion := version.NewVersion(adv.FixedVersion)
 
+			vuln := vulnerability.DetectedVulnerability{
+				VulnerabilityID:  adv.VulnerabilityID,
+				PkgName:          pkg.Name,
+				InstalledVersion: installed,
+			}
 			if installedVersion.LessThan(fixedVersion) {
-				vuln := vulnerability.DetectedVulnerability{
-					VulnerabilityID:  adv.VulnerabilityID,
-					PkgName:          pkg.Name,
-					InstalledVersion: installed,
-					FixedVersion:     adv.FixedVersion,
-				}
+				vuln.FixedVersion = adv.FixedVersion
+				vulns = append(vulns, vuln)
+			} else if adv.FixedVersion == "" {
 				vulns = append(vulns, vuln)
 			}
 		}

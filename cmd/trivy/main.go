@@ -70,8 +70,12 @@ OPTIONS:
 			Usage: "skip db update",
 		},
 		cli.BoolFlag{
-			Name:  "clean, c",
-			Usage: "clean all cache",
+			Name:  "reset",
+			Usage: "remove all caches and database",
+		},
+		cli.BoolFlag{
+			Name:  "clear-cache, c",
+			Usage: "clear image caches",
 		},
 		cli.BoolFlag{
 			Name:  "quiet, q",
