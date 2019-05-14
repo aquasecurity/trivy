@@ -298,13 +298,14 @@ Package: liblzma5
 Status: install ok installed
 Priority: required
 Section: libs
-Installed-Size: 338
-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Installed-Size: 309
+Maintainer: Jonathan Nieder <jrnieder@gmail.com>
 Architecture: amd64
 Multi-Arch: same
-Source: xz-utils
-Version: 5.2.2-1.3
-Depends: libc6 (>= 2.17)
+Source: xz-utils (5.1.1alpha+20120614-2)
+Version: 5.1.1alpha+20120614-2+b3
+Depends: libc6 (>= 2.14)
+Pre-Depends: multiarch-support
 Description: XZ-format compression library
  XZ is the successor to the Lempel-Ziv/Markov-chain Algorithm
  compression format, which provides memory-hungry but powerful
@@ -313,7 +314,6 @@ Description: XZ-format compression library
  The native format of liblzma is XZ; it also supports raw (headerless)
  streams and the older LZMA format used by lzma. (For 7-Zip's related
  format, use the p7zip package instead.)
-Original-Maintainer: Jonathan Nieder <jrnieder@gmail.com>
 Homepage: http://tukaani.org/xz/
 
 Package: libidn2-0
@@ -2107,4 +2107,27 @@ Depends: libc6 (>= 2.25)
 Description: smart column output alignment library
  This smart column output alignment library is used by fdisk utilities.
 Original-Maintainer: LaMont Jones <lamont@debian.org>
+
+Package: libustr-1.0-1
+Status: install ok installed
+Priority: optional
+Section: libs
+Installed-Size: 287
+Maintainer: Vaclav Ovsik <vaclav.ovsik@i.cz>
+Architecture: amd64
+Multi-Arch: same
+Source: ustr (1.0.4-3)
+Version: 1.0.4-3+b2
+Depends: libc6 (>= 2.14)
+Pre-Depends: multiarch-support
+Description: Micro string library: shared library
+ ustr (Micro string library) is a string API for C. It has tiny overhead over
+ just plain strdup(), is much safer, is easier to use, is faster for many
+ operations, can be used with read-only or automatically allocated data. You
+ don't even need to link to the library to use it (so there are no
+ dependencies).
+ .
+ This package contains the shared library for ustr.
+Homepage: http://www.and.org/ustr/
+
 

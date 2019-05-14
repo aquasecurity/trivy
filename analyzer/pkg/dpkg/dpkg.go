@@ -3,12 +3,12 @@ package dpkg
 import (
 	"bufio"
 	"bytes"
-	"errors"
 	"log"
 	"regexp"
 	"strings"
 
-	"github.com/deckarep/golang-set"
+	mapset "github.com/deckarep/golang-set"
+	"golang.org/x/xerrors"
 
 	"github.com/coreos/clair/ext/versionfmt"
 	"github.com/coreos/clair/ext/versionfmt/dpkg"
@@ -40,35 +40,28 @@ func (a debianPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.P
 		detected = true
 	}
 	if !detected {
-		return pkgs, errors.New("No package detected")
+		return pkgs, xerrors.New("no package detected")
 	}
 	return pkgs, nil
 }
 
 func (a debianPkgAnalyzer) parseDpkginfo(scanner *bufio.Scanner) (pkgs []analyzer.Package) {
-	var bin, src *analyzer.Package
+	var pkg *analyzer.Package
 	pkgMap := mapset.NewSet()
-	srcPkgMap := mapset.NewSet()
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if line == "" {
-			bin = nil
-			src = nil
+			pkg = nil
 			continue
 		}
 
-		bin, src = a.parseDpkgPkg(scanner)
-		if bin != nil {
-			pkgMap.Add(*bin)
-		}
-
-		if src != nil {
-			srcPkgMap.Add(*src)
+		pkg = a.parseDpkgPkg(scanner)
+		if pkg != nil {
+			pkgMap.Add(*pkg)
 		}
 	}
 	pkgs = mapsetToSlice(pkgMap)
-	pkgs = append(pkgs, mapsetToSlice(srcPkgMap)...)
 	return pkgs
 }
 
@@ -81,7 +74,7 @@ func mapsetToSlice(features mapset.Set) []analyzer.Package {
 	return uniqueLayerFeatures
 }
 
-func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (binPkg *analyzer.Package, srcPkg *analyzer.Package) {
+func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *analyzer.Package) {
 	var (
 		name          string
 		version       string
@@ -120,13 +113,13 @@ func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (binPkg *analyze
 		}
 	}
 
-	if name != "" && version != "" {
-		if err := versionfmt.Valid(clairDpkg.ParserName, version); err != nil {
-			log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", name, version)
-		} else {
-			binPkg = &analyzer.Package{Name: name, Version: version, Type: analyzer.TypeBinary}
-		}
+	if name == "" || version == "" {
+		return nil
+	} else if err := versionfmt.Valid(clairDpkg.ParserName, version); err != nil {
+		log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", name, version)
+		return nil
 	}
+	pkg = &analyzer.Package{Name: name, Version: version}
 
 	// Source version and names are computed from binary package names and versions
 	// in dpkg.
@@ -142,14 +135,14 @@ func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (binPkg *analyze
 		sourceVersion = version
 	}
 
-	if sourceName != "" && sourceVersion != "" {
-		if err := versionfmt.Valid(dpkg.ParserName, version); err != nil {
-			log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", name, version)
-		} else {
-			srcPkg = &analyzer.Package{Name: sourceName, Version: sourceVersion, Type: analyzer.TypeSource}
-		}
+	if err := versionfmt.Valid(dpkg.ParserName, sourceVersion); err != nil {
+		log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", sourceName, sourceVersion)
+		return pkg
 	}
-	return binPkg, srcPkg
+	pkg.SrcName = sourceName
+	pkg.SrcVersion = sourceVersion
+
+	return pkg
 }
 
 func (a debianPkgAnalyzer) RequiredFiles() []string {
