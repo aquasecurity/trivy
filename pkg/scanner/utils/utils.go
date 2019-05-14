@@ -29,12 +29,21 @@ func MatchVersions(currentVersion *version.Version, rangeVersions []string) bool
 }
 
 func FormatVersion(pkg analyzer.Package) string {
-	v := pkg.Version
-	if pkg.Release != "" {
-		v = fmt.Sprintf("%s-%s", v, pkg.Release)
+	return formatVersion(pkg.Epoch, pkg.Version, pkg.Release)
+}
+
+func FormatSrcVersion(pkg analyzer.Package) string {
+	return formatVersion(pkg.SrcEpoch, pkg.SrcVersion, pkg.SrcRelease)
+}
+
+func formatVersion(epoch int, version, release string) string {
+	v := version
+	if release != "" {
+		v = fmt.Sprintf("%s-%s", v, release)
 	}
-	if pkg.Epoch != 0 {
-		v = fmt.Sprintf("%d:%s", pkg.Epoch, v)
+	if epoch != 0 {
+		v = fmt.Sprintf("%d:%s", epoch, v)
 	}
 	return v
+
 }

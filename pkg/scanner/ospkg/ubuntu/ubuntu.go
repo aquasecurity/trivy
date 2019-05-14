@@ -24,12 +24,12 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 
 	var vulns []vulnerability.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := ubuntu.Get(osVer, pkg.Name)
+		advisories, err := ubuntu.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Ubuntu advisories: %w", err)
 		}
 
-		installed := utils.FormatVersion(pkg)
+		installed := utils.FormatSrcVersion(pkg)
 		installedVersion, err := version.NewVersion(installed)
 		if err != nil {
 			log.Logger.Debugf("failed to parse Ubuntu installed package version: %w", err)

@@ -32,8 +32,6 @@ github.com/containerd/continuity v0.0.0-20180921161001-7f53d412b9eb h1:qSMRxG547
 github.com/containerd/continuity v0.0.0-20180921161001-7f53d412b9eb/go.mod h1:GL3xCUCBDV3CZiTSEKksMWbLE66hEyuu9qyDOOqM47Y=
 github.com/coreos/clair v0.0.0-20180919182544-44ae4bc9590a h1:glxUtT0RlaVJU86kg78ygzfhwW6D+uj5H+aOK01QDgI=
 github.com/coreos/clair v0.0.0-20180919182544-44ae4bc9590a/go.mod h1:uXhHPWAoRqw0jJc2f8RrPCwRhIo9otQ8OEWUFtpCiwA=
-github.com/d4l3k/messagediff v1.2.1 h1:ZcAIMYsUg0EAp9X+tt8/enBE/Q8Yd5kzPynLyKptt9U=
-github.com/d4l3k/messagediff v1.2.1/go.mod h1:Oozbb1TVXFac9FtSIxHBMnBCq2qeH/2KkEQxENCrlLo=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -116,8 +114,8 @@ github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e h1:RgQk53JHp
 github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e/go.mod h1:CT57kijsi8u/K/BOFA39wgDQJ9CxiF4nAY/ojJ6r6mM=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/knqyf263/berkeleydb v0.0.0-20190501065933-fafe01fb9662/go.mod h1:bu1CcN4tUtoRcI/B/RFHhxMNKFHVq/c3SV+UTyduoXg=
-github.com/knqyf263/fanal v0.0.0-20190513061210-e1980f95d1f5 h1:d6oqR7xZEMoNDp0x7/g/DCKZ1n0exzr76eyzOz8p2ls=
-github.com/knqyf263/fanal v0.0.0-20190513061210-e1980f95d1f5/go.mod h1:/3MJJHzCSQm4xQMUnBAGx7aI5zvWA98twxekdDcLzbY=
+github.com/knqyf263/fanal v0.0.0-20190514052804-ca40e6cb0e1a h1:2zG9YY77/Nv+dMcAA3EzRwoUWP0cWmQIuAumhEYZtNQ=
+github.com/knqyf263/fanal v0.0.0-20190514052804-ca40e6cb0e1a/go.mod h1:HTp1oNm2dPtIooJCspQHukx37GjPpj5DHuqlebTp4TI=
 github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b h1:DiDMmSwuY27PJxA2Gs0+uI/bQ/ehKARaGXRdlp+wFis=
 github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b/go.mod h1:o8sgWoz3JADecfc/cTYD92/Et1yMqMy0utV1z+VaZao=
 github.com/knqyf263/go-dep-parser v0.0.0-20190511063217-d5d543bfc261 h1:RPgPsbEsYj6LuOjZnKl2DvbfodNWRuWKZfWJkrD7l8s=

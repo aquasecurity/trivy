@@ -28,12 +28,12 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 
 	var vulns []vulnerability.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := redhat.Get(osVer, pkg.Name)
+		advisories, err := redhat.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
 		}
 
-		installed := utils.FormatVersion(pkg)
+		installed := utils.FormatSrcVersion(pkg)
 		installedVersion := version.NewVersion(installed)
 		for _, adv := range advisories {
 			fixedVersion := version.NewVersion(adv.FixedVersion)

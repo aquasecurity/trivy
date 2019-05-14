@@ -34,15 +34,12 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 
 	var vulns []vulnerability.DetectedVulnerability
 	for _, pkg := range pkgs {
-		if pkg.Type != analyzer.TypeSource {
-			continue
-		}
-		advisories, err := debianoval.Get(osVer, pkg.Name)
+		advisories, err := debianoval.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get debian OVAL: %w", err)
 		}
 
-		installed := utils.FormatVersion(pkg)
+		installed := utils.FormatSrcVersion(pkg)
 		installedVersion, err := version.NewVersion(installed)
 		if err != nil {
 			log.Logger.Debugf("failed to parse Debian installed package version: %w", err)
@@ -66,7 +63,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 				vulns = append(vulns, vuln)
 			}
 		}
-		advisories, err = debian.Get(osVer, pkg.Name)
+		advisories, err = debian.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get debian advisory: %w", err)
 		}
