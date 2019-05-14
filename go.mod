@@ -5,7 +5,6 @@ require (
 	github.com/GoogleCloudPlatform/docker-credential-gcr v1.5.0
 	github.com/aws/aws-sdk-go v1.19.11
 	github.com/coreos/clair v0.0.0-20180919182544-44ae4bc9590a
-	github.com/d4l3k/messagediff v1.2.1
 	github.com/deckarep/golang-set v1.7.1
 	github.com/docker/distribution v0.0.0-20180920194744-16128bbac47f
 	github.com/docker/docker v0.0.0-20180924202107-a9c061deec0f

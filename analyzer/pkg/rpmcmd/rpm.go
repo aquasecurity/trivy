@@ -75,7 +75,7 @@ func (a rpmCmdPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []analyzer.Pa
 
 func parseRPMOutput(line string) (pkg analyzer.Package, err error) {
 	fields := strings.Fields(line)
-	if len(fields) != 4 {
+	if len(fields) != 5 {
 		return pkg, xerrors.Errorf("Failed to parse package line: %s", line)
 	}
 
@@ -90,22 +90,62 @@ func parseRPMOutput(line string) (pkg analyzer.Package, err error) {
 		}
 	}
 
+	// parse source rpm
+	var srcName, srcVer, srcRel string
+	if fields[4] != "(none)" {
+		// source epoch is not included in SOURCERPM
+		srcName, srcVer, srcRel, _, _ = splitFileName(fields[4])
+	}
+
 	return analyzer.Package{
-		Name:    fields[0],
-		Epoch:   epoch,
-		Version: fields[2],
-		Release: fields[3],
+		Name:       fields[0],
+		Epoch:      epoch,
+		Version:    fields[2],
+		Release:    fields[3],
+		SrcName:    srcName,
+		SrcVersion: srcVer,
+		SrcRelease: srcRel,
+		SrcEpoch:   epoch, // NOTE: use epoch of binary package as epoch of src package
 	}, nil
 }
 
 func outputPkgInfo(dir string) (out []byte, err error) {
-	const old = "%{NAME} %{EPOCH} %{VERSION} %{RELEASE}\n"
-	const new = "%{NAME} %{EPOCHNUM} %{VERSION} %{RELEASE}\n"
+	const old = "%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{SOURCERPM}\n"
+	const new = "%{NAME} %{EPOCHNUM} %{VERSION} %{RELEASE} %{SOURCERPM}\n"
 	out, err = exec.Command("rpm", "--dbpath", dir, "-qa", "--qf", new).Output()
 	if err != nil {
 		return exec.Command("rpm", "--dbpath", dir, "-qa", "--qf", old).Output()
 	}
 	return out, nil
+}
+
+// splitFileName returns a name, version, release, epoch, arch, e.g.::
+//    foo-1.0-1.i386.rpm returns foo, 1.0, 1, i386
+//    1:bar-9-123a.ia64.rpm returns bar, 9, 123a, 1, ia64
+// https://github.com/rpm-software-management/yum/blob/043e869b08126c1b24e392f809c9f6871344c60d/rpmUtils/miscutils.py#L301
+func splitFileName(filename string) (name, ver, rel string, epoch int, arch string) {
+	if strings.HasSuffix(filename, ".rpm") {
+		filename = filename[:len(filename)-4]
+	}
+
+	archIndex := strings.LastIndex(filename, ".")
+	arch = filename[archIndex+1:]
+
+	relIndex := strings.LastIndex(filename[:archIndex], "-")
+	rel = filename[relIndex+1 : archIndex]
+
+	verIndex := strings.LastIndex(filename[:relIndex], "-")
+	ver = filename[verIndex+1 : relIndex]
+
+	epochIndex := strings.Index(filename, ":")
+	if epochIndex == -1 {
+		epoch = 0
+	} else {
+		epoch, _ = strconv.Atoi(filename[:epochIndex])
+	}
+
+	name = filename[epochIndex+1 : verIndex]
+	return name, ver, rel, epoch, arch
 }
 
 func (a rpmCmdPkgAnalyzer) RequiredFiles() []string {
