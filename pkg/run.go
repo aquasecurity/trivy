@@ -31,9 +31,8 @@ func Run(c *cli.Context) (err error) {
 	}
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
-	clean := c.Bool("clean")
-	if clean {
-		log.Logger.Info("Cleaning caches...")
+	if c.Bool("reset") {
+		log.Logger.Info("Resetting...")
 		if err = cache.Clear(); err != nil {
 			return xerrors.New("failed to remove image layer cache")
 		}
@@ -41,6 +40,13 @@ func Run(c *cli.Context) (err error) {
 			return xerrors.New("failed to remove cache")
 		}
 		return nil
+	}
+
+	if c.Bool("clear-cache") {
+		log.Logger.Info("Removing image caches...")
+		if err = cache.Clear(); err != nil {
+			return xerrors.New("failed to remove image layer cache")
+		}
 	}
 
 	args := c.Args()
