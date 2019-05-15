@@ -6,22 +6,15 @@ import (
 	"fmt"
 	"os"
 
-	"golang.org/x/crypto/ssh/terminal"
-
 	"github.com/genuinetools/reg/registry"
-
-	"github.com/knqyf263/trivy/pkg/log"
-
-	"github.com/knqyf263/trivy/pkg/scanner/library"
-
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
-
-	"github.com/knqyf263/trivy/pkg/scanner/ospkg"
-
-	"golang.org/x/xerrors"
-
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/fanal/extractor"
+	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/knqyf263/trivy/pkg/scanner/library"
+	"github.com/knqyf263/trivy/pkg/scanner/ospkg"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/xerrors"
 )
 
 func ScanImage(imageName, filePath string) (map[string][]vulnerability.DetectedVulnerability, error) {
@@ -29,17 +22,17 @@ func ScanImage(imageName, filePath string) (map[string][]vulnerability.DetectedV
 	results := map[string][]vulnerability.DetectedVulnerability{}
 	ctx := context.Background()
 
-	image, err := registry.ParseImage(imageName)
-	if err != nil {
-		return nil, xerrors.Errorf("invalid image: %w", err)
-	}
-	if image.Tag == "latest" {
-		log.Logger.Warn("You should avoid using the :latest tag as it is cached. You need to specify '--clean' option when :latest image is changed")
-	}
-
 	var target string
 	var files extractor.FileMap
 	if imageName != "" {
+		image, err := registry.ParseImage(imageName)
+		if err != nil {
+			return nil, xerrors.Errorf("invalid image: %w", err)
+		}
+		if image.Tag == "latest" {
+			log.Logger.Warn("You should avoid using the :latest tag as it is cached. You need to specify '--clear-cache' option when :latest image is changed")
+		}
+
 		target = imageName
 		files, err = analyzer.Analyze(ctx, imageName)
 		if err != nil {
