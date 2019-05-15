@@ -3,7 +3,7 @@ package npm
 import "github.com/knqyf263/go-dep-parser/pkg/types"
 
 var (
-	// docker run --name composer --rm -it node:12-alpine bash
+	// docker run --name composer --rm -it node:12-alpine sh
 	// npm init --force
 	// npm install --save promise jquery
 	// npm ls | grep -E -o "\S+@\S+" | awk -F@ 'NR>0 {printf("{\""$1"\", \""$2"\"},\n")}'
@@ -13,7 +13,7 @@ var (
 		{"promise", "8.0.3"},
 	}
 
-	// docker run --name composer --rm -it node:12-alpine bash
+	// docker run --name composer --rm -it node:12-alpine sh
 	// npm init --force
 	// npm install --save react redux
 	// npm ls | grep -E -o "\S+@\S+" | awk -F@ 'NR>0 {printf("{\""$1"\", \""$2"\"},\n")}'
@@ -32,7 +32,7 @@ var (
 		{"symbol-observable", "1.2.0"},
 	}
 
-	// docker run --name composer --rm -it node:12-alpine bash
+	// docker run --name composer --rm -it node:12-alpine sh
 	// npm init --force
 	// npm install --save react redux
 	// npm install --save-dev mocha
@@ -52,7 +52,7 @@ var (
 		{"symbol-observable", "1.2.0"},
 	}
 
-	// docker run --name composer --rm -it node:12-alpine bash
+	// docker run --name composer --rm -it node:12-alpine sh
 	// npm init --force
 	// npm install --save react redux
 	// npm install --save-dev mocha
