@@ -39,6 +39,7 @@ func Parse(r io.Reader) (libs []types.Library, err error) {
 			if lib.Name == "" {
 				return nil, xerrors.New("Invalid yarn.lock format")
 			}
+			// fetch between version prefix and last double-quote
 			version := line[11:(len(line) -1)]
 			symbol := fmt.Sprintf("%s@%s", lib.Name, version)
 			if _, ok := unique[symbol]; ok {
@@ -47,15 +48,19 @@ func Parse(r io.Reader) (libs []types.Library, err error) {
 			}
 
 			lib.Version = version
-			fmt.Println(lib)
 			libs = append(libs, lib)
 			lib = types.Library{}
 			unique[symbol] = struct{}{}
 			continue
 		}
+
+		// packagename line contains "@"
 		atmarkPosition := strings.Index(line, "@")
 		if atmarkPosition > 0 {
 			var name string
+
+			// sometimes package name start double-quote
+			// ex) "string-width@^1.0.2 || 2", string-width@^2.0.0, string-width@^2.1.1:
 			if strings.HasPrefix(line, `"`) {
 				name = line[1:atmarkPosition]
 			} else {
@@ -64,6 +69,5 @@ func Parse(r io.Reader) (libs []types.Library, err error) {
 			lib.Name = name
 		}
 	}
-	fmt.Println(libs)
 	return libs, nil
 }
