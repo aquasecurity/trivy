@@ -9,6 +9,45 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Compatible with
 
 <img src="imgs/usage.gif" width="700">
 
+# Accuracy Comparison
+
+<img src="imgs/alpine_comparison.png" width="700">
+
+
+# TOC
+- [Abstract](#abstract)
+- [Features](#features)
+- [Installation](#installation)
+  - [RHEL/CentOS](#rhelcentos)
+  - [Debian/Ubuntu](#debianubuntu)
+  - [Mac OS X / Homebrew](#mac-os-x--homebrew)
+  - [Binary (Including Windows)](#binary-including-windows)
+  - [From source](#from-source)
+- [Quick Start](#quick-start)
+- [Examples](#examples)
+  - [Basic Usage](#basic-usage)
+  - [Scan an image](#scan-an-image)
+  - [Scan an image file](#scan-an-image-file)
+  - [Save the results as JSON](#save-the-results-as-json)
+  - [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
+  - [Skip an update of vulnerability DB](#skip-an-update-of-vulnerability-db)
+  - [Ignore unfixed vulnerabilities](#ignore-unfixed-vulnerabilities)
+  - [Specify exit code](#specify-exit-code)
+  - [Ignore the specified vulnerabilities](#ignore-the-specified-vulnerabilities)
+  - [Clean all caches](#clean-all-caches)
+- [Continuous Integration (CI)](#continuous-integration-ci)
+  - [Travis CI](#travis-ci)
+  - [Circle CI](#circle-ci)
+- [Usage](#usage)
+- [Comparison with other scanners](#comparison-with-other-scanners)
+  - [Overview](#overview)
+  - [vs Clair, Quay](#vs-clair-quay)
+  - [vs Anchore Engine](#vs-anchore-engine)
+  - [vs Docker Hub, GCR](#vs-docker-hub-gcr)
+- [Q&A](#qa)
+  - [Homebrew](#homebrew)
+  - [Others](#others)
+
 # Abstract
 `Trivy` is a simple and comprehensive vulnerability scanner for containers.
 `Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, etc.).
@@ -98,15 +137,15 @@ You need to install `rpm` command for scanning RHEL/CentOS.
 $ go get -u github.com/knqyf263/trivy
 ```
 
-# Examples
-## Basic Usage
-### Scan an image
+# Quick Start
+
 Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with cache.**
 
 ```
 $ trivy nginx:1.16.0-alpine
 ```
 
+# Examples
 ### Scan an image file
 
 ```
