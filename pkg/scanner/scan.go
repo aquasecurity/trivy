@@ -34,7 +34,7 @@ func ScanImage(imageName, filePath string) (map[string][]vulnerability.DetectedV
 		return nil, xerrors.Errorf("invalid image: %w", err)
 	}
 	if image.Tag == "latest" {
-		log.Logger.Warn("You should avoid using the :latest tag as it is cached. You need to specify '--clean' option when :latest image is changed")
+		log.Logger.Warn("You should avoid using the :latest tag as it is cached. You need to specify '--clear-cache' option when :latest image is changed")
 	}
 
 	var target string
