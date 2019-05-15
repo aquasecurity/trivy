@@ -32,6 +32,11 @@ func TestParse(t *testing.T) {
 			file:      "testdata/yarn_many.lock",
 			libraries: YarnMany,
 		},
+		{
+			file:      "testdata/yarn_realworld.lock",
+			libraries: YarnRealWorld,
+		},
+
 	}
 
 	for _, v := range vectors {

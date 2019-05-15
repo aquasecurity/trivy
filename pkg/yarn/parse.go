@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	yarnPackageRegexp      = regexp.MustCompile(`(?P<package>[^\s]*)@.*`)
+	yarnPackageRegexp      = regexp.MustCompile(`(?P<package>.*?)@[\^~*><= ]*[0-9\*]`)
 	yarnVersionPrefix = `  version "`
 )
 
@@ -35,6 +35,8 @@ func Parse(r io.Reader) (libs []types.Library, err error) {
 		if len(line) < 1 {
 			continue
 		}
+
+		// parse version
 		if strings.HasPrefix(line, yarnVersionPrefix) {
 			if lib.Name == "" {
 				return nil, xerrors.New("Invalid yarn.lock format")
@@ -54,17 +56,21 @@ func Parse(r io.Reader) (libs []types.Library, err error) {
 			continue
 		}
 
-		// packagename line contains "@"
-		atmarkPosition := strings.Index(line, "@")
-		if atmarkPosition > 0 {
-			var name string
+		// packagename line start 1 char
+		if line[:1] != " "  && line[:1] != "#" {
+			capture := yarnPackageRegexp.FindStringSubmatch(line)
+			if len(capture) < 2 {
+				continue
+			}
 
+			matched := capture[len(capture) - 1]
+			var name string
 			// sometimes package name start double-quote
 			// ex) "string-width@^1.0.2 || 2", string-width@^2.0.0, string-width@^2.1.1:
-			if strings.HasPrefix(line, `"`) {
-				name = line[1:atmarkPosition]
+			if strings.HasPrefix(matched, `"`) {
+				name = matched[1:]
 			} else {
-				name = line[:atmarkPosition]
+				name = matched
 			}
 			lib.Name = name
 		}
