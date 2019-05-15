@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -50,8 +51,12 @@ func (tw TableWriter) write(result Result) {
 		if len(splittedTitle) >= 12 {
 			title = strings.Join(splittedTitle[:12], " ") + "..."
 		}
-		table.Append([]string{v.PkgName, v.VulnerabilityID, vulnerability.ColorizeSeverity(v.Severity),
-			v.InstalledVersion, v.FixedVersion, title})
+		if tw.Output == os.Stdout {
+			table.Append([]string{v.PkgName, v.VulnerabilityID, vulnerability.ColorizeSeverity(v.Severity),
+				v.InstalledVersion, v.FixedVersion, title})
+		} else {
+			table.Append([]string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion, title})
+		}
 	}
 
 	var results []string
