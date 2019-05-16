@@ -18,6 +18,7 @@ import (
 	_ "github.com/knqyf263/fanal/analyzer/library/composer"
 	_ "github.com/knqyf263/fanal/analyzer/library/npm"
 	_ "github.com/knqyf263/fanal/analyzer/library/pipenv"
+	_ "github.com/knqyf263/fanal/analyzer/library/yarn"
 	_ "github.com/knqyf263/fanal/analyzer/os/alpine"
 	_ "github.com/knqyf263/fanal/analyzer/os/amazonlinux"
 	_ "github.com/knqyf263/fanal/analyzer/os/debianbase"
@@ -78,13 +79,13 @@ func run() (err error) {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Packages: %d\n", len(pkgs))
+	fmt.Printf("via image Packages: %d\n", len(pkgs))
 
 	pkgs, err = analyzer.GetPackagesFromCommands(os, files)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Packages: %d\n", len(pkgs))
+	fmt.Printf("via file Packages: %d\n", len(pkgs))
 
 	libs, err := analyzer.GetLibraries(files)
 	if err != nil {

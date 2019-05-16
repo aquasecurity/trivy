@@ -1,4 +1,4 @@
-package npm
+package yarn
 
 import (
 	"bytes"
@@ -8,23 +8,25 @@ import (
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/fanal/extractor"
 	"github.com/knqyf263/fanal/utils"
-	"github.com/knqyf263/go-dep-parser/pkg/npm"
 	"github.com/knqyf263/go-dep-parser/pkg/types"
+	"github.com/knqyf263/go-dep-parser/pkg/yarn"
 	"golang.org/x/xerrors"
 )
 
 func init() {
-	analyzer.RegisterLibraryAnalyzer(&npmLibraryAnalyzer{})
+	analyzer.RegisterLibraryAnalyzer(&yarnLibraryAnalyzer{})
 }
 
-type npmLibraryAnalyzer struct{}
+type yarnLibraryAnalyzer struct{}
 
-func (a npmLibraryAnalyzer) Analyze(fileMap extractor.FileMap) (map[analyzer.FilePath][]types.Library, error) {
+func (a yarnLibraryAnalyzer) Analyze(fileMap extractor.FileMap) (map[analyzer.FilePath][]types.Library, error) {
 	libMap := map[analyzer.FilePath][]types.Library{}
 	requiredFiles := a.RequiredFiles()
 
 	for filename, content := range fileMap {
+
 		basename := filepath.Base(filename)
+
 		if !utils.StringInSlice(basename, requiredFiles) {
 			continue
 		}
@@ -35,15 +37,16 @@ func (a npmLibraryAnalyzer) Analyze(fileMap extractor.FileMap) (map[analyzer.Fil
 		}
 
 		r := bytes.NewBuffer(content)
-		libs, err := npm.Parse(r)
+		libs, err := yarn.Parse(r)
 		if err != nil {
-			return nil, xerrors.Errorf("invalid package-lock.json format: %w", err)
+			return nil, xerrors.Errorf("invalid yarn.lock format: %w", err)
 		}
 		libMap[analyzer.FilePath(filename)] = libs
 	}
+
 	return libMap, nil
 }
 
-func (a npmLibraryAnalyzer) RequiredFiles() []string {
-	return []string{"package-lock.json"}
+func (a yarnLibraryAnalyzer) RequiredFiles() []string {
+	return []string{"yarn.lock"}
 }
