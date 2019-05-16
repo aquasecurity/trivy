@@ -1,8 +1,14 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+)
+
+var (
+	NODE_DEP_DIR  = "node_modules"
+	PathSeparator = fmt.Sprintf("%c", os.PathSeparator)
 )
 
 func CacheDir() string {
