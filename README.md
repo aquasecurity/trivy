@@ -5,9 +5,12 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/knqyf263/trivy)](https://goreportcard.com/report/github.com/knqyf263/trivy)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/knqyf263/trivy/blob/master/LICENSE)
 
-A Simple and Comprehensive Vulnerability Scanner for Containers, Compatible with CI
+A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 
 <img src="imgs/usage.gif" width="700">
+
+<img src="imgs/usage1.png" width="600">
+<img src="imgs/usage2.png" width="600">
 
 # Accuracy Comparison
 
@@ -48,9 +51,10 @@ See [Comparison with other scanners](#comparison-with-other-scanners) for detail
 - [Usage](#usage)
 - [Comparison with other scanners](#comparison-with-other-scanners)
   - [Overview](#overview)
-  - [vs Clair, Quay](#vs-clair-quay)
+  - [Accuracy](#accuracy)
+  - [vs Clair, Quay](#vs-clair)
   - [vs Anchore Engine](#vs-anchore-engine)
-  - [vs Docker Hub, GCR](#vs-docker-hub-gcr)
+  - [vs Docker Hub, GCR](#vs-quay-docker-hub-gcr)
 - [Q&A](#qa)
   - [Homebrew](#homebrew)
   - [Others](#others)
@@ -59,7 +63,7 @@ See [Comparison with other scanners](#comparison-with-other-scanners) for detail
 
 `Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive vulnerability scanner for containers.
 `Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, yarn etc.).
-`Trivy` is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify a container image name.
+`Trivy` is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify an image name of container.
 
 It is considered to be used in CI. Before pushing to a container registry, you can scan your local container image easily.
 See [here](#continuous-integration-ci) for details.
@@ -71,14 +75,15 @@ See [here](#continuous-integration-ci) for details.
   - **Application dependencies** (Bundler, Composer, Pipenv, npm, yarn and Cargo)
 - Simple
   - Specify only an image name
+  - See [Quick Start](#quick-start) and [Examples](#examples)
 - Easy installation
   - **No need for prerequirements** such as installation of DB, libraries, etc.
   - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](#installation))
 - High accuracy
   - **Especially Alpine Linux and RHEL/CentOS** (See [Comparison with other scanners](#comparison-with-other-scanners))
   - Other OSes are also high
-- Continuous Integration
-  - **Compatible with CI** such as Travis CI, CircleCI, Jenkins, etc.
+- DevSecOps
+  - **Suitable for CI** such as Travis CI, CircleCI, Jenkins, etc.
   - See [CI Example](#continuous-integration-ci)
 
 # Installation
@@ -101,7 +106,7 @@ $ sudo yum -y install trivy
 or
 
 ```
-$ rpm -ivh https://github.com/knqyf263/trivy/releases/download/v0.0.12/trivy_0.0.12_Linux-64bit.rpm
+$ rpm -ivh https://github.com/knqyf263/trivy/releases/download/v0.0.13/trivy_0.0.13_Linux-64bit.rpm
 ```
 
 ## Debian/Ubuntu
@@ -122,8 +127,8 @@ or
 
 ```
 $ sudo apt-get install rpm
-$ wget https://github.com/knqyf263/trivy/releases/download/v0.0.12/trivy_0.0.12_Linux-64bit.deb
-$ sudo dpkg -i trivy_0.0.12_Linux-64bit.deb
+$ wget https://github.com/knqyf263/trivy/releases/download/v0.0.13/trivy_0.0.13_Linux-64bit.deb
+$ sudo dpkg -i trivy_0.0.13_Linux-64bit.deb
 ```
 
 ## Mac OS X / Homebrew
@@ -147,7 +152,6 @@ You need to install `rpm` command for scanning RHEL/CentOS.
 $ go get -u github.com/knqyf263/trivy
 ```
 
-
 # Quick Start
 
 Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with cache.**. See [Clear image caches](#clear-image-caches)
@@ -159,16 +163,7 @@ $ trivy [YOUR_IMAGE_NAME]
 For example:
 
 ```
-$ trivy python:3.7-alpine
-```
-
-# Examples
-
-### Scan an image
-Simply specify an image name (and a tag).
-
-```
-$ trivy python:3.7-alpine
+$ trivy python:3.4-alpine
 ```
 
 <details>
@@ -192,6 +187,223 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 </details>
 
+# Examples
+
+### Scan an image
+
+Simply specify an image name (and a tag).
+
+```
+$ trivy knqyf263/test-image:1.2.3
+```
+
+<details>
+<summary>Result</summary>
+
+```
+2019-05-16T12:58:55.967+0900    INFO    Updating vulnerability database...
+2019-05-16T12:59:03.150+0900    INFO    Detecting Alpine vulnerabilities...
+2019-05-16T12:59:03.156+0900    INFO    Updating bundler Security DB...
+2019-05-16T12:59:04.941+0900    INFO    Detecting bundler vulnerabilities...
+2019-05-16T12:59:04.942+0900    INFO    Updating cargo Security DB...
+2019-05-16T12:59:05.967+0900    INFO    Detecting cargo vulnerabilities...
+2019-05-16T12:59:05.967+0900    INFO    Updating composer Security DB...
+2019-05-16T12:59:07.834+0900    INFO    Detecting composer vulnerabilities...
+2019-05-16T12:59:07.834+0900    INFO    Updating npm Security DB...
+2019-05-16T12:59:10.285+0900    INFO    Detecting npm vulnerabilities...
+2019-05-16T12:59:10.285+0900    INFO    Updating pipenv Security DB...
+2019-05-16T12:59:11.487+0900    INFO    Detecting pipenv vulnerabilities...
+
+knqyf263/test-image:1.2.3 (alpine 3.7.1)
+========================================
+Total: 26 (UNKNOWN: 0, LOW: 3, MEDIUM: 16, HIGH: 5, CRITICAL: 2)
+
++---------+------------------+----------+-------------------+---------------+----------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |              TITLE               |
++---------+------------------+----------+-------------------+---------------+----------------------------------+
+| curl    | CVE-2018-14618   | CRITICAL | 7.61.0-r0         | 7.61.1-r0     | curl: NTLM password overflow     |
+|         |                  |          |                   |               | via integer overflow             |
++         +------------------+----------+                   +---------------+----------------------------------+
+|         | CVE-2018-16839   | HIGH     |                   | 7.61.1-r1     | curl: Integer overflow leading   |
+|         |                  |          |                   |               | to heap-based buffer overflow in |
+|         |                  |          |                   |               | Curl_sasl_create_plain_message() |
++         +------------------+          +                   +---------------+----------------------------------+
+|         | CVE-2019-3822    |          |                   | 7.61.1-r2     | curl: NTLMv2 type-3 header       |
+|         |                  |          |                   |               | stack buffer overflow            |
++         +------------------+          +                   +---------------+----------------------------------+
+|         | CVE-2018-16840   |          |                   | 7.61.1-r1     | curl: Use-after-free when        |
+|         |                  |          |                   |               | closing "easy" handle in         |
+|         |                  |          |                   |               | Curl_close()                     |
++         +------------------+----------+                   +               +----------------------------------+
+|         | CVE-2018-16842   | MEDIUM   |                   |               | curl: Heap-based buffer          |
+|         |                  |          |                   |               | over-read in the curl tool       |
+|         |                  |          |                   |               | warning formatting               |
++         +------------------+          +                   +---------------+----------------------------------+
+|         | CVE-2018-16890   |          |                   | 7.61.1-r2     | curl: NTLM type-2 heap           |
+|         |                  |          |                   |               | out-of-bounds buffer read        |
++         +------------------+          +                   +               +----------------------------------+
+|         | CVE-2019-3823    |          |                   |               | curl: SMTP end-of-response       |
+|         |                  |          |                   |               | out-of-bounds read               |
++---------+------------------+----------+-------------------+---------------+----------------------------------+
+| git     | CVE-2018-17456   | HIGH     | 2.15.2-r0         | 2.15.3-r0     | git: arbitrary code execution    |
+|         |                  |          |                   |               | via .gitmodules                  |
++         +------------------+          +                   +               +----------------------------------+
+|         | CVE-2018-19486   |          |                   |               | git: Improper handling of        |
+|         |                  |          |                   |               | PATH allows for commands to be   |
+|         |                  |          |                   |               | executed from...                 |
++---------+------------------+----------+-------------------+---------------+----------------------------------+
+| libssh2 | CVE-2019-3855    | CRITICAL | 1.8.0-r2          | 1.8.1-r0      | libssh2: Integer overflow in     |
+|         |                  |          |                   |               | transport read resulting in      |
+|         |                  |          |                   |               | out of bounds write...           |
++         +------------------+----------+                   +               +----------------------------------+
+|         | CVE-2019-3859    | MEDIUM   |                   |               | libssh2: Unchecked use of        |
+|         |                  |          |                   |               | _libssh2_packet_require and      |
+|         |                  |          |                   |               | _libssh2_packet_requirev         |
+|         |                  |          |                   |               | resulting in out-of-bounds       |
+|         |                  |          |                   |               | read                             |
++         +------------------+          +                   +               +----------------------------------+
+|         | CVE-2019-3858    |          |                   |               | libssh2: Zero-byte allocation    |
+|         |                  |          |                   |               | with a specially crafted SFTP    |
+|         |                  |          |                   |               | packed leading to an...          |
++         +------------------+          +                   +               +----------------------------------+
+|         | CVE-2019-3863    |          |                   |               | libssh2: Integer overflow        |
+|         |                  |          |                   |               | in user authenticate             |
+|         |                  |          |                   |               | keyboard interactive allows      |
+|         |                  |          |                   |               | out-of-bounds writes             |
++         +------------------+          +                   +               +----------------------------------+
+|         | CVE-2019-3862    |          |                   |               | libssh2: Out-of-bounds memory    |
+|         |                  |          |                   |               | comparison with specially        |
+|         |                  |          |                   |               | crafted message channel          |
+|         |                  |          |                   |               | request                          |
++         +------------------+          +                   +               +----------------------------------+
+|         | CVE-2019-3860    |          |                   |               | libssh2: Out-of-bounds reads     |
+|         |                  |          |                   |               | with specially crafted SFTP      |
+|         |                  |          |                   |               | packets                          |
++         +------------------+          +                   +               +----------------------------------+
+|         | CVE-2019-3857    |          |                   |               | libssh2: Integer overflow in     |
+|         |                  |          |                   |               | SSH packet processing channel    |
+|         |                  |          |                   |               | resulting in out of...           |
++         +------------------+          +                   +               +----------------------------------+
+|         | CVE-2019-3861    |          |                   |               | libssh2: Out-of-bounds reads     |
+|         |                  |          |                   |               | with specially crafted SSH       |
+|         |                  |          |                   |               | packets                          |
++         +------------------+          +                   +               +----------------------------------+
+|         | CVE-2019-3856    |          |                   |               | libssh2: Integer overflow in     |
+|         |                  |          |                   |               | keyboard interactive handling    |
+|         |                  |          |                   |               | resulting in out of bounds...    |
++---------+------------------+          +-------------------+---------------+----------------------------------+
+| libxml2 | CVE-2018-14567   |          | 2.9.7-r0          | 2.9.8-r1      | libxml2: Infinite loop when      |
+|         |                  |          |                   |               | --with-lzma is used allows for   |
+|         |                  |          |                   |               | denial of service...             |
++         +------------------+          +                   +               +----------------------------------+
+|         | CVE-2018-14404   |          |                   |               | libxml2: NULL pointer            |
+|         |                  |          |                   |               | dereference in                   |
+|         |                  |          |                   |               | xpath.c:xmlXPathCompOpEval()     |
+|         |                  |          |                   |               | can allow attackers to cause     |
+|         |                  |          |                   |               | a...                             |
++         +------------------+----------+                   +               +----------------------------------+
+|         | CVE-2018-9251    | LOW      |                   |               | libxml2: infinite loop in        |
+|         |                  |          |                   |               | xz_decomp function in xzlib.c    |
++---------+------------------+----------+-------------------+---------------+----------------------------------+
+| openssh | CVE-2019-6109    | MEDIUM   | 7.5_p1-r9         | 7.5_p1-r10    | openssh: Missing character       |
+|         |                  |          |                   |               | encoding in progress display     |
+|         |                  |          |                   |               | allows for spoofing of scp...    |
++         +------------------+          +                   +               +----------------------------------+
+|         | CVE-2019-6111    |          |                   |               | openssh: Improper validation     |
+|         |                  |          |                   |               | of object names allows           |
+|         |                  |          |                   |               | malicious server to overwrite    |
+|         |                  |          |                   |               | files...                         |
++         +------------------+----------+                   +               +----------------------------------+
+|         | CVE-2018-20685   | LOW      |                   |               | openssh: scp client improper     |
+|         |                  |          |                   |               | directory name validation        |
++---------+------------------+----------+-------------------+---------------+----------------------------------+
+| sqlite  | CVE-2018-20346   | MEDIUM   | 3.21.0-r1         | 3.25.3-r0     | sqlite: Multiple flaws in        |
+|         |                  |          |                   |               | sqlite which can be triggered    |
+|         |                  |          |                   |               | via corrupted internal...        |
++---------+------------------+----------+-------------------+---------------+----------------------------------+
+| tar     | CVE-2018-20482   | LOW      | 1.29-r1           | 1.31-r0       | tar: Infinite read loop in       |
+|         |                  |          |                   |               | sparse_dump_region function in   |
+|         |                  |          |                   |               | sparse.c                         |
++---------+------------------+----------+-------------------+---------------+----------------------------------+
+
+ruby-app/Gemfile.lock
+=====================
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
++----------------------+------------------+----------+-------------------+---------------+--------------------------------+
+|       LIBRARY        | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
++----------------------+------------------+----------+-------------------+---------------+--------------------------------+
+| rails-html-sanitizer | CVE-2018-3741    | MEDIUM   | 1.0.3             | >= 1.0.4      | rubygem-rails-html-sanitizer:  |
+|                      |                  |          |                   |               | non-whitelisted attributes     |
+|                      |                  |          |                   |               | are present in sanitized       |
+|                      |                  |          |                   |               | output when input with         |
+|                      |                  |          |                   |               | specially-crafted...           |
++----------------------+------------------+----------+-------------------+---------------+--------------------------------+
+
+rust-app/Cargo.lock
+===================
+Total: 3 (UNKNOWN: 3, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
++---------+-------------------+----------+-------------------+---------------+--------------------------------+
+| LIBRARY | VULNERABILITY ID  | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
++---------+-------------------+----------+-------------------+---------------+--------------------------------+
+| ammonia | RUSTSEC-2019-0001 | UNKNOWN  | 1.9.0             | >= 2.1.0      | Uncontrolled recursion leads   |
+|         |                   |          |                   |               | to abort in HTML serialization |
++---------+-------------------+          +-------------------+---------------+--------------------------------+
+| openssl | RUSTSEC-2016-0001 |          | 0.8.3             | >= 0.9.0      | SSL/TLS MitM vulnerability due |
+|         |                   |          |                   |               | to insecure defaults           |
++         +-------------------+          +                   +---------------+--------------------------------+
+|         | RUSTSEC-2018-0010 |          |                   | >= 0.10.9     | Use after free in CMS Signing  |
++---------+-------------------+----------+-------------------+---------------+--------------------------------+
+
+php-app/composer.lock
+=====================
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
++-------------------+------------------+----------+-------------------+---------------------+--------------------------------+
+|      LIBRARY      | VULNERABILITY ID | SEVERITY | INSTALLED VERSION |    FIXED VERSION    |             TITLE              |
++-------------------+------------------+----------+-------------------+---------------------+--------------------------------+
+| guzzlehttp/guzzle | CVE-2016-5385    | MEDIUM   | 6.2.0             | 6.2.1, 4.2.4, 5.3.1 | PHP: sets environmental        |
+|                   |                  |          |                   |                     | variable based on user         |
+|                   |                  |          |                   |                     | supplied Proxy request header  |
++-------------------+------------------+----------+-------------------+---------------------+--------------------------------+
+
+node-app/package-lock.json
+==========================
+Total: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 3, HIGH: 1, CRITICAL: 0)
+
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| jquery  | CVE-2019-5428    | MEDIUM   | 3.3.9             | >=3.4.0       | Modification of                |
+|         |                  |          |                   |               | Assumed-Immutable Data (MAID)  |
++         +------------------+          +                   +               +--------------------------------+
+|         | CVE-2019-11358   |          |                   |               | js-jquery: prototype pollution |
+|         |                  |          |                   |               | in object's prototype leading  |
+|         |                  |          |                   |               | to denial of service or...     |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| lodash  | CVE-2018-16487   | HIGH     | 4.17.4            | >=4.17.11     | lodash: Prototype pollution in |
+|         |                  |          |                   |               | utilities function             |
++         +------------------+----------+                   +---------------+                                +
+|         | CVE-2018-3721    | MEDIUM   |                   | >=4.17.5      |                                |
+|         |                  |          |                   |               |                                |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+
+python-app/Pipfile.lock
+=======================
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
++---------+------------------+----------+-------------------+---------------+------------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |               TITLE                |
++---------+------------------+----------+-------------------+---------------+------------------------------------+
+| django  | CVE-2019-6975    | MEDIUM   | 2.0.9             | 2.0.11        | python-django:                     |
+|         |                  |          |                   |               | memory exhaustion in               |
+|         |                  |          |                   |               | django.utils.numberformat.format() |
++---------+------------------+----------+-------------------+---------------+------------------------------------+
+```
+
+</details>
+
 ### Scan an image file
 
 ```
@@ -203,49 +415,44 @@ $ trivy --input ruby-2.3.0.tar
 <summary>Result</summary>
 
 ```
-2019-05-16T01:40:44.254+0900    INFO    Updating vulnerability database...
-2019-05-16T01:40:46.035+0900    INFO    Detecting Debian vulnerabilities...
+2019-05-16T12:45:57.332+0900    INFO    Updating vulnerability database...
+2019-05-16T12:45:59.119+0900    INFO    Detecting Debian vulnerabilities...
 
 ruby-2.3.0.tar (debian 8.4)
 ===========================
-Total: 8136 (UNKNOWN: 5, LOW: 326, MEDIUM: 6020, HIGH: 1680, CRITICAL: 105)
+Total: 7447 (UNKNOWN: 5, LOW: 326, MEDIUM: 5695, HIGH: 1316, CRITICAL: 105)
 
-+-----------------------------+------------------+----------+---------------------------+----------------------------------+-------------------------------------------------+
-|           LIBRARY           | VULNERABILITY ID | SEVERITY |     INSTALLED VERSION     |          FIXED VERSION           |                      TITLE                      |
-+-----------------------------+------------------+----------+---------------------------+----------------------------------+-------------------------------------------------+
-| bash                        | CVE-2016-7543    | HIGH     | 4.3-11                    | 4.3-11+deb8u1                    | bash: Specially crafted                         |
-|                             |                  |          |                           |                                  | SHELLOPTS+PS4 variables allows                  |
-|                             |                  |          |                           |                                  | command substitution                            |
-+                             +------------------+          +                           +----------------------------------+-------------------------------------------------+
-|                             | CVE-2019-9924    |          |                           | 4.3-11+deb8u2                    | bash: BASH_CMD is writable in                   |
-|                             |                  |          |                           |                                  | restricted bash shells                          |
-+-----------------------------+------------------+          +---------------------------+----------------------------------+-------------------------------------------------+
-| binutils                    | CVE-2017-13716   |          | 2.25-5                    |                                  | binutils: Memory leak with the                  |
-|                             |                  |          |                           |                                  | C++ symbol demangler routine                    |
-|                             |                  |          |                           |                                  | in libiberty                                    |
-+                             +------------------+          +                           +----------------------------------+-------------------------------------------------+
-|                             | CVE-2017-14930   |          |                           |                                  | binutils: Memory leak in                        |
-|                             |                  |          |                           |                                  | decode_line_info                                |
-+                             +------------------+          +                           +----------------------------------+-------------------------------------------------+
-|                             | CVE-2017-8421    |          |                           |                                  | binutils: Memory exhaustion in                  |
-|                             |                  |          |                           |                                  | objdump via a crafted PE file                   |
-+                             +------------------+          +                           +----------------------------------+-------------------------------------------------+
-|                             | CVE-2017-7614    |          |                           |                                  | binutils: NULL                                  |
-|                             |                  |          |                           |                                  | pointer dereference in                          |
-|                             |                  |          |                           |                                  | bfd_elf_final_link function                     |
-+                             +------------------+          +                           +----------------------------------+-------------------------------------------------+
-|                             | CVE-2018-12699   |          |                           |                                  | binutils: heap-based buffer                     |
-|                             |                  |          |                           |                                  | overflow in finish_stab in                      |
-|                             |                  |          |                           |                                  | stabs.c                                         |
-+                             +------------------+          +                           +----------------------------------+-------------------------------------------------+
-|                             | CVE-2014-9939    |          |                           |                                  | binutils: buffer overflow in                    |
-|                             |                  |          |                           |                                  | ihex.c                                          |
-+-----------------------------+------------------+          +---------------------------+----------------------------------+-------------------------------------------------+
++------------------------------+---------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
+|           LIBRARY            |  VULNERABILITY ID   | SEVERITY |     INSTALLED VERSION      |          FIXED VERSION           |                        TITLE                        |
++------------------------------+---------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
+| apt                          | CVE-2019-3462       | CRITICAL | 1.0.9.8.3                  | 1.0.9.8.5                        | Incorrect sanitation of the                         |
+|                              |                     |          |                            |                                  | 302 redirect field in HTTP                          |
+|                              |                     |          |                            |                                  | transport method of...                              |
++                              +---------------------+----------+                            +----------------------------------+-----------------------------------------------------+
+|                              | CVE-2016-1252       | MEDIUM   |                            | 1.0.9.8.4                        | The apt package in Debian                           |
+|                              |                     |          |                            |                                  | jessie before 1.0.9.8.4, in                         |
+|                              |                     |          |                            |                                  | Debian unstable before...                           |
++                              +---------------------+----------+                            +----------------------------------+-----------------------------------------------------+
+|                              | CVE-2011-3374       | LOW      |                            |                                  |                                                     |
++------------------------------+---------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
+| bash                         | CVE-2016-7543       | HIGH     | 4.3-11                     | 4.3-11+deb8u1                    | bash: Specially crafted                             |
+|                              |                     |          |                            |                                  | SHELLOPTS+PS4 variables allows                      |
+|                              |                     |          |                            |                                  | command substitution                                |
++                              +---------------------+          +                            +----------------------------------+-----------------------------------------------------+
+|                              | CVE-2019-9924       |          |                            | 4.3-11+deb8u2                    | bash: BASH_CMD is writable in                       |
+|                              |                     |          |                            |                                  | restricted bash shells                              |
++                              +---------------------+----------+                            +----------------------------------+-----------------------------------------------------+
+|                              | CVE-2016-0634       | MEDIUM   |                            | 4.3-11+deb8u1                    | bash: Arbitrary code execution                      |
+|                              |                     |          |                            |                                  | via malicious hostname                              |
++                              +---------------------+----------+                            +----------------------------------+-----------------------------------------------------+
+|                              | CVE-2016-9401       | LOW      |                            | 4.3-11+deb8u2                    | bash: popd controlled free                          |
++                              +---------------------+          +                            +----------------------------------+-----------------------------------------------------+
+|                              | TEMP-0841856-B18BAF |          |                            |                                  |                                                     |
++------------------------------+---------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------
 ...
 ```
 
 </details>
-
 
 ### Save the results as JSON
 
@@ -328,11 +535,31 @@ Total: 1785 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1680, CRITICAL: 105)
 
 ### Skip an update of vulnerability DB
 
-`Trivy` updates vulnerability database every time it is run. This is usually fast as it is a difference update. But if you want to skip even that, use the `--skip-update` option.
+`Trivy` always updates vulnerability database when it starts operating. This is usually fast as it is a difference update. But if you want to skip even that, use the `--skip-update` option.
 
 ```
-$ trivy --skip-update alpine:3.9
+$ trivy --skip-update python:3.4-alpine3.9
 ```
+
+<details>
+<summary>Result</summary>
+
+```
+2019-05-16T12:48:08.703+0900    INFO    Detecting Alpine vulnerabilities...
+
+python:3.4-alpine3.9 (alpine 3.9.2)
+===================================
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| openssl | CVE-2019-1543    | MEDIUM   | 1.1.1a-r1         | 1.1.1b-r1     | openssl: ChaCha20-Poly1305     |
+|         |                  |          |                   |               | with long nonces               |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+```
+
+</details>
 
 ### Ignore unfixed vulnerabilities
 
@@ -340,8 +567,47 @@ By default, `Trivy` also detects unpatched/unfixed vulnerabilities. This means y
 If you would like to ignore them, use the `--ignore-unfixed` option.
 
 ```
-$ trivy --exit-code 1 httpd:2.4.39
+$ trivy --ignore-unfixed ruby:2.3.0
 ```
+
+<details>
+<summary>Result</summary>
+
+```
+2019-05-16T12:49:52.656+0900    INFO    Updating vulnerability database...
+2019-05-16T12:50:14.786+0900    INFO    Detecting Debian vulnerabilities...
+
+ruby:2.3.0 (debian 8.4)
+=======================
+Total: 4730 (UNKNOWN: 1, LOW: 145, MEDIUM: 3487, HIGH: 1014, CRITICAL: 83)
+
++------------------------------+------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
+|           LIBRARY            | VULNERABILITY ID | SEVERITY |     INSTALLED VERSION      |          FIXED VERSION           |                        TITLE                        |
++------------------------------+------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
+| apt                          | CVE-2019-3462    | CRITICAL | 1.0.9.8.3                  | 1.0.9.8.5                        | Incorrect sanitation of the                         |
+|                              |                  |          |                            |                                  | 302 redirect field in HTTP                          |
+|                              |                  |          |                            |                                  | transport method of...                              |
++                              +------------------+----------+                            +----------------------------------+-----------------------------------------------------+
+|                              | CVE-2016-1252    | MEDIUM   |                            | 1.0.9.8.4                        | The apt package in Debian                           |
+|                              |                  |          |                            |                                  | jessie before 1.0.9.8.4, in                         |
+|                              |                  |          |                            |                                  | Debian unstable before...                           |
++------------------------------+------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
+| bash                         | CVE-2019-9924    | HIGH     | 4.3-11                     | 4.3-11+deb8u2                    | bash: BASH_CMD is writable in                       |
+|                              |                  |          |                            |                                  | restricted bash shells                              |
++                              +------------------+          +                            +----------------------------------+-----------------------------------------------------+
+|                              | CVE-2016-7543    |          |                            | 4.3-11+deb8u1                    | bash: Specially crafted                             |
+|                              |                  |          |                            |                                  | SHELLOPTS+PS4 variables allows                      |
+|                              |                  |          |                            |                                  | command substitution                                |
++                              +------------------+----------+                            +                                  +-----------------------------------------------------+
+|                              | CVE-2016-0634    | MEDIUM   |                            |                                  | bash: Arbitrary code execution                      |
+|                              |                  |          |                            |                                  | via malicious hostname                              |
++                              +------------------+----------+                            +----------------------------------+-----------------------------------------------------+
+|                              | CVE-2016-9401    | LOW      |                            | 4.3-11+deb8u2                    | bash: popd controlled free                          |
++------------------------------+------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------+
+...
+```
+
+</details>
 
 ### Specify exit code
 
@@ -349,14 +615,35 @@ By default, `Trivy` exits with code 0 even when vulnerabilities are detected.
 Use the `--exit-code` option if you want to exit with a non-zero exit code.
 
 ```
-$ trivy --exit-code 1 httpd:2.4.39
+$ trivy --exit-code 1 python:3.4-alpine3.9
 ```
+
+<details>
+<summary>Result</summary>
+
+```
+2019-05-16T12:51:43.500+0900    INFO    Updating vulnerability database...
+2019-05-16T12:52:00.387+0900    INFO    Detecting Alpine vulnerabilities...
+
+python:3.4-alpine3.9 (alpine 3.9.2)
+===================================
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| openssl | CVE-2019-1543    | MEDIUM   | 1.1.1a-r1         | 1.1.1b-r1     | openssl: ChaCha20-Poly1305     |
+|         |                  |          |                   |               | with long nonces               |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+```
+
+</details>
 
 This option is useful for CI/CD. In the following example, the test will fail only when a critical vulnerability is found.
 
 ```
-$ trivy --exit-code 0 --severity MEDIUM,HIGH httpd:2.4.39
-$ trivy --exit-code 1 --severity CRITICAL httpd:2.4.39
+$ trivy --exit-code 0 --severity MEDIUM,HIGH ruby:2.3.0
+$ trivy --exit-code 1 --severity CRITICAL ruby:2.3.0
 ```
 
 ### Ignore the specified vulnerabilities
@@ -369,18 +656,57 @@ $ cat .trivyignore
 CVE-2018-14618
 
 # No impact in our settings
-CVE-2019-3855
+CVE-2019-1543
 
-$ trivy composer:1.7.2
+$ trivy python:3.4-alpine3.9
 ```
+
+<details>
+<summary>Result</summary>
+
+```
+2019-05-16T12:53:10.076+0900    INFO    Updating vulnerability database...
+2019-05-16T12:53:28.134+0900    INFO    Detecting Alpine vulnerabilities...
+
+python:3.4-alpine3.9 (alpine 3.9.2)
+===================================
+Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
+```
+
+</details>
 
 ### Clear image caches
 
 The `--clear-cache` option removes image caches. This option is useful if the image which has the same tag is updated (such as when using `latest` tag).
 
 ```
-$ trivy --clear-cache redis:5.0.4
+$ trivy --clear-cache python:3.7
 ```
+
+<details>
+<summary>Result</summary>
+
+```
+2019-05-16T12:55:24.749+0900    INFO    Removing image caches...
+2019-05-16T12:55:24.769+0900    INFO    Updating vulnerability database...
+2019-05-16T12:56:14.055+0900    INFO    Detecting Debian vulnerabilities...
+
+python:3.7 (debian 9.9)
+=======================
+Total: 3076 (UNKNOWN: 0, LOW: 127, MEDIUM: 2358, HIGH: 578, CRITICAL: 13)
+
++------------------------------+---------------------+----------+--------------------------+------------------+-------------------------------------------------------+
+|           LIBRARY            |  VULNERABILITY ID   | SEVERITY |    INSTALLED VERSION     |  FIXED VERSION   |                         TITLE                         |
++------------------------------+---------------------+----------+--------------------------+------------------+-------------------------------------------------------+
+| apt                          | CVE-2011-3374       | LOW      | 1.4.9                    |                  |                                                       |
++------------------------------+---------------------+          +--------------------------+------------------+-------------------------------------------------------+
+| bash                         | TEMP-0841856-B18BAF |          | 4.4-5                    |                  |                                                       |
++------------------------------+---------------------+----------+--------------------------+------------------+-------------------------------------------------------+
+...
+```
+
+</details>
 
 ### Reset
 
@@ -390,11 +716,20 @@ The `--reset` option removes all caches and database. After this, it takes a lon
 $ trivy --reset
 ```
 
+<details>
+<summary>Result</summary>
+
+```
+2019-05-16T13:05:31.935+0900    INFO    Resetting...
+```
+
+</details>
+
 # Continuous Integration (CI)
 
 Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0` .
 
-**Note**: The first time take a while (faster by cache after the second time)
+**Note**: It will take a while for the first time (faster by cache after the second time)
 
 ## Travis CI
 
@@ -409,8 +744,8 @@ env:
 
 before_install:
   - docker build -t trivy-ci-test:${COMMIT} .
-  - wget https://github.com/knqyf263/trivy/releases/download/v0.0.4/trivy_0.0.4_Linux-64bit.tar.gz
-  - tar zxvf trivy_0.0.4_Linux-64bit.tar.gz
+  - wget https://github.com/knqyf263/trivy/releases/download/v0.0.13/trivy_0.0.13_Linux-64bit.tar.gz
+  - tar zxvf trivy_0.0.13_Linux-64bit.tar.gz
 script:
   - ./trivy --exit-code 0 --severity HIGH --quiet trivy-ci-test:${COMMIT}
   - ./trivy --exit-code 1 --severity CRITICAL --quiet trivy-ci-test:${COMMIT}
@@ -440,8 +775,8 @@ jobs:
       - run:
           name: Install trivy
           command: |
-            wget https://github.com/knqyf263/trivy/releases/download/v0.0.4/trivy_0.0.4_Linux-64bit.tar.gz
-            tar zxvf trivy_0.0.4_Linux-64bit.tar.gz
+            wget https://github.com/knqyf263/trivy/releases/download/v0.0.13/trivy_0.0.13_Linux-64bit.tar.gz
+            tar zxvf trivy_0.0.13_Linux-64bit.tar.gz
             mv trivy /usr/local/bin
       - run:
           name: Scan the local image with trivy
@@ -453,7 +788,7 @@ jobs:
 workflows:
   version: 2
   release:
-    jobs:  
+    jobs:
       - build
 ```
 
@@ -464,14 +799,16 @@ Repository: https://github.com/knqyf263/trivy-ci-test
 
 ## OS Packages
 
-| OS                           | Supported Versions                       | Target Packages                                | Detection of unfixed vulnerabilities    |
-| ---------------------------- | ---------------------------------------- | -------------------------------------- | --- |
-| Alpine Linux                 | 2.2 - 2.7, 3.0 - 3.10                    | Installed by apk              | NO  |
-| Red Hat Universal Base Image | 7, 8                                     | Installed by yum/rpm          | YES |
-| Red Hat Enterprise Linux     | 6, 7, 8                                  | Installed by yum/rpm          | YES |
-| CentOS                       | 6, 7                                     | Installed by yum/rpm          | YES |
-| Debian GNU/Linux             | wheezy, jessie, stretch, buster          | Installed by apt/apt-get/dpkg | YES |
-| Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg | YES |
+The unfixed/unfixable vulnerabilities mean that the patch has not yet been provieded on their distribution.
+
+| OS                           | Supported Versions                       | Target Packages               | Detection of unfixed vulnerabilities |
+| ---------------------------- | ---------------------------------------- | ----------------------------- | :----------------------------------: |
+| Alpine Linux                 | 2.2 - 2.7, 3.0 - 3.10                    | Installed by apk              |                  NO                  |
+| Red Hat Universal Base Image | 7, 8                                     | Installed by yum/rpm          |                 YES                  |
+| Red Hat Enterprise Linux     | 6, 7, 8                                  | Installed by yum/rpm          |                 YES                  |
+| CentOS                       | 6, 7                                     | Installed by yum/rpm          |                 YES                  |
+| Debian GNU/Linux             | wheezy, jessie, stretch, buster          | Installed by apt/apt-get/dpkg |                 YES                  |
+| Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg |                 YES                  |
 
 ## Application Dependencies
 
@@ -496,7 +833,7 @@ NAME:
 USAGE:
   main [options] image_name
 VERSION:
-  0.0.12
+  0.0.13
 OPTIONS:
   --format value, -f value    format (table, json) (default: "table")
   --input value, -i value     input file path instead of image name
@@ -518,15 +855,15 @@ OPTIONS:
 
 ## Overview
 
-| Scanner        | OS<br>Packages | Application<br>Dependencie | Easy to use | Accuracy | Compatible<br>with CI |
-|----------------|-------------|:-----------------------:|-------------|----------|--------------------|
-| Trivy          | ◯           | ◯                       | ◯           | ◎        | ◯                  |
-| Clair          | ◯           | ×                       | △           | ◯        | △                  |
-| Anchore Engine | ◯           | △                       | △           | ◯        | △                  |
-| Quay           | ◯           | ×                       | ◯           | ◯        | ×                  |
-| MicroScanner   | ◯           | ×                       | ◯           | △        | ◯                  |
-| Docker Hub     | ◯           | ×                       | ◯           | ×        | ×                  |
-| GCR            | ◯           | ×                       | ◯           | ◯        | ×                  |
+| Scanner        | OS<br>Packages | Application<br>Dependencies | Easy to use | Accuracy | Suitable<br>for CI |
+| -------------- | :------------: | :-------------------------: | :---------: | :------: | :-------------------: |
+| Trivy          |       ◯        |              ◯              |      ◯      |    ◎     |           ◯           |
+| Clair          |       ◯        |              ×              |      △      |    ◯     |           △           |
+| Anchore Engine |       ◯        |              △              |      △      |    ◯     |           △           |
+| Quay           |       ◯        |              ×              |      ◯      |    ◯     |           ×           |
+| MicroScanner   |       ◯        |              ×              |      ◯      |    △     |           ◯           |
+| Docker Hub     |       ◯        |              ×              |      ◯      |    ×     |           ×           |
+| GCR            |       ◯        |              ×              |      ◯      |    ◯     |           ×           |
 
 ## Accuracy
 
@@ -561,7 +898,7 @@ The following chart includes only fixable vulnerabilities.
 
 Most scanners only detect patched/fixable vulnerabilities on RHEL/CentOS, but `Trivy` also detects unpatched/unfixable vulnerabilities.
 
-The below is the graph including unfixable vulnerabilities.
+This graph includes unfixable vulnerabilities as well.
 
 <img src="imgs/centos_include_unfixable.png" width="500">
 
@@ -594,6 +931,8 @@ RUN apk add --no-cache sqlite-dev \
  && apk del sqlite-dev
 ```
 
+And as many people know, it is difficult to select a `Clair` client because many clients are deprecated.
+
 Finally, `Trivy` can also detect vulnerabilities in application dependent libraries such as Bundler, Composer, Pipenv, etc.
 
 ## vs Anchore Engine
@@ -608,7 +947,7 @@ Also, `Anchore Engine` needs some steps to start scanning.
 
 As `Quay` seems to use `Clair` internally, it has the same accuracy with `Clair`. `Docker Hub` can scan only official images. `GCR` hardly detects vulnerability on Alpine Linux. Also, it is locked to a specific registry.
 
-`Trivy` does not depend on the registry. In addition, it is easy to be integrated with CI/CD services.
+`Trivy` can be used regardless of the registry. In addition, it is easy to be integrated with CI/CD services.
 
 # Q&A
 
@@ -665,6 +1004,11 @@ Try again with `--reset` option
 ```
 $ trivy --reset
 ```
+
+# Related Projects
+
+- [Remic](https://github.com/knqyf263/remic)
+  - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies
 
 # Contribute
 
