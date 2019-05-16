@@ -1,4 +1,4 @@
-package npm
+package node
 
 import (
 	"encoding/json"

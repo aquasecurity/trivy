@@ -1,30 +1,33 @@
-package npm
+package node
 
 import (
 	"fmt"
 	"os"
 	"strings"
 
+	version "github.com/knqyf263/go-version"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
 	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/go-dep-parser/pkg/npm"
 	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
-	"github.com/knqyf263/go-version"
+	"github.com/knqyf263/go-dep-parser/pkg/yarn"
 	"github.com/knqyf263/trivy/pkg/scanner/utils"
 )
 
 const (
-	scannerType = "npm"
+	ScannerTypeNpm  = "npm"
+	ScannerTypeYarn = "yarn"
 )
 
 type Scanner struct {
-	db AdvisoryDB
+	db          AdvisoryDB
+	scannerType string
 }
 
-func NewScanner() *Scanner {
-	return &Scanner{}
+func NewScanner(scannerType string) *Scanner {
+	return &Scanner{scannerType: scannerType}
 }
 
 func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]vulnerability.DetectedVulnerability, error) {
@@ -72,12 +75,28 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]vulnerabili
 }
 
 func (s *Scanner) ParseLockfile(f *os.File) ([]ptypes.Library, error) {
+	if s.Type() == ScannerTypeNpm {
+		return s.parseNpm(f)
+	}
+	return s.parseYarn(f)
+}
+
+func (s *Scanner) parseNpm(f *os.File) ([]ptypes.Library, error) {
 	libs, err := npm.Parse(f)
 	if err != nil {
 		return nil, xerrors.Errorf("invalid package-lock.json format: %w", err)
 	}
 	return libs, nil
 }
+
+func (s *Scanner) parseYarn(f *os.File) ([]ptypes.Library, error) {
+	libs, err := yarn.Parse(f)
+	if err != nil {
+		return nil, xerrors.Errorf("invalid yarn.lock format: %w", err)
+	}
+	return libs, nil
+}
+
 func (s *Scanner) Type() string {
-	return scannerType
+	return s.scannerType
 }
