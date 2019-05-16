@@ -38,7 +38,7 @@ func CloneOrPull(url, repoPath string) (map[string]struct{}, error) {
 		}
 		log.Logger.Debug("remove an existed directory")
 
-		suffix := " The first time will take a while..."
+		suffix := " It will take a while for the first time..."
 		s := utils.NewSpinner(suffix)
 		s.Start()
 		defer s.Stop()
