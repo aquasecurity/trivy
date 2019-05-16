@@ -16,10 +16,10 @@ import (
 
 var (
 	db    *bolt.DB
-	dbDir = filepath.Join(utils.CacheDir(), "db")
 )
 
 func Init() (err error) {
+	dbDir := filepath.Join(utils.CacheDir(), "db")
 	if err = os.MkdirAll(dbDir, 0700); err != nil {
 		return xerrors.Errorf("failed to mkdir: %w", err)
 	}
@@ -34,6 +34,7 @@ func Init() (err error) {
 }
 
 func Reset() error {
+	dbDir := filepath.Join(utils.CacheDir(), "db")
 	if err := os.RemoveAll(dbDir); err != nil {
 		return xerrors.Errorf("failed to reset DB: %w", err)
 	}
