@@ -93,6 +93,10 @@ OPTIONS:
 			Name:  "debug, d",
 			Usage: "debug mode",
 		},
+		cli.StringFlag{
+			Name: "cache-dir",
+			Usage: "cache directory",
+		},
 	}
 
 	app.Action = func(c *cli.Context) error {
