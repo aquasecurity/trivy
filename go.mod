@@ -11,9 +11,9 @@ require (
 	github.com/genuinetools/reg v0.16.0
 	github.com/gliderlabs/ssh v0.1.3 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
-	github.com/knqyf263/fanal v0.0.0-20190514052804-ca40e6cb0e1a
+	github.com/knqyf263/fanal v0.0.0-20190516002914-a1530cdb9a80
 	github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b
-	github.com/knqyf263/go-dep-parser v0.0.0-20190511063217-d5d543bfc261
+	github.com/knqyf263/go-dep-parser v0.0.0-20190515172517-b8305876c9c2
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/knqyf263/go-version v1.1.1
 	github.com/mattn/go-colorable v0.1.1 // indirect

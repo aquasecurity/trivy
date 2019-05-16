@@ -114,12 +114,12 @@ github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e h1:RgQk53JHp
 github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e/go.mod h1:CT57kijsi8u/K/BOFA39wgDQJ9CxiF4nAY/ojJ6r6mM=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/knqyf263/berkeleydb v0.0.0-20190501065933-fafe01fb9662/go.mod h1:bu1CcN4tUtoRcI/B/RFHhxMNKFHVq/c3SV+UTyduoXg=
-github.com/knqyf263/fanal v0.0.0-20190514052804-ca40e6cb0e1a h1:2zG9YY77/Nv+dMcAA3EzRwoUWP0cWmQIuAumhEYZtNQ=
-github.com/knqyf263/fanal v0.0.0-20190514052804-ca40e6cb0e1a/go.mod h1:HTp1oNm2dPtIooJCspQHukx37GjPpj5DHuqlebTp4TI=
+github.com/knqyf263/fanal v0.0.0-20190516002914-a1530cdb9a80 h1:6cXQOaOGU33P+22DKh6n7Pp+Tb5DLPwvqlJ7De34ZMg=
+github.com/knqyf263/fanal v0.0.0-20190516002914-a1530cdb9a80/go.mod h1:NQxdeR5taRqHUw9B2zkPCh/klHFaFb13j8QcQ6yxg60=
 github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b h1:DiDMmSwuY27PJxA2Gs0+uI/bQ/ehKARaGXRdlp+wFis=
 github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b/go.mod h1:o8sgWoz3JADecfc/cTYD92/Et1yMqMy0utV1z+VaZao=
-github.com/knqyf263/go-dep-parser v0.0.0-20190511063217-d5d543bfc261 h1:RPgPsbEsYj6LuOjZnKl2DvbfodNWRuWKZfWJkrD7l8s=
-github.com/knqyf263/go-dep-parser v0.0.0-20190511063217-d5d543bfc261/go.mod h1:gSiqSkOFPstUZu/qZ4wnNJS69PtQQnPl397vxKHJ5mQ=
+github.com/knqyf263/go-dep-parser v0.0.0-20190515172517-b8305876c9c2 h1:bQGj8WH6X4czC2FlkgUKKFq2xPnJovzf61T4Yl9sVZs=
+github.com/knqyf263/go-dep-parser v0.0.0-20190515172517-b8305876c9c2/go.mod h1:gSiqSkOFPstUZu/qZ4wnNJS69PtQQnPl397vxKHJ5mQ=
 github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936 h1:HDjRqotkViMNcGMGicb7cgxklx8OwnjtCBmyWEqrRvM=
 github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936/go.mod h1:i4sF0l1fFnY1aiw08QQSwVAFxHEm311Me3WsU/X7nL0=
 github.com/knqyf263/go-rpmdb v0.0.0-20190501070121-10a1c42a10dc/go.mod h1:MrSSvdMpTSymaQWk1yFr9sxFSyQmKMj6jkbvGrchBV8=
