@@ -58,7 +58,7 @@ See [Comparison with other scanners](#comparison-with-other-scanners) for detail
 # Abstract
 
 `Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive vulnerability scanner for containers.
-`Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, etc.).
+`Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, yarn etc.).
 `Trivy` is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify a container image name.
 
 It is considered to be used in CI. Before pushing to a container registry, you can scan your local container image easily.
@@ -68,7 +68,7 @@ See [here](#continuous-integration-ci) for details.
 
 - Detect comprehensive vulnerabilities
   - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Debian and Ubuntu)
-  - **Application dependencies** (Bundler, Composer, Pipenv, npm and Cargo)
+  - **Application dependencies** (Bundler, Composer, Pipenv, npm, yarn and Cargo)
 - Simple
   - Specify only an image name
 - Easy installation
@@ -481,6 +481,7 @@ Repository: https://github.com/knqyf263/trivy-ci-test
 - Pipfile.lock
 - composer.lock
 - package-lock.json
+- yarn.lock
 - Cargo.lock
 
 The path of these files does not matter.
