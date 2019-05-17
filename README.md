@@ -800,7 +800,7 @@ Repository: https://github.com/knqyf263/trivy-ci-test
 
 ## OS Packages
 
-The unfixed/unfixable vulnerabilities mean that the patch has not yet been provieded on their distribution.
+The unfixed/unfixable vulnerabilities mean that the patch has not yet been provided on their distribution.
 
 | OS                           | Supported Versions                       | Target Packages               | Detection of unfixed vulnerabilities |
 | ---------------------------- | ---------------------------------------- | ----------------------------- | :----------------------------------: |
