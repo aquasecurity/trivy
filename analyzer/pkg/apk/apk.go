@@ -7,11 +7,10 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/coreos/clair/ext/versionfmt"
-	clairDpkg "github.com/coreos/clair/ext/versionfmt/dpkg"
-
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/fanal/extractor"
+
+	debVersion "github.com/knqyf263/go-deb-version"
 )
 
 func init() {
@@ -59,7 +58,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []analyzer
 			pkg.Name = line[2:]
 		case "V:":
 			version = string(line[2:])
-			if err = versionfmt.Valid(clairDpkg.ParserName, version); err != nil {
+			if !debVersion.Valid(version) {
 				log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "alpine", pkg.Name, version)
 				continue
 			}
