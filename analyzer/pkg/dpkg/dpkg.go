@@ -10,11 +10,10 @@ import (
 	mapset "github.com/deckarep/golang-set"
 	"golang.org/x/xerrors"
 
-	"github.com/coreos/clair/ext/versionfmt"
-	"github.com/coreos/clair/ext/versionfmt/dpkg"
-	clairDpkg "github.com/coreos/clair/ext/versionfmt/dpkg"
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/fanal/extractor"
+
+	debVersion "github.com/knqyf263/go-deb-version"
 )
 
 var (
@@ -115,7 +114,7 @@ func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *analyzer.P
 
 	if name == "" || version == "" {
 		return nil
-	} else if err := versionfmt.Valid(clairDpkg.ParserName, version); err != nil {
+	} else if !debVersion.Valid(version) {
 		log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", name, version)
 		return nil
 	}
@@ -135,7 +134,7 @@ func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *analyzer.P
 		sourceVersion = version
 	}
 
-	if err := versionfmt.Valid(dpkg.ParserName, sourceVersion); err != nil {
+	if !debVersion.Valid(sourceVersion) {
 		log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", sourceName, sourceVersion)
 		return pkg
 	}
