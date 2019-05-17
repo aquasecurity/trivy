@@ -12,7 +12,7 @@ require (
 	github.com/gliderlabs/ssh v0.1.3 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/knqyf263/fanal v0.0.0-20190516002914-a1530cdb9a80
-	github.com/knqyf263/go-deb-version v0.0.0-20170509080151-9865fe14d09b
+	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-dep-parser v0.0.0-20190515172517-b8305876c9c2
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/knqyf263/go-version v1.1.1
