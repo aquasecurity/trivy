@@ -1028,6 +1028,7 @@ $ trivy --reset
 
 - Special thanks to [Tomoya Amachi](https://github.com/tomoyamachi)
 - Special thanks to [Masahiro Fujimura](https://github.com/masahiro331)
+- Special thanks to [Naoki Harima](https://github.com/XapiMa)
 
 # License
 
