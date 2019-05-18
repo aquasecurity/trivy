@@ -72,7 +72,7 @@ See [here](#continuous-integration-ci) for details.
 # Features
 
 - Detect comprehensive vulnerabilities
-  - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Debian and Ubuntu)
+  - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Fedora, Debian and Ubuntu)
   - **Application dependencies** (Bundler, Composer, Pipenv, npm, yarn and Cargo)
 - Simple
   - Specify only an image name
