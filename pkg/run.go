@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/genuinetools/reg/registry"
 	"github.com/knqyf263/fanal/cache"
 
 	"github.com/knqyf263/trivy/pkg/utils"
@@ -48,7 +49,8 @@ func Run(c *cli.Context) (err error) {
 		return nil
 	}
 
-	if c.Bool("clear-cache") {
+	clearCache := c.Bool("clear-cache")
+	if clearCache {
 		log.Logger.Info("Removing image caches...")
 		if err = cache.Clear(); err != nil {
 			return xerrors.New("failed to remove image layer cache")
@@ -110,6 +112,17 @@ func Run(c *cli.Context) (err error) {
 	if filePath == "" {
 		imageName = args[0]
 	}
+
+	if imageName != "" {
+		image, err := registry.ParseImage(imageName)
+		if err != nil {
+			return xerrors.Errorf("invalid image: %w", err)
+		}
+		if image.Tag == "latest" && !clearCache {
+			log.Logger.Warn("You should avoid using the :latest tag as it is cached. You need to specify '--clear-cache' option when :latest image is changed")
+		}
+	}
+
 	vulns, err := scanner.ScanImage(imageName, filePath)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
