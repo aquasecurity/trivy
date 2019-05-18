@@ -38,7 +38,8 @@ func Run(c *cli.Context) (err error) {
 
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
-	if c.Bool("reset") {
+	reset := c.Bool("reset")
+	if reset {
 		log.Logger.Info("Resetting...")
 		if err = cache.Clear(); err != nil {
 			return xerrors.New("failed to remove image layer cache")
@@ -57,11 +58,43 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
+	refresh := c.Bool("refresh")
+	if refresh {
+		log.Logger.Info("Refreshing DB...")
+		if err = db.Reset(); err != nil {
+			return xerrors.Errorf("error in refresh DB: %w", err)
+		}
+	}
+
 	args := c.Args()
+	var noTarget bool
 	filePath := c.String("input")
 	if filePath == "" && len(args) == 0 {
-		log.Logger.Info(`trivy" requires at least 1 argument or --input option.`)
-		cli.ShowAppHelpAndExit(c, 1)
+		noTarget = true
+		if !reset && !clearCache && !refresh {
+			log.Logger.Info(`trivy" requires at least 1 argument or --input option.`)
+			cli.ShowAppHelpAndExit(c, 1)
+		}
+	}
+
+	if err = db.Init(); err != nil {
+		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
+	}
+
+	dbVersion := db.GetVersion()
+	if dbVersion != "" && dbVersion != cliVersion {
+		log.Logger.Fatal("Detected version update of trivy. Please try again with --refresh option")
+	}
+
+	if !c.Bool("skip-update") {
+		if err = vulnsrc.Update(); err != nil {
+			return xerrors.Errorf("error in vulnerability DB update: %w", err)
+		}
+	}
+
+	// When specifying no image name and file name
+	if noTarget {
+		return nil
 	}
 
 	utils.Quiet = c.Bool("quiet")
@@ -84,35 +117,12 @@ func Run(c *cli.Context) (err error) {
 		severities = append(severities, severity)
 	}
 
-	if c.Bool("refresh") {
-		log.Logger.Info("Resetting DB...")
-		if err = db.Reset(); err != nil {
-			return xerrors.Errorf("error in refresh DB: %w", err)
-		}
-	}
-
-	if err = db.Init(); err != nil {
-		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
-	}
-
-	dbVersion := db.GetVersion()
-	if dbVersion != "" && dbVersion != cliVersion {
-		log.Logger.Fatal("Detected version update of trivy. Please try again with --refresh option")
-	}
-
-	if !c.Bool("skip-update") {
-		if err = vulnsrc.Update(); err != nil {
-			return xerrors.Errorf("error in vulnerability DB update: %w", err)
-		}
-	}
-
-	ignoreUnfixed := c.Bool("ignore-unfixed")
-
 	var imageName string
 	if filePath == "" {
 		imageName = args[0]
 	}
 
+	// Check whether 'latest' tag is used
 	if imageName != "" {
 		image, err := registry.ParseImage(imageName)
 		if err != nil {
@@ -129,6 +139,7 @@ func Run(c *cli.Context) (err error) {
 	}
 
 	var results report.Results
+	ignoreUnfixed := c.Bool("ignore-unfixed")
 	for path, vuln := range vulns {
 		results = append(results, report.Result{
 			FileName:        path,
