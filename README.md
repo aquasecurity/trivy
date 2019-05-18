@@ -145,7 +145,7 @@ $ brew install knqyf263/trivy/trivy
 
 Go to [the releases page](https://github.com/knqyf263/trivy/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
 
-You need to install `rpm` command for scanning RHEL/CentOS.
+You need to install `rpm` command for scanning RHEL/CentOS/Fedora.
 
 ## From source
 
@@ -808,6 +808,7 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 | Red Hat Universal Base Image | 7, 8                                     | Installed by yum/rpm          |                 YES                  |
 | Red Hat Enterprise Linux     | 6, 7, 8                                  | Installed by yum/rpm          |                 YES                  |
 | CentOS                       | 6, 7                                     | Installed by yum/rpm          |                 YES                  |
+| Fedora                       | 29, 30, 31                               | Installed by yum/rpm          |                 YES                  |
 | Debian GNU/Linux             | wheezy, jessie, stretch, buster          | Installed by apt/apt-get/dpkg |                 YES                  |
 | Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg |                 YES                  |
 

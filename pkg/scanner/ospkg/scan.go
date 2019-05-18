@@ -1,8 +1,6 @@
 package ospkg
 
 import (
-	"fmt"
-
 	"github.com/knqyf263/fanal/analyzer"
 	_ "github.com/knqyf263/fanal/analyzer/command/apk"
 	fos "github.com/knqyf263/fanal/analyzer/os"
@@ -43,7 +41,7 @@ func Scan(files extractor.FileMap) (string, string, []vulnerability.DetectedVuln
 	case fos.RedHat, fos.CentOS, fos.Fedora:
 		s = redhat.NewScanner()
 	default:
-		return "", "", nil, xerrors.New(fmt.Sprintf("unsupported os : %s", os.Family))
+		return "", "", nil, xerrors.Errorf("unsupported os : %s", os.Family)
 	}
 	pkgs, err := analyzer.GetPackages(files)
 	if err != nil {
