@@ -41,7 +41,7 @@ func Scan(files extractor.FileMap) (string, string, []vulnerability.DetectedVuln
 	case fos.RedHat, fos.CentOS:
 		s = redhat.NewScanner()
 	default:
-		return "", "", nil, xerrors.New("unsupported os")
+		return "", "", nil, xerrors.Errorf("unsupported os : %s", os.Family)
 	}
 	pkgs, err := analyzer.GetPackages(files)
 	if err != nil {
