@@ -110,7 +110,7 @@ OPTIONS:
 	err := app.Run(os.Args)
 	if err != nil {
 		if log.Logger != nil {
-			log.Logger.Fatal(err)
+			log.Fatal(err)
 		}
 		l.Fatal(err)
 	}
