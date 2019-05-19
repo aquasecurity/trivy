@@ -6,9 +6,13 @@ import (
 	"golang.org/x/xerrors"
 )
 
-var Logger *zap.SugaredLogger
+var (
+	Logger      *zap.SugaredLogger
+	debugOption bool
+)
 
 func InitLogger(debug bool) (err error) {
+	debugOption = debug
 	Logger, err = newLogger(debug)
 	if err != nil {
 		return xerrors.Errorf("error in new logger: %w", err)
@@ -29,8 +33,8 @@ func newLogger(debug bool) (*zap.SugaredLogger, error) {
 		Level:             level,
 		Encoding:          "console",
 		Development:       debug,
-		DisableStacktrace: !debug,
-		DisableCaller:     !debug,
+		DisableStacktrace: true,
+		DisableCaller:     true,
 		EncoderConfig: zapcore.EncoderConfig{
 			TimeKey:        "Time",
 			LevelKey:       "Level",
@@ -52,4 +56,11 @@ func newLogger(debug bool) (*zap.SugaredLogger, error) {
 	}
 
 	return logger.Sugar(), nil
+}
+
+func Fatal(err error) {
+	if debugOption {
+		Logger.Fatalf("%+v", err)
+	}
+	Logger.Fatal(err)
 }
