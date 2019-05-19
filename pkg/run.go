@@ -73,7 +73,7 @@ func Run(c *cli.Context) (err error) {
 	autoRefresh := c.Bool("auto-refresh")
 	skipUpdate := c.Bool("skip-update")
 	if (refresh || autoRefresh) && skipUpdate {
-		log.Logger.Fatal("The --skip-update option can not be specified with the --refresh or --auto-refresh option")
+		return xerrors.New("The --skip-update option can not be specified with the --refresh or --auto-refresh option")
 	}
 
 	if err = db.Init(); err != nil {
@@ -84,7 +84,7 @@ func Run(c *cli.Context) (err error) {
 	dbVersion := db.GetVersion()
 	if dbVersion != "" && dbVersion != cliVersion {
 		if !autoRefresh {
-			log.Logger.Fatal("Detected version update of trivy. Please try again with --refresh or --auto-refresh option")
+			return xerrors.New("Detected version update of trivy. Please try again with --refresh or --auto-refresh option")
 		}
 		needRefresh = true
 	}
