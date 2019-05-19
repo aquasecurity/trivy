@@ -11,4 +11,4 @@ RUN apk --no-cache add ca-certificates git
 COPY --from=builder /trivy /usr/local/bin/trivy
 RUN chmod +x /usr/local/bin/trivy
 
-CMD ["trivy"]
+ENTRYPOINT ["trivy"]
