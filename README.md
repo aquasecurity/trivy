@@ -781,6 +781,7 @@ Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerabili
 
 ```
 $ cat .travis.yml
+dist: xenial
 services:
   - docker
 
@@ -790,8 +791,9 @@ env:
 
 before_install:
   - docker build -t trivy-ci-test:${COMMIT} .
-  - wget https://github.com/knqyf263/trivy/releases/download/v0.0.13/trivy_0.0.13_Linux-64bit.tar.gz
-  - tar zxvf trivy_0.0.13_Linux-64bit.tar.gz
+  - export VERSION=$(curl --silent "https://api.github.com/repos/knqyf263/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+  - wget https://github.com/knqyf263/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
+  - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
 script:
   - ./trivy --exit-code 0 --severity HIGH --quiet --auto-refresh trivy-ci-test:${COMMIT}
   - ./trivy --exit-code 1 --severity CRITICAL --quiet --auto-refresh trivy-ci-test:${COMMIT}
@@ -806,6 +808,7 @@ Repository: https://github.com/knqyf263/trivy-ci-test
 ## CircleCI
 
 ```
+$ cat .circleci/config.yml
 jobs:
   build:
     docker:
@@ -821,8 +824,15 @@ jobs:
       - run:
           name: Install trivy
           command: |
-            wget https://github.com/knqyf263/trivy/releases/download/v0.0.13/trivy_0.0.13_Linux-64bit.tar.gz
-            tar zxvf trivy_0.0.13_Linux-64bit.tar.gz
+            apk add --update curl
+            VERSION=$(
+                curl --silent "https://api.github.com/repos/knqyf263/trivy/releases/latest" | \
+                grep '"tag_name":' | \
+                sed -E 's/.*"v([^"]+)".*/\1/'
+            )
+
+            wget https://github.com/knqyf263/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
+            tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
             mv trivy /usr/local/bin
       - run:
           name: Scan the local image with trivy
