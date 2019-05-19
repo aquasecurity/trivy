@@ -32,6 +32,8 @@ See [Comparison with other scanners](#comparison-with-other-scanners) for detail
   - [Binary (Including Windows)](#binary-including-windows)
   - [From source](#from-source)
 - [Quick Start](#quick-start)
+  - [Basic](#basic)
+  - [Docker](#docker)
 - [Examples](#examples)
   - [Scan an image](#scan-an-image)
   - [Scan an image file](#scan-an-image-file)
@@ -157,6 +159,8 @@ $ go get -u github.com/knqyf263/trivy
 
 Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with cache.**. See [Clear image caches](#clear-image-caches)
 
+## Basic
+
 ```
 $ trivy [YOUR_IMAGE_NAME]
 ```
@@ -165,6 +169,47 @@ For example:
 
 ```
 $ trivy python:3.4-alpine
+```
+
+<details>
+<summary>Result</summary>
+
+```
+2019-05-16T01:20:43.180+0900    INFO    Updating vulnerability database...
+2019-05-16T01:20:53.029+0900    INFO    Detecting Alpine vulnerabilities...
+
+python:3.4-alpine3.9 (alpine 3.9.2)
+===================================
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| openssl | CVE-2019-1543    | MEDIUM   | 1.1.1a-r1         | 1.1.1b-r1     | openssl: ChaCha20-Poly1305     |
+|         |                  |          |                   |               | with long nonces               |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+```
+
+</details>
+
+## Docker
+
+Replace [YOUR_CACHE_DIR] with the cache directory on your machine.
+
+```
+$ docker run -v [YOUR_CACHE_DIR]:/root/.cache/ knqyf263/trivy [YOUR_IMAGE_NAME]
+```
+
+Example for macOS:
+
+```
+$ docker run -v $HOME/Library/Caches:/root/.cache/ knqyf263/trivy python:3.4-alpine
+```
+
+If you would like to scan the image on your host machine, you need to mount `docker.sock`.
+
+```
+$ docker run -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ knqyf263/trivy python:3.4-alpine
 ```
 
 <details>
