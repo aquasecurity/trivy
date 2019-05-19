@@ -55,9 +55,9 @@ See [Comparison with other scanners](#comparison-with-other-scanners) for detail
 - [Comparison with other scanners](#comparison-with-other-scanners)
   - [Overview](#overview)
   - [Accuracy](#accuracy)
-  - [vs Clair, Quay](#vs-clair)
+  - [vs Clair](#vs-clair)
   - [vs Anchore Engine](#vs-anchore-engine)
-  - [vs Docker Hub, GCR](#vs-quay-docker-hub-gcr)
+  - [vs Quay, Docker Hub, GCR](#vs-quay-docker-hub-gcr)
 - [Q&A](#qa)
   - [Homebrew](#homebrew)
   - [Others](#others)
@@ -109,7 +109,7 @@ $ sudo yum -y install trivy
 or
 
 ```
-$ rpm -ivh https://github.com/knqyf263/trivy/releases/download/v0.0.13/trivy_0.0.13_Linux-64bit.rpm
+$ rpm -ivh https://github.com/knqyf263/trivy/releases/download/v0.0.15/trivy_0.0.15_Linux-64bit.rpm
 ```
 
 ## Debian/Ubuntu
@@ -130,8 +130,8 @@ or
 
 ```
 $ sudo apt-get install rpm
-$ wget https://github.com/knqyf263/trivy/releases/download/v0.0.13/trivy_0.0.13_Linux-64bit.deb
-$ sudo dpkg -i trivy_0.0.13_Linux-64bit.deb
+$ wget https://github.com/knqyf263/trivy/releases/download/v0.0.15/trivy_0.0.15_Linux-64bit.deb
+$ sudo dpkg -i trivy_0.0.15_Linux-64bit.deb
 ```
 
 ## Mac OS X / Homebrew
@@ -781,7 +781,6 @@ Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerabili
 
 ```
 $ cat .travis.yml
-dist: xenial
 services:
   - docker
 
@@ -889,7 +888,7 @@ NAME:
 USAGE:
   main [options] image_name
 VERSION:
-  0.0.13
+  0.0.15
 OPTIONS:
   --format value, -f value    format (table, json) (default: "table")
   --input value, -i value     input file path instead of image name
