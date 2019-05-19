@@ -793,8 +793,8 @@ before_install:
   - wget https://github.com/knqyf263/trivy/releases/download/v0.0.13/trivy_0.0.13_Linux-64bit.tar.gz
   - tar zxvf trivy_0.0.13_Linux-64bit.tar.gz
 script:
-  - ./trivy --exit-code 0 --severity HIGH --quiet trivy-ci-test:${COMMIT}
-  - ./trivy --exit-code 1 --severity CRITICAL --quiet trivy-ci-test:${COMMIT}
+  - ./trivy --exit-code 0 --severity HIGH --quiet --auto-refresh trivy-ci-test:${COMMIT}
+  - ./trivy --exit-code 1 --severity CRITICAL --quiet --auto-refresh trivy-ci-test:${COMMIT}
 cache:
   directories:
     - $HOME/.cache/trivy
@@ -826,7 +826,7 @@ jobs:
             mv trivy /usr/local/bin
       - run:
           name: Scan the local image with trivy
-          command: trivy --exit-code 0 --quiet trivy-ci-test:${CIRCLE_SHA1}
+          command: trivy --exit-code 0 --quiet --auto-refresh trivy-ci-test:${CIRCLE_SHA1}
       - save_cache:
           key: vulnerability-db
           paths:
@@ -892,6 +892,7 @@ OPTIONS:
   --quiet, -q                 suppress progress bar
   --ignore-unfixed            display only fixed vulnerabilities
   --refresh                   refresh DB (usually used after version update of trivy)
+  --auto-refresh              refresh DB automatically when updating version of trivy
   --debug, -d                 debug mode
   --help, -h                  show help
   --version, -v               print the version
