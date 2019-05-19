@@ -59,13 +59,6 @@ func Run(c *cli.Context) (err error) {
 	}
 
 	refresh := c.Bool("refresh")
-	if refresh {
-		log.Logger.Info("Refreshing DB...")
-		if err = db.Reset(); err != nil {
-			return xerrors.Errorf("error in refresh DB: %w", err)
-		}
-	}
-
 	args := c.Args()
 	var noTarget bool
 	filePath := c.String("input")
@@ -77,16 +70,33 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
+	autoRefresh := c.Bool("auto-refresh")
+	skipUpdate := c.Bool("skip-update")
+	if (refresh || autoRefresh) && skipUpdate {
+		log.Logger.Fatal("The --skip-update option can not be specified with the --refresh or --auto-refresh option")
+	}
+
 	if err = db.Init(); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 
+	needRefresh := false
 	dbVersion := db.GetVersion()
 	if dbVersion != "" && dbVersion != cliVersion {
-		log.Logger.Fatal("Detected version update of trivy. Please try again with --refresh option")
+		if !autoRefresh {
+			log.Logger.Fatal("Detected version update of trivy. Please try again with --refresh or --auto-refresh option")
+		}
+		needRefresh = true
 	}
 
-	if !c.Bool("skip-update") {
+	if refresh || needRefresh {
+		log.Logger.Info("Refreshing DB...")
+		if err = db.Reset(); err != nil {
+			return xerrors.Errorf("error in refresh DB: %w", err)
+		}
+	}
+
+	if !skipUpdate {
 		if err = vulnsrc.Update(); err != nil {
 			return xerrors.Errorf("error in vulnerability DB update: %w", err)
 		}

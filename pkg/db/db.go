@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	db    *bolt.DB
+	db *bolt.DB
 )
 
 func Init() (err error) {
@@ -33,9 +33,24 @@ func Init() (err error) {
 	return nil
 }
 
+func Close() error {
+	if err := db.Close(); err != nil {
+		return xerrors.Errorf("failed to close DB: %w", err)
+	}
+	return nil
+}
+
 func Reset() error {
+	if err := Close(); err != nil {
+		return xerrors.Errorf("failed to reset DB: %w", err)
+	}
+
 	dbDir := filepath.Join(utils.CacheDir(), "db")
 	if err := os.RemoveAll(dbDir); err != nil {
+		return xerrors.Errorf("failed to reset DB: %w", err)
+	}
+
+	if err := Init(); err != nil {
 		return xerrors.Errorf("failed to reset DB: %w", err)
 	}
 	return nil

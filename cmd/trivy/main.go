@@ -90,11 +90,15 @@ OPTIONS:
 			Usage: "refresh DB (usually used after version update of trivy)",
 		},
 		cli.BoolFlag{
+			Name:  "auto-refresh",
+			Usage: "refresh DB automatically when updating version of trivy",
+		},
+		cli.BoolFlag{
 			Name:  "debug, d",
 			Usage: "debug mode",
 		},
 		cli.StringFlag{
-			Name: "cache-dir",
+			Name:  "cache-dir",
 			Usage: "cache directory",
 		},
 	}
