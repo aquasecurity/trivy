@@ -26,6 +26,7 @@ import (
 func Run(c *cli.Context) (err error) {
 	cliVersion := c.App.Version
 
+	utils.Quiet = c.Bool("quiet")
 	debug := c.Bool("debug")
 	if err = log.InitLogger(debug); err != nil {
 		l.Fatal(err)
@@ -83,7 +84,7 @@ func Run(c *cli.Context) (err error) {
 	needRefresh := false
 	dbVersion := db.GetVersion()
 	if dbVersion != "" && dbVersion != cliVersion {
-		if !autoRefresh {
+		if !refresh && !autoRefresh {
 			return xerrors.New("Detected version update of trivy. Please try again with --refresh or --auto-refresh option")
 		}
 		needRefresh = true
@@ -95,7 +96,6 @@ func Run(c *cli.Context) (err error) {
 			return xerrors.Errorf("error in refresh DB: %w", err)
 		}
 	}
-
 	if !skipUpdate {
 		if err = vulnsrc.Update(); err != nil {
 			return xerrors.Errorf("error in vulnerability DB update: %w", err)
@@ -106,8 +106,6 @@ func Run(c *cli.Context) (err error) {
 	if noTarget {
 		return nil
 	}
-
-	utils.Quiet = c.Bool("quiet")
 
 	o := c.String("output")
 	output := os.Stdout
