@@ -103,9 +103,7 @@ OPTIONS:
 		},
 	}
 
-	app.Action = func(c *cli.Context) error {
-		return pkg.Run(c)
-	}
+	app.Action = pkg.Run
 
 	err := app.Run(os.Args)
 	if err != nil {

@@ -105,9 +105,7 @@ func Put(root *bolt.Bucket, nestedBucket, key string, value interface{}) error {
 	return nested.Put([]byte(key), v)
 }
 func BatchUpdate(fn func(tx *bolt.Tx) error) error {
-	err := db.Batch(func(tx *bolt.Tx) error {
-		return fn(tx)
-	})
+	err := db.Batch(fn)
 	if err != nil {
 		return xerrors.Errorf("error in batch update: %w", err)
 	}
