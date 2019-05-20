@@ -136,7 +136,7 @@ $ sudo dpkg -i trivy_0.0.15_Linux-64bit.deb
 
 ## Mac OS X / Homebrew
 
-You can use homebrew on OS X.
+You can use homebrew on Mac OS.
 
 ```
 $ brew tap knqyf263/trivy
@@ -145,7 +145,7 @@ $ brew install knqyf263/trivy/trivy
 
 ## Binary (Including Windows)
 
-Go to [the releases page](https://github.com/knqyf263/trivy/releases), find the version you want, and download the zip file. Unpack the zip file, and put the binary to somewhere you want (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
+Get the latest version from [this page](https://github.com/knqyf263/trivy/releases/latest), and download the archive file for your operating system/architecture. Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
 
 You need to install `rpm` command for scanning RHEL/CentOS.
 
@@ -1051,7 +1051,7 @@ The results of [composer:1.7.2](https://hub.docker.com/_/composer?tab=tags) usin
 
 <img src="imgs/alpine.png" width="500">
 
-`Trivy` has high accuracy and high precision, while GCR did not detect any vulnerability. Althogh Docker Hub has many True Positive, it also has many False Positive.
+`Trivy` has high accuracy and high precision, while GCR did not detect any vulnerability. Although Docker Hub has many True Positive, it also has many False Positive.
 
 ### RHEL/CentOS
 
@@ -1077,8 +1077,8 @@ In the case of other OS, the result is similar to other container scanners.
 However, the purpose of this database is to make it possible to know what packages has backported fixes.
 As README says, it is not a complete database of all security issues in Alpine.
 
-`Trivy` collects vulnerability information in Alpine Linux from [Alpine LInux Redmine](https://bugs.alpinelinux.org/projects/alpine/issues).
-Then, those vulnerabilities will be saved on [vuln-list](https://github.com/knqyf263/vuln-list/tree/master/alpine)
+`Trivy` collects vulnerability information in Alpine Linux from [Alpine Linux Redmine](https://bugs.alpinelinux.org/projects/alpine/issues).
+Then, those vulnerabilities will be saved on [vuln-list](https://github.com/knqyf263/vuln-list/tree/master/alpine).
 
 `alpine-secdb` has 6959 vulnerabilities (as of 2019/05/12).
 `vuln-list` has 11101 vulnerabilities related with Alpine Linux (as of 2019/05/12).
@@ -1086,7 +1086,7 @@ There is a difference in detection accuracy because the number of vulnerabilitie
 
 In addition, `Trivy` analyzes the middle layer as well and find out which version of the library was used for static linking.
 
-`Clair` can not handle the following cases because it analyzes the image after applying the all layers.
+`Clair` can not handle the following cases because it analyzes the image after applying all layers.
 
 ```
 RUN apk add --no-cache sqlite-dev \
@@ -1110,7 +1110,7 @@ Also, `Anchore Engine` needs some steps to start scanning.
 
 ## vs Quay, Docker Hub, GCR
 
-As `Quay` seems to use `Clair` internally, it has the same accuracy with `Clair`. `Docker Hub` can scan only official images. `GCR` hardly detects vulnerability on Alpine Linux. Also, it is locked to a specific registry.
+As `Quay` seems to use `Clair` internally, it has the same accuracy than `Clair`. `Docker Hub` can scan only official images. `GCR` hardly detects vulnerabilities on Alpine Linux. Also, it is locked to a specific registry.
 
 `Trivy` can be used regardless of the registry. In addition, it is easy to be integrated with CI/CD services.
 
