@@ -17,8 +17,8 @@ import (
 type Results []Result
 
 type Result struct {
-	FileName        string `json:"file"`
-	Vulnerabilities []vulnerability.DetectedVulnerability
+	FileName        string                                `json:"Target"`
+	Vulnerabilities []vulnerability.DetectedVulnerability `json:"Vulnerabilities"`
 }
 
 type Writer interface {
@@ -84,11 +84,7 @@ type JsonWriter struct {
 }
 
 func (jw JsonWriter) Write(results Results) error {
-	out := map[string][]vulnerability.DetectedVulnerability{}
-	for _, result := range results {
-		out[result.FileName] = result.Vulnerabilities
-	}
-	output, err := json.MarshalIndent(out, "", "  ")
+	output, err := json.MarshalIndent(results, "", "  ")
 	if err != nil {
 		return xerrors.Errorf("failed to marshal json: %w", err)
 	}
