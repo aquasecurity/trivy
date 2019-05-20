@@ -102,6 +102,10 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
+	if err = db.SetVersion(cliVersion); err != nil {
+		return xerrors.Errorf("unexpected error: %w", err)
+	}
+
 	// When specifying no image name and file name
 	if noTarget {
 		return nil
@@ -167,10 +171,6 @@ func Run(c *cli.Context) (err error) {
 
 	if err = writer.Write(results); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
-	}
-
-	if err = db.SetVersion(cliVersion); err != nil {
-		return xerrors.Errorf("unexpected error: %w", err)
 	}
 
 	exitCode := c.Int("exit-code")
