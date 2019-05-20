@@ -47,7 +47,7 @@ func Update() (err error) {
 		return xerrors.Errorf("error in Alpine OVAL update: %w", err)
 	}
 
-	//Update RedHat
+	// Update RedHat
 	log.Logger.Info("Updating RedHat data...")
 	if err = redhat.Update(dir, updatedFiles); err != nil {
 		return xerrors.Errorf("error in RedHat update: %w", err)
@@ -65,7 +65,7 @@ func Update() (err error) {
 		return xerrors.Errorf("error in Debian OVAL update: %w", err)
 	}
 
-	//Update Ubuntu
+	// Update Ubuntu
 	log.Logger.Info("Updating Ubuntu data...")
 	if err = ubuntu.Update(dir, updatedFiles); err != nil {
 		return xerrors.Errorf("error in Ubuntu update: %w", err)
