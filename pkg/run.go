@@ -156,13 +156,13 @@ func Run(c *cli.Context) (err error) {
 	}
 
 	var writer report.Writer
-	switch c.String("format") {
+	switch format := c.String("format"); format {
 	case "table":
 		writer = &report.TableWriter{Output: output}
 	case "json":
 		writer = &report.JsonWriter{Output: output}
 	default:
-		xerrors.New("unknown format")
+		return xerrors.Errorf("unknown format: %v", format)
 	}
 
 	if err = writer.Write(results); err != nil {
