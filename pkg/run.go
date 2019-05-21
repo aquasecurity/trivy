@@ -73,8 +73,17 @@ func Run(c *cli.Context) (err error) {
 
 	autoRefresh := c.Bool("auto-refresh")
 	skipUpdate := c.Bool("skip-update")
-	if (refresh || autoRefresh) && skipUpdate {
-		return xerrors.New("The --skip-update option can not be specified with the --refresh or --auto-refresh option")
+	onlyUpdate := c.String("only-update")
+	if refresh || autoRefresh {
+		if skipUpdate {
+			return xerrors.New("The --skip-update option can not be specified with the --refresh or --auto-refresh option")
+		}
+		if onlyUpdate != "" {
+			return xerrors.New("The --only-update option can not be specified with the --refresh or --auto-refresh option")
+		}
+	}
+	if skipUpdate && onlyUpdate != "" {
+		return xerrors.New("The --skip-update and --only-update option can not be specified both")
 	}
 
 	if err = db.Init(); err != nil {
@@ -96,8 +105,13 @@ func Run(c *cli.Context) (err error) {
 			return xerrors.Errorf("error in refresh DB: %w", err)
 		}
 	}
-	if !skipUpdate {
-		if err = vulnsrc.Update(); err != nil {
+	// this condition is already validated by skipUpdate && onlyUpdate != ""
+	if onlyUpdate != "" {
+		if err = vulnsrc.OnlyUpdate(strings.Split(onlyUpdate, ",")); err != nil {
+			return xerrors.Errorf("error in vulnerability DB update: %w", err)
+		}
+	} else {
+		if err = vulnsrc.UpdateAll(); err != nil {
 			return xerrors.Errorf("error in vulnerability DB update: %w", err)
 		}
 	}
