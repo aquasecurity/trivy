@@ -1,15 +1,57 @@
 package yarn
 
 import (
-	"github.com/knqyf263/go-dep-parser/pkg/types"
-	"github.com/kylelemons/godebug/pretty"
 	"os"
 	"path"
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/knqyf263/go-dep-parser/pkg/types"
+	"github.com/kylelemons/godebug/pretty"
 )
 
+func TestGetPackageName(t *testing.T) {
+	vectors := []struct {
+		target   string // Test input file
+		expect   string
+		occurErr bool
+	}{
+		{
+			target: `"@babel/code-frame@^7.0.0"`,
+			expect: "@babel/code-frame",
+		},
+		{
+			target: `grunt-contrib-cssmin@3.0.*:`,
+			expect: "grunt-contrib-cssmin",
+		},
+		{
+			target: "grunt-contrib-uglify-es@gruntjs/grunt-contrib-uglify#harmony:",
+			expect: "grunt-contrib-uglify-es",
+		},
+		{
+			target: `"jquery@git+https://xxxx:x-oauth-basic@github.com/tomoyamachi/jquery":`,
+			expect: "jquery",
+		},
+		{
+			target:   `normal line`,
+			occurErr: true,
+		},
+	}
+
+	for _, v := range vectors {
+		actual, err := getPackageName(v.target)
+
+		if v.occurErr != (err != nil) {
+			t.Errorf("expect error %t but err is %s", v.occurErr, err)
+			continue
+		}
+
+		if actual != v.expect {
+			t.Errorf("got %s, want %s, target :%s", actual, v.expect, v.target)
+		}
+	}
+}
 
 func TestParse(t *testing.T) {
 	vectors := []struct {
@@ -36,7 +78,6 @@ func TestParse(t *testing.T) {
 			file:      "testdata/yarn_realworld.lock",
 			libraries: YarnRealWorld,
 		},
-
 	}
 
 	for _, v := range vectors {
@@ -82,4 +123,3 @@ func TestParse(t *testing.T) {
 		})
 	}
 }
-
