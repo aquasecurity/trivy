@@ -72,9 +72,7 @@ func Scan(files extractor.FileMap) (map[string][]vulnerability.DetectedVulnerabi
 			return nil, xerrors.Errorf("failed to scan %s vulnerabilities: %w", scanner.Type(), err)
 		}
 
-		if len(vulns) != 0 {
-			vulnerabilities[string(path)] = vulns
-		}
+		vulnerabilities[string(path)] = vulns
 	}
 	return vulnerabilities, nil
 }
