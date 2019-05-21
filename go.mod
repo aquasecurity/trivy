@@ -10,7 +10,7 @@ require (
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/genuinetools/reg v0.16.0
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
-	github.com/knqyf263/go-dep-parser v0.0.0-20190515172517-b8305876c9c2
+	github.com/knqyf263/go-dep-parser v0.0.0-20190521150559-1ef8521d17a0
 	github.com/knqyf263/go-rpmdb v0.0.0-20190501070121-10a1c42a10dc
 	github.com/knqyf263/nested v0.0.1
 	github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348
