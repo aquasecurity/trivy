@@ -716,9 +716,9 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 </details>
 
-### Only an update of you are specified distribution
+### Update only you are specified distributions
 
-By default, `Trivy` always updates vulnerability database of all distribution. Use the `--only-update` option if you want to update only specified destributions.
+By default, `Trivy` always updates vulnerability database of all distribution. Use the `--only-update` option if you want to update only specified distributions.
 
 ```
 $ trivy --only-update alpine,debian python:3.4-alpine3.9
