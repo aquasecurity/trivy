@@ -1,4 +1,4 @@
-package pipenv
+package python
 
 import (
 	"os"
@@ -9,21 +9,24 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/go-dep-parser/pkg/pipenv"
+	"github.com/knqyf263/go-dep-parser/pkg/poetry"
 	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
 	"github.com/knqyf263/go-version"
 	"github.com/knqyf263/trivy/pkg/scanner/utils"
 )
 
 const (
-	scannerType = "pipenv"
+	ScannerTypePipenv = "pipenv"
+	ScannerTypePoetry = "poetry"
 )
 
 type Scanner struct {
-	db AdvisoryDB
+	db          AdvisoryDB
+	scannerType string
 }
 
-func NewScanner() *Scanner {
-	return &Scanner{}
+func NewScanner(scannerType string) *Scanner {
+	return &Scanner{scannerType: scannerType}
 }
 
 func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]vulnerability.DetectedVulnerability, error) {
@@ -63,12 +66,28 @@ func createFixedVersions(specs []string) string {
 }
 
 func (s *Scanner) ParseLockfile(f *os.File) ([]ptypes.Library, error) {
+	if s.Type() == ScannerTypePipenv {
+		return s.parsePipenv(f)
+	}
+	return s.parsePoetry(f)
+}
+
+func (s *Scanner) parsePipenv(f *os.File) ([]ptypes.Library, error) {
 	libs, err := pipenv.Parse(f)
 	if err != nil {
 		return nil, xerrors.Errorf("invalid Pipfile.lock format: %w", err)
 	}
 	return libs, nil
 }
+
+func (s *Scanner) parsePoetry(f *os.File) ([]ptypes.Library, error) {
+	libs, err := poetry.Parse(f)
+	if err != nil {
+		return nil, xerrors.Errorf("invalid poetry.lock format: %w", err)
+	}
+	return libs, nil
+}
+
 func (s *Scanner) Type() string {
-	return scannerType
+	return s.scannerType
 }
