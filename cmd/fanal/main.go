@@ -18,6 +18,7 @@ import (
 	_ "github.com/knqyf263/fanal/analyzer/library/composer"
 	_ "github.com/knqyf263/fanal/analyzer/library/npm"
 	_ "github.com/knqyf263/fanal/analyzer/library/pipenv"
+	_ "github.com/knqyf263/fanal/analyzer/library/poetry"
 	_ "github.com/knqyf263/fanal/analyzer/library/yarn"
 	_ "github.com/knqyf263/fanal/analyzer/os/alpine"
 	_ "github.com/knqyf263/fanal/analyzer/os/amazonlinux"
