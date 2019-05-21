@@ -983,6 +983,7 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 
 - Gemfile.lock
 - Pipfile.lock
+- poetry.lock
 - composer.lock
 - package-lock.json
 - yarn.lock
