@@ -75,7 +75,7 @@ See [here](#continuous-integration-ci) for details.
 
 - Detect comprehensive vulnerabilities
   - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Debian and Ubuntu)
-  - **Application dependencies** (Bundler, Composer, Pipenv, npm, yarn and Cargo)
+  - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn and Cargo)
 - Simple
   - Specify only an image name
   - See [Quick Start](#quick-start) and [Examples](#examples)
@@ -983,6 +983,7 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 
 - Gemfile.lock
 - Pipfile.lock
+- poetry.lock
 - composer.lock
 - package-lock.json
 - yarn.lock

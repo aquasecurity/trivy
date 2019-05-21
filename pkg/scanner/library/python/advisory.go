@@ -1,4 +1,4 @@
-package pipenv
+package python
 
 import (
 	"encoding/json"
