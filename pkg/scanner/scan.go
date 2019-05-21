@@ -48,8 +48,10 @@ func ScanImage(imageName, filePath string) (map[string][]vulnerability.DetectedV
 		return nil, xerrors.Errorf("failed to scan image: %w", err)
 
 	}
-	imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion)
-	results[imageDetail] = osVulns
+	if osFamily != "" {
+		imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion)
+		results[imageDetail] = osVulns
+	}
 
 	libVulns, err := library.Scan(files)
 	if err != nil {
