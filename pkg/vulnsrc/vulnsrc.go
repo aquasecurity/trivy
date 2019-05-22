@@ -31,41 +31,7 @@ var updateMap = map[string]updateFunc{
 	vulnerability.Ubuntu:     ubuntu.Update,
 }
 
-func UpdateAll() (err error) {
-	log.Logger.Info("Updating vulnerability database...")
-
-	// Clone vuln-list repository
-	dir := filepath.Join(utils.CacheDir(), "vuln-list")
-	updatedFiles, err := git.CloneOrPull(repoURL, dir)
-	if err != nil {
-		return xerrors.Errorf("error in vulnsrc clone or pull: %w", err)
-	}
-	log.Logger.Debugf("total updated files: %d", len(updatedFiles))
-
-	// Only last_updated.json
-	if len(updatedFiles) <= 1 {
-		return nil
-	}
-
-	updateOrder := []string{
-		vulnerability.Nvd,
-		vulnerability.Alpine,
-		vulnerability.RedHat,
-		vulnerability.Debian,
-		vulnerability.DebianOVAL,
-		vulnerability.Ubuntu,
-	}
-	for _, distribution := range updateOrder {
-		updateFunc := updateMap[distribution]
-		log.Logger.Infof("Updating %s data...", distribution)
-		if err := updateFunc(dir, updatedFiles); err != nil {
-			return xerrors.Errorf("error in %s update: %w", distribution, err)
-		}
-	}
-	return nil
-}
-
-func OnlyUpdate(names []string) error {
+func Update(names []string) error {
 	log.Logger.Info("Updating vulnerability database...")
 
 	// Clone vuln-list repository

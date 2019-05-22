@@ -7,20 +7,15 @@ import (
 
 	"github.com/genuinetools/reg/registry"
 	"github.com/knqyf263/fanal/cache"
-
-	"github.com/knqyf263/trivy/pkg/utils"
-
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
-
-	"github.com/knqyf263/trivy/pkg/report"
-	"github.com/knqyf263/trivy/pkg/scanner"
-	"github.com/knqyf263/trivy/pkg/vulnsrc"
-
-	"github.com/urfave/cli"
-	"golang.org/x/xerrors"
-
 	"github.com/knqyf263/trivy/pkg/db"
 	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/knqyf263/trivy/pkg/report"
+	"github.com/knqyf263/trivy/pkg/scanner"
+	"github.com/knqyf263/trivy/pkg/utils"
+	"github.com/knqyf263/trivy/pkg/vulnsrc"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/urfave/cli"
+	"golang.org/x/xerrors"
 )
 
 func Run(c *cli.Context) (err error) {
@@ -107,11 +102,11 @@ func Run(c *cli.Context) (err error) {
 	}
 	// this condition is already validated by skipUpdate && onlyUpdate != ""
 	if onlyUpdate != "" {
-		if err = vulnsrc.OnlyUpdate(strings.Split(onlyUpdate, ",")); err != nil {
+		if err = vulnsrc.Update(strings.Split(onlyUpdate, ",")); err != nil {
 			return xerrors.Errorf("error in vulnerability DB update: %w", err)
 		}
 	} else {
-		if err = vulnsrc.UpdateAll(); err != nil {
+		if err = vulnsrc.Update(vulnerability.DBNames); err != nil {
 			return xerrors.Errorf("error in vulnerability DB update: %w", err)
 		}
 	}
