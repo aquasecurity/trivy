@@ -30,14 +30,24 @@ func SetCacheDir(cd string) {
 	cacheDir = cd
 }
 
-var vulnTypeSelector string
+var vulnTypeSelector []string
 
-func VulnTypeSelector() string {
+func VulnTypeSelector() []string {
 	return vulnTypeSelector
 }
 
-func SetVulnTypeSelector(vulnType string) {
-	vulnTypeSelector = strings.ToLower(vulnType)
+func SetVulnTypeSelector(vulnTypeParam string) {
+	vulnTypeSelector = strings.Split(vulnTypeParam, ",")
+}
+
+func IsVulnTypeSelected(vulnType string) bool {
+	for i := 0; i < len(vulnTypeSelector); i++ {
+		if vulnType == vulnTypeSelector[i] {
+			log.Logger.Debugf("%s is in vuln type selected", vulnType)
+			return true
+		}
+	}
+	return false
 }
 
 func FileWalk(root string, targetFiles map[string]struct{}, walkFn func(r io.Reader, path string) error) error {

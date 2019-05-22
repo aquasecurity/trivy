@@ -64,9 +64,16 @@ func Scan(files extractor.FileMap) (map[string][]vulnerability.DetectedVulnerabi
 		return nil, xerrors.Errorf("failed to analyze libraries: %w", err)
 	}
 
-	if utils.VulnTypeSelector() != "all" && utils.VulnTypeSelector() != "package" {
+	if !utils.IsVulnTypeSelected("all") && !utils.IsVulnTypeSelected("package") {
 		for path, _ := range results {
-			if !strings.Contains(string(path), utils.VulnTypeSelector()) {
+			toDelete := true
+			for i := 0; i < len(utils.VulnTypeSelector()); i++ {
+				depFileDirName := strings.Join([]string{utils.VulnTypeSelector()[i], "app"},"-")
+				if strings.Contains(string(path), depFileDirName) {
+					toDelete = false
+				}
+			}
+			if toDelete {
 				delete(results, path)
 			}
 		}

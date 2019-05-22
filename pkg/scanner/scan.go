@@ -44,11 +44,10 @@ func ScanImage(imageName, filePath string) (map[string][]vulnerability.DetectedV
 		return nil, xerrors.New("image name or image file must be specified")
 	}
 
-	if utils.VulnTypeSelector() == "all" || utils.VulnTypeSelector() == "os"{
+	if utils.IsVulnTypeSelected("all") || utils.IsVulnTypeSelected("os"){
 		osFamily, osVersion, osVulns, err := ospkg.Scan(files)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to scan image: %w", err)
-
 		}
 		if osFamily != "" {
 			imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion)
@@ -56,7 +55,7 @@ func ScanImage(imageName, filePath string) (map[string][]vulnerability.DetectedV
 		}
 	}
 
-	if utils.VulnTypeSelector() != "os"{
+	if !utils.IsVulnTypeSelected("os") || len(utils.VulnTypeSelector()) > 1 {
 		libVulns, err := library.Scan(files)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to scan libraries: %w", err)
