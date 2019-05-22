@@ -2,6 +2,7 @@ package library
 
 import (
 	"os"
+	"strings"
 	"path/filepath"
 
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
@@ -17,6 +18,7 @@ import (
 	"github.com/knqyf263/fanal/extractor"
 	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
 	"github.com/knqyf263/go-version"
+	"github.com/knqyf263/trivy/pkg/utils"
 	"github.com/knqyf263/trivy/pkg/log"
 	"github.com/knqyf263/trivy/pkg/scanner/library/bundler"
 	"github.com/knqyf263/trivy/pkg/scanner/library/cargo"
@@ -60,6 +62,14 @@ func Scan(files extractor.FileMap) (map[string][]vulnerability.DetectedVulnerabi
 	results, err := analyzer.GetLibraries(files)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to analyze libraries: %w", err)
+	}
+
+	if utils.VulnTypeSelector() != "all" && utils.VulnTypeSelector() != "package" {
+		for path, _ := range results {
+			if !strings.Contains(string(path), utils.VulnTypeSelector()) {
+				delete(results, path)
+			}
+		}
 	}
 
 	vulnerabilities := map[string][]vulnerability.DetectedVulnerability{}

@@ -145,6 +145,15 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
+	vulnTypeSelector := c.String("vuln-type")
+	if vulnTypeSelector != "" {
+		utils.SetVulnTypeSelector(vulnTypeSelector)
+	} else {
+		utils.SetVulnTypeSelector("all")
+	}
+
+	log.Logger.Debugf("Vulnerability type:  %s", utils.VulnTypeSelector())
+
 	vulns, err := scanner.ScanImage(imageName, filePath)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)

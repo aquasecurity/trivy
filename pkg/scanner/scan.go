@@ -8,6 +8,7 @@ import (
 
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/fanal/extractor"
+	"github.com/knqyf263/trivy/pkg/utils"
 	"github.com/knqyf263/trivy/pkg/scanner/library"
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
@@ -43,22 +44,26 @@ func ScanImage(imageName, filePath string) (map[string][]vulnerability.DetectedV
 		return nil, xerrors.New("image name or image file must be specified")
 	}
 
-	osFamily, osVersion, osVulns, err := ospkg.Scan(files)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to scan image: %w", err)
+	if utils.VulnTypeSelector() == "all" || utils.VulnTypeSelector() == "os"{
+		osFamily, osVersion, osVulns, err := ospkg.Scan(files)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to scan image: %w", err)
 
-	}
-	if osFamily != "" {
-		imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion)
-		results[imageDetail] = osVulns
+		}
+		if osFamily != "" {
+			imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion)
+			results[imageDetail] = osVulns
+		}
 	}
 
-	libVulns, err := library.Scan(files)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to scan libraries: %w", err)
-	}
-	for path, vulns := range libVulns {
-		results[path] = vulns
+	if utils.VulnTypeSelector() != "os"{
+		libVulns, err := library.Scan(files)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to scan libraries: %w", err)
+		}
+		for path, vulns := range libVulns {
+			results[path] = vulns
+		}
 	}
 
 	return results, nil

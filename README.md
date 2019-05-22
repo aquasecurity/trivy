@@ -691,6 +691,47 @@ Total: 1785 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1680, CRITICAL: 105)
 
 </details>
 
+
+### Filter the vulnerabilities by type
+
+```
+$ trivy --vuln-type python mallear/tryvi-ci-test:latest
+```
+
+Available values:
+  - all (default)
+  - package
+  - os
+  - python
+  - ruby
+  - node
+  - php
+  - rust
+
+<details>
+<summary>Result</summary>
+
+```
+2019-05-22T14:32:01.299+0200	INFO	Updating vulnerability database...
+2019-05-22T14:32:02.905+0200	WARN	You should avoid using the :latest tag as it is cached. You need to specify '--clear-cache' option when :latest image is changed
+2019-05-22T14:32:08.378+0200	INFO	Updating pipenv Security DB...
+2019-05-22T14:32:09.581+0200	INFO	Detecting pipenv vulnerabilities...
+
+python-app/Pipfile.lock
+=======================
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
++---------+------------------+----------+-------------------+---------------+------------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |               TITLE                |
++---------+------------------+----------+-------------------+---------------+------------------------------------+
+| django  | CVE-2019-6975    | MEDIUM   | 2.0.9             | 2.0.11        | python-django:                     |
+|         |                  |          |                   |               | memory exhaustion in               |
+|         |                  |          |                   |               | django.utils.numberformat.format() |
++---------+------------------+----------+-------------------+---------------+------------------------------------+
+```
+
+</details>
+
 ### Skip an update of vulnerability DB
 
 `Trivy` always updates vulnerability database when it starts operating. This is usually fast as it is a difference update. But if you want to skip even that, use the `--skip-update` option.
@@ -913,7 +954,7 @@ cache:
     - $HOME/.cache/trivy
 ```
 
-Example: https://travis-ci.org/knqyf263/trivy-ci-test  
+Example: https://travis-ci.org/knqyf263/trivy-ci-test
 Repository: https://github.com/knqyf263/trivy-ci-test
 
 ## CircleCI
@@ -959,7 +1000,7 @@ workflows:
       - build
 ```
 
-Example: https://circleci.com/gh/knqyf263/trivy-ci-test  
+Example: https://circleci.com/gh/knqyf263/trivy-ci-test
 Repository: https://github.com/knqyf263/trivy-ci-test
 
 # Vulnerability Detection
@@ -1016,6 +1057,7 @@ OPTIONS:
   --refresh                   refresh DB (usually used after version update of trivy)
   --auto-refresh              refresh DB automatically when updating version of trivy
   --debug, -d                 debug mode
+  --vuln-type value           select vulnerability type
   --help, -h                  show help
   --version, -v               print the version
 ```
