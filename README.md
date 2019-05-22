@@ -139,7 +139,6 @@ $ sudo dpkg -i trivy_0.0.15_Linux-64bit.deb
 You can use homebrew on Mac OS.
 
 ```
-$ brew tap knqyf263/trivy
 $ brew install knqyf263/trivy/trivy
 ```
 
