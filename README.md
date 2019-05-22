@@ -963,11 +963,11 @@ Repository: https://github.com/knqyf263/trivy-ci-test
 
 ## Authorization for Private Docker Registry without Docker
 
-Trivy can download image without installing `Docker`, and fetch from private repositories without any 3rd party tools.
-
+Trivy can download images from private registry, without installing `Docker` and any 3rd party tools.
 That's because it's easy to run in a CI process.
-I hardly recommend using it in your local machine to you.
-You only to set ENV vars on a CI tool.
+
+All you have to do is install `Trivy` and set ENV vars.
+But, I can't recommend using ENV vars in your local machine to you.
 
 ### Dockerhub
 
