@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/briandowns/spinner v0.0.0-20190319032542-ac46072a5a91
+	github.com/caarlos0/env/v6 v6.0.0
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/etcd-io/bbolt v1.3.2
 	github.com/fatih/color v1.7.0
@@ -20,7 +21,6 @@ require (
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.1
-	github.com/stretchr/testify v1.3.0 // indirect
 	github.com/urfave/cli v1.20.0
 	github.com/xanzy/ssh-agent v0.2.1 // indirect
 	go.etcd.io/bbolt v1.3.2 // indirect

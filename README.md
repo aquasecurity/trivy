@@ -961,6 +961,61 @@ workflows:
 Example: https://circleci.com/gh/knqyf263/trivy-ci-test  
 Repository: https://github.com/knqyf263/trivy-ci-test
 
+## Authorization for Private Docker Registry without Docker
+
+Trivy can download image without installing `Docker`, and fetch from private repositories without any 3rd party tools.
+
+That's because it's easy to run in a CI process.
+I hardly recommend using it in your local machine to you.
+You only to set ENV vars on a CI tool.
+
+### Dockerhub
+
+Dockerhub needs `TRIVY_AUTH_URL`, `TRIVY_USERNAME` and `TRIVY_PASSWORD`.
+You don't need to set ENV vars when download from public repository.
+
+```bash
+export TRIVY_AUTH_URL=https://registry.hub.docker.com
+export TRIVY_USERNAME={DOCKERHUB_USERNAME}
+export TRIVY_PASSWORD={DOCKERHUB_PASSWORD}
+```
+
+### Amazon ECR (Elastic Container Registry)
+
+Amazon ECR needs `TRIVY_AWS_ACCESS`, `TRIVY_AWS_SECRET` and `TRIVY_AWS_REGION`.
+You don't need to install `aws` CLI tool.
+
+```bash
+# must set TRIVY_USERNAME empty char
+export TRIVY_USERNAME=
+export TRIVY_AWS_ACCESS={AWS_ACCESS_KEY}
+export TRIVY_AWS_SECRET={AWS_SECRET_KEY}
+export TRIVY_AWS_REGION={AWS_REGION}
+```
+
+### GCR (Google Container Registry)
+
+GCR needs `GOOGLE_APPLICATION_CREDENTIALS` and target project's credential file.
+You don't need to install `gcloud` command.
+
+```bash
+# must set TRIVY_USERNAME empty char
+export TRIVY_USERNAME=
+export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credential.json
+```
+
+### Self Hosted Registry (BasicAuth)
+
+BasicAuth server needs `TRIVY_USERNAME` and `TRIVY_PASSWORD`.
+
+```bash
+export TRIVY_USERNAME={USERNAME}
+export TRIVY_PASSWORD={PASSWORD}
+
+# if you want to use 80 port, use NonSSL
+export TRIVY_NON_SSL=true
+```
+
 # Vulnerability Detection
 
 ## OS Packages
