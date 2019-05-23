@@ -30,20 +30,9 @@ func SetCacheDir(cd string) {
 	cacheDir = cd
 }
 
-var vulnTypeSelector []string
-
-func VulnTypeSelector() []string {
-	return vulnTypeSelector
-}
-
-func SetVulnTypeSelector(vulnTypeParam string) {
-	vulnTypeSelector = strings.Split(vulnTypeParam, ",")
-}
-
-func IsVulnTypeSelected(vulnType string) bool {
-	for i := 0; i < len(vulnTypeSelector); i++ {
-		if vulnType == vulnTypeSelector[i] {
-			log.Logger.Debugf("%s is in vuln type selected", vulnType)
+func IsVulnTypeSelected(vulnList []string, vulnType string) bool {
+	for i := 0; i < len(vulnList); i++ {
+		if vulnType == vulnList[i] {
 			return true
 		}
 	}

@@ -8,8 +8,8 @@ import (
 	"github.com/genuinetools/reg/registry"
 	"github.com/knqyf263/fanal/cache"
 
+	customtype "github.com/knqyf263/trivy/pkg/types"
 	"github.com/knqyf263/trivy/pkg/utils"
-
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
 	"github.com/knqyf263/trivy/pkg/report"
@@ -145,16 +145,11 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
-	vulnTypeSelector := c.String("vuln-type")
-	if vulnTypeSelector != "" {
-		utils.SetVulnTypeSelector(vulnTypeSelector)
-	} else {
-		utils.SetVulnTypeSelector("all")
-	}
+	scanOptions := customtype.ScanOptions{VulnType: strings.Split(c.String("vuln-type"), ",")}
 
-	log.Logger.Debugf("Vulnerability type:  %s", utils.VulnTypeSelector())
+	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	vulns, err := scanner.ScanImage(imageName, filePath)
+	vulns, err := scanner.ScanImage(imageName, filePath, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}

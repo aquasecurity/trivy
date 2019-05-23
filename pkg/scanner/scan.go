@@ -8,15 +8,16 @@ import (
 
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/fanal/extractor"
-	"github.com/knqyf263/trivy/pkg/utils"
 	"github.com/knqyf263/trivy/pkg/scanner/library"
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg"
+	customtype "github.com/knqyf263/trivy/pkg/types"
+	"github.com/knqyf263/trivy/pkg/utils"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/xerrors"
 )
 
-func ScanImage(imageName, filePath string) (map[string][]vulnerability.DetectedVulnerability, error) {
+func ScanImage(imageName, filePath string, scanOptions customtype.ScanOptions) (map[string][]vulnerability.DetectedVulnerability, error) {
 	var err error
 	results := map[string][]vulnerability.DetectedVulnerability{}
 	ctx := context.Background()
@@ -44,7 +45,7 @@ func ScanImage(imageName, filePath string) (map[string][]vulnerability.DetectedV
 		return nil, xerrors.New("image name or image file must be specified")
 	}
 
-	if utils.IsVulnTypeSelected("all") || utils.IsVulnTypeSelected("os"){
+	if utils.IsVulnTypeSelected(scanOptions.VulnType, "all") || utils.IsVulnTypeSelected(scanOptions.VulnType, "os") {
 		osFamily, osVersion, osVulns, err := ospkg.Scan(files)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to scan image: %w", err)
@@ -55,8 +56,8 @@ func ScanImage(imageName, filePath string) (map[string][]vulnerability.DetectedV
 		}
 	}
 
-	if !utils.IsVulnTypeSelected("os") || len(utils.VulnTypeSelector()) > 1 {
-		libVulns, err := library.Scan(files)
+	if !utils.IsVulnTypeSelected(scanOptions.VulnType, "os") || len(scanOptions.VulnType) > 1 {
+		libVulns, err := library.Scan(files, scanOptions)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to scan libraries: %w", err)
 		}

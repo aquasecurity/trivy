@@ -2,8 +2,8 @@ package library
 
 import (
 	"os"
-	"strings"
 	"path/filepath"
+	"strings"
 
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
@@ -18,13 +18,14 @@ import (
 	"github.com/knqyf263/fanal/extractor"
 	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
 	"github.com/knqyf263/go-version"
-	"github.com/knqyf263/trivy/pkg/utils"
 	"github.com/knqyf263/trivy/pkg/log"
 	"github.com/knqyf263/trivy/pkg/scanner/library/bundler"
 	"github.com/knqyf263/trivy/pkg/scanner/library/cargo"
 	"github.com/knqyf263/trivy/pkg/scanner/library/composer"
 	"github.com/knqyf263/trivy/pkg/scanner/library/node"
 	"github.com/knqyf263/trivy/pkg/scanner/library/python"
+	customtype "github.com/knqyf263/trivy/pkg/types"
+	"github.com/knqyf263/trivy/pkg/utils"
 	"golang.org/x/xerrors"
 )
 
@@ -58,17 +59,17 @@ func NewScanner(filename string) Scanner {
 	return scanner
 }
 
-func Scan(files extractor.FileMap) (map[string][]vulnerability.DetectedVulnerability, error) {
+func Scan(files extractor.FileMap, scanOptions customtype.ScanOptions) (map[string][]vulnerability.DetectedVulnerability, error) {
 	results, err := analyzer.GetLibraries(files)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to analyze libraries: %w", err)
 	}
 
-	if !utils.IsVulnTypeSelected("all") && !utils.IsVulnTypeSelected("package") {
+	if !utils.IsVulnTypeSelected(scanOptions.VulnType, "all") && !utils.IsVulnTypeSelected(scanOptions.VulnType, "package") {
 		for path, _ := range results {
 			toDelete := true
-			for i := 0; i < len(utils.VulnTypeSelector()); i++ {
-				depFileDirName := strings.Join([]string{utils.VulnTypeSelector()[i], "app"},"-")
+			for i := 0; i < len(scanOptions.VulnType); i++ {
+				depFileDirName := strings.Join([]string{scanOptions.VulnType[i], "app"}, "-")
 				if strings.Contains(string(path), depFileDirName) {
 					toDelete = false
 				}
