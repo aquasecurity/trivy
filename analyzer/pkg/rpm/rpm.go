@@ -62,11 +62,16 @@ func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []analyzer.Packa
 	}
 
 	for _, pkg := range pkgList {
+		arch := pkg.Arch
+		if arch == "" {
+			arch = "(none)"
+		}
 		p := analyzer.Package{
 			Name:    pkg.Name,
 			Epoch:   pkg.Epoch,
 			Version: pkg.Version,
 			Release: pkg.Release,
+			Arch:    arch,
 		}
 		pkgs = append(pkgs, p)
 	}

@@ -58,16 +58,12 @@ type Package struct {
 	Version    string
 	Release    string
 	Epoch      int
+	Arch       string
 	SrcName    string
 	SrcVersion string
 	SrcRelease string
 	SrcEpoch   int
 }
-
-var (
-	TypeBinary = "binary"
-	TypeSource = "source"
-)
 
 type SrcPackage struct {
 	Name        string   `json:"name"`
@@ -161,7 +157,7 @@ func GetPackages(filesMap extractor.FileMap) ([]Package, error) {
 		}
 		return pkgs, nil
 	}
-	return nil, ErrUnknownOS
+	return nil, ErrPkgAnalysis
 }
 
 func GetPackagesFromCommands(targetOS OS, filesMap extractor.FileMap) ([]Package, error) {

@@ -75,7 +75,7 @@ func (a rpmCmdPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []analyzer.Pa
 
 func parseRPMOutput(line string) (pkg analyzer.Package, err error) {
 	fields := strings.Fields(line)
-	if len(fields) != 5 {
+	if len(fields) != 6 {
 		return pkg, xerrors.Errorf("Failed to parse package line: %s", line)
 	}
 
@@ -102,6 +102,7 @@ func parseRPMOutput(line string) (pkg analyzer.Package, err error) {
 		Epoch:      epoch,
 		Version:    fields[2],
 		Release:    fields[3],
+		Arch:       fields[5],
 		SrcName:    srcName,
 		SrcVersion: srcVer,
 		SrcRelease: srcRel,
@@ -110,11 +111,11 @@ func parseRPMOutput(line string) (pkg analyzer.Package, err error) {
 }
 
 func outputPkgInfo(dir string) (out []byte, err error) {
-	const old = "%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{SOURCERPM}\n"
-	const new = "%{NAME} %{EPOCHNUM} %{VERSION} %{RELEASE} %{SOURCERPM}\n"
-	out, err = exec.Command("rpm", "--dbpath", dir, "-qa", "--qf", new).Output()
+	const oldFmt = "%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{SOURCERPM} %{ARCH}\n"
+	const newFmt = "%{NAME} %{EPOCHNUM} %{VERSION} %{RELEASE} %{SOURCERPM} %{ARCH}\n"
+	out, err = exec.Command("rpm", "--dbpath", dir, "-qa", "--qf", newFmt).Output()
 	if err != nil {
-		return exec.Command("rpm", "--dbpath", dir, "-qa", "--qf", old).Output()
+		return exec.Command("rpm", "--dbpath", dir, "-qa", "--qf", oldFmt).Output()
 	}
 	return out, nil
 }
