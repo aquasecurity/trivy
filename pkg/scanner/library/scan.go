@@ -24,7 +24,7 @@ import (
 	"github.com/knqyf263/trivy/pkg/scanner/library/composer"
 	"github.com/knqyf263/trivy/pkg/scanner/library/node"
 	"github.com/knqyf263/trivy/pkg/scanner/library/python"
-	customtype "github.com/knqyf263/trivy/pkg/types"
+	"github.com/knqyf263/trivy/pkg/types"
 	"github.com/knqyf263/trivy/pkg/utils"
 	"golang.org/x/xerrors"
 )
@@ -59,7 +59,7 @@ func NewScanner(filename string) Scanner {
 	return scanner
 }
 
-func Scan(files extractor.FileMap, scanOptions customtype.ScanOptions) (map[string][]vulnerability.DetectedVulnerability, error) {
+func Scan(files extractor.FileMap, scanOptions types.ScanOptions) (map[string][]vulnerability.DetectedVulnerability, error) {
 	results, err := analyzer.GetLibraries(files)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to analyze libraries: %w", err)

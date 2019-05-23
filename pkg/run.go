@@ -8,7 +8,7 @@ import (
 	"github.com/genuinetools/reg/registry"
 	"github.com/knqyf263/fanal/cache"
 
-	customtype "github.com/knqyf263/trivy/pkg/types"
+	"github.com/knqyf263/trivy/pkg/types"
 	"github.com/knqyf263/trivy/pkg/utils"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
@@ -145,7 +145,7 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
-	scanOptions := customtype.ScanOptions{VulnType: strings.Split(c.String("vuln-type"), ",")}
+	scanOptions := types.ScanOptions{VulnType: strings.Split(c.String("vuln-type"), ",")}
 
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 

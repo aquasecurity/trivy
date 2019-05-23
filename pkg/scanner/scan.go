@@ -10,14 +10,14 @@ import (
 	"github.com/knqyf263/fanal/extractor"
 	"github.com/knqyf263/trivy/pkg/scanner/library"
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg"
-	customtype "github.com/knqyf263/trivy/pkg/types"
+	"github.com/knqyf263/trivy/pkg/types"
 	"github.com/knqyf263/trivy/pkg/utils"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/xerrors"
 )
 
-func ScanImage(imageName, filePath string, scanOptions customtype.ScanOptions) (map[string][]vulnerability.DetectedVulnerability, error) {
+func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[string][]vulnerability.DetectedVulnerability, error) {
 	var err error
 	results := map[string][]vulnerability.DetectedVulnerability{}
 	ctx := context.Background()
