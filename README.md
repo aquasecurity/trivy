@@ -969,9 +969,9 @@ That's because it's easy to run in a CI process.
 All you have to do is install `Trivy` and set ENV vars.
 But, I can't recommend using ENV vars in your local machine to you.
 
-### Dockerhub
+### Docker Hub
 
-Dockerhub needs `TRIVY_AUTH_URL`, `TRIVY_USERNAME` and `TRIVY_PASSWORD`.
+Docker Hub needs `TRIVY_AUTH_URL`, `TRIVY_USERNAME` and `TRIVY_PASSWORD`.
 You don't need to set ENV vars when download from public repository.
 
 ```bash
@@ -982,25 +982,16 @@ export TRIVY_PASSWORD={DOCKERHUB_PASSWORD}
 
 ### Amazon ECR (Elastic Container Registry)
 
-Amazon ECR needs `TRIVY_AWS_ACCESS`, `TRIVY_AWS_SECRET` and `TRIVY_AWS_REGION`.
-You don't need to install `aws` CLI tool.
-
-```bash
-# must set TRIVY_USERNAME empty char
-export TRIVY_USERNAME=
-export TRIVY_AWS_ACCESS={AWS_ACCESS_KEY}
-export TRIVY_AWS_SECRET={AWS_SECRET_KEY}
-export TRIVY_AWS_REGION={AWS_REGION}
-```
+Trivi use AWS SDK. You don't need to install `aws` CLI tool.
+You can use [AWS CLI's ENV Vars](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html).
 
 ### GCR (Google Container Registry)
 
-GCR needs `GOOGLE_APPLICATION_CREDENTIALS` and target project's credential file.
-You don't need to install `gcloud` command.
+Trivi use Google Cloud SDK. You don't need to install `gcloud` command.
 
+If you want to use target project's repository, you can settle via `GOOGLE_APPLICATION_CREDENTIAL`. 
 ```bash
 # must set TRIVY_USERNAME empty char
-export TRIVY_USERNAME=
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credential.json
 ```
 
