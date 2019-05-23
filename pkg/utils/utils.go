@@ -30,15 +30,6 @@ func SetCacheDir(cd string) {
 	cacheDir = cd
 }
 
-func IsVulnTypeSelected(vulnList []string, vulnType string) bool {
-	for i := 0; i < len(vulnList); i++ {
-		if vulnType == vulnList[i] {
-			return true
-		}
-	}
-	return false
-}
-
 func FileWalk(root string, targetFiles map[string]struct{}, walkFn func(r io.Reader, path string) error) error {
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {

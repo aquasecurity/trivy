@@ -25,7 +25,6 @@ import (
 	"github.com/knqyf263/trivy/pkg/scanner/library/node"
 	"github.com/knqyf263/trivy/pkg/scanner/library/python"
 	"github.com/knqyf263/trivy/pkg/types"
-	"github.com/knqyf263/trivy/pkg/utils"
 	"golang.org/x/xerrors"
 )
 
@@ -65,7 +64,7 @@ func Scan(files extractor.FileMap, scanOptions types.ScanOptions) (map[string][]
 		return nil, xerrors.Errorf("failed to analyze libraries: %w", err)
 	}
 
-	if !utils.IsVulnTypeSelected(scanOptions.VulnType, "all") && !utils.IsVulnTypeSelected(scanOptions.VulnType, "package") {
+	if !types.IsVulnTypeSelected(scanOptions, "all") && !types.IsVulnTypeSelected(scanOptions, "package") {
 		for path, _ := range results {
 			toDelete := true
 			for i := 0; i < len(scanOptions.VulnType); i++ {
