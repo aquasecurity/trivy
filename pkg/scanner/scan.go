@@ -11,7 +11,6 @@ import (
 	"github.com/knqyf263/trivy/pkg/scanner/library"
 	"github.com/knqyf263/trivy/pkg/scanner/ospkg"
 	"github.com/knqyf263/trivy/pkg/types"
-	"github.com/knqyf263/trivy/pkg/utils"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/xerrors"
@@ -26,7 +25,11 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[s
 	var files extractor.FileMap
 	if imageName != "" {
 		target = imageName
-		files, err = analyzer.Analyze(ctx, imageName)
+		dockerOption, err := types.GetDockerOption()
+		if err != nil {
+			return nil, xerrors.Errorf("failed to get docker option: %w", err)
+		}
+		files, err = analyzer.Analyze(ctx, imageName, dockerOption)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to analyze image: %w", err)
 		}
