@@ -102,6 +102,7 @@ func Run(c *cli.Context) (err error) {
 	}
 	// this condition is already validated by skipUpdate && onlyUpdate != ""
 	if onlyUpdate != "" {
+		log.Logger.Warn("The --update-only option may cause the vulnerability details such as severity and title not to be displayed")
 		if err = vulnsrc.Update(strings.Split(onlyUpdate, ",")); err != nil {
 			return xerrors.Errorf("error in vulnerability DB update: %w", err)
 		}
