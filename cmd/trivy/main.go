@@ -69,6 +69,10 @@ OPTIONS:
 			Name:  "skip-update",
 			Usage: "skip db update",
 		},
+		cli.StringFlag{
+			Name:  "only-update",
+			Usage: "update db only specified distribution (comma separated)",
+		},
 		cli.BoolFlag{
 			Name:  "reset",
 			Usage: "remove all caches and database",
