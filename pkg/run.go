@@ -107,7 +107,7 @@ func Run(c *cli.Context) (err error) {
 			return xerrors.Errorf("error in vulnerability DB update: %w", err)
 		}
 	} else {
-		if err = vulnsrc.Update(vulnerability.DBNames); err != nil {
+		if err = vulnsrc.Update(vulnsrc.UpdateList); err != nil {
 			return xerrors.Errorf("error in vulnerability DB update: %w", err)
 		}
 	}
