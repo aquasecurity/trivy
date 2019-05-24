@@ -22,13 +22,24 @@ const (
 
 type updateFunc func(dir string, updatedFiles map[string]struct{}) error
 
-var updateMap = map[string]updateFunc{
-	vulnerability.Nvd:        nvd.Update,
-	vulnerability.Alpine:     alpine.Update,
-	vulnerability.RedHat:     redhat.Update,
-	vulnerability.Debian:     debian.Update,
-	vulnerability.DebianOVAL: debianoval.Update,
-	vulnerability.Ubuntu:     ubuntu.Update,
+var (
+	// UpdateList has list of update distributions
+	UpdateList []string
+	updateMap  = map[string]updateFunc{
+		vulnerability.Nvd:        nvd.Update,
+		vulnerability.Alpine:     alpine.Update,
+		vulnerability.RedHat:     redhat.Update,
+		vulnerability.Debian:     debian.Update,
+		vulnerability.DebianOVAL: debianoval.Update,
+		vulnerability.Ubuntu:     ubuntu.Update,
+	}
+)
+
+func init() {
+	UpdateList = make([]string, 0, len(updateMap))
+	for distribution := range updateMap {
+		UpdateList = append(UpdateList, distribution)
+	}
 }
 
 func Update(names []string) error {
