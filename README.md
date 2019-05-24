@@ -983,12 +983,12 @@ export TRIVY_PASSWORD={DOCKERHUB_PASSWORD}
 
 ### Amazon ECR (Elastic Container Registry)
 
-Trivy use AWS SDK. You don't need to install `aws` CLI tool.
+Trivy uses AWS SDK. You don't need to install `aws` CLI tool.
 You can use [AWS CLI's ENV Vars](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html).
 
 ### GCR (Google Container Registry)
 
-Trivy use Google Cloud SDK. You don't need to install `gcloud` command.
+Trivy uses Google Cloud SDK. You don't need to install `gcloud` command.
 
 If you want to use target project's repository, you can settle via `GOOGLE_APPLICATION_CREDENTIAL`. 
 ```bash
