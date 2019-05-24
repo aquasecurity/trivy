@@ -92,7 +92,7 @@ func clone(url, repoPath string) error {
 }
 
 func cloneByOSCommand(url, repoPath string) error {
-	commandAndArgs := []string{"clone", url, repoPath}
+	commandAndArgs := []string{"clone", "--depth=1", url, repoPath}
 	_, err := utils.Exec("git", commandAndArgs)
 	if err != nil {
 		return xerrors.Errorf("error in git clone: %w", err)

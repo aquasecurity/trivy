@@ -75,7 +75,7 @@ See [here](#continuous-integration-ci) for details.
 
 - Detect comprehensive vulnerabilities
   - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Debian and Ubuntu)
-  - **Application dependencies** (Bundler, Composer, Pipenv, npm, yarn and Cargo)
+  - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn and Cargo)
 - Simple
   - Specify only an image name
   - See [Quick Start](#quick-start) and [Examples](#examples)
@@ -139,7 +139,6 @@ $ sudo dpkg -i trivy_0.0.15_Linux-64bit.deb
 You can use homebrew on Mac OS.
 
 ```
-$ brew tap knqyf263/trivy
 $ brew install knqyf263/trivy/trivy
 ```
 
@@ -197,20 +196,23 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 Replace [YOUR_CACHE_DIR] with the cache directory on your machine.
 
 ```
-$ docker run -v [YOUR_CACHE_DIR]:/root/.cache/ knqyf263/trivy [YOUR_IMAGE_NAME]
+$ docker run --rm -v [YOUR_CACHE_DIR]:/root/.cache/ knqyf263/trivy [YOUR_IMAGE_NAME]
 ```
 
 Example for macOS:
 
 ```
-$ docker run -v $HOME/Library/Caches:/root/.cache/ knqyf263/trivy python:3.4-alpine
+$ docker run --rm -v $HOME/Library/Caches:/root/.cache/ knqyf263/trivy python:3.4-alpine
 ```
 
 If you would like to scan the image on your host machine, you need to mount `docker.sock`.
 
 ```
-$ docker run -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ knqyf263/trivy python:3.4-alpine
+$ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+    -v $HOME/Library/Caches:/root/.cache/ knqyf263/trivy python:3.4-alpine
 ```
+
+Please re-pull latest `knqyf263/trivy` if an error occured.
 
 <details>
 <summary>Result</summary>
@@ -1011,6 +1013,7 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 
 - Gemfile.lock
 - Pipfile.lock
+- poetry.lock
 - composer.lock
 - package-lock.json
 - yarn.lock
