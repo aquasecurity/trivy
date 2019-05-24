@@ -721,7 +721,6 @@ Available values:
 2019-05-22T19:36:53.406+0200	[34mINFO[0m	Detecting pipenv vulnerabilities...
 
 mallear/trivy-ci-test:0.1.1 (alpine 3.7.1)
-==========================================
 Total: 26 (UNKNOWN: 0, LOW: 3, MEDIUM: 16, HIGH: 5, CRITICAL: 2)
 
 +---------+------------------+----------+-------------------+---------------+----------------------------------+
@@ -1200,7 +1199,7 @@ You can use [AWS CLI's ENV Vars](https://docs.aws.amazon.com/cli/latest/userguid
 
 Trivy uses Google Cloud SDK. You don't need to install `gcloud` command.
 
-If you want to use target project's repository, you can settle via `GOOGLE_APPLICATION_CREDENTIAL`. 
+If you want to use target project's repository, you can settle via `GOOGLE_APPLICATION_CREDENTIAL`.
 ```bash
 # must set TRIVY_USERNAME empty char
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credential.json

@@ -10,6 +10,7 @@ import (
 	"github.com/knqyf263/trivy/pkg/db"
 	"github.com/knqyf263/trivy/pkg/log"
 	"github.com/knqyf263/trivy/pkg/report"
+	"github.com/knqyf263/trivy/pkg/types"
 	"github.com/knqyf263/trivy/pkg/scanner"
 	"github.com/knqyf263/trivy/pkg/utils"
 	"github.com/knqyf263/trivy/pkg/vulnsrc"
@@ -107,7 +108,7 @@ func Run(c *cli.Context) (err error) {
 			return xerrors.Errorf("error in vulnerability DB update: %w", err)
 		}
 	} else {
-		if err = vulnsrc.Update(vulnerability.DBNames); err != nil {
+		if err = vulnsrc.Update(vulnsrc.UpdateList); err != nil {
 			return xerrors.Errorf("error in vulnerability DB update: %w", err)
 		}
 	}
