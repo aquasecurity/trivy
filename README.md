@@ -718,6 +718,37 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 </details>
 
+### Update only you are specified distributions
+
+By default, `Trivy` always updates vulnerability database of all distribution. Use the `--only-update` option if you want to update only specified distributions.
+
+```
+$ trivy --only-update alpine,debian python:3.4-alpine3.9
+$ trivy --only-update alpine python:3.4-alpine3.9
+```
+
+<details>
+<summary>Result</summary>
+
+```
+2019-05-21T19:37:06.301+0900    INFO    Updating vulnerability database...
+2019-05-21T19:37:07.793+0900    INFO    Updating alpine data...
+2019-05-21T19:37:08.127+0900    INFO    Detecting Alpine vulnerabilities...
+
+python:3.4-alpine3.9 (alpine 3.9.2)
+===================================
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| openssl | CVE-2019-1543    | MEDIUM   | 1.1.1a-r1         | 1.1.1b-r1     | openssl: ChaCha20-Poly1305     |
+|         |                  |          |                   |               | with long nonces               |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+```
+
+</details>
+
 ### Ignore unfixed vulnerabilities
 
 By default, `Trivy` also detects unpatched/unfixed vulnerabilities. This means you can't fix these vulnerabilities even if you update all packages.

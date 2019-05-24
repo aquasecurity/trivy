@@ -7,20 +7,15 @@ import (
 
 	"github.com/genuinetools/reg/registry"
 	"github.com/knqyf263/fanal/cache"
-
-	"github.com/knqyf263/trivy/pkg/utils"
-
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
-
-	"github.com/knqyf263/trivy/pkg/report"
-	"github.com/knqyf263/trivy/pkg/scanner"
-	"github.com/knqyf263/trivy/pkg/vulnsrc"
-
-	"github.com/urfave/cli"
-	"golang.org/x/xerrors"
-
 	"github.com/knqyf263/trivy/pkg/db"
 	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/knqyf263/trivy/pkg/report"
+	"github.com/knqyf263/trivy/pkg/scanner"
+	"github.com/knqyf263/trivy/pkg/utils"
+	"github.com/knqyf263/trivy/pkg/vulnsrc"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/urfave/cli"
+	"golang.org/x/xerrors"
 )
 
 func Run(c *cli.Context) (err error) {
@@ -73,8 +68,17 @@ func Run(c *cli.Context) (err error) {
 
 	autoRefresh := c.Bool("auto-refresh")
 	skipUpdate := c.Bool("skip-update")
-	if (refresh || autoRefresh) && skipUpdate {
-		return xerrors.New("The --skip-update option can not be specified with the --refresh or --auto-refresh option")
+	onlyUpdate := c.String("only-update")
+	if refresh || autoRefresh {
+		if skipUpdate {
+			return xerrors.New("The --skip-update option can not be specified with the --refresh or --auto-refresh option")
+		}
+		if onlyUpdate != "" {
+			return xerrors.New("The --only-update option can not be specified with the --refresh or --auto-refresh option")
+		}
+	}
+	if skipUpdate && onlyUpdate != "" {
+		return xerrors.New("The --skip-update and --only-update option can not be specified both")
 	}
 
 	if err = db.Init(); err != nil {
@@ -96,8 +100,14 @@ func Run(c *cli.Context) (err error) {
 			return xerrors.Errorf("error in refresh DB: %w", err)
 		}
 	}
-	if !skipUpdate {
-		if err = vulnsrc.Update(); err != nil {
+	// this condition is already validated by skipUpdate && onlyUpdate != ""
+	if onlyUpdate != "" {
+		log.Logger.Warn("The --update-only option may cause the vulnerability details such as severity and title not to be displayed")
+		if err = vulnsrc.Update(strings.Split(onlyUpdate, ",")); err != nil {
+			return xerrors.Errorf("error in vulnerability DB update: %w", err)
+		}
+	} else {
+		if err = vulnsrc.Update(vulnerability.DBNames); err != nil {
 			return xerrors.Errorf("error in vulnerability DB update: %w", err)
 		}
 	}

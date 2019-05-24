@@ -12,6 +12,7 @@ import (
 	"github.com/knqyf263/trivy/pkg/vulnsrc/nvd"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/redhat"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/ubuntu"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 	"golang.org/x/xerrors"
 )
 
@@ -19,7 +20,18 @@ const (
 	repoURL = "https://github.com/knqyf263/vuln-list.git"
 )
 
-func Update() (err error) {
+type updateFunc func(dir string, updatedFiles map[string]struct{}) error
+
+var updateMap = map[string]updateFunc{
+	vulnerability.Nvd:        nvd.Update,
+	vulnerability.Alpine:     alpine.Update,
+	vulnerability.RedHat:     redhat.Update,
+	vulnerability.Debian:     debian.Update,
+	vulnerability.DebianOVAL: debianoval.Update,
+	vulnerability.Ubuntu:     ubuntu.Update,
+}
+
+func Update(names []string) error {
 	log.Logger.Info("Updating vulnerability database...")
 
 	// Clone vuln-list repository
@@ -35,41 +47,15 @@ func Update() (err error) {
 		return nil
 	}
 
-	// Update NVD
-	log.Logger.Info("Updating NVD data...")
-	if err = nvd.Update(dir, updatedFiles); err != nil {
-		return xerrors.Errorf("error in NVD update: %w", err)
+	for _, distribution := range names {
+		updateFunc, ok := updateMap[distribution]
+		if !ok {
+			return xerrors.Errorf("%s does not supported yet", distribution)
+		}
+		log.Logger.Infof("Updating %s data...", distribution)
+		if err := updateFunc(dir, updatedFiles); err != nil {
+			return xerrors.Errorf("error in %s update: %w", distribution, err)
+		}
 	}
-
-	// Update Alpine OVAL
-	log.Logger.Info("Updating Alpine data...")
-	if err = alpine.Update(dir, updatedFiles); err != nil {
-		return xerrors.Errorf("error in Alpine OVAL update: %w", err)
-	}
-
-	// Update RedHat
-	log.Logger.Info("Updating RedHat data...")
-	if err = redhat.Update(dir, updatedFiles); err != nil {
-		return xerrors.Errorf("error in RedHat update: %w", err)
-	}
-
-	// Update Debian
-	log.Logger.Info("Updating Debian data...")
-	if err = debian.Update(dir, updatedFiles); err != nil {
-		return xerrors.Errorf("error in Debian update: %w", err)
-	}
-
-	// Update Debian OVAL
-	log.Logger.Info("Updating Debian OVAL data...")
-	if err = debianoval.Update(dir, updatedFiles); err != nil {
-		return xerrors.Errorf("error in Debian OVAL update: %w", err)
-	}
-
-	// Update Ubuntu
-	log.Logger.Info("Updating Ubuntu data...")
-	if err = ubuntu.Update(dir, updatedFiles); err != nil {
-		return xerrors.Errorf("error in Ubuntu update: %w", err)
-	}
-
 	return nil
 }

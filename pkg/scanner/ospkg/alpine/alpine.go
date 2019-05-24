@@ -3,17 +3,13 @@ package alpine
 import (
 	"strings"
 
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
-
-	"golang.org/x/xerrors"
-
-	version "github.com/knqyf263/go-rpm-version"
-	"github.com/knqyf263/trivy/pkg/scanner/utils"
-
-	"github.com/knqyf263/trivy/pkg/vulnsrc/alpine"
-
 	"github.com/knqyf263/fanal/analyzer"
+	version "github.com/knqyf263/go-rpm-version"
 	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/knqyf263/trivy/pkg/scanner/utils"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/alpine"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"golang.org/x/xerrors"
 )
 
 type Scanner struct{}
