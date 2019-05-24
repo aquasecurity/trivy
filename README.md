@@ -48,6 +48,7 @@ See [Comparison with other scanners](#comparison-with-other-scanners) for detail
 - [Continuous Integration (CI)](#continuous-integration-ci)
   - [Travis CI](#travis-ci)
   - [Circle CI](#circle-ci)
+  - [Authorization for Private Docker Registry](#authorization-for-private-docker-registry)
 - [Vulnerability Detection](#vulnerability-detection)
   - [OS Packages](#os-packages)
   - [Application Dependencies](#application-dependencies)
@@ -961,7 +962,7 @@ workflows:
 Example: https://circleci.com/gh/knqyf263/trivy-ci-test  
 Repository: https://github.com/knqyf263/trivy-ci-test
 
-## Authorization for Private Docker Registry without Docker
+## Authorization for Private Docker Registry
 
 Trivy can download images from private registry, without installing `Docker` and any 3rd party tools.
 That's because it's easy to run in a CI process.
@@ -982,12 +983,12 @@ export TRIVY_PASSWORD={DOCKERHUB_PASSWORD}
 
 ### Amazon ECR (Elastic Container Registry)
 
-Trivi use AWS SDK. You don't need to install `aws` CLI tool.
+Trivy use AWS SDK. You don't need to install `aws` CLI tool.
 You can use [AWS CLI's ENV Vars](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html).
 
 ### GCR (Google Container Registry)
 
-Trivi use Google Cloud SDK. You don't need to install `gcloud` command.
+Trivy use Google Cloud SDK. You don't need to install `gcloud` command.
 
 If you want to use target project's repository, you can settle via `GOOGLE_APPLICATION_CREDENTIAL`. 
 ```bash
