@@ -1,7 +1,20 @@
 <!--
-You do NOT have to include this information if this is a FEATURE REQUEST
 
+---------------------------------------------------
+FEATURE REQUEST
+---------------------------------------------------
+
+If this is a FEATURE REQUEST, request format does not matter  
+ 
+
+---------------------------------------------------
+BUG REPORT INFORMATION
+---------------------------------------------------
+
+You do NOT have to include this information if this is a FEATURE REQUEST
+    
 If this is a BUG REPORT, provide key information from your environment:
+
 -->
 
 **Description**
@@ -10,16 +23,17 @@ If this is a BUG REPORT, provide key information from your environment:
 Briefly describe the problem you are having in a few paragraphs.
 -->
 
-**Steps to reproduce the issue:**
-1.
-2.
-3.
-
 **What did you expect to happen?**
 
 
 **What happened instead?**
 
+
+**Output of run with `-debug`:**
+
+```
+(paste your output here)
+```
 
 **Output of `trivy -v`:**
 
@@ -28,3 +42,4 @@ Briefly describe the problem you are having in a few paragraphs.
 ```
 
 **Additional details (base image name, container registry info...):**
+
