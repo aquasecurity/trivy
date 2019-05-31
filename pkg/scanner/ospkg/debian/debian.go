@@ -30,7 +30,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
 	log.Logger.Debugf("debian: os version: %s", osVer)
-	log.Logger.Debugf("debian: the number of packages: %s", len(pkgs))
+	log.Logger.Debugf("debian: the number of packages: %d", len(pkgs))
 
 	var vulns []vulnerability.DetectedVulnerability
 	for _, pkg := range pkgs {
