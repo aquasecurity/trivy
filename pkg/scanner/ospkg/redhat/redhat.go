@@ -24,7 +24,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
 	log.Logger.Debugf("redhat: os version: %s", osVer)
-	log.Logger.Debugf("redhat: the number of packages: %s", len(pkgs))
+	log.Logger.Debugf("redhat: the number of packages: %d", len(pkgs))
 
 	var vulns []vulnerability.DetectedVulnerability
 	for _, pkg := range pkgs {
