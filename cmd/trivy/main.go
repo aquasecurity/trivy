@@ -107,8 +107,8 @@ OPTIONS:
 		},
 		cli.StringFlag{
 			Name:  "vuln-type",
-			Value: "all",
-			Usage: "comma-separated list of vulnerability types (os, package, node...)",
+			Value: "os,library",
+			Usage: "comma-separated list of vulnerability types (os, library)",
 		},
 	}
 

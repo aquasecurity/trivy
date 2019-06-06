@@ -17,7 +17,7 @@ import (
 )
 
 func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[string][]vulnerability.DetectedVulnerability, error) {
-	var err error
+	// var err error
 	results := map[string][]vulnerability.DetectedVulnerability{}
 	ctx := context.Background()
 
@@ -48,7 +48,7 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[s
 		return nil, xerrors.New("image name or image file must be specified")
 	}
 
-	if types.IsVulnTypeSelected(scanOptions, "all") || types.IsVulnTypeSelected(scanOptions, "os") {
+	if types.IsVulnTypeSelected(scanOptions, "os") {
 		osFamily, osVersion, osVulns, err := ospkg.Scan(files)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to scan image: %w", err)
@@ -59,7 +59,7 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[s
 		}
 	}
 
-	if types.IsVulnTypeSelected(scanOptions, "all") || types.IsVulnTypeSelected(scanOptions, "library") {
+	if types.IsVulnTypeSelected(scanOptions, "library") {
 		libVulns, err := library.Scan(files, scanOptions)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to scan libraries: %w", err)

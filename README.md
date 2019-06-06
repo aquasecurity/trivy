@@ -700,7 +700,6 @@ $ trivy --vuln-type os mallear/tryvi-ci-test:latest
 ```
 
 Available values:
-  - all (default)
   - library
   - os
 
@@ -1083,7 +1082,7 @@ cache:
     - $HOME/.cache/trivy
 ```
 
-Example: https://travis-ci.org/knqyf263/trivy-ci-test\
+Example: https://travis-ci.org/knqyf263/trivy-ci-test 
 Repository: https://github.com/knqyf263/trivy-ci-test
 
 ## CircleCI
@@ -1129,7 +1128,7 @@ workflows:
       - build
 ```
 
-Example: https://circleci.com/gh/knqyf263/trivy-ci-test\
+Example: https://circleci.com/gh/knqyf263/trivy-ci-test 
 Repository: https://github.com/knqyf263/trivy-ci-test
 
 ## Authorization for Private Docker Registry
@@ -1232,7 +1231,7 @@ OPTIONS:
   --refresh                   refresh DB (usually used after version update of trivy)
   --auto-refresh              refresh DB automatically when updating version of trivy
   --debug, -d                 debug mode
-  --vuln-type value           comma-separated list of vulnerability types (os, package, node...)
+  --vuln-type value           comma-separated list of vulnerability types (os, library)
   --help, -h                  show help
   --version, -v               print the version
 ```
