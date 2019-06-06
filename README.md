@@ -1122,7 +1122,7 @@ cache:
     - $HOME/.cache/trivy
 ```
 
-Example: https://travis-ci.org/knqyf263/trivy-ci-test
+Example: https://travis-ci.org/knqyf263/trivy-ci-test\
 Repository: https://github.com/knqyf263/trivy-ci-test
 
 ## CircleCI
@@ -1168,7 +1168,7 @@ workflows:
       - build
 ```
 
-Example: https://circleci.com/gh/knqyf263/trivy-ci-test
+Example: https://circleci.com/gh/knqyf263/trivy-ci-test\
 Repository: https://github.com/knqyf263/trivy-ci-test
 
 ## Authorization for Private Docker Registry
