@@ -3,7 +3,6 @@ package library
 import (
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
@@ -62,21 +61,6 @@ func Scan(files extractor.FileMap, scanOptions types.ScanOptions) (map[string][]
 	results, err := analyzer.GetLibraries(files)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to analyze libraries: %w", err)
-	}
-
-	if !types.IsVulnTypeSelected(scanOptions, "all") && !types.IsVulnTypeSelected(scanOptions, "package") {
-		for path, _ := range results {
-			toDelete := true
-			for i := 0; i < len(scanOptions.VulnType); i++ {
-				depFileDirName := strings.Join([]string{scanOptions.VulnType[i], "app"}, "-")
-				if strings.Contains(string(path), depFileDirName) {
-					toDelete = false
-				}
-			}
-			if toDelete {
-				delete(results, path)
-			}
-		}
 	}
 
 	vulnerabilities := map[string][]vulnerability.DetectedVulnerability{}

@@ -59,7 +59,7 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[s
 		}
 	}
 
-	if !types.IsVulnTypeSelected(scanOptions, "os") || len(scanOptions.VulnType) > 1 {
+	if types.IsVulnTypeSelected(scanOptions, "library") {
 		libVulns, err := library.Scan(files, scanOptions)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to scan libraries: %w", err)

@@ -696,18 +696,13 @@ Total: 1785 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1680, CRITICAL: 105)
 ### Filter the vulnerabilities by type
 
 ```
-$ trivy --vuln-type os,python,node mallear/tryvi-ci-test:latest
+$ trivy --vuln-type os mallear/tryvi-ci-test:latest
 ```
 
 Available values:
   - all (default)
-  - package
+  - library
   - os
-  - python
-  - ruby
-  - node
-  - php
-  - rust
 
 <details>
 <summary>Result</summary>
@@ -831,40 +826,6 @@ Total: 26 (UNKNOWN: 0, LOW: 3, MEDIUM: 16, HIGH: 5, CRITICAL: 2)
 |         |                  |          |                   |               | sparse_dump_region function in   |
 |         |                  |          |                   |               | sparse.c                         |
 +---------+------------------+----------+-------------------+---------------+----------------------------------+
-
-node-app/package-lock.json
-==========================
-Total: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 3, HIGH: 1, CRITICAL: 0)
-
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| jquery  | CVE-2019-5428    | MEDIUM   | 3.3.9             | >=3.4.0       | Modification of                |
-|         |                  |          |                   |               | Assumed-Immutable Data (MAID)  |
-+         +------------------+          +                   +               +--------------------------------+
-|         | CVE-2019-11358   |          |                   |               | js-jquery: prototype pollution |
-|         |                  |          |                   |               | in object's prototype leading  |
-|         |                  |          |                   |               | to denial of service or...     |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| lodash  | CVE-2018-16487   | HIGH     | 4.17.4            | >=4.17.11     | lodash: Prototype pollution in |
-|         |                  |          |                   |               | utilities function             |
-+         +------------------+----------+                   +---------------+                                +
-|         | CVE-2018-3721    | MEDIUM   |                   | >=4.17.5      |                                |
-|         |                  |          |                   |               |                                |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-
-python-app/Pipfile.lock
-=======================
-Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
-
-+---------+------------------+----------+-------------------+---------------+------------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |               TITLE                |
-+---------+------------------+----------+-------------------+---------------+------------------------------------+
-| django  | CVE-2019-6975    | MEDIUM   | 2.0.9             | 2.0.11        | python-django:                     |
-|         |                  |          |                   |               | memory exhaustion in               |
-|         |                  |          |                   |               | django.utils.numberformat.format() |
-+---------+------------------+----------+-------------------+---------------+------------------------------------+
-
 ```
 
 </details>
