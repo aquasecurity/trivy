@@ -105,6 +105,11 @@ OPTIONS:
 			Name:  "cache-dir",
 			Usage: "cache directory",
 		},
+		cli.StringFlag{
+			Name:  "vuln-type",
+			Value: "os,library",
+			Usage: "comma-separated list of vulnerability types (os,library)",
+		},
 	}
 
 	app.Action = pkg.Run

@@ -10,6 +10,7 @@ import (
 	"github.com/knqyf263/trivy/pkg/db"
 	"github.com/knqyf263/trivy/pkg/log"
 	"github.com/knqyf263/trivy/pkg/report"
+	"github.com/knqyf263/trivy/pkg/types"
 	"github.com/knqyf263/trivy/pkg/scanner"
 	"github.com/knqyf263/trivy/pkg/utils"
 	"github.com/knqyf263/trivy/pkg/vulnsrc"
@@ -155,7 +156,11 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
-	vulns, err := scanner.ScanImage(imageName, filePath)
+	scanOptions := types.ScanOptions{VulnType: strings.Split(c.String("vuln-type"), ",")}
+
+	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
+
+	vulns, err := scanner.ScanImage(imageName, filePath, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
