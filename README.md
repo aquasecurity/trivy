@@ -696,7 +696,7 @@ Total: 1785 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1680, CRITICAL: 105)
 ### Filter the vulnerabilities by type
 
 ```
-$ trivy --vuln-type os mallear/tryvi-ci-test:latest
+$ trivy --vuln-type os ruby:2.3.0
 ```
 
 Available values:
@@ -714,8 +714,8 @@ Available values:
 2019-05-22T19:36:52.390+0200	[34mINFO[0m	Updating pipenv Security DB...
 2019-05-22T19:36:53.406+0200	[34mINFO[0m	Detecting pipenv vulnerabilities...
 
-mallear/trivy-ci-test:0.1.1 (alpine 3.7.1)
-Total: 26 (UNKNOWN: 0, LOW: 3, MEDIUM: 16, HIGH: 5, CRITICAL: 2)
+ruby:2.3.0 (debian 8.4)
+Total: 4751 (UNKNOWN: 1, LOW: 150, MEDIUM: 3504, HIGH: 1013, CRITICAL: 83)
 
 +---------+------------------+----------+-------------------+---------------+----------------------------------+
 | LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |              TITLE               |
