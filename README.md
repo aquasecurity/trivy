@@ -1231,7 +1231,7 @@ OPTIONS:
   --refresh                   refresh DB (usually used after version update of trivy)
   --auto-refresh              refresh DB automatically when updating version of trivy
   --debug, -d                 debug mode
-  --vuln-type value           comma-separated list of vulnerability types (os, library)
+  --vuln-type value           comma-separated list of vulnerability types (os,library)
   --help, -h                  show help
   --version, -v               print the version
 ```
