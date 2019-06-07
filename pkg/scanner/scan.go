@@ -18,7 +18,6 @@ import (
 )
 
 func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[string][]vulnerability.DetectedVulnerability, error) {
-	var err error
 	results := map[string][]vulnerability.DetectedVulnerability{}
 	ctx := context.Background()
 
