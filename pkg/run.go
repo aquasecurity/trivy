@@ -10,8 +10,8 @@ import (
 	"github.com/knqyf263/trivy/pkg/db"
 	"github.com/knqyf263/trivy/pkg/log"
 	"github.com/knqyf263/trivy/pkg/report"
-	"github.com/knqyf263/trivy/pkg/types"
 	"github.com/knqyf263/trivy/pkg/scanner"
+	"github.com/knqyf263/trivy/pkg/types"
 	"github.com/knqyf263/trivy/pkg/utils"
 	"github.com/knqyf263/trivy/pkg/vulnsrc"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
@@ -101,14 +101,15 @@ func Run(c *cli.Context) (err error) {
 			return xerrors.Errorf("error in refresh DB: %w", err)
 		}
 	}
-	// this condition is already validated by skipUpdate && onlyUpdate != ""
+
+	updateTargets := vulnsrc.UpdateList
 	if onlyUpdate != "" {
-		log.Logger.Warn("The --update-only option may cause the vulnerability details such as severity and title not to be displayed")
-		if err = vulnsrc.Update(strings.Split(onlyUpdate, ",")); err != nil {
-			return xerrors.Errorf("error in vulnerability DB update: %w", err)
-		}
-	} else {
-		if err = vulnsrc.Update(vulnsrc.UpdateList); err != nil {
+		log.Logger.Warn("The --only-update option may cause the vulnerability details such as severity and title not to be displayed")
+		updateTargets = strings.Split(onlyUpdate, ",")
+	}
+
+	if !skipUpdate {
+		if err = vulnsrc.Update(updateTargets); err != nil {
 			return xerrors.Errorf("error in vulnerability DB update: %w", err)
 		}
 	}
