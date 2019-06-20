@@ -18,8 +18,8 @@ type RedhatCVE struct {
 	Name                 string `json:"name"`
 	DocumentDistribution string `json:"document_distribution"`
 
-	Details    []string `json:"details" gorm:"-"`
-	References []string `json:"references" gorm:"-"`
+	Details    []string `json:"details"`
+	References []string `json:"references"`
 }
 
 type RedhatCVEAffectedReleaseArray struct {
