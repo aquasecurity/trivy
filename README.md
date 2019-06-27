@@ -153,7 +153,12 @@ You need to install `rpm` command for scanning RHEL/CentOS.
 ## From source
 
 ```sh
-$ go get -u github.com/knqyf263/trivy
+$ mkdir -p $GOPATH/src/github.com/knqyf263
+$ cd $GOPATH/src/github.com/knqyf263
+$ git clone https://github.com/knqyf263/trivy
+$ cd trivy/cmd/trivy/
+$ export GO111MODULE=on
+$ go install
 ```
 
 # Quick Start
