@@ -1,6 +1,7 @@
 package nvd
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
 	"path/filepath"
@@ -14,6 +15,7 @@ import (
 	"github.com/knqyf263/trivy/pkg/utils"
 
 	bolt "github.com/etcd-io/bbolt"
+
 	"github.com/knqyf263/trivy/pkg/db"
 )
 
@@ -35,11 +37,16 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 	bar := utils.PbStartNew(len(targets))
 	defer bar.Finish()
 	var items []Item
+	buffer := &bytes.Buffer{}
 	err = utils.FileWalk(rootDir, targets, func(r io.Reader, _ string) error {
 		item := Item{}
-		if err := json.NewDecoder(r).Decode(&item); err != nil {
+		if _, err := buffer.ReadFrom(r); err != nil {
+			return xerrors.Errorf("failed to read file: %w", err)
+		}
+		if err := json.Unmarshal(buffer.Bytes(), &item); err != nil {
 			return xerrors.Errorf("failed to decode NVD JSON: %w", err)
 		}
+		buffer.Reset()
 		items = append(items, item)
 		bar.Increment()
 		return nil
