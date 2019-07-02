@@ -5,8 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"golang.org/x/xerrors"
-
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/fanal/extractor"
 	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
@@ -31,7 +29,7 @@ func (a rpmPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Pack
 		detected = true
 	}
 	if !detected {
-		return nil, xerrors.New("No package detected")
+		return nil, analyzer.ErrNoPkgsDetected
 	}
 	return pkgs, err
 }

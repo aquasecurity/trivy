@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	mapset "github.com/deckarep/golang-set"
-	"golang.org/x/xerrors"
 
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/fanal/extractor"
@@ -39,7 +38,7 @@ func (a debianPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.P
 		detected = true
 	}
 	if !detected {
-		return pkgs, xerrors.New("no package detected")
+		return pkgs, analyzer.ErrNoPkgsDetected
 	}
 	return pkgs, nil
 }

@@ -2,7 +2,6 @@ package rpmcmd
 
 import (
 	"bufio"
-	"errors"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -35,7 +34,7 @@ func (a rpmCmdPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.P
 		detected = true
 	}
 	if !detected {
-		return pkgs, errors.New("No package detected")
+		return pkgs, analyzer.ErrNoPkgsDetected
 	}
 	return pkgs, err
 }
