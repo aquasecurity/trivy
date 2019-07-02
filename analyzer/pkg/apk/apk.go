@@ -5,8 +5,6 @@ import (
 	"bytes"
 	"log"
 
-	"github.com/pkg/errors"
-
 	"github.com/knqyf263/fanal/analyzer"
 	"github.com/knqyf263/fanal/extractor"
 
@@ -33,7 +31,7 @@ func (a alpinePkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.P
 		detected = true
 	}
 	if !detected {
-		return pkgs, errors.New("No package detected")
+		return pkgs, analyzer.ErrNoPkgsDetected
 	}
 	return pkgs, nil
 }

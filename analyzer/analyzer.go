@@ -25,6 +25,8 @@ var (
 	ErrUnknownOS = xerrors.New("Unknown OS")
 	// ErrPkgAnalysis occurs when the analysis of packages is failed.
 	ErrPkgAnalysis = xerrors.New("Failed to analyze packages")
+	// ErrNoPkgsDetected occurs when the required files for an OS package manager are not detected
+	ErrNoPkgsDetected = xerrors.New("No packages detected")
 )
 
 type OSAnalyzer interface {
@@ -158,10 +160,12 @@ func GetOS(filesMap extractor.FileMap) (OS, error) {
 func GetPackages(filesMap extractor.FileMap) ([]Package, error) {
 	for _, analyzer := range pkgAnalyzers {
 		pkgs, err := analyzer.Analyze(filesMap)
-		if err != nil {
+
+		// Differentiate between a package manager not being found and another error
+		if err != nil && err == ErrNoPkgsDetected {
 			continue
 		}
-		return pkgs, nil
+		return pkgs, err
 	}
 	return nil, ErrPkgAnalysis
 }
