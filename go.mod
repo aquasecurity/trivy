@@ -11,8 +11,7 @@ require (
 	github.com/fatih/color v1.7.0
 	github.com/genuinetools/reg v0.16.0
 	github.com/gliderlabs/ssh v0.1.3 // indirect
-	github.com/golang/protobuf v1.3.1 // indirect
-	github.com/knqyf263/fanal v0.0.0-20190521154631-a2dde7e171c6
+	github.com/knqyf263/fanal v0.0.0-20190706175150-0e953d070757
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-dep-parser v0.0.0-20190521150559-1ef8521d17a0
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
@@ -27,8 +26,6 @@ require (
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.9.1
 	golang.org/x/crypto v0.0.0-20190404164418-38d8ce5564a5
-	golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3 // indirect
-	golang.org/x/sys v0.0.0-20190405154228-4b34438f7a67 // indirect
 	golang.org/x/xerrors v0.0.0-20190410155217-1f06c39b4373
 	gopkg.in/cheggaaa/pb.v1 v1.0.28
 	gopkg.in/src-d/go-billy.v4 v4.3.0 // indirect
@@ -37,4 +34,4 @@ require (
 	gopkg.in/yaml.v2 v2.2.2
 )
 
-replace github.com/genuinetools/reg => github.com/tomoyamachi/reg v0.16.2-0.20190418055600-c6010b917a55
+replace github.com/genuinetools/reg => github.com/tomoyamachi/reg v0.16.1-0.20190706172545-2a2250fd7c00
