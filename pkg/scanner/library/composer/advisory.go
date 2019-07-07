@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/etcd-io/bbolt"
-
 	"github.com/knqyf263/trivy/pkg/db"
 	"golang.org/x/xerrors"
 
@@ -73,9 +72,15 @@ func (s *Scanner) walk() (AdvisoryDB, error) {
 		}
 		advisoryDB[advisory.Reference] = append(advisories, advisory)
 
+		vulnerabilityID := advisory.Cve
+		if vulnerabilityID == "" {
+			// e.g. CVE-2019-12139.yaml => CVE-2019-12139
+			vulnerabilityID = strings.TrimSuffix(info.Name(), ".yaml")
+		}
+
 		// for displaying vulnerability detail
 		vulns = append(vulns, vulnerability.Vulnerability{
-			ID:         advisory.Cve,
+			ID:         vulnerabilityID,
 			References: []string{advisory.Link},
 			Title:      advisory.Title,
 		})
