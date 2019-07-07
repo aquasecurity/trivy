@@ -32,6 +32,7 @@ type Advisory struct {
 	Gem                string
 	Cve                string
 	Osvdb              string
+	Ghsa               string
 	Title              string
 	Url                string
 	Description        string
@@ -88,7 +89,12 @@ func (s *Scanner) walk() (AdvisoryDB, error) {
 			vulnerabilityID = fmt.Sprintf("CVE-%s", advisory.Cve)
 		} else if advisory.Osvdb != "" {
 			vulnerabilityID = fmt.Sprintf("OSVDB-%s", advisory.Osvdb)
+		} else if advisory.Ghsa != "" {
+			vulnerabilityID = fmt.Sprintf("GHSA-%s", advisory.Ghsa)
+		} else {
+			return nil
 		}
+
 		vulns = append(vulns, vulnerability.Vulnerability{
 			ID:          vulnerabilityID,
 			CvssScore:   advisory.CvssV2,
