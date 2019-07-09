@@ -120,6 +120,8 @@ Replace `[CODE_NAME]` with your code name
 
 CODE_NAME: wheezy, jessie, stretch, buster, trusty, xenial, bionic
 
+`$ lsb_release -c`
+
 ```
 $ sudo apt-get install apt-transport-https gnupg
 $ wget -qO - https://knqyf263.github.io/trivy-repo/deb/public.key | sudo apt-key add -
