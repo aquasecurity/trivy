@@ -48,7 +48,7 @@ See [Comparison with other scanners](#comparison-with-other-scanners) for detail
   - [Reset](#reset)
 - [Continuous Integration (CI)](#continuous-integration-ci)
   - [Travis CI](#travis-ci)
-  - [Circle CI](#circle-ci)
+  - [CircleCI](#circleci)
   - [Authorization for Private Docker Registry](#authorization-for-private-docker-registry)
 - [Vulnerability Detection](#vulnerability-detection)
   - [OS Packages](#os-packages)
