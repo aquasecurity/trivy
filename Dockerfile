@@ -38,11 +38,11 @@ LABEL org.opencontainers.image.authors="Author"                                 
       org.opencontainers.image.revision="${SOURCE_COMMIT}"                              \
       org.opencontainers.image.title="Trivy"                                            \
       org.opencontainers.image.description="Docker image for Trivy"                     \
-      org.opencontainers.image.url="https://hub.docker.com/r/0o0o/0o0o/tags/"    \
-      org.opencontainers.image.source="https://github.com/0o0o/0o0o"      \
-      org.opencontainers.image.licenses="https://github.com/0o0o/0o0o/LICENSE.md" \
-      org.example.image.user="root"                                          \
-      org.example.image.alpineversion="3.9"                             \
+      org.opencontainers.image.url="https://hub.docker.com/r/0o0o/0o0o/tags/"           \
+      org.opencontainers.image.source="https://github.com/0o0o/0o0o"                    \
+      org.opencontainers.image.licenses="https://github.com/0o0o/0o0o/LICENSE.md"       \
+      org.example.image.user="root"                                                     \
+      org.example.image.alpineversion="3.9"                                             \
       org.example.image.schemaversion="1.0"
 
 ENTRYPOINT [ "trivy" ]
