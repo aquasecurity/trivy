@@ -13,7 +13,7 @@ FROM alpine:3.9 AS compress
 COPY --from=builder /trivy /usr/local/bin/trivy
 
 RUN set -eux && apk --update --no-cache add \
-    upx="3.95-r1" && \
+    upx && \
     upx --lzma --best /usr/local/bin/trivy && \
 # unit test
     upx -t /usr/local/bin/trivy && \
