@@ -14,7 +14,6 @@ COPY --from=builder /trivy /usr/local/bin/trivy
 
 RUN set -eux && apk --update --no-cache add \
     upx="3.95-r1" && \
-    \
     upx --lzma --best /usr/local/bin/trivy && \
 # unit test
     upx -t /usr/local/bin/trivy && \
@@ -28,7 +27,6 @@ COPY --from=compress /usr/local/bin/trivy /usr/local/bin/trivy
 RUN set -eux && apk --update --no-cache add \
     ca-certificates git && \
     rm -rf /var/cache/apk/* && \
-    \
     chmod +x /usr/local/bin/trivy
 
 # best practice credit: https://github.com/opencontainers/image-spec/blob/master/annotations.md
