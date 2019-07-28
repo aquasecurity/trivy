@@ -26,7 +26,6 @@ COPY --from=compress /usr/local/bin/trivy /usr/local/bin/trivy
 
 RUN set -eux && apk --update --no-cache add \
     ca-certificates git && \
-    rm -rf /var/cache/apk/* && \
     chmod +x /usr/local/bin/trivy
 
 # best practice credit: https://github.com/opencontainers/image-spec/blob/master/annotations.md
