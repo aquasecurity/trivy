@@ -42,5 +42,4 @@ LABEL org.opencontainers.image.authors="Author"                                 
       org.example.image.alpineversion="3.9"                                             \
       org.example.image.schemaversion="1.0"
 
-ENTRYPOINT [ "trivy" ]
-CMD [ "--help" ]
+CMD [ "trivy" ]
