@@ -1,4 +1,4 @@
- FROM bepsays/ci-goreleaser:1.12-2
+FROM bepsays/ci-goreleaser:1.12-2
 
 RUN apt-get -y update \
     && apt-get -y install vim rpm reprepro createrepo \
