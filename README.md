@@ -28,6 +28,7 @@ See [Comparison with other scanners](#comparison-with-other-scanners) for detail
 - [Installation](#installation)
   - [RHEL/CentOS](#rhelcentos)
   - [Debian/Ubuntu](#debianubuntu)
+  - [Arch Linux](#arch-linux)
   - [Mac OS X / Homebrew](#mac-os-x--homebrew)
   - [Binary (Including Windows)](#binary-including-windows)
   - [From source](#from-source)
@@ -136,6 +137,15 @@ or
 $ sudo apt-get install rpm
 $ wget https://github.com/knqyf263/trivy/releases/download/v0.0.15/trivy_0.0.15_Linux-64bit.deb
 $ sudo dpkg -i trivy_0.0.15_Linux-64bit.deb
+```
+## Arch Linux
+trivy-bin can be installed from the Arch User Repository. Examples:
+```
+pikaur -Sy trivy-bin
+```
+or
+```
+yay -Sy trivy-bin
 ```
 
 ## Mac OS X / Homebrew
