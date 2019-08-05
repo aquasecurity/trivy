@@ -44,7 +44,6 @@ func Run(c *cli.Context) (err error) {
 		if err = os.RemoveAll(utils.CacheDir()); err != nil {
 			return xerrors.New("failed to remove cache")
 		}
-		return nil
 	}
 
 	clearCache := c.Bool("clear-cache")
