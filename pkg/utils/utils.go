@@ -12,13 +12,22 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func CacheDir() string {
-	cacheDir, err := os.UserCacheDir()
+var cacheDir string
+
+func DefaultCacheDir() string {
+	tmpDir, err := os.UserCacheDir()
 	if err != nil {
-		cacheDir = os.TempDir()
+		tmpDir = os.TempDir()
 	}
-	dir := filepath.Join(cacheDir, "trivy")
-	return dir
+	return filepath.Join(tmpDir, "trivy")
+}
+
+func CacheDir() string {
+	return cacheDir
+}
+
+func SetCacheDir(dir string) {
+	cacheDir = dir
 }
 
 func FileWalk(root string, targetFiles map[string]struct{}, walkFn func(r io.Reader, path string) error) error {

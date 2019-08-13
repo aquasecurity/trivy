@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/knqyf263/trivy/pkg/utils"
+
 	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
 
 	"github.com/urfave/cli"
@@ -105,6 +107,11 @@ OPTIONS:
 			Name:  "vuln-type",
 			Value: "os,library",
 			Usage: "comma-separated list of vulnerability types (os,library)",
+		},
+		cli.StringFlag{
+			Name:  "cache-dir",
+			Value: utils.DefaultCacheDir(),
+			Usage: "cache directory",
 		},
 	}
 

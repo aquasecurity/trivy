@@ -16,10 +16,11 @@ import (
 
 var (
 	db    *bolt.DB
-	dbDir = filepath.Join(utils.CacheDir(), "db")
+	dbDir string
 )
 
 func Init() (err error) {
+	dbDir = filepath.Join(utils.CacheDir(), "db")
 	if err = os.MkdirAll(dbDir, 0700); err != nil {
 		return xerrors.Errorf("failed to mkdir: %w", err)
 	}

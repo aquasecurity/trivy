@@ -1020,6 +1020,12 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 </details>
 
+### Specify cache directory
+
+```
+$ trivy --cache-dir /tmp/trivy/ python:3.4-alpine3.9
+```
+
 ### Clear image caches
 
 The `--clear-cache` option removes image caches. This option is useful if the image which has the same tag is updated (such as when using `latest` tag).
@@ -1249,6 +1255,7 @@ OPTIONS:
   --auto-refresh              refresh DB automatically when updating version of trivy
   --debug, -d                 debug mode
   --vuln-type value           comma-separated list of vulnerability types (os,library)
+  --cache-dir value           cache directory (default: "/path/to/cache")
   --help, -h                  show help
   --version, -v               print the version
 ```
