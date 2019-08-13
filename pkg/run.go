@@ -27,12 +27,6 @@ func Run(c *cli.Context) (err error) {
 	if err = log.InitLogger(debug); err != nil {
 		l.Fatal(err)
 	}
-
-	cacheDir := c.String("cache-dir")
-	if cacheDir != "" {
-		utils.SetCacheDir(cacheDir)
-	}
-
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
 	reset := c.Bool("reset")
