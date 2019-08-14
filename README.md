@@ -13,14 +13,6 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 <img src="imgs/usage1.png" width="600">
 <img src="imgs/usage2.png" width="600">
 
-# Accuracy Comparison
-
-The number of vulnerabilities detected on Alpine Linux (as of 2019/05/12)
-
-<img src="imgs/alpine.png" width="500">
-
-See [Comparison with other scanners](#comparison-with-other-scanners) for details.
-
 # TOC
 
 - [Abstract](#abstract)
@@ -57,7 +49,6 @@ See [Comparison with other scanners](#comparison-with-other-scanners) for detail
 - [Usage](#usage)
 - [Comparison with other scanners](#comparison-with-other-scanners)
   - [Overview](#overview)
-  - [Accuracy](#accuracy)
   - [vs Clair](#vs-clair)
   - [vs Anchore Engine](#vs-anchore-engine)
   - [vs Quay, Docker Hub, GCR](#vs-quay-docker-hub-gcr)
@@ -86,7 +77,7 @@ See [here](#continuous-integration-ci) for details.
   - **No need for prerequirements** such as installation of DB, libraries, etc.
   - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](#installation))
 - High accuracy
-  - **Especially Alpine Linux and RHEL/CentOS** (See [Comparison with other scanners](#comparison-with-other-scanners))
+  - **Especially Alpine Linux and RHEL/CentOS**
   - Other OSes are also high
 - DevSecOps
   - **Suitable for CI** such as Travis CI, CircleCI, Jenkins, etc.
@@ -1270,50 +1261,9 @@ OPTIONS:
 | Clair          |       ◯        |              ×              |      △      |    ◯     |           △           |
 | Anchore Engine |       ◯        |              △              |      △      |    ◯     |           △           |
 | Quay           |       ◯        |              ×              |      ◯      |    ◯     |           ×           |
-| MicroScanner   |       ◯        |              ×              |      ◯      |    △     |           ◯           |
+| MicroScanner   |       ◯        |              ×              |      ◯      |    ○     |           ◯           |
 | Docker Hub     |       ◯        |              ×              |      ◯      |    ×     |           ×           |
 | GCR            |       ◯        |              ×              |      ◯      |    ◯     |           ×           |
-
-## Accuracy
-
-The following bar charts show the results of scanning [composer:1.7.2](https://hub.docker.com/_/composer?tab=tags) and [crate:3.2.2](https://hub.docker.com/_/crate?tab=tags) by container scanners. These images were selected randomly.
-
-Scanners: [Clair](https://github.com/coreos/clair), [Quay](https://quay.io/), [MicroScanner(Free)](https://github.com/aquasecurity/microscanner), [Docker Hub](https://hub.docker.com/), [Anchore Engine](https://anchore.com/engine/)
-
-See [spreadsheet](https://docs.google.com/spreadsheets/d/16uj9vGh2PHMcVwb_D4h0nYUSvzCAxcnUz9UgQaDCYs4/edit#gid=0) for details.
-
-In this case, the union of vulnerabilities detected by all vulnerability scanners is used as a data set.
-
-**NOTE**
-
-- There may be vulnerabilities that all scanners could not detect.
-- There may be a mistake because I have confirmed the correctness manually.
-
-### Alpine Linux
-
-The results of [composer:1.7.2](https://hub.docker.com/_/composer?tab=tags) using Alpine Linux 3.7.1 (as of 2019/05/12).
-
-<img src="imgs/alpine.png" width="500">
-
-`Trivy` has high accuracy and high precision, while GCR did not detect any vulnerability. Although Docker Hub has many True Positive, it also has many False Positive.
-
-### RHEL/CentOS
-
-The results of [crate:3.2.2](https://hub.docker.com/_/crate?tab=tags) using CentOS 7.6.1810. (as of 2019/05/14).
-
-The following chart includes only fixable vulnerabilities.
-
-<img src="imgs/centos_only_fixable.png" width="500">
-
-Most scanners only detect patched/fixable vulnerabilities on RHEL/CentOS, but `Trivy` also detects unpatched/unfixable vulnerabilities.
-
-This graph includes unfixable vulnerabilities as well.
-
-<img src="imgs/centos_include_unfixable.png" width="500">
-
-### Other OS
-
-In the case of other OS, the result is similar to other container scanners.
 
 ## vs Clair
 
