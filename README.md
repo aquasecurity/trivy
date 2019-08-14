@@ -1261,7 +1261,7 @@ OPTIONS:
 | Clair          |       ◯        |              ×              |      △      |    ◯     |           △           |
 | Anchore Engine |       ◯        |              △              |      △      |    ◯     |           △           |
 | Quay           |       ◯        |              ×              |      ◯      |    ◯     |           ×           |
-| MicroScanner   |       ◯        |              ×              |      ◯      |    ○     |           ◯           |
+| MicroScanner   |       ◯        |              ×              |      ◯      |    ◯     |           ◯           |
 | Docker Hub     |       ◯        |              ×              |      ◯      |    ×     |           ×           |
 | GCR            |       ◯        |              ×              |      ◯      |    ◯     |           ×           |
 
@@ -1271,7 +1271,7 @@ OPTIONS:
 However, the purpose of this database is to make it possible to know what packages has backported fixes.
 As README says, it is not a complete database of all security issues in Alpine.
 
-`Trivy` collects vulnerability information in Alpine Linux from [Alpine Linux Redmine](https://bugs.alpinelinux.org/projects/alpine/issues).
+`Trivy` collects vulnerability information in Alpine Linux from [Alpine Linux aports repository](https://gitlab.alpinelinux.org/alpine/aports).
 Then, those vulnerabilities will be saved on [vuln-list](https://github.com/knqyf263/vuln-list/tree/master/alpine).
 
 `alpine-secdb` has 6959 vulnerabilities (as of 2019/05/12).
