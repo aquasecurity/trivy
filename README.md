@@ -1222,6 +1222,18 @@ The path of these files does not matter.
 
 Example: https://npm.pkg.github.com/knqyf263/trivy-ci-test/blob/master/Dockerfile
 
+### Data source
+- PHP
+  - https://github.com/FriendsOfPHP/security-advisories
+- Python
+  - https://github.com/pyupio/safety-db
+- Ruby
+  - https://github.com/rubysec/ruby-advisory-db
+- Node.js
+  - https://github.com/nodejs/security-wg
+- Rust
+  - https://github.com/RustSec/advisory-db
+
 # Usage
 
 ```
