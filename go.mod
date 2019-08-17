@@ -16,6 +16,7 @@ require (
 	github.com/knqyf263/go-dep-parser v0.0.0-20190521150559-1ef8521d17a0
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/knqyf263/go-version v1.1.1
+	github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.2-0.20190607075207-195002e6e56a
