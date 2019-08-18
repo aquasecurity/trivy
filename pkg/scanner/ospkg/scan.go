@@ -23,6 +23,7 @@ import (
 
 type Scanner interface {
 	Detect(string, []analyzer.Package) ([]vulnerability.DetectedVulnerability, error)
+	IsSupportedVersion(string, string) bool
 }
 
 func Scan(files extractor.FileMap) (string, string, []vulnerability.DetectedVulnerability, error) {
@@ -60,6 +61,11 @@ func Scan(files extractor.FileMap) (string, string, []vulnerability.DetectedVuln
 
 	pkgs = mergePkgs(pkgs, pkgsFromCommands)
 	log.Logger.Debugf("the number of packages: %d", len(pkgs))
+
+	if !s.IsSupportedVersion(os.Family, os.Name) {
+		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", os.Family, os.Name)
+		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
+	}
 
 	vulns, err := s.Detect(os.Name, pkgs)
 	if err != nil {

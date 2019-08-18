@@ -2,19 +2,40 @@ package debian
 
 import (
 	"strings"
-
-	version "github.com/knqyf263/go-deb-version"
-
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
-
-	"golang.org/x/xerrors"
-
-	"github.com/knqyf263/trivy/pkg/scanner/utils"
+	"time"
 
 	"github.com/knqyf263/fanal/analyzer"
+	version "github.com/knqyf263/go-deb-version"
+	"golang.org/x/xerrors"
+
 	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/knqyf263/trivy/pkg/scanner/utils"
 	"github.com/knqyf263/trivy/pkg/vulnsrc/debian"
 	debianoval "github.com/knqyf263/trivy/pkg/vulnsrc/debian-oval"
+	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+)
+
+var (
+	eolDates = map[string]time.Time{
+		"1.1": time.Date(1997, 6, 5, 23, 59, 59, 0, time.UTC),
+		"1.2": time.Date(1998, 6, 5, 23, 59, 59, 0, time.UTC),
+		"1.3": time.Date(1999, 3, 9, 23, 59, 59, 0, time.UTC),
+		"2.0": time.Date(2000, 3, 9, 23, 59, 59, 0, time.UTC),
+		"2.1": time.Date(2000, 10, 30, 23, 59, 59, 0, time.UTC),
+		"2.2": time.Date(2003, 7, 30, 23, 59, 59, 0, time.UTC),
+		"3.0": time.Date(2006, 6, 30, 23, 59, 59, 0, time.UTC),
+		"3.1": time.Date(2008, 3, 30, 23, 59, 59, 0, time.UTC),
+		"4.0": time.Date(2010, 2, 15, 23, 59, 59, 0, time.UTC),
+		"5.0": time.Date(2012, 2, 6, 23, 59, 59, 0, time.UTC),
+		// LTS
+		"6.0": time.Date(2016, 2, 29, 23, 59, 59, 0, time.UTC),
+		"7":   time.Date(2018, 5, 31, 23, 59, 59, 0, time.UTC),
+		"8":   time.Date(2020, 6, 30, 23, 59, 59, 0, time.UTC),
+		"9":   time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		"10":  time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		"11":  time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		"12":  time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+	}
 )
 
 type Scanner struct{}
@@ -77,4 +98,22 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 		}
 	}
 	return vulns, nil
+}
+
+func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
+	now := time.Now()
+	return s.isSupportedVersion(now, osFamily, osVer)
+}
+
+func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool {
+	if strings.Count(osVer, ".") > 0 {
+		osVer = osVer[:strings.Index(osVer, ".")]
+	}
+
+	eol, ok := eolDates[osVer]
+	if !ok {
+		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
+		return false
+	}
+	return now.Before(eol)
 }
