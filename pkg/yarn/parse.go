@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/knqyf263/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-dep-parser/pkg/types"
 	"golang.org/x/xerrors"
 )
 

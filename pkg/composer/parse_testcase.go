@@ -1,6 +1,6 @@
 package composer
 
-import "github.com/knqyf263/go-dep-parser/pkg/types"
+import "github.com/aquasecurity/go-dep-parser/pkg/types"
 
 var (
 	// docker run --name composer --rm -it composer:1.8 bash
