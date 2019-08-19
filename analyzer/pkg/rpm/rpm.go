@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/knqyf263/fanal/analyzer"
-	"github.com/knqyf263/fanal/extractor"
+	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/extractor"
 	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
 )
 

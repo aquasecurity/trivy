@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/knqyf263/fanal/types"
+	"github.com/aquasecurity/fanal/types"
 
 	"golang.org/x/xerrors"
 

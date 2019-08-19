@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/knqyf263/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer"
 )
 
 func TestParseRpmInfo(t *testing.T) {

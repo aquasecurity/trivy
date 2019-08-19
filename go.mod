@@ -1,8 +1,11 @@
+module github.com/aquasecurity/fanal
+
 go 1.12
 
 require (
 	cloud.google.com/go v0.37.4 // indirect
 	github.com/GoogleCloudPlatform/docker-credential-gcr v1.5.0
+	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
 	github.com/aws/aws-sdk-go v1.19.11
 	github.com/deckarep/golang-set v1.7.1
 	github.com/docker/distribution v2.7.1+incompatible
@@ -10,7 +13,6 @@ require (
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/genuinetools/reg v0.16.0
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
-	github.com/knqyf263/go-dep-parser v0.0.0-20190521150559-1ef8521d17a0
 	github.com/knqyf263/go-rpmdb v0.0.0-20190501070121-10a1c42a10dc
 	github.com/knqyf263/nested v0.0.1
 	github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348
@@ -21,5 +23,3 @@ require (
 )
 
 replace github.com/genuinetools/reg => github.com/tomoyamachi/reg v0.16.1-0.20190706172545-2a2250fd7c00
-
-module github.com/knqyf263/fanal

@@ -6,8 +6,8 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/fanal/analyzer"
-	"github.com/knqyf263/fanal/analyzer/os"
+	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer/os"
 )
 
 func TestAnalyze(t *testing.T) {

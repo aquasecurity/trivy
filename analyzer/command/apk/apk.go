@@ -11,13 +11,13 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/fanal/extractor/docker"
+	"github.com/aquasecurity/fanal/extractor/docker"
 
-	"github.com/knqyf263/fanal/analyzer/os"
+	"github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/pkg/errors"
 
-	"github.com/knqyf263/fanal/analyzer"
-	"github.com/knqyf263/fanal/extractor"
+	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/extractor"
 )
 
 func init() {

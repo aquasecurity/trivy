@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/knqyf263/fanal/extractor"
+	"github.com/aquasecurity/fanal/extractor"
 )
 
 func TestExtractFromFile(t *testing.T) {

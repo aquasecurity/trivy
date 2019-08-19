@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/knqyf263/fanal/utils"
+	"github.com/aquasecurity/fanal/utils"
 
 	"golang.org/x/xerrors"
 )

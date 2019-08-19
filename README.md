@@ -1,11 +1,11 @@
 # fanal
 Static Analysis Library for Containers
 
-[![GoDoc](https://godoc.org/github.com/knqyf263/fanal?status.svg)](https://godoc.org/github.com/knqyf263/fanal)
-[![Build Status](https://travis-ci.org/knqyf263/fanal.svg?branch=master)](https://travis-ci.org/knqyf263/fanal)
-[![Coverage Status](https://coveralls.io/repos/github/knqyf263/fanal/badge.svg?branch=master)](https://coveralls.io/github/knqyf263/fanal?branch=master)
-[![Go Report Card](https://goreportcard.com/badge/github.com/knqyf263/fanal)](https://goreportcard.com/report/github.com/knqyf263/fanal)
-[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/knqyf263/fanal/blob/master/LICENSE)
+[![GoDoc](https://godoc.org/github.com/aquasecurity/fanal?status.svg)](https://godoc.org/github.com/aquasecurity/fanal)
+[![Build Status](https://travis-ci.org/aquasecurity/fanal.svg?branch=master)](https://travis-ci.org/aquasecurity/fanal)
+<!-- [![Coverage Status](https://coveralls.io/repos/github/aquasecurity/fanal/badge.svg?branch=master)](https://coveralls.io/github/aquasecurity/fanal?branch=master) -->
+[![Go Report Card](https://goreportcard.com/badge/github.com/aquasecurity/fanal)](https://goreportcard.com/report/github.com/aquasecurity/fanal)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/aquasecurity/fanal/blob/master/LICENSE)
 
 ## Feature
 - Detect OS
@@ -28,25 +28,25 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/fanal/cache"
+	"github.com/aquasecurity/fanal/cache"
 
-	"github.com/knqyf263/fanal/analyzer"
-	_ "github.com/knqyf263/fanal/analyzer/library/bundler"
-	_ "github.com/knqyf263/fanal/analyzer/library/composer"
-	_ "github.com/knqyf263/fanal/analyzer/library/npm"
-	_ "github.com/knqyf263/fanal/analyzer/library/pipenv"
-	_ "github.com/knqyf263/fanal/analyzer/library/poetry"
-	_ "github.com/knqyf263/fanal/analyzer/library/yarn"
-	_ "github.com/knqyf263/fanal/analyzer/library/cargo"
-	_ "github.com/knqyf263/fanal/analyzer/os/alpine"
-	_ "github.com/knqyf263/fanal/analyzer/os/amazonlinux"
-	_ "github.com/knqyf263/fanal/analyzer/os/debianbase"
-	_ "github.com/knqyf263/fanal/analyzer/os/opensuse"
-	_ "github.com/knqyf263/fanal/analyzer/os/redhatbase"
-	_ "github.com/knqyf263/fanal/analyzer/pkg/apk"
-	_ "github.com/knqyf263/fanal/analyzer/pkg/dpkg"
-	_ "github.com/knqyf263/fanal/analyzer/pkg/rpm"
-	"github.com/knqyf263/fanal/extractor"
+	"github.com/aquasecurity/fanal/analyzer"
+	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
+	_ "github.com/aquasecurity/fanal/analyzer/library/composer"
+	_ "github.com/aquasecurity/fanal/analyzer/library/npm"
+	_ "github.com/aquasecurity/fanal/analyzer/library/pipenv"
+	_ "github.com/aquasecurity/fanal/analyzer/library/poetry"
+	_ "github.com/aquasecurity/fanal/analyzer/library/yarn"
+	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
+	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
+	_ "github.com/aquasecurity/fanal/analyzer/os/amazonlinux"
+	_ "github.com/aquasecurity/fanal/analyzer/os/debianbase"
+	_ "github.com/aquasecurity/fanal/analyzer/os/opensuse"
+	_ "github.com/aquasecurity/fanal/analyzer/os/redhatbase"
+	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
+	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"
+	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpm"
+	"github.com/aquasecurity/fanal/extractor"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
