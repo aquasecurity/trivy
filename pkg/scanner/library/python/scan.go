@@ -4,15 +4,15 @@ import (
 	"os"
 	"strings"
 
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/go-dep-parser/pkg/pipenv"
-	"github.com/knqyf263/go-dep-parser/pkg/poetry"
-	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-dep-parser/pkg/pipenv"
+	"github.com/aquasecurity/go-dep-parser/pkg/poetry"
+	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/knqyf263/go-version"
-	"github.com/knqyf263/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 )
 
 const (

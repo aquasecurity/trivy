@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func TestMain(m *testing.M) {

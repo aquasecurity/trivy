@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/kylelemons/godebug/pretty"
 )
 
