@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/caarlos0/env/v6"
-	"github.com/knqyf263/fanal/types"
+	"github.com/aquasecurity/fanal/types"
 )
 
 type DockerConfig struct {

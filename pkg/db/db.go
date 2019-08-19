@@ -5,11 +5,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/log"
 
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils"
 
 	bolt "github.com/etcd-io/bbolt"
 )

@@ -6,14 +6,14 @@ import (
 	"strings"
 
 	version "github.com/knqyf263/go-version"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/go-dep-parser/pkg/npm"
-	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
-	"github.com/knqyf263/go-dep-parser/pkg/yarn"
-	"github.com/knqyf263/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/go-dep-parser/pkg/npm"
+	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-dep-parser/pkg/yarn"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 )
 
 const (

@@ -3,21 +3,21 @@ package vulnsrc
 import (
 	"path/filepath"
 
-	"github.com/knqyf263/trivy/pkg/git"
-	"github.com/knqyf263/trivy/pkg/log"
-	"github.com/knqyf263/trivy/pkg/utils"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/alpine"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/debian"
-	debianoval "github.com/knqyf263/trivy/pkg/vulnsrc/debian-oval"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/nvd"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/redhat"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/ubuntu"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/git"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/alpine"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/debian"
+	debianoval "github.com/aquasecurity/trivy/pkg/vulnsrc/debian-oval"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/nvd"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/redhat"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/ubuntu"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 	"golang.org/x/xerrors"
 )
 
 const (
-	repoURL = "https://github.com/knqyf263/vuln-list.git"
+	repoURL = "https://github.com/aquasecurity/vuln-list.git"
 )
 
 type updateFunc func(dir string, updatedFiles map[string]struct{}) error

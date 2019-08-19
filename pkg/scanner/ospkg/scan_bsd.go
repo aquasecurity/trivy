@@ -3,5 +3,5 @@
 package ospkg
 
 import (
-	_ "github.com/knqyf263/fanal/analyzer/pkg/rpmcmd"
+	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpmcmd"
 )

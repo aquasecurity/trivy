@@ -4,15 +4,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/knqyf263/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer"
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/trivy/pkg/log"
-	"github.com/knqyf263/trivy/pkg/scanner/utils"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/debian"
-	debianoval "github.com/knqyf263/trivy/pkg/vulnsrc/debian-oval"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/debian"
+	debianoval "github.com/aquasecurity/trivy/pkg/vulnsrc/debian-oval"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 )
 
 var (

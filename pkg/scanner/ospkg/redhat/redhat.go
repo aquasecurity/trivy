@@ -4,13 +4,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/knqyf263/fanal/analyzer"
-	"github.com/knqyf263/fanal/analyzer/os"
+	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer/os"
 	version "github.com/knqyf263/go-rpm-version"
-	"github.com/knqyf263/trivy/pkg/log"
-	"github.com/knqyf263/trivy/pkg/scanner/utils"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/redhat"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/redhat"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 	"golang.org/x/xerrors"
 )
 

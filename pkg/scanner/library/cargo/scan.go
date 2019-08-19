@@ -4,12 +4,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 
-	"github.com/knqyf263/go-dep-parser/pkg/cargo"
-	ptypes "github.com/knqyf263/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-dep-parser/pkg/cargo"
+	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/knqyf263/go-version"
-	"github.com/knqyf263/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"golang.org/x/xerrors"
 )
 

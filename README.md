@@ -1,8 +1,8 @@
 <img src="imgs/logo.png" width="300">
 
-[![GitHub release](https://img.shields.io/github/release/knqyf263/trivy.svg)](https://github.com/knqyf263/trivy/releases/latest)
-[![CircleCI](https://circleci.com/gh/knqyf263/trivy.svg?style=svg)](https://circleci.com/gh/knqyf263/trivy)
-[![Go Report Card](https://goreportcard.com/badge/github.com/knqyf263/trivy)](https://goreportcard.com/report/github.com/knqyf263/trivy)
+[![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
+[![CircleCI](https://circleci.com/gh/aquasecurity/trivy.svg?style=svg)](https://circleci.com/gh/aquasecurity/trivy)
+[![Go Report Card](https://goreportcard.com/badge/github.com/aquasecurity/trivy)](https://goreportcard.com/report/github.com/aquasecurity/trivy)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 
@@ -93,7 +93,7 @@ Add repository setting to `/etc/yum.repos.d`.
 $ sudo vim /etc/yum.repos.d/trivy.repo
 [trivy]
 name=Trivy repository
-baseurl=https://knqyf263.github.io/trivy-repo/rpm/releases/$releasever/$basearch/
+baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$releasever/$basearch/
 gpgcheck=0
 enabled=1
 $ sudo yum -y update
@@ -103,7 +103,7 @@ $ sudo yum -y install trivy
 or
 
 ```
-$ rpm -ivh https://github.com/knqyf263/trivy/releases/download/v0.0.15/trivy_0.0.15_Linux-64bit.rpm
+$ rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.0.15/trivy_0.0.15_Linux-64bit.rpm
 ```
 
 ## Debian/Ubuntu
@@ -116,8 +116,8 @@ CODE_NAME: wheezy, jessie, stretch, buster, trusty, xenial, bionic
 
 ```
 $ sudo apt-get install apt-transport-https gnupg
-$ wget -qO - https://knqyf263.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-$ echo deb https://knqyf263.github.io/trivy-repo/deb [CODE_NAME] main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+$ wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+$ echo deb https://aquasecurity.github.io/trivy-repo/deb [CODE_NAME] main | sudo tee -a /etc/apt/sources.list.d/trivy.list
 $ sudo apt-get update
 $ sudo apt-get install trivy
 ```
@@ -126,7 +126,7 @@ or
 
 ```
 $ sudo apt-get install rpm
-$ wget https://github.com/knqyf263/trivy/releases/download/v0.0.15/trivy_0.0.15_Linux-64bit.deb
+$ wget https://github.com/aquasecurity/trivy/releases/download/v0.0.15/trivy_0.0.15_Linux-64bit.deb
 $ sudo dpkg -i trivy_0.0.15_Linux-64bit.deb
 ```
 ## Arch Linux
@@ -144,21 +144,21 @@ yay -Sy trivy-bin
 You can use homebrew on Mac OS.
 
 ```
-$ brew install knqyf263/trivy/trivy
+$ brew install aquasecurity/trivy/trivy
 ```
 
 ## Binary (Including Windows)
 
-Get the latest version from [this page](https://github.com/knqyf263/trivy/releases/latest), and download the archive file for your operating system/architecture. Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
+Get the latest version from [this page](https://github.com/aquasecurity/trivy/releases/latest), and download the archive file for your operating system/architecture. Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
 
 You need to install `rpm` command for scanning RHEL/CentOS.
 
 ## From source
 
 ```sh
-$ mkdir -p $GOPATH/src/github.com/knqyf263
-$ cd $GOPATH/src/github.com/knqyf263
-$ git clone https://github.com/knqyf263/trivy
+$ mkdir -p $GOPATH/src/github.com/aquasecurity
+$ cd $GOPATH/src/github.com/aquasecurity
+$ git clone https://github.com/aquasecurity/trivy
 $ cd trivy/cmd/trivy/
 $ export GO111MODULE=on
 $ go install
@@ -206,23 +206,23 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 Replace [YOUR_CACHE_DIR] with the cache directory on your machine.
 
 ```
-$ docker run --rm -v [YOUR_CACHE_DIR]:/root/.cache/ knqyf263/trivy [YOUR_IMAGE_NAME]
+$ docker run --rm -v [YOUR_CACHE_DIR]:/root/.cache/ aquasecurity/trivy [YOUR_IMAGE_NAME]
 ```
 
 Example for macOS:
 
 ```
-$ docker run --rm -v $HOME/Library/Caches:/root/.cache/ knqyf263/trivy python:3.4-alpine
+$ docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasecurity/trivy python:3.4-alpine
 ```
 
 If you would like to scan the image on your host machine, you need to mount `docker.sock`.
 
 ```
 $ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-    -v $HOME/Library/Caches:/root/.cache/ knqyf263/trivy python:3.4-alpine
+    -v $HOME/Library/Caches:/root/.cache/ aquasecurity/trivy python:3.4-alpine
 ```
 
-Please re-pull latest `knqyf263/trivy` if an error occured.
+Please re-pull latest `aquasecurity/trivy` if an error occured.
 
 <details>
 <summary>Result</summary>
@@ -252,7 +252,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 Simply specify an image name (and a tag).
 
 ```
-$ trivy knqyf263/test-image:1.2.3
+$ trivy aquasecurity/test-image:1.2.3
 ```
 
 <details>
@@ -272,7 +272,7 @@ $ trivy knqyf263/test-image:1.2.3
 2019-05-16T12:59:10.285+0900    INFO    Updating pipenv Security DB...
 2019-05-16T12:59:11.487+0900    INFO    Detecting pipenv vulnerabilities...
 
-knqyf263/test-image:1.2.3 (alpine 3.7.1)
+aquasecurity/test-image:1.2.3 (alpine 3.7.1)
 ========================================
 Total: 26 (UNKNOWN: 0, LOW: 3, MEDIUM: 16, HIGH: 5, CRITICAL: 2)
 
@@ -1085,8 +1085,8 @@ env:
 
 before_install:
   - docker build -t trivy-ci-test:${COMMIT} .
-  - export VERSION=$(curl --silent "https://api.github.com/repos/knqyf263/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-  - wget https://github.com/knqyf263/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
+  - export VERSION=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+  - wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
   - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
 script:
   - ./trivy --exit-code 0 --severity HIGH --quiet --auto-refresh trivy-ci-test:${COMMIT}
@@ -1096,8 +1096,8 @@ cache:
     - $HOME/.cache/trivy
 ```
 
-Example: https://travis-ci.org/knqyf263/trivy-ci-test  
-Repository: https://github.com/knqyf263/trivy-ci-test
+Example: https://travis-ci.org/aquasecurity/trivy-ci-test  
+Repository: https://github.com/aquasecurity/trivy-ci-test
 
 ## CircleCI
 
@@ -1120,12 +1120,12 @@ jobs:
           command: |
             apk add --update curl
             VERSION=$(
-                curl --silent "https://api.github.com/repos/knqyf263/trivy/releases/latest" | \
+                curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | \
                 grep '"tag_name":' | \
                 sed -E 's/.*"v([^"]+)".*/\1/'
             )
 
-            wget https://github.com/knqyf263/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
+            wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
             tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
             mv trivy /usr/local/bin
       - run:
@@ -1142,8 +1142,8 @@ workflows:
       - build
 ```
 
-Example: https://circleci.com/gh/knqyf263/trivy-ci-test  
-Repository: https://github.com/knqyf263/trivy-ci-test
+Example: https://circleci.com/gh/aquasecurity/trivy-ci-test  
+Repository: https://github.com/aquasecurity/trivy-ci-test
 
 ## Authorization for Private Docker Registry
 
@@ -1220,7 +1220,7 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 
 The path of these files does not matter.
 
-Example: https://npm.pkg.github.com/knqyf263/trivy-ci-test/blob/master/Dockerfile
+Example: https://npm.pkg.github.com/aquasecurity/trivy-ci-test/blob/master/Dockerfile
 
 ### Data source
 - PHP
@@ -1284,7 +1284,7 @@ However, the purpose of this database is to make it possible to know what packag
 As README says, it is not a complete database of all security issues in Alpine.
 
 `Trivy` collects vulnerability information in Alpine Linux from [Alpine Linux aports repository](https://gitlab.alpinelinux.org/alpine/aports).
-Then, those vulnerabilities will be saved on [vuln-list](https://github.com/knqyf263/vuln-list/tree/master/alpine).
+Then, those vulnerabilities will be saved on [vuln-list](https://github.com/aquasecurity/vuln-list/tree/master/alpine).
 
 `alpine-secdb` has 6959 vulnerabilities (as of 2019/05/12).
 `vuln-list` has 11101 vulnerabilities related with Alpine Linux (as of 2019/05/12).
@@ -1327,7 +1327,7 @@ As `Quay` seems to use `Clair` internally, it has the same accuracy than `Clair`
 ### Error: Your macOS keychain GitHub credentials do not have sufficient scope!
 
 ```
-$ brew tap knqyf263/trivy
+$ brew tap aquasecurity/trivy
 Error: Your macOS keychain GitHub credentials do not have sufficient scope!
 Scopes they need: none
 Scopes they have:
@@ -1342,12 +1342,12 @@ Try:
 $ printf "protocol=https\nhost=github.com\n" | git credential-osxkeychain erase
 ```
 
-### Error: knqyf263/trivy/trivy 64 already installed
+### Error: aquasecurity/trivy/trivy 64 already installed
 
 ```
 $ brew upgrade
 ...
-Error: knqyf263/trivy/trivy 64 already installed
+Error: aquasecurity/trivy/trivy 64 already installed
 ```
 
 Try:
@@ -1355,7 +1355,7 @@ Try:
 ```
 $ brew unlink trivy && brew uninstall trivy
 ($ rm -rf /usr/local/Cellar/trivy/64)
-$ brew install knqyf263/trivy/trivy
+$ brew install aquasecurity/trivy/trivy
 ```
 
 ## Others
@@ -1378,13 +1378,13 @@ $ trivy --reset
 
 # Related Projects
 
-- [Remic](https://github.com/knqyf263/remic)
+- [Remic](https://github.com/aquasecurity/remic)
   - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies
 
 # Contribute
 
-1. fork a repository: github.com/knqyf263/trivy to github.com/you/repo
-2. get original code: `go get github.com/knqyf263/trivy`
+1. fork a repository: github.com/aquasecurity/trivy to github.com/you/repo
+2. get original code: `go get github.com/aquasecurity/trivy`
 3. work on original code
 4. add remote to your repo: git remote add myfork https://github.com/you/repo.git
 5. push your changes: git push myfork
@@ -1406,4 +1406,4 @@ AGPLv3
 
 # Author
 
-Teppei Fukuda (knqyf263)
+Teppei Fukuda (aquasecurity)
