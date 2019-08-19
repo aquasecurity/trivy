@@ -4,13 +4,13 @@ import (
 	"time"
 
 	version "github.com/knqyf263/go-deb-version"
-	"github.com/knqyf263/trivy/pkg/scanner/utils"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/fanal/analyzer"
-	"github.com/knqyf263/trivy/pkg/log"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/ubuntu"
+	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/ubuntu"
 )
 
 var (

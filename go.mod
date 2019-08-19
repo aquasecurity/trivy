@@ -1,9 +1,11 @@
-module github.com/knqyf263/trivy
+module github.com/aquasecurity/trivy
 
 go 1.12
 
 require (
 	github.com/BurntSushi/toml v0.3.1
+	github.com/aquasecurity/fanal v0.0.0-20190819081512-f04452b627c6
+	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
 	github.com/briandowns/spinner v0.0.0-20190319032542-ac46072a5a91
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/emirpasic/gods v1.12.0 // indirect
@@ -11,9 +13,7 @@ require (
 	github.com/fatih/color v1.7.0
 	github.com/genuinetools/reg v0.16.0
 	github.com/gliderlabs/ssh v0.1.3 // indirect
-	github.com/knqyf263/fanal v0.0.0-20190706175150-0e953d070757
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
-	github.com/knqyf263/go-dep-parser v0.0.0-20190521150559-1ef8521d17a0
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/knqyf263/go-version v1.1.1
 	github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348

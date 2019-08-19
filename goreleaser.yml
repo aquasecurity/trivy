@@ -28,8 +28,8 @@ nfpm:
     - rpm
   dependencies:
     - rpm
-  vendor: "knqyf263"
-  homepage: "https://github.com/knqyf263"
+  vendor: "aquasecurity"
+  homepage: "https://github.com/aquasecurity"
   maintainer: "Teppei Fukuda <knqyf263@gmail.com>"
   description: "A Fast Vulnerability Scanner for Containers"
   license: "MIT"
@@ -71,11 +71,11 @@ archive:
 
 brew:
   github:
-    owner: knqyf263
+    owner: aquasecurity
     name: homebrew-trivy
   dependencies:
     - rpm
-  homepage: "https://github.com/knqyf263/trivy"
+  homepage: "https://github.com/aquasecurity/trivy"
   description: ""
   test: |
     system "#{bin}/program --version"

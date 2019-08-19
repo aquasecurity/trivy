@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"golang.org/x/xerrors"
 )
 

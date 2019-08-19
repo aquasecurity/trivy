@@ -8,17 +8,17 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/knqyf263/trivy/pkg/vulnsrc/debian"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/debian"
 
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 
 	bolt "github.com/etcd-io/bbolt"
-	"github.com/knqyf263/trivy/pkg/db"
-	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/log"
 
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 var (

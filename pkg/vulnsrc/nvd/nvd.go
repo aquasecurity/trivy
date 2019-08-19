@@ -6,17 +6,17 @@ import (
 	"io"
 	"path/filepath"
 
-	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/log"
 
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils"
 
 	bolt "github.com/etcd-io/bbolt"
 
-	"github.com/knqyf263/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/db"
 )
 
 const (

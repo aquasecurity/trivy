@@ -5,14 +5,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/knqyf263/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils"
 
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 
 	"github.com/urfave/cli"
 
-	"github.com/knqyf263/trivy/pkg"
-	"github.com/knqyf263/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var (
