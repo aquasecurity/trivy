@@ -5,10 +5,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/knqyf263/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/db"
 
-	"github.com/knqyf263/trivy/pkg/log"
-	"github.com/knqyf263/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/utils"
 	"golang.org/x/xerrors"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"

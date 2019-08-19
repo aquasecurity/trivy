@@ -21,7 +21,7 @@ jobs:
           command: goreleaser --rm-dist
       - run:
           name: Clone trivy repository
-          command: git clone git@github.com:knqyf263/trivy-repo.git
+          command: git clone git@github.com:aquasecurity/trivy-repo.git
       - run:
           name: Setup git settings
           command: |
