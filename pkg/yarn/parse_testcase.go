@@ -1,6 +1,6 @@
 package yarn
 
-import "github.com/knqyf263/go-dep-parser/pkg/types"
+import "github.com/aquasecurity/go-dep-parser/pkg/types"
 
 var (
 	// docker run --name composer --rm -it node:12-alpine sh

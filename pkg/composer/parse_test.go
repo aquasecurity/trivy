@@ -1,7 +1,7 @@
 package composer
 
 import (
-	"github.com/knqyf263/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-dep-parser/pkg/types"
 	"os"
 	"path"
 	"testing"

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/knqyf263/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/kylelemons/godebug/pretty"
 )
 

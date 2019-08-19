@@ -1,6 +1,6 @@
 package cargo
 
-import "github.com/knqyf263/go-dep-parser/pkg/types"
+import "github.com/aquasecurity/go-dep-parser/pkg/types"
 
 var (
 	// docker run --name cargo --rm -it rust:1.34 bash
