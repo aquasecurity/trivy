@@ -14,15 +14,15 @@ import (
 
 	digest "github.com/opencontainers/go-digest"
 
-	"github.com/knqyf263/fanal/extractor"
-	"github.com/knqyf263/fanal/extractor/docker/token/ecr"
-	"github.com/knqyf263/fanal/extractor/docker/token/gcr"
-	"github.com/knqyf263/fanal/types"
+	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/extractor/docker/token/ecr"
+	"github.com/aquasecurity/fanal/extractor/docker/token/gcr"
+	"github.com/aquasecurity/fanal/types"
 
 	"github.com/docker/distribution/manifest/schema2"
 	"github.com/docker/docker/client"
 	"github.com/genuinetools/reg/registry"
-	"github.com/knqyf263/fanal/cache"
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/knqyf263/nested"
 	"golang.org/x/xerrors"
 )

@@ -7,7 +7,7 @@ before_install:
   - go get golang.org/x/tools/cmd/cover
 script:
   - env GO111MODULE=on go test -v -covermode=count -coverprofile=coverage.out ./...
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN; fi
+    #  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN; fi
 
 addons:
   apt:

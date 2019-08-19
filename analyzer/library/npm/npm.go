@@ -5,11 +5,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/knqyf263/fanal/analyzer"
-	"github.com/knqyf263/fanal/extractor"
-	"github.com/knqyf263/fanal/utils"
-	"github.com/knqyf263/go-dep-parser/pkg/npm"
-	"github.com/knqyf263/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/utils"
+	"github.com/aquasecurity/go-dep-parser/pkg/npm"
+	"github.com/aquasecurity/go-dep-parser/pkg/types"
 	"golang.org/x/xerrors"
 )
 

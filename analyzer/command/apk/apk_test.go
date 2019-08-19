@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/knqyf263/fanal/extractor"
+	"github.com/aquasecurity/fanal/extractor"
 
 	"github.com/kylelemons/godebug/pretty"
 
-	"github.com/knqyf263/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer"
 )
 
 func TestAnalyze(t *testing.T) {

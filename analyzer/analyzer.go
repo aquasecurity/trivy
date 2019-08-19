@@ -5,13 +5,13 @@ import (
 	"io"
 	"time"
 
-	"github.com/knqyf263/fanal/types"
+	"github.com/aquasecurity/fanal/types"
 
 	"golang.org/x/xerrors"
 
-	"github.com/knqyf263/fanal/extractor"
-	"github.com/knqyf263/fanal/extractor/docker"
-	godeptypes "github.com/knqyf263/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/extractor/docker"
+	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 var (

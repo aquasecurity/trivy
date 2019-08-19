@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/knqyf263/fanal/extractor"
+	"github.com/aquasecurity/fanal/extractor"
 	"golang.org/x/xerrors"
 )
 

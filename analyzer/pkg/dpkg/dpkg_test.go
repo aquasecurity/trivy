@@ -9,7 +9,7 @@ import (
 
 	"github.com/kylelemons/godebug/pretty"
 
-	"github.com/knqyf263/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer"
 )
 
 func TestParseApkInfo(t *testing.T) {

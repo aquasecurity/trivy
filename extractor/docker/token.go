@@ -5,7 +5,7 @@ import (
 
 	dockertypes "github.com/docker/docker/api/types"
 	"github.com/genuinetools/reg/repoutils"
-	"github.com/knqyf263/fanal/types"
+	"github.com/aquasecurity/fanal/types"
 )
 
 var (
