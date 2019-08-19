@@ -1,5 +1,5 @@
-**CAUTION: This repository was transferred from knqyf263/trivy to aquasecurity/trivy.**  
-**If you have previously installed Trivy, please check the [Migration](#Migration) section. We apologise for any inconvenience.**
+**This repository was transferred from knqyf263/trivy to aquasecurity/trivy.**  
+**If you have previously installed Trivy, please check the [Migration](#Migration) section in case you have any scripts or package managers that need to be updated. We apologise for any inconvenience.**
 
 <img src="imgs/logo.png" width="300">
 
@@ -56,6 +56,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
   - [vs Clair](#vs-clair)
   - [vs Anchore Engine](#vs-anchore-engine)
   - [vs Quay, Docker Hub, GCR](#vs-quay-docker-hub-gcr)
+- [Migration](#migration)
 - [Q&A](#qa)
   - [Homebrew](#homebrew)
   - [Others](#others)
@@ -1326,10 +1327,10 @@ As `Quay` seems to use `Clair` internally, it has the same accuracy than `Clair`
 
 # Migration
 
-On 19 August 2019, Trivy's repositories moved from `knqyf263/trivy` to `aquasecurity/trivy`. If you previously installed Trivy you should update the package manager's records as described in this section. 
+On 19 August 2019, Trivy's repositories moved from `knqyf263/trivy` to `aquasecurity/trivy`. If you previously installed Trivy you should update any scripts or package manager records as described in this section. 
 
 ## Overview
-Replace knqyf263/trivy with aquasecurity/trivy.
+If you have a script that installs Trivy (for example into your CI pipelines) you should update it to obtain it from the new location by replacing knqyf263/trivy with aquasecurity/trivy.
 
 For example:
 ```bash
