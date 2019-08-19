@@ -1,5 +1,5 @@
 **CAUTION: This repository was transferred from knqyf263/trivy to aquasecurity/trivy.**  
-**Check the [Migration](#Migration) section. We apologise for the inconvenience.**
+**If you have previously installed Trivy using a package manager, please check the [Migration](#Migration) section. We apologise for the inconvenience.**
 
 <img src="imgs/logo.png" width="300">
 
@@ -1325,6 +1325,8 @@ As `Quay` seems to use `Clair` internally, it has the same accuracy than `Clair`
 `Trivy` can be used regardless of the registry. In addition, it is easy to be integrated with CI/CD services.
 
 # Migration
+
+On 19 August 2019, Trivy's repositories moved from `knqyf263/trivy` to `aquasecurity/trivy`. If you previously installed Trivy you should update the package manager's records as described in this section. 
 
 ## Overview
 Replace knqyf263/trivy with aquasecurity/trivy.
