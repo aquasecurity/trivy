@@ -1,5 +1,5 @@
 **CAUTION: This repository was transferred from knqyf263/trivy to aquasecurity/trivy.**  
-**If you have previously installed Trivy using a package manager, please check the [Migration](#Migration) section. We apologise for the inconvenience.**
+**If you have previously installed Trivy, please check the [Migration](#Migration) section. We apologise for any inconvenience.**
 
 <img src="imgs/logo.png" width="300">
 
