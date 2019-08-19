@@ -1,4 +1,8 @@
+**This repository was transferred from knqyf263/trivy to aquasecurity/trivy.**  
+**If you have previously installed Trivy, please check the [Migration](#Migration) section in case you have any scripts or package managers that need to be updated. We apologise for any inconvenience.**
+
 <img src="imgs/logo.png" width="300">
+
 
 [![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
 [![CircleCI](https://circleci.com/gh/aquasecurity/trivy.svg?style=svg)](https://circleci.com/gh/aquasecurity/trivy)
@@ -21,7 +25,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
   - [RHEL/CentOS](#rhelcentos)
   - [Debian/Ubuntu](#debianubuntu)
   - [Arch Linux](#arch-linux)
-  - [Mac OS X / Homebrew](#mac-os-x--homebrew)
+  - [Mac OS X / Homebrew](#homebrew)
   - [Binary (Including Windows)](#binary-including-windows)
   - [From source](#from-source)
 - [Quick Start](#quick-start)
@@ -52,6 +56,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
   - [vs Clair](#vs-clair)
   - [vs Anchore Engine](#vs-anchore-engine)
   - [vs Quay, Docker Hub, GCR](#vs-quay-docker-hub-gcr)
+- [Migration](#migration)
 - [Q&A](#qa)
   - [Homebrew](#homebrew)
   - [Others](#others)
@@ -139,9 +144,9 @@ or
 yay -Sy trivy-bin
 ```
 
-## Mac OS X / Homebrew
+## Homebrew
 
-You can use homebrew on Mac OS.
+You can use homebrew on macOS.
 
 ```
 $ brew install aquasecurity/trivy/trivy
@@ -1320,6 +1325,55 @@ As `Quay` seems to use `Clair` internally, it has the same accuracy than `Clair`
 
 `Trivy` can be used regardless of the registry. In addition, it is easy to be integrated with CI/CD services.
 
+# Migration
+
+On 19 August 2019, Trivy's repositories moved from `knqyf263/trivy` to `aquasecurity/trivy`. If you previously installed Trivy you should update any scripts or package manager records as described in this section. 
+
+## Overview
+If you have a script that installs Trivy (for example into your CI pipelines) you should update it to obtain it from the new location by replacing knqyf263/trivy with aquasecurity/trivy.
+
+For example:
+```bash
+# Before
+$ wget https://github.com/knqyf263/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
+
+# After
+$ wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
+```
+
+## CentOS/RedHat
+Use https://aquasecurity.github.io instead of https://knqyf263.github.io.
+
+```bash
+$ yum remove trivy
+$ sed -i s/knqyf263/aquasecurity/g /etc/yum.repos.d/trivy.repo
+$ yum update
+$ yum install trivy
+```
+
+## Debian/Ubuntu
+Use https://aquasecurity.github.io instead of https://knqyf263.github.io.
+
+```bash
+$ apt-get remove --purge trivy
+$ sed -i s/knqyf263/aquasecurity/g /etc/apt/sources.list.d/trivy.list
+$ apt-get update
+$ apt-get install trivy
+```
+
+## Homebrew
+Tap aquasecurity/trivy
+
+```bash
+$ brew uninstall --force trivy
+$ brew untap knqyf263/trivy
+$ brew install aquasecurity/trivy
+```
+
+## Binary (Including Windows)
+No need to fix.
+
+
 # Q&A
 
 ## Homebrew
@@ -1406,4 +1460,4 @@ AGPLv3
 
 # Author
 
-Teppei Fukuda (aquasecurity)
+Teppei Fukuda (knqyf263)
