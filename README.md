@@ -211,20 +211,20 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 Replace [YOUR_CACHE_DIR] with the cache directory on your machine.
 
 ```
-$ docker run --rm -v [YOUR_CACHE_DIR]:/root/.cache/ aquasecurity/trivy [YOUR_IMAGE_NAME]
+$ docker run --rm -v [YOUR_CACHE_DIR]:/root/.cache/ aquasec/trivy [YOUR_IMAGE_NAME]
 ```
 
 Example for macOS:
 
 ```
-$ docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasecurity/trivy python:3.4-alpine
+$ docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy python:3.4-alpine
 ```
 
 If you would like to scan the image on your host machine, you need to mount `docker.sock`.
 
 ```
 $ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-    -v $HOME/Library/Caches:/root/.cache/ aquasecurity/trivy python:3.4-alpine
+    -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy python:3.4-alpine
 ```
 
 Please re-pull latest `aquasecurity/trivy` if an error occured.
