@@ -26,7 +26,7 @@ func Run(c *cli.Context) (err error) {
 		utils.Quiet = true
 	}
 	debug := c.Bool("debug")
-	if err = log.InitLogger(debug); err != nil {
+	if err = log.InitLogger(debug, c.Bool("quiet")); err != nil {
 		l.Fatal(err)
 	}
 
