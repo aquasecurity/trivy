@@ -85,6 +85,10 @@ OPTIONS:
 		},
 		cli.BoolFlag{
 			Name:  "quiet, q",
+			Usage: "suppress progress bar and log output",
+		},
+		cli.BoolFlag{
+			Name:  "no-progress",
 			Usage: "suppress progress bar",
 		},
 		cli.BoolFlag{

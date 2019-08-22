@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/genuinetools/reg/registry"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -15,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/genuinetools/reg/registry"
 	"github.com/urfave/cli"
 	"golang.org/x/xerrors"
 )
@@ -22,9 +22,11 @@ import (
 func Run(c *cli.Context) (err error) {
 	cliVersion := c.App.Version
 
-	utils.Quiet = c.Bool("quiet")
+	if c.Bool("quiet") || c.Bool("no-progress") {
+		utils.Quiet = true
+	}
 	debug := c.Bool("debug")
-	if err = log.InitLogger(debug); err != nil {
+	if err = log.InitLogger(debug, c.Bool("quiet")); err != nil {
 		l.Fatal(err)
 	}
 
