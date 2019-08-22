@@ -1,6 +1,8 @@
 package log
 
 import (
+	"os"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/xerrors"
@@ -11,9 +13,9 @@ var (
 	debugOption bool
 )
 
-func InitLogger(debug bool) (err error) {
+func InitLogger(debug, disable bool) (err error) {
 	debugOption = debug
-	Logger, err = newLogger(debug)
+	Logger, err = newLogger(debug, disable)
 	if err != nil {
 		return xerrors.Errorf("error in new logger: %w", err)
 	}
@@ -21,7 +23,7 @@ func InitLogger(debug bool) (err error) {
 
 }
 
-func newLogger(debug bool) (*zap.SugaredLogger, error) {
+func newLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 	level := zap.NewAtomicLevel()
 	if debug {
 		level.SetLevel(zapcore.DebugLevel)
@@ -49,6 +51,10 @@ func newLogger(debug bool) (*zap.SugaredLogger, error) {
 		},
 		OutputPaths:      []string{"stdout"},
 		ErrorOutputPaths: []string{"stderr"},
+	}
+	if disable {
+		myConfig.OutputPaths = []string{os.DevNull}
+		myConfig.ErrorOutputPaths = []string{os.DevNull}
 	}
 	logger, err := myConfig.Build()
 	if err != nil {

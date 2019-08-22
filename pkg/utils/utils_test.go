@@ -31,7 +31,7 @@ func write(t *testing.T, name string, content string) {
 }
 
 func TestFileWalk(t *testing.T) {
-	if err := log.InitLogger(false); err != nil {
+	if err := log.InitLogger(false, false); err != nil {
 		t.Fatal(err)
 	}
 	td, err := ioutil.TempDir("", "walktest")
