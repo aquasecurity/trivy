@@ -23,7 +23,7 @@ const (
 )
 
 var (
-	repoPath = filepath.Join(utils.CacheDir(), "ruby-advisory-db")
+	repoPath string
 )
 
 type AdvisoryDB map[string][]Advisory
@@ -49,6 +49,7 @@ type Related struct {
 }
 
 func (s *Scanner) UpdateDB() (err error) {
+	repoPath = filepath.Join(utils.CacheDir(), "ruby-advisory-db")
 	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return xerrors.Errorf("error in %s security DB update: %w", s.Type(), err)
 	}
