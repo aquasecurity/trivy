@@ -227,7 +227,7 @@ $ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
     -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy python:3.4-alpine
 ```
 
-Please re-pull latest `aquasecurity/trivy` if an error occured.
+Please re-pull latest `aquasec/trivy` if an error occured.
 
 <details>
 <summary>Result</summary>
@@ -257,7 +257,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 Simply specify an image name (and a tag).
 
 ```
-$ trivy aquasecurity/test-image:1.2.3
+$ trivy knqyf263/test-image:1.2.3
 ```
 
 <details>
@@ -277,7 +277,7 @@ $ trivy aquasecurity/test-image:1.2.3
 2019-05-16T12:59:10.285+0900    INFO    Updating pipenv Security DB...
 2019-05-16T12:59:11.487+0900    INFO    Detecting pipenv vulnerabilities...
 
-aquasecurity/test-image:1.2.3 (alpine 3.7.1)
+knqyf263/test-image:1.2.3 (alpine 3.7.1)
 ========================================
 Total: 26 (UNKNOWN: 0, LOW: 3, MEDIUM: 16, HIGH: 5, CRITICAL: 2)
 
@@ -1225,7 +1225,7 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 
 The path of these files does not matter.
 
-Example: https://npm.pkg.github.com/aquasecurity/trivy-ci-test/blob/master/Dockerfile
+Example: https://github.com/aquasecurity/trivy-ci-test/blob/master/Dockerfile
 
 ### Data source
 - PHP
