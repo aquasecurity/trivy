@@ -60,7 +60,7 @@ func Run(c *cli.Context) (err error) {
 	if filePath == "" && len(args) == 0 {
 		noTarget = true
 		if !reset && !clearCache && !refresh {
-			log.Logger.Info(`trivy" requires at least 1 argument or --input option.`)
+			log.Logger.Info(`trivy requires at least 1 argument or --input option.`)
 			cli.ShowAppHelpAndExit(c, 1)
 		}
 	}
