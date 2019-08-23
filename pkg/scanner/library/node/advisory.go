@@ -24,7 +24,7 @@ const (
 )
 
 var (
-	repoPath = filepath.Join(utils.CacheDir(), "nodejs-security-wg")
+	repoPath string
 )
 
 type AdvisoryDB map[string][]Advisory
@@ -44,6 +44,7 @@ type Advisory struct {
 }
 
 func (s *Scanner) UpdateDB() (err error) {
+	repoPath = filepath.Join(utils.CacheDir(), "nodejs-security-wg")
 	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return err
 	}

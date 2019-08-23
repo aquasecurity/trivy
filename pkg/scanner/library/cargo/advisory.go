@@ -23,7 +23,7 @@ const (
 )
 
 var (
-	repoPath = filepath.Join(utils.CacheDir(), "rust-advisory-db")
+	repoPath string
 )
 
 type AdvisoryDB map[string][]Lockfile
@@ -45,6 +45,7 @@ type Advisory struct {
 }
 
 func (s *Scanner) UpdateDB() (err error) {
+	repoPath = filepath.Join(utils.CacheDir(), "rust-advisory-db")
 	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return xerrors.Errorf("error in %s security DB update: %w", s.Type(), err)
 	}
