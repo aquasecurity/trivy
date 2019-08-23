@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/etcd-io/bbolt"
 	"github.com/aquasecurity/trivy/pkg/db"
+	"github.com/etcd-io/bbolt"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -22,7 +22,7 @@ const (
 )
 
 var (
-	repoPath = filepath.Join(utils.CacheDir(), "php-security-advisories")
+	repoPath string
 )
 
 type AdvisoryDB map[string][]Advisory
@@ -40,6 +40,7 @@ type Branch struct {
 }
 
 func (s *Scanner) UpdateDB() (err error) {
+	repoPath = filepath.Join(utils.CacheDir(), "php-security-advisories")
 	if _, err := git.CloneOrPull(dbURL, repoPath); err != nil {
 		return err
 	}
