@@ -8,8 +8,8 @@ import (
 
 	"github.com/aquasecurity/go-dep-parser/pkg/cargo"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	"github.com/knqyf263/go-version"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/knqyf263/go-version"
 	"golang.org/x/xerrors"
 )
 

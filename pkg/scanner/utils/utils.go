@@ -6,8 +6,8 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 
-	"github.com/knqyf263/go-version"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/knqyf263/go-version"
 )
 
 var (

@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	bolt "github.com/etcd-io/bbolt"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	bolt "github.com/etcd-io/bbolt"
 	"golang.org/x/xerrors"
 )
 

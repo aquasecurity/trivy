@@ -16,7 +16,6 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/library/yarn"
 	"github.com/aquasecurity/fanal/extractor"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	"github.com/knqyf263/go-version"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/library/bundler"
 	"github.com/aquasecurity/trivy/pkg/scanner/library/cargo"
@@ -24,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/library/node"
 	"github.com/aquasecurity/trivy/pkg/scanner/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/knqyf263/go-version"
 	"golang.org/x/xerrors"
 )
 

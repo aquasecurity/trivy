@@ -13,8 +13,8 @@ import (
 
 	"golang.org/x/xerrors"
 
-	bolt "github.com/etcd-io/bbolt"
 	"github.com/aquasecurity/trivy/pkg/utils"
+	bolt "github.com/etcd-io/bbolt"
 )
 
 const (

@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	version "github.com/knqyf263/go-version"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	version "github.com/knqyf263/go-version"
 
 	"golang.org/x/xerrors"
 
