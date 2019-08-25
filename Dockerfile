@@ -1,9 +1,9 @@
 FROM golang:1.12-alpine AS builder
-ADD go.mod go.sum /app/
+COPY go.mod go.sum /app/
 WORKDIR /app/
 RUN apk --no-cache add git upx
 RUN go mod download
-ADD . /app/
+COPY . /app/
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$(git describe --tags --abbrev=0)" -a -o /trivy cmd/trivy/main.go
 RUN upx --lzma --best /trivy
 
