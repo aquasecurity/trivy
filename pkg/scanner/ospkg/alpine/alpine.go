@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	version "github.com/knqyf263/go-rpm-version"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/alpine"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
 )
 
