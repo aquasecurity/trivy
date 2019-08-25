@@ -12,9 +12,9 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 
-	bolt "github.com/etcd-io/bbolt"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
+	bolt "github.com/etcd-io/bbolt"
 
 	"golang.org/x/xerrors"
 

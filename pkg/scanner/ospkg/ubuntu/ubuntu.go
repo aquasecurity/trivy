@@ -3,9 +3,9 @@ package ubuntu
 import (
 	"time"
 
-	version "github.com/knqyf263/go-deb-version"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"

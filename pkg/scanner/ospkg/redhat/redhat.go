@@ -6,11 +6,11 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/os"
-	version "github.com/knqyf263/go-rpm-version"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/redhat"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
 )
 

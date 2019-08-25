@@ -3,8 +3,8 @@ package types
 import (
 	"time"
 
-	"github.com/caarlos0/env/v6"
 	"github.com/aquasecurity/fanal/types"
+	"github.com/caarlos0/env/v6"
 )
 
 type DockerConfig struct {
