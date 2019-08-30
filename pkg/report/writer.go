@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"text/template"
 
 	"golang.org/x/xerrors"
 
@@ -91,6 +92,19 @@ func (jw JsonWriter) Write(results Results) error {
 
 	if _, err = fmt.Fprint(jw.Output, string(output)); err != nil {
 		return xerrors.Errorf("failed to write json: %w", err)
+	}
+	return nil
+}
+
+type TemplateWriter struct {
+	Output   io.Writer
+	Template *template.Template
+}
+
+func (tw TemplateWriter) Write(results Results) error {
+	err := tw.Template.Execute(tw.Output, results)
+	if err != nil {
+		return xerrors.Errorf("failed to write with template: %w", err)
 	}
 	return nil
 }
