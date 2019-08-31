@@ -842,9 +842,9 @@ Total: 4751 (UNKNOWN: 1, LOW: 150, MEDIUM: 3504, HIGH: 1013, CRITICAL: 83)
 
 </details>
 
-### Skip an update of vulnerability DB
+### Skip update of vulnerability DB
 
-`Trivy` always updates vulnerability database when it starts operating. This is usually fast as it is a difference update. But if you want to skip even that, use the `--skip-update` option.
+`Trivy` always updates its vulnerability database when it starts operating. This is usually fast, as it is a difference update. But if you want to skip even that, use the `--skip-update` option.
 
 ```
 $ trivy --skip-update python:3.4-alpine3.9
@@ -870,9 +870,9 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 </details>
 
-### Update only you are specified distributions
+### Update only specified distributions
 
-By default, `Trivy` always updates vulnerability database of all distribution. Use the `--only-update` option if you want to update only specified distributions.
+By default, `Trivy` always updates its vulnerability database for all distributions. Use the `--only-update` option if you want to name specified distributions to update.
 
 ```
 $ trivy --only-update alpine,debian python:3.4-alpine3.9
