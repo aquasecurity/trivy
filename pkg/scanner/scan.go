@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/extractor"
@@ -28,6 +29,9 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[s
 		dockerOption, err := types.GetDockerOption()
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get docker option: %w", err)
+		}
+		if scanOptions.Timeout != time.Duration(60*time.Second) {
+			dockerOption.Timeout = scanOptions.Timeout
 		}
 		files, err = analyzer.Analyze(ctx, imageName, dockerOption)
 		if err != nil {

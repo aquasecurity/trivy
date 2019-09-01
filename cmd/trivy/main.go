@@ -122,6 +122,11 @@ OPTIONS:
 			Value: utils.DefaultCacheDir(),
 			Usage: "use as cache directory, but image cache is stored in /path/to/cache/fanal",
 		},
+		cli.IntFlag{
+			Name:  "timeout",
+			Value: 60,
+			Usage: "docker timeout",
+		},
 	}
 
 	app.Action = pkg.Run
