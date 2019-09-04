@@ -13,7 +13,6 @@
 A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 
 <img src="imgs/usage.gif" width="700">
-
 <img src="imgs/usage1.png" width="600">
 <img src="imgs/usage2.png" width="600">
 
@@ -108,7 +107,7 @@ $ sudo yum -y install trivy
 or
 
 ```
-$ rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.0.15/trivy_0.0.15_Linux-64bit.rpm
+$ rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.1.6/trivy_0.1.6_Linux-64bit.rpm
 ```
 
 ## Debian/Ubuntu
@@ -131,8 +130,8 @@ or
 
 ```
 $ sudo apt-get install rpm
-$ wget https://github.com/aquasecurity/trivy/releases/download/v0.0.15/trivy_0.0.15_Linux-64bit.deb
-$ sudo dpkg -i trivy_0.0.15_Linux-64bit.deb
+$ wget https://github.com/aquasecurity/trivy/releases/download/v0.1.6/trivy_0.1.6_Linux-64bit.deb
+$ sudo dpkg -i trivy_0.1.6_Linux-64bit.deb
 ```
 ## Arch Linux
 trivy-bin can be installed from the Arch User Repository. Examples:
@@ -1094,8 +1093,8 @@ before_install:
   - wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
   - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
 script:
-  - ./trivy --exit-code 0 --severity HIGH --quiet --auto-refresh trivy-ci-test:${COMMIT}
-  - ./trivy --exit-code 1 --severity CRITICAL --quiet --auto-refresh trivy-ci-test:${COMMIT}
+  - ./trivy --exit-code 0 --severity HIGH --no-progress --auto-refresh trivy-ci-test:${COMMIT}
+  - ./trivy --exit-code 1 --severity CRITICAL --no-progress --auto-refresh trivy-ci-test:${COMMIT}
 cache:
   directories:
     - $HOME/.cache/trivy
@@ -1135,7 +1134,7 @@ jobs:
             mv trivy /usr/local/bin
       - run:
           name: Scan the local image with trivy
-          command: trivy --exit-code 0 --quiet --auto-refresh trivy-ci-test:${CIRCLE_SHA1}
+          command: trivy --exit-code 0 --no-progress --auto-refresh trivy-ci-test:${CIRCLE_SHA1}
       - save_cache:
           key: vulnerability-db
           paths:
@@ -1245,9 +1244,9 @@ Example: https://github.com/aquasecurity/trivy-ci-test/blob/master/Dockerfile
 NAME:
   trivy - A simple and comprehensive vulnerability scanner for containers
 USAGE:
-  main [options] image_name
+  trivy [options] image_name
 VERSION:
-  0.0.15
+  0.1.6
 OPTIONS:
   --format value, -f value    format (table, json) (default: "table")
   --input value, -i value     input file path instead of image name
@@ -1255,14 +1254,16 @@ OPTIONS:
   --output value, -o value    output file name
   --exit-code value           Exit code when vulnerabilities were found (default: 0)
   --skip-update               skip db update
+  --only-update value         update db only specified distribution (comma separated)
   --reset                     remove all caches and database
   --clear-cache, -c           clear image caches
-  --quiet, -q                 suppress progress bar
+  --quiet, -q                 suppress progress bar and log output
+  --no-progress               suppress progress bar
   --ignore-unfixed            display only fixed vulnerabilities
   --refresh                   refresh DB (usually used after version update of trivy)
   --auto-refresh              refresh DB automatically when updating version of trivy
   --debug, -d                 debug mode
-  --vuln-type value           comma-separated list of vulnerability types (os,library)
+  --vuln-type value           comma-separated list of vulnerability types (os,library) (default: "os,library")
   --cache-dir value           cache directory (default: "/path/to/cache")
   --help, -h                  show help
   --version, -v               print the version
