@@ -115,7 +115,7 @@ OPTIONS:
 		cli.StringFlag{
 			Name:  "cache-dir",
 			Value: utils.DefaultCacheDir(),
-			Usage: "cache directory",
+			Usage: "use as cache directory, but image cache is stored in /path/to/cache/fanal",
 		},
 	}
 
