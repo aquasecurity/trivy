@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/BurntSushi/toml v0.3.1
-	github.com/aquasecurity/fanal v0.0.0-20190819081512-f04452b627c6
+	github.com/aquasecurity/fanal v0.0.0-20190925125246-dd21732f4f4f
 	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
 	github.com/briandowns/spinner v0.0.0-20190319032542-ac46072a5a91
 	github.com/caarlos0/env/v6 v6.0.0
