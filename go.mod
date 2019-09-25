@@ -1,6 +1,6 @@
 module github.com/aquasecurity/fanal
 
-go 1.12
+go 1.13
 
 require (
 	cloud.google.com/go v0.37.4 // indirect
@@ -19,7 +19,7 @@ require (
 	github.com/opencontainers/go-digest v0.0.0-20180430190053-c9281466c8b2
 	github.com/pkg/errors v0.8.1
 	golang.org/x/crypto v0.0.0-20190404164418-38d8ce5564a5
-	golang.org/x/xerrors v0.0.0-20190410155217-1f06c39b4373
+	golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7
 )
 
 replace github.com/genuinetools/reg => github.com/tomoyamachi/reg v0.16.1-0.20190706172545-2a2250fd7c00
