@@ -33,7 +33,10 @@ func (a rpmPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Pack
 	if !detected {
 		return nil, analyzer.ErrNoPkgsDetected
 	}
-	return pkgs, xerrors.Errorf("failed to parse the pkg info: %w", err)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse the pkg info: %w", err)
+	}
+	return pkgs, nil
 }
 
 func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []analyzer.Package, err error) {
