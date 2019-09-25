@@ -119,7 +119,7 @@ OPTIONS:
 		},
 		cli.StringFlag{
 			Name:  "ignorefile",
-			Value: ".trivyignore",
+			Value: vulnerability.DefaultIgnoreFile,
 			Usage: "specify .trivyignore file (default: ./.trivyignore)",
 		},
 	}
