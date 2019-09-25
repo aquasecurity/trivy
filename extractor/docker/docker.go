@@ -19,10 +19,10 @@ import (
 	"github.com/aquasecurity/fanal/extractor/docker/token/gcr"
 	"github.com/aquasecurity/fanal/types"
 
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/docker/distribution/manifest/schema2"
 	"github.com/docker/docker/client"
 	"github.com/genuinetools/reg/registry"
-	"github.com/aquasecurity/fanal/cache"
 	"github.com/knqyf263/nested"
 	"golang.org/x/xerrors"
 )
@@ -269,7 +269,7 @@ func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filen
 			break
 		}
 		if err != nil {
-			return nil, extractor.ErrCouldNotExtract
+			return nil, xerrors.Errorf("failed to extract the archive: %w", err)
 		}
 		switch {
 		case header.Name == "manifest.json":
@@ -320,7 +320,7 @@ func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extr
 			break
 		}
 		if err != nil {
-			return data, nil, extractor.ErrCouldNotExtract
+			return data, nil, xerrors.Errorf("failed to extract the archive: %w", err)
 		}
 
 		filePath := hdr.Name
