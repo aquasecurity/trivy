@@ -47,10 +47,7 @@ func TestParseApkInfo(t *testing.T) {
 			t.Errorf("%s : can't open file %s", testname, v.path)
 		}
 		scanner := bufio.NewScanner(read)
-		pkgs, err := a.parseApkInfo(scanner)
-		if err != nil {
-			t.Errorf("%s : catch the error : %v", testname, err)
-		}
+		pkgs := a.parseApkInfo(scanner)
 		if !reflect.DeepEqual(v.pkgs, pkgs) {
 			t.Errorf("[%s]\n%s", testname, pretty.Compare(v.pkgs, pkgs))
 		}

@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/extractor"
 	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
@@ -31,32 +33,32 @@ func (a rpmPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Pack
 	if !detected {
 		return nil, analyzer.ErrNoPkgsDetected
 	}
-	return pkgs, err
+	return pkgs, xerrors.Errorf("failed to parse the pkg info: %w", err)
 }
 
 func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []analyzer.Package, err error) {
 	tmpDir, err := ioutil.TempDir("", "rpm")
 	defer os.RemoveAll(tmpDir)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to create a temp dir: %w", err)
 	}
 
 	filename := filepath.Join(tmpDir, "Packages")
 	err = ioutil.WriteFile(filename, packageBytes, 0700)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to write a package file: %w", err)
 	}
 
 	// rpm-python 4.11.3 rpm-4.11.3-35.el7.src.rpm
 	// Extract binary package names because RHSA refers to binary package names.
 	db := rpmdb.DB{}
 	if err = db.Open(filename); err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to open RPM DB: %w", err)
 	}
 
 	pkgList, err := db.ListPackages()
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to list packages", err)
 	}
 
 	for _, pkg := range pkgList {

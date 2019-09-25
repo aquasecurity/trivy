@@ -65,7 +65,7 @@ func (a alpineCmdAnalyzer) Analyze(targetOS analyzer.OS, fileMap extractor.FileM
 
 	if err := a.fetchApkIndexArchive(targetOS); err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, xerrors.Errorf("failed to fetch apk index archive: %w", err)
 	}
 
 	for _, filename := range a.RequiredFiles() {
@@ -75,7 +75,7 @@ func (a alpineCmdAnalyzer) Analyze(targetOS analyzer.OS, fileMap extractor.FileM
 		}
 		var config docker.Config
 		if err := json.Unmarshal(file, &config); err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to unmarshal docker config: %w", err)
 		}
 		pkgs = append(pkgs, a.parseConfig(config)...)
 	}

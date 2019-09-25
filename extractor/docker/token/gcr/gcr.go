@@ -36,14 +36,14 @@ func (g *GCR) GetCredential(ctx context.Context) (username, password string, err
 	if g.Store == nil {
 		credStore, err = store.DefaultGCRCredStore()
 		if err != nil {
-			return "", "", err
+			return "", "", xerrors.Errorf("failed to get GCRCredStore: %w", err)
 		}
 	} else {
 		credStore = g.Store
 	}
 	userCfg, err := config.LoadUserConfig()
 	if err != nil {
-		return "", "", err
+		return "", "", xerrors.Errorf("failed to load user config: %w", err)
 	}
 	helper := credhelper.NewGCRCredentialHelper(credStore, userCfg)
 	return helper.Get(g.domain)
