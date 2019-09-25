@@ -53,6 +53,29 @@ func TestExtractFromFile(t *testing.T) {
 			},
 			err: nil,
 		},
+		{
+			file: "testdata/image5.tar",
+			// Not detect foo/baz cause set "foo"
+			filenames: []string{"bar", "foo/bar/", "foo"},
+			FileMap: extractor.FileMap{
+				"bar":         []byte("bar"),
+				"foo/bar/abc": []byte("abc"),
+				"foo/bar/def": []byte("def"),
+				"/config":     []byte(`{"architecture":"amd64","config":{"Hostname":"","Domainname":"","User":"","AttachStdin":false,"AttachStdout":false,"AttachStderr":false,"Tty":false,"OpenStdin":false,"StdinOnce":false,"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"],"Cmd":["/bin/sh"],"ArgsEscaped":true,"Image":"sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4","Volumes":null,"WorkingDir":"","Entrypoint":null,"OnBuild":null,"Labels":null},"container":"65b0a9f4cc5ba8eaad4edf5e8edd9166aa8dc31b2d6e21d84951b9737c250078","container_config":{"Hostname":"","Domainname":"","User":"","AttachStdin":false,"AttachStdout":false,"AttachStderr":false,"Tty":false,"OpenStdin":false,"StdinOnce":false,"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"],"Cmd":["/bin/sh","-c","echo -n bar \u003e bar \u0026\u0026 mkdir -p foo/bar \u0026\u0026 echo -n abc \u003e foo/bar/abc \u0026\u0026 echo -n def \u003e foo/bar/def \u0026\u0026 echo -n baz \u003e foo/baz"],"Image":"sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4","Volumes":null,"WorkingDir":"","Entrypoint":null,"OnBuild":null,"Labels":null},"created":"2019-09-05T17:19:53.569209Z","docker_version":"19.03.1","history":[{"created":"2019-08-20T20:19:55.062606894Z","created_by":"/bin/sh -c #(nop) ADD file:fe64057fbb83dccb960efabbf1cd8777920ef279a7fa8dbca0a8801c651bdf7c in / "},{"created":"2019-08-20T20:19:55.211423266Z","created_by":"/bin/sh -c #(nop)  CMD [\"/bin/sh\"]","empty_layer":true},{"created":"2019-09-05T17:19:53.569209Z","created_by":"/bin/sh -c echo -n bar \u003e bar \u0026\u0026 mkdir -p foo/bar \u0026\u0026 echo -n abc \u003e foo/bar/abc \u0026\u0026 echo -n def \u003e foo/bar/def \u0026\u0026 echo -n baz \u003e foo/baz"}],"os":"linux","rootfs":{"type":"layers","diff_ids":["sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0","sha256:69c7f4ae201dc4669b58cbac8f1cc0593e28ddb0f5d35a21541217ab17f550fa"]}}`),
+			},
+			err: nil,
+		},
+		{
+			file: "testdata/image5.tar",
+			// Detect foo/baz cause set "foo/"
+			filenames: []string{"bar", "foo/"},
+			FileMap: extractor.FileMap{
+				"bar":     []byte("bar"),
+				"foo/baz": []byte("baz"),
+				"/config": []byte(`{"architecture":"amd64","config":{"Hostname":"","Domainname":"","User":"","AttachStdin":false,"AttachStdout":false,"AttachStderr":false,"Tty":false,"OpenStdin":false,"StdinOnce":false,"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"],"Cmd":["/bin/sh"],"ArgsEscaped":true,"Image":"sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4","Volumes":null,"WorkingDir":"","Entrypoint":null,"OnBuild":null,"Labels":null},"container":"65b0a9f4cc5ba8eaad4edf5e8edd9166aa8dc31b2d6e21d84951b9737c250078","container_config":{"Hostname":"","Domainname":"","User":"","AttachStdin":false,"AttachStdout":false,"AttachStderr":false,"Tty":false,"OpenStdin":false,"StdinOnce":false,"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"],"Cmd":["/bin/sh","-c","echo -n bar \u003e bar \u0026\u0026 mkdir -p foo/bar \u0026\u0026 echo -n abc \u003e foo/bar/abc \u0026\u0026 echo -n def \u003e foo/bar/def \u0026\u0026 echo -n baz \u003e foo/baz"],"Image":"sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4","Volumes":null,"WorkingDir":"","Entrypoint":null,"OnBuild":null,"Labels":null},"created":"2019-09-05T17:19:53.569209Z","docker_version":"19.03.1","history":[{"created":"2019-08-20T20:19:55.062606894Z","created_by":"/bin/sh -c #(nop) ADD file:fe64057fbb83dccb960efabbf1cd8777920ef279a7fa8dbca0a8801c651bdf7c in / "},{"created":"2019-08-20T20:19:55.211423266Z","created_by":"/bin/sh -c #(nop)  CMD [\"/bin/sh\"]","empty_layer":true},{"created":"2019-09-05T17:19:53.569209Z","created_by":"/bin/sh -c echo -n bar \u003e bar \u0026\u0026 mkdir -p foo/bar \u0026\u0026 echo -n abc \u003e foo/bar/abc \u0026\u0026 echo -n def \u003e foo/bar/def \u0026\u0026 echo -n baz \u003e foo/baz"}],"os":"linux","rootfs":{"type":"layers","diff_ids":["sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0","sha256:69c7f4ae201dc4669b58cbac8f1cc0593e28ddb0f5d35a21541217ab17f550fa"]}}`),
+			},
+			err: nil,
+		},
 	}
 
 	for _, v := range vectors {

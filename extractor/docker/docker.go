@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	digest "github.com/opencontainers/go-digest"
+	"github.com/opencontainers/go-digest"
 
 	"github.com/aquasecurity/fanal/extractor"
 	"github.com/aquasecurity/fanal/extractor/docker/token/ecr"
@@ -336,6 +336,14 @@ func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extr
 		// Determine if we should extract the element
 		extract := false
 		for _, s := range filenames {
+			// extract all files in target directory if last char is "/"(Separator)
+			if s[len(s)-1] == '/' {
+				if filepath.Clean(s) == filepath.Dir(filePath) {
+					extract = true
+				}
+				break
+			}
+
 			if s == filePath || s == fileName || strings.HasPrefix(fileName, wh) {
 				extract = true
 				break
