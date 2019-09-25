@@ -340,8 +340,8 @@ func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extr
 			if s[len(s)-1] == '/' {
 				if filepath.Clean(s) == filepath.Dir(filePath) {
 					extract = true
+					break
 				}
-				break
 			}
 
 			if s == filePath || s == fileName || strings.HasPrefix(fileName, wh) {
