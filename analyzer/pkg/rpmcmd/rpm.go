@@ -13,6 +13,8 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/fanal/utils"
 )
 
 func init() {
@@ -22,6 +24,9 @@ func init() {
 type rpmCmdPkgAnalyzer struct{}
 
 func (a rpmCmdPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Package, err error) {
+	if !utils.IsCommandAvailable("rpm") {
+		return nil, types.ErrNoRpmCmd
+	}
 	var parsedPkgs []analyzer.Package
 	detected := false
 	for _, filename := range a.RequiredFiles() {

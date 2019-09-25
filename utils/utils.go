@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 )
 
@@ -28,4 +29,11 @@ func StringInSlice(a string, list []string) bool {
 		}
 	}
 	return false
+}
+
+func IsCommandAvailable(name string) bool {
+	if _, err := exec.LookPath(name); err != nil {
+		return false
+	}
+	return true
 }
