@@ -2,4 +2,7 @@ package types
 
 import "golang.org/x/xerrors"
 
-var InvalidURLPattern = xerrors.New("Invalid url pattern")
+var (
+	InvalidURLPattern = xerrors.New("invalid url pattern")
+	ErrNoRpmCmd       = xerrors.New("no rpm command")
+)
