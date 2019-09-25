@@ -119,7 +119,7 @@ CODE_NAME: wheezy, jessie, stretch, buster, trusty, xenial, bionic
 `$ lsb_release -c`
 
 ```
-$ sudo apt-get install apt-transport-https gnupg
+$ sudo apt-get install wget apt-transport-https gnupg
 $ wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
 $ echo deb https://aquasecurity.github.io/trivy-repo/deb [CODE_NAME] main | sudo tee -a /etc/apt/sources.list.d/trivy.list
 $ sudo apt-get update
@@ -133,6 +133,9 @@ $ sudo apt-get install rpm
 $ wget https://github.com/aquasecurity/trivy/releases/download/v0.1.6/trivy_0.1.6_Linux-64bit.deb
 $ sudo dpkg -i trivy_0.1.6_Linux-64bit.deb
 ```
+
+
+
 ## Arch Linux
 trivy-bin can be installed from the Arch User Repository. Examples:
 ```
@@ -167,6 +170,8 @@ $ cd trivy/cmd/trivy/
 $ export GO111MODULE=on
 $ go install
 ```
+
+You need to install `rpm` command for scanning RHEL/CentOS.
 
 # Quick Start
 
