@@ -44,9 +44,14 @@ OPTIONS:
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
+			Name:  "template, t",
+			Value: "",
+			Usage: "output template",
+		},
+		cli.StringFlag{
 			Name:  "format, f",
 			Value: "table",
-			Usage: "format (table, json)",
+			Usage: "format (table, json, template)",
 		},
 		cli.StringFlag{
 			Name:  "input, i",
