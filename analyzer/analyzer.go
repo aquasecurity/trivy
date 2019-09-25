@@ -164,8 +164,10 @@ func GetPackages(filesMap extractor.FileMap) ([]Package, error) {
 		// Differentiate between a package manager not being found and another error
 		if err != nil && err == ErrNoPkgsDetected {
 			continue
+		} else if err != nil {
+			return nil, xerrors.Errorf("failed to analyze packages: %w", err)
 		}
-		return pkgs, xerrors.Errorf("failed to analyze packages: %w", err)
+		return pkgs, nil
 	}
 	return nil, ErrPkgAnalysis
 }
