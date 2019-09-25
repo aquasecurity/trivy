@@ -3,6 +3,7 @@ package composer
 import (
 	"bytes"
 	"path/filepath"
+	"strings"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/extractor"
@@ -25,6 +26,11 @@ func (a composerLibraryAnalyzer) Analyze(fileMap extractor.FileMap) (map[analyze
 	for filename, content := range fileMap {
 		basename := filepath.Base(filename)
 		if !utils.StringInSlice(basename, requiredFiles) {
+			continue
+		}
+
+		// skip analyze files which in dependency folder
+		if utils.StringInSlice(utils.COMPOSER_DEP_DIR, strings.Split(filename, utils.PathSeparator)) {
 			continue
 		}
 
