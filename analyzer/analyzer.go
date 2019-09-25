@@ -165,7 +165,7 @@ func GetPackages(filesMap extractor.FileMap) ([]Package, error) {
 		if err != nil && err == ErrNoPkgsDetected {
 			continue
 		}
-		return pkgs, err
+		return pkgs, xerrors.Errorf("failed to analyze packages: %w", err)
 	}
 	return nil, ErrPkgAnalysis
 }

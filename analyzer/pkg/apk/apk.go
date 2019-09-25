@@ -26,7 +26,7 @@ func (a alpinePkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.P
 			continue
 		}
 		scanner := bufio.NewScanner(bytes.NewBuffer(file))
-		parsedPkgs, err = a.parseApkInfo(scanner)
+		parsedPkgs = a.parseApkInfo(scanner)
 		pkgs = append(pkgs, parsedPkgs...)
 		detected = true
 	}
@@ -36,7 +36,7 @@ func (a alpinePkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.P
 	return pkgs, nil
 }
 
-func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []analyzer.Package, err error) {
+func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []analyzer.Package) {
 	var pkg analyzer.Package
 	var version string
 	for scanner.Scan() {
@@ -77,7 +77,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []analyzer
 		pkgs = append(pkgs, pkg)
 	}
 
-	return a.uniquePkgs(pkgs), nil
+	return a.uniquePkgs(pkgs)
 }
 func (a alpinePkgAnalyzer) uniquePkgs(pkgs []analyzer.Package) (uniqPkgs []analyzer.Package) {
 	uniq := map[string]struct{}{}

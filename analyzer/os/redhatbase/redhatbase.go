@@ -3,7 +3,6 @@ package redhatbase
 import (
 	"bufio"
 	"bytes"
-	"errors"
 	"regexp"
 	"strings"
 
@@ -30,7 +29,7 @@ func (a redhatOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error
 			line := scanner.Text()
 			result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
 			if len(result) != 3 {
-				return analyzer.OS{}, errors.New("cent: Invalid centos-release")
+				return analyzer.OS{}, xerrors.New("cent: Invalid centos-release")
 			}
 
 			switch strings.ToLower(result[1]) {
@@ -46,7 +45,7 @@ func (a redhatOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error
 			line := scanner.Text()
 			result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
 			if len(result) != 3 {
-				return analyzer.OS{}, errors.New("oracle: Invalid oracle-release")
+				return analyzer.OS{}, xerrors.New("oracle: Invalid oracle-release")
 			}
 			return analyzer.OS{Family: os.Oracle, Name: result[2]}, nil
 		}
@@ -66,7 +65,7 @@ func (a redhatOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error
 			line := scanner.Text()
 			result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
 			if len(result) != 3 {
-				return analyzer.OS{}, errors.New("redhat: Invalid redhat-release")
+				return analyzer.OS{}, xerrors.New("redhat: Invalid redhat-release")
 			}
 
 			switch strings.ToLower(result[1]) {
@@ -91,7 +90,7 @@ func parseFedoraRelease(file []byte) (analyzer.OS, error) {
 		line := scanner.Text()
 		result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
 		if len(result) != 3 {
-			return analyzer.OS{}, errors.New("cent: Invalid fedora-release")
+			return analyzer.OS{}, xerrors.New("cent: Invalid fedora-release")
 		}
 
 		switch strings.ToLower(result[1]) {

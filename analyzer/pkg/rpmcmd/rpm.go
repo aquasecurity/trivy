@@ -36,27 +36,27 @@ func (a rpmCmdPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.P
 	if !detected {
 		return pkgs, analyzer.ErrNoPkgsDetected
 	}
-	return pkgs, err
+	return pkgs, xerrors.Errorf("failed to parse the pkg info: %w", err)
 }
 
 func (a rpmCmdPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []analyzer.Package, err error) {
 	tmpDir, err := ioutil.TempDir("", "rpm")
 	defer os.RemoveAll(tmpDir)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to create a temp dir: %w", err)
 	}
 
 	filename := filepath.Join(tmpDir, "Packages")
 	err = ioutil.WriteFile(filename, packageBytes, 0700)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to write a package file: %w", err)
 	}
 
 	// rpm-python 4.11.3 rpm-4.11.3-35.el7.src.rpm
 	// Extract binary package names because RHSA refers to binary package names.
 	out, err := outputPkgInfo(tmpDir)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to extract the package list: %w", err)
 	}
 
 	pkgString := string(out)
@@ -65,7 +65,7 @@ func (a rpmCmdPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []analyzer.Pa
 	for scanner.Scan() {
 		pkg, err := parseRPMOutput(scanner.Text())
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to parse the package list: %w", err)
 		}
 		pkgs = append(pkgs, pkg)
 	}
@@ -85,7 +85,7 @@ func parseRPMOutput(line string) (pkg analyzer.Package, err error) {
 	} else {
 		epoch, err = strconv.Atoi(epochStr)
 		if err != nil {
-			return pkg, err
+			return pkg, xerrors.Errorf("failed to convert epoch from string to int", err)
 		}
 	}
 

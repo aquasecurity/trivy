@@ -139,7 +139,7 @@ func (d DockerExtractor) SaveLocalImage(ctx context.Context, imageName string) (
 		// Save the image
 		r, err = d.saveLocalImage(ctx, imageName)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to save the image: %w", err)
 		}
 		r, err = cache.Set(imageName, r)
 		if err != nil {
@@ -169,17 +169,17 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 
 	image, err := registry.ParseImage(imageName)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to parse the image: %w", err)
 	}
 	r, err := d.createRegistryClient(ctx, image.Domain)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to create the registry client: %w", err)
 	}
 
 	// Get the v2 manifest.
 	manifest, err := r.Manifest(ctx, image.Path, image.Reference())
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to get the v2 manifest: %w", err)
 	}
 	m, ok := manifest.(*schema2.DeserializedManifest)
 	if !ok {
@@ -228,7 +228,7 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 		}
 		files, opqDirs, err := d.ExtractFiles(l.Content, filenames)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to extract files: %w", err)
 		}
 		layerID := string(l.ID)
 		filesInLayers[layerID] = files
@@ -274,19 +274,19 @@ func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filen
 		switch {
 		case header.Name == "manifest.json":
 			if err := json.NewDecoder(tr).Decode(&manifests); err != nil {
-				return nil, err
+				return nil, xerrors.Errorf("failed to decode manifest JSON: %w", err)
 			}
 		case strings.HasSuffix(header.Name, ".json"):
 			// save all JSON temporarily for config JSON
 			tmpJSONs[header.Name], err = ioutil.ReadAll(tr)
 			if err != nil {
-				return nil, err
+				return nil, xerrors.Errorf("failed to read JSON file: %w", err)
 			}
 		case strings.HasSuffix(header.Name, ".tar"):
 			layerID := filepath.Base(filepath.Dir(header.Name))
 			files, opqDirs, err := d.ExtractFiles(tr, filenames)
 			if err != nil {
-				return nil, err
+				return nil, xerrors.Errorf("failed to extract files: %w", err)
 			}
 			filesInLayers[layerID] = files
 			opqInLayers[layerID] = opqDirs
@@ -300,7 +300,7 @@ func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filen
 
 	fileMap, err := applyLayers(manifests[0].Layers, filesInLayers, opqInLayers)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
 	// special file for command analyzer

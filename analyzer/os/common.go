@@ -16,7 +16,7 @@ func GetFileMap(prefixPath string) (extractor.FileMap, error) {
 		prefixPath,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
-				return err
+				return xerrors.Errorf("unknown error during file walking: %w", err)
 			}
 			if info.IsDir() {
 				return nil
@@ -34,5 +34,8 @@ func GetFileMap(prefixPath string) (extractor.FileMap, error) {
 			return nil
 		},
 	)
-	return fileMap, err
+	if err != nil {
+		return nil, xerrors.Errorf("failed to walk the file tree: %w", err)
+	}
+	return fileMap, nil
 }
