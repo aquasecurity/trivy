@@ -44,7 +44,15 @@ func TestExtractFromFile(t *testing.T) {
 			err: nil,
 		},
 		{
-			file:      "testdata/image4.tar",
+			file:      "testdata/image3_gz_layers.tar",
+			filenames: []string{"home/app/Gemfile", "home/app2/Pipfile", "home/app/Pipfile"},
+			FileMap: extractor.FileMap{
+				"home/app/Pipfile": []byte("pip"),
+				"/config":          []byte(`{"architecture":"amd64","container":"a0625bb53d38b712d9fe7e307c53a5b1f2528189d694a29ba37b7a27bee20029","created":"2019-07-23T08:53:13.7506797Z","docker_version":"18.06.1-ce","history":[{"author":"","created":"2019-07-11T22:20:52.139709355Z","created_by":"/bin/sh -c #(nop) ADD file:0eb5ea35741d23fe39cbac245b3a5d84856ed6384f4ff07d496369ee6d960bad in / ","comment":""},{"author":"","created":"2019-07-11T22:20:52.375286404Z","created_by":"/bin/sh -c #(nop)  CMD [\"/bin/sh\"]","comment":"","empty_layer":true},{"author":"kaniko","created":"0001-01-01T00:00:00Z","created_by":"RUN mkdir /home/app \u0026\u0026 echo -n gem \u003e /home/app/Gemfile","comment":""},{"author":"kaniko","created":"0001-01-01T00:00:00Z","created_by":"RUN mkdir /home/app2 \u0026\u0026 echo -n pip \u003e /home/app2/Pipfile","comment":""},{"author":"kaniko","created":"0001-01-01T00:00:00Z","created_by":"RUN rm -rf /home/app \u0026\u0026 mv /home/app2 /home/app","comment":""}],"os":"linux","rootfs":{"type":"layers","diff_ids":["sha256:1bfeebd65323b8ddf5bd6a51cc7097b72788bc982e9ab3280d53d3c613adffa7","sha256:927e7087ecbc8de977df69cb60c19f1759b374bd36b2fa9c7c30cebe0fcf8156","sha256:25dbee606f1ef778e242145a8da895e416661dbd8b4243523aaa5227919458cc","sha256:ccbf319ba1f9c5f823254a36c91187db9ec2ff4cd1ec27dfc6b10bcf6996e334"]},"config":{"AttachStderr":false,"AttachStdin":false,"AttachStdout":false,"Cmd":["/bin/sh"],"Healthcheck":null,"Domainname":"","Entrypoint":null,"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"],"Hostname":"","Image":"sha256:f248cae16d3e1b44bf474ad89815438f10c395f8e532153e4fcd32cbbb150fb3","Labels":null,"OnBuild":null,"OpenStdin":false,"StdinOnce":false,"Tty":false,"User":"","Volumes":null,"WorkingDir":"","ExposedPorts":null,"ArgsEscaped":true,"NetworkDisabled":false,"MacAddress":"","StopSignal":"","Shell":null},"container_config":{"AttachStderr":false,"AttachStdin":false,"AttachStdout":false,"Cmd":["/bin/sh","-c","#(nop) ","CMD [\"/bin/sh\"]"],"Healthcheck":null,"Domainname":"","Entrypoint":null,"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"],"Hostname":"a0625bb53d38","Image":"sha256:f248cae16d3e1b44bf474ad89815438f10c395f8e532153e4fcd32cbbb150fb3","Labels":{},"OnBuild":null,"OpenStdin":false,"StdinOnce":false,"Tty":false,"User":"","Volumes":null,"WorkingDir":"","ExposedPorts":null,"ArgsEscaped":true,"NetworkDisabled":false,"MacAddress":"","StopSignal":"","Shell":null},"osversion":""}`),
+			},
+			err: nil,
+		},
+		{file: "testdata/image4.tar",
 			filenames: []string{".abc", ".def", "foo/.abc", "foo/.def", ".foo/.abc"},
 			FileMap: extractor.FileMap{
 				".def":     []byte("def"),
