@@ -69,16 +69,15 @@ func NewDockerExtractor(option types.DockerOption) DockerExtractor {
 	return DockerExtractor{Option: option}
 }
 
-func applyLayers(layerIDs []string, filesInLayers map[string]extractor.FileMap, opqInLayers map[string]opqDirs) (extractor.FileMap, error) {
+func applyLayers(layerPaths []string, filesInLayers map[string]extractor.FileMap, opqInLayers map[string]opqDirs) (extractor.FileMap, error) {
 	sep := "/"
 	nestedMap := nested.Nested{}
-	for _, layerID := range layerIDs {
-		layerID := strings.Split(layerID, sep)[0]
-		for _, opqDir := range opqInLayers[layerID] {
+	for _, layerPath := range layerPaths {
+		for _, opqDir := range opqInLayers[layerPath] {
 			nestedMap.DeleteByString(opqDir, sep)
 		}
 
-		for filePath, content := range filesInLayers[layerID] {
+		for filePath, content := range filesInLayers[layerPath] {
 			fileName := filepath.Base(filePath)
 			fileDir := filepath.Dir(filePath)
 			switch {
@@ -226,6 +225,7 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 		case <-ctx.Done():
 			return nil, xerrors.Errorf("timeout: %w", ctx.Err())
 		}
+
 		files, opqDirs, err := d.ExtractFiles(l.Content, filenames)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to extract files: %w", err)
@@ -259,9 +259,11 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filenames []string) (extractor.FileMap, error) {
 	manifests := make([]manifest, 0)
 	filesInLayers := map[string]extractor.FileMap{}
-	tmpJSONs := extractor.FileMap{}
 	opqInLayers := make(map[string]opqDirs)
 
+	tarFiles := make(map[string][]byte)
+
+	// Extract the files from the tarball
 	tr := tar.NewReader(r)
 	for {
 		header, err := tr.Next()
@@ -271,31 +273,43 @@ func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filen
 		if err != nil {
 			return nil, xerrors.Errorf("failed to extract the archive: %w", err)
 		}
+
 		switch {
 		case header.Name == "manifest.json":
 			if err := json.NewDecoder(tr).Decode(&manifests); err != nil {
 				return nil, xerrors.Errorf("failed to decode manifest JSON: %w", err)
 			}
-		case strings.HasSuffix(header.Name, ".json"):
-			// save all JSON temporarily for config JSON
-			tmpJSONs[header.Name], err = ioutil.ReadAll(tr)
-			if err != nil {
-				return nil, xerrors.Errorf("failed to read JSON file: %w", err)
-			}
 		case strings.HasSuffix(header.Name, ".tar"):
-			layerID := filepath.Base(filepath.Dir(header.Name))
 			files, opqDirs, err := d.ExtractFiles(tr, filenames)
 			if err != nil {
-				return nil, xerrors.Errorf("failed to extract files: %w", err)
+				return nil, err
 			}
-			filesInLayers[layerID] = files
-			opqInLayers[layerID] = opqDirs
+
+			filesInLayers[header.Name] = files
+			opqInLayers[header.Name] = opqDirs
+		case strings.HasSuffix(header.Name, ".tar.gz"):
+			gzipReader, err := gzip.NewReader(tr)
+			if err != nil {
+				return nil, err
+			}
+			files, opqDirs, err := d.ExtractFiles(gzipReader, filenames)
+			if err != nil {
+				return nil, err
+			}
+
+			filesInLayers[header.Name] = files
+			opqInLayers[header.Name] = opqDirs
 		default:
+			// save all JSON temporarily for config JSON
+			tarFiles[header.Name], err = ioutil.ReadAll(tr)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to read a file: %w", err)
+			}
 		}
 	}
 
 	if len(manifests) == 0 {
-		return nil, xerrors.New("Invalid image")
+		return nil, xerrors.New("Invalid manifest file")
 	}
 
 	fileMap, err := applyLayers(manifests[0].Layers, filesInLayers, opqInLayers)
@@ -304,7 +318,11 @@ func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filen
 	}
 
 	// special file for command analyzer
-	fileMap["/config"] = tmpJSONs[manifests[0].Config]
+	data, ok := tarFiles[manifests[0].Config]
+	if !ok {
+		return nil, xerrors.Errorf("Image config: %s not found\n", manifests[0].Config)
+	}
+	fileMap["/config"] = data
 
 	return fileMap, nil
 }
@@ -324,7 +342,7 @@ func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extr
 		}
 
 		filePath := hdr.Name
-		filePath = filepath.Clean(filePath)
+		filePath = strings.TrimLeft(filepath.Clean(filePath), "/")
 		fileName := filepath.Base(filePath)
 
 		// e.g. etc/.wh..wh..opq
