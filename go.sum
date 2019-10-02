@@ -22,8 +22,8 @@ github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRF
 github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239 h1:kFOfPq6dUM1hTo4JG6LR5AXSUEsOjtdm0kw0FtQtMJA=
 github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239/go.mod h1:2FmKhYUyUczH0OGQWaF5ceTx0UBShxjsH6f8oGKYe2c=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
-github.com/aquasecurity/fanal v0.0.0-20190925140227-796bfacda1fe h1:JZXBeXkBLu71rw6XQNWqwirIaF/C4DFcUQ66CcXt4Go=
-github.com/aquasecurity/fanal v0.0.0-20190925140227-796bfacda1fe/go.mod h1:dD1Ny21eY5FSDyERfUIMwdgYhg6Lnw611VOwDHmTSoQ=
+github.com/aquasecurity/fanal v0.0.0-20190930214148-1d3b788f4003 h1:jKLG8daiXJ/QcAJ3cq4cGkrvPpafzEzlbiKQPkkhaa4=
+github.com/aquasecurity/fanal v0.0.0-20190930214148-1d3b788f4003/go.mod h1:dD1Ny21eY5FSDyERfUIMwdgYhg6Lnw611VOwDHmTSoQ=
 github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b h1:55Ulc/gvfWm4ylhVaR7MxOwujRjA6et7KhmUbSgUFf4=
 github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b/go.mod h1:BpNTD9vHfrejKsED9rx04ldM1WIbeyXGYxUrqTVwxVQ=
 github.com/aws/aws-sdk-go v1.19.11 h1:tqaTGER6Byw3QvsjGW0p018U2UOqaJPeJuzoaF7jjoQ=
