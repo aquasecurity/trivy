@@ -117,6 +117,11 @@ OPTIONS:
 			Value: utils.DefaultCacheDir(),
 			Usage: "use as cache directory, but image cache is stored in /path/to/cache/fanal",
 		},
+		cli.StringFlag{
+			Name:  "ignorefile",
+			Value: vulnerability.DefaultIgnoreFile,
+			Usage: "specify .trivyignore file",
+		},
 	}
 
 	app.Action = pkg.Run
