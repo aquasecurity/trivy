@@ -75,8 +75,8 @@ See [here](#continuous-integration-ci) for details.
   - Specify only an image name
   - See [Quick Start](#quick-start) and [Examples](#examples)
 - Easy installation
-  - **No need for prerequirements** such as installation of DB, libraries, etc.
   - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](#installation))
+  - **No need for prerequirements** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
 - High accuracy
   - **Especially Alpine Linux and RHEL/CentOS**
   - Other OSes are also high
@@ -155,7 +155,7 @@ $ brew install aquasecurity/trivy/trivy
 
 Get the latest version from [this page](https://github.com/aquasecurity/trivy/releases/latest), and download the archive file for your operating system/architecture. Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
 
-You need to install `rpm` command for scanning RHEL/CentOS.
+You also need to install `rpm` command for scanning images based on RHEL/CentOS.
 
 ## From source
 
@@ -168,7 +168,7 @@ $ export GO111MODULE=on
 $ go install
 ```
 
-You need to install `rpm` command for scanning RHEL/CentOS.
+You also need to install `rpm` command for scanning images based on RHEL/CentOS.
 
 # Quick Start
 
@@ -1211,6 +1211,8 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 | CentOS                       | 6, 7                                     | Installed by yum/rpm          |                 YES                  |
 | Debian GNU/Linux             | wheezy, jessie, stretch, buster          | Installed by apt/apt-get/dpkg |                 YES                  |
 | Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg |                 YES                  |
+
+RHEL and CentOS package information is stored in a binary format, and Trivy uses the `rpm` executable to parse this information when scanning an image based on RHEL or CentOS. The Trivy container image includes `rpm`, and the installers include it as a dependency. If you installed the `trivy` binary using `wget` or `curl`, or if you build it from source, you will also need to ensure that `rpm` is available. 
 
 ## Application Dependencies
 
