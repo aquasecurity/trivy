@@ -74,11 +74,7 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		}, vuls)
 
-		allLogs := recorder.AllUntimed()
-		var loggedMessages []string
-		for _, l := range allLogs {
-			loggedMessages = append(loggedMessages, l.Message)
-		}
+		loggedMessages := getAllLoggedLogs(recorder)
 		assert.Contains(t, loggedMessages, "amazon: os version: 3.1.0")
 		assert.Contains(t, loggedMessages, "amazon: the number of packages: 2")
 	})
@@ -127,12 +123,46 @@ func TestScanner_Detect(t *testing.T) {
 		})
 		assert.NoError(t, err)
 		assert.Equal(t, []vulnerability.DetectedVulnerability(nil), vuls)
-		allLogs := recorder.AllUntimed()
-		var loggedMessages []string
-		for _, l := range allLogs {
-			loggedMessages = append(loggedMessages, l.Message)
-		}
+		loggedMessages := getAllLoggedLogs(recorder)
 		assert.Contains(t, loggedMessages, "failed to parse Amazon Linux installed package version: upstream_version must start with digit")
 	})
 
+	t.Run("invalid fixed package version", func(t *testing.T) {
+		zc, recorder := observer.New(zapcore.DebugLevel)
+		log.Logger = zap.New(zc).Sugar()
+		s := &Scanner{
+			l: log.Logger,
+			ac: MockAmazonConfig{
+				get: func(s string, s2 string) (advisories []vulnerability.Advisory, e error) {
+					return []vulnerability.Advisory{
+						{
+							VulnerabilityID: "123",
+							FixedVersion:    "thisisbadversioning",
+						},
+					}, nil
+				},
+			},
+		}
+
+		vuls, err := s.Detect("3.1.0", []analyzer.Package{
+			{
+				Name:       "testpkg",
+				SrcVersion: "3.1.0",
+			},
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, []vulnerability.DetectedVulnerability(nil), vuls)
+		loggedMessages := getAllLoggedLogs(recorder)
+		assert.Contains(t, loggedMessages, "failed to parse Amazon Linux package version: upstream_version must start with digit")
+	})
+
+}
+
+func getAllLoggedLogs(recorder *observer.ObservedLogs) []string {
+	allLogs := recorder.AllUntimed()
+	var loggedMessages []string
+	for _, l := range allLogs {
+		loggedMessages = append(loggedMessages, l.Message)
+	}
+	return loggedMessages
 }

@@ -56,7 +56,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 		for _, adv := range advisories {
 			fixedVersion, err := version.NewVersion(adv.FixedVersion)
 			if err != nil {
-				log.Logger.Debugf("failed to parse Amazon Linux package version: %w", err)
+				log.Logger.Debugf("failed to parse Amazon Linux package version: %s", err)
 				continue
 			}
 
