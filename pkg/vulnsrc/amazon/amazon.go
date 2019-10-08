@@ -25,12 +25,20 @@ var (
 	targetVersions = []string{"1", "2"}
 )
 
+type Operations interface {
+	Update(string, map[string]struct{}) error
+	Get(string, string) ([]vulnerability.Advisory, error)
+}
+
+type Config struct {
+}
+
 type alas struct {
 	Version string
 	amazon.ALAS
 }
 
-func Update(dir string, updatedFiles map[string]struct{}) error {
+func (ac Config) Update(dir string, updatedFiles map[string]struct{}) error {
 	rootDir := filepath.Join(dir, amazonDir)
 	targets, err := utils.FilterTargets(amazonDir, updatedFiles)
 	if err != nil {
@@ -121,7 +129,7 @@ func save(alasList []alas) error {
 }
 
 // Get returns a security advisory
-func Get(version string, pkgName string) ([]vulnerability.Advisory, error) {
+func (ac Config) Get(version string, pkgName string) ([]vulnerability.Advisory, error) {
 	bucket := fmt.Sprintf(platformFormat, version)
 	advisories, err := db.ForEach(bucket, pkgName)
 	if err != nil {

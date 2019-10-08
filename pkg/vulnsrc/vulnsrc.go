@@ -33,7 +33,7 @@ var (
 		vulnerability.Debian:     debian.Update,
 		vulnerability.DebianOVAL: debianoval.Update,
 		vulnerability.Ubuntu:     ubuntu.Update,
-		vulnerability.Amazon:     amazon.Update,
+		vulnerability.Amazon:     amazon.Config{}.Update,
 	}
 )
 

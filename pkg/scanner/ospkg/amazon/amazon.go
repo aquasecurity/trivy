@@ -1,6 +1,7 @@
 package amazon
 
 import (
+	"go.uber.org/zap"
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/amazon"
@@ -14,10 +15,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 )
 
-type Scanner struct{}
+type Scanner struct {
+	l  *zap.SugaredLogger
+	ac amazon.Operations
+}
 
 func NewScanner() *Scanner {
-	return &Scanner{}
+	return &Scanner{
+		l:  log.Logger,
+		ac: amazon.Config{},
+	}
 }
 
 func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability.DetectedVulnerability, error) {
@@ -29,7 +36,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 
 	var vulns []vulnerability.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := amazon.Get(osVer, pkg.SrcName)
+		advisories, err := s.ac.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get amazon advisories: %w", err)
 		}
