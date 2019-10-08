@@ -1,7 +1,13 @@
 package amazon
 
 import (
+	"errors"
 	"testing"
+
+	"go.uber.org/zap"
+
+	"go.uber.org/zap/zapcore"
+	"go.uber.org/zap/zaptest/observer"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -30,7 +36,8 @@ func (mac MockAmazonConfig) Get(a string, b string) ([]vulnerability.Advisory, e
 
 func TestScanner_Detect(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
-		_ = log.InitLogger(true, false)
+		zc, recorder := observer.New(zapcore.DebugLevel)
+		log.Logger = zap.New(zc).Sugar()
 		s := &Scanner{
 			l: log.Logger,
 			ac: MockAmazonConfig{
@@ -66,5 +73,66 @@ func TestScanner_Detect(t *testing.T) {
 				FixedVersion:     "3.0.0",
 			},
 		}, vuls)
+
+		allLogs := recorder.AllUntimed()
+		var loggedMessages []string
+		for _, l := range allLogs {
+			loggedMessages = append(loggedMessages, l.Message)
+		}
+		assert.Contains(t, loggedMessages, "amazon: os version: 3.1.0")
+		assert.Contains(t, loggedMessages, "amazon: the number of packages: 2")
 	})
+
+	t.Run("get vulnerabilities fails to fetch", func(t *testing.T) {
+		_ = log.InitLogger(true, false)
+		s := &Scanner{
+			l: log.Logger,
+			ac: MockAmazonConfig{
+				get: func(s string, s2 string) (advisories []vulnerability.Advisory, e error) {
+					return nil, errors.New("failed to fetch advisories")
+				},
+			},
+		}
+		vuls, err := s.Detect("foo", []analyzer.Package{
+			{
+				Name: "testpkg",
+			},
+		})
+		assert.Equal(t, "failed to get amazon advisories: failed to fetch advisories", err.Error())
+		assert.Empty(t, vuls)
+	})
+
+	t.Run("invalid installed package version", func(t *testing.T) {
+		zc, recorder := observer.New(zapcore.DebugLevel)
+		log.Logger = zap.New(zc).Sugar()
+		s := &Scanner{
+			l: log.Logger,
+			ac: MockAmazonConfig{
+				get: func(s string, s2 string) (advisories []vulnerability.Advisory, e error) {
+					return []vulnerability.Advisory{
+						{
+							VulnerabilityID: "123",
+							FixedVersion:    "3.0.0",
+						},
+					}, nil
+				},
+			},
+		}
+
+		vuls, err := s.Detect("3.1.0", []analyzer.Package{
+			{
+				Name:       "testpkg",
+				SrcVersion: "badsourceversion",
+			},
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, []vulnerability.DetectedVulnerability(nil), vuls)
+		allLogs := recorder.AllUntimed()
+		var loggedMessages []string
+		for _, l := range allLogs {
+			loggedMessages = append(loggedMessages, l.Message)
+		}
+		assert.Contains(t, loggedMessages, "failed to parse Amazon Linux installed package version: upstream_version must start with digit")
+	})
+
 }

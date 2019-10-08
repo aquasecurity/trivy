@@ -1,8 +1,9 @@
 package amazon
 
 import (
-	"go.uber.org/zap"
 	"strings"
+
+	"go.uber.org/zap"
 
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/amazon"
 
@@ -48,7 +49,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 
 		installedVersion, err := version.NewVersion(installed)
 		if err != nil {
-			log.Logger.Debugf("failed to parse Amazon Linux installed package version: %w", err)
+			log.Logger.Debugf("failed to parse Amazon Linux installed package version: %s", err)
 			continue
 		}
 
