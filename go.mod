@@ -14,7 +14,6 @@ require (
 	github.com/fatih/color v1.7.0
 	github.com/genuinetools/reg v0.16.0
 	github.com/gliderlabs/ssh v0.1.3 // indirect
-	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/knqyf263/go-version v1.1.1
