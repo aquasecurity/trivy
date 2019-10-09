@@ -39,7 +39,7 @@ func TestScanner_Detect(t *testing.T) {
 		zc, recorder := observer.New(zapcore.DebugLevel)
 		log.Logger = zap.New(zc).Sugar()
 		s := &Scanner{
-			l: log.Logger,
+			lg: log.Logger,
 			ac: MockAmazonConfig{
 				get: func(s string, s2 string) (advisories []vulnerability.Advisory, e error) {
 					return []vulnerability.Advisory{
@@ -82,7 +82,7 @@ func TestScanner_Detect(t *testing.T) {
 	t.Run("get vulnerabilities fails to fetch", func(t *testing.T) {
 		_ = log.InitLogger(true, false)
 		s := &Scanner{
-			l: log.Logger,
+			lg: log.Logger,
 			ac: MockAmazonConfig{
 				get: func(s string, s2 string) (advisories []vulnerability.Advisory, e error) {
 					return nil, errors.New("failed to fetch advisories")
@@ -102,7 +102,7 @@ func TestScanner_Detect(t *testing.T) {
 		zc, recorder := observer.New(zapcore.DebugLevel)
 		log.Logger = zap.New(zc).Sugar()
 		s := &Scanner{
-			l: log.Logger,
+			lg: log.Logger,
 			ac: MockAmazonConfig{
 				get: func(s string, s2 string) (advisories []vulnerability.Advisory, e error) {
 					return []vulnerability.Advisory{
@@ -131,7 +131,7 @@ func TestScanner_Detect(t *testing.T) {
 		zc, recorder := observer.New(zapcore.DebugLevel)
 		log.Logger = zap.New(zc).Sugar()
 		s := &Scanner{
-			l: log.Logger,
+			lg: log.Logger,
 			ac: MockAmazonConfig{
 				get: func(s string, s2 string) (advisories []vulnerability.Advisory, e error) {
 					return []vulnerability.Advisory{

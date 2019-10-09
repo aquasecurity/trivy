@@ -17,23 +17,23 @@ import (
 )
 
 type Scanner struct {
-	l  *zap.SugaredLogger
+	lg *zap.SugaredLogger
 	ac amazon.Operations
 }
 
 func NewScanner() *Scanner {
 	return &Scanner{
-		l:  log.Logger,
+		lg: log.Logger,
 		ac: amazon.Config{},
 	}
 }
 
 func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting Amazon Linux vulnerabilities...")
+	s.lg.Info("Detecting Amazon Linux vulnerabilities...")
 
 	osVer = strings.Fields(osVer)[0]
-	log.Logger.Debugf("amazon: os version: %s", osVer)
-	log.Logger.Debugf("amazon: the number of packages: %d", len(pkgs))
+	s.lg.Debugf("amazon: os version: %s", osVer)
+	s.lg.Debugf("amazon: the number of packages: %d", len(pkgs))
 
 	var vulns []vulnerability.DetectedVulnerability
 	for _, pkg := range pkgs {
@@ -49,14 +49,14 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 
 		installedVersion, err := version.NewVersion(installed)
 		if err != nil {
-			log.Logger.Debugf("failed to parse Amazon Linux installed package version: %s", err)
+			s.lg.Debugf("failed to parse Amazon Linux installed package version: %s", err)
 			continue
 		}
 
 		for _, adv := range advisories {
 			fixedVersion, err := version.NewVersion(adv.FixedVersion)
 			if err != nil {
-				log.Logger.Debugf("failed to parse Amazon Linux package version: %s", err)
+				s.lg.Debugf("failed to parse Amazon Linux package version: %s", err)
 				continue
 			}
 
