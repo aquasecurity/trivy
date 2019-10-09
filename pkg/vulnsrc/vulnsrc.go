@@ -62,6 +62,7 @@ func Update(names []string) error {
 
 	updatedFiles := map[string]struct{}{}
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		// TODO: Currently panics if info is nil
 		if info.IsDir() {
 			return nil
 		}

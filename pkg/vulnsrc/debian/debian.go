@@ -73,8 +73,9 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 }
 
 func save(cves []DebianCVE) error {
+	dbc := db.Config{}
 	log.Logger.Debug("Saving Debian DB")
-	err := db.BatchUpdate(func(tx *bolt.Tx) error {
+	err := dbc.BatchUpdate(func(tx *bolt.Tx) error {
 		for _, cve := range cves {
 			for _, release := range cve.Releases {
 				for releaseStr := range release.Repositories {
@@ -90,7 +91,7 @@ func save(cves []DebianCVE) error {
 						VulnerabilityID: cve.VulnerabilityID,
 						//Severity:        severityFromUrgency(release.Urgency),
 					}
-					if err := db.PutNestedBucket(tx, platformName, cve.Package, cve.VulnerabilityID, advisory); err != nil {
+					if err := dbc.PutNestedBucket(tx, platformName, cve.Package, cve.VulnerabilityID, advisory); err != nil {
 						return xerrors.Errorf("failed to save Debian advisory: %w", err)
 					}
 

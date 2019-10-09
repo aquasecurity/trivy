@@ -98,8 +98,9 @@ func walkDebian(cri Criteria, pkgs []Package) []Package {
 }
 
 func save(cves []DebianOVAL) error {
+	dbc := db.Config{}
 	log.Logger.Debug("Saving Debian OVAL")
-	err := db.BatchUpdate(func(tx *bolt.Tx) error {
+	err := dbc.BatchUpdate(func(tx *bolt.Tx) error {
 		for _, cve := range cves {
 			affectedPkgs := walkDebian(cve.Criteria, []Package{})
 			for _, affectedPkg := range affectedPkgs {
@@ -114,7 +115,7 @@ func save(cves []DebianOVAL) error {
 					VulnerabilityID: cveID,
 					FixedVersion:    affectedPkg.FixedVersion,
 				}
-				if err := db.PutNestedBucket(tx, platformName, affectedPkg.Name, cveID, advisory); err != nil {
+				if err := dbc.PutNestedBucket(tx, platformName, affectedPkg.Name, cveID, advisory); err != nil {
 					return xerrors.Errorf("failed to save Debian OVAL advisory: %w", err)
 				}
 

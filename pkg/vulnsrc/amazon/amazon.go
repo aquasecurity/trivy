@@ -7,8 +7,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"go.uber.org/zap"
+
 	"github.com/aquasecurity/trivy/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/vuln-list-update/amazon"
@@ -23,6 +24,7 @@ const (
 
 var (
 	targetVersions = []string{"1", "2"}
+	fileWalker     = utils.FileWalk // TODO: Remove once utils.go exposes an interface
 )
 
 type Operations interface {
@@ -31,6 +33,8 @@ type Operations interface {
 }
 
 type Config struct {
+	lg  *zap.SugaredLogger
+	dbc db.Operations
 }
 
 type alas struct {
@@ -44,23 +48,23 @@ func (ac Config) Update(dir string, updatedFiles map[string]struct{}) error {
 	if err != nil {
 		return xerrors.Errorf("failed to filter target files: %w", err)
 	} else if len(targets) == 0 {
-		log.Logger.Debug("amazon: no updated file")
+		ac.lg.Debug("amazon: no updated file")
 		return nil
 	}
-	log.Logger.Debugf("Amazon Linux AMI Security Advisory updated files: %d", len(targets))
+	ac.lg.Debugf("Amazon Linux AMI Security Advisory updated files: %d", len(targets))
 
 	bar := utils.PbStartNew(len(targets))
 	defer bar.Finish()
 
 	var alasList []alas
-	err = utils.FileWalk(rootDir, targets, func(r io.Reader, path string) error {
+	err = fileWalker(rootDir, targets, func(r io.Reader, path string) error { // TODO: untested
 		paths := strings.Split(path, string(filepath.Separator))
 		if len(paths) < 2 {
 			return nil
 		}
 		version := paths[len(paths)-2]
 		if !utils.StringInSlice(version, targetVersions) {
-			log.Logger.Debugf("unsupported amazon version: %s", version)
+			ac.lg.Debugf("unsupported amazon version: %s", version)
 			return nil
 		}
 
@@ -80,16 +84,16 @@ func (ac Config) Update(dir string, updatedFiles map[string]struct{}) error {
 		return xerrors.Errorf("error in amazon walk: %w", err)
 	}
 
-	if err = save(alasList); err != nil {
+	if err = ac.save(alasList); err != nil {
 		return xerrors.Errorf("error in amazon save: %w", err)
 	}
 
 	return nil
 }
 
-func save(alasList []alas) error {
-	log.Logger.Debug("Saving amazon DB")
-	err := db.BatchUpdate(func(tx *bolt.Tx) error {
+func (ac Config) save(alasList []alas) error {
+	ac.lg.Debug("Saving amazon DB")
+	err := ac.dbc.BatchUpdate(func(tx *bolt.Tx) error { // TODO: Untested
 		for _, alas := range alasList {
 			for _, cveID := range alas.CveIDs {
 				for _, pkg := range alas.Packages {
@@ -98,7 +102,7 @@ func save(alasList []alas) error {
 						VulnerabilityID: cveID,
 						FixedVersion:    constructVersion(pkg.Epoch, pkg.Version, pkg.Release),
 					}
-					if err := db.PutNestedBucket(tx, platformName, pkg.Name, cveID, advisory); err != nil {
+					if err := ac.dbc.PutNestedBucket(tx, platformName, pkg.Name, cveID, advisory); err != nil {
 						return xerrors.Errorf("failed to save amazon advisory: %w", err)
 					}
 

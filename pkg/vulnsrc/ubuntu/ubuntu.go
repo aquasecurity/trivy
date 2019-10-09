@@ -80,8 +80,9 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 }
 
 func save(cves []UbuntuCVE) error {
+	dbc := db.Config{}
 	log.Logger.Debug("Saving Ubuntu DB")
-	err := db.BatchUpdate(func(tx *bolt.Tx) error {
+	err := dbc.BatchUpdate(func(tx *bolt.Tx) error {
 		for _, cve := range cves {
 			for packageName, patch := range cve.Patches {
 				pkgName := string(packageName)
@@ -100,7 +101,7 @@ func save(cves []UbuntuCVE) error {
 					if status.Status == "released" {
 						advisory.FixedVersion = status.Note
 					}
-					if err := db.PutNestedBucket(tx, platformName, pkgName, cve.Candidate, advisory); err != nil {
+					if err := dbc.PutNestedBucket(tx, platformName, pkgName, cve.Candidate, advisory); err != nil {
 						return xerrors.Errorf("failed to save Ubuntu advisory: %w", err)
 					}
 
