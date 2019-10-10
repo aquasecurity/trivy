@@ -46,7 +46,7 @@ type alas struct {
 
 func (ac Config) Update(dir string, updatedFiles map[string]struct{}) error {
 	rootDir := filepath.Join(dir, amazonDir)
-	targets, err := utils.FilterTargets(amazonDir, updatedFiles)
+	targets, err := utils.FilterTargets(amazonDir, updatedFiles) //TODO: Untested
 	if err != nil {
 		return xerrors.Errorf("failed to filter target files: %w", err)
 	} else if len(targets) == 0 {
@@ -70,7 +70,7 @@ func (ac Config) Update(dir string, updatedFiles map[string]struct{}) error {
 	return nil
 }
 
-func (ac Config) walkFunc(r io.Reader, path string) error {
+func (ac *Config) walkFunc(r io.Reader, path string) error {
 	paths := strings.Split(path, string(filepath.Separator))
 	if len(paths) < 2 {
 		return nil

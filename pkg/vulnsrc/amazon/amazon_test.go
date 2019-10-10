@@ -4,7 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"strings"
 	"testing"
+
+	"github.com/aquasecurity/vuln-list-update/amazon"
+
+	"github.com/aquasecurity/trivy/pkg/utils"
 
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 
@@ -275,4 +280,76 @@ func TestConstructVersion(t *testing.T) {
 	for _, tc := range testCases {
 		assert.Equal(t, tc.expectedVersion, constructVersion(tc.inc.epoch, tc.inc.version, tc.inc.release), tc.name)
 	}
+}
+
+func TestConfig_WalkFunc(t *testing.T) {
+	testCases := []struct {
+		name             string
+		ioReader         io.Reader
+		inputPath        string
+		expectedALASList []alas
+		expectedError    error
+		expectedLogs     []string
+	}{
+		{
+			name: "happy path",
+			ioReader: strings.NewReader(`{
+"id":"123",
+"severity":"high"
+}`),
+			inputPath: "1/2/1",
+			expectedALASList: []alas{
+				{
+					Version: "2",
+					ALAS: amazon.ALAS{
+						ID:       "123",
+						Severity: "high",
+					},
+				},
+			},
+			expectedError: nil,
+		},
+		{
+			name:             "amazon returns invalid json",
+			ioReader:         strings.NewReader(`invalidjson`),
+			inputPath:        "1/2/1",
+			expectedALASList: []alas(nil),
+			expectedError:    errors.New("failed to decode amazon JSON: invalid character 'i' looking for beginning of value"),
+		},
+		{
+			name:          "unsupported amazon version",
+			inputPath:     "foo/bar/baz",
+			expectedError: nil,
+			expectedLogs:  []string{"unsupported amazon version: bar"},
+		},
+		{
+			name:          "empty path",
+			inputPath:     "",
+			expectedError: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		zc, recorder := observer.New(zapcore.DebugLevel)
+		log.Logger = zap.New(zc).Sugar()
+
+		ac := Config{
+			lg:  log.Logger,
+			bar: utils.PbStartNew(1),
+		}
+
+		err := ac.walkFunc(tc.ioReader, tc.inputPath)
+		switch {
+		case tc.expectedError != nil:
+			assert.Equal(t, tc.expectedError.Error(), err.Error(), tc.name)
+		default:
+			assert.NoError(t, err, tc.name)
+		}
+
+		assert.Equal(t, tc.expectedALASList, ac.alasList, tc.name)
+
+		allLogs := getAllLoggedLogs(recorder)
+		assert.Equal(t, tc.expectedLogs, allLogs, tc.name)
+	}
+
 }
