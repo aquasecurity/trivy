@@ -117,7 +117,7 @@ func save(cves []DebianCVE) error {
 
 func Get(release string, pkgName string) ([]vulnerability.Advisory, error) {
 	bucket := fmt.Sprintf(platformFormat, release)
-	advisories, err := db.ForEach(bucket, pkgName)
+	advisories, err := db.Config{}.ForEach(bucket, pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("error in Debian foreach: %w", err)
 	}

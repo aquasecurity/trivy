@@ -135,7 +135,7 @@ func (ac Config) save(alasList []alas) error {
 // Get returns a security advisory
 func (ac Config) Get(version string, pkgName string) ([]vulnerability.Advisory, error) {
 	bucket := fmt.Sprintf(platformFormat, version)
-	advisories, err := db.ForEach(bucket, pkgName)
+	advisories, err := ac.dbc.ForEach(bucket, pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("error in amazon foreach: %w", err)
 	}

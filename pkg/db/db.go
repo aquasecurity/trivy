@@ -24,6 +24,7 @@ type Operations interface {
 	Update(string, string, interface{}) error
 	BatchUpdate(func(*bolt.Tx) error) error
 	PutNestedBucket(*bolt.Tx, string, string, string, interface{}) error
+	ForEach(string, string) (map[string][]byte, error)
 }
 
 type Config struct {
@@ -143,7 +144,7 @@ func Get(rootBucket, nestedBucket, key string) (value []byte, err error) {
 	return value, nil
 }
 
-func ForEach(rootBucket, nestedBucket string) (value map[string][]byte, err error) {
+func (dbc Config) ForEach(rootBucket, nestedBucket string) (value map[string][]byte, err error) {
 	value = map[string][]byte{}
 	err = db.View(func(tx *bolt.Tx) error {
 		root := tx.Bucket([]byte(rootBucket))

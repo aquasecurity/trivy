@@ -1,9 +1,12 @@
 package amazon
 
 import (
+	"encoding/json"
 	"errors"
 	"io"
 	"testing"
+
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/stretchr/testify/assert"
@@ -20,6 +23,7 @@ type MockDBConfig struct { // TODO: Move this into vulnerability/db pkg
 	update          func(string, string, interface{}) error
 	batchupdate     func(func(*bbolt.Tx) error) error
 	putnestedbucket func(*bbolt.Tx, string, string, string, interface{}) error
+	foreach         func(string, string) (map[string][]byte, error)
 }
 
 func (mdbc MockDBConfig) SetVersion(a string) error {
@@ -48,6 +52,13 @@ func (mdbc MockDBConfig) PutNestedBucket(a *bbolt.Tx, b string, c string, d stri
 		return mdbc.putnestedbucket(a, b, c, d, e)
 	}
 	return nil
+}
+
+func (mdbc MockDBConfig) ForEach(a string, b string) (map[string][]byte, error) {
+	if mdbc.foreach != nil {
+		return mdbc.foreach(a, b)
+	}
+	return map[string][]byte{}, nil
 }
 
 // TODO: DRY
@@ -137,4 +148,62 @@ func TestConfig_Update(t *testing.T) {
 
 		assert.Equal(t, "error in amazon save: error in batch update: unable to batch update", ac.Update("testdata", map[string]struct{}{"amazon": {}}).Error())
 	})
+}
+
+func TestConfig_Get(t *testing.T) {
+	testCases := []struct {
+		name          string
+		forEachFunc   func(s string, s2 string) (bytes map[string][]byte, e error)
+		expectedError error
+		expectedVulns []vulnerability.Advisory
+	}{
+		{
+			name: "happy path",
+			forEachFunc: func(s string, s2 string) (bytes map[string][]byte, e error) {
+				b, _ := json.Marshal(vulnerability.Advisory{VulnerabilityID: "123", FixedVersion: "2.0.0"})
+				return map[string][]byte{"advisory1": b}, nil
+			},
+			expectedError: nil,
+			expectedVulns: []vulnerability.Advisory{{VulnerabilityID: "123", FixedVersion: "2.0.0"}},
+		},
+		{
+			name: "no advisories are returned",
+			forEachFunc: func(s string, s2 string) (bytes map[string][]byte, e error) {
+				return map[string][]byte{}, nil
+			},
+			expectedError: nil,
+			expectedVulns: []vulnerability.Advisory(nil),
+		},
+		{
+			name: "amazon forEach return an error",
+			forEachFunc: func(s string, s2 string) (bytes map[string][]byte, e error) {
+				return nil, errors.New("foreach func returned an error")
+			},
+			expectedError: errors.New("error in amazon foreach: foreach func returned an error"),
+			expectedVulns: nil,
+		},
+		{
+			name: "failed to unmarshal amazon json",
+			forEachFunc: func(s string, s2 string) (bytes map[string][]byte, e error) {
+				return map[string][]byte{"foo": []byte(`badbar`)}, nil
+			},
+			expectedError: errors.New("failed to unmarshal amazon JSON: invalid character 'b' looking for beginning of value"),
+			expectedVulns: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		ac := Config{
+			dbc: MockDBConfig{foreach: tc.forEachFunc},
+		}
+		vuls, err := ac.Get("1.1.0", "testpkg")
+		switch {
+		case tc.expectedError != nil:
+			assert.Equal(t, tc.expectedError.Error(), err.Error(), tc.name)
+		default:
+			assert.NoError(t, err, tc.name)
+		}
+
+		assert.Equal(t, tc.expectedVulns, vuls, tc.name)
+	}
 }

@@ -191,7 +191,7 @@ func save(cves []RedhatCVE) error {
 
 func Get(majorVersion string, pkgName string) ([]vulnerability.Advisory, error) {
 	bucket := fmt.Sprintf(platformFormat, majorVersion)
-	advisories, err := db.ForEach(bucket, pkgName)
+	advisories, err := db.Config{}.ForEach(bucket, pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("error in Red Hat foreach: %w", err)
 	}
