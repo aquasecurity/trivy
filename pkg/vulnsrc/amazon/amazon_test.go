@@ -220,3 +220,59 @@ func TestSeverityFromPriority(t *testing.T) {
 		assert.Equal(t, v, severityFromPriority(k))
 	}
 }
+
+func TestConstructVersion(t *testing.T) {
+	type inputCombination struct {
+		epoch   string
+		version string
+		release string
+	}
+
+	testCases := []struct {
+		name            string
+		inc             inputCombination
+		expectedVersion string
+	}{
+		{
+			name: "happy path",
+			inc: inputCombination{
+				epoch:   "1",
+				version: "2",
+				release: "master",
+			},
+			expectedVersion: "2-master",
+		},
+		{
+			name: "no epoch",
+			inc: inputCombination{
+				version: "2",
+				release: "master",
+			},
+			expectedVersion: "2-master",
+		},
+		{
+			name: "no release",
+			inc: inputCombination{
+				epoch:   "",
+				version: "2",
+			},
+			expectedVersion: "2",
+		},
+		{
+			name: "no epoch and release",
+			inc: inputCombination{
+				version: "2",
+			},
+			expectedVersion: "2",
+		},
+		{
+			name:            "no epoch release or version",
+			inc:             inputCombination{},
+			expectedVersion: "",
+		},
+	}
+
+	for _, tc := range testCases {
+		assert.Equal(t, tc.expectedVersion, constructVersion(tc.inc.epoch, tc.inc.version, tc.inc.release), tc.name)
+	}
+}
