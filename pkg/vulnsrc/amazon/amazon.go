@@ -33,8 +33,10 @@ type Operations interface {
 }
 
 type Config struct {
-	lg  *zap.SugaredLogger
-	dbc db.Operations
+	lg       *zap.SugaredLogger
+	dbc      db.Operations
+	bar      *utils.ProgressBar
+	alasList []alas
 }
 
 type alas struct {
@@ -53,48 +55,49 @@ func (ac Config) Update(dir string, updatedFiles map[string]struct{}) error {
 	}
 	ac.lg.Debugf("Amazon Linux AMI Security Advisory updated files: %d", len(targets))
 
-	bar := utils.PbStartNew(len(targets))
-	defer bar.Finish()
+	ac.bar = utils.PbStartNew(len(targets))
+	defer ac.bar.Finish()
 
-	var alasList []alas
-	err = fileWalker(rootDir, targets, func(r io.Reader, path string) error { // TODO: untested
-		paths := strings.Split(path, string(filepath.Separator))
-		if len(paths) < 2 {
-			return nil
-		}
-		version := paths[len(paths)-2]
-		if !utils.StringInSlice(version, targetVersions) {
-			ac.lg.Debugf("unsupported amazon version: %s", version)
-			return nil
-		}
-
-		var vuln amazon.ALAS
-		if err = json.NewDecoder(r).Decode(&vuln); err != nil {
-			return xerrors.Errorf("failed to decode amazon JSON: %w", err)
-		}
-
-		alasList = append(alasList, alas{
-			Version: version,
-			ALAS:    vuln,
-		})
-		bar.Increment()
-		return nil
-	})
+	err = fileWalker(rootDir, targets, ac.walkFunc)
 	if err != nil {
 		return xerrors.Errorf("error in amazon walk: %w", err)
 	}
 
-	if err = ac.save(alasList); err != nil {
+	if err = ac.save(); err != nil {
 		return xerrors.Errorf("error in amazon save: %w", err)
 	}
 
 	return nil
 }
 
-func (ac Config) save(alasList []alas) error {
+func (ac Config) walkFunc(r io.Reader, path string) error {
+	paths := strings.Split(path, string(filepath.Separator))
+	if len(paths) < 2 {
+		return nil
+	}
+	version := paths[len(paths)-2]
+	if !utils.StringInSlice(version, targetVersions) {
+		ac.lg.Debugf("unsupported amazon version: %s", version)
+		return nil
+	}
+
+	var vuln amazon.ALAS
+	if err := json.NewDecoder(r).Decode(&vuln); err != nil {
+		return xerrors.Errorf("failed to decode amazon JSON: %w", err)
+	}
+
+	ac.alasList = append(ac.alasList, alas{
+		Version: version,
+		ALAS:    vuln,
+	})
+	ac.bar.Increment()
+	return nil
+}
+
+func (ac Config) save() error {
 	ac.lg.Debug("Saving amazon DB")
 	err := ac.dbc.BatchUpdate(func(tx *bolt.Tx) error { // TODO: Untested
-		for _, alas := range alasList {
+		for _, alas := range ac.alasList {
 			for _, cveID := range alas.CveIDs {
 				for _, pkg := range alas.Packages {
 					platformName := fmt.Sprintf(platformFormat, alas.Version)
