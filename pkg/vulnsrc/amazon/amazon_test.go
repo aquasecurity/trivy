@@ -207,3 +207,16 @@ func TestConfig_Get(t *testing.T) {
 		assert.Equal(t, tc.expectedVulns, vuls, tc.name)
 	}
 }
+
+func TestSeverityFromPriority(t *testing.T) {
+	testCases := map[string]vulnerability.Severity{
+		"low":       vulnerability.SeverityLow,
+		"medium":    vulnerability.SeverityMedium,
+		"important": vulnerability.SeverityHigh,
+		"critical":  vulnerability.SeverityCritical,
+		"unknown":   vulnerability.SeverityUnknown,
+	}
+	for k, v := range testCases {
+		assert.Equal(t, v, severityFromPriority(k))
+	}
+}
