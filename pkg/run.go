@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 	"text/template"
-	"time"
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/db"
@@ -157,10 +156,10 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
-	timeout := time.Duration(c.Int("timeout"))
+	timeout := c.Duration("timeout")
 	scanOptions := types.ScanOptions{
 		VulnType: strings.Split(c.String("vuln-type"), ","),
-		Timeout:  time.Duration(timeout * time.Second),
+		Timeout:  timeout,
 	}
 
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)

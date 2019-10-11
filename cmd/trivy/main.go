@@ -4,6 +4,7 @@ import (
 	l "log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/aquasecurity/trivy/pkg/utils"
 
@@ -122,9 +123,9 @@ OPTIONS:
 			Value: utils.DefaultCacheDir(),
 			Usage: "use as cache directory, but image cache is stored in /path/to/cache/fanal",
 		},
-		cli.IntFlag{
+		cli.DurationFlag{
 			Name:  "timeout",
-			Value: 60,
+			Value: time.Second * 60,
 			Usage: "docker timeout",
 		},
 	}
