@@ -33,7 +33,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
   - [Save the results as JSON](#save-the-results-as-json)
   - [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
   - [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
-  - [Skip an update of vulnerability DB](#skip-an-update-of-vulnerability-db)
+  - [Skip update of vulnerability DB](#skip-update-of-vulnerability-db)
   - [Ignore unfixed vulnerabilities](#ignore-unfixed-vulnerabilities)
   - [Specify exit code](#specify-exit-code)
   - [Ignore the specified vulnerabilities](#ignore-the-specified-vulnerabilities)
