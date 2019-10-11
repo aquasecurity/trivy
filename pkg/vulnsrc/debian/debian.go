@@ -99,8 +99,8 @@ func save(cves []DebianCVE) error {
 						Severity:    severityFromUrgency(release.Urgency),
 						Description: cve.Description,
 					}
-
-					if err := vulnerability.Put(tx, cve.VulnerabilityID, vulnerability.Debian, vuln); err != nil {
+					vdb := vulnerability.DB{}
+					if err := vdb.Put(tx, cve.VulnerabilityID, vulnerability.Debian, vuln); err != nil {
 						return xerrors.Errorf("failed to save Debian vulnerability: %w", err)
 					}
 				}

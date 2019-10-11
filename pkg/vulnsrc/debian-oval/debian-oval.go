@@ -129,7 +129,8 @@ func save(cves []DebianOVAL) error {
 					References:  references,
 				}
 
-				if err := vulnerability.Put(tx, cveID, vulnerability.DebianOVAL, vuln); err != nil {
+				vdb := vulnerability.DB{}
+				if err := vdb.Put(tx, cveID, vulnerability.DebianOVAL, vuln); err != nil {
 					return xerrors.Errorf("failed to save Debian OVAL vulnerability: %w", err)
 				}
 			}

@@ -353,3 +353,138 @@ func TestConfig_WalkFunc(t *testing.T) {
 	}
 
 }
+
+type fakeVulnDB struct {
+	put func(*bbolt.Tx, string, string, vulnerability.Vulnerability) error
+}
+
+func (fvdb fakeVulnDB) Update(string, string, vulnerability.Vulnerability) error {
+	panic("implement me")
+}
+
+func (fvdb fakeVulnDB) BatchUpdate(func(bucket *bbolt.Bucket) error) error {
+	panic("implement me")
+}
+
+func (fvdb fakeVulnDB) Get(string) (map[string]vulnerability.Vulnerability, error) {
+	panic("implement me")
+}
+
+func (fvdb fakeVulnDB) Put(tx *bbolt.Tx, cveID, source string, vuln vulnerability.Vulnerability) error {
+	if fvdb.put != nil {
+		return fvdb.put(tx, cveID, source, vuln)
+	}
+	return nil
+}
+
+func TestConfig_CommitFunc(t *testing.T) {
+	t.Run("happy path", func(t *testing.T) {
+		ac := Config{
+			dbc: MockDBConfig{},
+			alasList: []alas{
+				{
+					Version: "123",
+					ALAS: amazon.ALAS{
+						ID:       "123",
+						Severity: "high",
+						CveIDs:   []string{"CVE-2020-0001"},
+						References: []amazon.Reference{
+							{
+								ID:    "fooref",
+								Href:  "http://foo.bar/baz",
+								Title: "bartitle",
+							},
+						},
+						Packages: []amazon.Package{
+							{
+								Name:    "testpkg",
+								Epoch:   "123",
+								Version: "456",
+								Release: "testing",
+							},
+						},
+					},
+				},
+			},
+			vdb: fakeVulnDB{},
+		}
+		assert.NoError(t, ac.commitFunc(&bbolt.Tx{
+			WriteFlag: 0,
+		}))
+	})
+
+	t.Run("failed to save Amazon advisory, PutNestedBucket() return an error", func(t *testing.T) {
+		ac := Config{
+			dbc: MockDBConfig{
+				putnestedbucket: func(tx *bbolt.Tx, s string, s2 string, s3 string, i interface{}) error {
+					return errors.New("putnestedbucket failed to save")
+				},
+			},
+			alasList: []alas{
+				{
+					Version: "123",
+					ALAS: amazon.ALAS{
+						ID:       "123",
+						Severity: "high",
+						CveIDs:   []string{"CVE-2020-0001"},
+						References: []amazon.Reference{
+							{
+								ID:    "fooref",
+								Href:  "http://foo.bar/baz",
+								Title: "bartitle",
+							},
+						},
+						Packages: []amazon.Package{
+							{
+								Name:    "testpkg",
+								Epoch:   "123",
+								Version: "456",
+								Release: "testing",
+							},
+						},
+					},
+				},
+			},
+		}
+		assert.Equal(t, "failed to save amazon advisory: putnestedbucket failed to save", ac.commitFunc(&bbolt.Tx{
+			WriteFlag: 0,
+		}).Error())
+	})
+
+	t.Run("failed to save Amazon advisory, PutNestedBucket() return an error", func(t *testing.T) {
+		ac := Config{
+			dbc: MockDBConfig{},
+			vdb: fakeVulnDB{put: func(tx *bbolt.Tx, s string, s2 string, i vulnerability.Vulnerability) error {
+				return errors.New("failed to commit to db")
+			}},
+			alasList: []alas{
+				{
+					Version: "123",
+					ALAS: amazon.ALAS{
+						ID:       "123",
+						Severity: "high",
+						CveIDs:   []string{"CVE-2020-0001"},
+						References: []amazon.Reference{
+							{
+								ID:    "fooref",
+								Href:  "http://foo.bar/baz",
+								Title: "bartitle",
+							},
+						},
+						Packages: []amazon.Package{
+							{
+								Name:    "testpkg",
+								Epoch:   "123",
+								Version: "456",
+								Release: "testing",
+							},
+						},
+					},
+				},
+			},
+		}
+		assert.Equal(t, "failed to save amazon vulnerability: failed to commit to db", ac.commitFunc(&bbolt.Tx{
+			WriteFlag: 0,
+		}).Error())
+	})
+}

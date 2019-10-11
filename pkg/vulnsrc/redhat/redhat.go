@@ -176,7 +176,8 @@ func save(cves []RedhatCVE) error {
 				Title:       strings.TrimSpace(title),
 				Description: strings.TrimSpace(strings.Join(cve.Details, "")),
 			}
-			if err := vulnerability.Put(tx, cve.Name, vulnerability.RedHat, vuln); err != nil {
+			vdb := vulnerability.DB{}
+			if err := vdb.Put(tx, cve.Name, vulnerability.RedHat, vuln); err != nil {
 				return xerrors.Errorf("failed to save Red Hat vulnerability: %w", err)
 			}
 		}

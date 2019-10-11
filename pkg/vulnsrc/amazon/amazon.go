@@ -37,6 +37,7 @@ type Config struct {
 	dbc      db.Operations
 	bar      *utils.ProgressBar
 	alasList []alas
+	vdb      vulnerability.Operations
 }
 
 type alas struct {
@@ -96,41 +97,48 @@ func (ac *Config) walkFunc(r io.Reader, path string) error {
 
 func (ac Config) save() error {
 	ac.lg.Debug("Saving amazon DB")
-	err := ac.dbc.BatchUpdate(func(tx *bolt.Tx) error { // TODO: Untested
-		for _, alas := range ac.alasList {
-			for _, cveID := range alas.CveIDs {
-				for _, pkg := range alas.Packages {
-					platformName := fmt.Sprintf(platformFormat, alas.Version)
-					advisory := vulnerability.Advisory{
-						VulnerabilityID: cveID,
-						FixedVersion:    constructVersion(pkg.Epoch, pkg.Version, pkg.Release),
-					}
-					if err := ac.dbc.PutNestedBucket(tx, platformName, pkg.Name, cveID, advisory); err != nil {
-						return xerrors.Errorf("failed to save amazon advisory: %w", err)
-					}
+	err := ac.dbc.BatchUpdate(ac.commit())
+	if err != nil {
+		return xerrors.Errorf("error in batch update: %w", err)
+	}
+	return nil
+}
 
-					var references []string
-					for _, ref := range alas.References {
-						references = append(references, ref.Href)
-					}
+// TODO: Cleanup the double layer of nested closures
+func (ac Config) commit() func(tx *bolt.Tx) error {
+	return ac.commitFunc
+}
 
-					vuln := vulnerability.Vulnerability{
-						Severity:    severityFromPriority(alas.Severity),
-						References:  references,
-						Description: alas.Description,
-						// TODO
-						Title: "",
-					}
-					if err := vulnerability.Put(tx, cveID, vulnerability.Amazon, vuln); err != nil {
-						return xerrors.Errorf("failed to save amazon vulnerability: %w", err)
-					}
+func (ac Config) commitFunc(tx *bolt.Tx) error {
+	for _, alas := range ac.alasList {
+		for _, cveID := range alas.CveIDs {
+			for _, pkg := range alas.Packages {
+				platformName := fmt.Sprintf(platformFormat, alas.Version)
+				advisory := vulnerability.Advisory{
+					VulnerabilityID: cveID,
+					FixedVersion:    constructVersion(pkg.Epoch, pkg.Version, pkg.Release),
+				}
+				if err := ac.dbc.PutNestedBucket(tx, platformName, pkg.Name, cveID, advisory); err != nil {
+					return xerrors.Errorf("failed to save amazon advisory: %w", err)
+				}
+
+				var references []string
+				for _, ref := range alas.References {
+					references = append(references, ref.Href)
+				}
+
+				vuln := vulnerability.Vulnerability{
+					Severity:    severityFromPriority(alas.Severity),
+					References:  references,
+					Description: alas.Description,
+					// TODO
+					Title: "",
+				}
+				if err := ac.vdb.Put(tx, cveID, vulnerability.Amazon, vuln); err != nil {
+					return xerrors.Errorf("failed to save amazon vulnerability: %w", err)
 				}
 			}
 		}
-		return nil
-	})
-	if err != nil {
-		return xerrors.Errorf("error in batch update: %w", err)
 	}
 	return nil
 }

@@ -81,7 +81,8 @@ func save(cves []AlpineCVE) error {
 				Title:       cve.Subject,
 				Description: cve.Description,
 			}
-			if err := vulnerability.Put(tx, cve.VulnerabilityID, vulnerability.Alpine, vuln); err != nil {
+			vdb := vulnerability.DB{}
+			if err := vdb.Put(tx, cve.VulnerabilityID, vulnerability.Alpine, vuln); err != nil {
 				return xerrors.Errorf("failed to save alpine vulnerability: %w", err)
 			}
 		}

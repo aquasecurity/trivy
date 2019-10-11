@@ -112,7 +112,8 @@ func save(cves []UbuntuCVE) error {
 						// TODO
 						Title: "",
 					}
-					if err := vulnerability.Put(tx, cve.Candidate, vulnerability.Ubuntu, vuln); err != nil {
+					vdb := vulnerability.DB{}
+					if err := vdb.Put(tx, cve.Candidate, vulnerability.Ubuntu, vuln); err != nil {
 						return xerrors.Errorf("failed to save Ubuntu vulnerability: %w", err)
 					}
 				}
