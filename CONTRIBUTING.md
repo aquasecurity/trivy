@@ -20,7 +20,7 @@ Thank you for taking interest in contributing to Trivy !
 
 ## Understand where your pull request belongs
 
-Trivy is composed of several different repositories that work togeather:
+Trivy is composed of several different repositories that work together:
 - [Trivy](https://github.com/aquasecurity/trivy) is the client side, user facing, command line tool.
 - [vuln-list](https://github.com/aquasecurity/vuln-list) is a vulnerabilities database, aggregated from different sources, and normalized for easy consumption. This of this as the "server" side of the trivy command line tool. **There should be no pull requests to this repo** 
 - [vuln-list-update](https://github.com/aquasecurity/vuln-list-update) is the code that maintains the vuln-list database.
