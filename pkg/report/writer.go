@@ -15,7 +15,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-type Results []Result
+type Results []*Result
 
 type Result struct {
 	FileName        string                                `json:"Target"`
@@ -36,7 +36,7 @@ func (tw TableWriter) Write(results Results) error {
 	}
 	return nil
 }
-func (tw TableWriter) write(result Result) {
+func (tw TableWriter) write(result *Result) {
 	table := tablewriter.NewWriter(tw.Output)
 	table.SetHeader([]string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version", "Title"})
 
