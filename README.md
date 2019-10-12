@@ -4,7 +4,7 @@
 [![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
 [![CircleCI](https://circleci.com/gh/aquasecurity/trivy.svg?style=svg)](https://circleci.com/gh/aquasecurity/trivy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/aquasecurity/trivy)](https://goreportcard.com/report/github.com/aquasecurity/trivy)
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
 
 
 A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
@@ -109,16 +109,12 @@ $ rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.1.6/trivy_
 
 ## Debian/Ubuntu
 
-Replace `[CODE_NAME]` with your code name
-
-CODE_NAME: wheezy, jessie, stretch, buster, trusty, xenial, bionic
-
-`$ lsb_release -c`
+Add repository to `/etc/apt/sources.list.d`.
 
 ```
-$ sudo apt-get install wget apt-transport-https gnupg
+ $ sudo apt-get install wget apt-transport-https gnupg lsb-release
 $ wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-$ echo deb https://aquasecurity.github.io/trivy-repo/deb [CODE_NAME] main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+$ echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
 $ sudo apt-get update
 $ sudo apt-get install trivy
 ```
@@ -228,7 +224,7 @@ $ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
     -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy python:3.4-alpine
 ```
 
-Please re-pull latest `aquasec/trivy` if an error occured.
+Please re-pull latest `aquasec/trivy` if an error occurred.
 
 <details>
 <summary>Result</summary>
@@ -1212,7 +1208,7 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 | Debian GNU/Linux             | wheezy, jessie, stretch, buster          | Installed by apt/apt-get/dpkg |                 YES                  |
 | Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg |                 YES                  |
 
-RHEL and CentOS package information is stored in a binary format, and Trivy uses the `rpm` executable to parse this information when scanning an image based on RHEL or CentOS. The Trivy container image includes `rpm`, and the installers include it as a dependency. If you installed the `trivy` binary using `wget` or `curl`, or if you build it from source, you will also need to ensure that `rpm` is available. 
+RHEL and CentOS package information is stored in a binary format, and Trivy uses the `rpm` executable to parse this information when scanning an image based on RHEL or CentOS. The Trivy container image includes `rpm`, and the installers include it as a dependency. If you installed the `trivy` binary using `wget` or `curl`, or if you build it from source, you will also need to ensure that `rpm` is available.
 
 ## Application Dependencies
 
@@ -1332,7 +1328,7 @@ As `Quay` seems to use `Clair` internally, it has the same accuracy than `Clair`
 
 # Migration
 
-On 19 August 2019, Trivy's repositories moved from `knqyf263/trivy` to `aquasecurity/trivy`. If you previously installed Trivy you should update any scripts or package manager records as described in this section. 
+On 19 August 2019, Trivy's repositories moved from `knqyf263/trivy` to `aquasecurity/trivy`. If you previously installed Trivy you should update any scripts or package manager records as described in this section.
 
 ## Overview
 If you have a script that installs Trivy (for example into your CI pipelines) you should update it to obtain it from the new location by replacing knqyf263/trivy with aquasecurity/trivy.
