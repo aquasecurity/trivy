@@ -13,7 +13,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 <img src="imgs/usage1.png" width="600">
 <img src="imgs/usage2.png" width="600">
 
-# Table of Contents
+# Table of Contents:
 
 - [Abstract](#abstract)
 - [Features](#features)
