@@ -44,7 +44,7 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (repor
 			return nil, xerrors.Errorf("failed to open stream: %w", err)
 		}
 
-		files, err = analyzer.AnalyzeFromFile(ctx, rc)
+		files, err = analyzer.AnalyzeFile(ctx, rc)
 		if err != nil {
 			return nil, err
 		}

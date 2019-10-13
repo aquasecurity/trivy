@@ -1,0 +1,45 @@
+[
+  {
+    "Target": "testdata/fixtures/distroless-base.tar.gz (debian 9.9)",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2019-1563",
+        "PkgName": "libssl1.1",
+        "InstalledVersion": "1.1.0k-1~deb9u1",
+        "FixedVersion": "1.1.0l-1~deb9u1",
+        "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
+        "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=08229ad838c50f644d7e928e2eef147b4308ad64",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=631f94db0065c78181ca9ba5546ebc8bb3884b97",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f",
+          "https://seclists.org/bugtraq/2019/Sep/25",
+          "https://security.netapp.com/advisory/ntap-20190919-0002/",
+          "https://www.openssl.org/news/secadv/20190910.txt"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1563",
+        "PkgName": "openssl",
+        "InstalledVersion": "1.1.0k-1~deb9u1",
+        "FixedVersion": "1.1.0l-1~deb9u1",
+        "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
+        "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=08229ad838c50f644d7e928e2eef147b4308ad64",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=631f94db0065c78181ca9ba5546ebc8bb3884b97",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f",
+          "https://seclists.org/bugtraq/2019/Sep/25",
+          "https://security.netapp.com/advisory/ntap-20190919-0002/",
+          "https://www.openssl.org/news/secadv/20190910.txt"
+        ]
+      }
+    ]
+  }
+]
