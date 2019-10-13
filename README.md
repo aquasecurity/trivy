@@ -4,7 +4,7 @@
 [![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
 [![CircleCI](https://circleci.com/gh/aquasecurity/trivy.svg?style=svg)](https://circleci.com/gh/aquasecurity/trivy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/aquasecurity/trivy)](https://goreportcard.com/report/github.com/aquasecurity/trivy)
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
 
 
 A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
@@ -13,7 +13,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 <img src="imgs/usage1.png" width="600">
 <img src="imgs/usage2.png" width="600">
 
-# TOC
+# Table of Contents
 
 - [Abstract](#abstract)
 - [Features](#features)
@@ -1435,17 +1435,6 @@ $ trivy --reset
 
 - [Remic](https://github.com/aquasecurity/remic)
   - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies
-
-# Contribute
-
-1. fork a repository: github.com/aquasecurity/trivy to github.com/you/repo
-2. get original code: `go get github.com/aquasecurity/trivy`
-3. work on original code
-4. add remote to your repo: git remote add myfork https://github.com/you/repo.git
-5. push your changes: git push myfork
-6. create a new Pull Request
-
-- see [GitHub and Go: forking, pull requests, and go-getting](http://blog.campoy.cat/2014/03/github-and-go-forking-pull-requests-and.html)
 
 ---
 
