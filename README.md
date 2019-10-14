@@ -1435,18 +1435,7 @@ $ trivy --reset
 
 - [Remic](https://github.com/aquasecurity/remic)
   - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies
-
-# Contribute
-
-1. Fork a repository: github.com/aquasecurity/trivy to github.com/you/repo
-2. Get original code: `go get github.com/aquasecurity/trivy`
-3. Work on original code.
-4. Add remote to your repo: git remote add myfork https://github.com/you/repo.git
-5. Push your changes: `git push myfork`
-6. Create a new Pull Request.
-
-- See [GitHub and Go: forking, pull requests, and go-getting](http://blog.campoy.cat/2014/03/github-and-go-forking-pull-requests-and.html)
-
+  
 ---
 
 # Credits
