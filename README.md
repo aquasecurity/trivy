@@ -1,4 +1,4 @@
-<img src="imgs/logo.png" width="300">
+<img src="imgs/logo.png" width="300" alt="trivy">
 
 
 [![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
@@ -9,9 +9,9 @@
 
 A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 
-<img src="imgs/usage.gif" width="700">
-<img src="imgs/usage1.png" width="600">
-<img src="imgs/usage2.png" width="600">
+<img src="imgs/usage.gif" width="700" alt="usage.gif">
+<img src="imgs/usage1.png" width="600" alt="usage1.png">
+<img src="imgs/usage2.png" width="600"  alt="usage3.png">
 
 # TOC
 
