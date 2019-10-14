@@ -51,10 +51,10 @@ func FileWalk(root string, targetFiles map[string]struct{}, walkFn func(r io.Rea
 		}
 
 		f, err := os.Open(path)
-		defer f.Close()
 		if err != nil {
 			return xerrors.Errorf("failed to open file: %w", err)
 		}
+		defer f.Close()
 
 		if err = walkFn(f, path); err != nil {
 			return err
