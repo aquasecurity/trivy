@@ -117,7 +117,7 @@ func TestReportWriter_JSON(t *testing.T) {
 				},
 			},
 			expectedJSON: report.Results{
-				report.Result{
+				&report.Result{
 					FileName: "foojson",
 					Vulnerabilities: []vulnerability.DetectedVulnerability{
 						{
@@ -149,4 +149,21 @@ func TestReportWriter_JSON(t *testing.T) {
 		assert.NoError(t, err, tc.name)
 	}
 
+}
+
+func TestReportWriter_Template(t *testing.T) {
+	tmplWritten := bytes.Buffer{}
+	tmplw := report.TemplateWriter{
+		Output: &tmplWritten,
+		//Template: &template.HTML()
+	}
+
+	err := tmplw.Write(report.Results{
+		{
+			FileName:        "foojson",
+			Vulnerabilities: []vulnerability.DetectedVulnerability{},
+		},
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "", tmplWritten.String())
 }
