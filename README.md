@@ -5,9 +5,9 @@
 [![CircleCI](https://circleci.com/gh/aquasecurity/trivy.svg?style=svg)](https://circleci.com/gh/aquasecurity/trivy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/aquasecurity/trivy)](https://goreportcard.com/report/github.com/aquasecurity/trivy)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
+[![Docker image](https://images.microbadger.com/badges/version/aquasec/trivy.svg)](https://microbadger.com/images/aquasec/trivy "Get your own version badge on microbadger.com")
 
-
-A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
+A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI.
 
 <img src="imgs/usage.gif" width="700">
 <img src="imgs/usage1.png" width="600">
@@ -168,7 +168,7 @@ You also need to install `rpm` command for scanning images based on RHEL/CentOS.
 
 # Quick Start
 
-Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with cache.**. See [Clear image caches](#clear-image-caches)
+Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with cache.**. See [Clear image caches](#clear-image-caches).
 
 ## Basic
 
@@ -1072,7 +1072,7 @@ $ trivy --reset
 
 Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0` .
 
-**Note**: It will take a while for the first time (faster by cache after the second time)
+**Note**: It will take a while for the first time (faster by cache after the second time).
 
 ## Travis CI
 
@@ -1417,7 +1417,7 @@ $ brew install aquasecurity/trivy/trivy
 
 ### Detected version update of trivy. Please try again with --refresh option
 
-Try again with `--refresh` option
+Try again with `--refresh` option:
 
 ```
 $ trivy --refresh alpine:3.9
@@ -1425,7 +1425,7 @@ $ trivy --refresh alpine:3.9
 
 ### Unknown error
 
-Try again with `--reset` option
+Try again with `--reset` option:
 
 ```
 $ trivy --reset
@@ -1434,8 +1434,7 @@ $ trivy --reset
 # Related Projects
 
 - [Remic](https://github.com/aquasecurity/remic)
-  - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies
-
+  - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies  
 ---
 
 # Credits
