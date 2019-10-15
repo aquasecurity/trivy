@@ -16,7 +16,6 @@ func TestReportWriter_Table(t *testing.T) {
 		name           string
 		detectedVulns  []vulnerability.DetectedVulnerability
 		expectedOutput string
-		expectedError  error
 	}{
 		{
 			name: "happy path",
@@ -93,26 +92,21 @@ func TestReportWriter_Table(t *testing.T) {
 		}
 		tableWritten := bytes.Buffer{}
 		tw.Output = &tableWritten
-		err := tw.Write(inputResults)
-		switch {
-		case tc.expectedError != nil:
-			assert.Equal(t, tc.expectedError, err, tc.name)
-		default:
-			assert.NoError(t, err, tc.name)
-		}
+		assert.Nil(t, tw.Write(inputResults))
 		assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 	}
 }
 
 func TestReportWriter_JSON(t *testing.T) {
-	jw := report.JsonWriter{}
-	jsonWritten := bytes.Buffer{}
-	jw.Output = &jsonWritten
-
-	err := jw.Write(report.Results{
+	testCases := []struct {
+		name          string
+		detectedVulns []vulnerability.DetectedVulnerability
+		expectedJSON  report.Results
+		expectedError string
+	}{
 		{
-			FileName: "foo",
-			Vulnerabilities: []vulnerability.DetectedVulnerability{
+			name: "happy path",
+			detectedVulns: []vulnerability.DetectedVulnerability{
 				{
 					VulnerabilityID:  "123",
 					PkgName:          "foo",
@@ -123,22 +117,42 @@ func TestReportWriter_JSON(t *testing.T) {
 					Severity:         "HIGH",
 				},
 			},
-		},
-	})
-
-	writtenResults := report.Results{}
-	errJson := json.Unmarshal([]byte(jsonWritten.String()), &writtenResults)
-	assert.NoError(t, errJson, "invalid json written")
-
-	assert.Equal(t, report.Results{
-		report.Result{
-			FileName: "foo",
-			Vulnerabilities: []vulnerability.DetectedVulnerability{
-				{
-					VulnerabilityID: "123", PkgName: "foo", InstalledVersion: "1.2.3", FixedVersion: "3.4.5", Title: "foobar", Description: "baz", Severity: "HIGH",
+			expectedJSON: report.Results{
+				report.Result{
+					FileName: "foojson",
+					Vulnerabilities: []vulnerability.DetectedVulnerability{
+						{
+							VulnerabilityID: "123", PkgName: "foo", InstalledVersion: "1.2.3", FixedVersion: "3.4.5", Title: "foobar", Description: "baz", Severity: "HIGH",
+						},
+					},
 				},
 			},
 		},
-	}, writtenResults)
-	assert.NoError(t, err)
+	}
+
+	for _, tc := range testCases {
+		jw := report.JsonWriter{}
+		jsonWritten := bytes.Buffer{}
+		jw.Output = &jsonWritten
+
+		err := jw.Write(report.Results{
+			{
+				FileName:        "foojson",
+				Vulnerabilities: tc.detectedVulns,
+			},
+		})
+
+		writtenResults := report.Results{}
+		errJson := json.Unmarshal([]byte(jsonWritten.String()), &writtenResults)
+		assert.NoError(t, errJson, "invalid json written", tc.name)
+
+		assert.Equal(t, tc.expectedJSON, writtenResults, tc.name)
+		switch {
+		case tc.expectedError != "":
+			assert.Equal(t, tc.expectedError, err, tc.name)
+		default:
+			assert.NoError(t, err, tc.name)
+		}
+	}
+
 }
