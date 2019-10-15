@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestReportWriter(t *testing.T) {
+func TestReportWriter_Table(t *testing.T) {
 	testCases := []struct {
 		name           string
 		detectedVulns  []vulnerability.DetectedVulnerability
@@ -36,6 +36,49 @@ func TestReportWriter(t *testing.T) {
 | foo     |              123 | HIGH     | 1.2.3             | 3.4.5         | foobar |
 +---------+------------------+----------+-------------------+---------------+--------+
 `,
+		},
+		{
+			name: "no title for vuln",
+			detectedVulns: []vulnerability.DetectedVulnerability{
+				{
+					VulnerabilityID:  "123",
+					PkgName:          "foo",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "3.4.5",
+					Description:      "foobar",
+					Severity:         "HIGH",
+				},
+			},
+			expectedOutput: `+---------+------------------+----------+-------------------+---------------+--------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION | TITLE  |
++---------+------------------+----------+-------------------+---------------+--------+
+| foo     |              123 | HIGH     | 1.2.3             | 3.4.5         | foobar |
++---------+------------------+----------+-------------------+---------------+--------+
+`,
+		},
+		{
+			name: "long title for vuln",
+			detectedVulns: []vulnerability.DetectedVulnerability{
+				{
+					VulnerabilityID:  "123",
+					PkgName:          "foo",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "3.4.5",
+					Title:            "a b c d e f g h i j k l m n o p q r s t u v",
+					Severity:         "HIGH",
+				},
+			},
+			expectedOutput: `+---------+------------------+----------+-------------------+---------------+----------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |           TITLE            |
++---------+------------------+----------+-------------------+---------------+----------------------------+
+| foo     |              123 | HIGH     | 1.2.3             | 3.4.5         | a b c d e f g h i j k l... |
++---------+------------------+----------+-------------------+---------------+----------------------------+
+`,
+		},
+		{
+			name:           "no vulns",
+			detectedVulns:  []vulnerability.DetectedVulnerability{},
+			expectedOutput: ``,
 		},
 	}
 
