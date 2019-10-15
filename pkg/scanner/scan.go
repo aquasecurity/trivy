@@ -29,6 +29,8 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[s
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get docker option: %w", err)
 		}
+
+		dockerOption.Timeout = scanOptions.Timeout
 		files, err = analyzer.Analyze(ctx, imageName, dockerOption)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to analyze image: %w", err)
