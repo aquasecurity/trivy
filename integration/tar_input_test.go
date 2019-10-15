@@ -269,7 +269,7 @@ func TestRun_WithTar(t *testing.T) {
 			if len(c.testArgs.IgnoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
 				err := ioutil.WriteFile(trivyIgnore, []byte(strings.Join(c.testArgs.IgnoreIDs, "\n")), 0444)
-				assert.Nil(t, err, "failed to write .trivyignore")
+				assert.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
 			if c.testArgs.Input != "" {
@@ -294,9 +294,9 @@ func TestRun_WithTar(t *testing.T) {
 
 			// Compare want and got
 			want, err := ioutil.ReadFile(c.golden)
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 			got, err := ioutil.ReadFile(outputFile)
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 
 			assert.JSONEq(t, string(want), string(got))
 		})
