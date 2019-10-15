@@ -64,7 +64,7 @@ func run() (err error) {
 			return err
 		}
 
-		files, err = analyzer.AnalyzeFromFile(ctx, rc)
+		files, err = analyzer.AnalyzeFile(ctx, rc)
 		if err != nil {
 			return err
 		}
