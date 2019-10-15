@@ -1,9 +1,13 @@
 package analyzer
 
 import (
+	"compress/gzip"
 	"context"
 	"io"
+	"os"
 	"time"
+
+	"github.com/aquasecurity/fanal/utils"
 
 	"github.com/aquasecurity/fanal/types"
 
@@ -136,7 +140,15 @@ func Analyze(ctx context.Context, imageName string, opts ...types.DockerOption) 
 	return fileMap, nil
 }
 
-func AnalyzeFromFile(ctx context.Context, r io.ReadCloser) (fileMap extractor.FileMap, err error) {
+func AnalyzeFile(ctx context.Context, f *os.File) (fileMap extractor.FileMap, err error) {
+	var r io.Reader
+	r = f
+	if utils.IsGzip(f) {
+		r, err = gzip.NewReader(f)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to open gzip: %w", err)
+		}
+	}
 	e := docker.NewDockerExtractor(types.DockerOption{})
 	fileMap, err = e.ExtractFromFile(ctx, r, RequiredFilenames())
 	if err != nil {
