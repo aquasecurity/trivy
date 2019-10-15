@@ -59,7 +59,7 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (repor
 		}
 		if osFamily != "" {
 			imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion)
-			results = append(results, &report.Result{
+			results = append(results, report.Result{
 				FileName:        imageDetail,
 				Vulnerabilities: osVulns,
 			})
@@ -74,7 +74,7 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (repor
 
 		var libResults report.Results
 		for path, vulns := range libVulns {
-			libResults = append(libResults, &report.Result{
+			libResults = append(libResults, report.Result{
 				FileName:        path,
 				Vulnerabilities: vulns,
 			})
