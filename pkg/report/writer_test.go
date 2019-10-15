@@ -102,7 +102,6 @@ func TestReportWriter_JSON(t *testing.T) {
 		name          string
 		detectedVulns []vulnerability.DetectedVulnerability
 		expectedJSON  report.Results
-		expectedError string
 	}{
 		{
 			name: "happy path",
@@ -147,12 +146,7 @@ func TestReportWriter_JSON(t *testing.T) {
 		assert.NoError(t, errJson, "invalid json written", tc.name)
 
 		assert.Equal(t, tc.expectedJSON, writtenResults, tc.name)
-		switch {
-		case tc.expectedError != "":
-			assert.Equal(t, tc.expectedError, err, tc.name)
-		default:
-			assert.NoError(t, err, tc.name)
-		}
+		assert.NoError(t, err, tc.name)
 	}
 
 }
