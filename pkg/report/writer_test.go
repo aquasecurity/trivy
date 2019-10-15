@@ -151,19 +151,20 @@ func TestReportWriter_JSON(t *testing.T) {
 
 }
 
-func TestReportWriter_Template(t *testing.T) {
-	tmplWritten := bytes.Buffer{}
-	tmplw := report.TemplateWriter{
-		Output: &tmplWritten,
-		//Template: &template.HTML()
-	}
-
-	err := tmplw.Write(report.Results{
-		{
-			FileName:        "foojson",
-			Vulnerabilities: []vulnerability.DetectedVulnerability{},
-		},
-	})
-	assert.NoError(t, err)
-	assert.Equal(t, "", tmplWritten.String())
-}
+// TODO: What would be an acceptable example for an input template?
+//func TestReportWriter_Template(t *testing.T) {
+//	tmplWritten := bytes.Buffer{}
+//	tmplw := report.TemplateWriter{
+//		Output:   &tmplWritten,
+//		Template: template.New("happy template"),
+//	}
+//
+//	err := tmplw.Write(report.Results{
+//		{
+//			FileName:        "foojson",
+//			Vulnerabilities: []vulnerability.DetectedVulnerability{},
+//		},
+//	})
+//	assert.NoError(t, err)
+//	assert.Equal(t, "", tmplWritten.String())
+//}
