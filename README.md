@@ -60,6 +60,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 # Abstract
 
 `Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive vulnerability scanner for containers.
+A software vulnerability is a glitch, flaw, or weakness present in the software or in an Operating System.
 `Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, yarn etc.).
 `Trivy` is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify an image name of container.
 
@@ -130,7 +131,7 @@ $ sudo dpkg -i trivy_0.1.6_Linux-64bit.deb
 
 
 ## Arch Linux
-trivy-bin can be installed from the Arch User Repository. Examples:
+Package trivy-bin can be installed from the Arch User Repository. Examples:
 ```
 pikaur -Sy trivy-bin
 ```
