@@ -2,6 +2,7 @@ package report_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
@@ -101,5 +102,43 @@ func TestReportWriter_Table(t *testing.T) {
 		}
 		assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 	}
+}
 
+func TestReportWriter_JSON(t *testing.T) {
+	jw := report.JsonWriter{}
+	jsonWritten := bytes.Buffer{}
+	jw.Output = &jsonWritten
+
+	err := jw.Write(report.Results{
+		{
+			FileName: "foo",
+			Vulnerabilities: []vulnerability.DetectedVulnerability{
+				{
+					VulnerabilityID:  "123",
+					PkgName:          "foo",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "3.4.5",
+					Title:            "foobar",
+					Description:      "baz",
+					Severity:         "HIGH",
+				},
+			},
+		},
+	})
+
+	writtenResults := report.Results{}
+	errJson := json.Unmarshal([]byte(jsonWritten.String()), &writtenResults)
+	assert.NoError(t, errJson, "invalid json written")
+
+	assert.Equal(t, report.Results{
+		report.Result{
+			FileName: "foo",
+			Vulnerabilities: []vulnerability.DetectedVulnerability{
+				{
+					VulnerabilityID: "123", PkgName: "foo", InstalledVersion: "1.2.3", FixedVersion: "3.4.5", Title: "foobar", Description: "baz", Severity: "HIGH",
+				},
+			},
+		},
+	}, writtenResults)
+	assert.NoError(t, err)
 }
