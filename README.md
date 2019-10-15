@@ -14,9 +14,9 @@ Static Analysis Library for Containers
   - Bundler, Composer, npm, Yarn, Pipenv, Poetry, Cargo
 
 ## Example
-See `cmd/fanal/`
+See [`cmd/fanal/`](cmd/fanal)
 
-```
+```go
 package main
 
 import (
