@@ -32,6 +32,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
     - [Scan an image](#scan-an-image)
     - [Scan an image file](#scan-an-image-file)
     - [Save the results as JSON](#save-the-results-as-json)
+    - [Save the results using a template](#save-the-results-using-a-template)
     - [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
     - [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
     - [Skip an update of vulnerability DB](#skip-update-of-vulnerability-db)
@@ -653,6 +654,25 @@ $ trivy -f json -o results.json golang:1.12-alpine
 ```
 
 </details>
+
+### Save the results using a template
+
+```
+$ trivy --format template --template "{{ range . }} {{ .Target }} {{ end }}" golang:1.12-alpine
+```
+<details>
+<summary>Result</summary>
+```
+2020-01-02T18:02:32.856+0100    INFO    Detecting Alpine vulnerabilities...
+ golang:1.12-alpine (alpine 3.10.2)
+```
+</details>
+
+You can load templates from a file prefixing the template path with an @.
+
+```
+$ trivy --format template --template "@/path/to/template" golang:1.12-alpine
+```
 
 ### Filter the vulnerabilities by severities
 
