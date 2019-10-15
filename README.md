@@ -1445,7 +1445,7 @@ $ trivy --reset
 
 # License
 
-AGPLv3
+[AGPLv3](LICENSE)
 
 # Author
 
