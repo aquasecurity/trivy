@@ -127,7 +127,7 @@ OPTIONS:
 			Name:  "ignorefile",
 			Value: vulnerability.DefaultIgnoreFile,
 			Usage: "specify .trivyignore file",
-    },
+		},
 		cli.DurationFlag{
 			Name:  "timeout",
 			Value: time.Second * 60,
