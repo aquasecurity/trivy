@@ -12,6 +12,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"
 	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg/debian"
@@ -49,6 +50,9 @@ func Scan(files extractor.FileMap) (string, string, []vulnerability.DetectedVuln
 	}
 	pkgs, err := analyzer.GetPackages(files)
 	if err != nil {
+		if xerrors.Is(err, types.ErrNoRpmCmd) {
+			log.Logger.Error("'rpm' command is not installed")
+		}
 		return "", "", nil, xerrors.Errorf("failed to analyze OS packages: %w", err)
 	}
 	log.Logger.Debugf("the number of packages: %d", len(pkgs))

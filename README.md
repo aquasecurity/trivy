@@ -1,16 +1,13 @@
-**This repository was transferred from knqyf263/trivy to aquasecurity/trivy.**  
-**If you have previously installed Trivy, please check the [Migration](#Migration) section in case you have any scripts or package managers that need to be updated. We apologise for any inconvenience.**
-
 <img src="imgs/logo.png" width="300">
 
 
 [![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
 [![CircleCI](https://circleci.com/gh/aquasecurity/trivy.svg?style=svg)](https://circleci.com/gh/aquasecurity/trivy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/aquasecurity/trivy)](https://goreportcard.com/report/github.com/aquasecurity/trivy)
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
+[![Docker image](https://images.microbadger.com/badges/version/aquasec/trivy.svg)](https://microbadger.com/images/aquasec/trivy "Get your own version badge on microbadger.com")
 
-
-A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
+A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI.
 
 <img src="imgs/usage.gif" width="700">
 <img src="imgs/usage1.png" width="600">
@@ -78,8 +75,8 @@ See [here](#continuous-integration-ci) for details.
   - Specify only an image name
   - See [Quick Start](#quick-start) and [Examples](#examples)
 - Easy installation
-  - **No need for prerequirements** such as installation of DB, libraries, etc.
   - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](#installation))
+  - **No need for prerequirements** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
 - High accuracy
   - **Especially Alpine Linux and RHEL/CentOS**
   - Other OSes are also high
@@ -112,16 +109,12 @@ $ rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.1.6/trivy_
 
 ## Debian/Ubuntu
 
-Replace `[CODE_NAME]` with your code name
-
-CODE_NAME: wheezy, jessie, stretch, buster, trusty, xenial, bionic
-
-`$ lsb_release -c`
+Add repository to `/etc/apt/sources.list.d`.
 
 ```
-$ sudo apt-get install apt-transport-https gnupg
+ $ sudo apt-get install wget apt-transport-https gnupg lsb-release
 $ wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-$ echo deb https://aquasecurity.github.io/trivy-repo/deb [CODE_NAME] main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+$ echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
 $ sudo apt-get update
 $ sudo apt-get install trivy
 ```
@@ -133,6 +126,9 @@ $ sudo apt-get install rpm
 $ wget https://github.com/aquasecurity/trivy/releases/download/v0.1.6/trivy_0.1.6_Linux-64bit.deb
 $ sudo dpkg -i trivy_0.1.6_Linux-64bit.deb
 ```
+
+
+
 ## Arch Linux
 trivy-bin can be installed from the Arch User Repository. Examples:
 ```
@@ -155,7 +151,7 @@ $ brew install aquasecurity/trivy/trivy
 
 Get the latest version from [this page](https://github.com/aquasecurity/trivy/releases/latest), and download the archive file for your operating system/architecture. Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
 
-You need to install `rpm` command for scanning RHEL/CentOS.
+You also need to install `rpm` command for scanning images based on RHEL/CentOS.
 
 ## From source
 
@@ -168,9 +164,11 @@ $ export GO111MODULE=on
 $ go install
 ```
 
+You also need to install `rpm` command for scanning images based on RHEL/CentOS.
+
 # Quick Start
 
-Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with cache.**. See [Clear image caches](#clear-image-caches)
+Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with cache.**. See [Clear image caches](#clear-image-caches).
 
 ## Basic
 
@@ -226,7 +224,7 @@ $ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
     -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy python:3.4-alpine
 ```
 
-Please re-pull latest `aquasec/trivy` if an error occured.
+Please re-pull latest `aquasec/trivy` if an error occurred.
 
 <details>
 <summary>Result</summary>
@@ -1074,7 +1072,7 @@ $ trivy --reset
 
 Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0` .
 
-**Note**: It will take a while for the first time (faster by cache after the second time)
+**Note**: It will take a while for the first time (faster by cache after the second time).
 
 ## Travis CI
 
@@ -1210,6 +1208,8 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 | Debian GNU/Linux             | wheezy, jessie, stretch, buster          | Installed by apt/apt-get/dpkg |                 YES                  |
 | Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg |                 YES                  |
 
+RHEL and CentOS package information is stored in a binary format, and Trivy uses the `rpm` executable to parse this information when scanning an image based on RHEL or CentOS. The Trivy container image includes `rpm`, and the installers include it as a dependency. If you installed the `trivy` binary using `wget` or `curl`, or if you build it from source, you will also need to ensure that `rpm` is available.
+
 ## Application Dependencies
 
 `Trivy` automatically detects the following files in the container and scans vulnerabilities in the application dependencies.
@@ -1328,7 +1328,7 @@ As `Quay` seems to use `Clair` internally, it has the same accuracy than `Clair`
 
 # Migration
 
-On 19 August 2019, Trivy's repositories moved from `knqyf263/trivy` to `aquasecurity/trivy`. If you previously installed Trivy you should update any scripts or package manager records as described in this section. 
+On 19 August 2019, Trivy's repositories moved from `knqyf263/trivy` to `aquasecurity/trivy`. If you previously installed Trivy you should update any scripts or package manager records as described in this section.
 
 ## Overview
 If you have a script that installs Trivy (for example into your CI pipelines) you should update it to obtain it from the new location by replacing knqyf263/trivy with aquasecurity/trivy.
@@ -1417,7 +1417,7 @@ $ brew install aquasecurity/trivy/trivy
 
 ### Detected version update of trivy. Please try again with --refresh option
 
-Try again with `--refresh` option
+Try again with `--refresh` option:
 
 ```
 $ trivy --refresh alpine:3.9
@@ -1425,7 +1425,7 @@ $ trivy --refresh alpine:3.9
 
 ### Unknown error
 
-Try again with `--reset` option
+Try again with `--reset` option:
 
 ```
 $ trivy --reset
@@ -1434,19 +1434,7 @@ $ trivy --reset
 # Related Projects
 
 - [Remic](https://github.com/aquasecurity/remic)
-  - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies
-
-# Contribute
-
-1. fork a repository: github.com/aquasecurity/trivy to github.com/you/repo
-2. get original code: `go get github.com/aquasecurity/trivy`
-3. work on original code
-4. add remote to your repo: git remote add myfork https://github.com/you/repo.git
-5. push your changes: git push myfork
-6. create a new Pull Request
-
-- see [GitHub and Go: forking, pull requests, and go-getting](http://blog.campoy.cat/2014/03/github-and-go-forking-pull-requests-and.html)
-
+  - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies  
 ---
 
 # Credits
@@ -1457,7 +1445,7 @@ $ trivy --reset
 
 # License
 
-AGPLv3
+[AGPLv3](LICENSE)
 
 # Author
 

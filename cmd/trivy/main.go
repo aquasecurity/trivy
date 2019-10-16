@@ -4,6 +4,7 @@ import (
 	l "log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/aquasecurity/trivy/pkg/utils"
 
@@ -44,9 +45,14 @@ OPTIONS:
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
+			Name:  "template, t",
+			Value: "",
+			Usage: "output template",
+		},
+		cli.StringFlag{
 			Name:  "format, f",
 			Value: "table",
-			Usage: "format (table, json)",
+			Usage: "format (table, json, template)",
 		},
 		cli.StringFlag{
 			Name:  "input, i",
@@ -121,6 +127,11 @@ OPTIONS:
 			Name:  "ignorefile",
 			Value: vulnerability.DefaultIgnoreFile,
 			Usage: "specify .trivyignore file",
+    },
+		cli.DurationFlag{
+			Name:  "timeout",
+			Value: time.Second * 60,
+			Usage: "docker timeout",
 		},
 	}
 

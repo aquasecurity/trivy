@@ -9,7 +9,7 @@ RUN go build -ldflags "-X main.version=$(git describe --tags --abbrev=0)" -a -o 
 RUN upx --lzma --best /trivy
 
 FROM alpine:3.9
-RUN apk --no-cache add ca-certificates git
+RUN apk --no-cache add ca-certificates git rpm
 COPY --from=builder /trivy /usr/local/bin/trivy
 
 ENTRYPOINT ["trivy"]

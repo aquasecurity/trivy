@@ -4,6 +4,7 @@ import (
 	l "log"
 	"os"
 	"strings"
+	"text/template"
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/db"
@@ -155,7 +156,11 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
-	scanOptions := types.ScanOptions{VulnType: strings.Split(c.String("vuln-type"), ",")}
+	timeout := c.Duration("timeout")
+	scanOptions := types.ScanOptions{
+		VulnType: strings.Split(c.String("vuln-type"), ","),
+		Timeout:  timeout,
+	}
 
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
@@ -181,6 +186,13 @@ func Run(c *cli.Context) (err error) {
 		writer = &report.TableWriter{Output: output}
 	case "json":
 		writer = &report.JsonWriter{Output: output}
+	case "template":
+		outputTemplate := c.String("template")
+		tmpl, err := template.New("output template").Parse(outputTemplate)
+		if err != nil {
+			return xerrors.Errorf("error parsing template: %w", err)
+		}
+		writer = &report.TemplateWriter{Output: output, Template: tmpl}
 	default:
 		return xerrors.Errorf("unknown format: %v", format)
 	}
