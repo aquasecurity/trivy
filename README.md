@@ -1344,7 +1344,7 @@ $ wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy
 ```
 
 ## CentOS/RedHat
-Use https://aquasecurity.github.io instead of https://knqyf263.github.io.
+Use https://aquasecurity.github.io/trivy-repo/ instead of https://knqyf263.github.io.
 
 ```bash
 $ yum remove trivy
@@ -1354,7 +1354,7 @@ $ yum install trivy
 ```
 
 ## Debian/Ubuntu
-Use https://aquasecurity.github.io instead of https://knqyf263.github.io.
+Use https://aquasecurity.github.io/trivy-repo/ instead of https://knqyf263.github.io.
 
 ```bash
 $ apt-get remove --purge trivy
@@ -1434,7 +1434,7 @@ $ trivy --reset
 
 # Related Projects
 
-- [Remic](https://github.com/aquasecurity/remic)
+- [Remic](https://github.com/knqyf263/remic)
   - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies  
 ---
 
