@@ -32,7 +32,7 @@ type AdvisoryDB map[string][]Advisory
 type Advisory struct {
 	ID                 int
 	Title              string
-	ModuleName         string `json:"module_name""`
+	ModuleName         string `json:"module_name"`
 	Cves               []string
 	VulnerableVersions string `json:"vulnerable_versions"`
 	PatchedVersions    string `json:"patched_versions"`
