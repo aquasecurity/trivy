@@ -13,7 +13,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 <img src="imgs/usage1.png" width="600">
 <img src="imgs/usage2.png" width="600">
 
-# TOC
+# Table of Contents
 
 - [Abstract](#abstract)
 - [Features](#features)
@@ -1446,7 +1446,7 @@ $ trivy --reset
 
 # License
 
-[AGPLv3](LICENSE)
+This repository is available under the [GNU Affero General Public License v3.0](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
 
 # Author
 
