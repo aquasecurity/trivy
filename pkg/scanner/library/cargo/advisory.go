@@ -59,6 +59,9 @@ func (s *Scanner) walk() (AdvisoryDB, error) {
 
 	var vulns []vulnerability.Vulnerability
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 		if info.IsDir() {
 			return nil
 		}
