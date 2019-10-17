@@ -117,7 +117,7 @@ func TestReportWriter_JSON(t *testing.T) {
 				},
 			},
 			expectedJSON: report.Results{
-				&report.Result{
+				report.Result{
 					FileName: "foojson",
 					Vulnerabilities: []vulnerability.DetectedVulnerability{
 						{

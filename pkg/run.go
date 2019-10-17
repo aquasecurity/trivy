@@ -172,8 +172,8 @@ func Run(c *cli.Context) (err error) {
 	ignoreFile := c.String("ignorefile")
 
 	ignoreUnfixed := c.Bool("ignore-unfixed")
-	for _, result := range results {
-		result.Vulnerabilities = vulnerability.FillAndFilter(result.Vulnerabilities, severities, ignoreUnfixed, ignoreFile)
+	for i := range results {
+		results[i].Vulnerabilities = vulnerability.FillAndFilter(results[i].Vulnerabilities, severities, ignoreUnfixed, ignoreFile)
 	}
 
 	var writer report.Writer
