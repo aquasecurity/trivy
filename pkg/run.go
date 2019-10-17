@@ -169,12 +169,14 @@ func Run(c *cli.Context) (err error) {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
 
+	ignoreFile := c.String("ignorefile")
+
 	var results report.Results
 	ignoreUnfixed := c.Bool("ignore-unfixed")
 	for path, vuln := range vulns {
 		results = append(results, report.Result{
 			FileName:        path,
-			Vulnerabilities: vulnerability.FillAndFilter(vuln, severities, ignoreUnfixed),
+			Vulnerabilities: vulnerability.FillAndFilter(vuln, severities, ignoreUnfixed, ignoreFile),
 		})
 	}
 
