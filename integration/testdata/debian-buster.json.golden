@@ -1,0 +1,1099 @@
+[
+  {
+    "Target": "testdata/fixtures/debian-buster.tar.gz (debian 10.1)",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2011-3374",
+        "PkgName": "apt",
+        "InstalledVersion": "1.8.2",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "",
+        "Severity": "LOW",
+        "References": null
+      },
+      {
+        "VulnerabilityID": "TEMP-0841856-B18BAF",
+        "PkgName": "bash",
+        "InstalledVersion": "5.0-4",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "",
+        "Severity": "LOW",
+        "References": null
+      },
+      {
+        "VulnerabilityID": "CVE-2016-2781",
+        "PkgName": "coreutils",
+        "InstalledVersion": "8.30-3",
+        "FixedVersion": "",
+        "Title": "coreutils: Non-privileged session can escape to the parent session in chroot",
+        "Description": "chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
+        "Severity": "LOW",
+        "References": [
+          "http://www.openwall.com/lists/oss-security/2016/02/28/2",
+          "http://www.openwall.com/lists/oss-security/2016/02/28/3"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2017-18018",
+        "PkgName": "coreutils",
+        "InstalledVersion": "8.30-3",
+        "FixedVersion": "",
+        "Title": "coreutils: race condition vulnerability in chown and chgrp",
+        "Description": "In GNU Coreutils through 8.29, chown-core.c in chown and chgrp does not prevent replacement of a plain file with a symlink during use of the POSIX \"-R -L\" options, which allows local users to modify the ownership of arbitrary files by leveraging a race condition.",
+        "Severity": "LOW",
+        "References": [
+          "http://lists.gnu.org/archive/html/coreutils/2017-12/msg00045.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5094",
+        "PkgName": "e2fsprogs",
+        "InstalledVersion": "1.44.5-1+deb10u1",
+        "FixedVersion": "1.44.5-1+deb10u2",
+        "Title": "",
+        "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+          "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+          "https://seclists.org/bugtraq/2019/Sep/58",
+          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+          "https://usn.ubuntu.com/4142-2/",
+          "https://www.debian.org/security/2019/dsa-4535"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-12886",
+        "PkgName": "gcc-8-base",
+        "InstalledVersion": "8.3.0-6",
+        "FixedVersion": "",
+        "Title": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
+        "Description": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://gcc.gnu.org/viewcvs/gcc/trunk/gcc/config/arm/arm-protos.h?revision=266379\u0026view=markup",
+          "https://www.gnu.org/software/gcc/gcc-8/changes.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-15847",
+        "PkgName": "gcc-8-base",
+        "InstalledVersion": "8.3.0-6",
+        "FixedVersion": "",
+        "Title": "gcc: POWER9 \"DARN\" RNG intrinsic produces repeated output",
+        "Description": "The POWER9 backend in GNU Compiler Collection (GCC) before version 10 could optimize multiple calls of the __builtin_darn intrinsic into a single call, thus reducing the entropy of the random number generator. This occurred because a volatile operation was not specified. For example, within a single execution of a program, the output of every __builtin_darn() call may be the same.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91481"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2011-3374",
+        "PkgName": "libapt-pkg5.0",
+        "InstalledVersion": "1.8.2",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "",
+        "Severity": "LOW",
+        "References": null
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1010022",
+        "PkgName": "libc-bin",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "glibc: stack guard protection bypass",
+        "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard.",
+        "Severity": "HIGH",
+        "References": [
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=22850"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2010-4051",
+        "PkgName": "libc-bin",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "CVE-2010-4052 glibc: De-recursivise regular expression engine",
+        "Description": "The regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (application crash) via a regular expression containing adjacent bounded repetitions that bypass the intended RE_DUP_MAX limitation, as demonstrated by a {10,}{10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD, related to a \"RE_DUP_MAX overflow.\"",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://cxib.net/stuff/proftpd.gnu.c",
+          "http://seclists.org/fulldisclosure/2011/Jan/78",
+          "http://secunia.com/advisories/42547",
+          "http://securityreason.com/achievement_securityalert/93",
+          "http://securityreason.com/securityalert/8003",
+          "http://securitytracker.com/id?1024832",
+          "http://www.exploit-db.com/exploits/15935",
+          "http://www.kb.cert.org/vuls/id/912279",
+          "http://www.securityfocus.com/archive/1/515589/100/0/threaded",
+          "http://www.securityfocus.com/bid/45233",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=645859"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2010-4052",
+        "PkgName": "libc-bin",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "CVE-2010-4051 CVE-2010-4052 glibc: De-recursivise regular expression engine",
+        "Description": "Stack consumption vulnerability in the regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (resource exhaustion) via a regular expression containing adjacent repetition operators, as demonstrated by a {10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://cxib.net/stuff/proftpd.gnu.c",
+          "http://seclists.org/fulldisclosure/2011/Jan/78",
+          "http://secunia.com/advisories/42547",
+          "http://securityreason.com/achievement_securityalert/93",
+          "http://securityreason.com/securityalert/8003",
+          "http://securitytracker.com/id?1024832",
+          "http://www.exploit-db.com/exploits/15935",
+          "http://www.kb.cert.org/vuls/id/912279",
+          "http://www.securityfocus.com/archive/1/515589/100/0/threaded",
+          "http://www.securityfocus.com/bid/45233",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=645859"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2010-4756",
+        "PkgName": "libc-bin",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "glibc: glob implementation can cause excessive CPU and memory consumption due to crafted glob expressions",
+        "Description": "The glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://cxib.net/stuff/glob-0day.c",
+          "http://securityreason.com/achievement_securityalert/89",
+          "http://securityreason.com/exploitalert/9223"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2016-10228",
+        "PkgName": "libc-bin",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "glibc: iconv program can hang when invoked with the -c option",
+        "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://openwall.com/lists/oss-security/2017/03/01/10",
+          "http://www.securityfocus.com/bid/96525",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=19519"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20796",
+        "PkgName": "libc-bin",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/107160",
+          "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34141",
+          "https://lists.gnu.org/archive/html/bug-gnulib/2019-01/msg00108.html",
+          "https://security.netapp.com/advisory/ntap-20190315-0002/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1010023",
+        "PkgName": "libc-bin",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "GNU Libc current is affected by: Re-mapping current loaded libray with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/109167",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=22851"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1010024",
+        "PkgName": "libc-bin",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/109162",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=22852",
+          "https://support.f5.com/csp/article/K06046097"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1010025",
+        "PkgName": "libc-bin",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "glibc: information disclosure of heap addresses of pthread_created thread",
+        "Description": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor's position is \"ASLR bypass itself is not a vulnerability.\"",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=22853"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9192",
+        "PkgName": "libc-bin",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
+        "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24269"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1010022",
+        "PkgName": "libc6",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "glibc: stack guard protection bypass",
+        "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard.",
+        "Severity": "HIGH",
+        "References": [
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=22850"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2010-4051",
+        "PkgName": "libc6",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "CVE-2010-4052 glibc: De-recursivise regular expression engine",
+        "Description": "The regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (application crash) via a regular expression containing adjacent bounded repetitions that bypass the intended RE_DUP_MAX limitation, as demonstrated by a {10,}{10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD, related to a \"RE_DUP_MAX overflow.\"",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://cxib.net/stuff/proftpd.gnu.c",
+          "http://seclists.org/fulldisclosure/2011/Jan/78",
+          "http://secunia.com/advisories/42547",
+          "http://securityreason.com/achievement_securityalert/93",
+          "http://securityreason.com/securityalert/8003",
+          "http://securitytracker.com/id?1024832",
+          "http://www.exploit-db.com/exploits/15935",
+          "http://www.kb.cert.org/vuls/id/912279",
+          "http://www.securityfocus.com/archive/1/515589/100/0/threaded",
+          "http://www.securityfocus.com/bid/45233",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=645859"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2010-4052",
+        "PkgName": "libc6",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "CVE-2010-4051 CVE-2010-4052 glibc: De-recursivise regular expression engine",
+        "Description": "Stack consumption vulnerability in the regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (resource exhaustion) via a regular expression containing adjacent repetition operators, as demonstrated by a {10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://cxib.net/stuff/proftpd.gnu.c",
+          "http://seclists.org/fulldisclosure/2011/Jan/78",
+          "http://secunia.com/advisories/42547",
+          "http://securityreason.com/achievement_securityalert/93",
+          "http://securityreason.com/securityalert/8003",
+          "http://securitytracker.com/id?1024832",
+          "http://www.exploit-db.com/exploits/15935",
+          "http://www.kb.cert.org/vuls/id/912279",
+          "http://www.securityfocus.com/archive/1/515589/100/0/threaded",
+          "http://www.securityfocus.com/bid/45233",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=645859"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2010-4756",
+        "PkgName": "libc6",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "glibc: glob implementation can cause excessive CPU and memory consumption due to crafted glob expressions",
+        "Description": "The glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://cxib.net/stuff/glob-0day.c",
+          "http://securityreason.com/achievement_securityalert/89",
+          "http://securityreason.com/exploitalert/9223"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2016-10228",
+        "PkgName": "libc6",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "glibc: iconv program can hang when invoked with the -c option",
+        "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://openwall.com/lists/oss-security/2017/03/01/10",
+          "http://www.securityfocus.com/bid/96525",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=19519"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20796",
+        "PkgName": "libc6",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/107160",
+          "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34141",
+          "https://lists.gnu.org/archive/html/bug-gnulib/2019-01/msg00108.html",
+          "https://security.netapp.com/advisory/ntap-20190315-0002/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1010023",
+        "PkgName": "libc6",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "GNU Libc current is affected by: Re-mapping current loaded libray with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/109167",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=22851"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1010024",
+        "PkgName": "libc6",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/109162",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=22852",
+          "https://support.f5.com/csp/article/K06046097"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1010025",
+        "PkgName": "libc6",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "glibc: information disclosure of heap addresses of pthread_created thread",
+        "Description": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor's position is \"ASLR bypass itself is not a vulnerability.\"",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=22853"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9192",
+        "PkgName": "libc6",
+        "InstalledVersion": "2.28-10",
+        "FixedVersion": "",
+        "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
+        "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24269"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5094",
+        "PkgName": "libcom-err2",
+        "InstalledVersion": "1.44.5-1+deb10u1",
+        "FixedVersion": "1.44.5-1+deb10u2",
+        "Title": "",
+        "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+          "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+          "https://seclists.org/bugtraq/2019/Sep/58",
+          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+          "https://usn.ubuntu.com/4142-2/",
+          "https://www.debian.org/security/2019/dsa-4535"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5094",
+        "PkgName": "libext2fs2",
+        "InstalledVersion": "1.44.5-1+deb10u1",
+        "FixedVersion": "1.44.5-1+deb10u2",
+        "Title": "",
+        "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+          "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+          "https://seclists.org/bugtraq/2019/Sep/58",
+          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+          "https://usn.ubuntu.com/4142-2/",
+          "https://www.debian.org/security/2019/dsa-4535"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-12886",
+        "PkgName": "libgcc1",
+        "InstalledVersion": "8.3.0-6",
+        "FixedVersion": "",
+        "Title": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
+        "Description": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://gcc.gnu.org/viewcvs/gcc/trunk/gcc/config/arm/arm-protos.h?revision=266379\u0026view=markup",
+          "https://www.gnu.org/software/gcc/gcc-8/changes.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-15847",
+        "PkgName": "libgcc1",
+        "InstalledVersion": "8.3.0-6",
+        "FixedVersion": "",
+        "Title": "gcc: POWER9 \"DARN\" RNG intrinsic produces repeated output",
+        "Description": "The POWER9 backend in GNU Compiler Collection (GCC) before version 10 could optimize multiple calls of the __builtin_darn intrinsic into a single call, thus reducing the entropy of the random number generator. This occurred because a volatile operation was not specified. For example, within a single execution of a program, the output of every __builtin_darn() call may be the same.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91481"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-6829",
+        "PkgName": "libgcrypt20",
+        "InstalledVersion": "1.8.4-5",
+        "FixedVersion": "",
+        "Title": "libgcrypt: ElGamal implementation doesn't have semantic security due to incorrectly encoded plaintexts possibly allowing to obtain sensitive information",
+        "Description": "cipher/elgamal.c in Libgcrypt through 1.8.2, when used to encrypt messages directly, improperly encodes plaintexts, which allows attackers to obtain sensitive information by reading ciphertext data (i.e., it does not have semantic security in face of a ciphertext-only attack). The Decisional Diffie-Hellman (DDH) assumption does not hold for Libgcrypt's ElGamal implementation.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://github.com/weikengchen/attack-on-libgcrypt-elgamal",
+          "https://github.com/weikengchen/attack-on-libgcrypt-elgamal/wiki",
+          "https://lists.gnupg.org/pipermail/gcrypt-devel/2018-February/004394.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-12904",
+        "PkgName": "libgcrypt20",
+        "InstalledVersion": "1.8.4-5",
+        "FixedVersion": "",
+        "Title": "Libgcrypt: physical addresses being available to other processes leads to a flush-and-reload side-channel attack",
+        "Description": "In Libgcrypt 1.8.4, the C implementation of AES is vulnerable to a flush-and-reload side-channel attack because physical addresses are available to other processes. (The C implementation is used on platforms where an assembly-language implementation is unavailable.)",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-12904.html\n    ",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00049.html",
+          "https://dev.gnupg.org/T4541",
+          "https://github.com/gpg/libgcrypt/commit/a4c561aab1014c3630bc88faf6f5246fee16b020",
+          "https://github.com/gpg/libgcrypt/commit/daedbbb5541cd8ecda1459d3b843ea4d92788762"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-13627",
+        "PkgName": "libgcrypt20",
+        "InstalledVersion": "1.8.4-5",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "It was discovered that there was a ECDSA timing attack in the libgcrypt20 cryptographic library. Version affected: 1.8.4-5, 1.7.6-2+deb9u3, and 1.6.3-2+deb8u4. Versions fixed: 1.8.5-2 and 1.6.3-2+deb8u7.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00060.html",
+          "http://www.openwall.com/lists/oss-security/2019/10/02/2",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-13627",
+          "https://github.com/gpg/libgcrypt/releases/tag/libgcrypt-1.8.5",
+          "https://lists.debian.org/debian-lts-announce/2019/09/msg00024.html",
+          "https://security-tracker.debian.org/tracker/CVE-2019-13627"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2011-3389",
+        "PkgName": "libgnutls30",
+        "InstalledVersion": "3.6.7-4",
+        "FixedVersion": "",
+        "Title": "HTTPS: block-wise chosen-plaintext attack against SSL/TLS (BEAST)",
+        "Description": "The SSL protocol, as used in certain configurations in Microsoft Windows and Microsoft Internet Explorer, Mozilla Firefox, Google Chrome, Opera, and other products, encrypts data by using CBC mode with chained initialization vectors, which allows man-in-the-middle attackers to obtain plaintext HTTP headers via a blockwise chosen-boundary attack (BCBA) on an HTTPS session, in conjunction with JavaScript code that uses (1) the HTML5 WebSocket API, (2) the Java URLConnection API, or (3) the Silverlight WebClient API, aka a \"BEAST\" attack.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://blog.mozilla.com/security/2011/09/27/attack-against-tls-protected-communications/",
+          "http://blogs.technet.com/b/msrc/archive/2011/09/26/microsoft-releases-security-advisory-2588513.aspx",
+          "http://blogs.technet.com/b/srd/archive/2011/09/26/is-ssl-broken-more-about-security-advisory-2588513.aspx",
+          "http://curl.haxx.se/docs/adv_20120124B.html",
+          "http://downloads.asterisk.org/pub/security/AST-2016-001.html",
+          "http://ekoparty.org/2011/juliano-rizzo.php",
+          "http://eprint.iacr.org/2004/111",
+          "http://eprint.iacr.org/2006/136",
+          "http://googlechromereleases.blogspot.com/2011/10/chrome-stable-release.html",
+          "http://isc.sans.edu/diary/SSL+TLS+part+3+/11635",
+          "http://lists.apple.com/archives/Security-announce/2011//Oct/msg00001.html",
+          "http://lists.apple.com/archives/Security-announce/2011//Oct/msg00002.html",
+          "http://lists.apple.com/archives/security-announce/2012/Feb/msg00000.html",
+          "http://lists.apple.com/archives/security-announce/2012/Jul/msg00001.html",
+          "http://lists.apple.com/archives/security-announce/2012/May/msg00001.html",
+          "http://lists.apple.com/archives/security-announce/2012/Sep/msg00004.html",
+          "http://lists.apple.com/archives/security-announce/2013/Oct/msg00004.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2012-01/msg00049.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2012-01/msg00051.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2012-05/msg00009.html",
+          "http://marc.info/?l=bugtraq\u0026m=132750579901589\u0026w=2",
+          "http://marc.info/?l=bugtraq\u0026m=132872385320240\u0026w=2",
+          "http://marc.info/?l=bugtraq\u0026m=133365109612558\u0026w=2",
+          "http://marc.info/?l=bugtraq\u0026m=133728004526190\u0026w=2",
+          "http://marc.info/?l=bugtraq\u0026m=134254866602253\u0026w=2",
+          "http://marc.info/?l=bugtraq\u0026m=134254957702612\u0026w=2",
+          "http://my.opera.com/securitygroup/blog/2011/09/28/the-beast-ssl-tls-issue",
+          "http://osvdb.org/74829",
+          "http://rhn.redhat.com/errata/RHSA-2012-0508.html",
+          "http://rhn.redhat.com/errata/RHSA-2013-1455.html",
+          "http://secunia.com/advisories/45791",
+          "http://secunia.com/advisories/47998",
+          "http://secunia.com/advisories/48256",
+          "http://secunia.com/advisories/48692",
+          "http://secunia.com/advisories/48915",
+          "http://secunia.com/advisories/48948",
+          "http://secunia.com/advisories/49198",
+          "http://secunia.com/advisories/55322",
+          "http://secunia.com/advisories/55350",
+          "http://secunia.com/advisories/55351",
+          "http://security.gentoo.org/glsa/glsa-201203-02.xml",
+          "http://security.gentoo.org/glsa/glsa-201406-32.xml",
+          "http://support.apple.com/kb/HT4999",
+          "http://support.apple.com/kb/HT5001",
+          "http://support.apple.com/kb/HT5130",
+          "http://support.apple.com/kb/HT5281",
+          "http://support.apple.com/kb/HT5501",
+          "http://support.apple.com/kb/HT6150",
+          "http://technet.microsoft.com/security/advisory/2588513",
+          "http://vnhacker.blogspot.com/2011/09/beast.html",
+          "http://www.apcmedia.com/salestools/SJHN-7RKGNM/SJHN-7RKGNM_R4_EN.pdf",
+          "http://www.debian.org/security/2012/dsa-2398",
+          "http://www.educatedguesswork.org/2011/09/security_impact_of_the_rizzodu.html",
+          "http://www.ibm.com/developerworks/java/jdk/alerts/",
+          "http://www.imperialviolet.org/2011/09/23/chromeandbeast.html",
+          "http://www.insecure.cl/Beast-SSL.rar",
+          "http://www.kb.cert.org/vuls/id/864643",
+          "http://www.mandriva.com/security/advisories?name=MDVSA-2012:058",
+          "http://www.opera.com/docs/changelogs/mac/1151/",
+          "http://www.opera.com/docs/changelogs/mac/1160/",
+          "http://www.opera.com/docs/changelogs/unix/1151/",
+          "http://www.opera.com/docs/changelogs/unix/1160/",
+          "http://www.opera.com/docs/changelogs/windows/1151/",
+          "http://www.opera.com/docs/changelogs/windows/1160/",
+          "http://www.opera.com/support/kb/view/1004/",
+          "http://www.oracle.com/technetwork/topics/security/cpujan2015-1972971.html",
+          "http://www.oracle.com/technetwork/topics/security/cpujul2015-2367936.html",
+          "http://www.oracle.com/technetwork/topics/security/javacpuoct2011-443431.html",
+          "http://www.redhat.com/support/errata/RHSA-2011-1384.html",
+          "http://www.redhat.com/support/errata/RHSA-2012-0006.html",
+          "http://www.securityfocus.com/bid/49388",
+          "http://www.securityfocus.com/bid/49778",
+          "http://www.securitytracker.com/id/1029190",
+          "http://www.securitytracker.com/id?1025997",
+          "http://www.securitytracker.com/id?1026103",
+          "http://www.securitytracker.com/id?1026704",
+          "http://www.ubuntu.com/usn/USN-1263-1",
+          "http://www.us-cert.gov/cas/techalerts/TA12-010A.html",
+          "https://blogs.oracle.com/sunsecurity/entry/multiple_vulnerabilities_in_fetchmail",
+          "https://bugzilla.novell.com/show_bug.cgi?id=719047",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=737506",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-3389",
+          "https://docs.microsoft.com/en-us/security-updates/securitybulletins/2012/ms12-006",
+          "https://h20564.www2.hp.com/portal/site/hpsc/public/kb/docDisplay?docId=emr_na-c03839862",
+          "https://hermes.opensuse.org/messages/13154861",
+          "https://hermes.opensuse.org/messages/13155432",
+          "https://ics-cert.us-cert.gov/advisories/ICSMA-18-058-02",
+          "https://oval.cisecurity.org/repository/search/definition/oval%3Aorg.mitre.oval%3Adef%3A14752"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2017-11164",
+        "PkgName": "libpcre3",
+        "InstalledVersion": "2:8.39-12",
+        "FixedVersion": "",
+        "Title": "pcre: OP_KETRMAX feature in the match function in pcre_exec.c",
+        "Description": "In PCRE 8.41, the OP_KETRMAX feature in the match function in pcre_exec.c allows stack exhaustion (uncontrolled recursion) when processing a crafted regular expression.",
+        "Severity": "HIGH",
+        "References": [
+          "http://openwall.com/lists/oss-security/2017/07/11/3",
+          "http://www.securityfocus.com/bid/99575"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2017-7245",
+        "PkgName": "libpcre3",
+        "InstalledVersion": "2:8.39-12",
+        "FixedVersion": "",
+        "Title": "pcre: stack-based buffer overflow write in pcre32_copy_substring",
+        "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 4) or possibly have unspecified other impact via a crafted file.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/\n    ",
+          "http://www.securityfocus.com/bid/97067",
+          "https://access.redhat.com/errata/RHSA-2018:2486",
+          "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
+          "https://security.gentoo.org/glsa/201710-25"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2017-7246",
+        "PkgName": "libpcre3",
+        "InstalledVersion": "2:8.39-12",
+        "FixedVersion": "",
+        "Title": "pcre: stack-based buffer overflow write in pcre32_copy_substring",
+        "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 268) or possibly have unspecified other impact via a crafted file.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/\n    ",
+          "http://www.securityfocus.com/bid/97067",
+          "https://access.redhat.com/errata/RHSA-2018:2486",
+          "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
+          "https://security.gentoo.org/glsa/201710-25"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2017-16231",
+        "PkgName": "libpcre3",
+        "InstalledVersion": "2:8.39-12",
+        "FixedVersion": "",
+        "Title": "pcre: self-recursive call in match() in pcre_exec.c leads to denial of service",
+        "Description": "** DISPUTED ** In PCRE 8.41, after compiling, a pcretest load test PoC produces a crash overflow in the function match() in pcre_exec.c because of a self-recursive call. NOTE: third parties dispute the relevance of this report, noting that there are options that can be used to limit the amount of stack that is used.",
+        "Severity": "LOW",
+        "References": [
+          "http://packetstormsecurity.com/files/150897/PCRE-8.41-Buffer-Overflow.html",
+          "http://seclists.org/fulldisclosure/2018/Dec/33",
+          "http://www.openwall.com/lists/oss-security/2017/11/01/11",
+          "http://www.openwall.com/lists/oss-security/2017/11/01/3",
+          "http://www.openwall.com/lists/oss-security/2017/11/01/7",
+          "http://www.openwall.com/lists/oss-security/2017/11/01/8",
+          "http://www.securityfocus.com/bid/101688",
+          "https://bugs.exim.org/show_bug.cgi?id=2047"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9893",
+        "PkgName": "libseccomp2",
+        "InstalledVersion": "2.3.3-4",
+        "FixedVersion": "",
+        "Title": "libseccomp: incorrect generation of syscall filters in libseccomp",
+        "Description": "libseccomp before 2.4.0 did not correctly generate 64-bit syscall argument comparisons using the arithmetic operators (LT, GT, LE, GE), which might able to lead to bypassing seccomp filters and potential privilege escalations.",
+        "Severity": "HIGH",
+        "References": [
+          "https://github.com/seccomp/libseccomp/issues/139",
+          "https://seclists.org/oss-sec/2019/q1/179",
+          "https://security.gentoo.org/glsa/201904-18",
+          "https://usn.ubuntu.com/4001-1/",
+          "https://usn.ubuntu.com/4001-2/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5094",
+        "PkgName": "libss2",
+        "InstalledVersion": "1.44.5-1+deb10u1",
+        "FixedVersion": "1.44.5-1+deb10u2",
+        "Title": "",
+        "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+          "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+          "https://seclists.org/bugtraq/2019/Sep/58",
+          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+          "https://usn.ubuntu.com/4142-2/",
+          "https://www.debian.org/security/2019/dsa-4535"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-12886",
+        "PkgName": "libstdc++6",
+        "InstalledVersion": "8.3.0-6",
+        "FixedVersion": "",
+        "Title": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
+        "Description": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://gcc.gnu.org/viewcvs/gcc/trunk/gcc/config/arm/arm-protos.h?revision=266379\u0026view=markup",
+          "https://www.gnu.org/software/gcc/gcc-8/changes.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-15847",
+        "PkgName": "libstdc++6",
+        "InstalledVersion": "8.3.0-6",
+        "FixedVersion": "",
+        "Title": "gcc: POWER9 \"DARN\" RNG intrinsic produces repeated output",
+        "Description": "The POWER9 backend in GNU Compiler Collection (GCC) before version 10 could optimize multiple calls of the __builtin_darn intrinsic into a single call, thus reducing the entropy of the random number generator. This occurred because a volatile operation was not specified. For example, within a single execution of a program, the output of every __builtin_darn() call may be the same.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91481"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20839",
+        "PkgName": "libsystemd0",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "",
+        "Title": "systemd: mishandling of the current keyboard mode check leading to passwords being disclosed in cleartext to attacker",
+        "Description": "systemd 242 changes the VT1 mode upon a logout, which allows attackers to read cleartext passwords in certain circumstances, such as watching a shutdown, or using Ctrl-Alt-F1 and Ctrl-Alt-F2. This occurs because the KDGKBMODE (aka current keyboard mode) check is mishandled.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/108389",
+          "https://bugs.launchpad.net/ubuntu/+source/systemd/+bug/1803993",
+          "https://github.com/systemd/systemd/commit/9725f1a10f80f5e0ae7d9b60547458622aeb322f",
+          "https://github.com/systemd/systemd/pull/12378",
+          "https://security.netapp.com/advisory/ntap-20190530-0002/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3843",
+        "PkgName": "libsystemd0",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "",
+        "Title": "systemd: services with DynamicUser can create SUID/SGID binaries",
+        "Description": "It was discovered that a systemd service that uses DynamicUser property can create a SUID/SGID binary that would be allowed to run as the transient service UID/GID even after the service is terminated. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the UID/GID will be recycled.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/108116",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3843",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5JXQAKSTMABZ46EVCRMW62DHWYHTTFES/",
+          "https://security.netapp.com/advisory/ntap-20190619-0002/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3844",
+        "PkgName": "libsystemd0",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "",
+        "Title": "systemd: services with DynamicUser can get new privileges and create SGID binaries",
+        "Description": "It was discovered that a systemd service that uses DynamicUser property can get new privileges through the execution of SUID binaries, which would allow to create binaries owned by the service transient group with the setgid bit set. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the GID will be recycled.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/108096",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3844",
+          "https://security.netapp.com/advisory/ntap-20190619-0002/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9619",
+        "PkgName": "libsystemd0",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "",
+        "Title": "systemd: not enabled pam_systemd for non-interactive sessions",
+        "Description": "** REJECT ** DO NOT USE THIS CANDIDATE NUMBER. ConsultIDs: none. Reason: This candidate was withdrawn by its CNA. Further investigation showed that it was not a security issue. Notes: none.",
+        "Severity": "MEDIUM",
+        "References": null
+      },
+      {
+        "VulnerabilityID": "CVE-2013-4392",
+        "PkgName": "libsystemd0",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "",
+        "Title": "systemd: TOCTOU race condition when updating file permissions and SELinux security contexts",
+        "Description": "systemd, when updating file permissions, allows local users to change the permissions and SELinux security contexts for arbitrary files via a symlink attack on unspecified files.",
+        "Severity": "LOW",
+        "References": [
+          "http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=725357",
+          "http://www.openwall.com/lists/oss-security/2013/10/01/9",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=859060"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-15718",
+        "PkgName": "libsystemd0",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "",
+        "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
+        "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
+        "Severity": "LOW",
+        "References": [
+          "http://www.openwall.com/lists/oss-security/2019/09/03/1",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1746057",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-1000654",
+        "PkgName": "libtasn1-6",
+        "InstalledVersion": "4.13-3",
+        "FixedVersion": "",
+        "Title": "libtasn1: Infinite loop in _asn1_expand_object_id(ptree) leads to memory exhaustion",
+        "Description": "GNU Libtasn1-4.13 libtasn1-4.13 version libtasn1-4.13, libtasn1-4.12 contains a DoS, specifically CPU usage will reach 100% when running asn1Paser against the POC due to an issue in _asn1_expand_object_id(p_tree), after a long time, the program will be killed. This attack appears to be exploitable via parsing a crafted file.",
+        "Severity": "HIGH",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00009.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00018.html",
+          "http://www.securityfocus.com/bid/105151",
+          "https://gitlab.com/gnutls/libtasn1/issues/4"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20839",
+        "PkgName": "libudev1",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "",
+        "Title": "systemd: mishandling of the current keyboard mode check leading to passwords being disclosed in cleartext to attacker",
+        "Description": "systemd 242 changes the VT1 mode upon a logout, which allows attackers to read cleartext passwords in certain circumstances, such as watching a shutdown, or using Ctrl-Alt-F1 and Ctrl-Alt-F2. This occurs because the KDGKBMODE (aka current keyboard mode) check is mishandled.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/108389",
+          "https://bugs.launchpad.net/ubuntu/+source/systemd/+bug/1803993",
+          "https://github.com/systemd/systemd/commit/9725f1a10f80f5e0ae7d9b60547458622aeb322f",
+          "https://github.com/systemd/systemd/pull/12378",
+          "https://security.netapp.com/advisory/ntap-20190530-0002/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3843",
+        "PkgName": "libudev1",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "",
+        "Title": "systemd: services with DynamicUser can create SUID/SGID binaries",
+        "Description": "It was discovered that a systemd service that uses DynamicUser property can create a SUID/SGID binary that would be allowed to run as the transient service UID/GID even after the service is terminated. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the UID/GID will be recycled.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/108116",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3843",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5JXQAKSTMABZ46EVCRMW62DHWYHTTFES/",
+          "https://security.netapp.com/advisory/ntap-20190619-0002/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3844",
+        "PkgName": "libudev1",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "",
+        "Title": "systemd: services with DynamicUser can get new privileges and create SGID binaries",
+        "Description": "It was discovered that a systemd service that uses DynamicUser property can get new privileges through the execution of SUID binaries, which would allow to create binaries owned by the service transient group with the setgid bit set. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the GID will be recycled.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/108096",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3844",
+          "https://security.netapp.com/advisory/ntap-20190619-0002/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9619",
+        "PkgName": "libudev1",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "",
+        "Title": "systemd: not enabled pam_systemd for non-interactive sessions",
+        "Description": "** REJECT ** DO NOT USE THIS CANDIDATE NUMBER. ConsultIDs: none. Reason: This candidate was withdrawn by its CNA. Further investigation showed that it was not a security issue. Notes: none.",
+        "Severity": "MEDIUM",
+        "References": null
+      },
+      {
+        "VulnerabilityID": "CVE-2013-4392",
+        "PkgName": "libudev1",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "",
+        "Title": "systemd: TOCTOU race condition when updating file permissions and SELinux security contexts",
+        "Description": "systemd, when updating file permissions, allows local users to change the permissions and SELinux security contexts for arbitrary files via a symlink attack on unspecified files.",
+        "Severity": "LOW",
+        "References": [
+          "http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=725357",
+          "http://www.openwall.com/lists/oss-security/2013/10/01/9",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=859060"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-15718",
+        "PkgName": "libudev1",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "",
+        "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
+        "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
+        "Severity": "LOW",
+        "References": [
+          "http://www.openwall.com/lists/oss-security/2019/09/03/1",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1746057",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2012-2663",
+        "PkgName": "libxtables12",
+        "InstalledVersion": "1.8.2-4",
+        "FixedVersion": "",
+        "Title": "iptables: --syn flag bypass",
+        "Description": "extensions/libxt_tcp.c in iptables through 1.4.21 does not match TCP SYN+FIN packets in --syn rules, which might allow remote attackers to bypass intended firewall restrictions via crafted packets.  NOTE: the CVE-2012-6638 fix makes this issue less relevant.",
+        "Severity": "HIGH",
+        "References": [
+          "http://www.spinics.net/lists/netfilter-devel/msg21248.html",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=826702"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-11360",
+        "PkgName": "libxtables12",
+        "InstalledVersion": "1.8.2-4",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "A buffer overflow in iptables-restore in netfilter iptables 1.8.2 allows an attacker to (at least) crash the program or potentially gain code execution via a specially crafted iptables-save file. This is related to add_param_to_argv in xshared.c.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://0day.work/cve-2019-11360-bufferoverflow-in-iptables-restore-v1-8-2/",
+          "https://git.netfilter.org/iptables/commit/iptables/xshared.c?id=2ae1099a42e6a0f06de305ca13a842ac83d4683e"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2007-5686",
+        "PkgName": "login",
+        "InstalledVersion": "1:4.5-1.1",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "initscripts in rPath Linux 1 sets insecure permissions for the /var/log/btmp file, which allows local users to obtain sensitive information regarding authentication attempts.  NOTE: because sshd detects the insecure permissions and does not log certain events, this also prevents sshd from logging failed authentication attempts by remote attackers.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://secunia.com/advisories/27215",
+          "http://www.securityfocus.com/archive/1/482129/100/100/threaded",
+          "http://www.securityfocus.com/archive/1/482857/100/0/threaded",
+          "http://www.securityfocus.com/bid/26048",
+          "http://www.vupen.com/english/advisories/2007/3474",
+          "https://issues.rpath.com/browse/RPL-1825"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-7169",
+        "PkgName": "login",
+        "InstalledVersion": "1:4.5-1.1",
+        "FixedVersion": "",
+        "Title": "shadow-utils: newgidmap allows unprivileged user to drop supplementary groups potentially allowing privilege escalation",
+        "Description": "An issue was discovered in shadow 4.5. newgidmap (in shadow-utils) is setuid and allows an unprivileged user to be placed in a user namespace where setgroups(2) is permitted. This allows an attacker to remove themselves from a supplementary group, which may allow access to certain filesystem paths if the administrator has used \"group blacklisting\" (e.g., chmod g-rwx) to restrict access to paths. This flaw effectively reverts a security feature in the kernel (in particular, the /proc/self/setgroups knob) to prevent this sort of privilege escalation.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://bugs.launchpad.net/ubuntu/+source/shadow/+bug/1729357",
+          "https://security.gentoo.org/glsa/201805-09"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2013-4235",
+        "PkgName": "login",
+        "InstalledVersion": "1:4.5-1.1",
+        "FixedVersion": "",
+        "Title": "shadow-utils: TOCTOU race conditions by copying and removing directory trees",
+        "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA TOCTOU race condition was discovered in shadow-utils. A local attacker with write privileges in a directory removed or copied by usermod/userdel could potentially exploit this flaw, when the administrator invokes usermod/userdel, to delete or modify other files on the system.",
+        "Severity": "LOW",
+        "References": null
+      },
+      {
+        "VulnerabilityID": "TEMP-0628843-DBAD28",
+        "PkgName": "login",
+        "InstalledVersion": "1:4.5-1.1",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "",
+        "Severity": "LOW",
+        "References": null
+      },
+      {
+        "VulnerabilityID": "CVE-2007-5686",
+        "PkgName": "passwd",
+        "InstalledVersion": "1:4.5-1.1",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "initscripts in rPath Linux 1 sets insecure permissions for the /var/log/btmp file, which allows local users to obtain sensitive information regarding authentication attempts.  NOTE: because sshd detects the insecure permissions and does not log certain events, this also prevents sshd from logging failed authentication attempts by remote attackers.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://secunia.com/advisories/27215",
+          "http://www.securityfocus.com/archive/1/482129/100/100/threaded",
+          "http://www.securityfocus.com/archive/1/482857/100/0/threaded",
+          "http://www.securityfocus.com/bid/26048",
+          "http://www.vupen.com/english/advisories/2007/3474",
+          "https://issues.rpath.com/browse/RPL-1825"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-7169",
+        "PkgName": "passwd",
+        "InstalledVersion": "1:4.5-1.1",
+        "FixedVersion": "",
+        "Title": "shadow-utils: newgidmap allows unprivileged user to drop supplementary groups potentially allowing privilege escalation",
+        "Description": "An issue was discovered in shadow 4.5. newgidmap (in shadow-utils) is setuid and allows an unprivileged user to be placed in a user namespace where setgroups(2) is permitted. This allows an attacker to remove themselves from a supplementary group, which may allow access to certain filesystem paths if the administrator has used \"group blacklisting\" (e.g., chmod g-rwx) to restrict access to paths. This flaw effectively reverts a security feature in the kernel (in particular, the /proc/self/setgroups knob) to prevent this sort of privilege escalation.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://bugs.launchpad.net/ubuntu/+source/shadow/+bug/1729357",
+          "https://security.gentoo.org/glsa/201805-09"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2013-4235",
+        "PkgName": "passwd",
+        "InstalledVersion": "1:4.5-1.1",
+        "FixedVersion": "",
+        "Title": "shadow-utils: TOCTOU race conditions by copying and removing directory trees",
+        "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA TOCTOU race condition was discovered in shadow-utils. A local attacker with write privileges in a directory removed or copied by usermod/userdel could potentially exploit this flaw, when the administrator invokes usermod/userdel, to delete or modify other files on the system.",
+        "Severity": "LOW",
+        "References": null
+      },
+      {
+        "VulnerabilityID": "TEMP-0628843-DBAD28",
+        "PkgName": "passwd",
+        "InstalledVersion": "1:4.5-1.1",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "",
+        "Severity": "LOW",
+        "References": null
+      },
+      {
+        "VulnerabilityID": "CVE-2011-4116",
+        "PkgName": "perl-base",
+        "InstalledVersion": "5.28.1-6",
+        "FixedVersion": "",
+        "Title": "perl: File::Temp insecure temporary file handling",
+        "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.",
+        "Severity": "LOW",
+        "References": null
+      },
+      {
+        "VulnerabilityID": "TEMP-0517018-A83CE6",
+        "PkgName": "sysvinit-utils",
+        "InstalledVersion": "2.93-8",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "",
+        "Severity": "LOW",
+        "References": null
+      },
+      {
+        "VulnerabilityID": "CVE-2005-2541",
+        "PkgName": "tar",
+        "InstalledVersion": "1.30+dfsg-6",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "Tar 1.15.1 does not properly warn the user when extracting setuid or setgid files, which may allow local users or remote attackers to gain privileges.",
+        "Severity": "CRITICAL",
+        "References": [
+          "http://marc.info/?l=bugtraq\u0026m=112327628230258\u0026w=2"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9923",
+        "PkgName": "tar",
+        "InstalledVersion": "1.30+dfsg-6",
+        "FixedVersion": "",
+        "Title": "tar: null-pointer dereference in pax_decode_header in sparse.c",
+        "Description": "pax_decode_header in sparse.c in GNU Tar before 1.32 had a NULL pointer dereference when parsing certain archives that have malformed extended headers.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://git.savannah.gnu.org/cgit/tar.git/commit/?id=cb07844454d8cc9fb21f53ace75975f91185a120",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00077.html",
+          "http://savannah.gnu.org/bugs/?55369",
+          "https://bugs.launchpad.net/ubuntu/+source/tar/+bug/1810241"
+        ]
+      },
+      {
+        "VulnerabilityID": "TEMP-0290435-0B57B5",
+        "PkgName": "tar",
+        "InstalledVersion": "1.30+dfsg-6",
+        "FixedVersion": "",
+        "Title": "",
+        "Description": "",
+        "Severity": "LOW",
+        "References": null
+      }
+    ]
+  }
+]

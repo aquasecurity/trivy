@@ -1,0 +1,296 @@
+[
+  {
+    "Target": "testdata/fixtures/centos-7.tar.gz (centos 7.6.1810)",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2018-5743",
+        "PkgName": "bind-license",
+        "InstalledVersion": "32:9.9.4-73.el7_6",
+        "FixedVersion": "32:9.9.4-74.el7_6.1",
+        "Title": "bind: Limiting simultaneous TCP clients is ineffective",
+        "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA flaw was found in the way bind implemented tunable which limited simultaneous TCP client connections. A remote attacker could use this flaw to exhaust the pool of file descriptors available to named, potentially affecting network connections and the management of files such as log files or zone journal files. In cases where the named process is not limited by OS-enforced per-process limits, this could additionally potentially lead to exhaustion of all available free file descriptors on that system.",
+        "Severity": "HIGH",
+        "References": [
+          "\nhttps://kb.isc.org/docs/cve-2018-5743\n    ",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5743"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16402",
+        "PkgName": "elfutils-default-yama-scope",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
+        "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
+        "Severity": "HIGH",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16402",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
+        "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
+        "Severity": "HIGH",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16402",
+        "PkgName": "elfutils-libs",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
+        "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
+        "Severity": "HIGH",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-0495",
+        "PkgName": "nss",
+        "InstalledVersion": "3.36.0-7.1.el7_6",
+        "FixedVersion": "3.44.0-4.el7",
+        "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
+        "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
+        "Severity": "LOW",
+        "References": [
+          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
+          "http://www.securitytracker.com/id/1041144",
+          "http://www.securitytracker.com/id/1041147",
+          "https://access.redhat.com/errata/RHSA-2018:3221",
+          "https://access.redhat.com/errata/RHSA-2018:3505",
+          "https://access.redhat.com/errata/RHSA-2019:1296",
+          "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
+          "https://dev.gnupg.org/T4011",
+          "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
+          "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
+          "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
+          "https://usn.ubuntu.com/3689-1/",
+          "https://usn.ubuntu.com/3689-2/",
+          "https://usn.ubuntu.com/3692-1/",
+          "https://usn.ubuntu.com/3692-2/",
+          "https://usn.ubuntu.com/3850-1/",
+          "https://usn.ubuntu.com/3850-2/",
+          "https://www.debian.org/security/2018/dsa-4231",
+          "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-0495",
+        "PkgName": "nss-sysinit",
+        "InstalledVersion": "3.36.0-7.1.el7_6",
+        "FixedVersion": "3.44.0-4.el7",
+        "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
+        "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
+        "Severity": "LOW",
+        "References": [
+          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
+          "http://www.securitytracker.com/id/1041144",
+          "http://www.securitytracker.com/id/1041147",
+          "https://access.redhat.com/errata/RHSA-2018:3221",
+          "https://access.redhat.com/errata/RHSA-2018:3505",
+          "https://access.redhat.com/errata/RHSA-2019:1296",
+          "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
+          "https://dev.gnupg.org/T4011",
+          "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
+          "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
+          "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
+          "https://usn.ubuntu.com/3689-1/",
+          "https://usn.ubuntu.com/3689-2/",
+          "https://usn.ubuntu.com/3692-1/",
+          "https://usn.ubuntu.com/3692-2/",
+          "https://usn.ubuntu.com/3850-1/",
+          "https://usn.ubuntu.com/3850-2/",
+          "https://www.debian.org/security/2018/dsa-4231",
+          "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-0495",
+        "PkgName": "nss-tools",
+        "InstalledVersion": "3.36.0-7.1.el7_6",
+        "FixedVersion": "3.44.0-4.el7",
+        "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
+        "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
+        "Severity": "LOW",
+        "References": [
+          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
+          "http://www.securitytracker.com/id/1041144",
+          "http://www.securitytracker.com/id/1041147",
+          "https://access.redhat.com/errata/RHSA-2018:3221",
+          "https://access.redhat.com/errata/RHSA-2018:3505",
+          "https://access.redhat.com/errata/RHSA-2019:1296",
+          "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
+          "https://dev.gnupg.org/T4011",
+          "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
+          "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
+          "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
+          "https://usn.ubuntu.com/3689-1/",
+          "https://usn.ubuntu.com/3689-2/",
+          "https://usn.ubuntu.com/3692-1/",
+          "https://usn.ubuntu.com/3692-2/",
+          "https://usn.ubuntu.com/3850-1/",
+          "https://usn.ubuntu.com/3850-2/",
+          "https://www.debian.org/security/2018/dsa-4231",
+          "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-5407",
+        "PkgName": "openssl-libs",
+        "InstalledVersion": "1:1.0.2k-16.el7",
+        "FixedVersion": "1:1.0.2k-16.el7_6.1",
+        "Title": "openssl: Side-channel vulnerability on SMT/Hyper-Threading architectures (PortSmash)",
+        "Description": "Simultaneous Multi-threading (SMT) in processors can enable local users to exploit software vulnerable to timing attacks via a side-channel timing attack on 'port contention'.",
+        "Severity": "LOW",
+        "References": [
+          "\nhttps://github.com/bbbrumley/portsmash\nhttps://www.openssl.org/news/secadv/20181112.txt\n    ",
+          "http://www.securityfocus.com/bid/105897",
+          "https://access.redhat.com/errata/RHSA-2019:0483",
+          "https://access.redhat.com/errata/RHSA-2019:0651",
+          "https://access.redhat.com/errata/RHSA-2019:0652",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5407",
+          "https://eprint.iacr.org/2018/1060.pdf",
+          "https://github.com/bbbrumley/portsmash",
+          "https://lists.debian.org/debian-lts-announce/2018/11/msg00024.html",
+          "https://nodejs.org/en/blog/vulnerability/november-2018-security-releases/",
+          "https://security.gentoo.org/glsa/201903-10",
+          "https://security.netapp.com/advisory/ntap-20181126-0001/",
+          "https://usn.ubuntu.com/3840-1/",
+          "https://www.debian.org/security/2018/dsa-4348",
+          "https://www.debian.org/security/2018/dsa-4355",
+          "https://www.exploit-db.com/exploits/45785/",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujan2019-5072801.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html",
+          "https://www.tenable.com/security/tns-2018-16",
+          "https://www.tenable.com/security/tns-2018-17"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5010",
+        "PkgName": "python",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
+        "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
+        "Severity": "HIGH",
+        "References": [
+          "\nhttps://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html\n    ",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5010",
+        "PkgName": "python-libs",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
+        "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
+        "Severity": "HIGH",
+        "References": [
+          "\nhttps://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html\n    ",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16866",
+        "PkgName": "systemd",
+        "InstalledVersion": "219-62.el7_6.5",
+        "FixedVersion": "219-67.el7",
+        "Title": "systemd: out-of-bounds read when parsing a crafted syslog message",
+        "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
+        "Severity": "LOW",
+        "References": [
+          "\nhttps://www.qualys.com/2019/01/09/system-down/system-down.txt\n    ",
+          "http://packetstormsecurity.com/files/152841/System-Down-A-systemd-journald-Exploit.html",
+          "http://seclists.org/fulldisclosure/2019/May/21",
+          "http://www.openwall.com/lists/oss-security/2019/05/10/4",
+          "http://www.securityfocus.com/bid/106527",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16866",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16866",
+          "https://seclists.org/bugtraq/2019/May/25",
+          "https://security.gentoo.org/glsa/201903-07",
+          "https://security.netapp.com/advisory/ntap-20190117-0001/",
+          "https://usn.ubuntu.com/3855-1/",
+          "https://www.debian.org/security/2019/dsa-4367",
+          "https://www.qualys.com/2019/01/09/system-down/system-down.txt"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16888",
+        "PkgName": "systemd",
+        "InstalledVersion": "219-62.el7_6.5",
+        "FixedVersion": "219-67.el7",
+        "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
+        "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
+        "Severity": "LOW",
+        "References": [
+          "https://access.redhat.com/errata/RHSA-2019:2091",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16888",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16888",
+          "https://lists.apache.org/thread.html/5960a34a524848cd722fd7ab7e2227eac10107b0f90d9d1e9c3caa74@%3Cuser.cassandra.apache.org%3E",
+          "https://security.netapp.com/advisory/ntap-20190307-0007/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16866",
+        "PkgName": "systemd-libs",
+        "InstalledVersion": "219-62.el7_6.5",
+        "FixedVersion": "219-67.el7",
+        "Title": "systemd: out-of-bounds read when parsing a crafted syslog message",
+        "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
+        "Severity": "LOW",
+        "References": [
+          "\nhttps://www.qualys.com/2019/01/09/system-down/system-down.txt\n    ",
+          "http://packetstormsecurity.com/files/152841/System-Down-A-systemd-journald-Exploit.html",
+          "http://seclists.org/fulldisclosure/2019/May/21",
+          "http://www.openwall.com/lists/oss-security/2019/05/10/4",
+          "http://www.securityfocus.com/bid/106527",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16866",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16866",
+          "https://seclists.org/bugtraq/2019/May/25",
+          "https://security.gentoo.org/glsa/201903-07",
+          "https://security.netapp.com/advisory/ntap-20190117-0001/",
+          "https://usn.ubuntu.com/3855-1/",
+          "https://www.debian.org/security/2019/dsa-4367",
+          "https://www.qualys.com/2019/01/09/system-down/system-down.txt"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16888",
+        "PkgName": "systemd-libs",
+        "InstalledVersion": "219-62.el7_6.5",
+        "FixedVersion": "219-67.el7",
+        "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
+        "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
+        "Severity": "LOW",
+        "References": [
+          "https://access.redhat.com/errata/RHSA-2019:2091",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16888",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16888",
+          "https://lists.apache.org/thread.html/5960a34a524848cd722fd7ab7e2227eac10107b0f90d9d1e9c3caa74@%3Cuser.cassandra.apache.org%3E",
+          "https://security.netapp.com/advisory/ntap-20190307-0007/"
+        ]
+      }
+    ]
+  }
+]
