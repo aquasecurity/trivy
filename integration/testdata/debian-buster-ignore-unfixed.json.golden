@@ -1,0 +1,75 @@
+[
+  {
+    "Target": "testdata/fixtures/debian-buster.tar.gz (debian 10.1)",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2019-5094",
+        "PkgName": "e2fsprogs",
+        "InstalledVersion": "1.44.5-1+deb10u1",
+        "FixedVersion": "1.44.5-1+deb10u2",
+        "Title": "",
+        "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+          "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+          "https://seclists.org/bugtraq/2019/Sep/58",
+          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+          "https://usn.ubuntu.com/4142-2/",
+          "https://www.debian.org/security/2019/dsa-4535"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5094",
+        "PkgName": "libcom-err2",
+        "InstalledVersion": "1.44.5-1+deb10u1",
+        "FixedVersion": "1.44.5-1+deb10u2",
+        "Title": "",
+        "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+          "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+          "https://seclists.org/bugtraq/2019/Sep/58",
+          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+          "https://usn.ubuntu.com/4142-2/",
+          "https://www.debian.org/security/2019/dsa-4535"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5094",
+        "PkgName": "libext2fs2",
+        "InstalledVersion": "1.44.5-1+deb10u1",
+        "FixedVersion": "1.44.5-1+deb10u2",
+        "Title": "",
+        "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+          "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+          "https://seclists.org/bugtraq/2019/Sep/58",
+          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+          "https://usn.ubuntu.com/4142-2/",
+          "https://www.debian.org/security/2019/dsa-4535"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5094",
+        "PkgName": "libss2",
+        "InstalledVersion": "1.44.5-1+deb10u1",
+        "FixedVersion": "1.44.5-1+deb10u2",
+        "Title": "",
+        "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+          "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+          "https://seclists.org/bugtraq/2019/Sep/58",
+          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+          "https://usn.ubuntu.com/4142-2/",
+          "https://www.debian.org/security/2019/dsa-4535"
+        ]
+      }
+    ]
+  }
+]

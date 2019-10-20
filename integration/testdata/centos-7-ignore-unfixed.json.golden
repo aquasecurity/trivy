@@ -1,0 +1,1580 @@
+[
+  {
+    "Target": "testdata/fixtures/centos-7.tar.gz (centos 7.6.1810)",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2018-5743",
+        "PkgName": "bind-license",
+        "InstalledVersion": "32:9.9.4-73.el7_6",
+        "FixedVersion": "32:9.9.4-74.el7_6.1",
+        "Title": "bind: Limiting simultaneous TCP clients is ineffective",
+        "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA flaw was found in the way bind implemented tunable which limited simultaneous TCP client connections. A remote attacker could use this flaw to exhaust the pool of file descriptors available to named, potentially affecting network connections and the management of files such as log files or zone journal files. In cases where the named process is not limited by OS-enforced per-process limits, this could additionally potentially lead to exhaustion of all available free file descriptors on that system.",
+        "Severity": "HIGH",
+        "References": [
+          "\nhttps://kb.isc.org/docs/cve-2018-5743\n    ",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5743"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-5741",
+        "PkgName": "bind-license",
+        "InstalledVersion": "32:9.9.4-73.el7_6",
+        "FixedVersion": "32:9.11.4-9.P2.el7",
+        "Title": "bind: Incorrect documentation of krb5-subdomain and ms-subdomain update policies",
+        "Description": "To provide fine-grained controls over the ability to use Dynamic DNS (DDNS) to update records in a zone, BIND 9 provides a feature called update-policy. Various rules can be configured to limit the types of updates that can be performed by a client, depending on the key used when sending the update request. Unfortunately, some rule types were not initially documented, and when documentation for them was added to the Administrator Reference Manual (ARM) in change #3112, the language that was added to the ARM at that time incorrectly described the behavior of two rule types, krb5-subdomain and ms-subdomain. This incorrect documentation could mislead operators into believing that policies they had configured were more restrictive than they actually were. This affects BIND versions prior to BIND 9.11.5 and BIND 9.12.3.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://kb.isc.org/docs/cve-2018-5741\n    ",
+          "http://www.securityfocus.com/bid/105379",
+          "http://www.securitytracker.com/id/1041674",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5741",
+          "https://kb.isc.org/docs/cve-2018-5741",
+          "https://security.gentoo.org/glsa/201903-13",
+          "https://support.hpe.com/hpsc/doc/public/display?docLocale=en_US\u0026docId=emr_na-hpesbux03927en_us"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-1000876",
+        "PkgName": "binutils",
+        "InstalledVersion": "2.27-34.base.el7",
+        "FixedVersion": "2.27-41.base.el7",
+        "Title": "binutils: integer overflow leads to heap-based buffer overflow in objdump",
+        "Description": "binutils version 2.32 and earlier contains a Integer Overflow vulnerability in objdump, bfd_get_dynamic_reloc_upper_bound,bfd_canonicalize_dynamic_reloc that can result in Integer overflow trigger heap overflow. Successful exploitation allows execution of arbitrary code.. This attack appear to be exploitable via Local. This vulnerability appears to have been fixed in after commit 3a551c7a1b80fca579461774860574eabfd7f18f.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/106304",
+          "https://access.redhat.com/errata/RHSA-2019:2075",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23994",
+          "https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;h=3a551c7a1b80fca579461774860574eabfd7f18f"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-12641",
+        "PkgName": "binutils",
+        "InstalledVersion": "2.27-34.base.el7",
+        "FixedVersion": "2.27-41.base.el7",
+        "Title": "binutils: Stack Exhaustion in the demangling functions provided by libiberty",
+        "Description": "An issue was discovered in arm_pt in cplus-dem.c in GNU libiberty, as distributed in GNU Binutils 2.30. Stack Exhaustion occurs in the C++ demangling functions provided by libiberty, and there are recursive stack frames: demangle_arm_hp_template, demangle_class_name, demangle_fund_type, do_type, do_arg, demangle_args, and demangle_nested_args. This can occur during execution of nm-new.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://access.redhat.com/errata/RHSA-2019:2075",
+          "https://bugs.launchpad.net/ubuntu/+source/binutils/+bug/1763099",
+          "https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85452",
+          "https://security.gentoo.org/glsa/201908-01",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23058"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-12697",
+        "PkgName": "binutils",
+        "InstalledVersion": "2.27-34.base.el7",
+        "FixedVersion": "2.27-41.base.el7",
+        "Title": "binutils: NULL pointer dereference in work_stuff_copy_to_from in cplus-dem.c.",
+        "Description": "A NULL pointer dereference (aka SEGV on unknown address 0x000000000000) was discovered in work_stuff_copy_to_from in cplus-dem.c in GNU libiberty, as distributed in GNU Binutils 2.30. This can occur during execution of objdump.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/104538",
+          "https://access.redhat.com/errata/RHSA-2019:2075",
+          "https://bugs.launchpad.net/ubuntu/+source/binutils/+bug/1763102",
+          "https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85454",
+          "https://security.gentoo.org/glsa/201908-01",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23057"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-14618",
+        "PkgName": "curl",
+        "InstalledVersion": "7.29.0-51.el7",
+        "FixedVersion": "7.29.0-51.el7_6.3",
+        "Title": "curl: NTLM password overflow via integer overflow",
+        "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
+        "Severity": "CRITICAL",
+        "References": [
+          "\nhttps://curl.haxx.se/docs/CVE-2018-14618.html\n    ",
+          "http://www.securitytracker.com/id/1041605",
+          "https://access.redhat.com/errata/RHSA-2018:3558",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14618",
+          "https://cert-portal.siemens.com/productcert/pdf/ssa-436177.pdf",
+          "https://curl.haxx.se/docs/CVE-2018-14618.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14618",
+          "https://psirt.global.sonicwall.com/vuln-detail/SNWLID-2018-0014",
+          "https://security.gentoo.org/glsa/201903-03",
+          "https://usn.ubuntu.com/3765-1/",
+          "https://usn.ubuntu.com/3765-2/",
+          "https://www.debian.org/security/2018/dsa-4286"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16842",
+        "PkgName": "curl",
+        "InstalledVersion": "7.29.0-51.el7",
+        "FixedVersion": "7.29.0-54.el7",
+        "Title": "curl: Heap-based buffer over-read in the curl tool warning formatting",
+        "Description": "Curl versions 7.14.1 through 7.61.1 are vulnerable to a heap-based buffer over-read in the tool_msgs.c:voutf() function that may result in information exposure and denial of service.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://curl.haxx.se/docs/CVE-2018-16842.html\n    ",
+          "http://www.securitytracker.com/id/1042014",
+          "https://access.redhat.com/errata/RHSA-2019:2181",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16842",
+          "https://curl.haxx.se/docs/CVE-2018-16842.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16842",
+          "https://github.com/curl/curl/commit/d530e92f59ae9bb2d47066c3c460b25d2ffeb211",
+          "https://lists.debian.org/debian-lts-announce/2018/11/msg00005.html",
+          "https://security.gentoo.org/glsa/201903-03",
+          "https://usn.ubuntu.com/3805-1/",
+          "https://usn.ubuntu.com/3805-2/",
+          "https://www.debian.org/security/2018/dsa-4331"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16402",
+        "PkgName": "elfutils-default-yama-scope",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
+        "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
+        "Severity": "HIGH",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16062",
+        "PkgName": "elfutils-default-yama-scope",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getaranges.c:dwarf_getaranges() via crafted file",
+        "Description": "dwarf_getaranges in dwarf_getaranges.c in libdw in elfutils before 2018-08-18 allows remote attackers to cause a denial of service (heap-based buffer over-read) via a crafted file.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00052.html",
+          "https://access.redhat.com/errata/RHSA-2019:2197",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16062",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23541",
+          "https://sourceware.org/git/?p=elfutils.git;a=commit;h=29e31978ba51c1051743a503ee325b5ebc03d7e9",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16403",
+        "PkgName": "elfutils-default-yama-scope",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getabbrev.c and libwd/dwarf_hasattr.c causes crash",
+        "Description": "libdw in elfutils 0.173 checks the end of the attributes list incorrectly in dwarf_getabbrev in dwarf_getabbrev.c and dwarf_hasattr in dwarf_hasattr.c, leading to a heap-based buffer over-read and an application crash.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00052.html",
+          "https://access.redhat.com/errata/RHSA-2019:2197",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16403",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23529",
+          "https://sourceware.org/git/?p=elfutils.git;a=commit;h=6983e59b727458a6c64d9659c85f08218bc4fcda",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-18310",
+        "PkgName": "elfutils-default-yama-scope",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl",
+        "Description": "An invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl in elfutils through v0.174. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by consider_notes.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18310",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23752",
+          "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00022.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-18520",
+        "PkgName": "elfutils-default-yama-scope",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: eu-size cannot handle recursive ar files",
+        "Description": "An Invalid Memory Address Dereference exists in the function elf_end in libelf in elfutils through v0.174. Although eu-size is intended to support ar files inside ar files, handle_ar in size.c closes the outer ar file before handling all inner entries. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18520",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23787",
+          "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00057.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-18521",
+        "PkgName": "elfutils-default-yama-scope",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Divide-by-zero in arlib_add_symbols function in arlib.c",
+        "Description": "Divide-by-zero vulnerabilities in the function arlib_add_symbols() in arlib.c in elfutils 0.174 allow remote attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by eu-ranlib, because a zero sh_entsize is mishandled.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18521",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23786",
+          "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00055.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7149",
+        "PkgName": "elfutils-default-yama-scope",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: heap-based buffer over-read in read_srclines in dwarf_getsrclines.c in libdw",
+        "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7149",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24102",
+          "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00068.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7150",
+        "PkgName": "elfutils-default-yama-scope",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: segmentation fault in elf64_xlatetom in libelf/elf32_xlatetom.c",
+        "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7150",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24103",
+          "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00070.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7664",
+        "PkgName": "elfutils-default-yama-scope",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Out of bound write in elf_cvt_note in libelf/note_xlate.h",
+        "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://access.redhat.com/errata/RHSA-2019:2197",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7664",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24084"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7665",
+        "PkgName": "elfutils-default-yama-scope",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: heap-based buffer over-read in function elf32_xlatetom in elf32_xlatetom.c",
+        "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7665",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24089",
+          "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00049.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16402",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
+        "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
+        "Severity": "HIGH",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16062",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getaranges.c:dwarf_getaranges() via crafted file",
+        "Description": "dwarf_getaranges in dwarf_getaranges.c in libdw in elfutils before 2018-08-18 allows remote attackers to cause a denial of service (heap-based buffer over-read) via a crafted file.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00052.html",
+          "https://access.redhat.com/errata/RHSA-2019:2197",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16062",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23541",
+          "https://sourceware.org/git/?p=elfutils.git;a=commit;h=29e31978ba51c1051743a503ee325b5ebc03d7e9",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16403",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getabbrev.c and libwd/dwarf_hasattr.c causes crash",
+        "Description": "libdw in elfutils 0.173 checks the end of the attributes list incorrectly in dwarf_getabbrev in dwarf_getabbrev.c and dwarf_hasattr in dwarf_hasattr.c, leading to a heap-based buffer over-read and an application crash.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00052.html",
+          "https://access.redhat.com/errata/RHSA-2019:2197",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16403",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23529",
+          "https://sourceware.org/git/?p=elfutils.git;a=commit;h=6983e59b727458a6c64d9659c85f08218bc4fcda",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-18310",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl",
+        "Description": "An invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl in elfutils through v0.174. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by consider_notes.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18310",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23752",
+          "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00022.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-18520",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: eu-size cannot handle recursive ar files",
+        "Description": "An Invalid Memory Address Dereference exists in the function elf_end in libelf in elfutils through v0.174. Although eu-size is intended to support ar files inside ar files, handle_ar in size.c closes the outer ar file before handling all inner entries. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18520",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23787",
+          "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00057.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-18521",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Divide-by-zero in arlib_add_symbols function in arlib.c",
+        "Description": "Divide-by-zero vulnerabilities in the function arlib_add_symbols() in arlib.c in elfutils 0.174 allow remote attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by eu-ranlib, because a zero sh_entsize is mishandled.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18521",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23786",
+          "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00055.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7149",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: heap-based buffer over-read in read_srclines in dwarf_getsrclines.c in libdw",
+        "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7149",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24102",
+          "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00068.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7150",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: segmentation fault in elf64_xlatetom in libelf/elf32_xlatetom.c",
+        "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7150",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24103",
+          "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00070.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7664",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Out of bound write in elf_cvt_note in libelf/note_xlate.h",
+        "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://access.redhat.com/errata/RHSA-2019:2197",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7664",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24084"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7665",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: heap-based buffer over-read in function elf32_xlatetom in elf32_xlatetom.c",
+        "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7665",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24089",
+          "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00049.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16402",
+        "PkgName": "elfutils-libs",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
+        "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
+        "Severity": "HIGH",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16062",
+        "PkgName": "elfutils-libs",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getaranges.c:dwarf_getaranges() via crafted file",
+        "Description": "dwarf_getaranges in dwarf_getaranges.c in libdw in elfutils before 2018-08-18 allows remote attackers to cause a denial of service (heap-based buffer over-read) via a crafted file.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00052.html",
+          "https://access.redhat.com/errata/RHSA-2019:2197",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16062",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23541",
+          "https://sourceware.org/git/?p=elfutils.git;a=commit;h=29e31978ba51c1051743a503ee325b5ebc03d7e9",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16403",
+        "PkgName": "elfutils-libs",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getabbrev.c and libwd/dwarf_hasattr.c causes crash",
+        "Description": "libdw in elfutils 0.173 checks the end of the attributes list incorrectly in dwarf_getabbrev in dwarf_getabbrev.c and dwarf_hasattr in dwarf_hasattr.c, leading to a heap-based buffer over-read and an application crash.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00052.html",
+          "https://access.redhat.com/errata/RHSA-2019:2197",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16403",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23529",
+          "https://sourceware.org/git/?p=elfutils.git;a=commit;h=6983e59b727458a6c64d9659c85f08218bc4fcda",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-18310",
+        "PkgName": "elfutils-libs",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl",
+        "Description": "An invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl in elfutils through v0.174. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by consider_notes.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18310",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23752",
+          "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00022.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-18520",
+        "PkgName": "elfutils-libs",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: eu-size cannot handle recursive ar files",
+        "Description": "An Invalid Memory Address Dereference exists in the function elf_end in libelf in elfutils through v0.174. Although eu-size is intended to support ar files inside ar files, handle_ar in size.c closes the outer ar file before handling all inner entries. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18520",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23787",
+          "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00057.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-18521",
+        "PkgName": "elfutils-libs",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Divide-by-zero in arlib_add_symbols function in arlib.c",
+        "Description": "Divide-by-zero vulnerabilities in the function arlib_add_symbols() in arlib.c in elfutils 0.174 allow remote attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by eu-ranlib, because a zero sh_entsize is mishandled.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18521",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23786",
+          "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00055.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7149",
+        "PkgName": "elfutils-libs",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: heap-based buffer over-read in read_srclines in dwarf_getsrclines.c in libdw",
+        "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7149",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24102",
+          "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00068.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7150",
+        "PkgName": "elfutils-libs",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: segmentation fault in elf64_xlatetom in libelf/elf32_xlatetom.c",
+        "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7150",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24103",
+          "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00070.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7664",
+        "PkgName": "elfutils-libs",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: Out of bound write in elf_cvt_note in libelf/note_xlate.h",
+        "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://access.redhat.com/errata/RHSA-2019:2197",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7664",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24084"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7665",
+        "PkgName": "elfutils-libs",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Title": "elfutils: heap-based buffer over-read in function elf32_xlatetom in elf32_xlatetom.c",
+        "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7665",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24089",
+          "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00049.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2016-10739",
+        "PkgName": "glibc",
+        "InstalledVersion": "2.17-260.el7_6.3",
+        "FixedVersion": "2.17-292.el7",
+        "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
+          "http://www.securityfocus.com/bid/106672",
+          "https://access.redhat.com/errata/RHSA-2019:2118",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2016-10739",
+        "PkgName": "glibc-common",
+        "InstalledVersion": "2.17-260.el7_6.3",
+        "FixedVersion": "2.17-292.el7",
+        "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
+          "http://www.securityfocus.com/bid/106672",
+          "https://access.redhat.com/errata/RHSA-2019:2118",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-14618",
+        "PkgName": "libcurl",
+        "InstalledVersion": "7.29.0-51.el7",
+        "FixedVersion": "7.29.0-51.el7_6.3",
+        "Title": "curl: NTLM password overflow via integer overflow",
+        "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
+        "Severity": "CRITICAL",
+        "References": [
+          "\nhttps://curl.haxx.se/docs/CVE-2018-14618.html\n    ",
+          "http://www.securitytracker.com/id/1041605",
+          "https://access.redhat.com/errata/RHSA-2018:3558",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14618",
+          "https://cert-portal.siemens.com/productcert/pdf/ssa-436177.pdf",
+          "https://curl.haxx.se/docs/CVE-2018-14618.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14618",
+          "https://psirt.global.sonicwall.com/vuln-detail/SNWLID-2018-0014",
+          "https://security.gentoo.org/glsa/201903-03",
+          "https://usn.ubuntu.com/3765-1/",
+          "https://usn.ubuntu.com/3765-2/",
+          "https://www.debian.org/security/2018/dsa-4286"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16842",
+        "PkgName": "libcurl",
+        "InstalledVersion": "7.29.0-51.el7",
+        "FixedVersion": "7.29.0-54.el7",
+        "Title": "curl: Heap-based buffer over-read in the curl tool warning formatting",
+        "Description": "Curl versions 7.14.1 through 7.61.1 are vulnerable to a heap-based buffer over-read in the tool_msgs.c:voutf() function that may result in information exposure and denial of service.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://curl.haxx.se/docs/CVE-2018-16842.html\n    ",
+          "http://www.securitytracker.com/id/1042014",
+          "https://access.redhat.com/errata/RHSA-2019:2181",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16842",
+          "https://curl.haxx.se/docs/CVE-2018-16842.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16842",
+          "https://github.com/curl/curl/commit/d530e92f59ae9bb2d47066c3c460b25d2ffeb211",
+          "https://lists.debian.org/debian-lts-announce/2018/11/msg00005.html",
+          "https://security.gentoo.org/glsa/201903-03",
+          "https://usn.ubuntu.com/3805-1/",
+          "https://usn.ubuntu.com/3805-2/",
+          "https://www.debian.org/security/2018/dsa-4331"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3855",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.3-12.el7",
+        "FixedVersion": "1.4.3-12.el7_6.2",
+        "Title": "libssh2: Integer overflow in transport read resulting in out of bounds write",
+        "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
+        "Severity": "CRITICAL",
+        "References": [
+          "\nhttps://www.libssh2.org/CVE-2019-3855.html\n    ",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
+          "http://www.openwall.com/lists/oss-security/2019/03/18/3",
+          "http://www.securityfocus.com/bid/107485",
+          "https://access.redhat.com/errata/RHSA-2019:0679",
+          "https://access.redhat.com/errata/RHSA-2019:1175",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3855",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3855",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XCWEA5ZCLKRDUK62QVVYMFWLWKOPX3LO/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://seclists.org/bugtraq/2019/Mar/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.broadcom.com/support/fibre-channel-networking/security-advisories/brocade-security-advisory-2019-767",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3855.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3856",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.3-12.el7",
+        "FixedVersion": "1.4.3-12.el7_6.2",
+        "Title": "libssh2: Integer overflow in keyboard interactive handling resulting in out of bounds write",
+        "Description": "An integer overflow flaw, which could lead to an out of bounds write, was discovered in libssh2 before 1.8.1 in the way keyboard prompt requests are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://www.libssh2.org/CVE-2019-3856.html\n    ",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "https://access.redhat.com/errata/RHSA-2019:0679",
+          "https://access.redhat.com/errata/RHSA-2019:1175",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3856",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3856",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3856.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3857",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.3-12.el7",
+        "FixedVersion": "1.4.3-12.el7_6.2",
+        "Title": "libssh2: Integer overflow in SSH packet processing channel resulting in out of bounds write",
+        "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit signal are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://www.libssh2.org/CVE-2019-3857.html\n    ",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "https://access.redhat.com/errata/RHSA-2019:0679",
+          "https://access.redhat.com/errata/RHSA-2019:1175",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3857",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3857",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3857.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3858",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.3-12.el7",
+        "FixedVersion": "1.8.0-3.el7",
+        "Title": "libssh2: Zero-byte allocation with a specially crafted SFTP packed leading to an out-of-bounds read",
+        "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 when a specially crafted SFTP packet is received from the server. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://www.libssh2.org/CVE-2019-3858.html\n    ",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
+          "http://www.openwall.com/lists/oss-security/2019/03/18/3",
+          "http://www.securityfocus.com/bid/107485",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3858",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3858",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XCWEA5ZCLKRDUK62QVVYMFWLWKOPX3LO/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://seclists.org/bugtraq/2019/Mar/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.broadcom.com/support/fibre-channel-networking/security-advisories/brocade-security-advisory-2019-767",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3858.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3861",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.3-12.el7",
+        "FixedVersion": "1.8.0-3.el7",
+        "Title": "libssh2: Out-of-bounds reads with specially crafted SSH packets",
+        "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH packets with a padding length value greater than the packet length are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://www.libssh2.org/CVE-2019-3861.html\n    ",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3861",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3861",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3861.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3862",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.3-12.el7",
+        "FixedVersion": "1.4.3-12.el7_6.3",
+        "Title": "libssh2: Out-of-bounds memory comparison with specially crafted message channel request",
+        "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit status message and no payload are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://www.libssh2.org/CVE-2019-3862.html\n    ",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
+          "http://www.openwall.com/lists/oss-security/2019/03/18/3",
+          "http://www.securityfocus.com/bid/107485",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3862",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3862",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XCWEA5ZCLKRDUK62QVVYMFWLWKOPX3LO/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://seclists.org/bugtraq/2019/Mar/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.broadcom.com/support/fibre-channel-networking/security-advisories/brocade-security-advisory-2019-767",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3862.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3863",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.3-12.el7",
+        "FixedVersion": "1.4.3-12.el7_6.2",
+        "Title": "libssh2: Integer overflow in user authenticate keyboard interactive allows out-of-bounds writes",
+        "Description": "A flaw was found in libssh2 before 1.8.1. A server could send a multiple keyboard interactive response messages whose total length are greater than unsigned char max characters. This value is used as an index to copy memory causing in an out of bounds memory write error.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://www.libssh2.org/CVE-2019-3863.html\n    ",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "https://access.redhat.com/errata/RHSA-2019:0679",
+          "https://access.redhat.com/errata/RHSA-2019:1175",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3863",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3863",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3863.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-12404",
+        "PkgName": "nss",
+        "InstalledVersion": "3.36.0-7.1.el7_6",
+        "FixedVersion": "3.44.0-4.el7",
+        "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
+        "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
+          "http://www.securityfocus.com/bid/107260",
+          "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-0495",
+        "PkgName": "nss",
+        "InstalledVersion": "3.36.0-7.1.el7_6",
+        "FixedVersion": "3.44.0-4.el7",
+        "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
+        "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
+        "Severity": "LOW",
+        "References": [
+          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
+          "http://www.securitytracker.com/id/1041144",
+          "http://www.securitytracker.com/id/1041147",
+          "https://access.redhat.com/errata/RHSA-2018:3221",
+          "https://access.redhat.com/errata/RHSA-2018:3505",
+          "https://access.redhat.com/errata/RHSA-2019:1296",
+          "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
+          "https://dev.gnupg.org/T4011",
+          "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
+          "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
+          "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
+          "https://usn.ubuntu.com/3689-1/",
+          "https://usn.ubuntu.com/3689-2/",
+          "https://usn.ubuntu.com/3692-1/",
+          "https://usn.ubuntu.com/3692-2/",
+          "https://usn.ubuntu.com/3850-1/",
+          "https://usn.ubuntu.com/3850-2/",
+          "https://www.debian.org/security/2018/dsa-4231",
+          "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-12404",
+        "PkgName": "nss-sysinit",
+        "InstalledVersion": "3.36.0-7.1.el7_6",
+        "FixedVersion": "3.44.0-4.el7",
+        "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
+        "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
+          "http://www.securityfocus.com/bid/107260",
+          "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-0495",
+        "PkgName": "nss-sysinit",
+        "InstalledVersion": "3.36.0-7.1.el7_6",
+        "FixedVersion": "3.44.0-4.el7",
+        "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
+        "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
+        "Severity": "LOW",
+        "References": [
+          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
+          "http://www.securitytracker.com/id/1041144",
+          "http://www.securitytracker.com/id/1041147",
+          "https://access.redhat.com/errata/RHSA-2018:3221",
+          "https://access.redhat.com/errata/RHSA-2018:3505",
+          "https://access.redhat.com/errata/RHSA-2019:1296",
+          "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
+          "https://dev.gnupg.org/T4011",
+          "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
+          "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
+          "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
+          "https://usn.ubuntu.com/3689-1/",
+          "https://usn.ubuntu.com/3689-2/",
+          "https://usn.ubuntu.com/3692-1/",
+          "https://usn.ubuntu.com/3692-2/",
+          "https://usn.ubuntu.com/3850-1/",
+          "https://usn.ubuntu.com/3850-2/",
+          "https://www.debian.org/security/2018/dsa-4231",
+          "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-12404",
+        "PkgName": "nss-tools",
+        "InstalledVersion": "3.36.0-7.1.el7_6",
+        "FixedVersion": "3.44.0-4.el7",
+        "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
+        "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
+          "http://www.securityfocus.com/bid/107260",
+          "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-0495",
+        "PkgName": "nss-tools",
+        "InstalledVersion": "3.36.0-7.1.el7_6",
+        "FixedVersion": "3.44.0-4.el7",
+        "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
+        "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
+        "Severity": "LOW",
+        "References": [
+          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
+          "http://www.securitytracker.com/id/1041144",
+          "http://www.securitytracker.com/id/1041147",
+          "https://access.redhat.com/errata/RHSA-2018:3221",
+          "https://access.redhat.com/errata/RHSA-2018:3505",
+          "https://access.redhat.com/errata/RHSA-2019:1296",
+          "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
+          "https://dev.gnupg.org/T4011",
+          "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
+          "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
+          "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
+          "https://usn.ubuntu.com/3689-1/",
+          "https://usn.ubuntu.com/3689-2/",
+          "https://usn.ubuntu.com/3692-1/",
+          "https://usn.ubuntu.com/3692-2/",
+          "https://usn.ubuntu.com/3850-1/",
+          "https://usn.ubuntu.com/3850-2/",
+          "https://www.debian.org/security/2018/dsa-4231",
+          "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-0734",
+        "PkgName": "openssl-libs",
+        "InstalledVersion": "1:1.0.2k-16.el7",
+        "FixedVersion": "1:1.0.2k-19.el7",
+        "Title": "openssl: timing side channel attack in the DSA signature algorithm",
+        "Description": "The OpenSSL DSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.1a (Affected 1.1.1). Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.0.2q (Affected 1.0.2-1.0.2p).",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00030.html",
+          "http://www.securityfocus.com/bid/105758",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0734",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=43e6a58d4991a451daf4891ff05a48735df871ac",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=8abfe72e8c1de1b95f50aa0d9134803b4d00070f",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=ef11e19d1365eea2b1851e6f540a0bf365d303e7",
+          "https://nodejs.org/en/blog/vulnerability/november-2018-security-releases/",
+          "https://security.netapp.com/advisory/ntap-20181105-0002/",
+          "https://security.netapp.com/advisory/ntap-20190118-0002/",
+          "https://security.netapp.com/advisory/ntap-20190423-0002/",
+          "https://usn.ubuntu.com/3840-1/",
+          "https://www.debian.org/security/2018/dsa-4348",
+          "https://www.debian.org/security/2018/dsa-4355",
+          "https://www.openssl.org/news/secadv/20181030.txt",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujan2019-5072801.html",
+          "https://www.tenable.com/security/tns-2018-16",
+          "https://www.tenable.com/security/tns-2018-17"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1559",
+        "PkgName": "openssl-libs",
+        "InstalledVersion": "1:1.0.2k-16.el7",
+        "FixedVersion": "1:1.0.2k-19.el7",
+        "Title": "openssl: 0-byte record padding oracle",
+        "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://www.openssl.org/news/secadv/20190226.txt\nhttps://github.com/RUB-NDS/TLS-Padding-Oracles\n    ",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00041.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00019.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00046.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00047.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00049.html",
+          "http://www.securityfocus.com/bid/107174",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1559",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e9bbefbf0f24c57645e7ad6a5a71ae649d18ac8e",
+          "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10282",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00003.html",
+          "https://security.gentoo.org/glsa/201903-10",
+          "https://security.netapp.com/advisory/ntap-20190301-0001/",
+          "https://security.netapp.com/advisory/ntap-20190301-0002/",
+          "https://security.netapp.com/advisory/ntap-20190423-0002/",
+          "https://support.f5.com/csp/article/K18549143",
+          "https://usn.ubuntu.com/3899-1/",
+          "https://www.debian.org/security/2019/dsa-4400",
+          "https://www.openssl.org/news/secadv/20190226.txt",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+          "https://www.tenable.com/security/tns-2019-02",
+          "https://www.tenable.com/security/tns-2019-03"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-5407",
+        "PkgName": "openssl-libs",
+        "InstalledVersion": "1:1.0.2k-16.el7",
+        "FixedVersion": "1:1.0.2k-16.el7_6.1",
+        "Title": "openssl: Side-channel vulnerability on SMT/Hyper-Threading architectures (PortSmash)",
+        "Description": "Simultaneous Multi-threading (SMT) in processors can enable local users to exploit software vulnerable to timing attacks via a side-channel timing attack on 'port contention'.",
+        "Severity": "LOW",
+        "References": [
+          "\nhttps://github.com/bbbrumley/portsmash\nhttps://www.openssl.org/news/secadv/20181112.txt\n    ",
+          "http://www.securityfocus.com/bid/105897",
+          "https://access.redhat.com/errata/RHSA-2019:0483",
+          "https://access.redhat.com/errata/RHSA-2019:0651",
+          "https://access.redhat.com/errata/RHSA-2019:0652",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5407",
+          "https://eprint.iacr.org/2018/1060.pdf",
+          "https://github.com/bbbrumley/portsmash",
+          "https://lists.debian.org/debian-lts-announce/2018/11/msg00024.html",
+          "https://nodejs.org/en/blog/vulnerability/november-2018-security-releases/",
+          "https://security.gentoo.org/glsa/201903-10",
+          "https://security.netapp.com/advisory/ntap-20181126-0001/",
+          "https://usn.ubuntu.com/3840-1/",
+          "https://www.debian.org/security/2018/dsa-4348",
+          "https://www.debian.org/security/2018/dsa-4355",
+          "https://www.exploit-db.com/exploits/45785/",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujan2019-5072801.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html",
+          "https://www.tenable.com/security/tns-2018-16",
+          "https://www.tenable.com/security/tns-2018-17"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-1122",
+        "PkgName": "procps-ng",
+        "InstalledVersion": "3.3.10-23.el7",
+        "FixedVersion": "3.3.10-26.el7",
+        "Title": "procps-ng, procps: Local privilege escalation in top",
+        "Description": "procps-ng before version 3.3.15 is vulnerable to a local privilege escalation in top. If a user runs top with HOME unset in an attacker-controlled directory, the attacker could achieve privilege escalation by exploiting one of several vulnerabilities in the config_file() function.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://www.qualys.com/2018/05/17/procps-ng-audit-report-advisory.txt\n    ",
+          "http://seclists.org/oss-sec/2018/q2/122",
+          "http://www.securityfocus.com/bid/104214",
+          "https://access.redhat.com/errata/RHSA-2019:2189",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-1122",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1122",
+          "https://lists.debian.org/debian-lts-announce/2018/05/msg00021.html",
+          "https://security.gentoo.org/glsa/201805-14",
+          "https://usn.ubuntu.com/3658-1/",
+          "https://usn.ubuntu.com/3658-3/",
+          "https://www.debian.org/security/2018/dsa-4208",
+          "https://www.exploit-db.com/exploits/44806/",
+          "https://www.qualys.com/2018/05/17/procps-ng-audit-report-advisory.txt"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5010",
+        "PkgName": "python",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
+        "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
+        "Severity": "HIGH",
+        "References": [
+          "\nhttps://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html\n    ",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-14647",
+        "PkgName": "python",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Title": "python: Missing salt initialization in _elementtree.c module",
+        "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. Python 3.8, 3.7, 3.6, 3.5, 3.4, 2.7 are believed to be vulnerable.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://bugs.python.org/issue34623\n    ",
+          "http://www.securityfocus.com/bid/105396",
+          "http://www.securitytracker.com/id/1041740",
+          "https://access.redhat.com/errata/RHSA-2019:1260",
+          "https://access.redhat.com/errata/RHSA-2019:2030",
+          "https://bugs.python.org/issue34623",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14647",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14647",
+          "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
+          "https://lists.debian.org/debian-lts-announce/2019/06/msg00023.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RBJCB2HWOJLP3L7CUQHJHNBHLSVOXJE5/",
+          "https://usn.ubuntu.com/3817-1/",
+          "https://usn.ubuntu.com/3817-2/",
+          "https://www.debian.org/security/2018/dsa-4306",
+          "https://www.debian.org/security/2018/dsa-4307"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-10160",
+        "PkgName": "python",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-80.el7_6",
+        "Title": "python: regression of CVE-2019-9636 due to functional fix to allow port numbers in netloc",
+        "Description": "A security regression of CVE-2019-9636 was discovered in python since commit d537ab0ff9767ef024f26246899728f0116b1ec3 affecting versions 2.7, 3.5, 3.6, 3.7 and from v3.8.0a4 through v3.8.0b1, which still allows an attacker to exploit CVE-2019-9636 by abusing the user and password parts of a URL. When an application parses user-supplied URLs to store cookies, authentication credentials, or other kind of information, it is possible for an attacker to provide specially crafted URLs to make the application locate host-related information (e.g. cookies, authentication data) and send them to a different host than where it should, unlike if the URLs had been correctly parsed. The result of an attack may vary based on the application.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization2.html\n    ",
+          "https://access.redhat.com/errata/RHSA-2019:1587",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-10160",
+          "https://github.com/python/cpython/commit/250b62acc59921d399f0db47db3b462cd6037e09",
+          "https://github.com/python/cpython/commit/8d0ef0b5edeae52960c7ed05ae8a12388324f87e",
+          "https://github.com/python/cpython/commit/f61599b050c621386a3fc6bc480359e2d3bb93de",
+          "https://github.com/python/cpython/commit/fd1771dbdd28709716bd531580c40ae5ed814468",
+          "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
+          "https://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization2.html",
+          "https://security.netapp.com/advisory/ntap-20190617-0003/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9636",
+        "PkgName": "python",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-77.el7_6",
+        "Title": "python: Information Disclosure due to urlsplit improper NFKC normalization",
+        "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization.html\n    ",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00092.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00097.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00024.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00050.html",
+          "http://www.securityfocus.com/bid/107400",
+          "https://access.redhat.com/errata/RHBA-2019:0959",
+          "https://access.redhat.com/errata/RHSA-2019:0710",
+          "https://access.redhat.com/errata/RHSA-2019:0765",
+          "https://access.redhat.com/errata/RHSA-2019:0806",
+          "https://access.redhat.com/errata/RHSA-2019:0902",
+          "https://access.redhat.com/errata/RHSA-2019:0981",
+          "https://access.redhat.com/errata/RHSA-2019:0997",
+          "https://access.redhat.com/errata/RHSA-2019:1467",
+          "https://bugs.python.org/issue36216",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9636",
+          "https://github.com/python/cpython/pull/12201",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/46PVWY5LFP4BRPG3BVQ5QEEFYBVEXHCK/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/AEZ5IQT7OF7Q2NCGIVABOWYGKO7YU3NJ/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CFBAAGM27H73OLYBUA2IAZFSUN6KGLME/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/D3LXPABKVLFYUHRYJPM3CSS5MS6FXKS7/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ICBEGRHIPHWPG2VGYS6R4EVKVUUF4AQW/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IFAXBEY2TGOBDRKTR556JBXBVFSAKD6I/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JSKPGPZQNTAULHW4UH63KGOOUIDE4RRB/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/L25RTMKCF62DLC2XVSNXGX7C7HXISLVM/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TR6GCO3WTV4D5L23WTCBF275VE6BVNI3/",
+          "https://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization.html",
+          "https://security.netapp.com/advisory/ntap-20190517-0001/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9740",
+        "PkgName": "python",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Title": "python: CRLF injection via the query part of the url passed to urlopen()",
+        "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the query string after a ? character) followed by an HTTP header or a Redis command.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/107466",
+          "https://access.redhat.com/errata/RHSA-2019:1260",
+          "https://bugs.python.org/issue36276",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9740",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9947",
+        "PkgName": "python",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Title": "python: CRLF injection via the path part of the url passed to urlopen()",
+        "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the path component of a URL that lacks a ? character) followed by an HTTP header or a Redis command. This is similar to the CVE-2019-9740 query string issue.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://access.redhat.com/errata/RHSA-2019:1260",
+          "https://bugs.python.org/issue35906",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9947",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/",
+          "https://security.netapp.com/advisory/ntap-20190404-0004/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9948",
+        "PkgName": "python",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Title": "python: Undocumented local_file protocol allows remote attackers to bypass protection mechanisms",
+        "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00092.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00050.html",
+          "http://www.securityfocus.com/bid/107549",
+          "https://bugs.python.org/issue35907",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9948",
+          "https://github.com/python/cpython/pull/11842",
+          "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
+          "https://security.netapp.com/advisory/ntap-20190404-0004/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5010",
+        "PkgName": "python-libs",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
+        "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
+        "Severity": "HIGH",
+        "References": [
+          "\nhttps://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html\n    ",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-14647",
+        "PkgName": "python-libs",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Title": "python: Missing salt initialization in _elementtree.c module",
+        "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. Python 3.8, 3.7, 3.6, 3.5, 3.4, 2.7 are believed to be vulnerable.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://bugs.python.org/issue34623\n    ",
+          "http://www.securityfocus.com/bid/105396",
+          "http://www.securitytracker.com/id/1041740",
+          "https://access.redhat.com/errata/RHSA-2019:1260",
+          "https://access.redhat.com/errata/RHSA-2019:2030",
+          "https://bugs.python.org/issue34623",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14647",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14647",
+          "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
+          "https://lists.debian.org/debian-lts-announce/2019/06/msg00023.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RBJCB2HWOJLP3L7CUQHJHNBHLSVOXJE5/",
+          "https://usn.ubuntu.com/3817-1/",
+          "https://usn.ubuntu.com/3817-2/",
+          "https://www.debian.org/security/2018/dsa-4306",
+          "https://www.debian.org/security/2018/dsa-4307"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-10160",
+        "PkgName": "python-libs",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-80.el7_6",
+        "Title": "python: regression of CVE-2019-9636 due to functional fix to allow port numbers in netloc",
+        "Description": "A security regression of CVE-2019-9636 was discovered in python since commit d537ab0ff9767ef024f26246899728f0116b1ec3 affecting versions 2.7, 3.5, 3.6, 3.7 and from v3.8.0a4 through v3.8.0b1, which still allows an attacker to exploit CVE-2019-9636 by abusing the user and password parts of a URL. When an application parses user-supplied URLs to store cookies, authentication credentials, or other kind of information, it is possible for an attacker to provide specially crafted URLs to make the application locate host-related information (e.g. cookies, authentication data) and send them to a different host than where it should, unlike if the URLs had been correctly parsed. The result of an attack may vary based on the application.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization2.html\n    ",
+          "https://access.redhat.com/errata/RHSA-2019:1587",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-10160",
+          "https://github.com/python/cpython/commit/250b62acc59921d399f0db47db3b462cd6037e09",
+          "https://github.com/python/cpython/commit/8d0ef0b5edeae52960c7ed05ae8a12388324f87e",
+          "https://github.com/python/cpython/commit/f61599b050c621386a3fc6bc480359e2d3bb93de",
+          "https://github.com/python/cpython/commit/fd1771dbdd28709716bd531580c40ae5ed814468",
+          "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
+          "https://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization2.html",
+          "https://security.netapp.com/advisory/ntap-20190617-0003/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9636",
+        "PkgName": "python-libs",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-77.el7_6",
+        "Title": "python: Information Disclosure due to urlsplit improper NFKC normalization",
+        "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
+        "Severity": "MEDIUM",
+        "References": [
+          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization.html\n    ",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00092.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00097.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00024.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00050.html",
+          "http://www.securityfocus.com/bid/107400",
+          "https://access.redhat.com/errata/RHBA-2019:0959",
+          "https://access.redhat.com/errata/RHSA-2019:0710",
+          "https://access.redhat.com/errata/RHSA-2019:0765",
+          "https://access.redhat.com/errata/RHSA-2019:0806",
+          "https://access.redhat.com/errata/RHSA-2019:0902",
+          "https://access.redhat.com/errata/RHSA-2019:0981",
+          "https://access.redhat.com/errata/RHSA-2019:0997",
+          "https://access.redhat.com/errata/RHSA-2019:1467",
+          "https://bugs.python.org/issue36216",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9636",
+          "https://github.com/python/cpython/pull/12201",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/46PVWY5LFP4BRPG3BVQ5QEEFYBVEXHCK/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/AEZ5IQT7OF7Q2NCGIVABOWYGKO7YU3NJ/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CFBAAGM27H73OLYBUA2IAZFSUN6KGLME/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/D3LXPABKVLFYUHRYJPM3CSS5MS6FXKS7/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ICBEGRHIPHWPG2VGYS6R4EVKVUUF4AQW/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IFAXBEY2TGOBDRKTR556JBXBVFSAKD6I/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JSKPGPZQNTAULHW4UH63KGOOUIDE4RRB/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/L25RTMKCF62DLC2XVSNXGX7C7HXISLVM/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TR6GCO3WTV4D5L23WTCBF275VE6BVNI3/",
+          "https://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization.html",
+          "https://security.netapp.com/advisory/ntap-20190517-0001/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9740",
+        "PkgName": "python-libs",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Title": "python: CRLF injection via the query part of the url passed to urlopen()",
+        "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the query string after a ? character) followed by an HTTP header or a Redis command.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://www.securityfocus.com/bid/107466",
+          "https://access.redhat.com/errata/RHSA-2019:1260",
+          "https://bugs.python.org/issue36276",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9740",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9947",
+        "PkgName": "python-libs",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Title": "python: CRLF injection via the path part of the url passed to urlopen()",
+        "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the path component of a URL that lacks a ? character) followed by an HTTP header or a Redis command. This is similar to the CVE-2019-9740 query string issue.",
+        "Severity": "MEDIUM",
+        "References": [
+          "https://access.redhat.com/errata/RHSA-2019:1260",
+          "https://bugs.python.org/issue35906",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9947",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/",
+          "https://security.netapp.com/advisory/ntap-20190404-0004/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-9948",
+        "PkgName": "python-libs",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Title": "python: Undocumented local_file protocol allows remote attackers to bypass protection mechanisms",
+        "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00092.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00050.html",
+          "http://www.securityfocus.com/bid/107549",
+          "https://bugs.python.org/issue35907",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9948",
+          "https://github.com/python/cpython/pull/11842",
+          "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
+          "https://security.netapp.com/advisory/ntap-20190404-0004/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-15686",
+        "PkgName": "systemd",
+        "InstalledVersion": "219-62.el7_6.5",
+        "FixedVersion": "219-67.el7",
+        "Title": "systemd: line splitting via fgets() allows for state injection during daemon-reexec",
+        "Description": "A vulnerability in unit_deserialize of systemd allows an attacker to supply arbitrary state across systemd re-execution via NotifyAccess. This can be used to improperly influence systemd execution and possibly lead to root privilege escalation. Affected releases are systemd versions up to and including 239.",
+        "Severity": "CRITICAL",
+        "References": [
+          "http://www.securityfocus.com/bid/105747",
+          "https://access.redhat.com/errata/RHSA-2019:2091",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-15686",
+          "https://github.com/systemd/systemd/pull/10519",
+          "https://lists.debian.org/debian-lts-announce/2018/11/msg00017.html",
+          "https://security.gentoo.org/glsa/201810-10",
+          "https://usn.ubuntu.com/3816-1/",
+          "https://www.exploit-db.com/exploits/45714/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16866",
+        "PkgName": "systemd",
+        "InstalledVersion": "219-62.el7_6.5",
+        "FixedVersion": "219-67.el7",
+        "Title": "systemd: out-of-bounds read when parsing a crafted syslog message",
+        "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
+        "Severity": "LOW",
+        "References": [
+          "\nhttps://www.qualys.com/2019/01/09/system-down/system-down.txt\n    ",
+          "http://packetstormsecurity.com/files/152841/System-Down-A-systemd-journald-Exploit.html",
+          "http://seclists.org/fulldisclosure/2019/May/21",
+          "http://www.openwall.com/lists/oss-security/2019/05/10/4",
+          "http://www.securityfocus.com/bid/106527",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16866",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16866",
+          "https://seclists.org/bugtraq/2019/May/25",
+          "https://security.gentoo.org/glsa/201903-07",
+          "https://security.netapp.com/advisory/ntap-20190117-0001/",
+          "https://usn.ubuntu.com/3855-1/",
+          "https://www.debian.org/security/2019/dsa-4367",
+          "https://www.qualys.com/2019/01/09/system-down/system-down.txt"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16888",
+        "PkgName": "systemd",
+        "InstalledVersion": "219-62.el7_6.5",
+        "FixedVersion": "219-67.el7",
+        "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
+        "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
+        "Severity": "LOW",
+        "References": [
+          "https://access.redhat.com/errata/RHSA-2019:2091",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16888",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16888",
+          "https://lists.apache.org/thread.html/5960a34a524848cd722fd7ab7e2227eac10107b0f90d9d1e9c3caa74@%3Cuser.cassandra.apache.org%3E",
+          "https://security.netapp.com/advisory/ntap-20190307-0007/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-15686",
+        "PkgName": "systemd-libs",
+        "InstalledVersion": "219-62.el7_6.5",
+        "FixedVersion": "219-67.el7",
+        "Title": "systemd: line splitting via fgets() allows for state injection during daemon-reexec",
+        "Description": "A vulnerability in unit_deserialize of systemd allows an attacker to supply arbitrary state across systemd re-execution via NotifyAccess. This can be used to improperly influence systemd execution and possibly lead to root privilege escalation. Affected releases are systemd versions up to and including 239.",
+        "Severity": "CRITICAL",
+        "References": [
+          "http://www.securityfocus.com/bid/105747",
+          "https://access.redhat.com/errata/RHSA-2019:2091",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-15686",
+          "https://github.com/systemd/systemd/pull/10519",
+          "https://lists.debian.org/debian-lts-announce/2018/11/msg00017.html",
+          "https://security.gentoo.org/glsa/201810-10",
+          "https://usn.ubuntu.com/3816-1/",
+          "https://www.exploit-db.com/exploits/45714/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16866",
+        "PkgName": "systemd-libs",
+        "InstalledVersion": "219-62.el7_6.5",
+        "FixedVersion": "219-67.el7",
+        "Title": "systemd: out-of-bounds read when parsing a crafted syslog message",
+        "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
+        "Severity": "LOW",
+        "References": [
+          "\nhttps://www.qualys.com/2019/01/09/system-down/system-down.txt\n    ",
+          "http://packetstormsecurity.com/files/152841/System-Down-A-systemd-journald-Exploit.html",
+          "http://seclists.org/fulldisclosure/2019/May/21",
+          "http://www.openwall.com/lists/oss-security/2019/05/10/4",
+          "http://www.securityfocus.com/bid/106527",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16866",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16866",
+          "https://seclists.org/bugtraq/2019/May/25",
+          "https://security.gentoo.org/glsa/201903-07",
+          "https://security.netapp.com/advisory/ntap-20190117-0001/",
+          "https://usn.ubuntu.com/3855-1/",
+          "https://www.debian.org/security/2019/dsa-4367",
+          "https://www.qualys.com/2019/01/09/system-down/system-down.txt"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16888",
+        "PkgName": "systemd-libs",
+        "InstalledVersion": "219-62.el7_6.5",
+        "FixedVersion": "219-67.el7",
+        "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
+        "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
+        "Severity": "LOW",
+        "References": [
+          "https://access.redhat.com/errata/RHSA-2019:2091",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16888",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16888",
+          "https://lists.apache.org/thread.html/5960a34a524848cd722fd7ab7e2227eac10107b0f90d9d1e9c3caa74@%3Cuser.cassandra.apache.org%3E",
+          "https://security.netapp.com/advisory/ntap-20190307-0007/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-12735",
+        "PkgName": "vim-minimal",
+        "InstalledVersion": "2:7.4.160-5.el7",
+        "FixedVersion": "2:7.4.160-6.el7_6",
+        "Title": "vim/neovim: ':source!' command allows arbitrary command execution via modelines",
+        "Description": "getchar.c in Vim before 8.1.1365 and Neovim before 0.3.6 allows remote attackers to execute arbitrary OS commands via the :source! command in a modeline, as demonstrated by execute in Vim, and assert_fails or nvim_input in Neovim.",
+        "Severity": "CRITICAL",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00031.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00036.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00037.html",
+          "http://www.securityfocus.com/bid/108724",
+          "https://bugs.debian.org/930020",
+          "https://bugs.debian.org/930024",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12735",
+          "https://github.com/neovim/neovim/pull/10082",
+          "https://github.com/numirias/security/blob/master/doc/2019-06-04_ace-vim-neovim.md",
+          "https://github.com/vim/vim/commit/53575521406739cf20bbe4e384d88e7dca11f040",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2BMDSHTF754TITC6AQJPCS5IRIDMMIM7/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TRIRBC2YRGKPAWVRMZS4SZTGGCVRVZPR/",
+          "https://usn.ubuntu.com/4016-1/",
+          "https://usn.ubuntu.com/4016-2/",
+          "https://www.debian.org/security/2019/dsa-4467"
+        ]
+      }
+    ]
+  }
+]

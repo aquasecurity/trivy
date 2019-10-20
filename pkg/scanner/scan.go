@@ -5,6 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
+
+	"github.com/aquasecurity/trivy/pkg/report"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/extractor"
@@ -12,13 +15,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/xerrors"
 )
 
-func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[string][]vulnerability.DetectedVulnerability, error) {
-	results := map[string][]vulnerability.DetectedVulnerability{}
+func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (report.Results, error) {
+	results := report.Results{}
 	ctx := context.Background()
 
 	var target string
@@ -42,7 +44,7 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[s
 			return nil, xerrors.Errorf("failed to open stream: %w", err)
 		}
 
-		files, err = analyzer.AnalyzeFromFile(ctx, rc)
+		files, err = analyzer.AnalyzeFile(ctx, rc)
 		if err != nil {
 			return nil, err
 		}
@@ -57,7 +59,10 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[s
 		}
 		if osFamily != "" {
 			imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion)
-			results[imageDetail] = osVulns
+			results = append(results, report.Result{
+				FileName:        imageDetail,
+				Vulnerabilities: osVulns,
+			})
 		}
 	}
 
@@ -66,21 +71,30 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[s
 		if err != nil {
 			return nil, xerrors.Errorf("failed to scan libraries: %w", err)
 		}
+
+		var libResults report.Results
 		for path, vulns := range libVulns {
-			results[path] = vulns
+			libResults = append(libResults, report.Result{
+				FileName:        path,
+				Vulnerabilities: vulns,
+			})
 		}
+		sort.Slice(libResults, func(i, j int) bool {
+			return libResults[i].FileName < libResults[j].FileName
+		})
+		results = append(results, libResults...)
 	}
 
 	return results, nil
 }
 
-func ScanFile(f *os.File) (map[string][]vulnerability.DetectedVulnerability, error) {
+func ScanFile(f *os.File) (report.Results, error) {
 	vulns, err := library.ScanFile(f)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to scan libraries in file: %w", err)
 	}
-	results := map[string][]vulnerability.DetectedVulnerability{
-		f.Name(): vulns,
+	results := report.Results{
+		{FileName: f.Name(), Vulnerabilities: vulns},
 	}
 	return results, nil
 }

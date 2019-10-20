@@ -1,0 +1,20 @@
+[
+  {
+    "Target": "testdata/fixtures/alpine-39.tar.gz (alpine 3.9.4)",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2019-14697",
+        "PkgName": "musl",
+        "InstalledVersion": "1.1.20-r4",
+        "FixedVersion": "1.1.20-r5",
+        "Title": "",
+        "Description": "musl libc through 1.1.23 has an x87 floating-point stack adjustment imbalance, related to the math/i386/ directory. In some cases, use of this library could introduce out-of-bounds writes that are not present in an application's source code.",
+        "Severity": "HIGH",
+        "References": [
+          "http://www.openwall.com/lists/oss-security/2019/08/06/4",
+          "https://www.openwall.com/lists/musl/2019/08/06/1"
+        ]
+      }
+    ]
+  }
+]

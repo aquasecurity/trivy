@@ -1,0 +1,147 @@
+[
+  {
+    "Target": "testdata/fixtures/centos-7.tar.gz (centos 7.6.1810)",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2018-14618",
+        "PkgName": "curl",
+        "InstalledVersion": "7.29.0-51.el7",
+        "FixedVersion": "7.29.0-51.el7_6.3",
+        "Title": "curl: NTLM password overflow via integer overflow",
+        "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
+        "Severity": "CRITICAL",
+        "References": [
+          "\nhttps://curl.haxx.se/docs/CVE-2018-14618.html\n    ",
+          "http://www.securitytracker.com/id/1041605",
+          "https://access.redhat.com/errata/RHSA-2018:3558",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14618",
+          "https://cert-portal.siemens.com/productcert/pdf/ssa-436177.pdf",
+          "https://curl.haxx.se/docs/CVE-2018-14618.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14618",
+          "https://psirt.global.sonicwall.com/vuln-detail/SNWLID-2018-0014",
+          "https://security.gentoo.org/glsa/201903-03",
+          "https://usn.ubuntu.com/3765-1/",
+          "https://usn.ubuntu.com/3765-2/",
+          "https://www.debian.org/security/2018/dsa-4286"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-14618",
+        "PkgName": "libcurl",
+        "InstalledVersion": "7.29.0-51.el7",
+        "FixedVersion": "7.29.0-51.el7_6.3",
+        "Title": "curl: NTLM password overflow via integer overflow",
+        "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
+        "Severity": "CRITICAL",
+        "References": [
+          "\nhttps://curl.haxx.se/docs/CVE-2018-14618.html\n    ",
+          "http://www.securitytracker.com/id/1041605",
+          "https://access.redhat.com/errata/RHSA-2018:3558",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14618",
+          "https://cert-portal.siemens.com/productcert/pdf/ssa-436177.pdf",
+          "https://curl.haxx.se/docs/CVE-2018-14618.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14618",
+          "https://psirt.global.sonicwall.com/vuln-detail/SNWLID-2018-0014",
+          "https://security.gentoo.org/glsa/201903-03",
+          "https://usn.ubuntu.com/3765-1/",
+          "https://usn.ubuntu.com/3765-2/",
+          "https://www.debian.org/security/2018/dsa-4286"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3855",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.3-12.el7",
+        "FixedVersion": "1.4.3-12.el7_6.2",
+        "Title": "libssh2: Integer overflow in transport read resulting in out of bounds write",
+        "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
+        "Severity": "CRITICAL",
+        "References": [
+          "\nhttps://www.libssh2.org/CVE-2019-3855.html\n    ",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
+          "http://www.openwall.com/lists/oss-security/2019/03/18/3",
+          "http://www.securityfocus.com/bid/107485",
+          "https://access.redhat.com/errata/RHSA-2019:0679",
+          "https://access.redhat.com/errata/RHSA-2019:1175",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3855",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3855",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XCWEA5ZCLKRDUK62QVVYMFWLWKOPX3LO/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://seclists.org/bugtraq/2019/Mar/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.broadcom.com/support/fibre-channel-networking/security-advisories/brocade-security-advisory-2019-767",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3855.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-15686",
+        "PkgName": "systemd",
+        "InstalledVersion": "219-62.el7_6.5",
+        "FixedVersion": "219-67.el7",
+        "Title": "systemd: line splitting via fgets() allows for state injection during daemon-reexec",
+        "Description": "A vulnerability in unit_deserialize of systemd allows an attacker to supply arbitrary state across systemd re-execution via NotifyAccess. This can be used to improperly influence systemd execution and possibly lead to root privilege escalation. Affected releases are systemd versions up to and including 239.",
+        "Severity": "CRITICAL",
+        "References": [
+          "http://www.securityfocus.com/bid/105747",
+          "https://access.redhat.com/errata/RHSA-2019:2091",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-15686",
+          "https://github.com/systemd/systemd/pull/10519",
+          "https://lists.debian.org/debian-lts-announce/2018/11/msg00017.html",
+          "https://security.gentoo.org/glsa/201810-10",
+          "https://usn.ubuntu.com/3816-1/",
+          "https://www.exploit-db.com/exploits/45714/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-15686",
+        "PkgName": "systemd-libs",
+        "InstalledVersion": "219-62.el7_6.5",
+        "FixedVersion": "219-67.el7",
+        "Title": "systemd: line splitting via fgets() allows for state injection during daemon-reexec",
+        "Description": "A vulnerability in unit_deserialize of systemd allows an attacker to supply arbitrary state across systemd re-execution via NotifyAccess. This can be used to improperly influence systemd execution and possibly lead to root privilege escalation. Affected releases are systemd versions up to and including 239.",
+        "Severity": "CRITICAL",
+        "References": [
+          "http://www.securityfocus.com/bid/105747",
+          "https://access.redhat.com/errata/RHSA-2019:2091",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-15686",
+          "https://github.com/systemd/systemd/pull/10519",
+          "https://lists.debian.org/debian-lts-announce/2018/11/msg00017.html",
+          "https://security.gentoo.org/glsa/201810-10",
+          "https://usn.ubuntu.com/3816-1/",
+          "https://www.exploit-db.com/exploits/45714/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-12735",
+        "PkgName": "vim-minimal",
+        "InstalledVersion": "2:7.4.160-5.el7",
+        "FixedVersion": "2:7.4.160-6.el7_6",
+        "Title": "vim/neovim: ':source!' command allows arbitrary command execution via modelines",
+        "Description": "getchar.c in Vim before 8.1.1365 and Neovim before 0.3.6 allows remote attackers to execute arbitrary OS commands via the :source! command in a modeline, as demonstrated by execute in Vim, and assert_fails or nvim_input in Neovim.",
+        "Severity": "CRITICAL",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00031.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00036.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00037.html",
+          "http://www.securityfocus.com/bid/108724",
+          "https://bugs.debian.org/930020",
+          "https://bugs.debian.org/930024",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12735",
+          "https://github.com/neovim/neovim/pull/10082",
+          "https://github.com/numirias/security/blob/master/doc/2019-06-04_ace-vim-neovim.md",
+          "https://github.com/vim/vim/commit/53575521406739cf20bbe4e384d88e7dca11f040",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2BMDSHTF754TITC6AQJPCS5IRIDMMIM7/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TRIRBC2YRGKPAWVRMZS4SZTGGCVRVZPR/",
+          "https://usn.ubuntu.com/4016-1/",
+          "https://usn.ubuntu.com/4016-2/",
+          "https://www.debian.org/security/2019/dsa-4467"
+        ]
+      }
+    ]
+  }
+]
