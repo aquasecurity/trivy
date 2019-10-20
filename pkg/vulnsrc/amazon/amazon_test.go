@@ -1,11 +1,16 @@
 package amazon
 
 import (
-	"encoding/json"
 	"errors"
 	"io"
+	"os"
 	"strings"
 	"testing"
+
+	bolt "github.com/etcd-io/bbolt"
+	"github.com/stretchr/testify/mock"
+
+	"github.com/aquasecurity/trivy/pkg/db"
 
 	"github.com/aquasecurity/vuln-list-update/amazon"
 
@@ -15,201 +20,120 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-
-	"github.com/etcd-io/bbolt"
-
-	"go.uber.org/zap/zaptest/observer"
 )
 
-type MockDBConfig struct { // TODO: Move this into vulnerability/db pkg
-	setversion      func(string) error
-	update          func(string, string, interface{}) error
-	batchupdate     func(func(*bbolt.Tx) error) error
-	putnestedbucket func(*bbolt.Tx, string, string, string, interface{}) error
-	foreach         func(string, string) (map[string][]byte, error)
-}
-
-func (mdbc MockDBConfig) SetVersion(a string) error {
-	if mdbc.setversion != nil {
-		return mdbc.setversion(a)
+func TestMain(m *testing.M) {
+	err := log.InitLogger(false, true)
+	if err != nil {
+		log.Fatal(err)
 	}
-	return nil
+	utils.Quiet = true
+	os.Exit(m.Run())
 }
 
-func (mdbc MockDBConfig) Update(a string, b string, c interface{}) error {
-	if mdbc.update != nil {
-		return mdbc.update(a, b, c)
+func TestVulnSrc_Update(t *testing.T) {
+	testCases := []struct {
+		name           string
+		cacheDir       string
+		batchUpdateErr error
+		expectedError  error
+		expectedVulns  []vulnerability.Advisory
+	}{
+		{
+			name:          "happy path",
+			cacheDir:      "testdata",
+			expectedError: nil,
+		},
+		{
+			name:          "cache dir doesnt exist",
+			cacheDir:      "badpathdoesnotexist",
+			expectedError: errors.New("error in amazon walk: error in file walk: lstat badpathdoesnotexist/amazon: no such file or directory"),
+		},
+		{
+			name:           "unable to save amazon defintions",
+			cacheDir:       "testdata",
+			batchUpdateErr: errors.New("unable to batch update"),
+			expectedError:  errors.New("error in amazon save: error in batch update: unable to batch update"),
+		},
 	}
-	return nil
-}
 
-func (mdbc MockDBConfig) BatchUpdate(f func(*bbolt.Tx) error) error {
-	if mdbc.batchupdate != nil {
-		return mdbc.batchupdate(f)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			mockDBConfig := new(db.MockDBConfig)
+			mockDBConfig.On("BatchUpdate", mock.Anything).Return(tc.batchUpdateErr)
+			ac := VulnSrc{dbc: mockDBConfig}
+
+			err := ac.Update(tc.cacheDir, map[string]struct{}{"amazon": {}})
+			switch {
+			case tc.expectedError != nil:
+				assert.EqualError(t, err, tc.expectedError.Error(), tc.name)
+			default:
+				assert.NoError(t, err, tc.name)
+			}
+		})
 	}
-	return nil
 }
 
-func (mdbc MockDBConfig) PutNestedBucket(a *bbolt.Tx, b string, c string, d string, e interface{}) error {
-	if mdbc.putnestedbucket != nil {
-		return mdbc.putnestedbucket(a, b, c, d, e)
+func TestVulnSrc_Get(t *testing.T) {
+	type forEachReturn struct {
+		b   map[string][]byte
+		err error
 	}
-	return nil
-}
-
-func (mdbc MockDBConfig) ForEach(a string, b string) (map[string][]byte, error) {
-	if mdbc.foreach != nil {
-		return mdbc.foreach(a, b)
-	}
-	return map[string][]byte{}, nil
-}
-
-// TODO: DRY
-func getAllLoggedLogs(recorder *observer.ObservedLogs) []string {
-	allLogs := recorder.AllUntimed()
-	var loggedMessages []string
-	for _, l := range allLogs {
-		loggedMessages = append(loggedMessages, l.Message)
-	}
-	return loggedMessages
-}
-
-func TestConfig_Update(t *testing.T) {
-	t.Run("happy path", func(t *testing.T) {
-		zc, recorder := observer.New(zapcore.DebugLevel)
-		log.Logger = zap.New(zc).Sugar()
-
-		ac := Config{
-			lg:  log.Logger,
-			dbc: MockDBConfig{},
-		}
-
-		assert.NoError(t, ac.Update("testdata", map[string]struct{}{"amazon": {}}))
-		allLogs := getAllLoggedLogs(recorder)
-		assert.Equal(t, allLogs, []string{"Amazon Linux AMI Security Advisory updated files: 1", "Saving amazon DB"})
-	})
-
-	// FIXME: This test panics if cache doesn't exist yet
-	//t.Run("cache dir doesnt exist", func(t *testing.T) {
-	//	zc, recorder := observer.New(zapcore.DebugLevel)
-	//	log.Logger = zap.New(zc).Sugar()
-	//
-	//	ac := Config{
-	//		lg:  log.Logger,
-	//		dbc: MockDBConfig{},
-	//	}
-	//
-	//	assert.NoError(t, ac.Update("badpathdoesnotexist", map[string]struct{}{"amazon": {}}))
-	//	allLogs := getAllLoggedLogs(recorder)
-	//	assert.Equal(t, allLogs, []string{"Amazon Linux AMI Security Advisory updated files: 1", "Saving amazon DB"})
-	//})
-
-	t.Run("filewalker errors out", func(t *testing.T) {
-		zc, recorder := observer.New(zapcore.DebugLevel)
-		log.Logger = zap.New(zc).Sugar()
-
-		oldFileWalker := fileWalker // TODO: Remove once utils.go exposes an interface
-		defer func() {
-			fileWalker = oldFileWalker
-		}()
-
-		fileWalker = func(root string, targetFiles map[string]struct{}, walkFn func(r io.Reader, path string) error) error {
-			return errors.New("fileWalker errored out")
-		}
-
-		ac := Config{
-			lg:  log.Logger,
-			dbc: MockDBConfig{},
-		}
-
-		assert.Equal(t, "error in amazon walk: fileWalker errored out", ac.Update("testdata", map[string]struct{}{"amazon": {}}).Error())
-		allLogs := getAllLoggedLogs(recorder)
-		assert.NotContains(t, allLogs, "Saving amazon DB")
-	})
-
-	t.Run("unable to save amazon defintions", func(t *testing.T) {
-		zc, _ := observer.New(zapcore.DebugLevel)
-		log.Logger = zap.New(zc).Sugar()
-
-		oldFileWalker := fileWalker // TODO: Remove once utils.go exposes an interface
-		defer func() {
-			fileWalker = oldFileWalker
-		}()
-
-		fileWalker = func(root string, targetFiles map[string]struct{}, walkFn func(r io.Reader, path string) error) error {
-			return nil
-		}
-
-		ac := Config{
-			lg: log.Logger,
-			dbc: MockDBConfig{
-				batchupdate: func(i func(*bbolt.Tx) error) error {
-					return errors.New("unable to batch update")
-				},
-			},
-		}
-
-		assert.Equal(t, "error in amazon save: error in batch update: unable to batch update", ac.Update("testdata", map[string]struct{}{"amazon": {}}).Error())
-	})
-}
-
-func TestConfig_Get(t *testing.T) {
 	testCases := []struct {
 		name          string
-		forEachFunc   func(s string, s2 string) (bytes map[string][]byte, e error)
+		forEachFunc   forEachReturn
 		expectedError error
 		expectedVulns []vulnerability.Advisory
 	}{
 		{
 			name: "happy path",
-			forEachFunc: func(s string, s2 string) (bytes map[string][]byte, e error) {
-				b, _ := json.Marshal(vulnerability.Advisory{VulnerabilityID: "123", FixedVersion: "2.0.0"})
-				return map[string][]byte{"advisory1": b}, nil
+			forEachFunc: forEachReturn{
+				b: map[string][]byte{
+					"advisory1": []byte(`{"VulnerabilityID":"123","FixedVersion":"2.0.0"}`),
+				},
+				err: nil,
 			},
 			expectedError: nil,
 			expectedVulns: []vulnerability.Advisory{{VulnerabilityID: "123", FixedVersion: "2.0.0"}},
 		},
 		{
-			name: "no advisories are returned",
-			forEachFunc: func(s string, s2 string) (bytes map[string][]byte, e error) {
-				return map[string][]byte{}, nil
-			},
+			name:          "no advisories are returned",
+			forEachFunc:   forEachReturn{b: nil, err: nil},
 			expectedError: nil,
 			expectedVulns: []vulnerability.Advisory(nil),
 		},
 		{
-			name: "amazon forEach return an error",
-			forEachFunc: func(s string, s2 string) (bytes map[string][]byte, e error) {
-				return nil, errors.New("foreach func returned an error")
-			},
+			name:          "amazon forEach return an error",
+			forEachFunc:   forEachReturn{b: nil, err: errors.New("foreach func returned an error")},
 			expectedError: errors.New("error in amazon foreach: foreach func returned an error"),
 			expectedVulns: nil,
 		},
 		{
-			name: "failed to unmarshal amazon json",
-			forEachFunc: func(s string, s2 string) (bytes map[string][]byte, e error) {
-				return map[string][]byte{"foo": []byte(`badbar`)}, nil
-			},
+			name:          "failed to unmarshal amazon json",
+			forEachFunc:   forEachReturn{b: map[string][]byte{"foo": []byte(`badbar`)}, err: nil},
 			expectedError: errors.New("failed to unmarshal amazon JSON: invalid character 'b' looking for beginning of value"),
 			expectedVulns: nil,
 		},
 	}
 
 	for _, tc := range testCases {
-		ac := Config{
-			dbc: MockDBConfig{foreach: tc.forEachFunc},
-		}
-		vuls, err := ac.Get("1.1.0", "testpkg")
-		switch {
-		case tc.expectedError != nil:
-			assert.Equal(t, tc.expectedError.Error(), err.Error(), tc.name)
-		default:
-			assert.NoError(t, err, tc.name)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			mockDBConfig := new(db.MockDBConfig)
+			mockDBConfig.On("ForEach", mock.Anything, mock.Anything).Return(
+				tc.forEachFunc.b, tc.forEachFunc.err,
+			)
+			ac := VulnSrc{dbc: mockDBConfig}
 
-		assert.Equal(t, tc.expectedVulns, vuls, tc.name)
+			vuls, err := ac.Get("1.1.0", "testpkg")
+			switch {
+			case tc.expectedError != nil:
+				assert.EqualError(t, err, tc.expectedError.Error(), tc.name)
+			default:
+				assert.NoError(t, err, tc.name)
+			}
+
+			assert.Equal(t, tc.expectedVulns, vuls, tc.name)
+		})
 	}
 }
 
@@ -241,11 +165,11 @@ func TestConstructVersion(t *testing.T) {
 		{
 			name: "happy path",
 			inc: inputCombination{
-				epoch:   "1",
-				version: "2",
+				epoch:   "2",
+				version: "3",
 				release: "master",
 			},
-			expectedVersion: "2-master",
+			expectedVersion: "2:3-master",
 		},
 		{
 			name: "no epoch",
@@ -282,7 +206,7 @@ func TestConstructVersion(t *testing.T) {
 	}
 }
 
-func TestConfig_WalkFunc(t *testing.T) {
+func TestVulnSrc_WalkFunc(t *testing.T) {
 	testCases := []struct {
 		name             string
 		ioReader         io.Reader
@@ -330,161 +254,144 @@ func TestConfig_WalkFunc(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		zc, recorder := observer.New(zapcore.DebugLevel)
-		log.Logger = zap.New(zc).Sugar()
+		t.Run(tc.name, func(t *testing.T) {
+			ac := VulnSrc{
+				bar: utils.PbStartNew(1),
+			}
 
-		ac := Config{
-			lg:  log.Logger,
-			bar: utils.PbStartNew(1),
-		}
+			err := ac.walkFunc(tc.ioReader, tc.inputPath)
+			switch {
+			case tc.expectedError != nil:
+				assert.EqualError(t, err, tc.expectedError.Error(), tc.name)
+			default:
+				assert.NoError(t, err, tc.name)
+			}
 
-		err := ac.walkFunc(tc.ioReader, tc.inputPath)
-		switch {
-		case tc.expectedError != nil:
-			assert.Equal(t, tc.expectedError.Error(), err.Error(), tc.name)
-		default:
-			assert.NoError(t, err, tc.name)
-		}
+			assert.Equal(t, tc.expectedALASList, ac.alasList, tc.name)
+		})
+	}
+}
 
-		assert.Equal(t, tc.expectedALASList, ac.alasList, tc.name)
-
-		allLogs := getAllLoggedLogs(recorder)
-		assert.Equal(t, tc.expectedLogs, allLogs, tc.name)
+func TestVulnSrc_CommitFunc(t *testing.T) {
+	testCases := []struct {
+		name               string
+		alasList           []alas
+		putNestedBucketErr error
+		putErr             error
+		expectedError      error
+	}{
+		{
+			name: "happy path",
+			alasList: []alas{
+				{
+					Version: "123",
+					ALAS: amazon.ALAS{
+						ID:       "123",
+						Severity: "high",
+						CveIDs:   []string{"CVE-2020-0001"},
+						References: []amazon.Reference{
+							{
+								ID:    "fooref",
+								Href:  "http://foo.bar/baz",
+								Title: "bartitle",
+							},
+						},
+						Packages: []amazon.Package{
+							{
+								Name:    "testpkg",
+								Epoch:   "123",
+								Version: "456",
+								Release: "testing",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "failed to save Amazon advisory, PutNestedBucket() return an error",
+			alasList: []alas{
+				{
+					Version: "123",
+					ALAS: amazon.ALAS{
+						ID:       "123",
+						Severity: "high",
+						CveIDs:   []string{"CVE-2020-0001"},
+						References: []amazon.Reference{
+							{
+								ID:    "fooref",
+								Href:  "http://foo.bar/baz",
+								Title: "bartitle",
+							},
+						},
+						Packages: []amazon.Package{
+							{
+								Name:    "testpkg",
+								Epoch:   "123",
+								Version: "456",
+								Release: "testing",
+							},
+						},
+					},
+				},
+			},
+			putNestedBucketErr: errors.New("putnestedbucket failed to save"),
+			expectedError:      errors.New("failed to save amazon advisory: putnestedbucket failed to save"),
+		},
+		{
+			name: "failed to save Amazon advisory, Put() return an error",
+			alasList: []alas{
+				{
+					Version: "123",
+					ALAS: amazon.ALAS{
+						ID:       "123",
+						Severity: "high",
+						CveIDs:   []string{"CVE-2020-0001"},
+						References: []amazon.Reference{
+							{
+								ID:    "fooref",
+								Href:  "http://foo.bar/baz",
+								Title: "bartitle",
+							},
+						},
+						Packages: []amazon.Package{
+							{
+								Name:    "testpkg",
+								Epoch:   "123",
+								Version: "456",
+								Release: "testing",
+							},
+						},
+					},
+				},
+			},
+			putErr:        errors.New("failed to commit to db"),
+			expectedError: errors.New("failed to save amazon vulnerability: failed to commit to db"),
+		},
 	}
 
-}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			mockDBConfig := new(db.MockDBConfig)
+			mockDBConfig.On("PutNestedBucket",
+				mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(
+				tc.putNestedBucketErr,
+			)
+			mockVulnDB := new(vulnerability.MockVulnDB)
+			mockVulnDB.On(
+				"Put", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(
+				tc.putErr,
+			)
 
-type fakeVulnDB struct {
-	put func(*bbolt.Tx, string, string, vulnerability.Vulnerability) error
-}
+			vs := VulnSrc{dbc: mockDBConfig, vdb: mockVulnDB, alasList: tc.alasList}
 
-func (fvdb fakeVulnDB) Update(string, string, vulnerability.Vulnerability) error {
-	panic("implement me")
-}
-
-func (fvdb fakeVulnDB) BatchUpdate(func(bucket *bbolt.Bucket) error) error {
-	panic("implement me")
-}
-
-func (fvdb fakeVulnDB) Get(string) (map[string]vulnerability.Vulnerability, error) {
-	panic("implement me")
-}
-
-func (fvdb fakeVulnDB) Put(tx *bbolt.Tx, cveID, source string, vuln vulnerability.Vulnerability) error {
-	if fvdb.put != nil {
-		return fvdb.put(tx, cveID, source, vuln)
+			err := vs.commitFunc(&bolt.Tx{WriteFlag: 0})
+			switch {
+			case tc.expectedError != nil:
+				assert.EqualError(t, err, tc.expectedError.Error(), tc.name)
+			default:
+				assert.NoError(t, err, tc.name)
+			}
+		})
 	}
-	return nil
-}
-
-func TestConfig_CommitFunc(t *testing.T) {
-	t.Run("happy path", func(t *testing.T) {
-		ac := Config{
-			dbc: MockDBConfig{},
-			alasList: []alas{
-				{
-					Version: "123",
-					ALAS: amazon.ALAS{
-						ID:       "123",
-						Severity: "high",
-						CveIDs:   []string{"CVE-2020-0001"},
-						References: []amazon.Reference{
-							{
-								ID:    "fooref",
-								Href:  "http://foo.bar/baz",
-								Title: "bartitle",
-							},
-						},
-						Packages: []amazon.Package{
-							{
-								Name:    "testpkg",
-								Epoch:   "123",
-								Version: "456",
-								Release: "testing",
-							},
-						},
-					},
-				},
-			},
-			vdb: fakeVulnDB{},
-		}
-		assert.NoError(t, ac.commitFunc(&bbolt.Tx{
-			WriteFlag: 0,
-		}))
-	})
-
-	t.Run("failed to save Amazon advisory, PutNestedBucket() return an error", func(t *testing.T) {
-		ac := Config{
-			dbc: MockDBConfig{
-				putnestedbucket: func(tx *bbolt.Tx, s string, s2 string, s3 string, i interface{}) error {
-					return errors.New("putnestedbucket failed to save")
-				},
-			},
-			alasList: []alas{
-				{
-					Version: "123",
-					ALAS: amazon.ALAS{
-						ID:       "123",
-						Severity: "high",
-						CveIDs:   []string{"CVE-2020-0001"},
-						References: []amazon.Reference{
-							{
-								ID:    "fooref",
-								Href:  "http://foo.bar/baz",
-								Title: "bartitle",
-							},
-						},
-						Packages: []amazon.Package{
-							{
-								Name:    "testpkg",
-								Epoch:   "123",
-								Version: "456",
-								Release: "testing",
-							},
-						},
-					},
-				},
-			},
-		}
-		assert.Equal(t, "failed to save amazon advisory: putnestedbucket failed to save", ac.commitFunc(&bbolt.Tx{
-			WriteFlag: 0,
-		}).Error())
-	})
-
-	t.Run("failed to save Amazon advisory, PutNestedBucket() return an error", func(t *testing.T) {
-		ac := Config{
-			dbc: MockDBConfig{},
-			vdb: fakeVulnDB{put: func(tx *bbolt.Tx, s string, s2 string, i vulnerability.Vulnerability) error {
-				return errors.New("failed to commit to db")
-			}},
-			alasList: []alas{
-				{
-					Version: "123",
-					ALAS: amazon.ALAS{
-						ID:       "123",
-						Severity: "high",
-						CveIDs:   []string{"CVE-2020-0001"},
-						References: []amazon.Reference{
-							{
-								ID:    "fooref",
-								Href:  "http://foo.bar/baz",
-								Title: "bartitle",
-							},
-						},
-						Packages: []amazon.Package{
-							{
-								Name:    "testpkg",
-								Epoch:   "123",
-								Version: "456",
-								Release: "testing",
-							},
-						},
-					},
-				},
-			},
-		}
-		assert.Equal(t, "failed to save amazon vulnerability: failed to commit to db", ac.commitFunc(&bbolt.Tx{
-			WriteFlag: 0,
-		}).Error())
-	})
 }

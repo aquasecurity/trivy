@@ -69,13 +69,13 @@ func TestScanner_Detect(t *testing.T) {
 			{
 				VulnerabilityID:  "123",
 				PkgName:          "testpkg",
-				InstalledVersion: "2.1.0-test-hotfix",
+				InstalledVersion: "2.1.0-hotfix",
 				FixedVersion:     "3.0.0",
 			},
 		}, vuls)
 
 		loggedMessages := getAllLoggedLogs(recorder)
-		assert.Contains(t, loggedMessages, "amazon: os version: 3.1.0")
+		assert.Contains(t, loggedMessages, "amazon: os version: 1")
 		assert.Contains(t, loggedMessages, "amazon: the number of packages: 2")
 	})
 
@@ -117,8 +117,8 @@ func TestScanner_Detect(t *testing.T) {
 
 		vuls, err := s.Detect("3.1.0", []analyzer.Package{
 			{
-				Name:       "testpkg",
-				SrcVersion: "badsourceversion",
+				Name:    "testpkg",
+				Version: "badsourceversion",
 			},
 		})
 		assert.NoError(t, err)
@@ -146,8 +146,8 @@ func TestScanner_Detect(t *testing.T) {
 
 		vuls, err := s.Detect("3.1.0", []analyzer.Package{
 			{
-				Name:       "testpkg",
-				SrcVersion: "3.1.0",
+				Name:    "testpkg",
+				Version: "3.1.0",
 			},
 		})
 		assert.NoError(t, err)

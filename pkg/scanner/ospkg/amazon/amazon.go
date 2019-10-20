@@ -5,9 +5,8 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/amazon"
-
 	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/amazon"
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
@@ -24,7 +23,7 @@ type Scanner struct {
 func NewScanner() *Scanner {
 	return &Scanner{
 		l:  log.Logger,
-		ac: amazon.Config{},
+		ac: amazon.NewVulnSrc(),
 	}
 }
 
@@ -32,17 +31,20 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 	log.Logger.Info("Detecting Amazon Linux vulnerabilities...")
 
 	osVer = strings.Fields(osVer)[0]
+	if osVer != "2" {
+		osVer = "1"
+	}
 	log.Logger.Debugf("amazon: os version: %s", osVer)
 	log.Logger.Debugf("amazon: the number of packages: %d", len(pkgs))
 
 	var vulns []vulnerability.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.ac.Get(osVer, pkg.SrcName)
+		advisories, err := s.ac.Get(osVer, pkg.Name)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get amazon advisories: %w", err)
 		}
 
-		installed := utils.FormatSrcVersion(pkg)
+		installed := utils.FormatVersion(pkg)
 		if installed == "" {
 			continue
 		}

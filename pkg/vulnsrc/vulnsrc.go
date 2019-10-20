@@ -1,9 +1,9 @@
 package vulnsrc
 
 import (
-	"os"
 	"path/filepath"
 
+	"github.com/aquasecurity/trivy/pkg/git"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/alpine"
@@ -33,7 +33,7 @@ var (
 		vulnerability.Debian:     debian.Update,
 		vulnerability.DebianOVAL: debianoval.Update,
 		vulnerability.Ubuntu:     ubuntu.Update,
-		vulnerability.Amazon:     amazon.Config{}.Update,
+		vulnerability.Amazon:     amazon.NewVulnSrc().Update,
 	}
 )
 
@@ -49,32 +49,15 @@ func Update(names []string) error {
 
 	// Clone vuln-list repository
 	dir := filepath.Join(utils.CacheDir(), "vuln-list")
-	//updatedFiles, err := git.CloneOrPull(repoURL, dir)
-	//if err != nil {
-	//	return xerrors.Errorf("error in vulnsrc clone or pull: %w", err)
-	//}
-	//log.Logger.Debugf("total updated files: %d", len(updatedFiles))
-	//
-	//// Only last_updated.json
-	//if len(updatedFiles) <= 1 {
-	//	return nil
-	//}
-
-	updatedFiles := map[string]struct{}{}
-	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		// TODO: Currently panics if info is nil
-		if info.IsDir() {
-			return nil
-		}
-		rel, err := filepath.Rel(dir, path)
-		if err != nil {
-			return xerrors.Errorf("failed to get a relative path: %w", err)
-		}
-		updatedFiles[rel] = struct{}{}
-		return nil
-	})
+	updatedFiles, err := git.CloneOrPull(repoURL, dir)
 	if err != nil {
-		return xerrors.Errorf("error in file walk: %w", err)
+		return xerrors.Errorf("error in vulnsrc clone or pull: %w", err)
+	}
+	log.Logger.Debugf("total updated files: %d", len(updatedFiles))
+
+	// Only last_updated.json
+	if len(updatedFiles) <= 1 {
+		return nil
 	}
 
 	for _, distribution := range names {

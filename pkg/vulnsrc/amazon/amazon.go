@@ -7,9 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"go.uber.org/zap"
-
 	"github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/vuln-list-update/amazon"
@@ -32,12 +31,11 @@ type Operations interface {
 	Get(string, string) ([]vulnerability.Advisory, error)
 }
 
-type Config struct {
-	lg       *zap.SugaredLogger
+type VulnSrc struct {
 	dbc      db.Operations
+	vdb      vulnerability.Operations
 	bar      *utils.ProgressBar
 	alasList []alas
-	vdb      vulnerability.Operations
 }
 
 type alas struct {
@@ -45,40 +43,47 @@ type alas struct {
 	amazon.ALAS
 }
 
-func (ac Config) Update(dir string, updatedFiles map[string]struct{}) error {
+func NewVulnSrc() VulnSrc {
+	return VulnSrc{
+		dbc: db.Config{},
+		vdb: vulnerability.DB{},
+	}
+}
+
+func (vs VulnSrc) Update(dir string, updatedFiles map[string]struct{}) error {
 	rootDir := filepath.Join(dir, amazonDir)
 	targets, err := utils.FilterTargets(amazonDir, updatedFiles) //TODO: Untested
 	if err != nil {
 		return xerrors.Errorf("failed to filter target files: %w", err)
 	} else if len(targets) == 0 {
-		ac.lg.Debug("amazon: no updated file")
+		log.Logger.Debug("amazon: no updated file")
 		return nil
 	}
-	ac.lg.Debugf("Amazon Linux AMI Security Advisory updated files: %d", len(targets))
+	log.Logger.Debugf("Amazon Linux AMI Security Advisory updated files: %d", len(targets))
 
-	ac.bar = utils.PbStartNew(len(targets))
-	defer ac.bar.Finish()
+	vs.bar = utils.PbStartNew(len(targets))
+	defer vs.bar.Finish()
 
-	err = fileWalker(rootDir, targets, ac.walkFunc)
+	err = fileWalker(rootDir, targets, vs.walkFunc)
 	if err != nil {
 		return xerrors.Errorf("error in amazon walk: %w", err)
 	}
 
-	if err = ac.save(); err != nil {
+	if err = vs.save(); err != nil {
 		return xerrors.Errorf("error in amazon save: %w", err)
 	}
 
 	return nil
 }
 
-func (ac *Config) walkFunc(r io.Reader, path string) error {
+func (vs *VulnSrc) walkFunc(r io.Reader, path string) error {
 	paths := strings.Split(path, string(filepath.Separator))
 	if len(paths) < 2 {
 		return nil
 	}
 	version := paths[len(paths)-2]
 	if !utils.StringInSlice(version, targetVersions) {
-		ac.lg.Debugf("unsupported amazon version: %s", version)
+		log.Logger.Debugf("unsupported amazon version: %s", version)
 		return nil
 	}
 
@@ -87,17 +92,17 @@ func (ac *Config) walkFunc(r io.Reader, path string) error {
 		return xerrors.Errorf("failed to decode amazon JSON: %w", err)
 	}
 
-	ac.alasList = append(ac.alasList, alas{
+	vs.alasList = append(vs.alasList, alas{
 		Version: version,
 		ALAS:    vuln,
 	})
-	ac.bar.Increment()
+	vs.bar.Increment()
 	return nil
 }
 
-func (ac Config) save() error {
-	ac.lg.Debug("Saving amazon DB")
-	err := ac.dbc.BatchUpdate(ac.commit())
+func (vs VulnSrc) save() error {
+	log.Logger.Debug("Saving amazon DB")
+	err := vs.dbc.BatchUpdate(vs.commit())
 	if err != nil {
 		return xerrors.Errorf("error in batch update: %w", err)
 	}
@@ -105,12 +110,12 @@ func (ac Config) save() error {
 }
 
 // TODO: Cleanup the double layer of nested closures
-func (ac Config) commit() func(tx *bolt.Tx) error {
-	return ac.commitFunc
+func (vs VulnSrc) commit() func(tx *bolt.Tx) error {
+	return vs.commitFunc
 }
 
-func (ac Config) commitFunc(tx *bolt.Tx) error {
-	for _, alas := range ac.alasList {
+func (vs VulnSrc) commitFunc(tx *bolt.Tx) error {
+	for _, alas := range vs.alasList {
 		for _, cveID := range alas.CveIDs {
 			for _, pkg := range alas.Packages {
 				platformName := fmt.Sprintf(platformFormat, alas.Version)
@@ -118,7 +123,7 @@ func (ac Config) commitFunc(tx *bolt.Tx) error {
 					VulnerabilityID: cveID,
 					FixedVersion:    constructVersion(pkg.Epoch, pkg.Version, pkg.Release),
 				}
-				if err := ac.dbc.PutNestedBucket(tx, platformName, pkg.Name, cveID, advisory); err != nil {
+				if err := vs.dbc.PutNestedBucket(tx, platformName, pkg.Name, cveID, advisory); err != nil {
 					return xerrors.Errorf("failed to save amazon advisory: %w", err)
 				}
 
@@ -131,10 +136,9 @@ func (ac Config) commitFunc(tx *bolt.Tx) error {
 					Severity:    severityFromPriority(alas.Severity),
 					References:  references,
 					Description: alas.Description,
-					// TODO
-					Title: "",
+					Title:       "",
 				}
-				if err := ac.vdb.Put(tx, cveID, vulnerability.Amazon, vuln); err != nil {
+				if err := vs.vdb.Put(tx, cveID, vulnerability.Amazon, vuln); err != nil {
 					return xerrors.Errorf("failed to save amazon vulnerability: %w", err)
 				}
 			}
@@ -144,9 +148,9 @@ func (ac Config) commitFunc(tx *bolt.Tx) error {
 }
 
 // Get returns a security advisory
-func (ac Config) Get(version string, pkgName string) ([]vulnerability.Advisory, error) {
+func (vs VulnSrc) Get(version string, pkgName string) ([]vulnerability.Advisory, error) {
 	bucket := fmt.Sprintf(platformFormat, version)
-	advisories, err := ac.dbc.ForEach(bucket, pkgName)
+	advisories, err := vs.dbc.ForEach(bucket, pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("error in amazon foreach: %w", err)
 	}
@@ -188,8 +192,8 @@ func constructVersion(epoch, version, release string) string {
 	verStr += version
 
 	if release != "" {
-		version += fmt.Sprintf("-%s", release)
+		verStr += fmt.Sprintf("-%s", release)
 
 	}
-	return version
+	return verStr
 }

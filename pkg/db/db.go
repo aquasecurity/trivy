@@ -21,7 +21,7 @@ var (
 
 type Operations interface {
 	SetVersion(string) error
-	Update(string, string, interface{}) error
+	Update(string, string, string, interface{}) error
 	BatchUpdate(func(*bolt.Tx) error) error
 	PutNestedBucket(*bolt.Tx, string, string, string, interface{}) error
 	ForEach(string, string) (map[string][]byte, error)
