@@ -1,4 +1,4 @@
-FROM golang:1.12-alpine AS builder
+FROM golang:1.12-alpine AS builder  #library 
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 COPY go.mod go.sum /app/
 WORKDIR /app/
@@ -13,3 +13,4 @@ RUN apk --no-cache add ca-certificates git rpm
 COPY --from=builder /trivy /usr/local/bin/trivy
 
 ENTRYPOINT ["trivy"]
+#end
