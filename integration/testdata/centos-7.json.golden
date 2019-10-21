@@ -301,8 +301,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA flaw was found in the way bind implemented tunable which limited simultaneous TCP client connections. A remote attacker could use this flaw to exhaust the pool of file descriptors available to named, potentially affecting network connections and the management of files such as log files or zone journal files. In cases where the named process is not limited by OS-enforced per-process limits, this could additionally potentially lead to exhaustion of all available free file descriptors on that system.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://kb.isc.org/docs/cve-2018-5743\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5743"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5743",
+          "https://kb.isc.org/docs/cve-2018-5743"
         ]
       },
       {
@@ -337,7 +337,6 @@
         "Description": "To provide fine-grained controls over the ability to use Dynamic DNS (DDNS) to update records in a zone, BIND 9 provides a feature called update-policy. Various rules can be configured to limit the types of updates that can be performed by a client, depending on the key used when sending the update request. Unfortunately, some rule types were not initially documented, and when documentation for them was added to the Administrator Reference Manual (ARM) in change #3112, the language that was added to the ARM at that time incorrectly described the behavior of two rule types, krb5-subdomain and ms-subdomain. This incorrect documentation could mislead operators into believing that policies they had configured were more restrictive than they actually were. This affects BIND versions prior to BIND 9.11.5 and BIND 9.12.3.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://kb.isc.org/docs/cve-2018-5741\n    ",
           "http://www.securityfocus.com/bid/105379",
           "http://www.securitytracker.com/id/1041674",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5741",
@@ -355,8 +354,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nAn assertion failure was found in the way bind implemented the \"managed keys\" feature. An attacker could use this flaw to cause the named daemon to crash. This flaw is very difficult for an attacker to trigger because it requires an operator to have BIND configured to use a trust anchor managed by the attacker.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://kb.isc.org/docs/cve-2018-5745\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5745"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5745",
+          "https://kb.isc.org/docs/cve-2018-5745"
         ]
       },
       {
@@ -378,8 +377,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nIt was found that the controls for zone transfer were not properly applied to Dynamically Loadable Zones (DLZs). An attacker acting as a DNS client could use this flaw to request and receive a zone transfer of a DLZ even when not permitted to do so by the \"allow-transfer\" ACL.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://kb.isc.org/docs/cve-2019-6465\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-6465"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-6465",
+          "https://kb.isc.org/docs/cve-2019-6465"
         ]
       },
       {
@@ -489,7 +488,6 @@
         "Description": "Integer overflow in the string_appends function in cplus-dem.c in libiberty allows remote attackers to execute arbitrary code via a crafted executable, which triggers a buffer overflow.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=69687\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90103",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-2226",
@@ -506,7 +504,6 @@
         "Description": "Use-after-free vulnerability in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, related to \"btypevec.\"",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70481\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90025",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4487",
@@ -522,7 +519,6 @@
         "Description": "Use-after-free vulnerability in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, related to \"ktypevec.\"",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70481\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90025",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4488",
@@ -538,7 +534,6 @@
         "Description": "Integer overflow in the gnu_special function in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, related to the \"demangling of virtual tables.\"",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70492\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90017",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4489",
@@ -554,7 +549,6 @@
         "Description": "Integer overflow in cp-demangle.c in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, related to inconsistent use of the long and int types for lengths.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70498\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90019",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4490",
@@ -570,7 +564,6 @@
         "Description": "The d_print_comp function in cp-demangle.c in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, which triggers infinite recursion and a buffer overflow, related to a node having \"itself as ancestor more than once.\"",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70909\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90016",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4491",
@@ -587,7 +580,6 @@
         "Description": "Buffer overflow in the do_type function in cplus-dem.c in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70926\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90014",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4492",
@@ -604,7 +596,6 @@
         "Description": "The demangle_template_value_parm and do_hpacc_template_literal functions in cplus-dem.c in libiberty allow remote attackers to cause a denial of service (out-of-bounds read and crash) via a crafted binary.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70926\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90014",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4493",
@@ -2655,7 +2646,6 @@
         "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
         "Severity": "CRITICAL",
         "References": [
-          "\nhttps://curl.haxx.se/docs/CVE-2018-14618.html\n    ",
           "http://www.securitytracker.com/id/1041605",
           "https://access.redhat.com/errata/RHSA-2018:3558",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14618",
@@ -2678,7 +2668,6 @@
         "Description": "The libcurl API function called `curl_maprintf()` before version 7.51.0 can be tricked into doing a double-free due to an unsafe `size_t` multiplication, on systems using 32 bit `size_t` variables.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102D.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94098",
           "http://www.securitytracker.com/id/1037192",
@@ -2700,7 +2689,6 @@
         "Description": "The function `read_data()` in security.c in curl before version 7.51.0 is vulnerable to memory double free.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102E.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94100",
           "http://www.securitytracker.com/id/1037192",
@@ -2723,7 +2711,6 @@
         "Description": "The URL percent-encoding decode function in libcurl before 7.51.0 is called `curl_easy_unescape`. Internally, even if this function would be made to allocate a unscape destination buffer larger than 2GB, it would return that new length in a signed 32 bit integer variable, thus the length would get either just truncated or both truncated and turned negative. That could then lead to libcurl writing outside of its heap based buffer.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102H.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94105",
           "http://www.securitytracker.com/id/1037192",
@@ -2745,7 +2732,6 @@
         "Description": "The FTP wildcard function in curl and libcurl before 7.57.0 allows remote attackers to cause a denial of service (out-of-bounds read and application crash) or possibly have unspecified other impact via a string that ends with an '[' character.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_2017-ae72.html\n    ",
           "http://security.cucumberlinux.com/security/details.php?id=162",
           "http://www.securityfocus.com/bid/102057",
           "http://www.securitytracker.com/id/1039897",
@@ -2766,7 +2752,6 @@
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://curl.haxx.se/docs/CVE-2019-5482.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
           "https://curl.haxx.se/docs/CVE-2019-5482.html",
@@ -2784,7 +2769,6 @@
         "Description": "The default configuration for cURL and libcurl before 7.42.1 sends custom HTTP headers to both the proxy and destination server, which might allow remote proxy servers to obtain sensitive information by reading the header contents.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttp://curl.haxx.se/docs/adv_20150429.html\n    ",
           "http://curl.haxx.se/docs/adv_20150429.html",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10743",
           "http://lists.apple.com/archives/security-announce/2015/Aug/msg00001.html",
@@ -2841,7 +2825,6 @@
         "Description": "A flaw was found in curl before version 7.51. If cookie state is written into a cookie jar file that is later read back and used for subsequent requests, a malicious HTTP server can inject new cookies for arbitrary domains into said cookie jar.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102A.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94096",
           "http://www.securitytracker.com/id/1037192",
@@ -2864,7 +2847,6 @@
         "Description": "A flaw was found in curl before version 7.51.0 When re-using a connection, curl was doing case insensitive comparisons of user name and password with the existing connections. This means that if an unused connection with proper credentials exists for a protocol that has connection-scoped credentials, an attacker can cause that connection to be reused if s/he knows the case-insensitive version of the correct password.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102B.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94094",
           "http://www.securitytracker.com/id/1037192",
@@ -2887,7 +2869,6 @@
         "Description": "The base64 encode function in curl before version 7.51.0 is prone to a buffer being under allocated in 32bit systems if it receives at least 1Gb as input via `CURLOPT_USERNAME`.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102C.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94097",
           "http://www.securitytracker.com/id/1037192",
@@ -2910,7 +2891,6 @@
         "Description": "The `curl_getdate` function in curl before version 7.51.0 is vulnerable to an out of bounds read if it receives an input with one digit short.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102G.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94101",
           "http://www.securitytracker.com/id/1037192",
@@ -2933,7 +2913,6 @@
         "Description": "A flaw was found in curl before version 7.51.0. The way curl handles cookies permits other threads to trigger a use-after-free leading to information disclosure.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102I.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94106",
           "http://www.securitytracker.com/id/1037192",
@@ -2956,7 +2935,6 @@
         "Description": "curl before version 7.51.0 doesn't parse the authority component of the URL correctly when the host name part ends with a '#' character, and could instead be tricked into connecting to a different host. This may have security implications if you for example use an URL parser that follows the RFC to check for allowed domains before using curl to request them.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102J.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94103",
           "http://www.securitytracker.com/id/1037192",
@@ -2978,7 +2956,6 @@
         "Description": "curl before version 7.51.0 uses outdated IDNA 2003 standard to handle International Domain Names and this may lead users to potentially and unknowingly issue network transfer requests to the wrong host.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102K.html\n    ",
           "http://www.securityfocus.com/bid/94107",
           "http://www.securitytracker.com/id/1037192",
           "https://access.redhat.com/errata/RHSA-2018:2486",
@@ -3000,7 +2977,6 @@
         "Description": "curl before version 7.52.0 is vulnerable to a buffer overflow when doing a large floating point output in libcurl's implementation of the printf() functions. If there are any application that accepts a format string from the outside without necessary input filtering, it could allow remote attacks.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161221A.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/95019",
           "http://www.securitytracker.com/id/1037515",
@@ -3022,7 +2998,6 @@
         "Description": "When doing a TFTP transfer and curl/libcurl is given a URL that contains a very long file name (longer than about 515 bytes), the file name is truncated to fit within the buffer boundaries, but the buffer size is still wrongly updated to use the untruncated length. This too large value is then used in the sendto() call, making curl attempt to send more data than what is actually put into the buffer. The endto() function will then read beyond the end of the heap based buffer. A malicious HTTP(S) server could redirect a vulnerable libcurl-using client to a crafted TFTP URL (if the client hasn't restricted which protocols it allows redirects to) and trick it to send private memory contents to a remote server over UDP. Limit curl's redirect protocols with --proto-redir and libcurl's with CURLOPT_REDIR_PROTOCOLS.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20170809B.html\n    ",
           "http://www.debian.org/security/2017/dsa-3992",
           "http://www.securityfocus.com/bid/100286",
           "http://www.securitytracker.com/id/1039118",
@@ -3042,7 +3017,6 @@
         "Description": "libcurl may read outside of a heap allocated buffer when doing FTP. When libcurl connects to an FTP server and successfully logs in (anonymous or not), it asks the server for the current directory with the `PWD` command. The server then responds with a 257 response containing the path, inside double quotes. The returned path name is then kept by libcurl for subsequent uses. Due to a flaw in the string parser for this directory name, a directory name passed like this but without a closing double quote would lead to libcurl not adding a trailing NUL byte to the buffer holding the name. When libcurl would then later access the string, it could read beyond the allocated heap buffer and crash or wrongly access data beyond the buffer, thinking it was part of the path. A malicious server could abuse this fact and effectively prevent libcurl-based clients to work with it - the PWD command is always issued on new FTP connections and the mistake has a high chance of causing a segfault. The simple fact that this has issue remained undiscovered for this long could suggest that malformed PWD responses are rare in benign servers. We are not aware of any exploit of this flaw. This bug was introduced in commit [415d2e7cb7](https://github.com/curl/curl/commit/415d2e7cb7), March 2005. In libcurl version 7.56.0, the parser always zero terminates the string but also rejects it if not terminated properly with a final double quote.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20171004.html\n    ",
           "http://www.debian.org/security/2017/dsa-3992",
           "http://www.securityfocus.com/bid/101115",
           "http://www.securitytracker.com/id/1039509",
@@ -3064,7 +3038,6 @@
         "Description": "Curl versions 7.14.1 through 7.61.1 are vulnerable to a heap-based buffer over-read in the tool_msgs.c:voutf() function that may result in information exposure and denial of service.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/CVE-2018-16842.html\n    ",
           "http://www.securitytracker.com/id/1042014",
           "https://access.redhat.com/errata/RHSA-2019:2181",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16842",
@@ -3104,9 +3077,9 @@
         "Description": "The ourWriteOut function in tool_writeout.c in curl 7.53.1 might allow physically proximate attackers to obtain sensitive information from process memory in opportunistic circumstances by reading a workstation screen during use of a --write-out argument ending in a '%' character, which leads to a heap-based buffer over-read.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20170403.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "https://access.redhat.com/errata/RHSA-2018:3558",
+          "https://curl.haxx.se/docs/adv_20170403.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7407",
           "https://github.com/curl/curl/commit/1890d59905414ab84a35892b2e45833654aa5c13",
           "https://security.gentoo.org/glsa/201709-14"
@@ -3121,7 +3094,6 @@
         "Description": "set_file_metadata in xattr.c in GNU Wget before 1.20.1 stores a file's origin URL in the user.xdg.origin.url metadata attribute of the extended attributes of the downloaded file, which allows local users to obtain sensitive information (e.g., credentials contained in the URL) by reading this attribute, as demonstrated by getfattr. This also applies to Referer information in the user.xdg.referrer.url metadata attribute. According to 2016-07-22 in the Wget ChangeLog, user.xdg.origin.url was partially based on the behavior of fwrite_xattr in tool_xattr.c in curl.",
         "Severity": "LOW",
         "References": [
-          "\nhttp://git.savannah.gnu.org/cgit/wget.git/tree/NEWS\n    ",
           "http://git.savannah.gnu.org/cgit/wget.git/tree/NEWS",
           "http://www.securityfocus.com/bid/106358",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20483",
@@ -3337,7 +3309,6 @@
         "Description": "dbus before 1.10.28, 1.12.x before 1.12.16, and 1.13.x before 1.13.12, as used in DBusServer in Canonical Upstart in Ubuntu 14.04 (and in some, less common, uses of dbus-daemon), allows cookie spoofing because of symlink mishandling in the reference implementation of DBUS_COOKIE_SHA1 in the libdbus library. (This only affects the DBUS_COOKIE_SHA1 authentication mechanism.) A malicious client with write access to its own home directory could manipulate a ~/.dbus-keyrings symlink to cause a DBusServer with a different uid to read and write in unintended locations. In the worst case, this could result in the DBusServer reusing a cookie that is known to the malicious client, and treating that cookie as evidence that a subsequent client connection came from an attacker-chosen uid, allowing authentication bypass.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.openwall.com/lists/oss-security/2019/06/11/2\n    ",
           "http://www.openwall.com/lists/oss-security/2019/06/11/2",
           "http://www.securityfocus.com/bid/108751",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12749",
@@ -3556,7 +3527,6 @@
         "Description": "dbus before 1.10.28, 1.12.x before 1.12.16, and 1.13.x before 1.13.12, as used in DBusServer in Canonical Upstart in Ubuntu 14.04 (and in some, less common, uses of dbus-daemon), allows cookie spoofing because of symlink mishandling in the reference implementation of DBUS_COOKIE_SHA1 in the libdbus library. (This only affects the DBUS_COOKIE_SHA1 authentication mechanism.) A malicious client with write access to its own home directory could manipulate a ~/.dbus-keyrings symlink to cause a DBusServer with a different uid to read and write in unintended locations. In the worst case, this could result in the DBusServer reusing a cookie that is known to the malicious client, and treating that cookie as evidence that a subsequent client connection came from an attacker-chosen uid, allowing authentication bypass.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.openwall.com/lists/oss-security/2019/06/11/2\n    ",
           "http://www.openwall.com/lists/oss-security/2019/06/11/2",
           "http://www.securityfocus.com/bid/108751",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12749",
@@ -3578,13 +3548,13 @@
         "Description": "The Debian initrd script for the cryptsetup package 2:1.7.3-2 and earlier allows physically proximate attackers to gain shell access via many log in attempts with an invalid password.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://access.redhat.com/articles/2786581\nhttp://hmarco.org/bugs/CVE-2016-4484/CVE-2016-4484_cryptsetup_initrd_shell.html\n    ",
           "http://hmarco.org/bugs/CVE-2016-4484/CVE-2016-4484_cryptsetup_initrd_shell.html",
           "http://www.openwall.com/lists/oss-security/2016/11/14/13",
           "http://www.openwall.com/lists/oss-security/2016/11/15/1",
           "http://www.openwall.com/lists/oss-security/2016/11/15/4",
           "http://www.openwall.com/lists/oss-security/2016/11/16/6",
           "http://www.securityfocus.com/bid/94315",
+          "https://access.redhat.com/articles/2786581",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4484",
           "https://gitlab.com/cryptsetup/cryptsetup/commit/ef8a7d82d8d3716ae9b58179590f7908981fa0cb"
         ]
@@ -4534,7 +4504,6 @@
         "Description": "Buffer overflow in the XML parser in Mozilla Firefox before 38.0, Firefox ESR 31.x before 31.7, and Thunderbird before 31.7 allows remote attackers to execute arbitrary code by providing a large amount of compressed XML data, a related issue to CVE-2015-1283.",
         "Severity": "HIGH",
         "References": [
-          "\nhttp://www.mozilla.org/security/announce/2015/mfsa2015-54.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2015-05/msg00012.html",
           "http://lists.opensuse.org/opensuse-security-announce/2015-05/msg00054.html",
           "http://lists.opensuse.org/opensuse-security-announce/2015-06/msg00000.html",
@@ -4588,13 +4557,13 @@
         "Description": "An integer overflow during the parsing of XML using the Expat library. This vulnerability affects Firefox \u003c 50.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://www.mozilla.org/en-US/security/advisories/mfsa2016-89/#CVE-2016-9063\n    ",
           "http://www.securityfocus.com/bid/94337",
           "http://www.securitytracker.com/id/1037298",
           "http://www.securitytracker.com/id/1039427",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1274777",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-9063",
           "https://www.debian.org/security/2017/dsa-3898",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2016-89/#CVE-2016-9063",
           "https://www.mozilla.org/security/advisories/mfsa2016-89/"
         ]
       },
@@ -4672,7 +4641,6 @@
         "Description": "XML External Entity vulnerability in libexpat 2.2.0 and earlier (Expat XML Parser Library) allows attackers to put the parser in an infinite loop using a malformed external entity definition from an external DTD.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://libexpat.github.io/doc/cve-2017-9233/\n    ",
           "http://www.debian.org/security/2017/dsa-3898",
           "http://www.openwall.com/lists/oss-security/2017/06/17/7",
           "http://www.securityfocus.com/bid/99276",
@@ -5100,7 +5068,6 @@
         "Description": "The _pcre32_xclass function in pcre_xclass.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (invalid memory read) via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-invalid-memory-read-in-_pcre32_xclass-pcre_xclass-c/\n    ",
           "http://www.securityfocus.com/bid/97067",
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-invalid-memory-read-in-_pcre32_xclass-pcre_xclass-c/",
@@ -5117,7 +5084,6 @@
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 4) or possibly have unspecified other impact via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/\n    ",
           "http://www.securityfocus.com/bid/97067",
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
@@ -5133,7 +5099,6 @@
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 268) or possibly have unspecified other impact via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/\n    ",
           "http://www.securityfocus.com/bid/97067",
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
@@ -5220,7 +5185,6 @@
         "Description": "The posix_spawn_file_actions_addopen function in glibc before 2.20 does not copy its path argument in accordance with the POSIX specification, which allows context-dependent attackers to trigger use-after-free vulnerabilities.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://sourceware.org/bugzilla/show_bug.cgi?id=17048\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2015-08/msg00012.html",
           "http://packetstormsecurity.com/files/153278/WAGO-852-Industrial-Managed-Switch-Series-Code-Execution-Hardcoded-Credentials.html",
           "http://seclists.org/fulldisclosure/2019/Jun/18",
@@ -5469,7 +5433,6 @@
         "Description": "The posix_spawn_file_actions_addopen function in glibc before 2.20 does not copy its path argument in accordance with the POSIX specification, which allows context-dependent attackers to trigger use-after-free vulnerabilities.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://sourceware.org/bugzilla/show_bug.cgi?id=17048\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2015-08/msg00012.html",
           "http://packetstormsecurity.com/files/153278/WAGO-852-Industrial-Managed-Switch-Series-Code-Execution-Hardcoded-Credentials.html",
           "http://seclists.org/fulldisclosure/2019/Jun/18",
@@ -5756,7 +5719,7 @@
         "Description": "Interaction between the sks-keyserver code through 1.2.0 of the SKS keyserver network, and GnuPG through 2.2.16, makes it risky to have a GnuPG keyserver configuration line referring to a host on the SKS keyserver network. Retrieving data from this network may cause a persistent denial of service, because of a Certificate Spamming Attack.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gist.github.com/rjhansen/67ab921ffb4084c865b3618d6955275f\nhttps://access.redhat.com/articles/4264021\n    ",
+          "https://access.redhat.com/articles/4264021",
           "https://gist.github.com/rjhansen/67ab921ffb4084c865b3618d6955275f",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2019q3/000439.html",
           "https://twitter.com/lambdafu/status/1147162583969009664"
@@ -5817,7 +5780,6 @@
         "Description": "Multiple heap-based buffer overflows in the status_handler function in (1) engine-gpgsm.c and (2) engine-uiserver.c in GPGME before 1.5.1 allow remote attackers to cause a denial of service (crash) and possibly execute arbitrary code via vectors related to \"different line lengths in a specific order.\"",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttp://git.gnupg.org/cgi-bin/gitweb.cgi?p=gpgme.git;a=commit;h=2cbd76f7911fc215845e89b50d6af5ff4a83dd77\n    ",
           "http://git.gnupg.org/cgi-bin/gitweb.cgi?p=gpgme.git;a=commit;h=2cbd76f7911fc215845e89b50d6af5ff4a83dd77",
           "http://seclists.org/oss-sec/2014/q3/266",
           "http://www.debian.org/security/2014/dsa-3005",
@@ -6060,7 +6022,6 @@
         "Description": "Heap-based buffer overflow in openfs.c in the libext2fs library in e2fsprogs before 1.42.12 allows local users to execute arbitrary code via crafted block group descriptor data in a filesystem image.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttp://www.ocert.org/advisories/ocert-2015-002.html\n    ",
           "http://advisories.mageia.org/MGASA-2015-0061.html",
           "http://git.kernel.org/cgit/fs/ext2/e2fsprogs.git/commit/?id=f66e6ce4",
           "http://lists.fedoraproject.org/pipermail/package-announce/2015-February/149434.html",
@@ -6115,7 +6076,6 @@
         "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
         "Severity": "CRITICAL",
         "References": [
-          "\nhttps://curl.haxx.se/docs/CVE-2018-14618.html\n    ",
           "http://www.securitytracker.com/id/1041605",
           "https://access.redhat.com/errata/RHSA-2018:3558",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14618",
@@ -6138,7 +6098,6 @@
         "Description": "The libcurl API function called `curl_maprintf()` before version 7.51.0 can be tricked into doing a double-free due to an unsafe `size_t` multiplication, on systems using 32 bit `size_t` variables.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102D.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94098",
           "http://www.securitytracker.com/id/1037192",
@@ -6160,7 +6119,6 @@
         "Description": "The function `read_data()` in security.c in curl before version 7.51.0 is vulnerable to memory double free.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102E.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94100",
           "http://www.securitytracker.com/id/1037192",
@@ -6183,7 +6141,6 @@
         "Description": "The URL percent-encoding decode function in libcurl before 7.51.0 is called `curl_easy_unescape`. Internally, even if this function would be made to allocate a unscape destination buffer larger than 2GB, it would return that new length in a signed 32 bit integer variable, thus the length would get either just truncated or both truncated and turned negative. That could then lead to libcurl writing outside of its heap based buffer.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102H.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94105",
           "http://www.securitytracker.com/id/1037192",
@@ -6205,7 +6162,6 @@
         "Description": "The FTP wildcard function in curl and libcurl before 7.57.0 allows remote attackers to cause a denial of service (out-of-bounds read and application crash) or possibly have unspecified other impact via a string that ends with an '[' character.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_2017-ae72.html\n    ",
           "http://security.cucumberlinux.com/security/details.php?id=162",
           "http://www.securityfocus.com/bid/102057",
           "http://www.securitytracker.com/id/1039897",
@@ -6226,7 +6182,6 @@
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://curl.haxx.se/docs/CVE-2019-5482.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
           "https://curl.haxx.se/docs/CVE-2019-5482.html",
@@ -6244,7 +6199,6 @@
         "Description": "The default configuration for cURL and libcurl before 7.42.1 sends custom HTTP headers to both the proxy and destination server, which might allow remote proxy servers to obtain sensitive information by reading the header contents.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttp://curl.haxx.se/docs/adv_20150429.html\n    ",
           "http://curl.haxx.se/docs/adv_20150429.html",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10743",
           "http://lists.apple.com/archives/security-announce/2015/Aug/msg00001.html",
@@ -6301,7 +6255,6 @@
         "Description": "A flaw was found in curl before version 7.51. If cookie state is written into a cookie jar file that is later read back and used for subsequent requests, a malicious HTTP server can inject new cookies for arbitrary domains into said cookie jar.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102A.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94096",
           "http://www.securitytracker.com/id/1037192",
@@ -6324,7 +6277,6 @@
         "Description": "A flaw was found in curl before version 7.51.0 When re-using a connection, curl was doing case insensitive comparisons of user name and password with the existing connections. This means that if an unused connection with proper credentials exists for a protocol that has connection-scoped credentials, an attacker can cause that connection to be reused if s/he knows the case-insensitive version of the correct password.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102B.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94094",
           "http://www.securitytracker.com/id/1037192",
@@ -6347,7 +6299,6 @@
         "Description": "The base64 encode function in curl before version 7.51.0 is prone to a buffer being under allocated in 32bit systems if it receives at least 1Gb as input via `CURLOPT_USERNAME`.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102C.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94097",
           "http://www.securitytracker.com/id/1037192",
@@ -6370,7 +6321,6 @@
         "Description": "The `curl_getdate` function in curl before version 7.51.0 is vulnerable to an out of bounds read if it receives an input with one digit short.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102G.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94101",
           "http://www.securitytracker.com/id/1037192",
@@ -6393,7 +6343,6 @@
         "Description": "A flaw was found in curl before version 7.51.0. The way curl handles cookies permits other threads to trigger a use-after-free leading to information disclosure.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102I.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94106",
           "http://www.securitytracker.com/id/1037192",
@@ -6416,7 +6365,6 @@
         "Description": "curl before version 7.51.0 doesn't parse the authority component of the URL correctly when the host name part ends with a '#' character, and could instead be tricked into connecting to a different host. This may have security implications if you for example use an URL parser that follows the RFC to check for allowed domains before using curl to request them.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102J.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/94103",
           "http://www.securitytracker.com/id/1037192",
@@ -6438,7 +6386,6 @@
         "Description": "curl before version 7.51.0 uses outdated IDNA 2003 standard to handle International Domain Names and this may lead users to potentially and unknowingly issue network transfer requests to the wrong host.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161102K.html\n    ",
           "http://www.securityfocus.com/bid/94107",
           "http://www.securitytracker.com/id/1037192",
           "https://access.redhat.com/errata/RHSA-2018:2486",
@@ -6460,7 +6407,6 @@
         "Description": "curl before version 7.52.0 is vulnerable to a buffer overflow when doing a large floating point output in libcurl's implementation of the printf() functions. If there are any application that accepts a format string from the outside without necessary input filtering, it could allow remote attacks.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20161221A.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "http://www.securityfocus.com/bid/95019",
           "http://www.securitytracker.com/id/1037515",
@@ -6482,7 +6428,6 @@
         "Description": "When doing a TFTP transfer and curl/libcurl is given a URL that contains a very long file name (longer than about 515 bytes), the file name is truncated to fit within the buffer boundaries, but the buffer size is still wrongly updated to use the untruncated length. This too large value is then used in the sendto() call, making curl attempt to send more data than what is actually put into the buffer. The endto() function will then read beyond the end of the heap based buffer. A malicious HTTP(S) server could redirect a vulnerable libcurl-using client to a crafted TFTP URL (if the client hasn't restricted which protocols it allows redirects to) and trick it to send private memory contents to a remote server over UDP. Limit curl's redirect protocols with --proto-redir and libcurl's with CURLOPT_REDIR_PROTOCOLS.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20170809B.html\n    ",
           "http://www.debian.org/security/2017/dsa-3992",
           "http://www.securityfocus.com/bid/100286",
           "http://www.securitytracker.com/id/1039118",
@@ -6502,7 +6447,6 @@
         "Description": "libcurl may read outside of a heap allocated buffer when doing FTP. When libcurl connects to an FTP server and successfully logs in (anonymous or not), it asks the server for the current directory with the `PWD` command. The server then responds with a 257 response containing the path, inside double quotes. The returned path name is then kept by libcurl for subsequent uses. Due to a flaw in the string parser for this directory name, a directory name passed like this but without a closing double quote would lead to libcurl not adding a trailing NUL byte to the buffer holding the name. When libcurl would then later access the string, it could read beyond the allocated heap buffer and crash or wrongly access data beyond the buffer, thinking it was part of the path. A malicious server could abuse this fact and effectively prevent libcurl-based clients to work with it - the PWD command is always issued on new FTP connections and the mistake has a high chance of causing a segfault. The simple fact that this has issue remained undiscovered for this long could suggest that malformed PWD responses are rare in benign servers. We are not aware of any exploit of this flaw. This bug was introduced in commit [415d2e7cb7](https://github.com/curl/curl/commit/415d2e7cb7), March 2005. In libcurl version 7.56.0, the parser always zero terminates the string but also rejects it if not terminated properly with a final double quote.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20171004.html\n    ",
           "http://www.debian.org/security/2017/dsa-3992",
           "http://www.securityfocus.com/bid/101115",
           "http://www.securitytracker.com/id/1039509",
@@ -6524,7 +6468,6 @@
         "Description": "Curl versions 7.14.1 through 7.61.1 are vulnerable to a heap-based buffer over-read in the tool_msgs.c:voutf() function that may result in information exposure and denial of service.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/CVE-2018-16842.html\n    ",
           "http://www.securitytracker.com/id/1042014",
           "https://access.redhat.com/errata/RHSA-2019:2181",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16842",
@@ -6564,9 +6507,9 @@
         "Description": "The ourWriteOut function in tool_writeout.c in curl 7.53.1 might allow physically proximate attackers to obtain sensitive information from process memory in opportunistic circumstances by reading a workstation screen during use of a --write-out argument ending in a '%' character, which leads to a heap-based buffer over-read.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://curl.haxx.se/docs/adv_20170403.html\n    ",
           "http://www.oracle.com/technetwork/security-advisory/cpuoct2018-4428296.html",
           "https://access.redhat.com/errata/RHSA-2018:3558",
+          "https://curl.haxx.se/docs/adv_20170403.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7407",
           "https://github.com/curl/curl/commit/1890d59905414ab84a35892b2e45833654aa5c13",
           "https://security.gentoo.org/glsa/201709-14"
@@ -6581,7 +6524,6 @@
         "Description": "set_file_metadata in xattr.c in GNU Wget before 1.20.1 stores a file's origin URL in the user.xdg.origin.url metadata attribute of the extended attributes of the downloaded file, which allows local users to obtain sensitive information (e.g., credentials contained in the URL) by reading this attribute, as demonstrated by getfattr. This also applies to Referer information in the user.xdg.referrer.url metadata attribute. According to 2016-07-22 in the Wget ChangeLog, user.xdg.origin.url was partially based on the behavior of fwrite_xattr in tool_xattr.c in curl.",
         "Severity": "LOW",
         "References": [
-          "\nhttp://git.savannah.gnu.org/cgit/wget.git/tree/NEWS\n    ",
           "http://git.savannah.gnu.org/cgit/wget.git/tree/NEWS",
           "http://www.securityfocus.com/bid/106358",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20483",
@@ -6647,7 +6589,6 @@
         "Description": "The std::random_device class in libstdc++ in the GNU Compiler Collection (aka GCC) before 4.9.4 does not properly handle short reads from blocking sources, which makes it easier for context-dependent attackers to predict the random values via unspecified vectors.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=65142\n    ",
           "http://lists.opensuse.org/opensuse-updates/2015-11/msg00054.html",
           "http://lists.opensuse.org/opensuse-updates/2016-04/msg00052.html",
           "http://www.securitytracker.com/id/1034375",
@@ -6664,7 +6605,6 @@
         "Description": "Integer overflow in the string_appends function in cplus-dem.c in libiberty allows remote attackers to execute arbitrary code via a crafted executable, which triggers a buffer overflow.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=69687\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90103",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-2226",
@@ -6681,7 +6621,6 @@
         "Description": "Use-after-free vulnerability in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, related to \"btypevec.\"",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70481\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90025",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4487",
@@ -6697,7 +6636,6 @@
         "Description": "Use-after-free vulnerability in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, related to \"ktypevec.\"",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70481\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90025",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4488",
@@ -6713,7 +6651,6 @@
         "Description": "Integer overflow in the gnu_special function in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, related to the \"demangling of virtual tables.\"",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70492\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90017",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4489",
@@ -6729,7 +6666,6 @@
         "Description": "Integer overflow in cp-demangle.c in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, related to inconsistent use of the long and int types for lengths.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70498\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90019",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4490",
@@ -6745,7 +6681,6 @@
         "Description": "The d_print_comp function in cp-demangle.c in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, which triggers infinite recursion and a buffer overflow, related to a node having \"itself as ancestor more than once.\"",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70909\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90016",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4491",
@@ -6762,7 +6697,6 @@
         "Description": "Buffer overflow in the do_type function in cplus-dem.c in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70926\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90014",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4492",
@@ -6779,7 +6713,6 @@
         "Description": "The demangle_template_value_parm and do_hpacc_template_literal functions in cplus-dem.c in libiberty allow remote attackers to cause a denial of service (out-of-bounds read and crash) via a crafted binary.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70926\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90014",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4493",
@@ -6855,7 +6788,6 @@
         "Description": "libgcrypt before version 1.7.8 is vulnerable to a cache side-channel attack resulting into a complete break of RSA-1024 while using the left-to-right method for computing the sliding-window expansion. The same attack is believed to work on RSA-2048 with moderately more computation. This side-channel requires that attacker can run arbitrary software on the hardware where the private RSA key is used.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://lists.gnupg.org/pipermail/gnupg-announce/2017q2/000408.html\nhttps://eprint.iacr.org/2017/627\n    ",
           "http://www.securityfocus.com/bid/99338",
           "http://www.securitytracker.com/id/1038915",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2017-7526",
@@ -6880,11 +6812,11 @@
         "Description": "In Libgcrypt 1.8.4, the C implementation of AES is vulnerable to a flush-and-reload side-channel attack because physical addresses are available to other processes. (The C implementation is used on platforms where an assembly-language implementation is unavailable.)",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-12904.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00049.html",
           "https://dev.gnupg.org/T4541",
           "https://github.com/gpg/libgcrypt/commit/a4c561aab1014c3630bc88faf6f5246fee16b020",
-          "https://github.com/gpg/libgcrypt/commit/daedbbb5541cd8ecda1459d3b843ea4d92788762"
+          "https://github.com/gpg/libgcrypt/commit/daedbbb5541cd8ecda1459d3b843ea4d92788762",
+          "https://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-12904.html"
         ]
       },
       {
@@ -7162,7 +7094,6 @@
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "CRITICAL",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3855.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
@@ -7192,7 +7123,6 @@
         "Description": "In libssh2 before 1.9.0, kex_method_diffie_hellman_group_exchange_sha256_key_exchange in kex.c has an integer overflow that could lead to an out-of-bounds read in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to disclose sensitive information or cause a denial of service condition on the client system when a user connects to the server. This is related to an _libssh2_check_length mistake, and is different from the various issues fixed in 1.8.1, such as CVE-2019-3855.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blog.semmle.com/libssh2-integer-overflow/\n    ",
           "https://blog.semmle.com/libssh2-integer-overflow/",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-13115",
           "https://github.com/libssh2/libssh2/compare/02ecf17...42d37aa",
@@ -7210,7 +7140,6 @@
         "Description": "An integer overflow flaw, which could lead to an out of bounds write, was discovered in libssh2 before 1.8.1 in the way keyboard prompt requests are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3856.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
@@ -7234,7 +7163,6 @@
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit signal are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3857.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
@@ -7258,7 +7186,6 @@
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 when a specially crafted SFTP packet is received from the server. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3858.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
@@ -7286,7 +7213,6 @@
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the _libssh2_packet_require and _libssh2_packet_requirev functions. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3859.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00102.html",
@@ -7318,7 +7244,6 @@
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SFTP packets with empty payloads are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3860.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3860",
@@ -7340,7 +7265,6 @@
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH packets with a padding length value greater than the packet length are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3861.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3861",
@@ -7362,7 +7286,6 @@
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit status message and no payload are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3862.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
@@ -7390,7 +7313,6 @@
         "Description": "A flaw was found in libssh2 before 1.8.1. A server could send a multiple keyboard interactive response messages whose total length are greater than unsigned char max characters. This value is used as an index to copy memory causing in an out of bounds memory write error.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3863.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
@@ -7431,7 +7353,6 @@
         "Description": "The std::random_device class in libstdc++ in the GNU Compiler Collection (aka GCC) before 4.9.4 does not properly handle short reads from blocking sources, which makes it easier for context-dependent attackers to predict the random values via unspecified vectors.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=65142\n    ",
           "http://lists.opensuse.org/opensuse-updates/2015-11/msg00054.html",
           "http://lists.opensuse.org/opensuse-updates/2016-04/msg00052.html",
           "http://www.securitytracker.com/id/1034375",
@@ -7448,7 +7369,6 @@
         "Description": "Integer overflow in the string_appends function in cplus-dem.c in libiberty allows remote attackers to execute arbitrary code via a crafted executable, which triggers a buffer overflow.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=69687\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90103",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-2226",
@@ -7465,7 +7385,6 @@
         "Description": "Use-after-free vulnerability in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, related to \"btypevec.\"",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70481\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90025",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4487",
@@ -7481,7 +7400,6 @@
         "Description": "Use-after-free vulnerability in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, related to \"ktypevec.\"",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70481\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90025",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4488",
@@ -7497,7 +7415,6 @@
         "Description": "Integer overflow in the gnu_special function in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, related to the \"demangling of virtual tables.\"",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70492\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90017",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4489",
@@ -7513,7 +7430,6 @@
         "Description": "Integer overflow in cp-demangle.c in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, related to inconsistent use of the long and int types for lengths.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70498\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90019",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4490",
@@ -7529,7 +7445,6 @@
         "Description": "The d_print_comp function in cp-demangle.c in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary, which triggers infinite recursion and a buffer overflow, related to a node having \"itself as ancestor more than once.\"",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70909\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90016",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4491",
@@ -7546,7 +7461,6 @@
         "Description": "Buffer overflow in the do_type function in cplus-dem.c in libiberty allows remote attackers to cause a denial of service (segmentation fault and crash) via a crafted binary.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70926\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90014",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4492",
@@ -7563,7 +7477,6 @@
         "Description": "The demangle_template_value_parm and do_hpacc_template_literal functions in cplus-dem.c in libiberty allow remote attackers to cause a denial of service (out-of-bounds read and crash) via a crafted binary.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gcc.gnu.org/bugzilla/show_bug.cgi?id=70926\n    ",
           "http://www.openwall.com/lists/oss-security/2016/05/05/5",
           "http://www.securityfocus.com/bid/90014",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4493",
@@ -7910,7 +7823,6 @@
         "Description": "Use-after-free vulnerability in libxml2 through 2.9.4, as used in Google Chrome before 52.0.2743.82, allows remote attackers to cause a denial of service or possibly have unspecified other impact via vectors related to the XPointer range-to function.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://googlechromereleases.blogspot.com/2016/07/stable-channel-update.html\n    ",
           "http://googlechromereleases.blogspot.com/2016/07/stable-channel-update.html",
           "http://lists.apple.com/archives/security-announce/2016/Sep/msg00006.html",
           "http://lists.apple.com/archives/security-announce/2016/Sep/msg00008.html",
@@ -7930,6 +7842,7 @@
           "https://codereview.chromium.org/2127493002",
           "https://crbug.com/623378",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-5131",
+          "https://googlechromereleases.blogspot.com/2016/07/stable-channel-update.html",
           "https://security.gentoo.org/glsa/201610-09",
           "https://security.gentoo.org/glsa/201701-37",
           "https://source.android.com/security/bulletin/2017-05-01",
@@ -7982,7 +7895,6 @@
         "Description": "Use after free in libxml2 before 2.9.5, as used in Google Chrome prior to 63.0.3239.84 and other products, allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://chromereleases.googleblog.com/2017/12/stable-channel-update-for-desktop.html\n    ",
           "http://www.securitytracker.com/id/1040348",
           "https://access.redhat.com/errata/RHSA-2017:3401",
           "https://access.redhat.com/errata/RHSA-2018:0287",
@@ -8327,7 +8239,6 @@
         "Description": "Use-after-free vulnerability in libxml2 through 2.9.4, as used in Google Chrome before 52.0.2743.82, allows remote attackers to cause a denial of service or possibly have unspecified other impact via vectors related to the XPointer range-to function.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://googlechromereleases.blogspot.com/2016/07/stable-channel-update.html\n    ",
           "http://googlechromereleases.blogspot.com/2016/07/stable-channel-update.html",
           "http://lists.apple.com/archives/security-announce/2016/Sep/msg00006.html",
           "http://lists.apple.com/archives/security-announce/2016/Sep/msg00008.html",
@@ -8347,6 +8258,7 @@
           "https://codereview.chromium.org/2127493002",
           "https://crbug.com/623378",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-5131",
+          "https://googlechromereleases.blogspot.com/2016/07/stable-channel-update.html",
           "https://security.gentoo.org/glsa/201610-09",
           "https://security.gentoo.org/glsa/201701-37",
           "https://source.android.com/security/bulletin/2017-05-01",
@@ -8399,7 +8311,6 @@
         "Description": "Use after free in libxml2 before 2.9.5, as used in Google Chrome prior to 63.0.3239.84 and other products, allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://chromereleases.googleblog.com/2017/12/stable-channel-update-for-desktop.html\n    ",
           "http://www.securitytracker.com/id/1040348",
           "https://access.redhat.com/errata/RHSA-2017:3401",
           "https://access.redhat.com/errata/RHSA-2018:0287",
@@ -9270,12 +9181,12 @@
         "Description": "Multiple integer overflows in io/prprf.c in Mozilla Netscape Portable Runtime (NSPR) before 4.12 allow remote attackers to cause a denial of service (buffer overflow) or possibly have unspecified other impact via a long string to a PR_*printf function.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://groups.google.com/forum/#!topic/mozilla.dev.tech.nspr/dV4MyMsg6jw\n    ",
           "http://www.securityfocus.com/bid/92385",
           "http://www.securitytracker.com/id/1036590",
           "http://www.ubuntu.com/usn/USN-3023-1",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1174015",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-1951",
+          "https://groups.google.com/forum/#!topic/mozilla.dev.tech.nspr/dV4MyMsg6jw",
           "https://groups.google.com/forum/message/raw?msg=mozilla.dev.tech.nspr/dV4MyMsg6jw/hhWcXOgJDQAJ",
           "https://hg.mozilla.org/projects/nspr/rev/96381e3aaae2"
         ]
@@ -9536,7 +9447,6 @@
         "Description": "The RC4 algorithm, as used in the TLS protocol and SSL protocol, does not properly combine state data with key data during the initialization phase, which makes it easier for remote attackers to conduct plaintext-recovery attacks against the initial bytes of a stream by sniffing network traffic that occasionally relies on keys affected by the Invariance Weakness, and then using a brute-force approach involving LSB values, aka the \"Bar Mitzvah\" issue.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttp://www.imperva.com/docs/HII_Attacking_SSL_when_using_RC4.pdf\n    ",
           "http://h20564.www2.hpe.com/hpsc/doc/public/display?docId=emr_na-c04779034",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10705",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10727",
@@ -9589,6 +9499,7 @@
           "http://www.debian.org/security/2015/dsa-3316",
           "http://www.debian.org/security/2015/dsa-3339",
           "http://www.huawei.com/en/psirt/security-advisories/hw-454055",
+          "http://www.imperva.com/docs/HII_Attacking_SSL_when_using_RC4.pdf",
           "http://www.oracle.com/technetwork/security-advisory/cpuapr2016v3-2985753.html",
           "http://www.oracle.com/technetwork/security-advisory/cpujan2018-3236628.html",
           "http://www.oracle.com/technetwork/security-advisory/cpujul2016-2881720.html",
@@ -9649,7 +9560,6 @@
         "Description": "The DES and Triple DES ciphers, as used in the TLS, SSH, and IPSec protocols and other protocols and products, have a birthday bound of approximately four billion blocks, which makes it easier for remote attackers to obtain cleartext data via a birthday attack against a long-duration encrypted session, as demonstrated by an HTTPS session using Triple DES in CBC mode, aka a \"Sweet32\" attack.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://sweet32.info/\nhttps://access.redhat.com/articles/2548661\nhttps://access.redhat.com/errata/RHSA-2016:1940\n    ",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10759",
           "http://lists.opensuse.org/opensuse-security-announce/2016-10/msg00013.html",
           "http://rhn.redhat.com/errata/RHSA-2017-0336.html",
@@ -9672,6 +9582,7 @@
           "http://www.splunk.com/view/SP-CAAAPSV",
           "http://www.splunk.com/view/SP-CAAAPUE",
           "https://access.redhat.com/articles/2548661",
+          "https://access.redhat.com/errata/RHSA-2016:1940",
           "https://access.redhat.com/errata/RHSA-2017:1216",
           "https://access.redhat.com/errata/RHSA-2017:2708",
           "https://access.redhat.com/errata/RHSA-2017:2709",
@@ -9731,7 +9642,6 @@
         "Description": "An existing mitigation of timing side-channel attacks is insufficient in some circumstances. This issue is addressed in Network Security Services (NSS) 3.26.1. This vulnerability affects Thunderbird \u003c 45.5, Firefox ESR \u003c 45.5, and Firefox \u003c 50.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.mozilla.org/en-US/security/advisories/mfsa2016-89/#CVE-2016-9074\n    ",
           "http://www.securityfocus.com/bid/94341",
           "http://www.securitytracker.com/id/1037298",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1293334",
@@ -9739,6 +9649,7 @@
           "https://security.gentoo.org/glsa/201701-15",
           "https://security.gentoo.org/glsa/201701-46",
           "https://www.debian.org/security/2016/dsa-3730",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2016-89/#CVE-2016-9074",
           "https://www.mozilla.org/security/advisories/mfsa2016-89/",
           "https://www.mozilla.org/security/advisories/mfsa2016-90/",
           "https://www.mozilla.org/security/advisories/mfsa2016-93/"
@@ -9782,8 +9693,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.41.1_release_notes\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18508"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18508",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.41.1_release_notes"
         ]
       },
       {
@@ -9795,7 +9706,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -9827,7 +9737,6 @@
         "Description": "Unspecified vulnerability in Oracle Java SE 7u80 and 8u45, and Java SE Embedded 7u75 and 8u33 allows remote attackers to affect confidentiality via vectors related to JCE.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttp://www.oracle.com/technetwork/topics/security/cpujul2015-2367936.html#AppendixJAVA\n    ",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10727",
           "http://lists.opensuse.org/opensuse-security-announce/2015-07/msg00039.html",
           "http://lists.opensuse.org/opensuse-security-announce/2015-07/msg00040.html",
@@ -9840,6 +9749,7 @@
           "http://www.debian.org/security/2015/dsa-3316",
           "http://www.debian.org/security/2015/dsa-3339",
           "http://www.oracle.com/technetwork/topics/security/cpujul2015-2367936.html",
+          "http://www.oracle.com/technetwork/topics/security/cpujul2015-2367936.html#AppendixJAVA",
           "http://www.securityfocus.com/bid/75871",
           "http://www.securitytracker.com/id/1032910",
           "http://www.ubuntu.com/usn/USN-2696-1",
@@ -9894,10 +9804,10 @@
         "Description": "An error occurs in the elliptic curve point addition algorithm that uses mixed Jacobian-affine coordinates where it can yield a result \"POINT_AT_INFINITY\" when it should not. A man-in-the-middle attacker could use this to interfere with a connection, resulting in an attacked party computing an incorrect shared secret. This vulnerability affects Firefox \u003c 55.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.mozilla.org/en-US/security/advisories/mfsa2017-18/#CVE-2017-7781\n    ",
           "http://www.securityfocus.com/bid/100383",
           "http://www.securitytracker.com/id/1039124",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1352039",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2017-18/#CVE-2017-7781",
           "https://www.mozilla.org/security/advisories/mfsa2017-18/"
         ]
       },
@@ -9910,7 +9820,6 @@
         "Description": "Unspecified vulnerability in Oracle Java SE 7u80 and 8u45, and Java SE Embedded 7u75 and 8u33 allows remote attackers to affect confidentiality via vectors related to JCE.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttp://www.oracle.com/technetwork/topics/security/cpujul2015-2367936.html#AppendixJAVA\n    ",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10727",
           "http://lists.opensuse.org/opensuse-security-announce/2015-07/msg00039.html",
           "http://lists.opensuse.org/opensuse-security-announce/2015-07/msg00040.html",
@@ -9923,6 +9832,7 @@
           "http://www.debian.org/security/2015/dsa-3316",
           "http://www.debian.org/security/2015/dsa-3339",
           "http://www.oracle.com/technetwork/topics/security/cpujul2015-2367936.html",
+          "http://www.oracle.com/technetwork/topics/security/cpujul2015-2367936.html#AppendixJAVA",
           "http://www.securityfocus.com/bid/75871",
           "http://www.securitytracker.com/id/1032910",
           "http://www.ubuntu.com/usn/USN-2696-1",
@@ -9977,10 +9887,10 @@
         "Description": "An error occurs in the elliptic curve point addition algorithm that uses mixed Jacobian-affine coordinates where it can yield a result \"POINT_AT_INFINITY\" when it should not. A man-in-the-middle attacker could use this to interfere with a connection, resulting in an attacked party computing an incorrect shared secret. This vulnerability affects Firefox \u003c 55.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.mozilla.org/en-US/security/advisories/mfsa2017-18/#CVE-2017-7781\n    ",
           "http://www.securityfocus.com/bid/100383",
           "http://www.securitytracker.com/id/1039124",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1352039",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2017-18/#CVE-2017-7781",
           "https://www.mozilla.org/security/advisories/mfsa2017-18/"
         ]
       },
@@ -10240,7 +10150,6 @@
         "Description": "The RC4 algorithm, as used in the TLS protocol and SSL protocol, does not properly combine state data with key data during the initialization phase, which makes it easier for remote attackers to conduct plaintext-recovery attacks against the initial bytes of a stream by sniffing network traffic that occasionally relies on keys affected by the Invariance Weakness, and then using a brute-force approach involving LSB values, aka the \"Bar Mitzvah\" issue.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttp://www.imperva.com/docs/HII_Attacking_SSL_when_using_RC4.pdf\n    ",
           "http://h20564.www2.hpe.com/hpsc/doc/public/display?docId=emr_na-c04779034",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10705",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10727",
@@ -10293,6 +10202,7 @@
           "http://www.debian.org/security/2015/dsa-3316",
           "http://www.debian.org/security/2015/dsa-3339",
           "http://www.huawei.com/en/psirt/security-advisories/hw-454055",
+          "http://www.imperva.com/docs/HII_Attacking_SSL_when_using_RC4.pdf",
           "http://www.oracle.com/technetwork/security-advisory/cpuapr2016v3-2985753.html",
           "http://www.oracle.com/technetwork/security-advisory/cpujan2018-3236628.html",
           "http://www.oracle.com/technetwork/security-advisory/cpujul2016-2881720.html",
@@ -10353,7 +10263,6 @@
         "Description": "The DES and Triple DES ciphers, as used in the TLS, SSH, and IPSec protocols and other protocols and products, have a birthday bound of approximately four billion blocks, which makes it easier for remote attackers to obtain cleartext data via a birthday attack against a long-duration encrypted session, as demonstrated by an HTTPS session using Triple DES in CBC mode, aka a \"Sweet32\" attack.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://sweet32.info/\nhttps://access.redhat.com/articles/2548661\nhttps://access.redhat.com/errata/RHSA-2016:1940\n    ",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10759",
           "http://lists.opensuse.org/opensuse-security-announce/2016-10/msg00013.html",
           "http://rhn.redhat.com/errata/RHSA-2017-0336.html",
@@ -10376,6 +10285,7 @@
           "http://www.splunk.com/view/SP-CAAAPSV",
           "http://www.splunk.com/view/SP-CAAAPUE",
           "https://access.redhat.com/articles/2548661",
+          "https://access.redhat.com/errata/RHSA-2016:1940",
           "https://access.redhat.com/errata/RHSA-2017:1216",
           "https://access.redhat.com/errata/RHSA-2017:2708",
           "https://access.redhat.com/errata/RHSA-2017:2709",
@@ -10435,7 +10345,6 @@
         "Description": "An existing mitigation of timing side-channel attacks is insufficient in some circumstances. This issue is addressed in Network Security Services (NSS) 3.26.1. This vulnerability affects Thunderbird \u003c 45.5, Firefox ESR \u003c 45.5, and Firefox \u003c 50.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.mozilla.org/en-US/security/advisories/mfsa2016-89/#CVE-2016-9074\n    ",
           "http://www.securityfocus.com/bid/94341",
           "http://www.securitytracker.com/id/1037298",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1293334",
@@ -10443,6 +10352,7 @@
           "https://security.gentoo.org/glsa/201701-15",
           "https://security.gentoo.org/glsa/201701-46",
           "https://www.debian.org/security/2016/dsa-3730",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2016-89/#CVE-2016-9074",
           "https://www.mozilla.org/security/advisories/mfsa2016-89/",
           "https://www.mozilla.org/security/advisories/mfsa2016-90/",
           "https://www.mozilla.org/security/advisories/mfsa2016-93/"
@@ -10486,8 +10396,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.41.1_release_notes\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18508"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18508",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.41.1_release_notes"
         ]
       },
       {
@@ -10499,7 +10409,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -10778,7 +10687,6 @@
         "Description": "The RC4 algorithm, as used in the TLS protocol and SSL protocol, does not properly combine state data with key data during the initialization phase, which makes it easier for remote attackers to conduct plaintext-recovery attacks against the initial bytes of a stream by sniffing network traffic that occasionally relies on keys affected by the Invariance Weakness, and then using a brute-force approach involving LSB values, aka the \"Bar Mitzvah\" issue.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttp://www.imperva.com/docs/HII_Attacking_SSL_when_using_RC4.pdf\n    ",
           "http://h20564.www2.hpe.com/hpsc/doc/public/display?docId=emr_na-c04779034",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10705",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10727",
@@ -10831,6 +10739,7 @@
           "http://www.debian.org/security/2015/dsa-3316",
           "http://www.debian.org/security/2015/dsa-3339",
           "http://www.huawei.com/en/psirt/security-advisories/hw-454055",
+          "http://www.imperva.com/docs/HII_Attacking_SSL_when_using_RC4.pdf",
           "http://www.oracle.com/technetwork/security-advisory/cpuapr2016v3-2985753.html",
           "http://www.oracle.com/technetwork/security-advisory/cpujan2018-3236628.html",
           "http://www.oracle.com/technetwork/security-advisory/cpujul2016-2881720.html",
@@ -10891,7 +10800,6 @@
         "Description": "The DES and Triple DES ciphers, as used in the TLS, SSH, and IPSec protocols and other protocols and products, have a birthday bound of approximately four billion blocks, which makes it easier for remote attackers to obtain cleartext data via a birthday attack against a long-duration encrypted session, as demonstrated by an HTTPS session using Triple DES in CBC mode, aka a \"Sweet32\" attack.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://sweet32.info/\nhttps://access.redhat.com/articles/2548661\nhttps://access.redhat.com/errata/RHSA-2016:1940\n    ",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10759",
           "http://lists.opensuse.org/opensuse-security-announce/2016-10/msg00013.html",
           "http://rhn.redhat.com/errata/RHSA-2017-0336.html",
@@ -10914,6 +10822,7 @@
           "http://www.splunk.com/view/SP-CAAAPSV",
           "http://www.splunk.com/view/SP-CAAAPUE",
           "https://access.redhat.com/articles/2548661",
+          "https://access.redhat.com/errata/RHSA-2016:1940",
           "https://access.redhat.com/errata/RHSA-2017:1216",
           "https://access.redhat.com/errata/RHSA-2017:2708",
           "https://access.redhat.com/errata/RHSA-2017:2709",
@@ -10973,7 +10882,6 @@
         "Description": "An existing mitigation of timing side-channel attacks is insufficient in some circumstances. This issue is addressed in Network Security Services (NSS) 3.26.1. This vulnerability affects Thunderbird \u003c 45.5, Firefox ESR \u003c 45.5, and Firefox \u003c 50.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.mozilla.org/en-US/security/advisories/mfsa2016-89/#CVE-2016-9074\n    ",
           "http://www.securityfocus.com/bid/94341",
           "http://www.securitytracker.com/id/1037298",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1293334",
@@ -10981,6 +10889,7 @@
           "https://security.gentoo.org/glsa/201701-15",
           "https://security.gentoo.org/glsa/201701-46",
           "https://www.debian.org/security/2016/dsa-3730",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2016-89/#CVE-2016-9074",
           "https://www.mozilla.org/security/advisories/mfsa2016-89/",
           "https://www.mozilla.org/security/advisories/mfsa2016-90/",
           "https://www.mozilla.org/security/advisories/mfsa2016-93/"
@@ -11024,8 +10933,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.41.1_release_notes\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18508"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18508",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.41.1_release_notes"
         ]
       },
       {
@@ -11037,7 +10946,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -11091,11 +10999,12 @@
         "Description": "An issue was discovered in OpenLDAP 2.x before 2.4.48. When using SASL authentication and session encryption, and relying on the SASL security layers in slapd access controls, it is possible to obtain access that would otherwise be denied via a simple bind for any identity covered in those ACLs. After the first SASL bind is completed, the sasl_ssf value is retained for all new non-SASL connections. Depending on the ACL configuration, this can affect different types of operations (searches, modifications, etc.). In other words, a successful authorization step completed by one user affects the authorization requirement for a different user.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttp://www.openldap.org/lists/openldap-announce/201907/msg00001.html\nhttps://openldap.org/its/?findid=9052\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00053.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00058.html",
+          "http://www.openldap.org/lists/openldap-announce/201907/msg00001.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-13565",
           "https://lists.debian.org/debian-lts-announce/2019/08/msg00024.html",
+          "https://openldap.org/its/?findid=9052",
           "https://usn.ubuntu.com/4078-1/",
           "https://usn.ubuntu.com/4078-2/",
           "https://www.openldap.org/its/index.cgi/?findid=9052",
@@ -11135,9 +11044,10 @@
         "Description": "An issue was discovered in the server in OpenLDAP before 2.4.48. When the server administrator delegates rootDN (database admin) privileges for certain databases but wants to maintain isolation (e.g., for multi-tenant deployments), slapd does not properly stop a rootDN from requesting authorization as an identity from another database during a SASL bind or with a proxyAuthz (RFC 4370) control. (It is not a common configuration to deploy a system where the server administrator and a DB administrator enjoy different levels of trust.)",
         "Severity": "LOW",
         "References": [
-          "\nhttp://www.openldap.org/lists/openldap-announce/201907/msg00001.html\nhttps://openldap.org/its/?findid=9038\n    ",
+          "http://www.openldap.org/lists/openldap-announce/201907/msg00001.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-13057",
           "https://lists.debian.org/debian-lts-announce/2019/08/msg00024.html",
+          "https://openldap.org/its/?findid=9038",
           "https://security.netapp.com/advisory/ntap-20190822-0004/",
           "https://usn.ubuntu.com/4078-1/",
           "https://usn.ubuntu.com/4078-2/",
@@ -11401,7 +11311,6 @@
         "Description": "The RC4 algorithm, as used in the TLS protocol and SSL protocol, does not properly combine state data with key data during the initialization phase, which makes it easier for remote attackers to conduct plaintext-recovery attacks against the initial bytes of a stream by sniffing network traffic that occasionally relies on keys affected by the Invariance Weakness, and then using a brute-force approach involving LSB values, aka the \"Bar Mitzvah\" issue.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttp://www.imperva.com/docs/HII_Attacking_SSL_when_using_RC4.pdf\n    ",
           "http://h20564.www2.hpe.com/hpsc/doc/public/display?docId=emr_na-c04779034",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10705",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10727",
@@ -11454,6 +11363,7 @@
           "http://www.debian.org/security/2015/dsa-3316",
           "http://www.debian.org/security/2015/dsa-3339",
           "http://www.huawei.com/en/psirt/security-advisories/hw-454055",
+          "http://www.imperva.com/docs/HII_Attacking_SSL_when_using_RC4.pdf",
           "http://www.oracle.com/technetwork/security-advisory/cpuapr2016v3-2985753.html",
           "http://www.oracle.com/technetwork/security-advisory/cpujan2018-3236628.html",
           "http://www.oracle.com/technetwork/security-advisory/cpujul2016-2881720.html",
@@ -11514,7 +11424,6 @@
         "Description": "The DES and Triple DES ciphers, as used in the TLS, SSH, and IPSec protocols and other protocols and products, have a birthday bound of approximately four billion blocks, which makes it easier for remote attackers to obtain cleartext data via a birthday attack against a long-duration encrypted session, as demonstrated by an HTTPS session using Triple DES in CBC mode, aka a \"Sweet32\" attack.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://sweet32.info/\nhttps://access.redhat.com/articles/2548661\nhttps://access.redhat.com/errata/RHSA-2016:1940\n    ",
           "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10759",
           "http://lists.opensuse.org/opensuse-security-announce/2016-10/msg00013.html",
           "http://rhn.redhat.com/errata/RHSA-2017-0336.html",
@@ -11537,6 +11446,7 @@
           "http://www.splunk.com/view/SP-CAAAPSV",
           "http://www.splunk.com/view/SP-CAAAPUE",
           "https://access.redhat.com/articles/2548661",
+          "https://access.redhat.com/errata/RHSA-2016:1940",
           "https://access.redhat.com/errata/RHSA-2017:1216",
           "https://access.redhat.com/errata/RHSA-2017:2708",
           "https://access.redhat.com/errata/RHSA-2017:2709",
@@ -11650,7 +11560,6 @@
         "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.openssl.org/news/secadv/20190226.txt\nhttps://github.com/RUB-NDS/TLS-Padding-Oracles\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00041.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00019.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00046.html",
@@ -11659,6 +11568,7 @@
           "http://www.securityfocus.com/bid/107174",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1559",
           "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e9bbefbf0f24c57645e7ad6a5a71ae649d18ac8e",
+          "https://github.com/RUB-NDS/TLS-Padding-Oracles",
           "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10282",
           "https://lists.debian.org/debian-lts-announce/2019/03/msg00003.html",
           "https://security.gentoo.org/glsa/201903-10",
@@ -11702,7 +11612,6 @@
         "Description": "Simultaneous Multi-threading (SMT) in processors can enable local users to exploit software vulnerable to timing attacks via a side-channel timing attack on 'port contention'.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://github.com/bbbrumley/portsmash\nhttps://www.openssl.org/news/secadv/20181112.txt\n    ",
           "http://www.securityfocus.com/bid/105897",
           "https://access.redhat.com/errata/RHSA-2019:0483",
           "https://access.redhat.com/errata/RHSA-2019:0651",
@@ -11718,6 +11627,7 @@
           "https://www.debian.org/security/2018/dsa-4348",
           "https://www.debian.org/security/2018/dsa-4355",
           "https://www.exploit-db.com/exploits/45785/",
+          "https://www.openssl.org/news/secadv/20181112.txt",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
           "https://www.oracle.com/technetwork/security-advisory/cpujan2019-5072801.html",
           "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html",
@@ -11924,7 +11834,6 @@
         "Description": "The _pcre32_xclass function in pcre_xclass.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (invalid memory read) via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-invalid-memory-read-in-_pcre32_xclass-pcre_xclass-c/\n    ",
           "http://www.securityfocus.com/bid/97067",
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-invalid-memory-read-in-_pcre32_xclass-pcre_xclass-c/",
@@ -11941,7 +11850,6 @@
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 4) or possibly have unspecified other impact via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/\n    ",
           "http://www.securityfocus.com/bid/97067",
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
@@ -11957,7 +11865,6 @@
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 268) or possibly have unspecified other impact via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/\n    ",
           "http://www.securityfocus.com/bid/97067",
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
@@ -11992,7 +11899,6 @@
         "Description": "procps-ng, procps is vulnerable to a process hiding through race condition. Since the kernel's proc_pid_readdir() returns PID entries in ascending numeric order, a process occupying a high PID can use inotify events to determine when the process list is being scanned, and fork/exec to obtain a lower PID, thus avoiding enumeration. An unprivileged attacker can hide a process from procps-ng's utilities by exploiting a race condition in reading /proc/PID entries. This vulnerability affects procps and procps-ng up to version 3.3.15, newer versions might be affected also.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.qualys.com/2018/05/17/procps-ng-audit-report-advisory.txt\n    ",
           "http://seclists.org/oss-sec/2018/q2/122",
           "http://www.securityfocus.com/bid/104214",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-1121",
@@ -12010,7 +11916,6 @@
         "Description": "procps-ng before version 3.3.15 is vulnerable to a local privilege escalation in top. If a user runs top with HOME unset in an attacker-controlled directory, the attacker could achieve privilege escalation by exploiting one of several vulnerabilities in the config_file() function.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.qualys.com/2018/05/17/procps-ng-audit-report-advisory.txt\n    ",
           "http://seclists.org/oss-sec/2018/q2/122",
           "http://www.securityfocus.com/bid/104214",
           "https://access.redhat.com/errata/RHSA-2019:2189",
@@ -12034,7 +11939,6 @@
         "Description": "procps-ng before version 3.3.15 is vulnerable to a denial of service in ps via mmap buffer overflow. Inbuilt protection in ps maps a guard page at the end of the overflowed buffer, ensuring that the impact of this flaw is limited to a crash (temporary denial of service).",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.qualys.com/2018/05/17/procps-ng-audit-report-advisory.txt\n    ",
           "http://seclists.org/oss-sec/2018/q2/122",
           "http://www.securityfocus.com/bid/104214",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-1123",
@@ -12057,7 +11961,6 @@
         "Description": "procps-ng before version 3.3.15 is vulnerable to a stack buffer overflow in pgrep. This vulnerability is mitigated by FORTIFY, as it involves strncat() to a stack-allocated string. When pgrep is compiled with FORTIFY (as on Red Hat Enterprise Linux and Fedora), the impact is limited to a crash.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.qualys.com/2018/05/17/procps-ng-audit-report-advisory.txt\n    ",
           "http://seclists.org/oss-sec/2018/q2/122",
           "http://www.securityfocus.com/bid/104214",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-1125",
@@ -12078,7 +11981,7 @@
         "Description": "CPython (aka Python) up to 2.7.13 is vulnerable to an integer overflow in the PyString_DecodeEscape function in stringobject.c, resulting in heap-based buffer overflow (and possible arbitrary code execution)",
         "Severity": "HIGH",
         "References": [
-          "\nhttp://python-security.readthedocs.io/vuln/cve-2017-1000158_pystring_decodeescape_integer_overflow.html\n    ",
+          "http://python-security.readthedocs.io/vuln/cve-2017-1000158_pystring_decodeescape_integer_overflow.html",
           "http://www.securitytracker.com/id/1039890",
           "https://bugs.python.org/issue30657",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-1000158",
@@ -12099,8 +12002,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
+          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html"
         ]
       },
       {
@@ -12192,7 +12095,6 @@
         "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. Python 3.8, 3.7, 3.6, 3.5, 3.4, 2.7 are believed to be vulnerable.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://bugs.python.org/issue34623\n    ",
           "http://www.securityfocus.com/bid/105396",
           "http://www.securitytracker.com/id/1041740",
           "https://access.redhat.com/errata/RHSA-2019:1260",
@@ -12235,7 +12137,6 @@
         "Description": "A security regression of CVE-2019-9636 was discovered in python since commit d537ab0ff9767ef024f26246899728f0116b1ec3 affecting versions 2.7, 3.5, 3.6, 3.7 and from v3.8.0a4 through v3.8.0b1, which still allows an attacker to exploit CVE-2019-9636 by abusing the user and password parts of a URL. When an application parses user-supplied URLs to store cookies, authentication credentials, or other kind of information, it is possible for an attacker to provide specially crafted URLs to make the application locate host-related information (e.g. cookies, authentication data) and send them to a different host than where it should, unlike if the URLs had been correctly parsed. The result of an attack may vary based on the application.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization2.html\n    ",
           "https://access.redhat.com/errata/RHSA-2019:1587",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-10160",
           "https://github.com/python/cpython/commit/250b62acc59921d399f0db47db3b462cd6037e09",
@@ -12276,7 +12177,6 @@
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00092.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00097.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00024.html",
@@ -12370,7 +12270,7 @@
         "Description": "CPython (aka Python) up to 2.7.13 is vulnerable to an integer overflow in the PyString_DecodeEscape function in stringobject.c, resulting in heap-based buffer overflow (and possible arbitrary code execution)",
         "Severity": "HIGH",
         "References": [
-          "\nhttp://python-security.readthedocs.io/vuln/cve-2017-1000158_pystring_decodeescape_integer_overflow.html\n    ",
+          "http://python-security.readthedocs.io/vuln/cve-2017-1000158_pystring_decodeescape_integer_overflow.html",
           "http://www.securitytracker.com/id/1039890",
           "https://bugs.python.org/issue30657",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-1000158",
@@ -12391,8 +12291,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
+          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html"
         ]
       },
       {
@@ -12484,7 +12384,6 @@
         "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. Python 3.8, 3.7, 3.6, 3.5, 3.4, 2.7 are believed to be vulnerable.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://bugs.python.org/issue34623\n    ",
           "http://www.securityfocus.com/bid/105396",
           "http://www.securitytracker.com/id/1041740",
           "https://access.redhat.com/errata/RHSA-2019:1260",
@@ -12527,7 +12426,6 @@
         "Description": "A security regression of CVE-2019-9636 was discovered in python since commit d537ab0ff9767ef024f26246899728f0116b1ec3 affecting versions 2.7, 3.5, 3.6, 3.7 and from v3.8.0a4 through v3.8.0b1, which still allows an attacker to exploit CVE-2019-9636 by abusing the user and password parts of a URL. When an application parses user-supplied URLs to store cookies, authentication credentials, or other kind of information, it is possible for an attacker to provide specially crafted URLs to make the application locate host-related information (e.g. cookies, authentication data) and send them to a different host than where it should, unlike if the URLs had been correctly parsed. The result of an attack may vary based on the application.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization2.html\n    ",
           "https://access.redhat.com/errata/RHSA-2019:1587",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-10160",
           "https://github.com/python/cpython/commit/250b62acc59921d399f0db47db3b462cd6037e09",
@@ -12568,7 +12466,6 @@
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00092.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00097.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00024.html",
@@ -12805,7 +12702,6 @@
         "Description": "The fts3_tokenizer function in SQLite, as used in Apple iOS before 8.4 and OS X before 10.10.4, allows remote attackers to execute arbitrary code or cause a denial of service (application crash) via a SQL command that triggers an API call with a crafted pointer value in the second argument.",
         "Severity": "HIGH",
         "References": [
-          "\nhttp://zerodayinitiative.com/advisories/ZDI-15-570/\n    ",
           "http://support.apple.com/kb/HT204941",
           "http://support.apple.com/kb/HT204942",
           "http://zerodayinitiative.com/advisories/ZDI-15-570/",
@@ -12866,7 +12762,6 @@
         "Description": "os_unix.c in SQLite before 3.13.0 improperly implements the temporary directory search algorithm, which might allow local users to obtain sensitive information, cause a denial of service (application crash), or have unspecified other impact by leveraging use of the current working directory for temporary files.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.korelogic.com/Resources/Advisories/KL-001-2016-003.txt\n    ",
           "http://lists.opensuse.org/opensuse-updates/2016-08/msg00053.html",
           "http://www.openwall.com/lists/oss-security/2016/07/01/1",
           "http://www.openwall.com/lists/oss-security/2016/07/01/2",
@@ -12916,10 +12811,10 @@
         "Description": "An issue was discovered in certain Apple products. iOS before 10.3.2 is affected. macOS before 10.12.5 is affected. The issue involves the \"SQLite\" component. It allows remote attackers to execute arbitrary code or cause a denial of service (memory corruption and application crash) via a crafted web site.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://chromereleases.googleblog.com/2017/07/stable-channel-update-for-desktop.html\n    ",
           "http://www.securityfocus.com/bid/98767",
           "http://www.securityfocus.com/bid/99950",
           "https://access.redhat.com/errata/RHSA-2017:1833",
+          "https://chromereleases.googleblog.com/2017/07/stable-channel-update-for-desktop.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7000",
           "https://security.gentoo.org/glsa/201709-15",
           "https://support.apple.com/HT207797",
@@ -12955,7 +12850,6 @@
         "Description": "Integer overflow in SQLite via WebSQL in Google Chrome prior to 74.0.3729.131 allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://chromereleases.googleblog.com/2019/04/stable-channel-update-for-desktop_30.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00085.html",
           "https://chromereleases.googleblog.com/2019/04/stable-channel-update-for-desktop_30.html",
           "https://crbug.com/952406",
@@ -13075,7 +12969,6 @@
         "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.qualys.com/2019/01/09/system-down/system-down.txt\n    ",
           "http://packetstormsecurity.com/files/152841/System-Down-A-systemd-journald-Exploit.html",
           "http://seclists.org/fulldisclosure/2019/May/21",
           "http://www.openwall.com/lists/oss-security/2019/05/10/4",
@@ -13217,7 +13110,6 @@
         "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.qualys.com/2019/01/09/system-down/system-down.txt\n    ",
           "http://packetstormsecurity.com/files/152841/System-Down-A-systemd-journald-Exploit.html",
           "http://seclists.org/fulldisclosure/2019/May/21",
           "http://www.openwall.com/lists/oss-security/2019/05/10/4",
@@ -13257,7 +13149,6 @@
         "Description": "Directory traversal vulnerability in the safer_name_suffix function in GNU tar 1.14 through 1.29 might allow remote attackers to bypass an intended protection mechanism and write to arbitrary files via vectors related to improper sanitization of the file_name parameter, aka POINTYFEATHER.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://sintonen.fi/advisories/tar-extract-pathname-bypass.txt\n    ",
           "http://git.savannah.gnu.org/cgit/tar.git/commit/?id=7340f67b9860ea0531c1450e5aa261c50f67165d",
           "http://lists.gnu.org/archive/html/bug-tar/2016-10/msg00016.html",
           "http://packetstormsecurity.com/files/139370/GNU-tar-1.29-Extract-Pathname-Bypass.html",
@@ -13268,7 +13159,8 @@
           "http://www.ubuntu.com/usn/USN-3132-1",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-6321",
           "https://security.gentoo.org/glsa/201611-19",
-          "https://sintonen.fi/advisories/tar-extract-pathname-bypass.proper.txt"
+          "https://sintonen.fi/advisories/tar-extract-pathname-bypass.proper.txt",
+          "https://sintonen.fi/advisories/tar-extract-pathname-bypass.txt"
         ]
       },
       {

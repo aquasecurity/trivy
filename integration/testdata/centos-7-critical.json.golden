@@ -11,7 +11,6 @@
         "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
         "Severity": "CRITICAL",
         "References": [
-          "\nhttps://curl.haxx.se/docs/CVE-2018-14618.html\n    ",
           "http://www.securitytracker.com/id/1041605",
           "https://access.redhat.com/errata/RHSA-2018:3558",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14618",
@@ -34,7 +33,6 @@
         "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
         "Severity": "CRITICAL",
         "References": [
-          "\nhttps://curl.haxx.se/docs/CVE-2018-14618.html\n    ",
           "http://www.securitytracker.com/id/1041605",
           "https://access.redhat.com/errata/RHSA-2018:3558",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14618",
@@ -57,7 +55,6 @@
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "CRITICAL",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3855.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",

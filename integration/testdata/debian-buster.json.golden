@@ -481,11 +481,11 @@
         "Description": "In Libgcrypt 1.8.4, the C implementation of AES is vulnerable to a flush-and-reload side-channel attack because physical addresses are available to other processes. (The C implementation is used on platforms where an assembly-language implementation is unavailable.)",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-12904.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00049.html",
           "https://dev.gnupg.org/T4541",
           "https://github.com/gpg/libgcrypt/commit/a4c561aab1014c3630bc88faf6f5246fee16b020",
-          "https://github.com/gpg/libgcrypt/commit/daedbbb5541cd8ecda1459d3b843ea4d92788762"
+          "https://github.com/gpg/libgcrypt/commit/daedbbb5541cd8ecda1459d3b843ea4d92788762",
+          "https://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-12904.html"
         ]
       },
       {
@@ -626,7 +626,6 @@
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 4) or possibly have unspecified other impact via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/\n    ",
           "http://www.securityfocus.com/bid/97067",
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
@@ -642,7 +641,6 @@
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 268) or possibly have unspecified other impact via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/\n    ",
           "http://www.securityfocus.com/bid/97067",
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",

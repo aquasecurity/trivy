@@ -11,8 +11,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA flaw was found in the way bind implemented tunable which limited simultaneous TCP client connections. A remote attacker could use this flaw to exhaust the pool of file descriptors available to named, potentially affecting network connections and the management of files such as log files or zone journal files. In cases where the named process is not limited by OS-enforced per-process limits, this could additionally potentially lead to exhaustion of all available free file descriptors on that system.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://kb.isc.org/docs/cve-2018-5743\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5743"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5743",
+          "https://kb.isc.org/docs/cve-2018-5743"
         ]
       },
       {
@@ -24,7 +24,6 @@
         "Description": "To provide fine-grained controls over the ability to use Dynamic DNS (DDNS) to update records in a zone, BIND 9 provides a feature called update-policy. Various rules can be configured to limit the types of updates that can be performed by a client, depending on the key used when sending the update request. Unfortunately, some rule types were not initially documented, and when documentation for them was added to the Administrator Reference Manual (ARM) in change #3112, the language that was added to the ARM at that time incorrectly described the behavior of two rule types, krb5-subdomain and ms-subdomain. This incorrect documentation could mislead operators into believing that policies they had configured were more restrictive than they actually were. This affects BIND versions prior to BIND 9.11.5 and BIND 9.12.3.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://kb.isc.org/docs/cve-2018-5741\n    ",
           "http://www.securityfocus.com/bid/105379",
           "http://www.securitytracker.com/id/1041674",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5741",
@@ -90,7 +89,6 @@
         "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
         "Severity": "CRITICAL",
         "References": [
-          "\nhttps://curl.haxx.se/docs/CVE-2018-14618.html\n    ",
           "http://www.securitytracker.com/id/1041605",
           "https://access.redhat.com/errata/RHSA-2018:3558",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14618",
@@ -113,7 +111,6 @@
         "Description": "Curl versions 7.14.1 through 7.61.1 are vulnerable to a heap-based buffer over-read in the tool_msgs.c:voutf() function that may result in information exposure and denial of service.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/CVE-2018-16842.html\n    ",
           "http://www.securitytracker.com/id/1042014",
           "https://access.redhat.com/errata/RHSA-2019:2181",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16842",
@@ -647,7 +644,6 @@
         "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
         "Severity": "CRITICAL",
         "References": [
-          "\nhttps://curl.haxx.se/docs/CVE-2018-14618.html\n    ",
           "http://www.securitytracker.com/id/1041605",
           "https://access.redhat.com/errata/RHSA-2018:3558",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14618",
@@ -670,7 +666,6 @@
         "Description": "Curl versions 7.14.1 through 7.61.1 are vulnerable to a heap-based buffer over-read in the tool_msgs.c:voutf() function that may result in information exposure and denial of service.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://curl.haxx.se/docs/CVE-2018-16842.html\n    ",
           "http://www.securitytracker.com/id/1042014",
           "https://access.redhat.com/errata/RHSA-2019:2181",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16842",
@@ -693,7 +688,6 @@
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "CRITICAL",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3855.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
@@ -723,7 +717,6 @@
         "Description": "An integer overflow flaw, which could lead to an out of bounds write, was discovered in libssh2 before 1.8.1 in the way keyboard prompt requests are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3856.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
@@ -747,7 +740,6 @@
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit signal are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3857.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
@@ -771,7 +763,6 @@
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 when a specially crafted SFTP packet is received from the server. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3858.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
@@ -799,7 +790,6 @@
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH packets with a padding length value greater than the packet length are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3861.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3861",
@@ -821,7 +811,6 @@
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit status message and no payload are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3862.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
@@ -849,7 +838,6 @@
         "Description": "A flaw was found in libssh2 before 1.8.1. A server could send a multiple keyboard interactive response messages whose total length are greater than unsigned char max characters. This value is used as an index to copy memory causing in an out of bounds memory write error.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.libssh2.org/CVE-2019-3863.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
@@ -888,7 +876,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -935,7 +922,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -982,7 +968,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -1043,7 +1028,6 @@
         "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.openssl.org/news/secadv/20190226.txt\nhttps://github.com/RUB-NDS/TLS-Padding-Oracles\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00041.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00019.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00046.html",
@@ -1052,6 +1036,7 @@
           "http://www.securityfocus.com/bid/107174",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1559",
           "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e9bbefbf0f24c57645e7ad6a5a71ae649d18ac8e",
+          "https://github.com/RUB-NDS/TLS-Padding-Oracles",
           "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10282",
           "https://lists.debian.org/debian-lts-announce/2019/03/msg00003.html",
           "https://security.gentoo.org/glsa/201903-10",
@@ -1076,7 +1061,6 @@
         "Description": "Simultaneous Multi-threading (SMT) in processors can enable local users to exploit software vulnerable to timing attacks via a side-channel timing attack on 'port contention'.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://github.com/bbbrumley/portsmash\nhttps://www.openssl.org/news/secadv/20181112.txt\n    ",
           "http://www.securityfocus.com/bid/105897",
           "https://access.redhat.com/errata/RHSA-2019:0483",
           "https://access.redhat.com/errata/RHSA-2019:0651",
@@ -1092,6 +1076,7 @@
           "https://www.debian.org/security/2018/dsa-4348",
           "https://www.debian.org/security/2018/dsa-4355",
           "https://www.exploit-db.com/exploits/45785/",
+          "https://www.openssl.org/news/secadv/20181112.txt",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
           "https://www.oracle.com/technetwork/security-advisory/cpujan2019-5072801.html",
           "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html",
@@ -1108,7 +1093,6 @@
         "Description": "procps-ng before version 3.3.15 is vulnerable to a local privilege escalation in top. If a user runs top with HOME unset in an attacker-controlled directory, the attacker could achieve privilege escalation by exploiting one of several vulnerabilities in the config_file() function.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://www.qualys.com/2018/05/17/procps-ng-audit-report-advisory.txt\n    ",
           "http://seclists.org/oss-sec/2018/q2/122",
           "http://www.securityfocus.com/bid/104214",
           "https://access.redhat.com/errata/RHSA-2019:2189",
@@ -1132,8 +1116,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
+          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html"
         ]
       },
       {
@@ -1145,7 +1129,6 @@
         "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. Python 3.8, 3.7, 3.6, 3.5, 3.4, 2.7 are believed to be vulnerable.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://bugs.python.org/issue34623\n    ",
           "http://www.securityfocus.com/bid/105396",
           "http://www.securitytracker.com/id/1041740",
           "https://access.redhat.com/errata/RHSA-2019:1260",
@@ -1171,7 +1154,6 @@
         "Description": "A security regression of CVE-2019-9636 was discovered in python since commit d537ab0ff9767ef024f26246899728f0116b1ec3 affecting versions 2.7, 3.5, 3.6, 3.7 and from v3.8.0a4 through v3.8.0b1, which still allows an attacker to exploit CVE-2019-9636 by abusing the user and password parts of a URL. When an application parses user-supplied URLs to store cookies, authentication credentials, or other kind of information, it is possible for an attacker to provide specially crafted URLs to make the application locate host-related information (e.g. cookies, authentication data) and send them to a different host than where it should, unlike if the URLs had been correctly parsed. The result of an attack may vary based on the application.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization2.html\n    ",
           "https://access.redhat.com/errata/RHSA-2019:1587",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-10160",
           "https://github.com/python/cpython/commit/250b62acc59921d399f0db47db3b462cd6037e09",
@@ -1192,7 +1174,6 @@
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00092.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00097.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00024.html",
@@ -1286,8 +1267,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
+          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html"
         ]
       },
       {
@@ -1299,7 +1280,6 @@
         "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. Python 3.8, 3.7, 3.6, 3.5, 3.4, 2.7 are believed to be vulnerable.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://bugs.python.org/issue34623\n    ",
           "http://www.securityfocus.com/bid/105396",
           "http://www.securitytracker.com/id/1041740",
           "https://access.redhat.com/errata/RHSA-2019:1260",
@@ -1325,7 +1305,6 @@
         "Description": "A security regression of CVE-2019-9636 was discovered in python since commit d537ab0ff9767ef024f26246899728f0116b1ec3 affecting versions 2.7, 3.5, 3.6, 3.7 and from v3.8.0a4 through v3.8.0b1, which still allows an attacker to exploit CVE-2019-9636 by abusing the user and password parts of a URL. When an application parses user-supplied URLs to store cookies, authentication credentials, or other kind of information, it is possible for an attacker to provide specially crafted URLs to make the application locate host-related information (e.g. cookies, authentication data) and send them to a different host than where it should, unlike if the URLs had been correctly parsed. The result of an attack may vary based on the application.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization2.html\n    ",
           "https://access.redhat.com/errata/RHSA-2019:1587",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-10160",
           "https://github.com/python/cpython/commit/250b62acc59921d399f0db47db3b462cd6037e09",
@@ -1346,7 +1325,6 @@
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00092.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00097.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00024.html",
@@ -1459,7 +1437,6 @@
         "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.qualys.com/2019/01/09/system-down/system-down.txt\n    ",
           "http://packetstormsecurity.com/files/152841/System-Down-A-systemd-journald-Exploit.html",
           "http://seclists.org/fulldisclosure/2019/May/21",
           "http://www.openwall.com/lists/oss-security/2019/05/10/4",
@@ -1518,7 +1495,6 @@
         "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.qualys.com/2019/01/09/system-down/system-down.txt\n    ",
           "http://packetstormsecurity.com/files/152841/System-Down-A-systemd-journald-Exploit.html",
           "http://seclists.org/fulldisclosure/2019/May/21",
           "http://www.openwall.com/lists/oss-security/2019/05/10/4",
