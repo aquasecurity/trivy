@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg/alpine"
+	"github.com/aquasecurity/trivy/pkg/scanner/ospkg/amazon"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg/debian"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg/redhat"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg/ubuntu"
@@ -44,6 +45,8 @@ func Scan(files extractor.FileMap) (string, string, []vulnerability.DetectedVuln
 		s = ubuntu.NewScanner()
 	case fos.RedHat, fos.CentOS:
 		s = redhat.NewScanner()
+	case fos.Amazon:
+		s = amazon.NewScanner()
 	default:
 		log.Logger.Warnf("unsupported os : %s", os.Family)
 		return "", "", nil, nil
