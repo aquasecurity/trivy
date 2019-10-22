@@ -9,7 +9,7 @@ type MockDBConfig struct {
 	mock.Mock
 }
 
-func (_m *MockDBConfig) SetVersion(version string) error {
+func (_m *MockDBConfig) SetVersion(version int) error {
 	ret := _m.Called(version)
 	return ret.Error(0)
 }

@@ -21,8 +21,6 @@ import (
 )
 
 func Run(c *cli.Context) (err error) {
-	cliVersion := c.App.Version
-
 	if c.Bool("quiet") || c.Bool("no-progress") {
 		utils.Quiet = true
 	}
@@ -87,7 +85,7 @@ func Run(c *cli.Context) (err error) {
 
 	needRefresh := false
 	dbVersion := db.GetVersion()
-	if dbVersion != "" && dbVersion != cliVersion {
+	if 0 < dbVersion && dbVersion < db.SchemaVersion {
 		if !refresh && !autoRefresh {
 			return xerrors.New("Detected version update of trivy. Please try again with --refresh or --auto-refresh option")
 		}
@@ -114,7 +112,7 @@ func Run(c *cli.Context) (err error) {
 	}
 
 	dbc := db.Config{}
-	if err = dbc.SetVersion(cliVersion); err != nil {
+	if err = dbc.SetVersion(db.SchemaVersion); err != nil {
 		return xerrors.Errorf("unexpected error: %w", err)
 	}
 
