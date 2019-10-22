@@ -106,7 +106,7 @@
         "Description": "Interaction between the sks-keyserver code through 1.2.0 of the SKS keyserver network, and GnuPG through 2.2.16, makes it risky to have a GnuPG keyserver configuration line referring to a host on the SKS keyserver network. Retrieving data from this network may cause a persistent denial of service, because of a Certificate Spamming Attack.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gist.github.com/rjhansen/67ab921ffb4084c865b3618d6955275f\nhttps://access.redhat.com/articles/4264021\n    ",
+          "https://access.redhat.com/articles/4264021",
           "https://gist.github.com/rjhansen/67ab921ffb4084c865b3618d6955275f",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2019q3/000439.html",
           "https://twitter.com/lambdafu/status/1147162583969009664"
@@ -121,7 +121,7 @@
         "Description": "Interaction between the sks-keyserver code through 1.2.0 of the SKS keyserver network, and GnuPG through 2.2.16, makes it risky to have a GnuPG keyserver configuration line referring to a host on the SKS keyserver network. Retrieving data from this network may cause a persistent denial of service, because of a Certificate Spamming Attack.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gist.github.com/rjhansen/67ab921ffb4084c865b3618d6955275f\nhttps://access.redhat.com/articles/4264021\n    ",
+          "https://access.redhat.com/articles/4264021",
           "https://gist.github.com/rjhansen/67ab921ffb4084c865b3618d6955275f",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2019q3/000439.html",
           "https://twitter.com/lambdafu/status/1147162583969009664"
@@ -719,13 +719,13 @@
         "Description": "The Debian initrd script for the cryptsetup package 2:1.7.3-2 and earlier allows physically proximate attackers to gain shell access via many log in attempts with an invalid password.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://access.redhat.com/articles/2786581\nhttp://hmarco.org/bugs/CVE-2016-4484/CVE-2016-4484_cryptsetup_initrd_shell.html\n    ",
           "http://hmarco.org/bugs/CVE-2016-4484/CVE-2016-4484_cryptsetup_initrd_shell.html",
           "http://www.openwall.com/lists/oss-security/2016/11/14/13",
           "http://www.openwall.com/lists/oss-security/2016/11/15/1",
           "http://www.openwall.com/lists/oss-security/2016/11/15/4",
           "http://www.openwall.com/lists/oss-security/2016/11/16/6",
           "http://www.securityfocus.com/bid/94315",
+          "https://access.redhat.com/articles/2786581",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-4484",
           "https://gitlab.com/cryptsetup/cryptsetup/commit/ef8a7d82d8d3716ae9b58179590f7908981fa0cb"
         ]
@@ -1217,7 +1217,6 @@
         "Description": "The _pcre32_xclass function in pcre_xclass.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (invalid memory read) via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-invalid-memory-read-in-_pcre32_xclass-pcre_xclass-c/\n    ",
           "http://www.securityfocus.com/bid/97067",
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-invalid-memory-read-in-_pcre32_xclass-pcre_xclass-c/",
@@ -1234,7 +1233,6 @@
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 4) or possibly have unspecified other impact via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/\n    ",
           "http://www.securityfocus.com/bid/97067",
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
@@ -1250,7 +1248,6 @@
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 268) or possibly have unspecified other impact via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/\n    ",
           "http://www.securityfocus.com/bid/97067",
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
@@ -2416,7 +2413,6 @@
         "Description": "inffast.c in zlib 1.2.8 might allow context-dependent attackers to have unspecified impact by leveraging improper pointer arithmetic.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://wiki.mozilla.org/images/0/09/Zlib-report.pdf\nhttps://docs.google.com/document/d/10i1KZS5so8xDqH2rplRa2xet0tyTvvJlLbQQmZIUIKE/edit#heading=h.t13tvnx4loq7\n    ",
           "http://lists.opensuse.org/opensuse-updates/2016-12/msg00127.html",
           "http://lists.opensuse.org/opensuse-updates/2017-01/msg00050.html",
           "http://lists.opensuse.org/opensuse-updates/2017-01/msg00053.html",
@@ -2436,6 +2432,7 @@
           "https://access.redhat.com/errata/RHSA-2017:3453",
           "https://bugzilla.redhat.com/show_bug.cgi?id=1402346",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-9841",
+          "https://docs.google.com/document/d/10i1KZS5so8xDqH2rplRa2xet0tyTvvJlLbQQmZIUIKE/edit#heading=h.t13tvnx4loq7",
           "https://github.com/madler/zlib/commit/9aaec95e82117c1cb0f9624264c3618fc380cecb",
           "https://lists.debian.org/debian-lts-announce/2019/03/msg00027.html",
           "https://security.gentoo.org/glsa/201701-56",
@@ -2457,7 +2454,6 @@
         "Description": "The crc32_big function in crc32.c in zlib 1.2.8 might allow context-dependent attackers to have unspecified impact via vectors involving big-endian CRC calculation.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://wiki.mozilla.org/images/0/09/Zlib-report.pdf\nhttps://docs.google.com/document/d/10i1KZS5so8xDqH2rplRa2xet0tyTvvJlLbQQmZIUIKE/edit#heading=h.t13tvnx4loq7\n    ",
           "http://lists.opensuse.org/opensuse-updates/2016-12/msg00127.html",
           "http://lists.opensuse.org/opensuse-updates/2017-01/msg00050.html",
           "http://lists.opensuse.org/opensuse-updates/2017-01/msg00053.html",
@@ -2477,6 +2473,7 @@
           "https://access.redhat.com/errata/RHSA-2017:3453",
           "https://bugzilla.redhat.com/show_bug.cgi?id=1402351",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-9843",
+          "https://docs.google.com/document/d/10i1KZS5so8xDqH2rplRa2xet0tyTvvJlLbQQmZIUIKE/edit#heading=h.t13tvnx4loq7",
           "https://github.com/madler/zlib/commit/d1d577490c15a0c6862473d7576352a9f18ef811",
           "https://lists.debian.org/debian-lts-announce/2019/03/msg00027.html",
           "https://security.gentoo.org/glsa/201701-56",
@@ -2498,7 +2495,6 @@
         "Description": "inftrees.c in zlib 1.2.8 might allow context-dependent attackers to have unspecified impact by leveraging improper pointer arithmetic.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://wiki.mozilla.org/images/0/09/Zlib-report.pdf\nhttps://docs.google.com/document/d/10i1KZS5so8xDqH2rplRa2xet0tyTvvJlLbQQmZIUIKE/edit#heading=h.t13tvnx4loq7\n    ",
           "http://lists.opensuse.org/opensuse-updates/2016-12/msg00127.html",
           "http://lists.opensuse.org/opensuse-updates/2017-01/msg00050.html",
           "http://lists.opensuse.org/opensuse-updates/2017-01/msg00053.html",
@@ -2516,6 +2512,7 @@
           "https://access.redhat.com/errata/RHSA-2017:3453",
           "https://bugzilla.redhat.com/show_bug.cgi?id=1402345",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-9840",
+          "https://docs.google.com/document/d/10i1KZS5so8xDqH2rplRa2xet0tyTvvJlLbQQmZIUIKE/edit#heading=h.t13tvnx4loq7",
           "https://github.com/madler/zlib/commit/6a043145ca6e9c55184013841a67b2fef87e44c0",
           "https://lists.debian.org/debian-lts-announce/2019/03/msg00027.html",
           "https://security.gentoo.org/glsa/201701-56",
@@ -2536,7 +2533,6 @@
         "Description": "The inflateMark function in inflate.c in zlib 1.2.8 might allow context-dependent attackers to have unspecified impact via vectors involving left shifts of negative integers.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://wiki.mozilla.org/images/0/09/Zlib-report.pdf\nhttps://docs.google.com/document/d/10i1KZS5so8xDqH2rplRa2xet0tyTvvJlLbQQmZIUIKE/edit#heading=h.t13tvnx4loq7\n    ",
           "http://lists.opensuse.org/opensuse-updates/2016-12/msg00127.html",
           "http://lists.opensuse.org/opensuse-updates/2017-01/msg00050.html",
           "http://lists.opensuse.org/opensuse-updates/2017-01/msg00053.html",
@@ -2554,6 +2550,7 @@
           "https://access.redhat.com/errata/RHSA-2017:3453",
           "https://bugzilla.redhat.com/show_bug.cgi?id=1402348",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-9842",
+          "https://docs.google.com/document/d/10i1KZS5so8xDqH2rplRa2xet0tyTvvJlLbQQmZIUIKE/edit#heading=h.t13tvnx4loq7",
           "https://github.com/madler/zlib/commit/e54e1299404101a5a9d0cf5e45512b543967f958",
           "https://lists.debian.org/debian-lts-announce/2019/03/msg00027.html",
           "https://security.gentoo.org/glsa/201701-56",

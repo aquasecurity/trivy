@@ -279,6 +279,26 @@ func TestRun_WithTar(t *testing.T) {
 			},
 			golden: "testdata/distroless-python27.json.golden",
 		},
+		{
+			name: "amazon 1 integration",
+			testArgs: args{
+				Version:    "dev",
+				SkipUpdate: true,
+				Format:     "json",
+				Input:      "testdata/fixtures/amazon-1.tar.gz",
+			},
+			golden: "testdata/amazon-1.json.golden",
+		},
+		{
+			name: "amazon 2 integration",
+			testArgs: args{
+				Version:    "dev",
+				SkipUpdate: true,
+				Format:     "json",
+				Input:      "testdata/fixtures/amazon-2.tar.gz",
+			},
+			golden: "testdata/amazon-2.json.golden",
+		},
 	}
 
 	for _, c := range cases {

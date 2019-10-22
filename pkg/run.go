@@ -113,7 +113,8 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
-	if err = db.SetVersion(cliVersion); err != nil {
+	dbc := db.Config{}
+	if err = dbc.SetVersion(cliVersion); err != nil {
 		return xerrors.Errorf("unexpected error: %w", err)
 	}
 

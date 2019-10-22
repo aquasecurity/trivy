@@ -765,8 +765,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
+          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html"
         ]
       },
       {
@@ -864,7 +864,6 @@
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00092.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00097.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00024.html",
@@ -1004,7 +1003,6 @@
         "Description": "SQLite before 3.25.3, when the FTS3 extension is enabled, encounters an integer overflow (and resultant buffer overflow) for FTS3 queries that occur after crafted changes to FTS3 shadow tables, allowing remote attackers to execute arbitrary code by leveraging the ability to run arbitrary SQL statements (such as in certain WebSQL use cases), aka Magellan.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://access.redhat.com/articles/3758321\nhttps://chromereleases.googleblog.com/2018/12/stable-channel-update-for-desktop.html\nhttps://blade.tencent.com/magellan/index_en.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00070.html",
           "http://www.securityfocus.com/bid/106323",
@@ -1040,7 +1038,6 @@
         "Description": "SQLite 3.25.2, when queries are run on a table with a malformed PRIMARY KEY, allows remote attackers to cause a denial of service (application crash) by leveraging the ability to run arbitrary SQL statements (such as in certain WebSQL use cases).",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://access.redhat.com/articles/3758321\nhttps://chromereleases.googleblog.com/2018/12/stable-channel-update-for-desktop.html\nhttps://blade.tencent.com/magellan/index_en.html\n    ",
           "http://seclists.org/fulldisclosure/2019/Jan/62",
           "http://seclists.org/fulldisclosure/2019/Jan/64",
           "http://seclists.org/fulldisclosure/2019/Jan/66",
@@ -1048,6 +1045,9 @@
           "http://seclists.org/fulldisclosure/2019/Jan/68",
           "http://seclists.org/fulldisclosure/2019/Jan/69",
           "http://www.securityfocus.com/bid/106698",
+          "https://access.redhat.com/articles/3758321",
+          "https://blade.tencent.com/magellan/index_en.html",
+          "https://chromereleases.googleblog.com/2018/12/stable-channel-update-for-desktop.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20505",
           "https://seclists.org/bugtraq/2019/Jan/28",
           "https://seclists.org/bugtraq/2019/Jan/29",
@@ -1075,7 +1075,6 @@
         "Description": "SQLite before 3.25.3, when the FTS3 extension is enabled, encounters an integer overflow (and resultant buffer overflow) for FTS3 queries in a \"merge\" operation that occurs after crafted changes to FTS3 shadow tables, allowing remote attackers to execute arbitrary code by leveraging the ability to run arbitrary SQL statements (such as in certain WebSQL use cases). This is a different vulnerability than CVE-2018-20346.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://access.redhat.com/articles/3758321\nhttps://chromereleases.googleblog.com/2018/12/stable-channel-update-for-desktop.html\nhttps://blade.tencent.com/magellan/index_en.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00070.html",
           "http://seclists.org/fulldisclosure/2019/Jan/62",
           "http://seclists.org/fulldisclosure/2019/Jan/64",
@@ -1084,6 +1083,9 @@
           "http://seclists.org/fulldisclosure/2019/Jan/68",
           "http://seclists.org/fulldisclosure/2019/Jan/69",
           "http://www.securityfocus.com/bid/106698",
+          "https://access.redhat.com/articles/3758321",
+          "https://blade.tencent.com/magellan/index_en.html",
+          "https://chromereleases.googleblog.com/2018/12/stable-channel-update-for-desktop.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20506",
           "https://seclists.org/bugtraq/2019/Jan/28",
           "https://seclists.org/bugtraq/2019/Jan/29",
@@ -1146,7 +1148,6 @@
         "Description": "Integer overflow in SQLite via WebSQL in Google Chrome prior to 74.0.3729.131 allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://chromereleases.googleblog.com/2019/04/stable-channel-update-for-desktop_30.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00085.html",
           "https://chromereleases.googleblog.com/2019/04/stable-channel-update-for-desktop_30.html",
           "https://crbug.com/952406",
@@ -1362,8 +1363,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
+          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html"
         ]
       },
       {
@@ -1461,7 +1462,6 @@
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00092.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00097.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00024.html",

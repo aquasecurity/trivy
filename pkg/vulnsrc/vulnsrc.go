@@ -7,6 +7,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/alpine"
+	"github.com/aquasecurity/trivy/pkg/vulnsrc/amazon"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/debian"
 	debianoval "github.com/aquasecurity/trivy/pkg/vulnsrc/debian-oval"
 	"github.com/aquasecurity/trivy/pkg/vulnsrc/nvd"
@@ -32,6 +33,7 @@ var (
 		vulnerability.Debian:     debian.Update,
 		vulnerability.DebianOVAL: debianoval.Update,
 		vulnerability.Ubuntu:     ubuntu.Update,
+		vulnerability.Amazon:     amazon.NewVulnSrc().Update,
 	}
 )
 

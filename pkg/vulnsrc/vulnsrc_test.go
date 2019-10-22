@@ -26,8 +26,9 @@ func BenchmarkUpdate(b *testing.B) {
 	b.ResetTimer()
 
 	b.Run("NVD", func(b *testing.B) {
+		dbc := db.Config{}
 		for i := 0; i < b.N; i++ {
-			if err := db.SetVersion(""); err != nil {
+			if err := dbc.SetVersion(""); err != nil {
 				b.Fatal(err)
 			}
 			if err := Update([]string{vulnerability.Nvd}); err != nil {

@@ -11,8 +11,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA flaw was found in the way bind implemented tunable which limited simultaneous TCP client connections. A remote attacker could use this flaw to exhaust the pool of file descriptors available to named, potentially affecting network connections and the management of files such as log files or zone journal files. In cases where the named process is not limited by OS-enforced per-process limits, this could additionally potentially lead to exhaustion of all available free file descriptors on that system.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://kb.isc.org/docs/cve-2018-5743\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5743"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5743",
+          "https://kb.isc.org/docs/cve-2018-5743"
         ]
       },
       {
@@ -66,7 +66,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -98,7 +97,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -130,7 +128,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/\n    ",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -162,7 +159,6 @@
         "Description": "Simultaneous Multi-threading (SMT) in processors can enable local users to exploit software vulnerable to timing attacks via a side-channel timing attack on 'port contention'.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://github.com/bbbrumley/portsmash\nhttps://www.openssl.org/news/secadv/20181112.txt\n    ",
           "http://www.securityfocus.com/bid/105897",
           "https://access.redhat.com/errata/RHSA-2019:0483",
           "https://access.redhat.com/errata/RHSA-2019:0651",
@@ -178,6 +174,7 @@
           "https://www.debian.org/security/2018/dsa-4348",
           "https://www.debian.org/security/2018/dsa-4355",
           "https://www.exploit-db.com/exploits/45785/",
+          "https://www.openssl.org/news/secadv/20181112.txt",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
           "https://www.oracle.com/technetwork/security-advisory/cpujan2019-5072801.html",
           "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html",
@@ -194,8 +191,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
+          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html"
         ]
       },
       {
@@ -207,8 +204,8 @@
         "Description": "** RESERVED ** This candidate has been reserved by an organization or individual that will use it when announcing a new security problem.  When the candidate has been publicized, the details for this candidate will be provided.\n    \nA null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
         "Severity": "HIGH",
         "References": [
-          "\nhttps://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html\n    ",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
+          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html"
         ]
       },
       {
@@ -220,7 +217,6 @@
         "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.qualys.com/2019/01/09/system-down/system-down.txt\n    ",
           "http://packetstormsecurity.com/files/152841/System-Down-A-systemd-journald-Exploit.html",
           "http://seclists.org/fulldisclosure/2019/May/21",
           "http://www.openwall.com/lists/oss-security/2019/05/10/4",
@@ -260,7 +256,6 @@
         "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
         "Severity": "LOW",
         "References": [
-          "\nhttps://www.qualys.com/2019/01/09/system-down/system-down.txt\n    ",
           "http://packetstormsecurity.com/files/152841/System-Down-A-systemd-journald-Exploit.html",
           "http://seclists.org/fulldisclosure/2019/May/21",
           "http://www.openwall.com/lists/oss-security/2019/05/10/4",

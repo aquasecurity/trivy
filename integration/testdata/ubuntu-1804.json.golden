@@ -89,7 +89,7 @@
         "Description": "Interaction between the sks-keyserver code through 1.2.0 of the SKS keyserver network, and GnuPG through 2.2.16, makes it risky to have a GnuPG keyserver configuration line referring to a host on the SKS keyserver network. Retrieving data from this network may cause a persistent denial of service, because of a Certificate Spamming Attack.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://gist.github.com/rjhansen/67ab921ffb4084c865b3618d6955275f\nhttps://access.redhat.com/articles/4264021\n    ",
+          "https://access.redhat.com/articles/4264021",
           "https://gist.github.com/rjhansen/67ab921ffb4084c865b3618d6955275f",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2019q3/000439.html",
           "https://twitter.com/lambdafu/status/1147162583969009664"
@@ -554,11 +554,11 @@
         "Description": "In Libgcrypt 1.8.4, the C implementation of AES is vulnerable to a flush-and-reload side-channel attack because physical addresses are available to other processes. (The C implementation is used on platforms where an assembly-language implementation is unavailable.)",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-12904.html\n    ",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00049.html",
           "https://dev.gnupg.org/T4541",
           "https://github.com/gpg/libgcrypt/commit/a4c561aab1014c3630bc88faf6f5246fee16b020",
-          "https://github.com/gpg/libgcrypt/commit/daedbbb5541cd8ecda1459d3b843ea4d92788762"
+          "https://github.com/gpg/libgcrypt/commit/daedbbb5541cd8ecda1459d3b843ea4d92788762",
+          "https://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-12904.html"
         ]
       },
       {
@@ -587,7 +587,6 @@
         "Description": "A Bleichenbacher type side-channel based padding oracle attack was found in the way gnutls handles verification of RSA decrypted PKCS#1 v1.5 data. An attacker who is able to run process on the same physical core as the victim process, could use this to extract plaintext or in some cases downgrade any TLS connections to a vulnerable server.",
         "Severity": "LOW",
         "References": [
-          "\nhttp://cat.eyalro.net/\n    ",
           "http://cat.eyalro.net/",
           "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00017.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00068.html",
@@ -605,7 +604,6 @@
         "Description": "A Bleichenbacher type side-channel based padding oracle attack was found in the way nettle handles endian conversion of RSA decrypted PKCS#1 v1.5 data. An attacker who is able to run a process on the same physical core as the victim process, could use this flaw extract plaintext or in some cases downgrade any TLS connections to a vulnerable server.",
         "Severity": "LOW",
         "References": [
-          "\nhttp://cat.eyalro.net/\n    ",
           "http://cat.eyalro.net/",
           "http://www.securityfocus.com/bid/106092",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16869",
@@ -638,7 +636,6 @@
         "Description": "A Bleichenbacher type side-channel based padding oracle attack was found in the way nettle handles endian conversion of RSA decrypted PKCS#1 v1.5 data. An attacker who is able to run a process on the same physical core as the victim process, could use this flaw extract plaintext or in some cases downgrade any TLS connections to a vulnerable server.",
         "Severity": "LOW",
         "References": [
-          "\nhttp://cat.eyalro.net/\n    ",
           "http://cat.eyalro.net/",
           "http://www.securityfocus.com/bid/106092",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16869",
@@ -667,7 +664,6 @@
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 4) or possibly have unspecified other impact via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/\n    ",
           "http://www.securityfocus.com/bid/97067",
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
@@ -683,7 +679,6 @@
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 268) or possibly have unspecified other impact via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "\nhttps://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/\n    ",
           "http://www.securityfocus.com/bid/97067",
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
