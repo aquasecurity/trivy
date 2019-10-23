@@ -13,6 +13,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 <img src="imgs/usage1.png" width="600">
 <img src="imgs/usage2.png" width="600">
 
+
 # Table of Contents
 
 - [Abstract](#abstract)
@@ -57,6 +58,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
   - [Homebrew](#homebrew)
   - [Others](#others)
 
+
 # Abstract
 
 `Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive vulnerability scanner for containers.
@@ -66,6 +68,7 @@ A software vulnerability is a glitch, flaw, or weakness present in the software 
 
 It is considered to be used in CI. Before pushing to a container registry, you can scan your local container image easily.
 See [here](#continuous-integration-ci) for details.
+
 
 # Features
 
@@ -84,6 +87,7 @@ See [here](#continuous-integration-ci) for details.
 - DevSecOps
   - **Suitable for CI** such as Travis CI, CircleCI, Jenkins, etc.
   - See [CI Example](#continuous-integration-ci)
+
 
 # Installation
 
@@ -140,6 +144,7 @@ or
 yay -Sy trivy-bin
 ```
 
+
 ## Homebrew
 
 You can use homebrew on macOS.
@@ -148,11 +153,13 @@ You can use homebrew on macOS.
 $ brew install aquasecurity/trivy/trivy
 ```
 
+
 ## Binary (Including Windows)
 
 Get the latest version from [this page](https://github.com/aquasecurity/trivy/releases/latest), and download the archive file for your operating system/architecture. Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
 
 You also need to install `rpm` command for scanning images based on RHEL/CentOS.
+
 
 ## From source
 
@@ -167,9 +174,11 @@ $ go install
 
 You also need to install `rpm` command for scanning images based on RHEL/CentOS.
 
+
 # Quick Start
 
 Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with cache.**. See [Clear image caches](#clear-image-caches).
+
 
 ## Basic
 
@@ -203,6 +212,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 ```
 
 </details>
+
 
 ## Docker
 
@@ -247,6 +257,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 ```
 
 </details>
+
 
 # Examples
 
@@ -464,6 +475,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 ```
 
 </details>
+
 
 ### Scan an image file
 
@@ -840,6 +852,7 @@ Total: 4751 (UNKNOWN: 1, LOW: 150, MEDIUM: 3504, HIGH: 1013, CRITICAL: 83)
 
 </details>
 
+
 ### Skip update of vulnerability DB
 
 `Trivy` always updates its vulnerability database when it starts operating. This is usually fast, as it is a difference update. But if you want to skip even that, use the `--skip-update` option.
@@ -947,6 +960,7 @@ Total: 4730 (UNKNOWN: 1, LOW: 145, MEDIUM: 3487, HIGH: 1014, CRITICAL: 83)
 
 </details>
 
+
 ### Specify exit code
 
 By default, `Trivy` exits with code 0 even when vulnerabilities are detected.
@@ -984,6 +998,7 @@ $ trivy --exit-code 0 --severity MEDIUM,HIGH ruby:2.3.0
 $ trivy --exit-code 1 --severity CRITICAL ruby:2.3.0
 ```
 
+
 ### Ignore the specified vulnerabilities
 
 Use `.trivyignore`.
@@ -1020,6 +1035,7 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 $ trivy --cache-dir /tmp/trivy/ python:3.4-alpine3.9
 ```
 
+
 ### Clear image caches
 
 The `--clear-cache` option removes image caches. This option is useful if the image which has the same tag is updated (such as when using `latest` tag).
@@ -1052,6 +1068,7 @@ Total: 3076 (UNKNOWN: 0, LOW: 127, MEDIUM: 2358, HIGH: 578, CRITICAL: 13)
 
 </details>
 
+
 ### Reset
 
 The `--reset` option removes all caches and database. After this, it takes a long time as the vulnerability database needs to be rebuilt locally.
@@ -1069,11 +1086,13 @@ $ trivy --reset
 
 </details>
 
+
 # Continuous Integration (CI)
 
 Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0` .
 
 **Note**: It will take a while for the first time (faster by cache after the second time).
+
 
 ## Travis CI
 
@@ -1101,6 +1120,7 @@ cache:
 
 Example: https://travis-ci.org/aquasecurity/trivy-ci-test  
 Repository: https://github.com/aquasecurity/trivy-ci-test
+
 
 ## CircleCI
 
@@ -1148,6 +1168,7 @@ workflows:
 Example: https://circleci.com/gh/aquasecurity/trivy-ci-test  
 Repository: https://github.com/aquasecurity/trivy-ci-test
 
+
 ## Authorization for Private Docker Registry
 
 Trivy can download images from private registry, without installing `Docker` and any 3rd party tools.
@@ -1155,6 +1176,7 @@ That's because it's easy to run in a CI process.
 
 All you have to do is install `Trivy` and set ENV vars.
 But, I can't recommend using ENV vars in your local machine to you.
+
 
 ### Docker Hub
 
@@ -1167,10 +1189,12 @@ export TRIVY_USERNAME={DOCKERHUB_USERNAME}
 export TRIVY_PASSWORD={DOCKERHUB_PASSWORD}
 ```
 
+
 ### Amazon ECR (Elastic Container Registry)
 
 Trivy uses AWS SDK. You don't need to install `aws` CLI tool.
 You can use [AWS CLI's ENV Vars](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html).
+
 
 ### GCR (Google Container Registry)
 
@@ -1181,6 +1205,7 @@ If you want to use target project's repository, you can settle via `GOOGLE_APPLI
 # must set TRIVY_USERNAME empty char
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credential.json
 ```
+
 
 ### Self Hosted Registry (BasicAuth)
 
@@ -1193,6 +1218,7 @@ export TRIVY_PASSWORD={PASSWORD}
 # if you want to use 80 port, use NonSSL
 export TRIVY_NON_SSL=true
 ```
+
 
 # Vulnerability Detection
 
@@ -1215,6 +1241,7 @@ RHEL, CentOS and Amazon Linux package information is stored in a binary format, 
 
 Distroless: https://github.com/GoogleContainerTools/distroless
 
+
 ## Application Dependencies
 
 `Trivy` automatically detects the following files in the container and scans vulnerabilities in the application dependencies.
@@ -1230,6 +1257,7 @@ Distroless: https://github.com/GoogleContainerTools/distroless
 The path of these files does not matter.
 
 Example: https://github.com/aquasecurity/trivy-ci-test/blob/master/Dockerfile
+
 
 ## Image Tar format
 Trivy scans a tar image with the following format.
@@ -1253,6 +1281,7 @@ Trivy scans a tar image with the following format.
   - https://github.com/nodejs/security-wg
 - Rust
   - https://github.com/RustSec/advisory-db
+
 
 # Usage
 
@@ -1285,6 +1314,7 @@ OPTIONS:
   --version, -v               print the version
 ```
 
+
 # Comparison with other scanners
 
 ## Overview
@@ -1298,6 +1328,7 @@ OPTIONS:
 | MicroScanner   |       ◯        |              ×              |      ◯      |    ◯     |           ◯           |
 | Docker Hub     |       ◯        |              ×              |      ◯      |    ×     |           ×           |
 | GCR            |       ◯        |              ×              |      ◯      |    ◯     |           ×           |
+
 
 ## vs Clair
 
@@ -1328,6 +1359,7 @@ And as many people know, it is difficult to select a `Clair` client because many
 
 Finally, `Trivy` can also detect vulnerabilities in application dependent libraries such as Bundler, Composer, Pipenv, etc.
 
+
 ## vs Anchore Engine
 
 Similar to Clair, there is a difference in detection accuracy on Alpine Linux.
@@ -1336,15 +1368,18 @@ Then, as noted above, `Anchore Engine` does not detect unfixable vulnerabilities
 Also, `Anchore Engine` needs some steps to start scanning.
 `Trivy` is much easier to use.
 
+
 ## vs Quay, Docker Hub, GCR
 
 As `Quay` seems to use `Clair` internally, it has the same accuracy than `Clair`. `Docker Hub` can scan only official images. `GCR` hardly detects vulnerabilities on Alpine Linux. Also, it is locked to a specific registry.
 
 `Trivy` can be used regardless of the registry. In addition, it is easy to be integrated with CI/CD services.
 
+
 # Migration
 
 On 19 August 2019, Trivy's repositories moved from `knqyf263/trivy` to `aquasecurity/trivy`. If you previously installed Trivy you should update any scripts or package manager records as described in this section.
+
 
 ## Overview
 If you have a script that installs Trivy (for example into your CI pipelines) you should update it to obtain it from the new location by replacing knqyf263/trivy with aquasecurity/trivy.
@@ -1358,6 +1393,7 @@ $ wget https://github.com/knqyf263/trivy/releases/download/v${VERSION}/trivy_${V
 $ wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
 ```
 
+
 ## CentOS/RedHat
 Use https://aquasecurity.github.io instead of https://knqyf263.github.io.
 
@@ -1367,6 +1403,7 @@ $ sed -i s/knqyf263/aquasecurity/g /etc/yum.repos.d/trivy.repo
 $ yum update
 $ yum install trivy
 ```
+
 
 ## Debian/Ubuntu
 Use https://aquasecurity.github.io instead of https://knqyf263.github.io.
@@ -1378,6 +1415,7 @@ $ apt-get update
 $ apt-get install trivy
 ```
 
+
 ## Homebrew
 Tap aquasecurity/trivy
 
@@ -1387,8 +1425,10 @@ $ brew untap knqyf263/trivy
 $ brew install aquasecurity/trivy/trivy
 ```
 
+
 ## Binary (Including Windows)
 No need to fix.
+
 
 
 # Q&A
@@ -1413,6 +1453,7 @@ Try:
 $ printf "protocol=https\nhost=github.com\n" | git credential-osxkeychain erase
 ```
 
+
 ### Error: aquasecurity/trivy/trivy 64 already installed
 
 ```
@@ -1429,6 +1470,7 @@ $ brew unlink trivy && brew uninstall trivy
 $ brew install aquasecurity/trivy/trivy
 ```
 
+
 ## Others
 
 ### Detected version update of trivy. Please try again with --refresh option
@@ -1439,6 +1481,7 @@ Try again with `--refresh` option:
 $ trivy --refresh alpine:3.9
 ```
 
+
 ### Unknown error
 
 Try again with `--reset` option:
@@ -1447,11 +1490,13 @@ Try again with `--reset` option:
 $ trivy --reset
 ```
 
+
 # Related Projects
 
 - [Remic](https://github.com/aquasecurity/remic)
   - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies  
 ---
+
 
 # Credits
 
@@ -1459,9 +1504,11 @@ $ trivy --reset
 - Special thanks to [Masahiro Fujimura](https://github.com/masahiro331)
 - Special thanks to [Naoki Harima](https://github.com/XapiMa)
 
+
 # License
 
 This repository is available under the [GNU Affero General Public License v3.0](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
+
 
 # Author
 
