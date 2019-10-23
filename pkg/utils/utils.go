@@ -32,6 +32,9 @@ func SetCacheDir(dir string) {
 
 func FileWalk(root string, targetFiles map[string]struct{}, walkFn func(r io.Reader, path string) error) error {
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 		if info.IsDir() {
 			return nil
 		}
@@ -51,10 +54,10 @@ func FileWalk(root string, targetFiles map[string]struct{}, walkFn func(r io.Rea
 		}
 
 		f, err := os.Open(path)
-		defer f.Close()
 		if err != nil {
 			return xerrors.Errorf("failed to open file: %w", err)
 		}
+		defer f.Close()
 
 		if err = walkFn(f, path); err != nil {
 			return err

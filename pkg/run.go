@@ -21,8 +21,6 @@ import (
 )
 
 func Run(c *cli.Context) (err error) {
-	cliVersion := c.App.Version
-
 	if c.Bool("quiet") || c.Bool("no-progress") {
 		utils.Quiet = true
 	}
@@ -87,7 +85,7 @@ func Run(c *cli.Context) (err error) {
 
 	needRefresh := false
 	dbVersion := db.GetVersion()
-	if dbVersion != "" && dbVersion != cliVersion {
+	if 0 < dbVersion && dbVersion < db.SchemaVersion {
 		if !refresh && !autoRefresh {
 			return xerrors.New("Detected version update of trivy. Please try again with --refresh or --auto-refresh option")
 		}
@@ -113,7 +111,8 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
-	if err = db.SetVersion(cliVersion); err != nil {
+	dbc := db.Config{}
+	if err = dbc.SetVersion(db.SchemaVersion); err != nil {
 		return xerrors.Errorf("unexpected error: %w", err)
 	}
 
@@ -156,22 +155,24 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
-	scanOptions := types.ScanOptions{VulnType: strings.Split(c.String("vuln-type"), ",")}
+	timeout := c.Duration("timeout")
+	scanOptions := types.ScanOptions{
+		VulnType: strings.Split(c.String("vuln-type"), ","),
+		Timeout:  timeout,
+	}
 
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	vulns, err := scanner.ScanImage(imageName, filePath, scanOptions)
+	results, err := scanner.ScanImage(imageName, filePath, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
 
-	var results report.Results
+	ignoreFile := c.String("ignorefile")
+
 	ignoreUnfixed := c.Bool("ignore-unfixed")
-	for path, vuln := range vulns {
-		results = append(results, report.Result{
-			FileName:        path,
-			Vulnerabilities: vulnerability.FillAndFilter(vuln, severities, ignoreUnfixed),
-		})
+	for i := range results {
+		results[i].Vulnerabilities = vulnerability.FillAndFilter(results[i].Vulnerabilities, severities, ignoreUnfixed, ignoreFile)
 	}
 
 	var writer report.Writer

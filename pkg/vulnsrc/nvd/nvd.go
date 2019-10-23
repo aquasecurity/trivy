@@ -64,7 +64,8 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 
 func save(items []Item) error {
 	log.Logger.Debug("NVD batch update")
-	err := vulnerability.BatchUpdate(func(b *bolt.Bucket) error {
+	vdb := vulnerability.DB{}
+	err := vdb.BatchUpdate(func(b *bolt.Bucket) error {
 		for _, item := range items {
 			cveID := item.Cve.Meta.ID
 			severity, _ := vulnerability.NewSeverity(item.Impact.BaseMetricV2.Severity)

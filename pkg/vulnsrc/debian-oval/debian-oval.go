@@ -98,8 +98,9 @@ func walkDebian(cri Criteria, pkgs []Package) []Package {
 }
 
 func save(cves []DebianOVAL) error {
+	dbc := db.Config{}
 	log.Logger.Debug("Saving Debian OVAL")
-	err := db.BatchUpdate(func(tx *bolt.Tx) error {
+	err := dbc.BatchUpdate(func(tx *bolt.Tx) error {
 		for _, cve := range cves {
 			affectedPkgs := walkDebian(cve.Criteria, []Package{})
 			for _, affectedPkg := range affectedPkgs {
@@ -114,7 +115,7 @@ func save(cves []DebianOVAL) error {
 					VulnerabilityID: cveID,
 					FixedVersion:    affectedPkg.FixedVersion,
 				}
-				if err := db.PutNestedBucket(tx, platformName, affectedPkg.Name, cveID, advisory); err != nil {
+				if err := dbc.PutNestedBucket(tx, platformName, affectedPkg.Name, cveID, advisory); err != nil {
 					return xerrors.Errorf("failed to save Debian OVAL advisory: %w", err)
 				}
 
@@ -128,7 +129,8 @@ func save(cves []DebianOVAL) error {
 					References:  references,
 				}
 
-				if err := vulnerability.Put(tx, cveID, vulnerability.DebianOVAL, vuln); err != nil {
+				vdb := vulnerability.DB{}
+				if err := vdb.Put(tx, cveID, vulnerability.DebianOVAL, vuln); err != nil {
 					return xerrors.Errorf("failed to save Debian OVAL vulnerability: %w", err)
 				}
 			}
@@ -144,7 +146,7 @@ func save(cves []DebianOVAL) error {
 
 func Get(release string, pkgName string) ([]vulnerability.Advisory, error) {
 	bucket := fmt.Sprintf(platformFormat, release)
-	advisories, err := db.ForEach(bucket, pkgName)
+	advisories, err := db.Config{}.ForEach(bucket, pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("error in Debian OVAL foreach: %w", err)
 	}

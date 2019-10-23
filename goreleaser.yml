@@ -1,6 +1,7 @@
 project_name: trivy
 builds:
-  - main: cmd/trivy/main.go
+  -
+    main: cmd/trivy/main.go
     binary: trivy
     ldflags: 
       - -s -w
@@ -22,60 +23,79 @@ builds:
     goarm:
       - 7
 
-nfpm:
-  formats:
-    - deb
-    - rpm
-  dependencies:
-    - rpm
-  vendor: "aquasecurity"
-  homepage: "https://github.com/aquasecurity"
-  maintainer: "Teppei Fukuda <knqyf263@gmail.com>"
-  description: "A Fast Vulnerability Scanner for Containers"
-  license: "MIT"
-  name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
-  replacements:
-    amd64: 64bit
-    386: 32bit
-    arm: ARM
-    arm64: ARM64
-    darwin: macOS
-    linux: Linux
-    windows: Windows
-    openbsd: OpenBSD
-    netbsd: NetBSD
-    freebsd: FreeBSD
-    dragonfly: DragonFlyBSD
+nfpms:
+  -
+    formats:
+      - deb
+      - rpm
+    dependencies:
+      - rpm
+    vendor: "aquasecurity"
+    homepage: "https://github.com/aquasecurity"
+    maintainer: "Teppei Fukuda <knqyf263@gmail.com>"
+    description: "A Fast Vulnerability Scanner for Containers"
+    license: "MIT"
+    name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+    replacements:
+      amd64: 64bit
+      386: 32bit
+      arm: ARM
+      arm64: ARM64
+      darwin: macOS
+      linux: Linux
+      windows: Windows
+      openbsd: OpenBSD
+      netbsd: NetBSD
+      freebsd: FreeBSD
+      dragonfly: DragonFlyBSD
 
-archive:
-  format: tar.gz
-  format_overrides:
-    - goos: windows
-      format: zip
-  name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
-  replacements:
-    amd64: 64bit
-    386: 32bit
-    arm: ARM
-    arm64: ARM64
-    darwin: macOS
-    linux: Linux
-    windows: Windows
-    openbsd: OpenBSD
-    netbsd: NetBSD
-    freebsd: FreeBSD
-    dragonfly: DragonFlyBSD
-  files:
-    - README.md
-    - LICENSE
+archives:
+  -
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+    replacements:
+      amd64: 64bit
+      386: 32bit
+      arm: ARM
+      arm64: ARM64
+      darwin: macOS
+      linux: Linux
+      windows: Windows
+      openbsd: OpenBSD
+      netbsd: NetBSD
+      freebsd: FreeBSD
+      dragonfly: DragonFlyBSD
+    files:
+      - README.md
+      - LICENSE
 
-brew:
-  github:
-    owner: aquasecurity
-    name: homebrew-trivy
-  dependencies:
-    - rpm
-  homepage: "https://github.com/aquasecurity/trivy"
-  description: ""
-  test: |
-    system "#{bin}/program --version"
+brews:
+  -
+    github:
+      owner: aquasecurity
+      name: homebrew-trivy
+    dependencies:
+      - rpm
+    homepage: "https://github.com/aquasecurity/trivy"
+    description: ""
+    test: |
+      system "#{bin}/program --version"
+
+dockers:
+  - image_templates:
+      - "docker.io/aquasec/trivy:{{ .Version }}"
+      - "docker.io/aquasec/trivy:latest"
+    binaries:
+      - trivy
+    build_flag_templates:
+      - "--label=org.label-schema.schema-version=1.0"
+      - "--label=org.label-schema.name={{ .ProjectName }}"
+      - "--label=org.label-schema.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.label-schema.vendor=Aqua Security"
+      - "--label=org.label-schema.version={{ .Version }}"
+      - "--label=org.label-schema.build-date={{ .Date }}"
+      - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
+      - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
