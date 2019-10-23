@@ -61,7 +61,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 
 `Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive vulnerability scanner for containers.
 A software vulnerability is a glitch, flaw, or weakness present in the software or in an Operating System.
-`Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, yarn etc.).
+`Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, yarn, etc.).
 `Trivy` is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify an image name of container.
 
 It is considered to be used in CI. Before pushing to a container registry, you can scan your local container image easily.
@@ -1071,7 +1071,7 @@ $ trivy --reset
 
 # Continuous Integration (CI)
 
-Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0` .
+Scan your image built-in Travis CI/CircleCI. The test will fail if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0` .
 
 **Note**: It will take a while for the first time (faster by cache after the second time).
 
@@ -1159,7 +1159,7 @@ But, I can't recommend using ENV vars in your local machine to you.
 ### Docker Hub
 
 Docker Hub needs `TRIVY_AUTH_URL`, `TRIVY_USERNAME` and `TRIVY_PASSWORD`.
-You don't need to set ENV vars when download from public repository.
+You don't need to set ENV vars when downloading from public repository.
 
 ```bash
 export TRIVY_AUTH_URL=https://registry.hub.docker.com
@@ -1302,7 +1302,7 @@ OPTIONS:
 ## vs Clair
 
 [Clair](https://github.com/coreos/clair) uses [alpine-secdb](https://github.com/alpinelinux/alpine-secdb/).
-However, the purpose of this database is to make it possible to know what packages has backported fixes.
+However, the purpose of this database is to make it possible to know what packages have backported fixes.
 As README says, it is not a complete database of all security issues in Alpine.
 
 `Trivy` collects vulnerability information in Alpine Linux from [Alpine Linux aports repository](https://gitlab.alpinelinux.org/alpine/aports).
@@ -1338,7 +1338,7 @@ Also, `Anchore Engine` needs some steps to start scanning.
 
 ## vs Quay, Docker Hub, GCR
 
-As `Quay` seems to use `Clair` internally, it has the same accuracy than `Clair`. `Docker Hub` can scan only official images. `GCR` hardly detects vulnerabilities on Alpine Linux. Also, it is locked to a specific registry.
+As `Quay` seems to use `Clair` internally, it has the same accuracy as `Clair`. `Docker Hub` can scan only official images. `GCR` hardly detects vulnerabilities on Alpine Linux. Also, it is locked to a specific registry.
 
 `Trivy` can be used regardless of the registry. In addition, it is easy to be integrated with CI/CD services.
 
