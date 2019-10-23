@@ -1,6 +1,6 @@
 defaults: &defaults
   docker :
-    - image: knqyf263/ci-trivy:latest
+    - image: aquasec/trivy-ci:latest
   environment:
     CGO_ENABLED: "0"
 
@@ -26,6 +26,11 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+      - run:
+          name: setup docker
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run:
           name: Release
           command: goreleaser --rm-dist

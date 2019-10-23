@@ -1,20 +1,10 @@
-FROM bepsays/ci-goreleaser:1.12-2
+FROM circleci/golang:1.12-buster 
 
-RUN apt-get -y update \
-    && apt-get -y install vim rpm reprepro createrepo \
-    && wget https://dl.bintray.com/homebrew/mirror/berkeley-db-18.1.32.tar.gz \
+RUN sudo apt-get -y update \
+    && sudo apt-get -y install rpm reprepro createrepo
 
-    # Berkeley DB
-    && tar zxvf berkeley-db-18.1.32.tar.gz \
-    && cd db-18.1.32/build_unix \
-
-    # Linux
-    && ../dist/configure --prefix=/usr/local --host=x86_64-linux \
-    && make \
-    && make install \
-
-    # Darwin
-    && make clean \
-    && ../dist/configure --prefix=/usr/local --host=x86_64-apple-darwin15 \
-    && make \
-    && make install
+ARG GORELEASER_VERSION=0.110.0
+ARG GORELEASER_ARTIFACT=goreleaser_Linux_x86_64.tar.gz
+RUN wget https://github.com/goreleaser/goreleaser/releases/download/v${GORELEASER_VERSION}/${GORELEASER_ARTIFACT} \
+    && sudo tar -xzf ${GORELEASER_ARTIFACT} -C /usr/bin/ goreleaser \
+    && rm ${GORELEASER_ARTIFACT}
