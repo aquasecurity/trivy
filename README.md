@@ -1296,7 +1296,7 @@ Then, those vulnerabilities will be saved on [vuln-list](https://github.com/aqua
 `vuln-list` has 11101 vulnerabilities related to Alpine Linux (as of 2019/05/12).
 There is a difference in detection accuracy because the number of vulnerabilities is nearly doubled.
 
-Besides, `Trivy` analyzes the middle layer as well and find out which version of the library was used for static linking.
+In addition, `Trivy` analyzes the middle layers as well to find out which version of the library was used for static linking.
 
 `Clair` can not handle the following cases because it analyzes the image after applying all layers.
 
