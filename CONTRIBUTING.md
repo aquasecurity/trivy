@@ -1,12 +1,12 @@
 Thank you for taking interest in contributing to Trivy !
 
-## Issues
+## Issues:
 - Feel free to open issues for any reason. When you open a new issue, you'll have to select an issue kind: bug/feature/support and fill the required information based on the selected template.
 - Please spend a small amount of time giving due diligence to the issue tracker. Your issue might be a duplicate. If it is, please add your comment to the existing issue.
 - Remember users might be searching for your issue in the future, so please give it a meaningful title to help others.
 - The issue should clearly explain the reason for opening, the proposal if you have any, and any technical information that's relevant.
 
-## Pull Requests
+## Pull Requests:
 
 1. Every Pull Request should have an associated bug or feature issue, unless you are fixing a trivial documentation issue.
 1. Your PR is more likely to be accepted if it focuses on just one change.
@@ -18,7 +18,7 @@ Thank you for taking interest in contributing to Trivy !
 1. Your PR is more likely to be accepted if it includes tests (We have not historically been very strict about tests, but we would like to improve this!).
 1. If your PR affects the user experience in some way, please update the Readme and the cli help accordingly.
 
-## Understand where your pull request belongs
+## Understand where your pull request belongs:
 
 Trivy is composed of several different repositories that work together:
 - [Trivy](https://github.com/aquasecurity/trivy) is the client side, user facing, command line tool.
