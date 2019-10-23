@@ -1324,7 +1324,7 @@ Also, `Anchore Engine` needs some steps to start scanning.
 
 As `Quay` seems to use `Clair` internally, it has the same accuracy as `Clair`. `Docker Hub` can scan only official images. `GCR` hardly detects vulnerabilities on Alpine Linux. Also, it is locked to a specific registry.
 
-`Trivy` can be used regardless of the registry. Besides, it is easy to be integrated with CI/CD services.
+`Trivy` can be used regardless of the registry, and it is easily integrated with CI/CD services.
 
 # Migration
 
