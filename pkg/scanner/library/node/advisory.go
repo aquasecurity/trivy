@@ -32,7 +32,7 @@ type AdvisoryDB map[string][]Advisory
 type Advisory struct {
 	ID                 int
 	Title              string
-	ModuleName         string `json:"module_name""`
+	ModuleName         string `json:"module_name"`
 	Cves               []string
 	VulnerableVersions string `json:"vulnerable_versions"`
 	PatchedVersions    string `json:"patched_versions"`
@@ -56,6 +56,9 @@ func (s *Scanner) walk() (AdvisoryDB, error) {
 	advisoryDB := AdvisoryDB{}
 	var vulns []vulnerability.Vulnerability
 	err := filepath.Walk(filepath.Join(repoPath, "vuln"), func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 		if info.IsDir() || !strings.HasSuffix(info.Name(), ".json") {
 			return nil
 		}
@@ -112,7 +115,8 @@ func (s *Scanner) walk() (AdvisoryDB, error) {
 }
 
 func (s Scanner) saveVulnerabilities(vulns []vulnerability.Vulnerability) error {
-	return vulnerability.BatchUpdate(func(b *bbolt.Bucket) error {
+	vdb := vulnerability.DB{}
+	return vdb.BatchUpdate(func(b *bbolt.Bucket) error {
 		for _, vuln := range vulns {
 			if err := db.Put(b, vuln.ID, vulnerability.NodejsSecurityWg, vuln); err != nil {
 				return xerrors.Errorf("failed to save %s vulnerability: %w", s.Type(), err)
