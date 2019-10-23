@@ -113,7 +113,8 @@ func Run(c *cli.Context) (err error) {
 		}
 	}
 
-	if err = db.SetVersion(cliVersion); err != nil {
+	dbc := db.Config{}
+	if err = dbc.SetVersion(cliVersion); err != nil {
 		return xerrors.Errorf("unexpected error: %w", err)
 	}
 
@@ -164,20 +165,16 @@ func Run(c *cli.Context) (err error) {
 
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	vulns, err := scanner.ScanImage(imageName, filePath, scanOptions)
+	results, err := scanner.ScanImage(imageName, filePath, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
 
 	ignoreFile := c.String("ignorefile")
 
-	var results report.Results
 	ignoreUnfixed := c.Bool("ignore-unfixed")
-	for path, vuln := range vulns {
-		results = append(results, report.Result{
-			FileName:        path,
-			Vulnerabilities: vulnerability.FillAndFilter(vuln, severities, ignoreUnfixed, ignoreFile),
-		})
+	for i := range results {
+		results[i].Vulnerabilities = vulnerability.FillAndFilter(results[i].Vulnerabilities, severities, ignoreUnfixed, ignoreFile)
 	}
 
 	var writer report.Writer

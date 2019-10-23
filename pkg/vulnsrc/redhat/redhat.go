@@ -113,8 +113,9 @@ type pkg map[string]advisory
 type advisory map[string]interface{}
 
 func save(cves []RedhatCVE) error {
+	dbc := db.Config{}
 	log.Logger.Debug("Saving RedHat DB")
-	err := db.BatchUpdate(func(tx *bolt.Tx) error {
+	err := dbc.BatchUpdate(func(tx *bolt.Tx) error {
 		for _, cve := range cves {
 			for _, affected := range cve.AffectedRelease {
 				if affected.Package == "" {
@@ -131,7 +132,7 @@ func save(cves []RedhatCVE) error {
 					VulnerabilityID: cve.Name,
 					FixedVersion:    version,
 				}
-				if err := db.PutNestedBucket(tx, platformName, pkgName, cve.Name, advisory); err != nil {
+				if err := dbc.PutNestedBucket(tx, platformName, pkgName, cve.Name, advisory); err != nil {
 					return xerrors.Errorf("failed to save Red Hat advisory: %w", err)
 				}
 
@@ -156,7 +157,7 @@ func save(cves []RedhatCVE) error {
 					FixedVersion:    "",
 					VulnerabilityID: cve.Name,
 				}
-				if err := db.PutNestedBucket(tx, platformName, pkgName, cve.Name, advisory); err != nil {
+				if err := dbc.PutNestedBucket(tx, platformName, pkgName, cve.Name, advisory); err != nil {
 					return xerrors.Errorf("failed to save Red Hat advisory: %w", err)
 				}
 
@@ -175,7 +176,8 @@ func save(cves []RedhatCVE) error {
 				Title:       strings.TrimSpace(title),
 				Description: strings.TrimSpace(strings.Join(cve.Details, "")),
 			}
-			if err := vulnerability.Put(tx, cve.Name, vulnerability.RedHat, vuln); err != nil {
+			vdb := vulnerability.DB{}
+			if err := vdb.Put(tx, cve.Name, vulnerability.RedHat, vuln); err != nil {
 				return xerrors.Errorf("failed to save Red Hat vulnerability: %w", err)
 			}
 		}
@@ -190,7 +192,7 @@ func save(cves []RedhatCVE) error {
 
 func Get(majorVersion string, pkgName string) ([]vulnerability.Advisory, error) {
 	bucket := fmt.Sprintf(platformFormat, majorVersion)
-	advisories, err := db.ForEach(bucket, pkgName)
+	advisories, err := db.Config{}.ForEach(bucket, pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("error in Red Hat foreach: %w", err)
 	}

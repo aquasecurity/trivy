@@ -37,6 +37,7 @@ func (s *Spinner) Stop() {
 	s.client.Stop()
 }
 
+// TODO: Expose an interface for progressbar
 type ProgressBar struct {
 	client *pb.ProgressBar
 }

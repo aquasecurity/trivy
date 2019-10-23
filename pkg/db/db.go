@@ -19,6 +19,17 @@ var (
 	dbDir string
 )
 
+type Operations interface {
+	SetVersion(string) error
+	Update(string, string, string, interface{}) error
+	BatchUpdate(func(*bolt.Tx) error) error
+	PutNestedBucket(*bolt.Tx, string, string, string, interface{}) error
+	ForEach(string, string) (map[string][]byte, error)
+}
+
+type Config struct {
+}
+
 func Init() (err error) {
 	dbDir = filepath.Join(utils.CacheDir(), "db")
 	if err = os.MkdirAll(dbDir, 0700); err != nil {
@@ -68,17 +79,17 @@ func GetVersion() string {
 	return version
 }
 
-func SetVersion(version string) error {
-	err := Update("trivy", "metadata", "version", version)
+func (dbc Config) SetVersion(version string) error {
+	err := dbc.Update("trivy", "metadata", "version", version)
 	if err != nil {
 		return xerrors.Errorf("failed to save DB version: %w", err)
 	}
 	return nil
 }
 
-func Update(rootBucket, nestedBucket, key string, value interface{}) error {
+func (dbc Config) Update(rootBucket, nestedBucket, key string, value interface{}) error {
 	err := db.Update(func(tx *bolt.Tx) error {
-		return PutNestedBucket(tx, rootBucket, nestedBucket, key, value)
+		return dbc.PutNestedBucket(tx, rootBucket, nestedBucket, key, value)
 	})
 	if err != nil {
 		return xerrors.Errorf("error in db update: %w", err)
@@ -86,13 +97,14 @@ func Update(rootBucket, nestedBucket, key string, value interface{}) error {
 	return err
 }
 
-func PutNestedBucket(tx *bolt.Tx, rootBucket, nestedBucket, key string, value interface{}) error {
+func (dbc Config) PutNestedBucket(tx *bolt.Tx, rootBucket, nestedBucket, key string, value interface{}) error {
 	root, err := tx.CreateBucketIfNotExists([]byte(rootBucket))
 	if err != nil {
 		return xerrors.Errorf("failed to create a bucket: %w", err)
 	}
 	return Put(root, nestedBucket, key, value)
 }
+
 func Put(root *bolt.Bucket, nestedBucket, key string, value interface{}) error {
 	nested, err := root.CreateBucketIfNotExists([]byte(nestedBucket))
 	if err != nil {
@@ -104,7 +116,8 @@ func Put(root *bolt.Bucket, nestedBucket, key string, value interface{}) error {
 	}
 	return nested.Put([]byte(key), v)
 }
-func BatchUpdate(fn func(tx *bolt.Tx) error) error {
+
+func (dbc Config) BatchUpdate(fn func(tx *bolt.Tx) error) error {
 	err := db.Batch(fn)
 	if err != nil {
 		return xerrors.Errorf("error in batch update: %w", err)
@@ -131,7 +144,7 @@ func Get(rootBucket, nestedBucket, key string) (value []byte, err error) {
 	return value, nil
 }
 
-func ForEach(rootBucket, nestedBucket string) (value map[string][]byte, err error) {
+func (dbc Config) ForEach(rootBucket, nestedBucket string) (value map[string][]byte, err error) {
 	value = map[string][]byte{}
 	err = db.View(func(tx *bolt.Tx) error {
 		root := tx.Bucket([]byte(rootBucket))

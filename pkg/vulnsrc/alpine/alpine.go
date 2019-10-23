@@ -63,7 +63,8 @@ func Update(dir string, updatedFiles map[string]struct{}) error {
 func save(cves []AlpineCVE) error {
 	log.Logger.Debug("Saving Alpine DB")
 
-	err := db.BatchUpdate(func(tx *bolt.Tx) error {
+	dbc := db.Config{}
+	err := dbc.BatchUpdate(func(tx *bolt.Tx) error {
 		for _, cve := range cves {
 			platformName := fmt.Sprintf(platformFormat, cve.Release)
 			pkgName := cve.Package
@@ -72,7 +73,7 @@ func save(cves []AlpineCVE) error {
 				FixedVersion:    cve.FixedVersion,
 				Repository:      cve.Repository,
 			}
-			if err := db.PutNestedBucket(tx, platformName, pkgName, cve.VulnerabilityID, advisory); err != nil {
+			if err := dbc.PutNestedBucket(tx, platformName, pkgName, cve.VulnerabilityID, advisory); err != nil {
 				return xerrors.Errorf("failed to save alpine advisory: %w", err)
 			}
 
@@ -80,7 +81,8 @@ func save(cves []AlpineCVE) error {
 				Title:       cve.Subject,
 				Description: cve.Description,
 			}
-			if err := vulnerability.Put(tx, cve.VulnerabilityID, vulnerability.Alpine, vuln); err != nil {
+			vdb := vulnerability.DB{}
+			if err := vdb.Put(tx, cve.VulnerabilityID, vulnerability.Alpine, vuln); err != nil {
 				return xerrors.Errorf("failed to save alpine vulnerability: %w", err)
 			}
 		}
@@ -94,7 +96,7 @@ func save(cves []AlpineCVE) error {
 
 func Get(release string, pkgName string) ([]Advisory, error) {
 	bucket := fmt.Sprintf(platformFormat, release)
-	advisories, err := db.ForEach(bucket, pkgName)
+	advisories, err := db.Config{}.ForEach(bucket, pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("error in Alpine foreach: %w", err)
 	}
