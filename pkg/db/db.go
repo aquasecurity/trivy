@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 
@@ -14,13 +15,17 @@ import (
 	bolt "github.com/etcd-io/bbolt"
 )
 
+const (
+	SchemaVersion = 1
+)
+
 var (
 	db    *bolt.DB
 	dbDir string
 )
 
 type Operations interface {
-	SetVersion(string) error
+	SetVersion(int) error
 	Update(string, string, string, interface{}) error
 	BatchUpdate(func(*bolt.Tx) error) error
 	PutNestedBucket(*bolt.Tx, string, string, string, interface{}) error
@@ -67,19 +72,22 @@ func Reset() error {
 	return nil
 }
 
-func GetVersion() string {
-	var version string
+func GetVersion() int {
 	value, err := Get("trivy", "metadata", "version")
-	if err != nil {
-		return ""
+	if err != nil || len(value) == 0 {
+		// initial run
+		return 0
 	}
-	if err = json.Unmarshal(value, &version); err != nil {
-		return ""
+
+	version, err := strconv.Atoi(string(value))
+	if err != nil {
+		// old trivy version
+		return 1
 	}
 	return version
 }
 
-func (dbc Config) SetVersion(version string) error {
+func (dbc Config) SetVersion(version int) error {
 	err := dbc.Update("trivy", "metadata", "version", version)
 	if err != nil {
 		return xerrors.Errorf("failed to save DB version: %w", err)
