@@ -1449,7 +1449,7 @@ $ trivy --reset
 
 # Related Projects
 
-- [Remic](https://github.com/aquasecurity/remic)
+- [Remic](https://github.com/knqyf263/remic)
   - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies  
 ---
 
