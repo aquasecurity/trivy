@@ -62,7 +62,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 `Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive vulnerability scanner for containers.
 A software vulnerability is a glitch, flaw, or weakness present in the software or in an Operating System.
 `Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, yarn etc.).
-`Trivy` is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify an image name of a container.
+`Trivy` is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify an image name of the container.
 
 It is considered to be used in CI. Before pushing to a container registry, you can scan your local container image easily.
 See [here](#continuous-integration-ci) for details.
@@ -77,7 +77,7 @@ See [here](#continuous-integration-ci) for details.
   - See [Quick Start](#quick-start) and [Examples](#examples)
 - Easy installation
   - `apt-get install`, `yum install` and `brew install` are all possible (See [Installation](#installation))
-  - **No need for prerequisites** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
+  - **No need for prerequirements** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
 - High accuracy
   - **Especially Alpine Linux and RHEL/CentOS**
   - Other OSes are also high
