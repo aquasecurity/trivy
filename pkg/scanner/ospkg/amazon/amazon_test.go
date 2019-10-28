@@ -4,34 +4,34 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
-
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest/observer"
 
 	"github.com/aquasecurity/fanal/analyzer"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
-	"github.com/stretchr/testify/assert"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type MockAmazonConfig struct {
-	update func(string, map[string]struct{}) error
-	get    func(string, string) ([]vulnerability.Advisory, error)
+	update func(string) error
+	get    func(string, string) ([]dbTypes.Advisory, error)
 }
 
-func (mac MockAmazonConfig) Update(a string, b map[string]struct{}) error {
+func (mac MockAmazonConfig) Update(a string) error {
 	if mac.update != nil {
-		return mac.update(a, b)
+		return mac.update(a)
 	}
 	return nil
 }
 
-func (mac MockAmazonConfig) Get(a string, b string) ([]vulnerability.Advisory, error) {
+func (mac MockAmazonConfig) Get(a string, b string) ([]dbTypes.Advisory, error) {
 	if mac.get != nil {
 		return mac.get(a, b)
 	}
-	return []vulnerability.Advisory{}, nil
+	return []dbTypes.Advisory{}, nil
 }
 
 func TestScanner_Detect(t *testing.T) {
@@ -41,8 +41,8 @@ func TestScanner_Detect(t *testing.T) {
 		s := &Scanner{
 			l: log.Logger,
 			ac: MockAmazonConfig{
-				get: func(s string, s2 string) (advisories []vulnerability.Advisory, e error) {
-					return []vulnerability.Advisory{
+				get: func(s string, s2 string) (advisories []dbTypes.Advisory, e error) {
+					return []dbTypes.Advisory{
 						{
 							VulnerabilityID: "123",
 							FixedVersion:    "3.0.0",
@@ -65,7 +65,7 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		})
 		assert.NoError(t, err)
-		assert.Equal(t, []vulnerability.DetectedVulnerability{
+		assert.Equal(t, []types.DetectedVulnerability{
 			{
 				VulnerabilityID:  "123",
 				PkgName:          "testpkg",
@@ -84,7 +84,7 @@ func TestScanner_Detect(t *testing.T) {
 		s := &Scanner{
 			l: log.Logger,
 			ac: MockAmazonConfig{
-				get: func(s string, s2 string) (advisories []vulnerability.Advisory, e error) {
+				get: func(s string, s2 string) (advisories []dbTypes.Advisory, e error) {
 					return nil, errors.New("failed to fetch advisories")
 				},
 			},
@@ -104,8 +104,8 @@ func TestScanner_Detect(t *testing.T) {
 		s := &Scanner{
 			l: log.Logger,
 			ac: MockAmazonConfig{
-				get: func(s string, s2 string) (advisories []vulnerability.Advisory, e error) {
-					return []vulnerability.Advisory{
+				get: func(s string, s2 string) (advisories []dbTypes.Advisory, e error) {
+					return []dbTypes.Advisory{
 						{
 							VulnerabilityID: "123",
 							FixedVersion:    "3.0.0",
@@ -122,7 +122,7 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		})
 		assert.NoError(t, err)
-		assert.Equal(t, []vulnerability.DetectedVulnerability(nil), vuls)
+		assert.Equal(t, []types.DetectedVulnerability(nil), vuls)
 		loggedMessages := getAllLoggedLogs(recorder)
 		assert.Contains(t, loggedMessages, "failed to parse Amazon Linux installed package version: upstream_version must start with digit")
 	})
@@ -133,8 +133,8 @@ func TestScanner_Detect(t *testing.T) {
 		s := &Scanner{
 			l: log.Logger,
 			ac: MockAmazonConfig{
-				get: func(s string, s2 string) (advisories []vulnerability.Advisory, e error) {
-					return []vulnerability.Advisory{
+				get: func(s string, s2 string) (advisories []dbTypes.Advisory, e error) {
+					return []dbTypes.Advisory{
 						{
 							VulnerabilityID: "123",
 							FixedVersion:    "thisisbadversioning",
@@ -151,7 +151,7 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		})
 		assert.NoError(t, err)
-		assert.Equal(t, []vulnerability.DetectedVulnerability(nil), vuls)
+		assert.Equal(t, []types.DetectedVulnerability(nil), vuls)
 		loggedMessages := getAllLoggedLogs(recorder)
 		assert.Contains(t, loggedMessages, "failed to parse Amazon Linux package version: upstream_version must start with digit")
 	})

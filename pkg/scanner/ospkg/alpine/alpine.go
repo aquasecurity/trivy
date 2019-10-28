@@ -4,13 +4,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/alpine"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/fanal/analyzer"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alpine"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var (
@@ -37,13 +39,17 @@ var (
 	}
 )
 
-type Scanner struct{}
-
-func NewScanner() *Scanner {
-	return &Scanner{}
+type Scanner struct {
+	vs dbTypes.VulnSrc
 }
 
-func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability.DetectedVulnerability, error) {
+func NewScanner() *Scanner {
+	return &Scanner{
+		vs: alpine.NewVulnSrc(),
+	}
+}
+
+func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Alpine vulnerabilities...")
 	if strings.Count(osVer, ".") > 1 {
 		osVer = osVer[:strings.LastIndex(osVer, ".")]
@@ -51,9 +57,9 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 	log.Logger.Debugf("alpine: os version: %s", osVer)
 	log.Logger.Debugf("alpine: the number of packages: %d", len(pkgs))
 
-	var vulns []vulnerability.DetectedVulnerability
+	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := alpine.Get(osVer, pkg.Name)
+		advisories, err := s.vs.Get(osVer, pkg.Name)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get alpine advisories: %w", err)
 		}
@@ -64,7 +70,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 		for _, adv := range advisories {
 			fixedVersion := version.NewVersion(adv.FixedVersion)
 			if installedVersion.LessThan(fixedVersion) {
-				vuln := vulnerability.DetectedVulnerability{
+				vuln := types.DetectedVulnerability{
 					VulnerabilityID:  adv.VulnerabilityID,
 					PkgName:          pkg.Name,
 					InstalledVersion: installed,
