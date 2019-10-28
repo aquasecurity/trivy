@@ -15,7 +15,7 @@ jobs:
             if test -z "$(gofmt -l .)"; then
               echo "Congrats! There is nothing to fix."
             else
-              "The following lines should be fixed."
+              echo "The following lines should be fixed."
               gofmt -s -d .
               exit 1
             fi
