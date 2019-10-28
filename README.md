@@ -169,7 +169,7 @@ You also need to install `rpm` command for scanning images based on RHEL/CentOS.
 
 # Quick Start
 
-Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with cache.**. See [Clear image caches](#clear-image-caches).
+Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with cache.** See [Clear image caches](#clear-image-caches).
 
 ## Basic
 
@@ -949,7 +949,7 @@ Total: 4730 (UNKNOWN: 1, LOW: 145, MEDIUM: 3487, HIGH: 1014, CRITICAL: 83)
 
 ### Specify exit code
 
-By default, `Trivy` exits with code 0 even when vulnerabilities are detected.
+By default, `Trivy` exits with code 0, even when vulnerabilities are detected.
 Use the `--exit-code` option if you want to exit with a non-zero exit code.
 
 ```
@@ -1239,7 +1239,7 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 | Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg |                 YES                  |
 | Distroless                   | Any                                      | Installed by apt/apt-get/dpkg |                 YES                  |
 
-RHEL, CentOS and Amazon Linux package information is stored in a binary format, and Trivy uses the `rpm` executable to parse this information when scanning an image based on RHEL or CentOS. The Trivy container image includes `rpm`, and the installers include it as a dependency. If you installed the `trivy` binary using `wget` or `curl`, or if you build it from source, you will also need to ensure that `rpm` is available.
+RHEL, CentOS and Amazon Linux package information is stored in a binary format, and Trivy uses the `rpm` executable to parse this information when scanning an image based on RHEL or CentOS. The Trivy container image includes `rpm`, and the installers include it as a dependency. If you installed the `trivy` binary using `wget` or `curl`, or build it from source, you will also need to ensure that `rpm` is available.
 
 Distroless: https://github.com/GoogleContainerTools/distroless
 
@@ -1375,7 +1375,7 @@ As `Quay` seems to use `Clair` internally, it has the same accuracy than `Clair`
 On 19 August 2019, Trivy's repositories moved from `knqyf263/trivy` to `aquasecurity/trivy`. If you previously installed Trivy you should update any scripts or package manager records as described in this section.
 
 ## Overview
-If you have a script that installs Trivy (for example into your CI pipelines) you should update it to obtain it from the new location by replacing knqyf263/trivy with aquasecurity/trivy.
+If you have a script that installs Trivy (for example into your CI pipelines), you should update it to obtain it from the new location by replacing knqyf263/trivy with aquasecurity/trivy.
 
 For example:
 ```bash
