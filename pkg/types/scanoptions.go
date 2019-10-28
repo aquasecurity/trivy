@@ -3,6 +3,7 @@ package types
 import "time"
 
 type ScanOptions struct {
-	VulnType []string
-	Timeout  time.Duration
+	VulnType   []string
+	SkipUpdate bool
+	Timeout    time.Duration
 }

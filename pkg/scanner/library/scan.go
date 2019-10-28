@@ -71,7 +71,7 @@ func Scan(files extractor.FileMap, scanOptions types.ScanOptions) (map[string][]
 			return nil, xerrors.New("unknown file type")
 		}
 
-		vulns, err := scan(scanner, pkgs)
+		vulns, err := scan(scanner, pkgs, scanOptions)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to scan %s vulnerabilities: %w", scanner.Type(), err)
 		}
@@ -81,7 +81,7 @@ func Scan(files extractor.FileMap, scanOptions types.ScanOptions) (map[string][]
 	return vulnerabilities, nil
 }
 
-func ScanFile(f *os.File) ([]vulnerability.DetectedVulnerability, error) {
+func ScanFile(f *os.File, scanOptions types.ScanOptions) ([]vulnerability.DetectedVulnerability, error) {
 	scanner := NewScanner(filepath.Base(f.Name()))
 	if scanner == nil {
 		return nil, xerrors.New("unknown file type")
@@ -92,18 +92,20 @@ func ScanFile(f *os.File) ([]vulnerability.DetectedVulnerability, error) {
 		return nil, err
 	}
 
-	vulns, err := scan(scanner, pkgs)
+	vulns, err := scan(scanner, pkgs, scanOptions)
 	if err != nil {
 		return nil, err
 	}
 	return vulns, nil
 }
 
-func scan(scanner Scanner, pkgs []ptypes.Library) ([]vulnerability.DetectedVulnerability, error) {
-	log.Logger.Infof("Updating %s Security DB...", scanner.Type())
-	err := scanner.UpdateDB()
-	if err != nil {
-		return nil, xerrors.Errorf("failed to update %s advisories: %w", scanner.Type(), err)
+func scan(scanner Scanner, pkgs []ptypes.Library, scanOptions types.ScanOptions) ([]vulnerability.DetectedVulnerability, error) {
+	if !scanOptions.SkipUpdate {
+		log.Logger.Infof("Updating %s Security DB...", scanner.Type())
+		err := scanner.UpdateDB()
+		if err != nil {
+			return nil, xerrors.Errorf("failed to update %s advisories: %w", scanner.Type(), err)
+		}
 	}
 
 	log.Logger.Infof("Detecting %s vulnerabilities...", scanner.Type())

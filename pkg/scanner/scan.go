@@ -88,8 +88,8 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (repor
 	return results, nil
 }
 
-func ScanFile(f *os.File) (report.Results, error) {
-	vulns, err := library.ScanFile(f)
+func ScanFile(f *os.File, scanOptions types.ScanOptions) (report.Results, error) {
+	vulns, err := library.ScanFile(f, scanOptions)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to scan libraries in file: %w", err)
 	}

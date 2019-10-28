@@ -157,8 +157,9 @@ func Run(c *cli.Context) (err error) {
 
 	timeout := c.Duration("timeout")
 	scanOptions := types.ScanOptions{
-		VulnType: strings.Split(c.String("vuln-type"), ","),
-		Timeout:  timeout,
+		VulnType:   strings.Split(c.String("vuln-type"), ","),
+		SkipUpdate: skipUpdate,
+		Timeout:    timeout,
 	}
 
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
