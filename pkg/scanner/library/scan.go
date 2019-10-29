@@ -58,9 +58,30 @@ func NewScanner(filename string) Scanner {
 }
 
 func Scan(files extractor.FileMap, scanOptions types.ScanOptions) (map[string][]vulnerability.DetectedVulnerability, error) {
-	results, err := analyzer.GetLibraries(files)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to analyze libraries: %w", err)
+	results := map[analyzer.FilePath][]ptypes.Library{}
+
+	// Scan each file individually so that we are able to handle failed
+	// parsing - such as an invalid lockfile - without bailing out before
+	// scanning every other file.
+	for filename, content := range files {
+		singleFileMap := extractor.FileMap{
+			filename: content,
+		}
+
+		singleFileResults, err := analyzer.GetLibraries(singleFileMap)
+
+		if err != nil {
+			log.Logger.Warnf("failed to analyze libraries for %s: %w", filename, err)
+			continue
+		}
+
+		for path, libs := range singleFileResults {
+			if existingLibs, ok := results["foo"]; ok {
+				libs = append(existingLibs, libs...)
+			}
+
+			results[path] = libs
+		}
 	}
 
 	vulnerabilities := map[string][]vulnerability.DetectedVulnerability{}
