@@ -32,6 +32,8 @@ OPTIONS:
 
 	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
 
+	app.EnableBashCompletion = true
+
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "template, t",
