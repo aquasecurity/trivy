@@ -4,7 +4,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/python"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	"golang.org/x/xerrors"
 
@@ -21,30 +22,29 @@ const (
 )
 
 type Scanner struct {
-	db          AdvisoryDB
 	scannerType string
+	vs          python.VulnSrc
 }
 
 func NewScanner(scannerType string) *Scanner {
 	return &Scanner{scannerType: scannerType}
 }
 
-func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]vulnerability.DetectedVulnerability, error) {
-	var vulns []vulnerability.DetectedVulnerability
-	for _, advisory := range s.db[pkgName] {
+func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+	advisories, err := s.vs.Get(pkgName)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+	}
+
+	var vulns []types.DetectedVulnerability
+	for _, advisory := range advisories {
 		if !utils.MatchVersions(pkgVer, advisory.Specs) {
 			continue
 		}
 
-		vulnerabilityID := advisory.Cve
-		if vulnerabilityID == "" {
-			vulnerabilityID = advisory.ID
-		}
-
-		vuln := vulnerability.DetectedVulnerability{
-			VulnerabilityID:  vulnerabilityID,
+		vuln := types.DetectedVulnerability{
+			VulnerabilityID:  advisory.VulnerabilityID,
 			PkgName:          pkgName,
-			Title:            strings.TrimSpace(advisory.Advisory),
 			InstalledVersion: pkgVer.String(),
 			FixedVersion:     createFixedVersions(advisory.Specs),
 		}

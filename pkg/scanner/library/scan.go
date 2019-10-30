@@ -4,8 +4,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
-
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
 	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
@@ -28,9 +26,8 @@ import (
 )
 
 type Scanner interface {
-	UpdateDB() error
 	ParseLockfile(*os.File) ([]ptypes.Library, error)
-	Detect(string, *version.Version) ([]vulnerability.DetectedVulnerability, error)
+	Detect(string, *version.Version) ([]types.DetectedVulnerability, error)
 	Type() string
 }
 
@@ -57,13 +54,13 @@ func NewScanner(filename string) Scanner {
 	return scanner
 }
 
-func Scan(files extractor.FileMap, scanOptions types.ScanOptions) (map[string][]vulnerability.DetectedVulnerability, error) {
+func Scan(files extractor.FileMap, scanOptions types.ScanOptions) (map[string][]types.DetectedVulnerability, error) {
 	results, err := analyzer.GetLibraries(files)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to analyze libraries: %w", err)
 	}
 
-	vulnerabilities := map[string][]vulnerability.DetectedVulnerability{}
+	vulnerabilities := map[string][]types.DetectedVulnerability{}
 	for path, pkgs := range results {
 		log.Logger.Debugf("Detecting library vulnerabilities, path: %s", path)
 		scanner := NewScanner(filepath.Base(string(path)))
@@ -81,7 +78,7 @@ func Scan(files extractor.FileMap, scanOptions types.ScanOptions) (map[string][]
 	return vulnerabilities, nil
 }
 
-func ScanFile(f *os.File) ([]vulnerability.DetectedVulnerability, error) {
+func ScanFile(f *os.File) ([]types.DetectedVulnerability, error) {
 	scanner := NewScanner(filepath.Base(f.Name()))
 	if scanner == nil {
 		return nil, xerrors.New("unknown file type")
@@ -99,15 +96,9 @@ func ScanFile(f *os.File) ([]vulnerability.DetectedVulnerability, error) {
 	return vulns, nil
 }
 
-func scan(scanner Scanner, pkgs []ptypes.Library) ([]vulnerability.DetectedVulnerability, error) {
-	log.Logger.Infof("Updating %s Security DB...", scanner.Type())
-	err := scanner.UpdateDB()
-	if err != nil {
-		return nil, xerrors.Errorf("failed to update %s advisories: %w", scanner.Type(), err)
-	}
-
+func scan(scanner Scanner, pkgs []ptypes.Library) ([]types.DetectedVulnerability, error) {
 	log.Logger.Infof("Detecting %s vulnerabilities...", scanner.Type())
-	var vulnerabilities []vulnerability.DetectedVulnerability
+	var vulnerabilities []types.DetectedVulnerability
 	for _, pkg := range pkgs {
 		v, err := version.NewVersion(pkg.Version)
 		if err != nil {

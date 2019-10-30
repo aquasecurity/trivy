@@ -5,12 +5,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/composer"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	composerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/composer"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/knqyf263/go-version"
 )
@@ -20,17 +21,24 @@ const (
 )
 
 type Scanner struct {
-	db AdvisoryDB
+	vs composerSrc.VulnSrc
 }
 
 func NewScanner() *Scanner {
-	return &Scanner{}
+	return &Scanner{
+		vs: composerSrc.NewVulnSrc(),
+	}
 }
 
-func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]vulnerability.DetectedVulnerability, error) {
-	var vulns []vulnerability.DetectedVulnerability
+func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
 	ref := fmt.Sprintf("composer://%s", pkgName)
-	for _, advisory := range s.db[ref] {
+	advisories, err := s.vs.Get(ref)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+	}
+
+	var vulns []types.DetectedVulnerability
+	for _, advisory := range advisories {
 		var affectedVersions []string
 		var patchedVersions []string
 		for _, branch := range advisory.Branches {
@@ -46,10 +54,9 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]vulnerabili
 			continue
 		}
 
-		vuln := vulnerability.DetectedVulnerability{
-			VulnerabilityID:  advisory.Cve,
+		vuln := types.DetectedVulnerability{
+			VulnerabilityID:  advisory.VulnerabilityID,
 			PkgName:          pkgName,
-			Title:            strings.TrimSpace(advisory.Title),
 			InstalledVersion: pkgVer.String(),
 			FixedVersion:     strings.Join(patchedVersions, ", "),
 		}

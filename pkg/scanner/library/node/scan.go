@@ -1,19 +1,18 @@
 package node
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 	version "github.com/knqyf263/go-version"
-
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/npm"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/go-dep-parser/pkg/yarn"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/node"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -22,18 +21,23 @@ const (
 )
 
 type Scanner struct {
-	db          AdvisoryDB
 	scannerType string
+	vs          node.VulnSrc
 }
 
 func NewScanner(scannerType string) *Scanner {
 	return &Scanner{scannerType: scannerType}
 }
 
-func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]vulnerability.DetectedVulnerability, error) {
+func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
 	replacer := strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc", " <", ", <", " >", ", >")
-	var vulns []vulnerability.DetectedVulnerability
-	for _, advisory := range s.db[pkgName] {
+	advisories, err := s.vs.Get(pkgName)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+	}
+
+	var vulns []types.DetectedVulnerability
+	for _, advisory := range advisories {
 		// e.g. <= 2.15.0 || >= 3.0.0 <= 3.8.2
 		//  => {"<=2.15.0", ">= 3.0.0, <= 3.8.2"}
 		var vulnerableVersions []string
@@ -56,20 +60,13 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]vulnerabili
 			continue
 		}
 
-		if len(advisory.Cves) == 0 {
-			advisory.Cves = []string{fmt.Sprintf("NSWG-ECO-%d", advisory.ID)}
+		vuln := types.DetectedVulnerability{
+			VulnerabilityID:  advisory.VulnerabilityID,
+			PkgName:          pkgName,
+			InstalledVersion: pkgVer.String(),
+			FixedVersion:     strings.Join(patchedVersions, ", "),
 		}
-
-		for _, cveID := range advisory.Cves {
-			vuln := vulnerability.DetectedVulnerability{
-				VulnerabilityID:  cveID,
-				PkgName:          pkgName,
-				Title:            strings.TrimSpace(advisory.Title),
-				InstalledVersion: pkgVer.String(),
-				FixedVersion:     strings.Join(patchedVersions, ", "),
-			}
-			vulns = append(vulns, vuln)
-		}
+		vulns = append(vulns, vuln)
 	}
 	return vulns, nil
 }
