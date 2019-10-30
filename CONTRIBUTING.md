@@ -10,7 +10,7 @@ Thank you for taking interest in contributing to Trivy !
 
 1. Every Pull Request should have an associated bug or feature issue, unless you are fixing a trivial documentation issue.
 1. Your PR is more likely to be accepted if it focuses on just one change.
-1. Describe what the PR does. There's no convention enforced, but please try to be concise and descriptive. Treat the PR description as a commit message. Titles that starts with "fix"/"add"/"improve"/"remove" are good examples.
+1. Describe what the PR does. There's no convention enforced, but please try to be concise and descriptive. Treat the PR description as a commit message. Titles that starts with "fix" or "add" or "improve" or "remove" are good examples.
 1. Please add the associated Issue in the PR description.
 1. There's no need to add or tag reviewers.
 1. If a reviewer commented on your code, or asked for changes, please remember to mark the discussion as resolved after you address it. PRs with unresolved issues should not be merged (even if the comment is unclear or requires no action from your side).
