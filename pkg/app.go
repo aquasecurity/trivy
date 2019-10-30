@@ -73,6 +73,10 @@ OPTIONS:
 			Usage: "update db only specified distribution (comma separated)",
 		},
 		cli.BoolFlag{
+			Name:  "download-db-only",
+			Usage: "download/update vulnerability database but don't run a scan",
+		},
+		cli.BoolFlag{
 			Name:  "reset",
 			Usage: "remove all caches and database",
 		},
