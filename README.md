@@ -1,4 +1,4 @@
-<img src="imgs/logo.png" width="300">
+﻿<img src="imgs/logo.png" width="300">
 
 
 [![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
@@ -77,7 +77,7 @@ See [here](#continuous-integration-ci) for details.
   - See [Quick Start](#quick-start) and [Examples](#examples)
 - Easy installation
   - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](#installation))
-  - **No need for prerequirements** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
+  - **No prerequisites ** needed such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
 - High accuracy
   - **Especially Alpine Linux and RHEL/CentOS**
   - Other OSes are also high
