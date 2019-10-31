@@ -84,6 +84,16 @@ func TestExtractFromFile(t *testing.T) {
 			},
 			err: nil,
 		},
+		{
+			file: "testdata/image6.tar",
+			// Not detect package-lock.json and composer.lock under vendor/ or node_modules/"
+			filenames: []string{"foo", "package-lock.json", "composer.lock"},
+			FileMap: extractor.FileMap{
+				"foo":     []byte("foo\n"),
+				"/config": []byte(`{"architecture":"amd64","config":{"Hostname":"","Domainname":"","User":"","AttachStdin":false,"AttachStdout":false,"AttachStderr":false,"Tty":false,"OpenStdin":false,"StdinOnce":false,"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt"],"Cmd":null,"Image":"sha256:7b421e99fb75da8466c90ec04a1c43a3f8b9fd9be0bb71a341d30ca11c75e9e0","Volumes":null,"WorkingDir":"","Entrypoint":null,"OnBuild":null,"Labels":null},"container_config":{"Hostname":"","Domainname":"","User":"","AttachStdin":false,"AttachStdout":false,"AttachStderr":false,"Tty":false,"OpenStdin":false,"StdinOnce":false,"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt"],"Cmd":["/bin/sh","-c","#(nop) COPY file:745080737b5cb8cd47dbca9a8819cc8e9034b7748ccb0ed1c60bdb0b5fc6c2e8 in /app/vendor/ "],"Image":"sha256:7b421e99fb75da8466c90ec04a1c43a3f8b9fd9be0bb71a341d30ca11c75e9e0","Volumes":null,"WorkingDir":"","Entrypoint":null,"OnBuild":null,"Labels":null},"created":"2019-10-30T09:59:16.9071124Z","docker_version":"19.03.4","history":[{"created":"1970-01-01T00:00:00Z","author":"Bazel","created_by":"bazel build ..."},{"created":"1970-01-01T00:00:00Z","author":"Bazel","created_by":"bazel build ..."},{"created":"2019-10-30T09:59:16.1671833Z","created_by":"/bin/sh -c #(nop) COPY file:8d7ea209a266ec183c53e0de5dad09aa6ccd217961306f174884d94eb92369ab in /foo "},{"created":"2019-10-30T09:59:16.5096275Z","created_by":"/bin/sh -c #(nop) COPY file:4772d4fa23206c27b7ddbac967e3d2e3f6b08f6dde8ba8170975efc4b6041255 in /app/node_modules/ "},{"created":"2019-10-30T09:59:16.9071124Z","created_by":"/bin/sh -c #(nop) COPY file:745080737b5cb8cd47dbca9a8819cc8e9034b7748ccb0ed1c60bdb0b5fc6c2e8 in /app/vendor/ "}],"os":"linux","rootfs":{"type":"layers","diff_ids":["sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02","sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5","sha256:ca9852efab2ff2b5031a02f69021c6d4c49d351480f9cd7b08beec00d3527d1a","sha256:88d8eebab45ec2cb73ad2859a158617324eadfb904a8fe24b936b07ccd15096d","sha256:ef55f7ceb56d4ccbfb9228ab865f3e411c9a9781814fe4558003a2b2427f457d"]}}`),
+			},
+			err: nil,
+		},
 	}
 
 	for _, v := range vectors {

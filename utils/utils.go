@@ -9,9 +9,7 @@ import (
 )
 
 var (
-	NODE_DEP_DIR     = "node_modules"
-	COMPOSER_DEP_DIR = "vendor"
-	PathSeparator    = fmt.Sprintf("%c", os.PathSeparator)
+	PathSeparator = fmt.Sprintf("%c", os.PathSeparator)
 )
 
 func CacheDir() string {

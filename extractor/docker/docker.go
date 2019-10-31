@@ -12,6 +12,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/fanal/analyzer/library"
+	"github.com/aquasecurity/fanal/utils"
+
 	"github.com/opencontainers/go-digest"
 
 	"github.com/aquasecurity/fanal/extractor"
@@ -351,6 +354,10 @@ func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extr
 			continue
 		}
 
+		if d.isIgnored(filePath) {
+			continue
+		}
+
 		// Determine if we should extract the element
 		extract := false
 		for _, s := range filenames {
@@ -382,5 +389,13 @@ func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extr
 	}
 
 	return data, opqDirs, nil
+}
 
+func (d DockerExtractor) isIgnored(filePath string) bool {
+	for _, path := range strings.Split(filePath, utils.PathSeparator) {
+		if utils.StringInSlice(path, library.IgnoreDirs) {
+			return true
+		}
+	}
+	return false
 }

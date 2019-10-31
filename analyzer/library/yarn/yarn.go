@@ -3,7 +3,6 @@ package yarn
 import (
 	"bytes"
 	"path/filepath"
-	"strings"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/extractor"
@@ -28,11 +27,6 @@ func (a yarnLibraryAnalyzer) Analyze(fileMap extractor.FileMap) (map[analyzer.Fi
 		basename := filepath.Base(filename)
 
 		if !utils.StringInSlice(basename, requiredFiles) {
-			continue
-		}
-
-		// skip analyze files which in dependency folder
-		if utils.StringInSlice(utils.NODE_DEP_DIR, strings.Split(filename, utils.PathSeparator)) {
 			continue
 		}
 
