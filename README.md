@@ -899,6 +899,15 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 </details>
 
+### Only download vulnerability database
+
+You can also ask `Trivy` to simply retrieve the vulnerability database. This is useful to initialize workers in Continuous Integration systems. In the first run, the `--only-update` option is silently ignored.
+
+```
+$ trivy --download-db-only
+$ trivy --download-db-only --only-update alpine
+```
+
 ### Ignore unfixed vulnerabilities
 
 By default, `Trivy` also detects unpatched/unfixed vulnerabilities. This means you can't fix these vulnerabilities even if you update all packages.
