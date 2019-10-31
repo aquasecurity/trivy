@@ -899,6 +899,15 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 </details>
 
+### Only download vulnerability database
+
+You can also ask `Trivy` to simply retrieve the vulnerability database. This is useful to initialize workers in Continuous Integration systems. In the first run, the `--only-update` option is silently ignored.
+
+```
+$ trivy --download-db-only
+$ trivy --download-db-only --only-update alpine
+```
+
 ### Ignore unfixed vulnerabilities
 
 By default, `Trivy` also detects unpatched/unfixed vulnerabilities. This means you can't fix these vulnerabilities even if you update all packages.
@@ -1147,6 +1156,34 @@ workflows:
 
 Example: https://circleci.com/gh/aquasecurity/trivy-ci-test  
 Repository: https://github.com/aquasecurity/trivy-ci-test
+
+## GitLab
+
+```
+$ cat .gitlab-ci.yml
+stages:
+  - test
+
+trivy:
+  stage: test
+  image: docker:stable-git
+  before_script:
+    - docker build -t trivy-ci-test:${CI_COMMIT_REF_NAME} .
+    - export VERSION=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+    - wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
+    - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
+  variables:
+    DOCKER_DRIVER: overlay2
+  allow_failure: true
+  services:
+    - docker:stable-dind
+  script:
+    - ./trivy --exit-code 0 --severity HIGH --no-progress --auto-refresh trivy-ci-test:${CI_COMMIT_REF_NAME}
+    - ./trivy --exit-code 1 --severity CRITICAL --no-progress --auto-refresh trivy-ci-test:${CI_COMMIT_REF_NAME}
+  cache:
+    directories:
+      - $HOME/.cache/trivy
+```   
 
 ## Authorization for Private Docker Registry
 

@@ -53,12 +53,13 @@ func Run(c *cli.Context) (err error) {
 	}
 
 	refresh := c.Bool("refresh")
+	downloadOnly := c.Bool("download-db-only")
 	args := c.Args()
 	var noTarget bool
 	filePath := c.String("input")
 	if filePath == "" && len(args) == 0 {
 		noTarget = true
-		if !reset && !clearCache && !refresh {
+		if !reset && !clearCache && !refresh && !downloadOnly {
 			log.Logger.Info(`trivy requires at least 1 argument or --input option.`)
 			cli.ShowAppHelpAndExit(c, 1)
 		}
@@ -77,6 +78,9 @@ func Run(c *cli.Context) (err error) {
 	}
 	if skipUpdate && onlyUpdate != "" {
 		return xerrors.New("The --skip-update and --only-update option can not be specified both")
+	}
+	if skipUpdate && downloadOnly {
+		return xerrors.New("The --skip-update and --download-db-only option can not be specified both")
 	}
 
 	if err = db.Init(); err != nil {
@@ -108,6 +112,12 @@ func Run(c *cli.Context) (err error) {
 	if !skipUpdate {
 		if err = vulnsrc.Update(updateTargets); err != nil {
 			return xerrors.Errorf("error in vulnerability DB update: %w", err)
+		}
+		if downloadOnly {
+			if onlyUpdate != "" {
+				log.Logger.Warn("The --only-update option will be ignored if the database is empty")
+			}
+			return nil
 		}
 	}
 
