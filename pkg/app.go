@@ -4,8 +4,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
+
+	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 	"github.com/urfave/cli"
 )
 
@@ -52,7 +54,7 @@ OPTIONS:
 		},
 		cli.StringFlag{
 			Name:  "severity, s",
-			Value: strings.Join(vulnerability.SeverityNames, ","),
+			Value: strings.Join(types.SeverityNames, ","),
 			Usage: "severities of vulnerabilities to be displayed (comma separated)",
 		},
 		cli.StringFlag{
@@ -67,10 +69,6 @@ OPTIONS:
 		cli.BoolFlag{
 			Name:  "skip-update",
 			Usage: "skip db update",
-		},
-		cli.StringFlag{
-			Name:  "only-update",
-			Usage: "update db only specified distribution (comma separated)",
 		},
 		cli.BoolFlag{
 			Name:  "download-db-only",
@@ -97,14 +95,6 @@ OPTIONS:
 			Usage: "display only fixed vulnerabilities",
 		},
 		cli.BoolFlag{
-			Name:  "refresh",
-			Usage: "refresh DB (usually used after version update of trivy)",
-		},
-		cli.BoolFlag{
-			Name:  "auto-refresh",
-			Usage: "refresh DB automatically when updating version of trivy",
-		},
-		cli.BoolFlag{
 			Name:  "debug, d",
 			Usage: "debug mode",
 		},
@@ -127,6 +117,10 @@ OPTIONS:
 			Name:  "timeout",
 			Value: time.Second * 60,
 			Usage: "docker timeout",
+		},
+		cli.BoolFlag{
+			Name:  "light",
+			Usage: "light mode",
 		},
 	}
 

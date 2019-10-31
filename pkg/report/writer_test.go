@@ -6,7 +6,7 @@ import (
 	"testing"
 	"text/template"
 
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/stretchr/testify/assert"

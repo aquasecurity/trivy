@@ -10,7 +10,8 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/olekukonko/tablewriter"
 )
@@ -18,8 +19,31 @@ import (
 type Results []Result
 
 type Result struct {
-	FileName        string                                `json:"Target"`
-	Vulnerabilities []vulnerability.DetectedVulnerability `json:"Vulnerabilities"`
+	FileName        string                        `json:"Target"`
+	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities"`
+}
+
+func Write(format string, output io.Writer, results Results, outputTemplate string, light bool) error {
+	var writer Writer
+	switch format {
+	case "table":
+		writer = &TableWriter{Output: output, Light: light}
+	case "json":
+		writer = &JsonWriter{Output: output}
+	case "template":
+		tmpl, err := template.New("output template").Parse(outputTemplate)
+		if err != nil {
+			return xerrors.Errorf("error parsing template: %w", err)
+		}
+		writer = &TemplateWriter{Output: output, Template: tmpl}
+	default:
+		return xerrors.Errorf("unknown format: %v", format)
+	}
+
+	if err := writer.Write(results); err != nil {
+		return xerrors.Errorf("failed to write results: %w", err)
+	}
+	return nil
 }
 
 type Writer interface {
@@ -28,6 +52,7 @@ type Writer interface {
 
 type TableWriter struct {
 	Output io.Writer
+	Light  bool
 }
 
 func (tw TableWriter) Write(results Results) error {
@@ -38,7 +63,11 @@ func (tw TableWriter) Write(results Results) error {
 }
 func (tw TableWriter) write(result Result) {
 	table := tablewriter.NewWriter(tw.Output)
-	table.SetHeader([]string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version", "Title"})
+	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version"}
+	if !tw.Light {
+		header = append(header, "Title")
+	}
+	table.SetHeader(header)
 
 	severityCount := map[string]int{}
 	for _, v := range result.Vulnerabilities {
@@ -52,16 +81,22 @@ func (tw TableWriter) write(result Result) {
 		if len(splittedTitle) >= 12 {
 			title = strings.Join(splittedTitle[:12], " ") + "..."
 		}
+		var row []string
 		if tw.Output == os.Stdout {
-			table.Append([]string{v.PkgName, v.VulnerabilityID, vulnerability.ColorizeSeverity(v.Severity),
-				v.InstalledVersion, v.FixedVersion, title})
+			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
+				v.InstalledVersion, v.FixedVersion}
 		} else {
-			table.Append([]string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion, title})
+			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion}
 		}
+
+		if !tw.Light {
+			row = append(row, title)
+		}
+		table.Append(row)
 	}
 
 	var results []string
-	for _, severity := range vulnerability.SeverityNames {
+	for _, severity := range dbTypes.SeverityNames {
 		r := fmt.Sprintf("%s: %d", severity, severityCount[severity])
 		results = append(results, r)
 	}
