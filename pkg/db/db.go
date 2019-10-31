@@ -5,7 +5,8 @@ import (
 	"context"
 	"io"
 	"os"
-	"time"
+
+	"k8s.io/utils/clock"
 
 	"golang.org/x/xerrors"
 
@@ -20,9 +21,29 @@ const (
 	lightDB = "trivy-light.db.gz"
 )
 
-type Client struct{}
+type Operation interface {
+	GetMetadata() (db.Metadata, error)
+}
 
-func (c Client) Download(cacheDir string, light bool) error {
+type GitHubOperation interface {
+	DownloadDB(ctx context.Context, fileName string) (io.ReadCloser, error)
+}
+
+type Client struct {
+	dbc          Operation
+	clock        clock.Clock
+	githubClient GitHubOperation
+}
+
+func NewClient(ctx context.Context) Client {
+	return Client{
+		dbc:          db.Config{},
+		clock:        clock.RealClock{},
+		githubClient: github.NewClient(ctx),
+	}
+}
+
+func (c Client) Download(ctx context.Context, cacheDir string, light bool) error {
 	dbType := db.TypeFull
 	dbFile := fullDB
 	message := " Downloading Full DB file..."
@@ -32,16 +53,22 @@ func (c Client) Download(cacheDir string, light bool) error {
 		dbType = db.TypeLight
 	}
 
-	metadata, err := db.GetMetadata()
+	metadata, err := c.dbc.GetMetadata()
 	if err != nil {
 		log.Logger.Debug("This is the first run")
 	}
 
-	if metadata.Type == dbType && time.Now().Before(metadata.UpdatedAt) {
+	if db.SchemaVersion < metadata.Version {
+		log.Logger.Error("Your version is old. Update to the latest version.")
+		return xerrors.New("The version of DB schema doesn't match")
+	}
+
+	if db.SchemaVersion == metadata.Version && metadata.Type == dbType &&
+		c.clock.Now().Before(metadata.NextUpdate) {
 		return nil
 	}
 
-	if err = c.download(cacheDir, message, dbFile); err != nil {
+	if err = c.download(ctx, cacheDir, message, dbFile); err != nil {
 		return xerrors.Errorf("failed to download the DB file: %w", err)
 	}
 
@@ -56,15 +83,12 @@ func (c Client) Download(cacheDir string, light bool) error {
 	return nil
 }
 
-func (c Client) download(cacheDir, message, dbFile string) error {
+func (c Client) download(ctx context.Context, cacheDir, message, dbFile string) error {
 	spinner := utils.NewSpinner(message)
 	spinner.Start()
 	defer spinner.Stop()
 
-	ctx := context.Background()
-	client := github.NewClient(ctx)
-
-	rc, err := client.DownloadDB(ctx, dbFile)
+	rc, err := c.githubClient.DownloadDB(ctx, dbFile)
 	if err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
