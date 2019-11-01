@@ -6,29 +6,32 @@ import (
 	"testing"
 	"text/template"
 
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
-
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/stretchr/testify/assert"
+
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestReportWriter_Table(t *testing.T) {
 	testCases := []struct {
 		name           string
-		detectedVulns  []vulnerability.DetectedVulnerability
+		detectedVulns  []types.DetectedVulnerability
 		expectedOutput string
 	}{
 		{
 			name: "happy path",
-			detectedVulns: []vulnerability.DetectedVulnerability{
+			detectedVulns: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "123",
 					PkgName:          "foo",
 					InstalledVersion: "1.2.3",
 					FixedVersion:     "3.4.5",
-					Title:            "foobar",
-					Description:      "baz",
-					Severity:         "HIGH",
+					Vulnerability: dbTypes.Vulnerability{
+						Title:       "foobar",
+						Description: "baz",
+						Severity:    "HIGH",
+					},
 				},
 			},
 			expectedOutput: `+---------+------------------+----------+-------------------+---------------+--------+
@@ -40,14 +43,16 @@ func TestReportWriter_Table(t *testing.T) {
 		},
 		{
 			name: "no title for vuln",
-			detectedVulns: []vulnerability.DetectedVulnerability{
+			detectedVulns: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "123",
 					PkgName:          "foo",
 					InstalledVersion: "1.2.3",
 					FixedVersion:     "3.4.5",
-					Description:      "foobar",
-					Severity:         "HIGH",
+					Vulnerability: dbTypes.Vulnerability{
+						Description: "foobar",
+						Severity:    "HIGH",
+					},
 				},
 			},
 			expectedOutput: `+---------+------------------+----------+-------------------+---------------+--------+
@@ -59,14 +64,16 @@ func TestReportWriter_Table(t *testing.T) {
 		},
 		{
 			name: "long title for vuln",
-			detectedVulns: []vulnerability.DetectedVulnerability{
+			detectedVulns: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "123",
 					PkgName:          "foo",
 					InstalledVersion: "1.2.3",
 					FixedVersion:     "3.4.5",
-					Title:            "a b c d e f g h i j k l m n o p q r s t u v",
-					Severity:         "HIGH",
+					Vulnerability: dbTypes.Vulnerability{
+						Title:    "a b c d e f g h i j k l m n o p q r s t u v",
+						Severity: "HIGH",
+					},
 				},
 			},
 			expectedOutput: `+---------+------------------+----------+-------------------+---------------+----------------------------+
@@ -78,7 +85,7 @@ func TestReportWriter_Table(t *testing.T) {
 		},
 		{
 			name:           "no vulns",
-			detectedVulns:  []vulnerability.DetectedVulnerability{},
+			detectedVulns:  []types.DetectedVulnerability{},
 			expectedOutput: ``,
 		},
 	}
@@ -103,28 +110,38 @@ func TestReportWriter_Table(t *testing.T) {
 func TestReportWriter_JSON(t *testing.T) {
 	testCases := []struct {
 		name          string
-		detectedVulns []vulnerability.DetectedVulnerability
+		detectedVulns []types.DetectedVulnerability
 		expectedJSON  report.Results
 	}{
 		{
 			name: "happy path",
-			detectedVulns: []vulnerability.DetectedVulnerability{
+			detectedVulns: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "123",
 					PkgName:          "foo",
 					InstalledVersion: "1.2.3",
 					FixedVersion:     "3.4.5",
-					Title:            "foobar",
-					Description:      "baz",
-					Severity:         "HIGH",
+					Vulnerability: dbTypes.Vulnerability{
+						Title:       "foobar",
+						Description: "baz",
+						Severity:    "HIGH",
+					},
 				},
 			},
 			expectedJSON: report.Results{
 				report.Result{
 					FileName: "foojson",
-					Vulnerabilities: []vulnerability.DetectedVulnerability{
+					Vulnerabilities: []types.DetectedVulnerability{
 						{
-							VulnerabilityID: "123", PkgName: "foo", InstalledVersion: "1.2.3", FixedVersion: "3.4.5", Title: "foobar", Description: "baz", Severity: "HIGH",
+							VulnerabilityID:  "123",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "3.4.5",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "foobar",
+								Description: "baz",
+								Severity:    "HIGH",
+							},
 						},
 					},
 				},
@@ -159,16 +176,33 @@ func TestReportWriter_JSON(t *testing.T) {
 func TestReportWriter_Template(t *testing.T) {
 	testCases := []struct {
 		name          string
-		detectedVulns []vulnerability.DetectedVulnerability
+		detectedVulns []types.DetectedVulnerability
 		template      string
 		expected      string
 	}{
 		{
 			name: "happy path",
-			detectedVulns: []vulnerability.DetectedVulnerability{
-				{VulnerabilityID: "CVE-2019-0000", PkgName: "foo", Severity: vulnerability.SeverityHigh.String()},
-				{VulnerabilityID: "CVE-2019-0000", PkgName: "bar", Severity: vulnerability.SeverityHigh.String()},
-				{VulnerabilityID: "CVE-2019-0001", PkgName: "baz", Severity: vulnerability.SeverityCritical.String()},
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2019-0000",
+					PkgName:         "foo",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+				{
+					VulnerabilityID: "CVE-2019-0000",
+					PkgName:         "bar",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String()},
+				},
+				{
+					VulnerabilityID: "CVE-2019-0001",
+					PkgName:         "baz",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityCritical.String(),
+					},
+				},
 			},
 			template: "{{ range . }}{{ range .Vulnerabilities}}{{ println .VulnerabilityID .Severity }}{{ end }}{{ end }}",
 			expected: "CVE-2019-0000 HIGH\nCVE-2019-0000 HIGH\nCVE-2019-0001 CRITICAL\n",
