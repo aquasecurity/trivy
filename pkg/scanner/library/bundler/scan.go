@@ -4,14 +4,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/knqyf263/go-version"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/bundler"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	bundlerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/bundler"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
-	"github.com/knqyf263/go-version"
-	"golang.org/x/xerrors"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -30,8 +30,12 @@ var (
 	)
 )
 
+type VulnSrc interface {
+	Get(pkgName string) ([]bundlerSrc.Advisory, error)
+}
+
 type Scanner struct {
-	vs bundlerSrc.VulnSrc
+	vs VulnSrc
 }
 
 func massageLockFileVersion(version string) string {
