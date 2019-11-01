@@ -76,8 +76,8 @@ See [here](#continuous-integration-ci) for details.
   - Specify only an image name
   - See [Quick Start](#quick-start) and [Examples](#examples)
 - Easy installation
-  - `apt-get install`, `yum install` and `brew install` are all possible (See [Installation](#installation))
-  - **No need for prerequirements** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
+  - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](#installation))
+  - **No need for pre-requirements** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
 - High accuracy
   - **Especially Alpine Linux and RHEL/CentOS**
   - Other OSes are also high
@@ -718,12 +718,12 @@ Available values:
 <summary>Result</summary>
 
 ```
-2019-05-22T19:36:50.530+0200	[34mINFO[0m	Updating vulnerability database...
-2019-05-22T19:36:51.681+0200	[34mINFO[0m	Detecting Alpine vulnerabilities...
-2019-05-22T19:36:51.685+0200	[34mINFO[0m	Updating npm Security DB...
-2019-05-22T19:36:52.389+0200	[34mINFO[0m	Detecting npm vulnerabilities...
-2019-05-22T19:36:52.390+0200	[34mINFO[0m	Updating pipenv Security DB...
-2019-05-22T19:36:53.406+0200	[34mINFO[0m	Detecting pipenv vulnerabilities...
+2019-05-22T19:36:50.530+0200    [34mINFO[0m    Updating vulnerability database...
+2019-05-22T19:36:51.681+0200    [34mINFO[0m    Detecting Alpine vulnerabilities...
+2019-05-22T19:36:51.685+0200    [34mINFO[0m    Updating npm Security DB...
+2019-05-22T19:36:52.389+0200    [34mINFO[0m    Detecting npm vulnerabilities...
+2019-05-22T19:36:52.390+0200    [34mINFO[0m    Updating pipenv Security DB...
+2019-05-22T19:36:53.406+0200    [34mINFO[0m    Detecting pipenv vulnerabilities...
 
 ruby:2.3.0 (debian 8.4)
 Total: 4751 (UNKNOWN: 1, LOW: 150, MEDIUM: 3504, HIGH: 1013, CRITICAL: 83)
@@ -1346,10 +1346,10 @@ As README says, it is not a complete database of all security issues in Alpine.
 Then, those vulnerabilities will be saved on [vuln-list](https://github.com/aquasecurity/vuln-list/tree/master/alpine).
 
 `alpine-secdb` has 6959 vulnerabilities (as of 2019/05/12).
-`vuln-list` has 11101 vulnerabilities related with Alpine Linux (as of 2019/05/12).
+`vuln-list` has 11101 vulnerabilities related to Alpine Linux (as of 2019/05/12).
 There is a difference in detection accuracy because the number of vulnerabilities is nearly doubled.
 
-In addition, `Trivy` analyzes the middle layer as well and find out which version of the library was used for static linking.
+In addition, `Trivy` analyzes the middle layers as well to find out which version of the library was used for static linking.
 
 `Clair` can not handle the following cases because it analyzes the image after applying all layers.
 
@@ -1375,9 +1375,9 @@ Also, `Anchore Engine` needs some steps to start scanning.
 
 ## vs Quay, Docker Hub, GCR
 
-As `Quay` seems to use `Clair` internally, it has the same accuracy than `Clair`. `Docker Hub` can scan only official images. `GCR` hardly detects vulnerabilities on Alpine Linux. Also, it is locked to a specific registry.
+As `Quay` seems to use `Clair` internally, it has the same accuracy as `Clair`. `Docker Hub` can scan only official images. `GCR` hardly detects vulnerabilities on Alpine Linux. Also, it is locked to a specific registry.
 
-`Trivy` can be used regardless of the registry. In addition, it is easy to be integrated with CI/CD services.
+`Trivy` can be used regardless of the registry, and it is easily integrated with CI/CD services.
 
 # Migration
 
