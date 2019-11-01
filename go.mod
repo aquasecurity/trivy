@@ -5,12 +5,11 @@ go 1.13
 require (
 	github.com/aquasecurity/fanal v0.0.0-20191015084852-e80236018d26
 	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
-	github.com/aquasecurity/trivy-db v0.0.0-20191031130829-a08bd7b08133
+	github.com/aquasecurity/trivy-db v0.0.0-20191101193735-bb56553762c0
 	github.com/briandowns/spinner v0.0.0-20190319032542-ac46072a5a91
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/genuinetools/reg v0.16.0
 	github.com/google/go-github/v28 v28.1.1
-	github.com/k0kubun/pp v3.0.1+incompatible // indirect
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/knqyf263/go-version v1.1.1
