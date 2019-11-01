@@ -125,8 +125,9 @@ func Run(c *cli.Context) (err error) {
 	severities := splitSeverity(c.String("severity"))
 	ignoreFile := c.String("ignorefile")
 	ignoreUnfixed := c.Bool("ignore-unfixed")
+	vulnClient := vulnerability.NewClient()
 	for i := range results {
-		results[i].Vulnerabilities = vulnerability.FillAndFilter(results[i].Vulnerabilities,
+		results[i].Vulnerabilities = vulnClient.FillAndFilter(results[i].Vulnerabilities,
 			severities, ignoreUnfixed, ignoreFile, light)
 	}
 
