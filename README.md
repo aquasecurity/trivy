@@ -77,7 +77,7 @@ See [here](#continuous-integration-ci) for details.
   - See [Quick Start](#quick-start) and [Examples](#examples)
 - Easy installation
   - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](#installation))
-  - **No need for pre-requirements** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
+  - **No pre-requisites** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
 - High accuracy
   - **Especially Alpine Linux and RHEL/CentOS**
   - Other OSes are also high
