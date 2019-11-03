@@ -1502,4 +1502,4 @@ This repository is available under the [GNU Affero General Public License v3.0](
 
 # Author
 
-Teppei Fukuda (knqyf263)
+[Teppei Fukuda](https://github.com/knqyf263) (knqyf263)

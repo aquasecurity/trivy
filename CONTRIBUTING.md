@@ -16,12 +16,13 @@ Thank you for taking interest in contributing to Trivy !
 1. If a reviewer commented on your code or asked for changes, please remember to mark the discussion as resolved after you address it. PRs with unresolved issues should not be merged (even if the comment is unclear or requires no action from your side).
 1. Please include a comment with the results before and after your change.
 1. Your PR is more likely to be accepted if it includes tests (We have not historically been very strict about tests, but we would like to improve this!).
-1. If your PR affects the user experience in some way, please update the Readme and the cli help accordingly.
+1. If your PR affects the user experience in some way, please update the Readme and the CLI help accordingly.
 
 ## Understand where your pull request belongs
 
 Trivy is composed of several different repositories that work together:
+
 - [Trivy](https://github.com/aquasecurity/trivy) is the client-side, user-facing, command line tool.
 - [vuln-list](https://github.com/aquasecurity/vuln-list) is a vulnerabilities database, aggregated from different sources, and normalized for easy consumption. This of this as the "server" side of the trivy command line tool. **There should be no pull requests to this repo** 
 - [vuln-list-update](https://github.com/aquasecurity/vuln-list-update) is the code that maintains the vuln-list database.
-- [fanal](https://github.com/aquasecurity/fanal) is a library for extracting system information containers. It is being used by trivy to find testable subjects in the container image.
+- [fanal](https://github.com/aquasecurity/fanal) is a library for extracting system information containers. It is being used by Trivy to find testable subjects in the container image.
