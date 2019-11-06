@@ -16,18 +16,18 @@ $(GOBIN)/golangci-lint:
 
 .PHONY: test
 test:
-	go test ./...
+	go test -v -short ./...
 
 integration/testdata/fixtures/*.tar.gz:
 	git clone https://github.com/aquasecurity/trivy-test-images.git integration/testdata/fixtures
 
 .PHONY: test-integration
 test-integration: integration/testdata/fixtures/*.tar.gz
-	go test ./... -tags=integration
+	go test -v -tags=integration ./integration/...
 
 .PHONY: lint
 lint: $(GOBIN)/golangci-lint
-	golangci-lint run
+	$(GOBIN)/golangci-lint run
 
 .PHONY: build
 build:
