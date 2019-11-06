@@ -37,3 +37,6 @@ build:
 install:
 	go install $(LDFLAGS) ./cmd/trivy
 
+.PHONY: clean
+clean:
+	rm -rf integration/testdata/fixtures/
