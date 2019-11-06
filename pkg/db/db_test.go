@@ -260,7 +260,7 @@ func TestClient_Download(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			err = client.Download(ctx, dir, tc.light)
+			err = client.Download(ctx, "test", dir, tc.light)
 
 			switch {
 			case tc.expectedError != nil:
