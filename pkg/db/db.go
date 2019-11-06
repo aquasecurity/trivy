@@ -60,7 +60,8 @@ func (c Client) Download(ctx context.Context, cliVersion, cacheDir string, light
 
 	if db.SchemaVersion < metadata.Version {
 		log.Logger.Errorf("Trivy version (%s) is old. Update to the latest version.", cliVersion)
-		return xerrors.New("The version of DB schema doesn't match")
+		return xerrors.Errorf("the version of DB schema doesn't match. Local DB: %d, Expected: %d",
+			metadata.Version, db.SchemaVersion)
 	}
 
 	if db.SchemaVersion == metadata.Version && metadata.Type == dbType &&
