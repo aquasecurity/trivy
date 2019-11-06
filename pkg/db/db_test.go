@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 	clocktesting "k8s.io/utils/clock/testing"
@@ -220,7 +222,7 @@ func TestClient_Download(t *testing.T) {
 	}
 
 	if err := log.InitLogger(false, true); err != nil {
-		panic(err)
+		require.NoError(t, err, "failed to init logger")
 	}
 
 	for _, tc := range testCases {
