@@ -67,6 +67,7 @@ func (c Client) Download(ctx context.Context, cliVersion, cacheDir string, light
 
 	if db.SchemaVersion == metadata.Version && metadata.Type == dbType &&
 		c.clock.Now().Before(metadata.NextUpdate) {
+		log.Logger.Debug("DB update was skipped because DB is the latest")
 		return nil
 	}
 
