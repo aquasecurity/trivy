@@ -18,9 +18,10 @@ func TestReportWriter_Table(t *testing.T) {
 		name           string
 		detectedVulns  []types.DetectedVulnerability
 		expectedOutput string
+		light          bool
 	}{
 		{
-			name: "happy path",
+			name: "happy path full",
 			detectedVulns: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "123",
@@ -39,6 +40,29 @@ func TestReportWriter_Table(t *testing.T) {
 +---------+------------------+----------+-------------------+---------------+--------+
 | foo     |              123 | HIGH     | 1.2.3             | 3.4.5         | foobar |
 +---------+------------------+----------+-------------------+---------------+--------+
+`,
+		},
+		{
+			name:  "happy path light",
+			light: true,
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "123",
+					PkgName:          "foo",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "3.4.5",
+					Vulnerability: dbTypes.Vulnerability{
+						Title:       "foobar",
+						Description: "baz",
+						Severity:    "HIGH",
+					},
+				},
+			},
+			expectedOutput: `+---------+------------------+----------+-------------------+---------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |
++---------+------------------+----------+-------------------+---------------+
+| foo     |              123 | HIGH     | 1.2.3             | 3.4.5         |
++---------+------------------+----------+-------------------+---------------+
 `,
 		},
 		{
@@ -92,7 +116,6 @@ func TestReportWriter_Table(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			tw := report.TableWriter{}
 			inputResults := report.Results{
 				{
 					FileName:        "foo",
@@ -100,8 +123,7 @@ func TestReportWriter_Table(t *testing.T) {
 				},
 			}
 			tableWritten := bytes.Buffer{}
-			tw.Output = &tableWritten
-			assert.Nil(t, tw.Write(inputResults))
+			assert.NoError(t, report.Write("table", &tableWritten, inputResults, "", tc.light), tc.name)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})
 	}
