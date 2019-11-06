@@ -21,7 +21,10 @@ jobs:
             fi
       - run:
           name: Test
-          command: go test ./...
+          command: make test
+      - run:
+          name: Integration Test
+          command: make test-integration
   release:
     <<: *defaults
     steps:
