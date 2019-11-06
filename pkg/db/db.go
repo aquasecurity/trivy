@@ -43,7 +43,7 @@ func NewClient(ctx context.Context) Client {
 	}
 }
 
-func (c Client) Download(ctx context.Context, cacheDir string, light bool) error {
+func (c Client) Download(ctx context.Context, cliVersion, cacheDir string, light bool) error {
 	dbType := db.TypeFull
 	dbFile := fullDB
 	message := " Downloading Full DB file..."
@@ -59,7 +59,7 @@ func (c Client) Download(ctx context.Context, cacheDir string, light bool) error
 	}
 
 	if db.SchemaVersion < metadata.Version {
-		log.Logger.Error("Your version is old. Update to the latest version.")
+		log.Logger.Errorf("Trivy version (%s) is old. Update to the latest version.", cliVersion)
 		return xerrors.New("The version of DB schema doesn't match")
 	}
 

@@ -48,7 +48,7 @@ func Run(c *cli.Context) (err error) {
 	if !skipUpdate {
 		ctx := context.Background()
 		client := dbFile.NewClient(ctx)
-		if err = client.Download(ctx, cacheDir, light); err != nil {
+		if err = client.Download(ctx, c.App.Version, cacheDir, light); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}
 	}
