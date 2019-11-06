@@ -21,7 +21,7 @@ jobs:
             fi
       - run:
           name: Test
-          command: go test ./...
+          command: make test-integration
   release:
     <<: *defaults
     steps:
