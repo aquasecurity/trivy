@@ -21,6 +21,9 @@ jobs:
             fi
       - run:
           name: Test
+          command: make test
+      - run:
+          name: Integration Test
           command: make test-integration
   release:
     <<: *defaults
