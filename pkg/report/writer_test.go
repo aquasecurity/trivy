@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"testing"
-	"text/template"
 
 	"github.com/stretchr/testify/assert"
 
@@ -234,19 +233,14 @@ func TestReportWriter_Template(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tmplWritten := bytes.Buffer{}
-			tmpl, _ := template.New(tc.name).Parse(tc.template)
-			tmplw := report.TemplateWriter{
-				Output:   &tmplWritten,
-				Template: tmpl,
-			}
-
-			err := tmplw.Write(report.Results{
+			inputResults := report.Results{
 				{
 					FileName:        "foojson",
 					Vulnerabilities: tc.detectedVulns,
 				},
-			})
-			assert.NoError(t, err)
+			}
+
+			assert.NoError(t, report.Write("template", &tmplWritten, inputResults, tc.template, false))
 			assert.Equal(t, tc.expected, tmplWritten.String())
 		})
 	}
