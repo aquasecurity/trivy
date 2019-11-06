@@ -75,7 +75,7 @@ func (c Client) Download(ctx context.Context, cliVersion, cacheDir string, light
 		return xerrors.Errorf("failed to download the DB file: %w", err)
 	}
 
-	log.Logger.Info("Reopen vulnerability DB")
+	log.Logger.Info("Reopening vulnerability DB")
 	if err = db.Close(); err != nil {
 		return xerrors.Errorf("unable to close old DB: %w", err)
 	}
