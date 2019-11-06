@@ -247,11 +247,11 @@ func TestClient_Download(t *testing.T) {
 			}
 
 			dir, err := ioutil.TempDir("", "db")
-			assert.NoError(t, err, tc.name)
+			require.NoError(t, err, tc.name)
 			defer os.RemoveAll(dir)
 
 			err = db.Init(dir)
-			assert.NoError(t, err, tc.name)
+			require.NoError(t, err, tc.name)
 
 			client := Client{
 				dbc:          mockConfig,
