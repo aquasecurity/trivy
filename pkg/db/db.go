@@ -56,6 +56,7 @@ func (c Client) Download(ctx context.Context, cliVersion, cacheDir string, light
 	metadata, err := c.dbc.GetMetadata()
 	if err != nil {
 		log.Logger.Debug("This is the first run")
+		metadata = db.Metadata{} // suppress a warning
 	}
 
 	if db.SchemaVersion < metadata.Version {
