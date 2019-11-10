@@ -23,7 +23,7 @@ type Result struct {
 	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities"`
 }
 
-func Write(format string, output io.Writer, results Results, outputTemplate string, light bool) error {
+func WriteResults(format string, output io.Writer, results Results, outputTemplate string, light bool) error {
 	var writer Writer
 	switch format {
 	case "table":

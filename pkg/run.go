@@ -133,7 +133,7 @@ func Run(c *cli.Context) (err error) {
 
 	format := c.String("format")
 	template := c.String("template")
-	if err = report.Write(format, output, results, template, light); err != nil {
+	if err = report.WriteResults(format, output, results, template, light); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
