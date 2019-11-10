@@ -75,7 +75,7 @@ func TestClient_Download(t *testing.T) {
 		name            string
 		light           bool
 		clock           clock.Clock
-		getMetadata     []getMetadataOutput
+		getMetadata     getMetadataOutput
 		downloadDB      []downloadDB
 		expectedContent []byte
 		expectedError   error
@@ -84,13 +84,11 @@ func TestClient_Download(t *testing.T) {
 			name:  "happy path",
 			light: false,
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
-			getMetadata: []getMetadataOutput{
-				{
-					metadata: db.Metadata{
-						Version:    1,
-						Type:       db.TypeFull,
-						NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
-					},
+			getMetadata: getMetadataOutput{
+				metadata: db.Metadata{
+					Version:    1,
+					Type:       db.TypeFull,
+					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
 				},
 			},
 			downloadDB: []downloadDB{
@@ -106,11 +104,9 @@ func TestClient_Download(t *testing.T) {
 			name:  "happy path for first run",
 			light: false,
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
-			getMetadata: []getMetadataOutput{
-				{
-					metadata: db.Metadata{},
-					err:      errors.New("get metadata failed"),
-				},
+			getMetadata: getMetadataOutput{
+				metadata: db.Metadata{},
+				err:      errors.New("get metadata failed"),
 			},
 			downloadDB: []downloadDB{
 				{
@@ -125,13 +121,11 @@ func TestClient_Download(t *testing.T) {
 			name:  "happy path with different type",
 			light: true,
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
-			getMetadata: []getMetadataOutput{
-				{
-					metadata: db.Metadata{
-						Version:    1,
-						Type:       db.TypeFull,
-						NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
-					},
+			getMetadata: getMetadataOutput{
+				metadata: db.Metadata{
+					Version:    1,
+					Type:       db.TypeFull,
+					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
 				},
 			},
 			downloadDB: []downloadDB{
@@ -147,13 +141,11 @@ func TestClient_Download(t *testing.T) {
 			name:  "happy path with old schema version",
 			light: true,
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
-			getMetadata: []getMetadataOutput{
-				{
-					metadata: db.Metadata{
-						Version:    0,
-						Type:       db.TypeFull,
-						NextUpdate: time.Date(2020, 9, 1, 0, 0, 0, 0, time.UTC),
-					},
+			getMetadata: getMetadataOutput{
+				metadata: db.Metadata{
+					Version:    0,
+					Type:       db.TypeFull,
+					NextUpdate: time.Date(2020, 9, 1, 0, 0, 0, 0, time.UTC),
 				},
 			},
 			downloadDB: []downloadDB{
@@ -169,13 +161,11 @@ func TestClient_Download(t *testing.T) {
 			name:  "skip downloading DB",
 			light: false,
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
-			getMetadata: []getMetadataOutput{
-				{
-					metadata: db.Metadata{
-						Version:    1,
-						Type:       db.TypeFull,
-						NextUpdate: time.Date(2019, 10, 2, 0, 0, 0, 0, time.UTC),
-					},
+			getMetadata: getMetadataOutput{
+				metadata: db.Metadata{
+					Version:    1,
+					Type:       db.TypeFull,
+					NextUpdate: time.Date(2019, 10, 2, 0, 0, 0, 0, time.UTC),
 				},
 			},
 		},
@@ -183,28 +173,24 @@ func TestClient_Download(t *testing.T) {
 			name:  "newer schema version",
 			light: false,
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
-			getMetadata: []getMetadataOutput{
-				{
-					metadata: db.Metadata{
-						Version:    2,
-						Type:       db.TypeFull,
-						NextUpdate: time.Date(2019, 10, 2, 0, 0, 0, 0, time.UTC),
-					},
+			getMetadata: getMetadataOutput{
+				metadata: db.Metadata{
+					Version:    2,
+					Type:       db.TypeFull,
+					NextUpdate: time.Date(2019, 10, 2, 0, 0, 0, 0, time.UTC),
 				},
 			},
-			expectedError: xerrors.New("The version of DB schema doesn't match"),
+			expectedError: xerrors.New("the version of DB schema doesn't match. Local DB: 2, Expected: 1"),
 		},
 		{
 			name:  "DownloadDB returns an error",
 			light: false,
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
-			getMetadata: []getMetadataOutput{
-				{
-					metadata: db.Metadata{
-						Version:    1,
-						Type:       db.TypeFull,
-						NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
-					},
+			getMetadata: getMetadataOutput{
+				metadata: db.Metadata{
+					Version:    1,
+					Type:       db.TypeFull,
+					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
 				},
 			},
 			downloadDB: []downloadDB{
@@ -221,13 +207,11 @@ func TestClient_Download(t *testing.T) {
 			name:  "invalid gzip",
 			light: false,
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
-			getMetadata: []getMetadataOutput{
-				{
-					metadata: db.Metadata{
-						Version:    1,
-						Type:       db.TypeFull,
-						NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
-					},
+			getMetadata: getMetadataOutput{
+				metadata: db.Metadata{
+					Version:    1,
+					Type:       db.TypeFull,
+					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
 				},
 			},
 			downloadDB: []downloadDB{
@@ -249,9 +233,8 @@ func TestClient_Download(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			mockConfig := new(MockConfig)
-			for _, gm := range tc.getMetadata {
-				mockConfig.On("GetMetadata").Return(gm.metadata, gm.err)
-			}
+			mockConfig.On("GetMetadata").Return(
+				tc.getMetadata.metadata, tc.getMetadata.err)
 
 			mockGitHubConfig := new(MockGitHubClient)
 			for _, dd := range tc.downloadDB {
