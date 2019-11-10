@@ -78,7 +78,7 @@ func (c Client) DownloadDB(ctx context.Context, fileName string) (io.ReadCloser,
 	prefix := fmt.Sprintf("v%d", db.SchemaVersion)
 	for _, release := range releases {
 		log.Logger.Debugf("release name: %s", release.GetName())
-		if !strings.HasPrefix(*release.Name, prefix) {
+		if !strings.HasPrefix(release.GetName(), prefix) {
 			continue
 		}
 
@@ -96,8 +96,8 @@ func (c Client) DownloadDB(ctx context.Context, fileName string) (io.ReadCloser,
 }
 
 func (c Client) downloadAsset(ctx context.Context, asset github.ReleaseAsset, fileName string) (io.ReadCloser, error) {
-	log.Logger.Debugf("asset name: %s", *asset.Name)
-	if *asset.Name != fileName {
+	log.Logger.Debugf("asset name: %s", asset.GetName())
+	if asset.GetName() != fileName {
 		return nil, xerrors.New("file name doesn't match")
 	}
 
