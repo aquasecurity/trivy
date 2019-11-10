@@ -1,9 +1,16 @@
 package alpine
 
 import (
+	"errors"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/fanal/analyzer"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -11,6 +18,182 @@ import (
 func TestMain(m *testing.M) {
 	log.InitLogger(false, false)
 	os.Exit(m.Run())
+}
+
+func TestScanner_Detect(t *testing.T) {
+	type args struct {
+		osVer string
+		pkgs  []analyzer.Package
+	}
+	type getInput struct {
+		osVer   string
+		pkgName string
+	}
+	type getOutput struct {
+		advisories []dbTypes.Advisory
+		err        error
+	}
+	type get struct {
+		input  getInput
+		output getOutput
+	}
+	type mocks struct {
+		get []get
+	}
+
+	tests := []struct {
+		name    string
+		args    args
+		mocks   mocks
+		want    []types.DetectedVulnerability
+		wantErr string
+	}{
+		{
+			name: "happy path",
+			args: args{
+				osVer: "3.10.2",
+				pkgs: []analyzer.Package{
+					{
+						Name:    "ansible",
+						Version: "2.6.4",
+					},
+					{
+						Name:    "invalid",
+						Version: "invalid", // skipped
+					},
+				},
+			},
+			mocks: mocks{
+				get: []get{
+					{
+						input: getInput{
+							osVer:   "3.10",
+							pkgName: "ansible",
+						},
+						output: getOutput{
+							advisories: []dbTypes.Advisory{
+								{
+									VulnerabilityID: "CVE-2018-10875",
+									FixedVersion:    "2.6.3-r0",
+								},
+								{
+									VulnerabilityID: "CVE-2019-10217",
+									FixedVersion:    "2.8.4-r0",
+								},
+								{
+									VulnerabilityID: "CVE-2019-INVALID",
+									FixedVersion:    "invalid", // skipped
+								},
+							},
+						},
+					},
+					{
+						input: getInput{
+							osVer:   "3.10",
+							pkgName: "invalid",
+						},
+						output: getOutput{advisories: []dbTypes.Advisory{{}}},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "ansible",
+					VulnerabilityID:  "CVE-2019-10217",
+					InstalledVersion: "2.6.4",
+					FixedVersion:     "2.8.4-r0",
+				},
+			},
+		},
+		{
+			name: "contain rc",
+			args: args{
+				osVer: "3.9",
+				pkgs: []analyzer.Package{
+					{
+						Name:    "jq",
+						Version: "1.6-r0",
+					},
+				},
+			},
+			mocks: mocks{
+				get: []get{
+					{
+						input: getInput{
+							osVer:   "3.9",
+							pkgName: "jq",
+						},
+						output: getOutput{
+							advisories: []dbTypes.Advisory{
+								{
+									VulnerabilityID: "CVE-2016-4074",
+									FixedVersion:    "1.6_rc1-r0",
+								},
+								{
+									VulnerabilityID: "CVE-2019-9999",
+									FixedVersion:    "1.6_rc2",
+								},
+							},
+						},
+					},
+					{
+						input: getInput{
+							osVer:   "3.10",
+							pkgName: "invalid",
+						},
+						output: getOutput{advisories: []dbTypes.Advisory{{}}},
+					},
+				},
+			},
+		},
+		{
+			name: "Get returns an error",
+			args: args{
+				osVer: "3.8.1",
+				pkgs: []analyzer.Package{
+					{
+						Name:    "jq",
+						Version: "1.6-r0",
+					},
+				},
+			},
+			mocks: mocks{
+				get: []get{
+					{
+						input: getInput{
+							osVer:   "3.8",
+							pkgName: "jq",
+						},
+						output: getOutput{err: errors.New("error")},
+					},
+				},
+			},
+			wantErr: "failed to get alpine advisories",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockVulnSrc := new(dbTypes.MockVulnSrc)
+			for _, g := range tt.mocks.get {
+				mockVulnSrc.On("Get", g.input.osVer, g.input.pkgName).Return(
+					g.output.advisories, g.output.err)
+			}
+
+			s := &Scanner{
+				vs: mockVulnSrc,
+			}
+			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)
+
+			switch {
+			case tt.wantErr != "":
+				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+			default:
+				assert.NoError(t, err, tt.name)
+			}
+
+			assert.ElementsMatch(t, got, tt.want, tt.name)
+		})
+	}
 }
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
