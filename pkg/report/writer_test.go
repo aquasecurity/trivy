@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"testing"
-	"text/template"
 
 	"github.com/stretchr/testify/assert"
 
@@ -18,9 +17,10 @@ func TestReportWriter_Table(t *testing.T) {
 		name           string
 		detectedVulns  []types.DetectedVulnerability
 		expectedOutput string
+		light          bool
 	}{
 		{
-			name: "happy path",
+			name: "happy path full",
 			detectedVulns: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "123",
@@ -39,6 +39,29 @@ func TestReportWriter_Table(t *testing.T) {
 +---------+------------------+----------+-------------------+---------------+--------+
 | foo     |              123 | HIGH     | 1.2.3             | 3.4.5         | foobar |
 +---------+------------------+----------+-------------------+---------------+--------+
+`,
+		},
+		{
+			name:  "happy path light",
+			light: true,
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "123",
+					PkgName:          "foo",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "3.4.5",
+					Vulnerability: dbTypes.Vulnerability{
+						Title:       "foobar",
+						Description: "baz",
+						Severity:    "HIGH",
+					},
+				},
+			},
+			expectedOutput: `+---------+------------------+----------+-------------------+---------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |
++---------+------------------+----------+-------------------+---------------+
+| foo     |              123 | HIGH     | 1.2.3             | 3.4.5         |
++---------+------------------+----------+-------------------+---------------+
 `,
 		},
 		{
@@ -92,7 +115,6 @@ func TestReportWriter_Table(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			tw := report.TableWriter{}
 			inputResults := report.Results{
 				{
 					FileName:        "foo",
@@ -100,8 +122,7 @@ func TestReportWriter_Table(t *testing.T) {
 				},
 			}
 			tableWritten := bytes.Buffer{}
-			tw.Output = &tableWritten
-			assert.Nil(t, tw.Write(inputResults))
+			assert.NoError(t, report.Write("table", &tableWritten, inputResults, "", tc.light), tc.name)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})
 	}
@@ -151,23 +172,24 @@ func TestReportWriter_JSON(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+
 			jw := report.JsonWriter{}
 			jsonWritten := bytes.Buffer{}
 			jw.Output = &jsonWritten
 
-			err := jw.Write(report.Results{
+			inputResults := report.Results{
 				{
 					FileName:        "foojson",
 					Vulnerabilities: tc.detectedVulns,
 				},
-			})
+			}
 
 			writtenResults := report.Results{}
 			errJson := json.Unmarshal([]byte(jsonWritten.String()), &writtenResults)
 			assert.NoError(t, errJson, "invalid json written", tc.name)
 
 			assert.Equal(t, tc.expectedJSON, writtenResults, tc.name)
-			assert.NoError(t, err, tc.name)
+			assert.NoError(t, report.Write("json", &jsonWritten, inputResults, "", false), tc.name)
 		})
 	}
 
@@ -211,19 +233,14 @@ func TestReportWriter_Template(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tmplWritten := bytes.Buffer{}
-			tmpl, _ := template.New(tc.name).Parse(tc.template)
-			tmplw := report.TemplateWriter{
-				Output:   &tmplWritten,
-				Template: tmpl,
-			}
-
-			err := tmplw.Write(report.Results{
+			inputResults := report.Results{
 				{
 					FileName:        "foojson",
 					Vulnerabilities: tc.detectedVulns,
 				},
-			})
-			assert.NoError(t, err)
+			}
+
+			assert.NoError(t, report.Write("template", &tmplWritten, inputResults, tc.template, false))
 			assert.Equal(t, tc.expected, tmplWritten.String())
 		})
 	}

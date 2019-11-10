@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"io"
 	"io/ioutil"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"golang.org/x/xerrors"
+
 	"k8s.io/utils/clock"
 	clocktesting "k8s.io/utils/clock/testing"
 
@@ -89,6 +91,25 @@ func TestClient_Download(t *testing.T) {
 						Type:       db.TypeFull,
 						NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
 					},
+				},
+			},
+			downloadDB: []downloadDB{
+				{
+					input: fullDB,
+					output: downloadDBOutput{
+						fileName: "testdata/test.db.gz",
+					},
+				},
+			},
+		},
+		{
+			name:  "happy path for first run",
+			light: false,
+			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			getMetadata: []getMetadataOutput{
+				{
+					metadata: db.Metadata{},
+					err:      errors.New("get metadata failed"),
 				},
 			},
 			downloadDB: []downloadDB{
