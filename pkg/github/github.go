@@ -72,7 +72,7 @@ func (c Client) DownloadDB(ctx context.Context, fileName string) (io.ReadCloser,
 	}
 
 	sort.Slice(releases, func(i, j int) bool {
-		return releases[i].PublishedAt.After(releases[j].PublishedAt.Time)
+		return releases[i].GetPublishedAt().After(releases[j].GetPublishedAt().Time)
 	})
 
 	prefix := fmt.Sprintf("v%d", db.SchemaVersion)
