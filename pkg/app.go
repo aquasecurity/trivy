@@ -138,7 +138,7 @@ OPTIONS:
 		},
 		cli.BoolFlag{
 			Name:  "light",
-			Usage: "light mode",
+			Usage: "light mode: it's faster, but vulnerability descriptions and references are not displayed",
 		},
 	}
 
