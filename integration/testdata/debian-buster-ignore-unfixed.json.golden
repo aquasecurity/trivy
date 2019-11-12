@@ -7,7 +7,6 @@
         "PkgName": "e2fsprogs",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u2",
-        "Title": "",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "References": [
@@ -24,7 +23,6 @@
         "PkgName": "libcom-err2",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u2",
-        "Title": "",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "References": [
@@ -41,7 +39,6 @@
         "PkgName": "libext2fs2",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u2",
-        "Title": "",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "References": [
@@ -58,7 +55,6 @@
         "PkgName": "libss2",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u2",
-        "Title": "",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "References": [
