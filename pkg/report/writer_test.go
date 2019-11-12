@@ -122,7 +122,7 @@ func TestReportWriter_Table(t *testing.T) {
 				},
 			}
 			tableWritten := bytes.Buffer{}
-			assert.NoError(t, report.Write("table", &tableWritten, inputResults, "", tc.light), tc.name)
+			assert.NoError(t, report.WriteResults("table", &tableWritten, inputResults, "", tc.light), tc.name)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})
 	}
@@ -184,12 +184,13 @@ func TestReportWriter_JSON(t *testing.T) {
 				},
 			}
 
+			assert.NoError(t, report.WriteResults("json", &jsonWritten, inputResults, "", false), tc.name)
+
 			writtenResults := report.Results{}
 			errJson := json.Unmarshal([]byte(jsonWritten.String()), &writtenResults)
 			assert.NoError(t, errJson, "invalid json written", tc.name)
 
 			assert.Equal(t, tc.expectedJSON, writtenResults, tc.name)
-			assert.NoError(t, report.Write("json", &jsonWritten, inputResults, "", false), tc.name)
 		})
 	}
 
@@ -240,7 +241,7 @@ func TestReportWriter_Template(t *testing.T) {
 				},
 			}
 
-			assert.NoError(t, report.Write("template", &tmplWritten, inputResults, tc.template, false))
+			assert.NoError(t, report.WriteResults("template", &tmplWritten, inputResults, tc.template, false))
 			assert.Equal(t, tc.expected, tmplWritten.String())
 		})
 	}
