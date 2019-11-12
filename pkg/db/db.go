@@ -35,11 +35,11 @@ type Client struct {
 	githubClient GitHubOperation
 }
 
-func NewClient(ctx context.Context) Client {
+func NewClient() Client {
 	return Client{
 		dbc:          db.Config{},
 		clock:        clock.RealClock{},
-		githubClient: github.NewClient(ctx),
+		githubClient: github.NewClient(),
 	}
 }
 

@@ -5,14 +5,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"sort"
 	"strings"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/google/go-github/v28/github"
-	"golang.org/x/oauth2"
 	"golang.org/x/xerrors"
 )
 
@@ -45,12 +43,8 @@ type Client struct {
 	Repository RepositoryInterface
 }
 
-func NewClient(ctx context.Context) Client {
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: os.Getenv("GITHUB_TOKEN")},
-	)
-	tc := oauth2.NewClient(ctx, ts)
-	gc := github.NewClient(tc)
+func NewClient() Client {
+	gc := github.NewClient(nil)
 
 	repo := Repository{
 		repository: gc.Repositories,
