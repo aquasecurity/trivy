@@ -140,6 +140,23 @@ OPTIONS:
 			Name:  "light",
 			Usage: "light mode: it's faster, but vulnerability descriptions and references are not displayed",
 		},
+
+		// deprecated options
+		cli.StringFlag{
+			Name:   "only-update",
+			Usage:  "deprecated",
+			EnvVar: "TRIVY_ONLY_UPDATE",
+		},
+		cli.BoolFlag{
+			Name:   "refresh",
+			Usage:  "deprecated",
+			EnvVar: "TRIVY_REFRESH",
+		},
+		cli.BoolFlag{
+			Name:   "auto-refresh",
+			Usage:  "deprecated",
+			EnvVar: "TRIVY_AUTO_REFRESH",
+		},
 	}
 
 	app.Action = Run

@@ -30,6 +30,10 @@ func Run(c *cli.Context) (err error) {
 		l.Fatal(err)
 	}
 
+	if c.String("only-update") != "" || c.Bool("refresh") || c.Bool("auto-refresh") {
+		log.Logger.Warn("--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.")
+	}
+
 	cacheDir := c.String("cache-dir")
 	utils.SetCacheDir(c.String("cache-dir"))
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
