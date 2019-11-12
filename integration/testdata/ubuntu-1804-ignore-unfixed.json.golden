@@ -7,7 +7,6 @@
         "PkgName": "e2fsprogs",
         "InstalledVersion": "1.44.1-1ubuntu1.1",
         "FixedVersion": "1.44.1-1ubuntu1.2",
-        "Title": "",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "References": [
@@ -24,7 +23,6 @@
         "PkgName": "libcom-err2",
         "InstalledVersion": "1.44.1-1ubuntu1.1",
         "FixedVersion": "1.44.1-1ubuntu1.2",
-        "Title": "",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "References": [
@@ -41,7 +39,6 @@
         "PkgName": "libext2fs2",
         "InstalledVersion": "1.44.1-1ubuntu1.1",
         "FixedVersion": "1.44.1-1ubuntu1.2",
-        "Title": "",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "References": [
@@ -58,7 +55,6 @@
         "PkgName": "libss2",
         "InstalledVersion": "1.44.1-1ubuntu1.1",
         "FixedVersion": "1.44.1-1ubuntu1.2",
-        "Title": "",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "References": [
@@ -107,7 +103,6 @@
         "PkgName": "libzstd1",
         "InstalledVersion": "1.3.3+dfsg-2ubuntu1",
         "FixedVersion": "1.3.3+dfsg-2ubuntu1.1",
-        "Title": "",
         "Description": "A race condition in the one-pass compression functions of Zstandard prior to version 1.3.8 could allow an attacker to write bytes out of bounds if an output buffer smaller than the recommended size was used.",
         "Severity": "MEDIUM",
         "References": [
