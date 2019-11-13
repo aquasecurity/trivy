@@ -3,14 +3,16 @@ package ubuntu
 import (
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ubuntu"
+
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/ubuntu"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var (
@@ -49,20 +51,24 @@ var (
 	}
 )
 
-type Scanner struct{}
-
-func NewScanner() *Scanner {
-	return &Scanner{}
+type Scanner struct {
+	vs dbTypes.VulnSrc
 }
 
-func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability.DetectedVulnerability, error) {
+func NewScanner() *Scanner {
+	return &Scanner{
+		vs: ubuntu.NewVulnSrc(),
+	}
+}
+
+func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Ubuntu vulnerabilities...")
 	log.Logger.Debugf("ubuntu: os version: %s", osVer)
 	log.Logger.Debugf("ubuntu: the number of packages: %d", len(pkgs))
 
-	var vulns []vulnerability.DetectedVulnerability
+	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := ubuntu.Get(osVer, pkg.SrcName)
+		advisories, err := s.vs.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Ubuntu advisories: %w", err)
 		}
@@ -75,7 +81,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 		}
 
 		for _, adv := range advisories {
-			vuln := vulnerability.DetectedVulnerability{
+			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,

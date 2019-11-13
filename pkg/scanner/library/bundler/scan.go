@@ -1,17 +1,17 @@
 package bundler
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/knqyf263/go-version"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/bundler"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	bundlerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/bundler"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
-	"github.com/knqyf263/go-version"
-	"golang.org/x/xerrors"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -30,8 +30,12 @@ var (
 	)
 )
 
+type VulnSrc interface {
+	Get(pkgName string) ([]bundlerSrc.Advisory, error)
+}
+
 type Scanner struct {
-	db AdvisoryDB
+	vs VulnSrc
 }
 
 func massageLockFileVersion(version string) string {
@@ -42,12 +46,19 @@ func massageLockFileVersion(version string) string {
 }
 
 func NewScanner() *Scanner {
-	return &Scanner{}
+	return &Scanner{
+		vs: bundlerSrc.NewVulnSrc(),
+	}
 }
 
-func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]vulnerability.DetectedVulnerability, error) {
-	var vulns []vulnerability.DetectedVulnerability
-	for _, advisory := range s.db[pkgName] {
+func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+	advisories, err := s.vs.Get(pkgName)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+	}
+
+	var vulns []types.DetectedVulnerability
+	for _, advisory := range advisories {
 		if utils.MatchVersions(pkgVer, advisory.PatchedVersions) {
 			continue
 		}
@@ -55,17 +66,9 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]vulnerabili
 			continue
 		}
 
-		var vulnerabilityID string
-		if advisory.Cve != "" {
-			vulnerabilityID = fmt.Sprintf("CVE-%s", advisory.Cve)
-		} else if advisory.Osvdb != "" {
-			vulnerabilityID = fmt.Sprintf("OSVDB-%s", advisory.Osvdb)
-		}
-
-		vuln := vulnerability.DetectedVulnerability{
-			VulnerabilityID:  vulnerabilityID,
-			PkgName:          strings.TrimSpace(advisory.Gem),
-			Title:            strings.TrimSpace(advisory.Title),
+		vuln := types.DetectedVulnerability{
+			VulnerabilityID:  advisory.VulnerabilityID,
+			PkgName:          strings.TrimSpace(pkgName),
 			InstalledVersion: pkgVer.String(),
 			FixedVersion:     strings.Join(advisory.PatchedVersions, ", "),
 		}

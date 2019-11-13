@@ -4,8 +4,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
+
+	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
 	"github.com/urfave/cli"
 )
 
@@ -55,7 +57,7 @@ OPTIONS:
 		},
 		cli.StringFlag{
 			Name:   "severity, s",
-			Value:  strings.Join(vulnerability.SeverityNames, ","),
+			Value:  strings.Join(types.SeverityNames, ","),
 			Usage:  "severities of vulnerabilities to be displayed (comma separated)",
 			EnvVar: "TRIVY_SEVERITY",
 		},
@@ -74,11 +76,6 @@ OPTIONS:
 			Name:   "skip-update",
 			Usage:  "skip db update",
 			EnvVar: "TRIVY_SKIP_UPDATE",
-		},
-		cli.StringFlag{
-			Name:   "only-update",
-			Usage:  "update db only specified distribution (comma separated)",
-			EnvVar: "TRIVY_ONLY_UPDATE",
 		},
 		cli.BoolFlag{
 			Name:   "download-db-only",
@@ -111,16 +108,6 @@ OPTIONS:
 			EnvVar: "TRIVY_IGNORE_UNFIXED",
 		},
 		cli.BoolFlag{
-			Name:   "refresh",
-			Usage:  "refresh DB (usually used after version update of trivy)",
-			EnvVar: "TRIVY_REFRESH",
-		},
-		cli.BoolFlag{
-			Name:   "auto-refresh",
-			Usage:  "refresh DB automatically when updating version of trivy",
-			EnvVar: "TRIVY_AUTO_REFRESH",
-		},
-		cli.BoolFlag{
 			Name:   "debug, d",
 			Usage:  "debug mode",
 			EnvVar: "TRIVY_DEBUG",
@@ -129,7 +116,7 @@ OPTIONS:
 			Name:   "vuln-type",
 			Value:  "os,library",
 			Usage:  "comma-separated list of vulnerability types (os,library)",
-			EnvVar: "TRIVY_VULN_TYOE",
+			EnvVar: "TRIVY_VULN_TYPE",
 		},
 		cli.StringFlag{
 			Name:   "cache-dir",
@@ -148,6 +135,27 @@ OPTIONS:
 			Value:  time.Second * 60,
 			Usage:  "docker timeout",
 			EnvVar: "TRIVY_TIMEOUT",
+		},
+		cli.BoolFlag{
+			Name:  "light",
+			Usage: "light mode: it's faster, but vulnerability descriptions and references are not displayed",
+		},
+
+		// deprecated options
+		cli.StringFlag{
+			Name:   "only-update",
+			Usage:  "deprecated",
+			EnvVar: "TRIVY_ONLY_UPDATE",
+		},
+		cli.BoolFlag{
+			Name:   "refresh",
+			Usage:  "deprecated",
+			EnvVar: "TRIVY_REFRESH",
+		},
+		cli.BoolFlag{
+			Name:   "auto-refresh",
+			Usage:  "deprecated",
+			EnvVar: "TRIVY_AUTO_REFRESH",
 		},
 	}
 

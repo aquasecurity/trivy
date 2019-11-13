@@ -4,15 +4,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian"
+	debianoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian-oval"
+
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/debian"
-	debianoval "github.com/aquasecurity/trivy/pkg/vulnsrc/debian-oval"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var (
@@ -38,13 +40,19 @@ var (
 	}
 )
 
-type Scanner struct{}
-
-func NewScanner() *Scanner {
-	return &Scanner{}
+type Scanner struct {
+	ovalVs dbTypes.VulnSrc
+	vs     dbTypes.VulnSrc
 }
 
-func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability.DetectedVulnerability, error) {
+func NewScanner() *Scanner {
+	return &Scanner{
+		ovalVs: debianoval.NewVulnSrc(),
+		vs:     debian.NewVulnSrc(),
+	}
+}
+
+func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Debian vulnerabilities...")
 
 	if strings.Count(osVer, ".") > 0 {
@@ -53,9 +61,9 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 	log.Logger.Debugf("debian: os version: %s", osVer)
 	log.Logger.Debugf("debian: the number of packages: %d", len(pkgs))
 
-	var vulns []vulnerability.DetectedVulnerability
+	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := debianoval.Get(osVer, pkg.SrcName)
+		advisories, err := s.ovalVs.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get debian OVAL: %w", err)
 		}
@@ -75,7 +83,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 			}
 
 			if installedVersion.LessThan(fixedVersion) {
-				vuln := vulnerability.DetectedVulnerability{
+				vuln := types.DetectedVulnerability{
 					VulnerabilityID:  adv.VulnerabilityID,
 					PkgName:          pkg.Name,
 					InstalledVersion: installed,
@@ -84,12 +92,12 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 				vulns = append(vulns, vuln)
 			}
 		}
-		advisories, err = debian.Get(osVer, pkg.SrcName)
+		advisories, err = s.vs.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get debian advisory: %w", err)
 		}
 		for _, adv := range advisories {
-			vuln := vulnerability.DetectedVulnerability{
+			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,

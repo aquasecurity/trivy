@@ -1,20 +1,21 @@
 package pkg
 
 import (
+	"context"
 	l "log"
 	"os"
 	"strings"
-	"text/template"
 
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	"github.com/genuinetools/reg/registry"
 	"github.com/urfave/cli"
 	"golang.org/x/xerrors"
@@ -29,8 +30,36 @@ func Run(c *cli.Context) (err error) {
 		l.Fatal(err)
 	}
 
+	if c.String("only-update") != "" || c.Bool("refresh") || c.Bool("auto-refresh") {
+		log.Logger.Warn("--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.")
+	}
+
+	cacheDir := c.String("cache-dir")
 	utils.SetCacheDir(c.String("cache-dir"))
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
+
+	if err = db.Init(cacheDir); err != nil {
+		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
+	}
+
+	downloadDBOnly := c.Bool("download-db-only")
+	skipUpdate := c.Bool("skip-update")
+	if skipUpdate && downloadDBOnly {
+		return xerrors.New("The --skip-update and --download-db-only option can not be specified both")
+	}
+
+	light := c.Bool("light")
+	if !skipUpdate {
+		client := dbFile.NewClient()
+		ctx := context.Background()
+		if err = client.Download(ctx, c.App.Version, cacheDir, light); err != nil {
+			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
+		}
+	}
+
+	if downloadDBOnly {
+		return nil
+	}
 
 	reset := c.Bool("reset")
 	if reset {
@@ -50,85 +79,14 @@ func Run(c *cli.Context) (err error) {
 		if err = cache.Clear(); err != nil {
 			return xerrors.New("failed to remove image layer cache")
 		}
+		return nil
 	}
 
-	refresh := c.Bool("refresh")
-	downloadOnly := c.Bool("download-db-only")
 	args := c.Args()
-	var noTarget bool
 	filePath := c.String("input")
 	if filePath == "" && len(args) == 0 {
-		noTarget = true
-		if !reset && !clearCache && !refresh && !downloadOnly {
-			log.Logger.Info(`trivy requires at least 1 argument or --input option.`)
-			cli.ShowAppHelpAndExit(c, 1)
-		}
-	}
-
-	autoRefresh := c.Bool("auto-refresh")
-	skipUpdate := c.Bool("skip-update")
-	onlyUpdate := c.String("only-update")
-	if refresh || autoRefresh {
-		if skipUpdate {
-			return xerrors.New("The --skip-update option can not be specified with the --refresh or --auto-refresh option")
-		}
-		if onlyUpdate != "" {
-			return xerrors.New("The --only-update option can not be specified with the --refresh or --auto-refresh option")
-		}
-	}
-	if skipUpdate && onlyUpdate != "" {
-		return xerrors.New("The --skip-update and --only-update option can not be specified both")
-	}
-	if skipUpdate && downloadOnly {
-		return xerrors.New("The --skip-update and --download-db-only option can not be specified both")
-	}
-
-	if err = db.Init(); err != nil {
-		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
-	}
-
-	needRefresh := false
-	dbVersion := db.GetVersion()
-	if 0 < dbVersion && dbVersion < db.SchemaVersion {
-		if !refresh && !autoRefresh {
-			return xerrors.New("Detected version update of trivy. Please try again with --refresh or --auto-refresh option")
-		}
-		needRefresh = true
-	}
-
-	if refresh || needRefresh {
-		log.Logger.Info("Refreshing DB...")
-		if err = db.Reset(); err != nil {
-			return xerrors.Errorf("error in refresh DB: %w", err)
-		}
-	}
-
-	updateTargets := vulnsrc.UpdateList
-	if onlyUpdate != "" {
-		log.Logger.Warn("The --only-update option may cause the vulnerability details such as severity and title not to be displayed")
-		updateTargets = strings.Split(onlyUpdate, ",")
-	}
-
-	if !skipUpdate {
-		if err = vulnsrc.Update(updateTargets); err != nil {
-			return xerrors.Errorf("error in vulnerability DB update: %w", err)
-		}
-		if downloadOnly {
-			if onlyUpdate != "" {
-				log.Logger.Warn("The --only-update option will be ignored if the database is empty")
-			}
-			return nil
-		}
-	}
-
-	dbc := db.Config{}
-	if err = dbc.SetVersion(db.SchemaVersion); err != nil {
-		return xerrors.Errorf("unexpected error: %w", err)
-	}
-
-	// When specifying no image name and file name
-	if noTarget {
-		return nil
+		log.Logger.Info(`trivy requires at least 1 argument or --input option.`)
+		cli.ShowAppHelpAndExit(c, 1)
 	}
 
 	o := c.String("output")
@@ -137,16 +95,6 @@ func Run(c *cli.Context) (err error) {
 		if output, err = os.Create(o); err != nil {
 			return xerrors.Errorf("failed to create an output file: %w", err)
 		}
-	}
-
-	var severities []vulnerability.Severity
-	for _, s := range strings.Split(c.String("severity"), ",") {
-		severity, err := vulnerability.NewSeverity(s)
-		if err != nil {
-			log.Logger.Infof("error in severity option: %s", err)
-			cli.ShowAppHelpAndExit(c, 1)
-		}
-		severities = append(severities, severity)
 	}
 
 	var imageName string
@@ -178,32 +126,19 @@ func Run(c *cli.Context) (err error) {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
 
+	severities := splitSeverity(c.String("severity"))
 	ignoreFile := c.String("ignorefile")
-
 	ignoreUnfixed := c.Bool("ignore-unfixed")
+	vulnClient := vulnerability.NewClient()
 	for i := range results {
-		results[i].Vulnerabilities = vulnerability.FillAndFilter(results[i].Vulnerabilities, severities, ignoreUnfixed, ignoreFile)
+		results[i].Vulnerabilities = vulnClient.FillAndFilter(results[i].Vulnerabilities,
+			severities, ignoreUnfixed, ignoreFile, light)
 	}
 
-	var writer report.Writer
-	switch format := c.String("format"); format {
-	case "table":
-		writer = &report.TableWriter{Output: output}
-	case "json":
-		writer = &report.JsonWriter{Output: output}
-	case "template":
-		outputTemplate := c.String("template")
-		tmpl, err := template.New("output template").Parse(outputTemplate)
-		if err != nil {
-			return xerrors.Errorf("error parsing template: %w", err)
-		}
-		writer = &report.TemplateWriter{Output: output, Template: tmpl}
-	default:
-		return xerrors.Errorf("unknown format: %v", format)
-	}
-
-	if err = writer.Write(results); err != nil {
-		return xerrors.Errorf("failed to write results: %w", err)
+	format := c.String("format")
+	template := c.String("template")
+	if err = report.WriteResults(format, output, results, template, light); err != nil {
+		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
 	exitCode := c.Int("exit-code")
@@ -216,4 +151,16 @@ func Run(c *cli.Context) (err error) {
 	}
 
 	return nil
+}
+
+func splitSeverity(severity string) []dbTypes.Severity {
+	var severities []dbTypes.Severity
+	for _, s := range strings.Split(severity, ",") {
+		severity, err := dbTypes.NewSeverity(s)
+		if err != nil {
+			log.Logger.Warnf("unknown severity option: %s", err)
+		}
+		severities = append(severities, severity)
+	}
+	return severities
 }

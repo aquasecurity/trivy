@@ -16,3 +16,6 @@
 # Directory Cache Files
 .DS_Store
 thumbs.db
+
+# test fixtures
+integration/testdata/fixtures/

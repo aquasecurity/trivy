@@ -5,19 +5,20 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/amazon"
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/amazon"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Scanner struct {
 	l  *zap.SugaredLogger
-	ac amazon.Operations
+	ac dbTypes.VulnSrc
 }
 
 func NewScanner() *Scanner {
@@ -27,7 +28,7 @@ func NewScanner() *Scanner {
 	}
 }
 
-func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability.DetectedVulnerability, error) {
+func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Amazon Linux vulnerabilities...")
 
 	osVer = strings.Fields(osVer)[0]
@@ -37,7 +38,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 	log.Logger.Debugf("amazon: os version: %s", osVer)
 	log.Logger.Debugf("amazon: the number of packages: %d", len(pkgs))
 
-	var vulns []vulnerability.DetectedVulnerability
+	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
 		advisories, err := s.ac.Get(osVer, pkg.Name)
 		if err != nil {
@@ -63,7 +64,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]vulnerability
 			}
 
 			if installedVersion.LessThan(fixedVersion) {
-				vuln := vulnerability.DetectedVulnerability{
+				vuln := types.DetectedVulnerability{
 					VulnerabilityID:  adv.VulnerabilityID,
 					PkgName:          pkg.Name,
 					InstalledVersion: installed,

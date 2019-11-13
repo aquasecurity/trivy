@@ -12,23 +12,23 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"
 	"github.com/aquasecurity/fanal/extractor"
-	"github.com/aquasecurity/fanal/types"
+	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg/amazon"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg/debian"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg/redhat"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg/ubuntu"
-	"github.com/aquasecurity/trivy/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"golang.org/x/xerrors"
 )
 
 type Scanner interface {
-	Detect(string, []analyzer.Package) ([]vulnerability.DetectedVulnerability, error)
+	Detect(string, []analyzer.Package) ([]types.DetectedVulnerability, error)
 	IsSupportedVersion(string, string) bool
 }
 
-func Scan(files extractor.FileMap) (string, string, []vulnerability.DetectedVulnerability, error) {
+func Scan(files extractor.FileMap) (string, string, []types.DetectedVulnerability, error) {
 	os, err := analyzer.GetOS(files)
 	if err != nil {
 		return "", "", nil, xerrors.Errorf("failed to analyze OS: %w", err)
@@ -53,7 +53,7 @@ func Scan(files extractor.FileMap) (string, string, []vulnerability.DetectedVuln
 	}
 	pkgs, err := analyzer.GetPackages(files)
 	if err != nil {
-		if xerrors.Is(err, types.ErrNoRpmCmd) {
+		if xerrors.Is(err, ftypes.ErrNoRpmCmd) {
 			log.Logger.Error("'rpm' command is not installed")
 		}
 		return "", "", nil, xerrors.Errorf("failed to analyze OS packages: %w", err)
