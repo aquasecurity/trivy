@@ -26,7 +26,10 @@ type Scanner struct {
 }
 
 func NewScanner(scannerType string) *Scanner {
-	return &Scanner{scannerType: scannerType}
+	return &Scanner{
+		scannerType: scannerType,
+		vs:          node.NewVulnSrc(),
+	}
 }
 
 func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
