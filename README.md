@@ -1056,10 +1056,10 @@ $ trivy --reset
 
 The lightweight DB doesn't contain vulnerability detail such as descriptions and references. Because of that, the size of the DB is smaller and the download is faster.
 
-https://nvd.nist.gov/vuln/search
 
 This option is useful when you don't need vulnerability details and is suitable for CI/CD.
-To find the additional information, you can search vulnerability details on the NVD website.
+To find the additional information, you can search vulnerability details on the NVD website.  
+https://nvd.nist.gov/vuln/search
 
 ```
 $ trivy --light alpine:3.10
@@ -1098,7 +1098,7 @@ Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 
 Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0` .
 
-Since in automated scenarios such as CI/CD you only interested in the end result, and not the full report, use the `--light` flag to optimize  for this scenario and get fast results.
+Since in automated scenarios such as CI/CD you only interested in the end result, and not the full report, use the `--light` flag to optimize for this scenario and get fast results.
 
 ## Travis CI
 
