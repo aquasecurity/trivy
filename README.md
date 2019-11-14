@@ -76,6 +76,9 @@ See [here](#continuous-integration-ci) for details.
 - Simple
   - Specify only an image name
   - See [Quick Start](#quick-start) and [Examples](#examples)
+- Fast
+  - The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish in single seconds.
+  - Unlike other scanners that take long to fetch vulnerability information (~10 minutes) on the first run, and encourage you to maintain the a durable vulnerability database, Trivy is stateless and requires no maintenance or preparation.
 - Easy installation
   - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](#installation))
   - **No pre-requisites** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
@@ -869,36 +872,6 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 </details>
 
-### Update only specified distributions
-
-By default, `Trivy` always updates its vulnerability database for all distributions. Use the `--only-update` option if you want to name specified distributions to update.
-
-```
-$ trivy --only-update alpine,debian python:3.4-alpine3.9
-$ trivy --only-update alpine python:3.4-alpine3.9
-```
-
-<details>
-<summary>Result</summary>
-
-```
-2019-05-21T19:37:06.301+0900    INFO    Updating vulnerability database...
-2019-05-21T19:37:07.793+0900    INFO    Updating alpine data...
-2019-05-21T19:37:08.127+0900    INFO    Detecting Alpine vulnerabilities...
-
-python:3.4-alpine3.9 (alpine 3.9.2)
-===================================
-Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
-
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| openssl | CVE-2019-1543    | MEDIUM   | 1.1.1a-r1         | 1.1.1b-r1     | openssl: ChaCha20-Poly1305     |
-|         |                  |          |                   |               | with long nonces               |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-```
-
-</details>
 
 ### Only download vulnerability database
 
@@ -1079,11 +1052,53 @@ $ trivy --reset
 
 </details>
 
+### Use lightweight DB
+
+The lightweight DB doesn't contain vulnerability detail such as descriptions and references. Because of that, the size of the DB is smaller and the download is faster.
+
+
+This option is useful when you don't need vulnerability details and is suitable for CI/CD.
+To find the additional information, you can search vulnerability details on the NVD website.  
+https://nvd.nist.gov/vuln/search
+
+```
+$ trivy --light alpine:3.10
+```
+
+`--light` option doesn't display titles like the following example.
+
+<details>
+<summary>Result</summary>
+
+```
+2019-11-14T10:21:01.553+0200    INFO    Reopening vulnerability DB
+2019-11-14T10:21:02.574+0200    INFO    Detecting Alpine vulnerabilities...
+
+alpine:3.10 (alpine 3.10.2)
+===========================
+Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
+
++---------+------------------+----------+-------------------+---------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |
++---------+------------------+----------+-------------------+---------------+
+| openssl | CVE-2019-1549    | MEDIUM   | 1.1.1c-r0         | 1.1.1d-r0     |
++         +------------------+          +                   +               +
+|         | CVE-2019-1563    |          |                   |               |
++         +------------------+----------+                   +               +
+|         | CVE-2019-1547    | LOW      |                   |               |
++---------+------------------+----------+-------------------+---------------+
+```
+</details>
+
+### Deprecated options
+
+`--only-update`, `--refresh` and `--auto-refresh` are deprecated since they are unnecessary now. These options will be removed at the next version
+
 # Continuous Integration (CI)
 
 Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0` .
 
-**Note**: It will take a while for the first time (faster by cache after the second time).
+Since in automated scenarios such as CI/CD you only interested in the end result, and not the full report, use the `--light` flag to optimize for this scenario and get fast results.
 
 ## Travis CI
 
@@ -1102,8 +1117,8 @@ before_install:
   - wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
   - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
 script:
-  - ./trivy --exit-code 0 --severity HIGH --no-progress --auto-refresh trivy-ci-test:${COMMIT}
-  - ./trivy --exit-code 1 --severity CRITICAL --no-progress --auto-refresh trivy-ci-test:${COMMIT}
+  - ./trivy --exit-code 0 --severity HIGH --no-progress trivy-ci-test:${COMMIT}
+  - ./trivy --exit-code 1 --severity CRITICAL --no-progress trivy-ci-test:${COMMIT}
 cache:
   directories:
     - $HOME/.cache/trivy
@@ -1122,9 +1137,6 @@ jobs:
       - image: docker:18.09-git
     steps:
       - checkout
-      - setup_remote_docker
-      - restore_cache:
-          key: vulnerability-db
       - run:
           name: Build image
           command: docker build -t trivy-ci-test:${CIRCLE_SHA1} .
@@ -1143,11 +1155,7 @@ jobs:
             mv trivy /usr/local/bin
       - run:
           name: Scan the local image with trivy
-          command: trivy --exit-code 0 --no-progress --auto-refresh trivy-ci-test:${CIRCLE_SHA1}
-      - save_cache:
-          key: vulnerability-db
-          paths:
-            - $HOME/.cache/trivy
+          command: trivy --exit-code 0 --no-progress trivy-ci-test:${CIRCLE_SHA1}
 workflows:
   version: 2
   release:
@@ -1179,8 +1187,8 @@ trivy:
   services:
     - docker:stable-dind
   script:
-    - ./trivy --exit-code 0 --severity HIGH --no-progress --auto-refresh trivy-ci-test:${CI_COMMIT_REF_NAME}
-    - ./trivy --exit-code 1 --severity CRITICAL --no-progress --auto-refresh trivy-ci-test:${CI_COMMIT_REF_NAME}
+    - ./trivy --exit-code 0 --severity HIGH --no-progress trivy-ci-test:${CI_COMMIT_REF_NAME}
+    - ./trivy --exit-code 1 --severity CRITICAL --no-progress trivy-ci-test:${CI_COMMIT_REF_NAME}
   cache:
     directories:
       - $HOME/.cache/trivy
@@ -1298,29 +1306,35 @@ Trivy scans a tar image with the following format.
 NAME:
   trivy - A simple and comprehensive vulnerability scanner for containers
 USAGE:
-  trivy [options] image_name
+  main [options] image_name
 VERSION:
-  0.1.6
+  0.2.0
 OPTIONS:
-  --format value, -f value    format (table, json) (default: "table")
-  --input value, -i value     input file path instead of image name
-  --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
-  --output value, -o value    output file name
-  --exit-code value           Exit code when vulnerabilities were found (default: 0)
-  --skip-update               skip db update
-  --only-update value         update db only specified distribution (comma separated)
-  --reset                     remove all caches and database
-  --clear-cache, -c           clear image caches
-  --quiet, -q                 suppress progress bar and log output
-  --no-progress               suppress progress bar
-  --ignore-unfixed            display only fixed vulnerabilities
-  --refresh                   refresh DB (usually used after version update of trivy)
-  --auto-refresh              refresh DB automatically when updating version of trivy
-  --debug, -d                 debug mode
-  --vuln-type value           comma-separated list of vulnerability types (os,library) (default: "os,library")
-  --cache-dir value           cache directory (default: "/path/to/cache")
+  --template value, -t value  output template [$TRIVY_TEMPLATE]
+  --format value, -f value    format (table, json, template) (default: "table") [$TRIVY_FORMAT]
+  --input value, -i value     input file path instead of image name [$TRIVY_INPUT]
+  --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
+  --output value, -o value    output file name [$TRIVY_OUTPUT]
+  --exit-code value           Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
+  --skip-update               skip db update [$TRIVY_SKIP_UPDATE]
+  --download-db-only          download/update vulnerability database but don't run a scan [$TRIVY_DOWNLOAD_DB_ONLY]
+  --reset                     remove all caches and database [$TRIVY_RESET]
+  --clear-cache, -c           clear image caches [$TRIVY_CLEAR_CACHE]
+  --quiet, -q                 suppress progress bar and log output [$TRIVY_QUIET]
+  --no-progress               suppress progress bar [$TRIVY_NO_PROGRESS]
+  --ignore-unfixed            display only fixed vulnerabilities [$TRIVY_IGNORE_UNFIXED]
+  --debug, -d                 debug mode [$TRIVY_DEBUG]
+  --vuln-type value           comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
+  --cache-dir value           use as cache directory, but image cache is stored in /path/to/cache/fanal (default: "/Users/teppei/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
+  --ignorefile value          specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
+  --timeout value             docker timeout (default: 1m0s) [$TRIVY_TIMEOUT]
+  --light                     light mode: it's faster, but vulnerability descriptions and references are not displayed
+  --only-update value         deprecated [$TRIVY_ONLY_UPDATE]
+  --refresh                   deprecated [$TRIVY_REFRESH]
+  --auto-refresh              deprecated [$TRIVY_AUTO_REFRESH]
   --help, -h                  show help
   --version, -v               print the version
+
 ```
 
 # Comparison with other scanners
@@ -1364,6 +1378,8 @@ RUN apk add --no-cache sqlite-dev \
 
 And as many people know, it is difficult to select a `Clair` client because many clients are deprecated.
 
+Trivy is a stand-alone tool and can scan very fast. This means it's very easy to use in CI/CD.
+
 Finally, `Trivy` can also detect vulnerabilities in application dependent libraries such as Bundler, Composer, Pipenv, etc.
 
 ## vs Anchore Engine
@@ -1376,7 +1392,7 @@ Also, `Anchore Engine` needs some steps to start scanning.
 
 ## vs Quay, Docker Hub, GCR
 
-As `Quay` seems to use `Clair` internally, it has the same accuracy as `Clair`. `Docker Hub` can scan only official images. `GCR` hardly detects vulnerabilities on Alpine Linux. Also, it is locked to a specific registry.
+As `Quay` uses `Clair` internally, it has the same accuracy as `Clair`. `Docker Hub` can scan only official images. `GCR` hardly detects vulnerabilities on Alpine Linux. Also, it is locked to a specific registry.
 
 `Trivy` can be used regardless of the registry, and it is easily integrated with CI/CD services.
 
@@ -1468,14 +1484,6 @@ $ brew install aquasecurity/trivy/trivy
 ```
 
 ## Others
-
-### Detected version update of trivy. Please try again with --refresh option
-
-Try again with `--refresh` option:
-
-```
-$ trivy --refresh alpine:3.9
-```
 
 ### Unknown error
 
