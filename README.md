@@ -1175,10 +1175,20 @@ stages:
 
 trivy:
   stage: test
-  image: docker:stable-git
+  image: docker:stable
+  services:
+    - name: docker:dind
+      entrypoint: ["env", "-u", "DOCKER_HOST"]
+      command: ["dockerd-entrypoint.sh"]
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+    # See https://github.com/docker-library/docker/pull/166
+    DOCKER_TLS_CERTDIR: ""
   before_script:
-    - docker build -t trivy-ci-test:${CI_COMMIT_REF_NAME} .
+    - apk add --no-cache curl
     - export VERSION=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+    - echo $VERSION
     - wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
     - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
   variables:
@@ -1187,11 +1197,11 @@ trivy:
   services:
     - docker:stable-dind
   script:
-    - ./trivy --exit-code 0 --severity HIGH --no-progress trivy-ci-test:${CI_COMMIT_REF_NAME}
-    - ./trivy --exit-code 1 --severity CRITICAL --no-progress trivy-ci-test:${CI_COMMIT_REF_NAME}
+    - ./trivy --exit-code 0 --cache-dir $CI_PROJECT_DIR/.trivycache/ --no-progress --severity HIGH DOCKER_IMAGE
+    #- ./trivy --exit-code 1 --severity CRITICAL  --no-progress DOCKER_IMAGE
   cache:
-    directories:
-      - $HOME/.cache/trivy
+    paths:
+      - $CI_PROJECT_DIR/.trivycache/
 ```   
 
 ## Authorization for Private Docker Registry
