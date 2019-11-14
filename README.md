@@ -1098,7 +1098,7 @@ Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 
 Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0` .
 
-**Note**: The scan is already fast enough so you don't require caching now. Most scans will finish within a few seconds (depending on image size)
+Since in automated scenarios such as CI/CD you only interested in the end result, and not the full report, use the `--light` flag to optimize  for this scenario and get fast results.
 
 ## Travis CI
 
