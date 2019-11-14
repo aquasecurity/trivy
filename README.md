@@ -1058,7 +1058,8 @@ The lightweight DB doesn't contain vulnerability detail such as descriptions and
 
 https://nvd.nist.gov/vuln/search
 
-This option is useful when you don't need vulnerability details. This option should be suitable for CI/CD.
+This option is useful when you don't need vulnerability details and is suitable for CI/CD.
+To find the additional information, you can search vulnerability details on the NVD website.
 
 ```
 $ trivy --light alpine:3.10
