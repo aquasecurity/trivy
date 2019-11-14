@@ -42,6 +42,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 - [Continuous Integration (CI)](#continuous-integration-ci)
   - [Travis CI](#travis-ci)
   - [CircleCI](#circleci)
+  - [GitLab CI](#gitlab)
   - [Authorization for Private Docker Registry](#authorization-for-private-docker-registry)
 - [Vulnerability Detection](#vulnerability-detection)
   - [OS Packages](#os-packages)

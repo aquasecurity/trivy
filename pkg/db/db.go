@@ -43,7 +43,7 @@ func NewClient() Client {
 	}
 }
 
-func (c Client) Download(ctx context.Context, cliVersion, cacheDir string, light bool) error {
+func (c Client) Download(ctx context.Context, cliVersion, cacheDir string, light, skip bool) error {
 	dbType := db.TypeFull
 	dbFile := fullDB
 	message := " Downloading Full DB file..."
@@ -56,6 +56,10 @@ func (c Client) Download(ctx context.Context, cliVersion, cacheDir string, light
 	metadata, err := c.dbc.GetMetadata()
 	if err != nil {
 		log.Logger.Debug("This is the first run")
+		if skip {
+			log.Logger.Error("The first run cannot skip downloading DB")
+			return xerrors.New("--skip-update cannot be specified on the first run")
+		}
 		metadata = db.Metadata{} // suppress a warning
 	}
 
@@ -63,6 +67,21 @@ func (c Client) Download(ctx context.Context, cliVersion, cacheDir string, light
 		log.Logger.Errorf("Trivy version (%s) is old. Update to the latest version.", cliVersion)
 		return xerrors.Errorf("the version of DB schema doesn't match. Local DB: %d, Expected: %d",
 			metadata.Version, db.SchemaVersion)
+	}
+
+	if skip {
+		if db.SchemaVersion != metadata.Version {
+			log.Logger.Error("The local DB is old and needs to be updated")
+			return xerrors.New("--skip-update cannot be specified with the old DB")
+		} else if metadata.Type != dbType {
+			if dbType == db.TypeFull {
+				log.Logger.Error("The local DB is a lightweight DB. You have to download a full DB")
+			} else {
+				log.Logger.Error("The local DB is a full DB. You have to download a lightweight DB")
+			}
+			return xerrors.New("--skip-update cannot be specified with the different schema DB")
+		}
+		return nil
 	}
 
 	if db.SchemaVersion == metadata.Version && metadata.Type == dbType &&
