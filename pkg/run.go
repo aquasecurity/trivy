@@ -55,6 +55,14 @@ func Run(c *cli.Context) (err error) {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 
+	// for debug
+	metadata, err := db.Config{}.GetMetadata()
+	if err != nil {
+		return xerrors.Errorf("something wrong with DB: %w", err)
+	}
+	log.Logger.Debugf("DB Schema: %d, Type: %d, UpdatedAt: %s, NextUpdate: %s",
+		metadata.Version, metadata.Type, metadata.UpdatedAt, metadata.NextUpdate)
+
 	if downloadDBOnly {
 		return nil
 	}
@@ -152,6 +160,7 @@ func Run(c *cli.Context) (err error) {
 }
 
 func splitSeverity(severity string) []dbTypes.Severity {
+	log.Logger.Debugf("Severities: %s", severity)
 	var severities []dbTypes.Severity
 	for _, s := range strings.Split(severity, ",") {
 		severity, err := dbTypes.NewSeverity(s)
