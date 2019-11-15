@@ -89,6 +89,8 @@ See [here](#continuous-integration-ci) for details.
   - **Suitable for CI** such as Travis CI, CircleCI, Jenkins, etc.
   - See [CI Example](#continuous-integration-ci)
 
+Please see [LICENSE](https://github.com/aquasecurity/trivy/blob/master/LICENSE) for Trivy licensing information. Note that Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only. 
+
 # Installation
 
 ## RHEL/CentOS
