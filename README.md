@@ -1,4 +1,4 @@
-<img src="imgs/logo.png" width="300">
+<img src="imgs/logo.png" width="150">
 
 
 [![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
