@@ -38,6 +38,18 @@ func Run(c *cli.Context) (err error) {
 	utils.SetCacheDir(c.String("cache-dir"))
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
+	reset := c.Bool("reset")
+	if reset {
+		log.Logger.Info("Resetting...")
+		if err = cache.Clear(); err != nil {
+			return xerrors.New("failed to remove image layer cache")
+		}
+		if err = os.RemoveAll(utils.CacheDir()); err != nil {
+			return xerrors.New("failed to remove cache")
+		}
+		return nil
+	}
+
 	if err = db.Init(cacheDir); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
@@ -56,18 +68,6 @@ func Run(c *cli.Context) (err error) {
 	}
 
 	if downloadDBOnly {
-		return nil
-	}
-
-	reset := c.Bool("reset")
-	if reset {
-		log.Logger.Info("Resetting...")
-		if err = cache.Clear(); err != nil {
-			return xerrors.New("failed to remove image layer cache")
-		}
-		if err = os.RemoveAll(utils.CacheDir()); err != nil {
-			return xerrors.New("failed to remove cache")
-		}
 		return nil
 	}
 
