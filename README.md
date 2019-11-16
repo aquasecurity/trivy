@@ -1,4 +1,4 @@
-<img src="imgs/logo.png" width="300">
+<img src="imgs/logo.png" width="150">
 
 
 [![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
@@ -1007,30 +1007,18 @@ $ trivy --cache-dir /tmp/trivy/ python:3.4-alpine3.9
 
 The `--clear-cache` option removes image caches. This option is useful if the image which has the same tag is updated (such as when using `latest` tag).
 
+**The scan is not performed.**
+
 ```
-$ trivy --clear-cache python:3.7
+$ trivy --clear-cache
 ```
 
 <details>
 <summary>Result</summary>
 
 ```
-2019-05-16T12:55:24.749+0900    INFO    Removing image caches...
-2019-05-16T12:55:24.769+0900    INFO    Updating vulnerability database...
-2019-05-16T12:56:14.055+0900    INFO    Detecting Debian vulnerabilities...
-
-python:3.7 (debian 9.9)
-=======================
-Total: 3076 (UNKNOWN: 0, LOW: 127, MEDIUM: 2358, HIGH: 578, CRITICAL: 13)
-
-+------------------------------+---------------------+----------+--------------------------+------------------+-------------------------------------------------------+
-|           LIBRARY            |  VULNERABILITY ID   | SEVERITY |    INSTALLED VERSION     |  FIXED VERSION   |                         TITLE                         |
-+------------------------------+---------------------+----------+--------------------------+------------------+-------------------------------------------------------+
-| apt                          | CVE-2011-3374       | LOW      | 1.4.9                    |                  |                                                       |
-+------------------------------+---------------------+          +--------------------------+------------------+-------------------------------------------------------+
-| bash                         | TEMP-0841856-B18BAF |          | 4.4-5                    |                  |                                                       |
-+------------------------------+---------------------+----------+--------------------------+------------------+-------------------------------------------------------+
-...
+2019-11-15T15:13:26.209+0200    INFO    Reopening vulnerability DB
+2019-11-15T15:13:26.209+0200    INFO    Removing image caches...
 ```
 
 </details>
@@ -1484,6 +1472,15 @@ $ brew install aquasecurity/trivy/trivy
 ```
 
 ## Others
+
+### GitHub Rate limiting
+
+Specify GITHUB_TOKEN for authentication  
+https://developer.github.com/v3/#rate-limiting
+
+```
+$ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
+```
 
 ### Unknown error
 
