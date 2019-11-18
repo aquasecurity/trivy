@@ -37,9 +37,35 @@ func (mde mockDockerExtractor) ExtractFiles(layer io.Reader, filenames []string)
 	panic("implement me")
 }
 
+type mockOSAnalyzer struct{}
+
+func (m mockOSAnalyzer) Analyze(extractor.FileMap) (OS, error) {
+	panic("implement me")
+}
+
+func (m mockOSAnalyzer) RequiredFiles() []string {
+	return []string{"file1", "file2", "file3"}
+}
+
 func TestAnalyze(t *testing.T) {
-	ac := AnalyzerConfig{Extractor: mockDockerExtractor{}}
-	fm, err := ac.Analyze(context.TODO(), "foo")
-	assert.NoError(t, err)
-	assert.NotNil(t, fm)
+	t.Run("happy path with docker installed and image found", func(t *testing.T) {
+		RegisterOSAnalyzer(mockOSAnalyzer{})
+		ac := AnalyzerConfig{Extractor: mockDockerExtractor{
+			extractFromFile: func(ctx context.Context, r io.Reader, filenames []string) (maps extractor.FileMap, e error) {
+				assert.Equal(t, []string{"file1", "file2", "file3"}, filenames)
+				return extractor.FileMap{
+					"file1": []byte{0x1, 0x2, 0x3},
+					"file2": []byte{0x1, 0x2, 0x3},
+					"file3": []byte{0x1, 0x2, 0x3},
+				}, nil
+			},
+		}}
+		fm, err := ac.Analyze(context.TODO(), "foo")
+		assert.NoError(t, err)
+		assert.Equal(t, extractor.FileMap{
+			"file1": []byte{0x1, 0x2, 0x3},
+			"file2": []byte{0x1, 0x2, 0x3},
+			"file3": []byte{0x1, 0x2, 0x3},
+		}, fm)
+	})
 }
