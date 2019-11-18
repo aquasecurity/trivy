@@ -6,6 +6,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
+
+	"github.com/aquasecurity/fanal/types"
+
+	"github.com/aquasecurity/fanal/extractor/docker"
 
 	"golang.org/x/xerrors"
 
@@ -52,9 +57,14 @@ func run() (err error) {
 
 	args := flag.Args()
 
+	opt := types.DockerOption{
+		Timeout: 600 * time.Second,
+	}
+	ac := analyzer.AnalyzerConfig{Extractor: docker.NewDockerExtractor(opt)}
+
 	var files extractor.FileMap
 	if len(args) > 0 {
-		files, err = analyzer.Analyze(ctx, args[0])
+		files, err = ac.Analyze(ctx, args[0])
 		if err != nil {
 			return err
 		}
