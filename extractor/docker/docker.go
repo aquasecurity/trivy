@@ -60,19 +60,17 @@ type layer struct {
 	Content io.ReadCloser
 }
 
-type opqDirs []string
-
 type DockerExtractor struct {
 	Option types.DockerOption
 }
 
-func NewDockerExtractor(option types.DockerOption) DockerExtractor {
+func NewDockerExtractor(option types.DockerOption) extractor.Extractor {
 	RegisterRegistry(&gcr.GCR{})
 	RegisterRegistry(&ecr.ECR{})
 	return DockerExtractor{Option: option}
 }
 
-func applyLayers(layerPaths []string, filesInLayers map[string]extractor.FileMap, opqInLayers map[string]opqDirs) (extractor.FileMap, error) {
+func applyLayers(layerPaths []string, filesInLayers map[string]extractor.FileMap, opqInLayers map[string]extractor.OPQDirs) (extractor.FileMap, error) {
 	sep := "/"
 	nestedMap := nested.Nested{}
 	for _, layerPath := range layerPaths {
@@ -190,7 +188,8 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 
 	ch := make(chan layer)
 	errCh := make(chan error)
-	layerIDs := []string{}
+	var layerIDs []string
+
 	for _, ref := range m.Manifest.Layers {
 		layerIDs = append(layerIDs, string(ref.Digest))
 		go func(d digest.Digest) {
@@ -203,6 +202,7 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 					errCh <- xerrors.Errorf("failed to download the layer(%s): %w", d, err)
 					return
 				}
+
 				rc, err = cache.Set(string(d), rc)
 				if err != nil {
 					log.Print(err)
@@ -218,7 +218,7 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 	}
 
 	filesInLayers := make(map[string]extractor.FileMap)
-	opqInLayers := make(map[string]opqDirs)
+	opqInLayers := make(map[string]extractor.OPQDirs)
 	for i := 0; i < len(m.Manifest.Layers); i++ {
 		var l layer
 		select {
@@ -262,7 +262,7 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filenames []string) (extractor.FileMap, error) {
 	manifests := make([]manifest, 0)
 	filesInLayers := map[string]extractor.FileMap{}
-	opqInLayers := make(map[string]opqDirs)
+	opqInLayers := make(map[string]extractor.OPQDirs)
 
 	tarFiles := make(map[string][]byte)
 
@@ -330,9 +330,9 @@ func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filen
 	return fileMap, nil
 }
 
-func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extractor.FileMap, opqDirs, error) {
+func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extractor.FileMap, extractor.OPQDirs, error) {
 	data := make(map[string][]byte)
-	opqDirs := opqDirs{}
+	opqDirs := extractor.OPQDirs{}
 
 	tr := tar.NewReader(layer)
 	for {
