@@ -48,7 +48,7 @@ func Scan(files extractor.FileMap) (string, string, []types.DetectedVulnerabilit
 		s = redhat.NewScanner()
 	case fos.Amazon:
 		s = amazon.NewScanner()
-	case fos.Amazon:
+	case fos.Oracle:
 		s = oracle.NewScanner()
 	default:
 		log.Logger.Warnf("unsupported os : %s", os.Family)

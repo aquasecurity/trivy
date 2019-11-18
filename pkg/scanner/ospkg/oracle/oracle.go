@@ -46,6 +46,7 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Detecte
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
+
 	log.Logger.Debugf("Oracle Linux: os version: %s", osVer)
 	log.Logger.Debugf("Oracle Linux: the number of packages: %d", len(pkgs))
 
@@ -55,11 +56,8 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Detecte
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Oracle Linux advisory: %w", err)
 		}
-		installed := utils.FormatVersion(pkg)
-		if installed == "" {
-			continue
-		}
 
+		installed := utils.FormatVersion(pkg)
 		installedVersion := version.NewVersion(installed)
 		for _, adv := range advisories {
 			fixedVersion := version.NewVersion(adv.FixedVersion)
