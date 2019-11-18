@@ -2,6 +2,7 @@ package analyzer
 
 import (
 	"context"
+	"errors"
 	"io"
 	"testing"
 
@@ -13,10 +14,14 @@ import (
 type mockDockerExtractor struct {
 	saveLocalImage  func(ctx context.Context, imageName string) (io.Reader, error)
 	extractFromFile func(ctx context.Context, r io.Reader, filenames []string) (extractor.FileMap, error)
+	extract         func(ctx context.Context, imageName string, filenames []string) (extractor.FileMap, error)
 }
 
 func (mde mockDockerExtractor) Extract(ctx context.Context, imageName string, filenames []string) (extractor.FileMap, error) {
-	panic("implement me")
+	if mde.extract != nil {
+		return mde.extract(ctx, imageName, filenames)
+	}
+	return extractor.FileMap{}, nil
 }
 
 func (mde mockDockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filenames []string) (extractor.FileMap, error) {
@@ -50,6 +55,8 @@ func (m mockOSAnalyzer) RequiredFiles() []string {
 func TestAnalyze(t *testing.T) {
 	testCases := []struct {
 		name                string
+		saveLocalImageFunc  func(ctx context.Context, imageName string) (io.Reader, error)
+		extractFunc         func(ctx context.Context, imageName string, filenames []string) (extractor.FileMap, error)
 		extractFromFileFunc func(ctx context.Context, r io.Reader, filenames []string) (maps extractor.FileMap, e error)
 		expectedError       error
 		expectedFileMap     extractor.FileMap
@@ -70,14 +77,36 @@ func TestAnalyze(t *testing.T) {
 				"file3": []byte{0x1, 0x2, 0x3},
 			},
 		},
+		{
+			name: "happy path with no docker installed or no image found",
+			saveLocalImageFunc: func(ctx context.Context, imageName string) (reader io.Reader, e error) {
+				return nil, errors.New("couldn't save local image")
+			},
+			extractFunc: func(ctx context.Context, imageName string, filenames []string) (maps extractor.FileMap, e error) {
+				assert.Equal(t, "fooimage", imageName)
+				assert.Equal(t, []string{"file1", "file2", "file3"}, filenames)
+				return extractor.FileMap{
+					"file1": []byte{0x1, 0x2, 0x3},
+					"file2": []byte{0x1, 0x2, 0x3},
+					"file3": []byte{0x1, 0x2, 0x3},
+				}, nil
+			},
+			expectedFileMap: extractor.FileMap{
+				"file1": []byte{0x1, 0x2, 0x3},
+				"file2": []byte{0x1, 0x2, 0x3},
+				"file3": []byte{0x1, 0x2, 0x3},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
 		RegisterOSAnalyzer(mockOSAnalyzer{})
 		ac := AnalyzerConfig{Extractor: mockDockerExtractor{
 			extractFromFile: tc.extractFromFileFunc,
+			extract:         tc.extractFunc,
+			saveLocalImage:  tc.saveLocalImageFunc,
 		}}
-		fm, err := ac.Analyze(context.TODO(), "foo")
+		fm, err := ac.Analyze(context.TODO(), "fooimage")
 		assert.Equal(t, tc.expectedError, err, tc.name)
 		assert.Equal(t, tc.expectedFileMap, fm, tc.name)
 	}
