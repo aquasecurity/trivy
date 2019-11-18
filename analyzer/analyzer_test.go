@@ -48,10 +48,15 @@ func (m mockOSAnalyzer) RequiredFiles() []string {
 }
 
 func TestAnalyze(t *testing.T) {
-	t.Run("happy path with docker installed and image found", func(t *testing.T) {
-		RegisterOSAnalyzer(mockOSAnalyzer{})
-		ac := AnalyzerConfig{Extractor: mockDockerExtractor{
-			extractFromFile: func(ctx context.Context, r io.Reader, filenames []string) (maps extractor.FileMap, e error) {
+	testCases := []struct {
+		name                string
+		extractFromFileFunc func(ctx context.Context, r io.Reader, filenames []string) (maps extractor.FileMap, e error)
+		expectedError       error
+		expectedFileMap     extractor.FileMap
+	}{
+		{
+			name: "happy path with docker installed and image found",
+			extractFromFileFunc: func(ctx context.Context, r io.Reader, filenames []string) (maps extractor.FileMap, e error) {
 				assert.Equal(t, []string{"file1", "file2", "file3"}, filenames)
 				return extractor.FileMap{
 					"file1": []byte{0x1, 0x2, 0x3},
@@ -59,13 +64,21 @@ func TestAnalyze(t *testing.T) {
 					"file3": []byte{0x1, 0x2, 0x3},
 				}, nil
 			},
+			expectedFileMap: extractor.FileMap{
+				"file1": []byte{0x1, 0x2, 0x3},
+				"file2": []byte{0x1, 0x2, 0x3},
+				"file3": []byte{0x1, 0x2, 0x3},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		RegisterOSAnalyzer(mockOSAnalyzer{})
+		ac := AnalyzerConfig{Extractor: mockDockerExtractor{
+			extractFromFile: tc.extractFromFileFunc,
 		}}
 		fm, err := ac.Analyze(context.TODO(), "foo")
-		assert.NoError(t, err)
-		assert.Equal(t, extractor.FileMap{
-			"file1": []byte{0x1, 0x2, 0x3},
-			"file2": []byte{0x1, 0x2, 0x3},
-			"file3": []byte{0x1, 0x2, 0x3},
-		}, fm)
-	})
+		assert.Equal(t, tc.expectedError, err, tc.name)
+		assert.Equal(t, tc.expectedFileMap, fm, tc.name)
+	}
 }
