@@ -122,7 +122,7 @@ func TestExtractFiles(t *testing.T) {
 		file      string            // Test input file
 		filenames []string          // Target files
 		FileMap   extractor.FileMap // Expected output
-		opqDirs   opqDirs           // Expected output
+		opqDirs   OPQDirs           // Expected output
 		err       error             // Expected error to occur
 	}{
 		{
@@ -167,7 +167,7 @@ func TestExtractFiles(t *testing.T) {
 				t.Errorf("err: got %v, want %v", v.err, err)
 			}
 			if !reflect.DeepEqual(opqDirs, v.opqDirs) {
-				t.Errorf("opqDirs: got %v, want %v", opqDirs, v.opqDirs)
+				t.Errorf("OPQDirs: got %v, want %v", opqDirs, v.opqDirs)
 			}
 			if !reflect.DeepEqual(fm, v.FileMap) {
 				t.Errorf("FilesMap: got %v, want %v", fm, v.FileMap)

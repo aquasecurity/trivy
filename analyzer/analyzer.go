@@ -5,7 +5,6 @@ import (
 	"context"
 	"io"
 	"os"
-	"time"
 
 	"github.com/aquasecurity/fanal/utils"
 
@@ -32,6 +31,10 @@ var (
 	// ErrNoPkgsDetected occurs when the required files for an OS package manager are not detected
 	ErrNoPkgsDetected = xerrors.New("No packages detected")
 )
+
+type AnalyzerConfig struct {
+	Extractor extractor.Extractor
+}
 
 type OSAnalyzer interface {
 	Analyze(extractor.FileMap) (OS, error)
@@ -113,28 +116,19 @@ func RequiredFilenames() []string {
 	return filenames
 }
 
-func Analyze(ctx context.Context, imageName string, opts ...types.DockerOption) (fileMap extractor.FileMap, err error) {
-	// default docker option
-	opt := types.DockerOption{
-		Timeout:  600 * time.Second,
-		SkipPing: true,
-	}
-	if len(opts) > 0 {
-		opt = opts[0]
-	}
-
-	e := docker.NewDockerExtractor(opt)
-	r, err := e.SaveLocalImage(ctx, imageName)
+// TODO: Remove opts as they're no longer needed
+func (ac AnalyzerConfig) Analyze(ctx context.Context, imageName string, opts ...types.DockerOption) (fileMap extractor.FileMap, err error) {
+	r, err := ac.Extractor.SaveLocalImage(ctx, imageName)
 	if err != nil {
 		// when no docker daemon is installed or no image exists in the local machine
-		fileMap, err = e.Extract(ctx, imageName, RequiredFilenames())
+		fileMap, err = ac.Extractor.Extract(ctx, imageName, RequiredFilenames())
 		if err != nil {
 			return nil, xerrors.Errorf("failed to extract files: %w", err)
 		}
 		return fileMap, nil
 	}
 
-	fileMap, err = e.ExtractFromFile(ctx, r, RequiredFilenames())
+	fileMap, err = ac.Extractor.ExtractFromFile(ctx, r, RequiredFilenames())
 	if err != nil {
 		return nil, xerrors.Errorf("failed to extract files from saved tar: %w", err)
 	}
