@@ -90,14 +90,15 @@ func (c Client) Download(ctx context.Context, cliVersion, cacheDir string, light
 		return nil
 	}
 
+	log.Logger.Info("Downloading the DB file and reopening vulnerability DB")
+	if err = db.Close(); err != nil {
+		return xerrors.Errorf("unable to close old DB: %w", err)
+	}
+
 	if err = c.download(ctx, cacheDir, message, dbFile); err != nil {
 		return xerrors.Errorf("failed to download the DB file: %w", err)
 	}
 
-	log.Logger.Info("Reopening vulnerability DB")
-	if err = db.Close(); err != nil {
-		return xerrors.Errorf("unable to close old DB: %w", err)
-	}
 	if err = db.Init(cacheDir); err != nil {
 		return xerrors.Errorf("unable to open new DB: %w", err)
 	}
