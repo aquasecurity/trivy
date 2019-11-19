@@ -1,6 +1,6 @@
 [
   {
-    "Target": "oraclelinux:6-slim (oracle 6.10)",
+    "Target": "testdata/fixtures/oraclelinux-6-slim.tar.gz (oracle 6.10)",
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-3855",
