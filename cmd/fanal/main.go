@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/aquasecurity/fanal/utils"
+
 	"github.com/aquasecurity/fanal/types"
 
 	"github.com/aquasecurity/fanal/extractor/docker"
@@ -49,8 +51,10 @@ func run() (err error) {
 	clearCache := flag.Bool("clear", false, "clear cache")
 	flag.Parse()
 
+	c := cache.Initialize(utils.CacheDir())
+
 	if *clearCache {
-		if err = cache.Clear(); err != nil {
+		if err = c.Clear(); err != nil {
 			return xerrors.Errorf("error in cache clear: %w", err)
 		}
 	}

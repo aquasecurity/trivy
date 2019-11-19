@@ -3,6 +3,7 @@ package docker
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -10,6 +11,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/aquasecurity/fanal/cache"
 
 	"github.com/docker/docker/client"
 
@@ -201,12 +204,19 @@ func TestDockerExtractor_SaveLocalImage(t *testing.T) {
 	c, err := client.NewClientWithOpts(client.WithHost(ts.URL))
 	assert.NoError(t, err)
 
-	d := DockerExtractor{
+	// setup cache
+	tempCacheDir, _ := ioutil.TempDir("", "TestDockerExtractor_SaveLocalImage-*")
+	defer func() {
+		_ = os.RemoveAll(tempCacheDir)
+	}()
+
+	de := DockerExtractor{
 		Option: types.DockerOption{},
 		Client: c,
+		Cache:  cache.Initialize(tempCacheDir),
 	}
 
-	r, err := d.SaveLocalImage(context.TODO(), "fooimage")
+	r, err := de.SaveLocalImage(context.TODO(), "fooimage")
 	assert.NotNil(t, r)
 	assert.NoError(t, err)
 }

@@ -6,18 +6,29 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/fanal/utils"
-
 	"golang.org/x/xerrors"
 )
 
 var (
-	cacheDir = utils.CacheDir()
 	replacer = strings.NewReplacer("/", "_")
 )
 
-func Get(key string) io.Reader {
-	filePath := filepath.Join(cacheDir, replacer.Replace(key))
+type Cache interface {
+	Get(key string) io.Reader
+	Set(key string, file io.Reader) (io.Reader, error)
+	Clear() error
+}
+
+type FSCache struct {
+	Directory string
+}
+
+func Initialize(cacheDir string) Cache {
+	return &FSCache{Directory: cacheDir}
+}
+
+func (fs FSCache) Get(key string) io.Reader {
+	filePath := filepath.Join(fs.Directory, replacer.Replace(key))
 	f, err := os.Open(filePath)
 	if err != nil {
 		return nil
@@ -25,9 +36,9 @@ func Get(key string) io.Reader {
 	return f
 }
 
-func Set(key string, file io.Reader) (io.Reader, error) {
-	filePath := filepath.Join(cacheDir, replacer.Replace(key))
-	if err := os.MkdirAll(cacheDir, os.ModePerm); err != nil {
+func (fs FSCache) Set(key string, file io.Reader) (io.Reader, error) {
+	filePath := filepath.Join(fs.Directory, replacer.Replace(key))
+	if err := os.MkdirAll(fs.Directory, os.ModePerm); err != nil {
 		return nil, xerrors.Errorf("failed to mkdir all: %w", err)
 	}
 	cacheFile, err := os.Create(filePath)
@@ -39,8 +50,8 @@ func Set(key string, file io.Reader) (io.Reader, error) {
 	return tee, nil
 }
 
-func Clear() error {
-	if err := os.RemoveAll(cacheDir); err != nil {
+func (fs FSCache) Clear() error {
+	if err := os.RemoveAll(fs.Directory); err != nil {
 		return xerrors.New("failed to remove cache")
 	}
 	return nil

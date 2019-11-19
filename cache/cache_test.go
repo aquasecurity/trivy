@@ -10,36 +10,31 @@ import (
 )
 
 func TestSetAndGetAndClear(t *testing.T) {
-	d, _ := ioutil.TempDir("", "TestCacheDir-*")
-	f, _ := ioutil.TempFile(d, "foo.bar.baz-*")
+	tempCacheDir, _ := ioutil.TempDir("", "TestCacheDir-*")
+	f, _ := ioutil.TempFile(tempCacheDir, "foo.bar.baz-*")
 
-	oldCacheDir := cacheDir
-	defer func() {
-		cacheDir = oldCacheDir
-		_ = os.RemoveAll(d)
-	}()
-	cacheDir = d
+	c := Initialize(tempCacheDir)
 
 	// set
 	expectedCacheContents := "foo bar baz"
 	var buf bytes.Buffer
 	buf.Write([]byte(expectedCacheContents))
 
-	r, err := Set(f.Name(), &buf)
+	r, err := c.Set(f.Name(), &buf)
 	assert.NoError(t, err)
 
 	b, _ := ioutil.ReadAll(r)
 	assert.Equal(t, expectedCacheContents, string(b))
 
 	// get
-	actualFile := Get(f.Name())
+	actualFile := c.Get(f.Name())
 	actualBytes, _ := ioutil.ReadAll(actualFile)
 	assert.Equal(t, expectedCacheContents, string(actualBytes))
 
 	// clear
-	assert.NoError(t, Clear())
+	assert.NoError(t, c.Clear())
 
 	// confirm that no cachedir remains
-	_, err = os.Stat(d)
+	_, err = os.Stat(tempCacheDir)
 	assert.True(t, os.IsNotExist(err))
 }
