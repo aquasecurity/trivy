@@ -184,13 +184,9 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 	}
 
 	// Get the v2 manifest.
-	manifest, err := r.Manifest(ctx, image.Path, image.Reference())
+	m, err := getValidManifest(err, r, ctx, image)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get the v2 manifest: %w", err)
-	}
-	m, ok := manifest.(*schema2.DeserializedManifest)
-	if !ok {
-		return nil, xerrors.New("invalid manifest")
+		return nil, err
 	}
 
 	ch := make(chan layer)
@@ -264,6 +260,18 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 	fileMap["/config"] = config
 
 	return fileMap, nil
+}
+
+func getValidManifest(err error, r *registry.Registry, ctx context.Context, image registry.Image) (*schema2.DeserializedManifest, error) {
+	manifest, err := r.Manifest(ctx, image.Path, image.Reference())
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get the v2 manifest: %w", err)
+	}
+	m, ok := manifest.(*schema2.DeserializedManifest)
+	if !ok {
+		return nil, xerrors.New("invalid manifest")
+	}
+	return m, nil
 }
 
 func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filenames []string) (extractor.FileMap, error) {
