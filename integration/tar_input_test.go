@@ -301,6 +301,36 @@ func TestRun_WithTar(t *testing.T) {
 			},
 			golden: "testdata/amazon-2.json.golden",
 		},
+		{
+			name: "oracle 6 integration",
+			testArgs: args{
+				Version:    "dev",
+				SkipUpdate: true,
+				Format:     "json",
+				Input:      "testdata/fixtures/oraclelinux-6-slim.tar.gz",
+			},
+			golden: "testdata/oraclelinux-6-slim.json.golden",
+		},
+		{
+			name: "oracle 7 integration",
+			testArgs: args{
+				Version:    "dev",
+				SkipUpdate: true,
+				Format:     "json",
+				Input:      "testdata/fixtures/oraclelinux-7-slim.tar.gz",
+			},
+			golden: "testdata/oraclelinux-7-slim.json.golden",
+		},
+		{
+			name: "oracle 8 integration",
+			testArgs: args{
+				Version:    "dev",
+				SkipUpdate: true,
+				Format:     "json",
+				Input:      "testdata/fixtures/oraclelinux-8-slim.tar.gz",
+			},
+			golden: "testdata/oraclelinux-8-slim.json.golden",
+		},
 	}
 
 	for _, c := range cases {
