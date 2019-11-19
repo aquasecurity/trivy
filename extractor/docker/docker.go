@@ -189,34 +189,14 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 		return nil, err
 	}
 
-	ch := make(chan layer)
+	layerCh := make(chan layer)
 	errCh := make(chan error)
 	var layerIDs []string
 
 	for _, ref := range m.Manifest.Layers {
 		layerIDs = append(layerIDs, string(ref.Digest))
 		go func(dig digest.Digest) {
-			// Use cache
-			rc := d.Cache.Get(string(dig))
-			if rc == nil {
-				// Download the layer.
-				rc, err = r.DownloadLayer(ctx, image.Path, dig)
-				if err != nil {
-					errCh <- xerrors.Errorf("failed to download the layer(%s): %w", dig, err)
-					return
-				}
-
-				rc, err = d.Cache.Set(string(dig), rc)
-				if err != nil {
-					log.Print(err)
-				}
-			}
-			gzipReader, err := gzip.NewReader(rc)
-			if err != nil {
-				errCh <- xerrors.Errorf("invalid gzip: %w", err)
-				return
-			}
-			ch <- layer{ID: dig, Content: gzipReader}
+			d.extractLayerWorker(dig, r, ctx, image, errCh, layerCh)
 		}(ref.Digest)
 	}
 
@@ -225,7 +205,7 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 	for i := 0; i < len(m.Manifest.Layers); i++ {
 		var l layer
 		select {
-		case l = <-ch:
+		case l = <-layerCh:
 		case err := <-errCh:
 			return nil, err
 		case <-ctx.Done():
@@ -260,6 +240,31 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 	fileMap["/config"] = config
 
 	return fileMap, nil
+}
+
+func (d DockerExtractor) extractLayerWorker(dig digest.Digest, r *registry.Registry, ctx context.Context, image registry.Image, errCh chan error, layerCh chan layer) {
+	var rc io.Reader
+	// Use cache
+	rc = d.Cache.Get(string(dig))
+	if rc == nil {
+		// Download the layer.
+		layerRC, err := r.DownloadLayer(ctx, image.Path, dig)
+		if err != nil {
+			errCh <- xerrors.Errorf("failed to download the layer(%s): %w", dig, err)
+			return
+		}
+
+		rc, err = d.Cache.Set(string(dig), layerRC)
+		if err != nil {
+			log.Print(err)
+		}
+	}
+	gzipReader, err := gzip.NewReader(rc)
+	if err != nil {
+		errCh <- xerrors.Errorf("invalid gzip: %w", err)
+		return
+	}
+	layerCh <- layer{ID: dig, Content: gzipReader}
 }
 
 func getValidManifest(err error, r *registry.Registry, ctx context.Context, image registry.Image) (*schema2.DeserializedManifest, error) {
