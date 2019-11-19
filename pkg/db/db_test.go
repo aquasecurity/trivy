@@ -74,6 +74,7 @@ func TestClient_Download(t *testing.T) {
 	testCases := []struct {
 		name            string
 		light           bool
+		skip            bool
 		clock           clock.Clock
 		getMetadata     getMetadataOutput
 		downloadDB      []downloadDB
@@ -158,6 +159,19 @@ func TestClient_Download(t *testing.T) {
 			},
 		},
 		{
+			name:  "happy path with --skip-update",
+			light: false,
+			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			getMetadata: getMetadataOutput{
+				metadata: db.Metadata{
+					Version:    1,
+					Type:       db.TypeFull,
+					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
+				},
+			},
+			skip: true,
+		},
+		{
 			name:  "skip downloading DB",
 			light: false,
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
@@ -224,6 +238,30 @@ func TestClient_Download(t *testing.T) {
 			},
 			expectedError: xerrors.New("unable to open new DB: failed to open db: invalid database"),
 		},
+		{
+			name:  "--skip-update on the first run",
+			light: false,
+			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			getMetadata: getMetadataOutput{
+				err: xerrors.New("this is the first run"),
+			},
+			skip:          true,
+			expectedError: xerrors.New("--skip-update cannot be specified on the first run"),
+		},
+		{
+			name:  "--skip-update with different schema version",
+			light: false,
+			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			getMetadata: getMetadataOutput{
+				metadata: db.Metadata{
+					Version:    0,
+					Type:       db.TypeFull,
+					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
+				},
+			},
+			skip:          true,
+			expectedError: xerrors.New("--skip-update cannot be specified with the old DB"),
+		},
 	}
 
 	if err := log.InitLogger(false, true); err != nil {
@@ -264,7 +302,7 @@ func TestClient_Download(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			err = client.Download(ctx, "test", dir, tc.light)
+			err = client.Download(ctx, "test", dir, tc.light, tc.skip)
 
 			switch {
 			case tc.expectedError != nil:
