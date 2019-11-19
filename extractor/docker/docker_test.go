@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"context"
 	"os"
 	"path"
 	"reflect"
@@ -105,7 +106,7 @@ func TestExtractFromFile(t *testing.T) {
 			defer f.Close()
 
 			d := DockerExtractor{}
-			fm, err := d.ExtractFromFile(nil, f, v.filenames)
+			fm, err := d.ExtractFromFile(context.TODO(), f, v.filenames)
 			if v.err != err {
 				t.Errorf("err: got %v, want %v", v.err, err)
 			}

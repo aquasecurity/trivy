@@ -70,11 +70,11 @@ func run() (err error) {
 		}
 	}
 
-	os, err := analyzer.GetOS(files)
+	osFound, err := analyzer.GetOS(files)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v\n", os)
+	fmt.Printf("%+v\n", osFound)
 
 	pkgs, err := analyzer.GetPackages(files)
 	if err != nil {
@@ -82,7 +82,7 @@ func run() (err error) {
 	}
 	fmt.Printf("via image Packages: %d\n", len(pkgs))
 
-	pkgs, err = analyzer.GetPackagesFromCommands(os, files)
+	pkgs, err = analyzer.GetPackagesFromCommands(osFound, files)
 	if err != nil {
 		return err
 	}

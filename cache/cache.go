@@ -40,7 +40,7 @@ func Set(key string, file io.Reader) (io.Reader, error) {
 }
 
 func Clear() error {
-	if err := os.RemoveAll(utils.CacheDir()); err != nil {
+	if err := os.RemoveAll(cacheDir); err != nil {
 		return xerrors.New("failed to remove cache")
 	}
 	return nil
