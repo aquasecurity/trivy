@@ -19,3 +19,4 @@ thumbs.db
 
 # test fixtures
 integration/testdata/fixtures/
+integration/testdata/db/

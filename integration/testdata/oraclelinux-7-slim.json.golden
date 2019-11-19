@@ -11,8 +11,6 @@
         "Description": "Curl versions 7.14.1 through 7.61.1 are vulnerable to a heap-based buffer over-read in the tool_msgs.c:voutf() function that may result in information exposure and denial of service.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-16842.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2181.html",
           "http://www.securitytracker.com/id/1042014",
           "https://access.redhat.com/errata/RHSA-2019:2181",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16842",
@@ -35,8 +33,6 @@
         "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
         "Severity": "HIGH",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-16402.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
           "https://usn.ubuntu.com/4012-1/"
@@ -51,8 +47,6 @@
         "Description": "dwarf_getaranges in dwarf_getaranges.c in libdw in elfutils before 2018-08-18 allows remote attackers to cause a denial of service (heap-based buffer over-read) via a crafted file.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-16062.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00052.html",
           "https://access.redhat.com/errata/RHSA-2019:2197",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16062",
@@ -71,8 +65,6 @@
         "Description": "libdw in elfutils 0.173 checks the end of the attributes list incorrectly in dwarf_getabbrev in dwarf_getabbrev.c and dwarf_hasattr in dwarf_hasattr.c, leading to a heap-based buffer over-read and an application crash.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-16403.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00052.html",
           "https://access.redhat.com/errata/RHSA-2019:2197",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16403",
@@ -90,8 +82,6 @@
         "Description": "An invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl in elfutils through v0.174. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by consider_notes.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-18310.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18310",
           "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23752",
@@ -108,8 +98,6 @@
         "Description": "An Invalid Memory Address Dereference exists in the function elf_end in libelf in elfutils through v0.174. Although eu-size is intended to support ar files inside ar files, handle_ar in size.c closes the outer ar file before handling all inner entries. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-18520.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18520",
           "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23787",
@@ -126,8 +114,6 @@
         "Description": "Divide-by-zero vulnerabilities in the function arlib_add_symbols() in arlib.c in elfutils 0.174 allow remote attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by eu-ranlib, because a zero sh_entsize is mishandled.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-18521.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18521",
           "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23786",
@@ -144,8 +130,6 @@
         "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-7149.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7149",
           "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24102",
@@ -162,8 +146,6 @@
         "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-7150.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7150",
           "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24103",
@@ -180,8 +162,6 @@
         "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-7664.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
           "https://access.redhat.com/errata/RHSA-2019:2197",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7664",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24084"
@@ -196,8 +176,6 @@
         "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-7665.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7665",
           "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24089",
@@ -214,8 +192,6 @@
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2016-10739.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2118.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
           "http://www.securityfocus.com/bid/106672",
           "https://access.redhat.com/errata/RHSA-2019:2118",
@@ -233,8 +209,6 @@
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2016-10739.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2118.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
           "http://www.securityfocus.com/bid/106672",
           "https://access.redhat.com/errata/RHSA-2019:2118",
@@ -252,8 +226,6 @@
         "Description": "Curl versions 7.14.1 through 7.61.1 are vulnerable to a heap-based buffer over-read in the tool_msgs.c:voutf() function that may result in information exposure and denial of service.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-16842.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2181.html",
           "http://www.securitytracker.com/id/1042014",
           "https://access.redhat.com/errata/RHSA-2019:2181",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16842",
@@ -276,8 +248,6 @@
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 when a specially crafted SFTP packet is received from the server. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-3858.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2136.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
@@ -305,8 +275,6 @@
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH packets with a padding length value greater than the packet length are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-3861.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2136.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3861",
@@ -328,8 +296,6 @@
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-12404.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
@@ -345,8 +311,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-0495.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -378,8 +342,6 @@
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-12404.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
@@ -395,8 +357,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-0495.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -428,8 +388,6 @@
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-12404.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
@@ -445,8 +403,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-0495.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -478,8 +434,6 @@
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-12404.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
@@ -495,8 +449,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-0495.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -528,8 +480,6 @@
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-12404.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
@@ -545,8 +495,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-0495.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -578,8 +526,6 @@
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-12404.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
@@ -595,8 +541,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-0495.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -628,8 +572,6 @@
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-12404.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
@@ -645,8 +587,6 @@
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-0495.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://www.securitytracker.com/id/1041144",
           "http://www.securitytracker.com/id/1041147",
           "https://access.redhat.com/errata/RHSA-2018:3221",
@@ -678,8 +618,6 @@
         "Description": "The OpenSSL DSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.1a (Affected 1.1.1). Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.0.2q (Affected 1.0.2-1.0.2p).",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-0734.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2304.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00030.html",
           "http://www.securityfocus.com/bid/105758",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0734",
@@ -709,8 +647,6 @@
         "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-1559.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2471.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00041.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00019.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00046.html",
@@ -736,6 +672,19 @@
         ]
       },
       {
+        "VulnerabilityID": "CVE-2019-5010",
+        "PkgName": "python",
+        "InstalledVersion": "2.7.5-80.0.1.el7_6",
+        "FixedVersion": "2.7.5-86.0.1.el7",
+        "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
+        "Description": "A null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
+        "Severity": "HIGH",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
+          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html"
+        ]
+      },
+      {
         "VulnerabilityID": "CVE-2018-14647",
         "PkgName": "python",
         "InstalledVersion": "2.7.5-80.0.1.el7_6",
@@ -744,8 +693,6 @@
         "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. Python 3.8, 3.7, 3.6, 3.5, 3.4, 2.7 are believed to be vulnerable.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-14647.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
           "http://www.securityfocus.com/bid/105396",
           "http://www.securitytracker.com/id/1041740",
           "https://access.redhat.com/errata/RHSA-2019:1260",
@@ -763,24 +710,6 @@
         ]
       },
       {
-        "VulnerabilityID": "CVE-2019-5010",
-        "PkgName": "python",
-        "InstalledVersion": "2.7.5-80.0.1.el7_6",
-        "FixedVersion": "2.7.5-86.0.1.el7",
-        "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
-        "Description": "An exploitable denial-of-service vulnerability exists in the X509 certificate parser of Python.org Python 2.7.11 / 3.6.6. A specially crafted X509 certificate can cause a NULL pointer dereference, resulting in a denial of service. An attacker can initiate or accept TLS connections using crafted certificates to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2019-5010.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
-          "https://access.redhat.com/errata/RHSA-2019:3520",
-          "https://access.redhat.com/errata/RHSA-2019:3725",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
-          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0758"
-        ]
-      },
-      {
         "VulnerabilityID": "CVE-2019-9740",
         "PkgName": "python",
         "InstalledVersion": "2.7.5-80.0.1.el7_6",
@@ -789,8 +718,6 @@
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the query string after a ? character) followed by an HTTP header or a Redis command.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-9740.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
           "http://www.securityfocus.com/bid/107466",
           "https://access.redhat.com/errata/RHSA-2019:1260",
           "https://bugs.python.org/issue36276",
@@ -808,8 +735,6 @@
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the path component of a URL that lacks a ? character) followed by an HTTP header or a Redis command. This is similar to the CVE-2019-9740 query string issue.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-9947.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
           "https://access.redhat.com/errata/RHSA-2019:1260",
           "https://bugs.python.org/issue35906",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9947",
@@ -827,8 +752,6 @@
         "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-9948.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00092.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00050.html",
           "http://www.securityfocus.com/bid/107549",
@@ -840,6 +763,19 @@
         ]
       },
       {
+        "VulnerabilityID": "CVE-2019-5010",
+        "PkgName": "python-libs",
+        "InstalledVersion": "2.7.5-80.0.1.el7_6",
+        "FixedVersion": "2.7.5-86.0.1.el7",
+        "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
+        "Description": "A null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
+        "Severity": "HIGH",
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
+          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html"
+        ]
+      },
+      {
         "VulnerabilityID": "CVE-2018-14647",
         "PkgName": "python-libs",
         "InstalledVersion": "2.7.5-80.0.1.el7_6",
@@ -848,8 +784,6 @@
         "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. Python 3.8, 3.7, 3.6, 3.5, 3.4, 2.7 are believed to be vulnerable.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-14647.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
           "http://www.securityfocus.com/bid/105396",
           "http://www.securitytracker.com/id/1041740",
           "https://access.redhat.com/errata/RHSA-2019:1260",
@@ -867,24 +801,6 @@
         ]
       },
       {
-        "VulnerabilityID": "CVE-2019-5010",
-        "PkgName": "python-libs",
-        "InstalledVersion": "2.7.5-80.0.1.el7_6",
-        "FixedVersion": "2.7.5-86.0.1.el7",
-        "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
-        "Description": "An exploitable denial-of-service vulnerability exists in the X509 certificate parser of Python.org Python 2.7.11 / 3.6.6. A specially crafted X509 certificate can cause a NULL pointer dereference, resulting in a denial of service. An attacker can initiate or accept TLS connections using crafted certificates to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2019-5010.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
-          "https://access.redhat.com/errata/RHSA-2019:3520",
-          "https://access.redhat.com/errata/RHSA-2019:3725",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
-          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0758"
-        ]
-      },
-      {
         "VulnerabilityID": "CVE-2019-9740",
         "PkgName": "python-libs",
         "InstalledVersion": "2.7.5-80.0.1.el7_6",
@@ -893,8 +809,6 @@
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the query string after a ? character) followed by an HTTP header or a Redis command.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-9740.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
           "http://www.securityfocus.com/bid/107466",
           "https://access.redhat.com/errata/RHSA-2019:1260",
           "https://bugs.python.org/issue36276",
@@ -912,8 +826,6 @@
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the path component of a URL that lacks a ? character) followed by an HTTP header or a Redis command. This is similar to the CVE-2019-9740 query string issue.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-9947.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
           "https://access.redhat.com/errata/RHSA-2019:1260",
           "https://bugs.python.org/issue35906",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9947",
@@ -931,8 +843,6 @@
         "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-9948.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00092.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00050.html",
           "http://www.securityfocus.com/bid/107549",
@@ -946,3 +856,4 @@
     ]
   }
 ]
+

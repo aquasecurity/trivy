@@ -11,8 +11,6 @@
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "CRITICAL",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-3855.html",
-          "http://linux.oracle.com/errata/ELSA-2019-1652.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
@@ -42,8 +40,6 @@
         "Description": "An integer overflow flaw, which could lead to an out of bounds write, was discovered in libssh2 before 1.8.1 in the way keyboard prompt requests are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-3856.html",
-          "http://linux.oracle.com/errata/ELSA-2019-1652.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
@@ -67,8 +63,6 @@
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit signal are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-3857.html",
-          "http://linux.oracle.com/errata/ELSA-2019-1652.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
@@ -92,8 +86,6 @@
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit status message and no payload are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-3862.html",
-          "http://linux.oracle.com/errata/ELSA-2019-4693.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
@@ -121,8 +113,6 @@
         "Description": "A flaw was found in libssh2 before 1.8.1. A server could send a multiple keyboard interactive response messages whose total length are greater than unsigned char max characters. This value is used as an index to copy memory causing in an out of bounds memory write error.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-3863.html",
-          "http://linux.oracle.com/errata/ELSA-2019-1652.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
@@ -146,8 +136,6 @@
         "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-1559.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2471.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00041.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00019.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00046.html",
@@ -175,3 +163,4 @@
     ]
   }
 ]
+
