@@ -73,8 +73,6 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Detecte
 			if installedVersion.LessThan(fixedVersion) {
 				vuln.FixedVersion = adv.FixedVersion
 				vulns = append(vulns, vuln)
-			} else if adv.FixedVersion == "" {
-				vulns = append(vulns, vuln)
 			}
 		}
 	}
