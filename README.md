@@ -1241,7 +1241,7 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 | Red Hat Enterprise Linux     | 6, 7, 8                                  | Installed by yum/rpm          |                 YES                  |
 | CentOS                       | 6, 7                                     | Installed by yum/rpm          |                 YES                  |
 | Oracle Linux                 | 5, 6, 7, 8                               | Installed by yum/rpm          |                  NO                  |
-| Amazon Linux                 | 1, 2                                     | Installed by apt/apt-get/dpkg |                  NO                  |
+| Amazon Linux                 | 1, 2                                     | Installed by yum/rpm          |                  NO                  |
 | Debian GNU/Linux             | wheezy, jessie, stretch, buster          | Installed by apt/apt-get/dpkg |                 YES                  |
 | Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg |                 YES                  |
 | Distroless                   | Any                                      | Installed by apt/apt-get/dpkg |                 YES                  |
