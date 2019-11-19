@@ -22,6 +22,7 @@ require (
 	go.uber.org/zap v1.9.1
 	golang.org/x/crypto v0.0.0-20190510104115-cbcb75029529
 	golang.org/x/net v0.0.0-20191014212845-da9a3fd4c582 // indirect
+	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
 	golang.org/x/sys v0.0.0-20191020152052-9984515f0562 // indirect
 	golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898
 	gopkg.in/cheggaaa/pb.v1 v1.0.28
