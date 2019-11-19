@@ -223,24 +223,29 @@ func TestDockerExtractor_SaveLocalImage(t *testing.T) {
 }
 
 func TestDockerExtractor_Extract(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		httpPath := r.URL.String()
-		switch {
-		case strings.Contains(httpPath, "/v2/library/fooimage/manifests/latest"):
-			w.Header().Set("Content-Type", "application/vnd.docker.distribution.manifest.v2+json")
-			_, _ = fmt.Fprint(w, `{
-   "schemaVersion": 2,
-   "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
-   "layers": [
-      {
-         "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
-         "size": 153263,
-         "digest": "sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b"
-      }
-   ]
-}`)
-		case strings.Contains(httpPath, "/v2/library/fooimage/blobs/sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b"):
-			_, _ = w.Write([]byte{ // this is hello.txt containing "hello world\n" POSIX tar'd and then gzipped
+	testCases := []struct {
+		name            string
+		imageName       string
+		manifestResp    string
+		layerData       []byte
+		blobData        string
+		expectedFileMap extractor.FileMap
+		expectedError   string
+	}{
+		{
+			name: "happy path",
+			manifestResp: `{
+		  "schemaVersion": 2,
+		  "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+		  "layers": [
+		     {
+		        "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+		        "size": 153263,
+		        "digest": "sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b"
+		     }
+		  ]
+		}`,
+			layerData: []byte{ // this is hello.txt containing "hello world\n" POSIX tar'd and then gzipped
 				0x1f, 0x8b, 0x8, 0x8, 0xfa, 0x33, 0xd4, 0x5d, 0x0, 0x3, 0x68, 0x65,
 				0x6c, 0x6c, 0x6f, 0x0, 0xd3, 0xd3, 0xcf, 0x48, 0xcd, 0xc9, 0xc9, 0xd7,
 				0x2b, 0xa9, 0x28, 0x61, 0xa0, 0x15, 0x30, 0x30, 0x30, 0x30, 0x33, 0x31,
@@ -254,38 +259,97 @@ func TestDockerExtractor_Extract(t *testing.T) {
 				0x5, 0x70, 0x15, 0xd, 0xe6, 0xcc, 0xb3, 0xee, 0xc9, 0xaa, 0x33, 0x68, 0xc, 0x98,
 				0x1b, 0x47, 0xc1, 0x28, 0x18, 0x5, 0xa3, 0x60, 0x14, 0x50, 0x1f, 0x0, 0x0,
 				0x7b, 0x78, 0xf9, 0x4b, 0x0, 0x8, 0x0, 0x0,
-			})
-		case strings.Contains(httpPath, "/v2/library/fooimage/blobs/"):
-			_, _ = w.Write([]byte("someblobdata"))
-		default:
-			assert.FailNow(t, "unexpected path accessed: ", r.URL.String())
-		}
-	}))
-	defer ts.Close()
-
-	c, err := client.NewClientWithOpts(client.WithHost(ts.URL))
-	assert.NoError(t, err)
-
-	// setup cache
-	tempCacheDir, _ := ioutil.TempDir("", "TestDockerExtractor_Extract-*")
-	defer func() {
-		_ = os.RemoveAll(tempCacheDir)
-	}()
-
-	de := DockerExtractor{
-		Option: types.DockerOption{
-			AuthURL:  ts.URL,
-			NonSSL:   true,
-			SkipPing: true,
-			Timeout:  time.Second * 1000,
+			},
+			blobData: "foo",
+			expectedFileMap: extractor.FileMap{
+				"/config": []uint8{0x66, 0x6f, 0x6f},
+			},
 		},
-		Client: c,
-		Cache:  cache.Initialize(tempCacheDir),
+		{
+			name:          "sad path: invalid manifest response",
+			manifestResp:  "badManifestResponse",
+			expectedError: "failed to get the v2 manifest: invalid character 'b' looking for beginning of value",
+		},
+		{
+			name:          "sad path: bad image name",
+			imageName:     "https://docker/very/bad/imagename",
+			expectedError: `failed to parse the image: parsing image "https://docker/very/bad/imagename" failed: invalid reference format`,
+		},
+		{
+			name: "sad path: corrupt layer data invalid gzip",
+			manifestResp: `{
+		  "schemaVersion": 2,
+		  "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+		  "layers": [
+		     {
+		        "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+		        "size": 153263,
+		        "digest": "sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b"
+		     }
+		  ]
+		}`,
+			layerData:       []byte{0xde, 0xad, 0xbe, 0xef},
+			blobData:        "foo",
+			expectedFileMap: extractor.FileMap(nil),
+			expectedError:   "invalid gzip: unexpected EOF",
+		},
 	}
 
-	filesToExtract := []string{"file1", "file2", "file3"}
-	tsURL := strings.TrimPrefix(ts.URL, "http://")
-	fm, err := de.Extract(context.TODO(), tsURL+"/library/fooimage", filesToExtract)
-	assert.NoError(t, err)
-	assert.NotNil(t, fm)
+	for _, tc := range testCases {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			httpPath := r.URL.String()
+			switch {
+			case strings.Contains(httpPath, "/v2/library/fooimage/manifests/latest"):
+				w.Header().Set("Content-Type", "application/vnd.docker.distribution.manifest.v2+json")
+				_, _ = fmt.Fprint(w, tc.manifestResp)
+			case strings.Contains(httpPath, "/v2/library/fooimage/blobs/sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b"):
+				_, _ = w.Write(tc.layerData)
+			case strings.Contains(httpPath, "/v2/library/fooimage/blobs/"):
+				_, _ = w.Write([]byte(tc.blobData))
+			default:
+				assert.FailNow(t, "unexpected path accessed: ", r.URL.String())
+			}
+		}))
+		defer ts.Close()
+
+		c, err := client.NewClientWithOpts(client.WithHost(ts.URL))
+		assert.NoError(t, err)
+
+		// setup cache
+		tempCacheDir, _ := ioutil.TempDir("", "TestDockerExtractor_Extract-*")
+		defer func() {
+			_ = os.RemoveAll(tempCacheDir)
+		}()
+
+		de := DockerExtractor{
+			Option: types.DockerOption{
+				AuthURL:  ts.URL,
+				NonSSL:   true,
+				SkipPing: true,
+				Timeout:  time.Second * 1000,
+			},
+			Client: c,
+			Cache:  cache.Initialize(tempCacheDir),
+		}
+
+		filesToExtract := []string{"file1", "file2", "file3"}
+		tsURL := strings.TrimPrefix(ts.URL, "http://")
+
+		var imageName string
+		switch {
+		case tc.imageName != "":
+			imageName = tc.imageName
+		default:
+			imageName = tsURL + "/library/fooimage"
+		}
+		fm, err := de.Extract(context.TODO(), imageName, filesToExtract)
+
+		switch {
+		case tc.expectedError != "":
+			assert.Equal(t, tc.expectedError, err.Error(), tc.name)
+		default:
+			assert.NoError(t, err, tc.name)
+		}
+		assert.Equal(t, tc.expectedFileMap, fm, tc.name)
+	}
 }
