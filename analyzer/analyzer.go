@@ -13,7 +13,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/extractor"
-	"github.com/aquasecurity/fanal/extractor/docker"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
@@ -135,7 +134,7 @@ func (ac AnalyzerConfig) Analyze(ctx context.Context, imageName string, opts ...
 	return fileMap, nil
 }
 
-func AnalyzeFile(ctx context.Context, f *os.File) (fileMap extractor.FileMap, err error) {
+func (ac AnalyzerConfig) AnalyzeFile(ctx context.Context, f *os.File) (fileMap extractor.FileMap, err error) {
 	var r io.Reader
 	r = f
 	if utils.IsGzip(f) {
@@ -144,8 +143,8 @@ func AnalyzeFile(ctx context.Context, f *os.File) (fileMap extractor.FileMap, er
 			return nil, xerrors.Errorf("failed to open gzip: %w", err)
 		}
 	}
-	e := docker.NewDockerExtractor(types.DockerOption{})
-	fileMap, err = e.ExtractFromFile(ctx, r, RequiredFilenames())
+	//e := docker.NewDockerExtractor(types.DockerOption{})
+	fileMap, err = ac.Extractor.ExtractFromFile(ctx, r, RequiredFilenames())
 	if err != nil {
 		return nil, xerrors.Errorf("failed to extract files from tar: %w", err)
 	}

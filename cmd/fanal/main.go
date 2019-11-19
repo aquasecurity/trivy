@@ -60,7 +60,12 @@ func run() (err error) {
 	opt := types.DockerOption{
 		Timeout: 600 * time.Second,
 	}
-	ac := analyzer.AnalyzerConfig{Extractor: docker.NewDockerExtractor(opt)}
+
+	ext, err := docker.NewDockerExtractor(opt)
+	if err != nil {
+		return err
+	}
+	ac := analyzer.AnalyzerConfig{Extractor: ext}
 
 	var files extractor.FileMap
 	if len(args) > 0 {
@@ -74,7 +79,7 @@ func run() (err error) {
 			return err
 		}
 
-		files, err = analyzer.AnalyzeFile(ctx, rc)
+		files, err = ac.AnalyzeFile(ctx, rc)
 		if err != nil {
 			return err
 		}
