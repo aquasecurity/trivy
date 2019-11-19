@@ -2,10 +2,20 @@ package docker
 
 import (
 	"context"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path"
 	"reflect"
+	"strings"
 	"testing"
+
+	"github.com/docker/docker/client"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/fanal/types"
 
 	"github.com/aquasecurity/fanal/extractor"
 )
@@ -122,7 +132,7 @@ func TestExtractFiles(t *testing.T) {
 		file      string            // Test input file
 		filenames []string          // Target files
 		FileMap   extractor.FileMap // Expected output
-		opqDirs   OPQDirs           // Expected output
+		opqDirs   extractor.OPQDirs // Expected output
 		err       error             // Expected error to occur
 	}{
 		{
@@ -174,4 +184,29 @@ func TestExtractFiles(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestDockerExtractor_SaveLocalImage(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		httpPath := r.URL.String()
+		switch {
+		case strings.Contains(httpPath, "images/get?names=fooimage"):
+			_, _ = fmt.Fprint(w, "foocontent")
+		default:
+			assert.FailNow(t, "unexpected path accessed: ", r.URL.String())
+		}
+	}))
+	defer ts.Close()
+
+	c, err := client.NewClientWithOpts(client.WithHost(ts.URL))
+	assert.NoError(t, err)
+
+	d := DockerExtractor{
+		Option: types.DockerOption{},
+		Client: c,
+	}
+
+	r, err := d.SaveLocalImage(context.TODO(), "fooimage")
+	assert.NotNil(t, r)
+	assert.NoError(t, err)
 }

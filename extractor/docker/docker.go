@@ -61,13 +61,20 @@ type layer struct {
 }
 
 type DockerExtractor struct {
+	Client *client.Client
 	Option types.DockerOption
 }
 
-func NewDockerExtractor(option types.DockerOption) extractor.Extractor {
+func NewDockerExtractor(option types.DockerOption) (extractor.Extractor, error) {
 	RegisterRegistry(&gcr.GCR{})
 	RegisterRegistry(&ecr.ECR{})
-	return DockerExtractor{Option: option}
+
+	cli, err := client.NewClientWithOpts(client.FromEnv)
+	if err != nil {
+		return nil, xerrors.Errorf("error initializing docker extractor: %w", err)
+	}
+
+	return DockerExtractor{Option: option, Client: cli}, nil
 }
 
 func applyLayers(layerPaths []string, filesInLayers map[string]extractor.FileMap, opqInLayers map[string]extractor.OPQDirs) (extractor.FileMap, error) {
@@ -151,12 +158,7 @@ func (d DockerExtractor) SaveLocalImage(ctx context.Context, imageName string) (
 }
 
 func (d DockerExtractor) saveLocalImage(ctx context.Context, imageName string) (io.ReadCloser, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv)
-	if err != nil {
-		return nil, xerrors.New("error in docker NewClient")
-	}
-
-	r, err := cli.ImageSave(ctx, []string{imageName})
+	r, err := d.Client.ImageSave(ctx, []string{imageName})
 	if err != nil {
 		return nil, xerrors.New("error in docker image save")
 	}
