@@ -214,6 +214,18 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 	}
 
 	// download config file
+	config, err := downloadConfigFile(err, r, ctx, image, m)
+	if err != nil {
+		return nil, err
+	}
+
+	// special file for command analyzer
+	fileMap["/config"] = config
+
+	return fileMap, nil
+}
+
+func downloadConfigFile(err error, r *registry.Registry, ctx context.Context, image registry.Image, m *schema2.DeserializedManifest) ([]byte, error) {
 	rc, err := r.DownloadLayer(ctx, image.Path, m.Manifest.Config.Digest)
 	if err != nil {
 		return nil, xerrors.Errorf("error in layer download: %w", err)
@@ -222,11 +234,7 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 	if err != nil {
 		return nil, xerrors.Errorf("failed to decode config JSON: %w", err)
 	}
-
-	// special file for command analyzer
-	fileMap["/config"] = config
-
-	return fileMap, nil
+	return config, nil
 }
 
 func (d DockerExtractor) extractLayerFiles(layerCh chan layer, errCh chan error, ctx context.Context, filenames []string, filesInLayers map[string]extractor.FileMap, opqInLayers map[string]extractor.OPQDirs) error {
