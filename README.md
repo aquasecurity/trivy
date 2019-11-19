@@ -1175,7 +1175,7 @@ stages:
 
 trivy:
   stage: test
-  image: docker:stable
+  image: docker:19.03.1
   services:
     - name: docker:dind
       entrypoint: ["env", "-u", "DOCKER_HOST"]
@@ -1191,14 +1191,11 @@ trivy:
     - echo $VERSION
     - wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
     - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
-  variables:
-    DOCKER_DRIVER: overlay2
   allow_failure: true
-  services:
-    - docker:stable-dind
   script:
-    - ./trivy --exit-code 0 --cache-dir $CI_PROJECT_DIR/.trivycache/ --no-progress --severity HIGH DOCKER_IMAGE
-    #- ./trivy --exit-code 1 --severity CRITICAL  --no-progress DOCKER_IMAGE
+    - docker build -t trivy-ci-test:$CI_COMMIT_SHA .
+    - ./trivy --exit-code 0 --cache-dir $CI_PROJECT_DIR/.trivycache/ --no-progress --severity HIGH trivy-ci-test:$CI_COMMIT_SHA
+    - ./trivy --exit-code 1 --severity CRITICAL  --no-progress trivy-ci-test:$CI_COMMIT_SHA
   cache:
     paths:
       - $CI_PROJECT_DIR/.trivycache/
