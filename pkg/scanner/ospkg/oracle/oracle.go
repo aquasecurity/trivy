@@ -14,6 +14,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
+
+	"k8s.io/utils/clock"
 )
 
 var (
@@ -31,12 +33,14 @@ var (
 )
 
 type Scanner struct {
-	vs dbTypes.VulnSrc
+	vs    dbTypes.VulnSrc
+	clock clock.Clock
 }
 
 func NewScanner() *Scanner {
 	return &Scanner{
-		vs: oracleoval.NewVulnSrc(),
+		vs:    oracleoval.NewVulnSrc(),
+		clock: clock.RealClock{},
 	}
 }
 
@@ -78,11 +82,6 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Detecte
 }
 
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	now := time.Now()
-	return s.isSupportedVersion(now, osFamily, osVer)
-}
-
-func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool {
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
@@ -92,5 +91,6 @@ func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool
 		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
 		return false
 	}
-	return now.Before(eol)
+
+	return s.clock.Now().Before(eol)
 }
