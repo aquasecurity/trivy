@@ -62,6 +62,7 @@ type layer struct {
 
 type DockerExtractor struct {
 	Client *client.Client
+	Cache  cache.Cache
 	Option types.DockerOption
 }
 
@@ -74,7 +75,11 @@ func NewDockerExtractor(option types.DockerOption) (extractor.Extractor, error) 
 		return nil, xerrors.Errorf("error initializing docker extractor: %w", err)
 	}
 
-	return DockerExtractor{Option: option, Client: cli}, nil
+	return DockerExtractor{
+		Option: option,
+		Client: cli,
+		Cache:  cache.Initialize(utils.CacheDir()),
+	}, nil
 }
 
 func applyLayers(layerPaths []string, filesInLayers map[string]extractor.FileMap, opqInLayers map[string]extractor.OPQDirs) (extractor.FileMap, error) {
@@ -141,14 +146,14 @@ func (d DockerExtractor) createRegistryClient(ctx context.Context, domain string
 
 func (d DockerExtractor) SaveLocalImage(ctx context.Context, imageName string) (io.Reader, error) {
 	var err error
-	r := cache.Get(imageName)
+	r := d.Cache.Get(imageName)
 	if r == nil {
 		// Save the image
 		r, err = d.saveLocalImage(ctx, imageName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to save the image: %w", err)
 		}
-		r, err = cache.Set(imageName, r)
+		r, err = d.Cache.Set(imageName, r)
 		if err != nil {
 			log.Print(err)
 		}
@@ -194,18 +199,18 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 
 	for _, ref := range m.Manifest.Layers {
 		layerIDs = append(layerIDs, string(ref.Digest))
-		go func(d digest.Digest) {
+		go func(dig digest.Digest) {
 			// Use cache
-			rc := cache.Get(string(d))
+			rc := d.Cache.Get(string(dig))
 			if rc == nil {
 				// Download the layer.
-				rc, err = r.DownloadLayer(ctx, image.Path, d)
+				rc, err = r.DownloadLayer(ctx, image.Path, dig)
 				if err != nil {
-					errCh <- xerrors.Errorf("failed to download the layer(%s): %w", d, err)
+					errCh <- xerrors.Errorf("failed to download the layer(%s): %w", dig, err)
 					return
 				}
 
-				rc, err = cache.Set(string(d), rc)
+				rc, err = d.Cache.Set(string(dig), rc)
 				if err != nil {
 					log.Print(err)
 				}
@@ -215,7 +220,7 @@ func (d DockerExtractor) Extract(ctx context.Context, imageName string, filename
 				errCh <- xerrors.Errorf("invalid gzip: %w", err)
 				return
 			}
-			ch <- layer{ID: d, Content: gzipReader}
+			ch <- layer{ID: dig, Content: gzipReader}
 		}(ref.Digest)
 	}
 
