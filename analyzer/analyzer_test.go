@@ -101,6 +101,7 @@ func TestAnalyze(t *testing.T) {
 
 	for _, tc := range testCases {
 		RegisterOSAnalyzer(mockOSAnalyzer{})
+
 		ac := AnalyzerConfig{Extractor: mockDockerExtractor{
 			extractFromFile: tc.extractFromFileFunc,
 			extract:         tc.extractFunc,
@@ -109,5 +110,8 @@ func TestAnalyze(t *testing.T) {
 		fm, err := ac.Analyze(context.TODO(), "fooimage")
 		assert.Equal(t, tc.expectedError, err, tc.name)
 		assert.Equal(t, tc.expectedFileMap, fm, tc.name)
+
+		// reset the gnarly global state
+		osAnalyzers = []OSAnalyzer{}
 	}
 }
