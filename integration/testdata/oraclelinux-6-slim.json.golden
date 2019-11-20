@@ -1,0 +1,166 @@
+[
+  {
+    "Target": "testdata/fixtures/oraclelinux-6-slim.tar.gz (oracle 6.10)",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2019-3855",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.2-2.el6_7.1",
+        "FixedVersion": "1.4.2-3.0.1.el6_10.1",
+        "Title": "libssh2: Integer overflow in transport read resulting in out of bounds write",
+        "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
+        "Severity": "CRITICAL",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
+          "http://www.openwall.com/lists/oss-security/2019/03/18/3",
+          "http://www.securityfocus.com/bid/107485",
+          "https://access.redhat.com/errata/RHSA-2019:0679",
+          "https://access.redhat.com/errata/RHSA-2019:1175",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3855",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3855",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XCWEA5ZCLKRDUK62QVVYMFWLWKOPX3LO/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://seclists.org/bugtraq/2019/Mar/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.broadcom.com/support/fibre-channel-networking/security-advisories/brocade-security-advisory-2019-767",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3855.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3856",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.2-2.el6_7.1",
+        "FixedVersion": "1.4.2-3.0.1.el6_10.1",
+        "Title": "libssh2: Integer overflow in keyboard interactive handling resulting in out of bounds write",
+        "Description": "An integer overflow flaw, which could lead to an out of bounds write, was discovered in libssh2 before 1.8.1 in the way keyboard prompt requests are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "https://access.redhat.com/errata/RHSA-2019:0679",
+          "https://access.redhat.com/errata/RHSA-2019:1175",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3856",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3856",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3856.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3857",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.2-2.el6_7.1",
+        "FixedVersion": "1.4.2-3.0.1.el6_10.1",
+        "Title": "libssh2: Integer overflow in SSH packet processing channel resulting in out of bounds write",
+        "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit signal are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "https://access.redhat.com/errata/RHSA-2019:0679",
+          "https://access.redhat.com/errata/RHSA-2019:1175",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3857",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3857",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3857.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3862",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.2-2.el6_7.1",
+        "FixedVersion": "1.4.2-2.0.1.el6_7.1",
+        "Title": "libssh2: Out-of-bounds memory comparison with specially crafted message channel request",
+        "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit status message and no payload are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
+          "http://www.openwall.com/lists/oss-security/2019/03/18/3",
+          "http://www.securityfocus.com/bid/107485",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3862",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3862",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XCWEA5ZCLKRDUK62QVVYMFWLWKOPX3LO/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://seclists.org/bugtraq/2019/Mar/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.broadcom.com/support/fibre-channel-networking/security-advisories/brocade-security-advisory-2019-767",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3862.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3863",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.2-2.el6_7.1",
+        "FixedVersion": "1.4.2-3.0.1.el6_10.1",
+        "Title": "libssh2: Integer overflow in user authenticate keyboard interactive allows out-of-bounds writes",
+        "Description": "A flaw was found in libssh2 before 1.8.1. A server could send a multiple keyboard interactive response messages whose total length are greater than unsigned char max characters. This value is used as an index to copy memory causing in an out of bounds memory write error.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "https://access.redhat.com/errata/RHSA-2019:0679",
+          "https://access.redhat.com/errata/RHSA-2019:1175",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3863",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3863",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3863.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1559",
+        "PkgName": "openssl",
+        "InstalledVersion": "1.0.1e-57.0.6.el6",
+        "FixedVersion": "1.0.1e-58.0.1.el6_10",
+        "Title": "openssl: 0-byte record padding oracle",
+        "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00041.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00019.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00046.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00047.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00049.html",
+          "http://www.securityfocus.com/bid/107174",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1559",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e9bbefbf0f24c57645e7ad6a5a71ae649d18ac8e",
+          "https://github.com/RUB-NDS/TLS-Padding-Oracles",
+          "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10282",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00003.html",
+          "https://security.gentoo.org/glsa/201903-10",
+          "https://security.netapp.com/advisory/ntap-20190301-0001/",
+          "https://security.netapp.com/advisory/ntap-20190301-0002/",
+          "https://security.netapp.com/advisory/ntap-20190423-0002/",
+          "https://support.f5.com/csp/article/K18549143",
+          "https://usn.ubuntu.com/3899-1/",
+          "https://www.debian.org/security/2019/dsa-4400",
+          "https://www.openssl.org/news/secadv/20190226.txt",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+          "https://www.tenable.com/security/tns-2019-02",
+          "https://www.tenable.com/security/tns-2019-03"
+        ]
+      }
+    ]
+  }
+]
+

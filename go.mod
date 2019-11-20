@@ -17,8 +17,10 @@ require (
 	github.com/olekukonko/tablewriter v0.0.2-0.20190607075207-195002e6e56a
 	github.com/stretchr/testify v1.4.0
 	github.com/urfave/cli v1.20.0
+	go.etcd.io/bbolt v1.3.3 // indirect
+	go.uber.org/multierr v1.4.0 // indirect
 	go.uber.org/zap v1.9.1
-	golang.org/x/crypto v0.0.0-20190404164418-38d8ce5564a5
+	golang.org/x/crypto v0.0.0-20190510104115-cbcb75029529
 	golang.org/x/net v0.0.0-20191014212845-da9a3fd4c582 // indirect
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
 	golang.org/x/sys v0.0.0-20191020152052-9984515f0562 // indirect
