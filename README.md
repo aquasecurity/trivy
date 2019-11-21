@@ -22,7 +22,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
   - [Debian/Ubuntu](#debianubuntu)
   - [Arch Linux](#arch-linux)
   - [Mac OS X / Homebrew](#homebrew)
-  - [Binary (Including Windows)](#binary-including-windows)
+  - [Binary](#binary)
   - [From source](#from-source)
 - [Quick Start](#quick-start)
   - [Basic](#basic)
@@ -152,7 +152,7 @@ You can use homebrew on macOS.
 $ brew install aquasecurity/trivy/trivy
 ```
 
-## Binary (Including Windows)
+## Binary
 
 Get the latest version from [this page](https://github.com/aquasecurity/trivy/releases/latest), and download the archive file for your operating system/architecture. Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
 
@@ -1430,7 +1430,7 @@ $ brew untap knqyf263/trivy
 $ brew install aquasecurity/trivy/trivy
 ```
 
-## Binary (Including Windows)
+## Binary
 No need to fix.
 
 
