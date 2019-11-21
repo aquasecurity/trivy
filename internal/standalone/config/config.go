@@ -6,17 +6,18 @@ import (
 	"time"
 
 	"github.com/genuinetools/reg/registry"
-
+	"github.com/urfave/cli"
+	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/urfave/cli"
 )
 
 type Config struct {
 	context *cli.Context
+	logger  *zap.SugaredLogger
 
 	Quiet      bool
 	NoProgress bool
@@ -56,13 +57,20 @@ type Config struct {
 	autoRefresh bool
 }
 
-func New(c *cli.Context) Config {
+func New(c *cli.Context) (Config, error) {
+	debug := c.Bool("debug")
+	quiet := c.Bool("quiet")
+	logger, err := log.NewLogger(debug, quiet)
+	if err != nil {
+		return Config{}, xerrors.New("failed to create a logger")
+	}
 	return Config{
 		context: c,
+		logger:  logger,
 
-		Quiet:      c.Bool("quiet"),
+		Quiet:      quiet,
 		NoProgress: c.Bool("no-progress"),
-		Debug:      c.Bool("debug"),
+		Debug:      debug,
 
 		CacheDir:       c.String("cache-dir"),
 		Reset:          c.Bool("reset"),
@@ -86,18 +94,18 @@ func New(c *cli.Context) Config {
 		onlyUpdate:  c.String("only-update"),
 		refresh:     c.Bool("refresh"),
 		autoRefresh: c.Bool("auto-refresh"),
-	}
+	}, nil
 }
 
 func (c *Config) Init() (err error) {
 	if c.onlyUpdate != "" || c.refresh || c.autoRefresh {
-		log.Logger.Warn("--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.")
+		c.logger.Warn("--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.")
 	}
 	if c.SkipUpdate && c.DownloadDBOnly {
 		return xerrors.New("The --skip-update and --download-db-only option can not be specified both")
 	}
 
-	c.Severities = splitSeverity(c.severities)
+	c.Severities = c.splitSeverity(c.severities)
 	c.VulnType = strings.Split(c.vulnType, ",")
 	c.AppVersion = c.context.App.Version
 
@@ -112,8 +120,9 @@ func (c *Config) Init() (err error) {
 
 	args := c.context.Args()
 	if c.Input == "" && len(args) == 0 {
-		log.Logger.Info(`trivy requires at least 1 argument or --input option.`)
-		cli.ShowAppHelpAndExit(c.context, 1)
+		c.logger.Error(`trivy requires at least 1 argument or --input option`)
+		cli.ShowAppHelp(c.context)
+		return xerrors.New("arguments error")
 	}
 
 	c.Output = os.Stdout
@@ -134,20 +143,20 @@ func (c *Config) Init() (err error) {
 			return xerrors.Errorf("invalid image: %w", err)
 		}
 		if image.Tag == "latest" {
-			log.Logger.Warn("You should avoid using the :latest tag as it is cached. You need to specify '--clear-cache' option when :latest image is changed")
+			c.logger.Warn("You should avoid using the :latest tag as it is cached. You need to specify '--clear-cache' option when :latest image is changed")
 		}
 	}
 
 	return nil
 }
 
-func splitSeverity(severity string) []dbTypes.Severity {
-	log.Logger.Debugf("Severities: %s", severity)
+func (c *Config) splitSeverity(severity string) []dbTypes.Severity {
+	c.logger.Debugf("Severities: %s", severity)
 	var severities []dbTypes.Severity
 	for _, s := range strings.Split(severity, ",") {
 		severity, err := dbTypes.NewSeverity(s)
 		if err != nil {
-			log.Logger.Warnf("unknown severity option: %s", err)
+			c.logger.Warnf("unknown severity option: %s", err)
 		}
 		severities = append(severities, severity)
 	}
