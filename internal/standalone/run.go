@@ -19,8 +19,12 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func Run(c *cli.Context) error {
-	return run(config.New(c))
+func Run(cliCtx *cli.Context) error {
+	c, err := config.New(cliCtx)
+	if err != nil {
+		return err
+	}
+	return run(c)
 }
 
 func run(c config.Config) (err error) {
@@ -38,18 +42,11 @@ func run(c config.Config) (err error) {
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
 	if c.Reset {
-		if err = reset(); err != nil {
-			return err
-		}
-		return nil
+		return reset()
 	}
 
 	if c.ClearCache {
-		log.Logger.Info("Removing image caches...")
-		if err = cache.Clear(); err != nil {
-			return xerrors.New("failed to remove image layer cache")
-		}
-		return nil
+		return clearCache()
 	}
 
 	if err = db.Init(c.CacheDir); err != nil {
@@ -107,6 +104,14 @@ func reset() (err error) {
 	return nil
 }
 
+func clearCache() error {
+	log.Logger.Info("Removing image caches...")
+	if err := cache.Clear(); err != nil {
+		return xerrors.New("failed to remove image layer cache")
+	}
+	return nil
+}
+
 func downloadDB(appVersion, cacheDir string, light, skipUpdate bool) error {
 	client := dbFile.NewClient()
 	ctx := context.Background()
@@ -115,7 +120,7 @@ func downloadDB(appVersion, cacheDir string, light, skipUpdate bool) error {
 	}
 	// for debug
 	if err := showDBInfo(); err != nil {
-		return err
+		return xerrors.Errorf("failed to show database info")
 	}
 	return nil
 }
