@@ -13,9 +13,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/aquasecurity/trivy/internal/standalone"
 
-	"github.com/aquasecurity/trivy/pkg"
+	"github.com/stretchr/testify/assert"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -340,7 +340,7 @@ func TestRun_WithTar(t *testing.T) {
 			defer os.RemoveAll(cacheDir)
 
 			// Setup CLI App
-			app := pkg.NewApp(c.testArgs.Version)
+			app := standalone.NewApp(c.testArgs.Version)
 			app.Writer = ioutil.Discard
 
 			osArgs := []string{"trivy", "--cache-dir", cacheDir, "--format", c.testArgs.Format}
