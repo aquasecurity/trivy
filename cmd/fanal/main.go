@@ -57,7 +57,8 @@ func run() (err error) {
 	args := flag.Args()
 
 	opt := types.DockerOption{
-		Timeout: 600 * time.Second,
+		Timeout:  600 * time.Second,
+		SkipPing: true,
 	}
 
 	ext, err := docker.NewDockerExtractor(opt)
