@@ -14,14 +14,10 @@ import (
 	"time"
 
 	"github.com/aquasecurity/fanal/cache"
-
-	"github.com/docker/docker/client"
-
-	"github.com/stretchr/testify/assert"
-
-	"github.com/aquasecurity/fanal/types"
-
 	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/types"
+	"github.com/docker/docker/client"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestExtractFromFile(t *testing.T) {
