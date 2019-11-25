@@ -1,4 +1,4 @@
-<img src="imgs/logo.png" width="300">
+<img src="imgs/logo.png" width="150">
 
 
 [![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
@@ -22,7 +22,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
   - [Debian/Ubuntu](#debianubuntu)
   - [Arch Linux](#arch-linux)
   - [Mac OS X / Homebrew](#homebrew)
-  - [Binary (Including Windows)](#binary-including-windows)
+  - [Binary](#binary)
   - [From source](#from-source)
 - [Quick Start](#quick-start)
   - [Basic](#basic)
@@ -71,7 +71,7 @@ See [here](#continuous-integration-ci) for details.
 # Features
 
 - Detect comprehensive vulnerabilities
-  - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Debian, Ubuntu, Amazon Linux and Distroless)
+  - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Oracle Linux, Debian, Ubuntu, Amazon Linux and Distroless)
   - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn and Cargo)
 - Simple
   - Specify only an image name
@@ -154,7 +154,7 @@ You can use homebrew on macOS.
 $ brew install aquasecurity/trivy/trivy
 ```
 
-## Binary (Including Windows)
+## Binary
 
 Get the latest version from [this page](https://github.com/aquasecurity/trivy/releases/latest), and download the archive file for your operating system/architecture. Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
 
@@ -1009,30 +1009,18 @@ $ trivy --cache-dir /tmp/trivy/ python:3.4-alpine3.9
 
 The `--clear-cache` option removes image caches. This option is useful if the image which has the same tag is updated (such as when using `latest` tag).
 
+**The scan is not performed.**
+
 ```
-$ trivy --clear-cache python:3.7
+$ trivy --clear-cache
 ```
 
 <details>
 <summary>Result</summary>
 
 ```
-2019-05-16T12:55:24.749+0900    INFO    Removing image caches...
-2019-05-16T12:55:24.769+0900    INFO    Updating vulnerability database...
-2019-05-16T12:56:14.055+0900    INFO    Detecting Debian vulnerabilities...
-
-python:3.7 (debian 9.9)
-=======================
-Total: 3076 (UNKNOWN: 0, LOW: 127, MEDIUM: 2358, HIGH: 578, CRITICAL: 13)
-
-+------------------------------+---------------------+----------+--------------------------+------------------+-------------------------------------------------------+
-|           LIBRARY            |  VULNERABILITY ID   | SEVERITY |    INSTALLED VERSION     |  FIXED VERSION   |                         TITLE                         |
-+------------------------------+---------------------+----------+--------------------------+------------------+-------------------------------------------------------+
-| apt                          | CVE-2011-3374       | LOW      | 1.4.9                    |                  |                                                       |
-+------------------------------+---------------------+          +--------------------------+------------------+-------------------------------------------------------+
-| bash                         | TEMP-0841856-B18BAF |          | 4.4-5                    |                  |                                                       |
-+------------------------------+---------------------+----------+--------------------------+------------------+-------------------------------------------------------+
-...
+2019-11-15T15:13:26.209+0200    INFO    Reopening vulnerability DB
+2019-11-15T15:13:26.209+0200    INFO    Removing image caches...
 ```
 
 </details>
@@ -1254,12 +1242,13 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 | Red Hat Universal Base Image | 7, 8                                     | Installed by yum/rpm          |                 YES                  |
 | Red Hat Enterprise Linux     | 6, 7, 8                                  | Installed by yum/rpm          |                 YES                  |
 | CentOS                       | 6, 7                                     | Installed by yum/rpm          |                 YES                  |
-| Amazon Linux                 | 1, 2                                     | Installed by apt/apt-get/dpkg |                  NO                  |
+| Oracle Linux                 | 5, 6, 7, 8                               | Installed by yum/rpm          |                  NO                  |
+| Amazon Linux                 | 1, 2                                     | Installed by yum/rpm          |                  NO                  |
 | Debian GNU/Linux             | wheezy, jessie, stretch, buster          | Installed by apt/apt-get/dpkg |                 YES                  |
 | Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg |                 YES                  |
 | Distroless                   | Any                                      | Installed by apt/apt-get/dpkg |                 YES                  |
 
-RHEL, CentOS and Amazon Linux package information is stored in a binary format, and Trivy uses the `rpm` executable to parse this information when scanning an image based on RHEL or CentOS. The Trivy container image includes `rpm`, and the installers include it as a dependency. If you installed the `trivy` binary using `wget` or `curl`, or if you build it from source, you will also need to ensure that `rpm` is available.
+RHEL, CentOS, Oracle Linux and Amazon Linux package information is stored in a binary format, and Trivy uses the `rpm` executable to parse this information when scanning an image based on RHEL or CentOS. The Trivy container image includes `rpm`, and the installers include it as a dependency. If you installed the `trivy` binary using `wget` or `curl`, or if you build it from source, you will also need to ensure that `rpm` is available.
 
 Distroless: https://github.com/GoogleContainerTools/distroless
 
@@ -1443,7 +1432,7 @@ $ brew untap knqyf263/trivy
 $ brew install aquasecurity/trivy/trivy
 ```
 
-## Binary (Including Windows)
+## Binary
 No need to fix.
 
 
@@ -1486,6 +1475,15 @@ $ brew install aquasecurity/trivy/trivy
 ```
 
 ## Others
+
+### GitHub Rate limiting
+
+Specify GITHUB_TOKEN for authentication  
+https://developer.github.com/v3/#rate-limiting
+
+```
+$ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
+```
 
 ### Unknown error
 
