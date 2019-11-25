@@ -64,7 +64,7 @@ func run() (err error) {
 	if err != nil {
 		return err
 	}
-	ac := analyzer.AnalyzerConfig{Extractor: ext}
+	ac := analyzer.Config{Extractor: ext}
 
 	var files extractor.FileMap
 	if len(args) > 0 {

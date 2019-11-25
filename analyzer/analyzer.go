@@ -31,7 +31,7 @@ var (
 	ErrNoPkgsDetected = xerrors.New("No packages detected")
 )
 
-type AnalyzerConfig struct {
+type Config struct {
 	Extractor extractor.Extractor
 }
 
@@ -116,7 +116,7 @@ func RequiredFilenames() []string {
 }
 
 // TODO: Remove opts as they're no longer needed
-func (ac AnalyzerConfig) Analyze(ctx context.Context, imageName string, opts ...types.DockerOption) (fileMap extractor.FileMap, err error) {
+func (ac Config) Analyze(ctx context.Context, imageName string, opts ...types.DockerOption) (fileMap extractor.FileMap, err error) {
 	r, err := ac.Extractor.SaveLocalImage(ctx, imageName)
 	if err != nil {
 		// when no docker daemon is installed or no image exists in the local machine
@@ -134,7 +134,7 @@ func (ac AnalyzerConfig) Analyze(ctx context.Context, imageName string, opts ...
 	return fileMap, nil
 }
 
-func (ac AnalyzerConfig) AnalyzeFile(ctx context.Context, f *os.File) (fileMap extractor.FileMap, err error) {
+func (ac Config) AnalyzeFile(ctx context.Context, f *os.File) (fileMap extractor.FileMap, err error) {
 	var r io.Reader
 	r = f
 	if utils.IsGzip(f) {
