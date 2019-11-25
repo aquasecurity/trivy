@@ -143,7 +143,6 @@ func (ac AnalyzerConfig) AnalyzeFile(ctx context.Context, f *os.File) (fileMap e
 			return nil, xerrors.Errorf("failed to open gzip: %w", err)
 		}
 	}
-	//e := docker.NewDockerExtractor(types.DockerOption{})
 	fileMap, err = ac.Extractor.ExtractFromFile(ctx, r, RequiredFilenames())
 	if err != nil {
 		return nil, xerrors.Errorf("failed to extract files from tar: %w", err)
