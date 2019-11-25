@@ -8,16 +8,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/aquasecurity/fanal/utils"
-
-	"github.com/aquasecurity/fanal/types"
-
-	"github.com/aquasecurity/fanal/extractor/docker"
-
-	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/fanal/cache"
-
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
@@ -35,8 +25,13 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpm"
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/extractor/docker"
+	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/fanal/utils"
 	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/xerrors"
 )
 
 func main() {
