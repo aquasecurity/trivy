@@ -119,7 +119,7 @@ func TestExtractFromFile(t *testing.T) {
 			}
 			defer f.Close()
 
-			d := DockerExtractor{}
+			d := Extractor{}
 			fm, err := d.ExtractFromFile(context.TODO(), f, v.filenames)
 			if v.err != err {
 				t.Errorf("err: got %v, want %v", v.err, err)
@@ -175,7 +175,7 @@ func TestExtractFiles(t *testing.T) {
 			}
 			defer f.Close()
 
-			d := DockerExtractor{}
+			d := Extractor{}
 			fm, opqDirs, err := d.ExtractFiles(f, v.filenames)
 			if v.err != err {
 				t.Errorf("err: got %v, want %v", v.err, err)
@@ -211,7 +211,7 @@ func TestDockerExtractor_SaveLocalImage(t *testing.T) {
 		_ = os.RemoveAll(tempCacheDir)
 	}()
 
-	de := DockerExtractor{
+	de := Extractor{
 		Option: types.DockerOption{},
 		Client: c,
 		Cache:  cache.Initialize(tempCacheDir),
@@ -311,7 +311,7 @@ func TestDockerExtractor_Extract(t *testing.T) {
 			_ = os.RemoveAll(tempCacheDir)
 		}()
 
-		de := DockerExtractor{
+		de := Extractor{
 			Option: types.DockerOption{
 				AuthURL:  ts.URL,
 				NonSSL:   true,
