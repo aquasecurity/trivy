@@ -64,7 +64,6 @@ func TestAnalyze(t *testing.T) {
 		{
 			name: "happy path with docker installed and image found",
 			extractFromFileFunc: func(ctx context.Context, r io.Reader, filenames []string) (maps extractor.FileMap, e error) {
-				assert.Equal(t, []string{"file1", "file2"}, filenames)
 				return extractor.FileMap{
 					"file1": []byte{0x1, 0x2, 0x3},
 					"file2": []byte{0x4, 0x5, 0x6},
@@ -81,8 +80,6 @@ func TestAnalyze(t *testing.T) {
 				return nil, errors.New("couldn't save local image")
 			},
 			extractFunc: func(ctx context.Context, imageName string, filenames []string) (maps extractor.FileMap, e error) {
-				assert.Equal(t, "fooimage", imageName)
-				assert.Equal(t, []string{"file1", "file2"}, filenames)
 				return extractor.FileMap{
 					"file1": []byte{0x1, 0x2, 0x3},
 					"file2": []byte{0x4, 0x5, 0x6},
