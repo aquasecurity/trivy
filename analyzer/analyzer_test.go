@@ -98,7 +98,7 @@ func TestAnalyze(t *testing.T) {
 	for _, tc := range testCases {
 		RegisterOSAnalyzer(mockOSAnalyzer{})
 
-		ac := AnalyzerConfig{Extractor: mockDockerExtractor{
+		ac := Config{Extractor: mockDockerExtractor{
 			extractFromFile: tc.extractFromFileFunc,
 			extract:         tc.extractFunc,
 			saveLocalImage:  tc.saveLocalImageFunc,
