@@ -60,22 +60,22 @@ type layer struct {
 	Content io.ReadCloser
 }
 
-type DockerExtractor struct {
+type Extractor struct {
 	Client *client.Client
 	Cache  cache.Cache
 	Option types.DockerOption
 }
 
-func NewDockerExtractor(option types.DockerOption) (extractor.Extractor, error) {
+func NewDockerExtractor(option types.DockerOption) (Extractor, error) {
 	RegisterRegistry(&gcr.GCR{})
 	RegisterRegistry(&ecr.ECR{})
 
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
-		return nil, xerrors.Errorf("error initializing docker extractor: %w", err)
+		return Extractor{}, xerrors.Errorf("error initializing docker extractor: %w", err)
 	}
 
-	return DockerExtractor{
+	return Extractor{
 		Option: option,
 		Client: cli,
 		Cache:  cache.Initialize(utils.CacheDir()),
@@ -122,7 +122,7 @@ func applyLayers(layerPaths []string, filesInLayers map[string]extractor.FileMap
 
 }
 
-func (d DockerExtractor) createRegistryClient(ctx context.Context, domain string) (*registry.Registry, error) {
+func (d Extractor) createRegistryClient(ctx context.Context, domain string) (*registry.Registry, error) {
 	auth, err := GetToken(ctx, domain, d.Option)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get auth config: %w", err)
@@ -144,7 +144,7 @@ func (d DockerExtractor) createRegistryClient(ctx context.Context, domain string
 	})
 }
 
-func (d DockerExtractor) SaveLocalImage(ctx context.Context, imageName string) (io.Reader, error) {
+func (d Extractor) SaveLocalImage(ctx context.Context, imageName string) (io.Reader, error) {
 	var err error
 	r := d.Cache.Get(imageName)
 	if r == nil {
@@ -162,7 +162,7 @@ func (d DockerExtractor) SaveLocalImage(ctx context.Context, imageName string) (
 	return r, nil
 }
 
-func (d DockerExtractor) saveLocalImage(ctx context.Context, imageName string) (io.ReadCloser, error) {
+func (d Extractor) saveLocalImage(ctx context.Context, imageName string) (io.ReadCloser, error) {
 	r, err := d.Client.ImageSave(ctx, []string{imageName})
 	if err != nil {
 		return nil, xerrors.New("error in docker image save")
@@ -170,7 +170,7 @@ func (d DockerExtractor) saveLocalImage(ctx context.Context, imageName string) (
 	return r, nil
 }
 
-func (d DockerExtractor) Extract(ctx context.Context, imageName string, filenames []string) (extractor.FileMap, error) {
+func (d Extractor) Extract(ctx context.Context, imageName string, filenames []string) (extractor.FileMap, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), d.Option.Timeout)
 	defer cancel()
 
@@ -237,7 +237,7 @@ func downloadConfigFile(ctx context.Context, r *registry.Registry, image registr
 	return config, nil
 }
 
-func (d DockerExtractor) extractLayerFiles(layerCh chan layer, errCh chan error, ctx context.Context, filenames []string, filesInLayers map[string]extractor.FileMap, opqInLayers map[string]extractor.OPQDirs) error {
+func (d Extractor) extractLayerFiles(layerCh chan layer, errCh chan error, ctx context.Context, filenames []string, filesInLayers map[string]extractor.FileMap, opqInLayers map[string]extractor.OPQDirs) error {
 	var l layer
 	select {
 	case l = <-layerCh:
@@ -257,7 +257,7 @@ func (d DockerExtractor) extractLayerFiles(layerCh chan layer, errCh chan error,
 	return nil
 }
 
-func (d DockerExtractor) extractLayerWorker(dig digest.Digest, r *registry.Registry, ctx context.Context, image registry.Image, errCh chan error, layerCh chan layer) {
+func (d Extractor) extractLayerWorker(dig digest.Digest, r *registry.Registry, ctx context.Context, image registry.Image, errCh chan error, layerCh chan layer) {
 	var rc io.Reader
 	// Use cache
 	rc = d.Cache.Get(string(dig))
@@ -294,7 +294,7 @@ func getValidManifest(ctx context.Context, r *registry.Registry, image registry.
 	return m, nil
 }
 
-func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filenames []string) (extractor.FileMap, error) {
+func (d Extractor) ExtractFromFile(ctx context.Context, r io.Reader, filenames []string) (extractor.FileMap, error) {
 	manifests := make([]manifest, 0)
 	filesInLayers := map[string]extractor.FileMap{}
 	opqInLayers := make(map[string]extractor.OPQDirs)
@@ -365,7 +365,7 @@ func (d DockerExtractor) ExtractFromFile(ctx context.Context, r io.Reader, filen
 	return fileMap, nil
 }
 
-func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extractor.FileMap, extractor.OPQDirs, error) {
+func (d Extractor) ExtractFiles(layer io.Reader, filenames []string) (extractor.FileMap, extractor.OPQDirs, error) {
 	data := make(map[string][]byte)
 	opqDirs := extractor.OPQDirs{}
 
@@ -426,7 +426,7 @@ func (d DockerExtractor) ExtractFiles(layer io.Reader, filenames []string) (extr
 	return data, opqDirs, nil
 }
 
-func (d DockerExtractor) isIgnored(filePath string) bool {
+func (d Extractor) isIgnored(filePath string) bool {
 	for _, path := range strings.Split(filePath, utils.PathSeparator) {
 		if utils.StringInSlice(path, library.IgnoreDirs) {
 			return true
