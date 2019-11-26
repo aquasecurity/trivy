@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	version "github.com/knqyf263/go-rpm-version"
+	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -65,10 +65,19 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Detecte
 		}
 
 		installed := utils.FormatVersion(pkg)
-		installedVersion := version.NewVersion(installed)
+		installedVersion, err := version.NewVersion(installed)
+		if err != nil {
+			log.Logger.Debugf("failed to parse Alpine Linux installed package version: %s", err)
+			continue
+		}
 
 		for _, adv := range advisories {
-			fixedVersion := version.NewVersion(adv.FixedVersion)
+			f := strings.Replace(adv.FixedVersion, "_rc", "~rc", 1)
+			fixedVersion, err := version.NewVersion(f)
+			if err != nil {
+				log.Logger.Debugf("failed to parse Alpine Linux fixed version: %s", err)
+				continue
+			}
 			if installedVersion.LessThan(fixedVersion) {
 				vuln := types.DetectedVulnerability{
 					VulnerabilityID:  adv.VulnerabilityID,
