@@ -5,6 +5,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"path/filepath"
 
 	"k8s.io/utils/clock"
 
@@ -42,14 +43,9 @@ func NewClient() Client {
 		githubClient: github.NewClient(),
 	}
 }
-
-func (c Client) Download(ctx context.Context, cliVersion, cacheDir string, light, skip bool) error {
+func (c Client) NeedsUpdate(ctx context.Context, cliVersion string, light, skip bool) (bool, error) {
 	dbType := db.TypeFull
-	dbFile := fullDB
-	message := " Downloading Full DB file..."
 	if light {
-		dbFile = lightDB
-		message = " Downloading Lightweight DB file..."
 		dbType = db.TypeLight
 	}
 
@@ -58,54 +54,48 @@ func (c Client) Download(ctx context.Context, cliVersion, cacheDir string, light
 		log.Logger.Debug("This is the first run")
 		if skip {
 			log.Logger.Error("The first run cannot skip downloading DB")
-			return xerrors.New("--skip-update cannot be specified on the first run")
+			return false, xerrors.New("--skip-update cannot be specified on the first run")
 		}
 		metadata = db.Metadata{} // suppress a warning
 	}
 
 	if db.SchemaVersion < metadata.Version {
 		log.Logger.Errorf("Trivy version (%s) is old. Update to the latest version.", cliVersion)
-		return xerrors.Errorf("the version of DB schema doesn't match. Local DB: %d, Expected: %d",
+		return false, xerrors.Errorf("the version of DB schema doesn't match. Local DB: %d, Expected: %d",
 			metadata.Version, db.SchemaVersion)
 	}
 
 	if skip {
 		if db.SchemaVersion != metadata.Version {
 			log.Logger.Error("The local DB is old and needs to be updated")
-			return xerrors.New("--skip-update cannot be specified with the old DB")
+			return false, xerrors.New("--skip-update cannot be specified with the old DB")
 		} else if metadata.Type != dbType {
 			if dbType == db.TypeFull {
 				log.Logger.Error("The local DB is a lightweight DB. You have to download a full DB")
 			} else {
 				log.Logger.Error("The local DB is a full DB. You have to download a lightweight DB")
 			}
-			return xerrors.New("--skip-update cannot be specified with the different schema DB")
+			return false, xerrors.New("--skip-update cannot be specified with the different schema DB")
 		}
-		return nil
+		return false, nil
 	}
 
 	if db.SchemaVersion == metadata.Version && metadata.Type == dbType &&
 		c.clock.Now().Before(metadata.NextUpdate) {
 		log.Logger.Debug("DB update was skipped because DB is the latest")
-		return nil
+		return false, nil
 	}
-
-	if err = c.download(ctx, cacheDir, message, dbFile); err != nil {
-		return xerrors.Errorf("failed to download the DB file: %w", err)
-	}
-
-	log.Logger.Info("Reopening vulnerability DB")
-	if err = db.Close(); err != nil {
-		return xerrors.Errorf("unable to close old DB: %w", err)
-	}
-	if err = db.Init(cacheDir); err != nil {
-		return xerrors.Errorf("unable to open new DB: %w", err)
-	}
-
-	return nil
+	return true, nil
 }
 
-func (c Client) download(ctx context.Context, cacheDir, message, dbFile string) error {
+func (c Client) Download(ctx context.Context, cacheDir string, light bool) error {
+	dbFile := fullDB
+	message := " Downloading Full DB file..."
+	if light {
+		dbFile = lightDB
+		message = " Downloading Lightweight DB file..."
+	}
+
 	spinner := utils.NewSpinner(message)
 	spinner.Start()
 	defer spinner.Stop()
@@ -122,6 +112,11 @@ func (c Client) download(ctx context.Context, cacheDir, message, dbFile string) 
 	}
 
 	dbPath := db.Path(cacheDir)
+	dbDir := filepath.Dir(dbPath)
+	if err = os.MkdirAll(dbDir, 0700); err != nil {
+		return xerrors.Errorf("failed to mkdir: %w", err)
+	}
+
 	file, err := os.Create(dbPath)
 	if err != nil {
 		return xerrors.Errorf("unable to open DB file: %w", err)

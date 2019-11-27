@@ -56,30 +56,20 @@ func (_m *MockGitHubClient) DownloadDB(ctx context.Context, fileName string) (io
 	return rc, ret.Error(1)
 }
 
-func TestClient_Download(t *testing.T) {
+func TestClient_NeedsUpdate(t *testing.T) {
 	type getMetadataOutput struct {
 		metadata db.Metadata
 		err      error
 	}
 
-	type downloadDBOutput struct {
-		fileName string
-		err      error
-	}
-	type downloadDB struct {
-		input  string
-		output downloadDBOutput
-	}
-
 	testCases := []struct {
-		name            string
-		light           bool
-		skip            bool
-		clock           clock.Clock
-		getMetadata     getMetadataOutput
-		downloadDB      []downloadDB
-		expectedContent []byte
-		expectedError   error
+		name          string
+		light         bool
+		skip          bool
+		clock         clock.Clock
+		getMetadata   getMetadataOutput
+		expected      bool
+		expectedError error
 	}{
 		{
 			name:  "happy path",
@@ -92,14 +82,7 @@ func TestClient_Download(t *testing.T) {
 					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
 				},
 			},
-			downloadDB: []downloadDB{
-				{
-					input: fullDB,
-					output: downloadDBOutput{
-						fileName: "testdata/test.db.gz",
-					},
-				},
-			},
+			expected: true,
 		},
 		{
 			name:  "happy path for first run",
@@ -109,14 +92,7 @@ func TestClient_Download(t *testing.T) {
 				metadata: db.Metadata{},
 				err:      errors.New("get metadata failed"),
 			},
-			downloadDB: []downloadDB{
-				{
-					input: fullDB,
-					output: downloadDBOutput{
-						fileName: "testdata/test.db.gz",
-					},
-				},
-			},
+			expected: true,
 		},
 		{
 			name:  "happy path with different type",
@@ -129,14 +105,7 @@ func TestClient_Download(t *testing.T) {
 					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
 				},
 			},
-			downloadDB: []downloadDB{
-				{
-					input: lightDB,
-					output: downloadDBOutput{
-						fileName: "testdata/test.db.gz",
-					},
-				},
-			},
+			expected: true,
 		},
 		{
 			name:  "happy path with old schema version",
@@ -149,14 +118,7 @@ func TestClient_Download(t *testing.T) {
 					NextUpdate: time.Date(2020, 9, 1, 0, 0, 0, 0, time.UTC),
 				},
 			},
-			downloadDB: []downloadDB{
-				{
-					input: lightDB,
-					output: downloadDBOutput{
-						fileName: "testdata/test.db.gz",
-					},
-				},
-			},
+			expected: true,
 		},
 		{
 			name:  "happy path with --skip-update",
@@ -169,7 +131,8 @@ func TestClient_Download(t *testing.T) {
 					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
 				},
 			},
-			skip: true,
+			skip:     true,
+			expected: false,
 		},
 		{
 			name:  "skip downloading DB",
@@ -182,6 +145,7 @@ func TestClient_Download(t *testing.T) {
 					NextUpdate: time.Date(2019, 10, 2, 0, 0, 0, 0, time.UTC),
 				},
 			},
+			expected: false,
 		},
 		{
 			name:  "newer schema version",
@@ -195,48 +159,6 @@ func TestClient_Download(t *testing.T) {
 				},
 			},
 			expectedError: xerrors.New("the version of DB schema doesn't match. Local DB: 2, Expected: 1"),
-		},
-		{
-			name:  "DownloadDB returns an error",
-			light: false,
-			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
-			getMetadata: getMetadataOutput{
-				metadata: db.Metadata{
-					Version:    1,
-					Type:       db.TypeFull,
-					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
-				},
-			},
-			downloadDB: []downloadDB{
-				{
-					input: fullDB,
-					output: downloadDBOutput{
-						err: xerrors.New("download failed"),
-					},
-				},
-			},
-			expectedError: xerrors.New("failed to download the DB file: failed to download vulnerability DB: download failed"),
-		},
-		{
-			name:  "invalid gzip",
-			light: false,
-			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
-			getMetadata: getMetadataOutput{
-				metadata: db.Metadata{
-					Version:    1,
-					Type:       db.TypeFull,
-					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
-				},
-			},
-			downloadDB: []downloadDB{
-				{
-					input: fullDB,
-					output: downloadDBOutput{
-						fileName: "testdata/invalid.db.gz",
-					},
-				},
-			},
-			expectedError: xerrors.New("unable to open new DB: failed to open db: invalid database"),
 		},
 		{
 			name:  "--skip-update on the first run",
@@ -274,6 +196,96 @@ func TestClient_Download(t *testing.T) {
 			mockConfig.On("GetMetadata").Return(
 				tc.getMetadata.metadata, tc.getMetadata.err)
 
+			dir, err := ioutil.TempDir("", "db")
+			require.NoError(t, err, tc.name)
+			defer os.RemoveAll(dir)
+
+			err = db.Init(dir)
+			require.NoError(t, err, tc.name)
+
+			client := Client{
+				dbc:   mockConfig,
+				clock: tc.clock,
+			}
+
+			ctx := context.Background()
+			needsUpdate, err := client.NeedsUpdate(ctx, "test", tc.light, tc.skip)
+
+			switch {
+			case tc.expectedError != nil:
+				assert.EqualError(t, err, tc.expectedError.Error(), tc.name)
+			default:
+				assert.NoError(t, err, tc.name)
+			}
+
+			assert.Equal(t, tc.expected, needsUpdate)
+			mockConfig.AssertExpectations(t)
+		})
+	}
+}
+
+func TestClient_Download(t *testing.T) {
+	type downloadDBOutput struct {
+		fileName string
+		err      error
+	}
+	type downloadDB struct {
+		input  string
+		output downloadDBOutput
+	}
+
+	testCases := []struct {
+		name            string
+		light           bool
+		downloadDB      []downloadDB
+		expectedContent []byte
+		expectedError   error
+	}{
+		{
+			name:  "happy path",
+			light: false,
+			downloadDB: []downloadDB{
+				{
+					input: fullDB,
+					output: downloadDBOutput{
+						fileName: "testdata/test.db.gz",
+					},
+				},
+			},
+		},
+		{
+			name:  "DownloadDB returns an error",
+			light: false,
+			downloadDB: []downloadDB{
+				{
+					input: fullDB,
+					output: downloadDBOutput{
+						err: xerrors.New("download failed"),
+					},
+				},
+			},
+			expectedError: xerrors.New("failed to download vulnerability DB: download failed"),
+		},
+		{
+			name:  "invalid gzip",
+			light: false,
+			downloadDB: []downloadDB{
+				{
+					input: fullDB,
+					output: downloadDBOutput{
+						fileName: "testdata/invalid.db.gz",
+					},
+				},
+			},
+			expectedError: xerrors.New("invalid gzip file: unexpected EOF"),
+		},
+	}
+
+	err := log.InitLogger(false, true)
+	require.NoError(t, err, "failed to init logger")
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
 			mockGitHubConfig := new(MockGitHubClient)
 			for _, dd := range tc.downloadDB {
 				var rc io.ReadCloser
@@ -296,13 +308,11 @@ func TestClient_Download(t *testing.T) {
 			require.NoError(t, err, tc.name)
 
 			client := Client{
-				dbc:          mockConfig,
-				clock:        tc.clock,
 				githubClient: mockGitHubConfig,
 			}
 
 			ctx := context.Background()
-			err = client.Download(ctx, "test", dir, tc.light, tc.skip)
+			err = client.Download(ctx, dir, tc.light)
 
 			switch {
 			case tc.expectedError != nil:
@@ -311,7 +321,6 @@ func TestClient_Download(t *testing.T) {
 				assert.NoError(t, err, tc.name)
 			}
 
-			mockConfig.AssertExpectations(t)
 			mockGitHubConfig.AssertExpectations(t)
 		})
 	}
