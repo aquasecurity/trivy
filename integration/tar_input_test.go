@@ -13,9 +13,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/aquasecurity/trivy/internal/standalone"
 
-	"github.com/aquasecurity/trivy/pkg"
+	"github.com/stretchr/testify/assert"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -301,6 +301,36 @@ func TestRun_WithTar(t *testing.T) {
 			},
 			golden: "testdata/amazon-2.json.golden",
 		},
+		{
+			name: "oracle 6 integration",
+			testArgs: args{
+				Version:    "dev",
+				SkipUpdate: true,
+				Format:     "json",
+				Input:      "testdata/fixtures/oraclelinux-6-slim.tar.gz",
+			},
+			golden: "testdata/oraclelinux-6-slim.json.golden",
+		},
+		{
+			name: "oracle 7 integration",
+			testArgs: args{
+				Version:    "dev",
+				SkipUpdate: true,
+				Format:     "json",
+				Input:      "testdata/fixtures/oraclelinux-7-slim.tar.gz",
+			},
+			golden: "testdata/oraclelinux-7-slim.json.golden",
+		},
+		{
+			name: "oracle 8 integration",
+			testArgs: args{
+				Version:    "dev",
+				SkipUpdate: true,
+				Format:     "json",
+				Input:      "testdata/fixtures/oraclelinux-8-slim.tar.gz",
+			},
+			golden: "testdata/oraclelinux-8-slim.json.golden",
+		},
 	}
 
 	for _, c := range cases {
@@ -310,7 +340,7 @@ func TestRun_WithTar(t *testing.T) {
 			defer os.RemoveAll(cacheDir)
 
 			// Setup CLI App
-			app := pkg.NewApp(c.testArgs.Version)
+			app := standalone.NewApp(c.testArgs.Version)
 			app.Writer = ioutil.Discard
 
 			osArgs := []string{"trivy", "--cache-dir", cacheDir, "--format", c.testArgs.Format}

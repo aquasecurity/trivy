@@ -15,7 +15,7 @@ var (
 
 func InitLogger(debug, disable bool) (err error) {
 	debugOption = debug
-	Logger, err = newLogger(debug, disable)
+	Logger, err = NewLogger(debug, disable)
 	if err != nil {
 		return xerrors.Errorf("error in new logger: %w", err)
 	}
@@ -23,7 +23,7 @@ func InitLogger(debug, disable bool) (err error) {
 
 }
 
-func newLogger(debug, disable bool) (*zap.SugaredLogger, error) {
+func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 	level := zap.NewAtomicLevel()
 	if debug {
 		level.SetLevel(zapcore.DebugLevel)
@@ -56,6 +56,7 @@ func newLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 		myConfig.OutputPaths = []string{os.DevNull}
 		myConfig.ErrorOutputPaths = []string{os.DevNull}
 	}
+
 	logger, err := myConfig.Build()
 	if err != nil {
 		return nil, xerrors.Errorf("failed to build zap config: %w", err)

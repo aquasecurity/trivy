@@ -1,0 +1,6 @@
+[
+  {
+    "Target": "testdata/fixtures/oraclelinux-8-slim.tar.gz (oracle 8.0)",
+    "Vulnerabilities": null
+  }
+]

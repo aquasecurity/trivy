@@ -22,7 +22,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
   - [Debian/Ubuntu](#debianubuntu)
   - [Arch Linux](#arch-linux)
   - [Mac OS X / Homebrew](#homebrew)
-  - [Binary (Including Windows)](#binary-including-windows)
+  - [Binary](#binary)
   - [From source](#from-source)
 - [Quick Start](#quick-start)
   - [Basic](#basic)
@@ -71,7 +71,7 @@ See [here](#continuous-integration-ci) for details.
 # Features
 
 - Detect comprehensive vulnerabilities
-  - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Debian, Ubuntu, Amazon Linux and Distroless)
+  - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Oracle Linux, Debian, Ubuntu, Amazon Linux and Distroless)
   - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn and Cargo)
 - Simple
   - Specify only an image name
@@ -152,7 +152,7 @@ You can use homebrew on macOS.
 $ brew install aquasecurity/trivy/trivy
 ```
 
-## Binary (Including Windows)
+## Binary
 
 Get the latest version from [this page](https://github.com/aquasecurity/trivy/releases/latest), and download the archive file for your operating system/architecture. Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
 
@@ -1163,23 +1163,30 @@ stages:
 
 trivy:
   stage: test
-  image: docker:stable-git
+  image: docker:19.03.1
+  services:
+    - name: docker:dind
+      entrypoint: ["env", "-u", "DOCKER_HOST"]
+      command: ["dockerd-entrypoint.sh"]
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+    # See https://github.com/docker-library/docker/pull/166
+    DOCKER_TLS_CERTDIR: ""
   before_script:
-    - docker build -t trivy-ci-test:${CI_COMMIT_REF_NAME} .
+    - apk add --no-cache curl
     - export VERSION=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+    - echo $VERSION
     - wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
     - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
-  variables:
-    DOCKER_DRIVER: overlay2
   allow_failure: true
-  services:
-    - docker:stable-dind
   script:
-    - ./trivy --exit-code 0 --severity HIGH --no-progress trivy-ci-test:${CI_COMMIT_REF_NAME}
-    - ./trivy --exit-code 1 --severity CRITICAL --no-progress trivy-ci-test:${CI_COMMIT_REF_NAME}
+    - docker build -t trivy-ci-test:$CI_COMMIT_SHA .
+    - ./trivy --exit-code 0 --cache-dir $CI_PROJECT_DIR/.trivycache/ --no-progress --severity HIGH trivy-ci-test:$CI_COMMIT_SHA
+    - ./trivy --exit-code 1 --severity CRITICAL  --no-progress trivy-ci-test:$CI_COMMIT_SHA
   cache:
-    directories:
-      - $HOME/.cache/trivy
+    paths:
+      - $CI_PROJECT_DIR/.trivycache/
 ```   
 
 ## Authorization for Private Docker Registry
@@ -1240,12 +1247,13 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 | Red Hat Universal Base Image | 7, 8                                     | Installed by yum/rpm          |                 YES                  |
 | Red Hat Enterprise Linux     | 6, 7, 8                                  | Installed by yum/rpm          |                 YES                  |
 | CentOS                       | 6, 7                                     | Installed by yum/rpm          |                 YES                  |
-| Amazon Linux                 | 1, 2                                     | Installed by apt/apt-get/dpkg |                  NO                  |
+| Oracle Linux                 | 5, 6, 7, 8                               | Installed by yum/rpm          |                  NO                  |
+| Amazon Linux                 | 1, 2                                     | Installed by yum/rpm          |                  NO                  |
 | Debian GNU/Linux             | wheezy, jessie, stretch, buster          | Installed by apt/apt-get/dpkg |                 YES                  |
 | Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg |                 YES                  |
 | Distroless                   | Any                                      | Installed by apt/apt-get/dpkg |                 YES                  |
 
-RHEL, CentOS and Amazon Linux package information is stored in a binary format, and Trivy uses the `rpm` executable to parse this information when scanning an image based on RHEL or CentOS. The Trivy container image includes `rpm`, and the installers include it as a dependency. If you installed the `trivy` binary using `wget` or `curl`, or if you build it from source, you will also need to ensure that `rpm` is available.
+RHEL, CentOS, Oracle Linux and Amazon Linux package information is stored in a binary format, and Trivy uses the `rpm` executable to parse this information when scanning an image based on RHEL or CentOS. The Trivy container image includes `rpm`, and the installers include it as a dependency. If you installed the `trivy` binary using `wget` or `curl`, or if you build it from source, you will also need to ensure that `rpm` is available.
 
 Distroless: https://github.com/GoogleContainerTools/distroless
 
@@ -1429,7 +1437,7 @@ $ brew untap knqyf263/trivy
 $ brew install aquasecurity/trivy/trivy
 ```
 
-## Binary (Including Windows)
+## Binary
 No need to fix.
 
 
