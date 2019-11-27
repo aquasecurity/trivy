@@ -13,7 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/standalone"
+	"github.com/aquasecurity/trivy/internal"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -340,7 +340,7 @@ func TestRun_WithTar(t *testing.T) {
 			defer os.RemoveAll(cacheDir)
 
 			// Setup CLI App
-			app := standalone.NewApp(c.testArgs.Version)
+			app := internal.NewApp(c.testArgs.Version)
 			app.Writer = ioutil.Discard
 
 			osArgs := []string{"trivy", "--cache-dir", cacheDir, "--format", c.testArgs.Format}
