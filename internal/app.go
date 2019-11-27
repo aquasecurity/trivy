@@ -1,9 +1,10 @@
-package standalone
+package internal
 
 import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/trivy/internal/standalone"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 
 	"github.com/aquasecurity/trivy-db/pkg/types"
@@ -159,6 +160,6 @@ OPTIONS:
 		},
 	}
 
-	app.Action = Run
+	app.Action = standalone.Run
 	return app
 }
