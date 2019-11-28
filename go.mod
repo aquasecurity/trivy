@@ -8,7 +8,7 @@ require (
 	github.com/aquasecurity/trivy-db v0.0.0-20191120190201-a6645984b409
 	github.com/briandowns/spinner v0.0.0-20190319032542-ac46072a5a91
 	github.com/caarlos0/env/v6 v6.0.0
-	github.com/genuinetools/reg v0.16.0
+	github.com/genuinetools/reg v0.16.1
 	github.com/google/go-github/v28 v28.1.1
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
@@ -31,5 +31,3 @@ require (
 	gopkg.in/yaml.v2 v2.2.4 // indirect
 	k8s.io/utils v0.0.0-20191010214722-8d271d903fe4
 )
-
-replace github.com/genuinetools/reg => github.com/tomoyamachi/reg v0.16.1-0.20190706172545-2a2250fd7c00
