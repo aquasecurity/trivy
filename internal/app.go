@@ -4,12 +4,146 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/trivy/internal/client"
+	"github.com/aquasecurity/trivy/internal/server"
+
 	"github.com/aquasecurity/trivy/internal/standalone"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 
 	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/urfave/cli"
+)
+
+var (
+	templateFlag = cli.StringFlag{
+		Name:   "template, t",
+		Value:  "",
+		Usage:  "output template",
+		EnvVar: "TRIVY_TEMPLATE",
+	}
+
+	formatFlag = cli.StringFlag{
+		Name:   "format, f",
+		Value:  "table",
+		Usage:  "format (table, json, template)",
+		EnvVar: "TRIVY_FORMAT",
+	}
+
+	inputFlag = cli.StringFlag{
+		Name:   "input, i",
+		Value:  "",
+		Usage:  "input file path instead of image name",
+		EnvVar: "TRIVY_INPUT",
+	}
+
+	severityFlag = cli.StringFlag{
+		Name:   "severity, s",
+		Value:  strings.Join(types.SeverityNames, ","),
+		Usage:  "severities of vulnerabilities to be displayed (comma separated)",
+		EnvVar: "TRIVY_SEVERITY",
+	}
+
+	outputFlag = cli.StringFlag{
+		Name:   "output, o",
+		Usage:  "output file name",
+		EnvVar: "TRIVY_OUTPUT",
+	}
+
+	exitCodeFlag = cli.IntFlag{
+		Name:   "exit-code",
+		Usage:  "Exit code when vulnerabilities were found",
+		Value:  0,
+		EnvVar: "TRIVY_EXIT_CODE",
+	}
+
+	skipUpdateFlag = cli.BoolFlag{
+		Name:   "skip-update",
+		Usage:  "skip db update",
+		EnvVar: "TRIVY_SKIP_UPDATE",
+	}
+
+	downloadDBOnlyFlag = cli.BoolFlag{
+		Name:   "download-db-only",
+		Usage:  "download/update vulnerability database but don't run a scan",
+		EnvVar: "TRIVY_DOWNLOAD_DB_ONLY",
+	}
+
+	resetFlag = cli.BoolFlag{
+		Name:   "reset",
+		Usage:  "remove all caches and database",
+		EnvVar: "TRIVY_RESET",
+	}
+
+	clearCacheFlag = cli.BoolFlag{
+		Name:   "clear-cache, c",
+		Usage:  "clear image caches without scanning",
+		EnvVar: "TRIVY_CLEAR_CACHE",
+	}
+
+	quietFlag = cli.BoolFlag{
+		Name:   "quiet, q",
+		Usage:  "suppress progress bar and log output",
+		EnvVar: "TRIVY_QUIET",
+	}
+
+	noProgressFlag = cli.BoolFlag{
+		Name:   "no-progress",
+		Usage:  "suppress progress bar",
+		EnvVar: "TRIVY_NO_PROGRESS",
+	}
+
+	ignoreUnfixedFlag = cli.BoolFlag{
+		Name:   "ignore-unfixed",
+		Usage:  "display only fixed vulnerabilities",
+		EnvVar: "TRIVY_IGNORE_UNFIXED",
+	}
+
+	debugFlag = cli.BoolFlag{
+		Name:   "debug, d",
+		Usage:  "debug mode",
+		EnvVar: "TRIVY_DEBUG",
+	}
+
+	vulnTypeFlag = cli.StringFlag{
+		Name:   "vuln-type",
+		Value:  "os,library",
+		Usage:  "comma-separated list of vulnerability types (os,library)",
+		EnvVar: "TRIVY_VULN_TYPE",
+	}
+
+	cacheDirFlag = cli.StringFlag{
+		Name:   "cache-dir",
+		Value:  utils.DefaultCacheDir(),
+		Usage:  "use as cache directory, but image cache is stored in /path/to/cache/fanal",
+		EnvVar: "TRIVY_CACHE_DIR",
+	}
+
+	ignoreFileFlag = cli.StringFlag{
+		Name:   "ignorefile",
+		Value:  vulnerability.DefaultIgnoreFile,
+		Usage:  "specify .trivyignore file",
+		EnvVar: "TRIVY_IGNOREFILE",
+	}
+
+	timeoutFlag = cli.DurationFlag{
+		Name:   "timeout",
+		Value:  time.Second * 60,
+		Usage:  "docker timeout",
+		EnvVar: "TRIVY_TIMEOUT",
+	}
+
+	lightFlag = cli.BoolFlag{
+		Name:   "light",
+		Usage:  "light mode: it's faster, but vulnerability descriptions and references are not displayed",
+		EnvVar: "TRIVY_LIGHT",
+	}
+
+	token = cli.StringFlag{
+		Name:   "token",
+		Usage:  "for authentication",
+		EnvVar: "TRIVY_TOKEN",
+	}
 )
 
 func NewApp(version string) *cli.App {
@@ -38,109 +172,25 @@ OPTIONS:
 	app.EnableBashCompletion = true
 
 	app.Flags = []cli.Flag{
-		cli.StringFlag{
-			Name:   "template, t",
-			Value:  "",
-			Usage:  "output template",
-			EnvVar: "TRIVY_TEMPLATE",
-		},
-		cli.StringFlag{
-			Name:   "format, f",
-			Value:  "table",
-			Usage:  "format (table, json, template)",
-			EnvVar: "TRIVY_FORMAT",
-		},
-		cli.StringFlag{
-			Name:   "input, i",
-			Value:  "",
-			Usage:  "input file path instead of image name",
-			EnvVar: "TRIVY_INPUT",
-		},
-		cli.StringFlag{
-			Name:   "severity, s",
-			Value:  strings.Join(types.SeverityNames, ","),
-			Usage:  "severities of vulnerabilities to be displayed (comma separated)",
-			EnvVar: "TRIVY_SEVERITY",
-		},
-		cli.StringFlag{
-			Name:   "output, o",
-			Usage:  "output file name",
-			EnvVar: "TRIVY_OUTPUT",
-		},
-		cli.IntFlag{
-			Name:   "exit-code",
-			Usage:  "Exit code when vulnerabilities were found",
-			Value:  0,
-			EnvVar: "TRIVY_EXIT_CODE",
-		},
-		cli.BoolFlag{
-			Name:   "skip-update",
-			Usage:  "skip db update",
-			EnvVar: "TRIVY_SKIP_UPDATE",
-		},
-		cli.BoolFlag{
-			Name:   "download-db-only",
-			Usage:  "download/update vulnerability database but don't run a scan",
-			EnvVar: "TRIVY_DOWNLOAD_DB_ONLY",
-		},
-		cli.BoolFlag{
-			Name:   "reset",
-			Usage:  "remove all caches and database",
-			EnvVar: "TRIVY_RESET",
-		},
-		cli.BoolFlag{
-			Name:   "clear-cache, c",
-			Usage:  "clear image caches without scanning",
-			EnvVar: "TRIVY_CLEAR_CACHE",
-		},
-		cli.BoolFlag{
-			Name:   "quiet, q",
-			Usage:  "suppress progress bar and log output",
-			EnvVar: "TRIVY_QUIET",
-		},
-		cli.BoolFlag{
-			Name:   "no-progress",
-			Usage:  "suppress progress bar",
-			EnvVar: "TRIVY_NO_PROGRESS",
-		},
-		cli.BoolFlag{
-			Name:   "ignore-unfixed",
-			Usage:  "display only fixed vulnerabilities",
-			EnvVar: "TRIVY_IGNORE_UNFIXED",
-		},
-		cli.BoolFlag{
-			Name:   "debug, d",
-			Usage:  "debug mode",
-			EnvVar: "TRIVY_DEBUG",
-		},
-		cli.StringFlag{
-			Name:   "vuln-type",
-			Value:  "os,library",
-			Usage:  "comma-separated list of vulnerability types (os,library)",
-			EnvVar: "TRIVY_VULN_TYPE",
-		},
-		cli.StringFlag{
-			Name:   "cache-dir",
-			Value:  utils.DefaultCacheDir(),
-			Usage:  "use as cache directory, but image cache is stored in /path/to/cache/fanal",
-			EnvVar: "TRIVY_CACHE_DIR",
-		},
-		cli.StringFlag{
-			Name:   "ignorefile",
-			Value:  vulnerability.DefaultIgnoreFile,
-			Usage:  "specify .trivyignore file",
-			EnvVar: "TRIVY_IGNOREFILE",
-		},
-		cli.DurationFlag{
-			Name:   "timeout",
-			Value:  time.Second * 60,
-			Usage:  "docker timeout",
-			EnvVar: "TRIVY_TIMEOUT",
-		},
-		cli.BoolFlag{
-			Name:  "light",
-			Usage: "light mode: it's faster, but vulnerability descriptions and references are not displayed",
-		},
+		templateFlag,
+		formatFlag,
+		inputFlag,
+		severityFlag,
+		outputFlag,
+		exitCodeFlag,
+		skipUpdateFlag,
+		downloadDBOnlyFlag,
+		resetFlag,
+		clearCacheFlag,
+		quietFlag,
+		noProgressFlag,
+		ignoreUnfixedFlag,
+		debugFlag,
+		vulnTypeFlag,
+		cacheDirFlag,
+		ignoreFileFlag,
+		timeoutFlag,
+		lightFlag,
 
 		// deprecated options
 		cli.StringFlag{
@@ -160,6 +210,75 @@ OPTIONS:
 		},
 	}
 
+	app.Commands = []cli.Command{
+		NewClientCommand(),
+		NewServerCommand(),
+	}
+
 	app.Action = standalone.Run
 	return app
+}
+
+func NewClientCommand() cli.Command {
+	return cli.Command{
+		Name:    "client",
+		Aliases: []string{"c"},
+		Usage:   "client mode",
+		// ToDO
+		Action: client.Run,
+		Flags: []cli.Flag{
+			templateFlag,
+			formatFlag,
+			inputFlag,
+			severityFlag,
+			outputFlag,
+			exitCodeFlag,
+			clearCacheFlag,
+			quietFlag,
+			ignoreUnfixedFlag,
+			debugFlag,
+			vulnTypeFlag,
+			ignoreFileFlag,
+			cacheDirFlag,
+			timeoutFlag,
+
+			// original flags
+			token,
+			cli.StringFlag{
+				Name:   "remote",
+				Value:  "http://localhost:8080",
+				Usage:  "server address",
+				EnvVar: "TRIVY_REMOTE",
+			},
+		},
+	}
+}
+
+func NewServerCommand() cli.Command {
+	return cli.Command{
+		Name:    "server",
+		Aliases: []string{"s"},
+		Usage:   "server mode",
+		// ToDO
+		Action: server.Run,
+		Flags: []cli.Flag{
+			skipUpdateFlag,
+			downloadDBOnlyFlag,
+			resetFlag,
+			quietFlag,
+			noProgressFlag,
+			debugFlag,
+			ignoreFileFlag,
+			cacheDirFlag,
+
+			// original flags
+			token,
+			cli.StringFlag{
+				Name:   "listen",
+				Value:  "localhost:8080",
+				Usage:  "listen address",
+				EnvVar: "TRIVY_LISTEN",
+			},
+		},
+	}
 }
