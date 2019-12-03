@@ -53,21 +53,27 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (repor
 	}
 
 	if utils.StringInSlice("os", scanOptions.VulnType) {
-		osFamily, osVersion, osVulns, err := ospkg.Scan(files)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to scan image: %w", err)
+		scanner, err := ospkg.NewScanner(scanOptions.RemoteURL, scanOptions.Token, files)
+		if err != nil && err != ospkg.ErrUnsupportedOS {
+			return nil, xerrors.Errorf("failed to create an OS scanner: %w", err)
 		}
-		if osFamily != "" {
+		if err == nil {
+			osFamily, osVersion, osVulns, err := scanner.Scan()
+			if err != nil {
+				return nil, xerrors.Errorf("failed to scan the image: %w", err)
+			}
 			imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion)
 			results = append(results, report.Result{
 				FileName:        imageDetail,
 				Vulnerabilities: osVulns,
 			})
+
 		}
 	}
 
 	if utils.StringInSlice("library", scanOptions.VulnType) {
-		libVulns, err := library.Scan(files, scanOptions)
+		scanner := library.NewScanner(scanOptions.RemoteURL, scanOptions.Token)
+		libVulns, err := scanner.Scan(files)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to scan libraries: %w", err)
 		}
