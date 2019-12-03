@@ -4,6 +4,14 @@ import (
 	"os"
 	"path/filepath"
 
+	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/scanner/library/bundler"
+	"github.com/aquasecurity/trivy/pkg/scanner/library/cargo"
+	"github.com/aquasecurity/trivy/pkg/scanner/library/composer"
+	"github.com/aquasecurity/trivy/pkg/scanner/library/node"
+	"github.com/aquasecurity/trivy/pkg/scanner/library/python"
+	"github.com/knqyf263/go-version"
+
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
 	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
@@ -13,26 +21,45 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/library/poetry"
 	_ "github.com/aquasecurity/fanal/analyzer/library/yarn"
 	"github.com/aquasecurity/fanal/extractor"
-	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/scanner/library/bundler"
-	"github.com/aquasecurity/trivy/pkg/scanner/library/cargo"
-	"github.com/aquasecurity/trivy/pkg/scanner/library/composer"
-	"github.com/aquasecurity/trivy/pkg/scanner/library/node"
-	"github.com/aquasecurity/trivy/pkg/scanner/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/knqyf263/go-version"
 	"golang.org/x/xerrors"
 )
 
-type Scanner interface {
+type Scanner struct {
+	detector DetectorOperation
+}
+
+func NewScanner(remoteURL, token string) Scanner {
+	detector := NewDetector(remoteURL, token)
+	return Scanner{detector: detector}
+}
+
+func (s Scanner) Scan(files extractor.FileMap) (map[string][]types.DetectedVulnerability, error) {
+	results, err := analyzer.GetLibraries(files)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to analyze libraries: %w", err)
+	}
+
+	vulnerabilities := map[string][]types.DetectedVulnerability{}
+	for path, libs := range results {
+		vulns, err := s.detector.Detect(string(path), libs)
+		if err != nil {
+			return nil, xerrors.Errorf("failed library scan: %w", err)
+		}
+
+		vulnerabilities[string(path)] = vulns
+	}
+	return vulnerabilities, nil
+}
+
+type ScannerOperation interface {
 	ParseLockfile(*os.File) ([]ptypes.Library, error)
 	Detect(string, *version.Version) ([]types.DetectedVulnerability, error)
 	Type() string
 }
 
-func NewScanner(filename string) Scanner {
-	var scanner Scanner
+func newScanner(filename string) ScannerOperation {
+	var scanner ScannerOperation
 	switch filename {
 	case "Gemfile.lock":
 		scanner = bundler.NewScanner()
@@ -54,32 +81,8 @@ func NewScanner(filename string) Scanner {
 	return scanner
 }
 
-func Scan(files extractor.FileMap, scanOptions types.ScanOptions) (map[string][]types.DetectedVulnerability, error) {
-	results, err := analyzer.GetLibraries(files)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to analyze libraries: %w", err)
-	}
-
-	vulnerabilities := map[string][]types.DetectedVulnerability{}
-	for path, pkgs := range results {
-		log.Logger.Debugf("Detecting library vulnerabilities, path: %s", path)
-		scanner := NewScanner(filepath.Base(string(path)))
-		if scanner == nil {
-			return nil, xerrors.New("unknown file type")
-		}
-
-		vulns, err := scan(scanner, pkgs)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to scan %s vulnerabilities: %w", scanner.Type(), err)
-		}
-
-		vulnerabilities[string(path)] = vulns
-	}
-	return vulnerabilities, nil
-}
-
 func ScanFile(f *os.File) ([]types.DetectedVulnerability, error) {
-	scanner := NewScanner(filepath.Base(f.Name()))
+	scanner := newScanner(filepath.Base(f.Name()))
 	if scanner == nil {
 		return nil, xerrors.New("unknown file type")
 	}
@@ -89,29 +92,9 @@ func ScanFile(f *os.File) ([]types.DetectedVulnerability, error) {
 		return nil, err
 	}
 
-	vulns, err := scan(scanner, pkgs)
+	vulns, err := detect(scanner, pkgs)
 	if err != nil {
 		return nil, err
 	}
 	return vulns, nil
-}
-
-func scan(scanner Scanner, pkgs []ptypes.Library) ([]types.DetectedVulnerability, error) {
-	log.Logger.Infof("Detecting %s vulnerabilities...", scanner.Type())
-	var vulnerabilities []types.DetectedVulnerability
-	for _, pkg := range pkgs {
-		v, err := version.NewVersion(pkg.Version)
-		if err != nil {
-			log.Logger.Debug(err)
-			continue
-		}
-
-		vulns, err := scanner.Detect(pkg.Name, v)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to detect %s vulnerabilities: %w", scanner.Type(), err)
-		}
-		vulnerabilities = append(vulnerabilities, vulns...)
-	}
-
-	return vulnerabilities, nil
 }
