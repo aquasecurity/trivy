@@ -1,8 +1,8 @@
 package utils
 
 import (
+	"bufio"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -37,11 +37,10 @@ func IsCommandAvailable(name string) bool {
 	return true
 }
 
-func IsGzip(f *os.File) bool {
+func IsGzip(f *bufio.Reader) bool {
 	buf := make([]byte, 3)
-	n, _ := f.Read(buf)
-	defer f.Seek(0, io.SeekStart)
-	if n < 3 {
+	buf, err := f.Peek(3)
+	if err != nil {
 		return false
 	}
 	return buf[0] == 0x1F && buf[1] == 0x8B && buf[2] == 0x8
