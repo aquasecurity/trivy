@@ -3,6 +3,8 @@ package library
 import (
 	"context"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/internal/rpc"
 
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
@@ -12,19 +14,26 @@ import (
 	proto "github.com/aquasecurity/trivy/rpc/detector"
 )
 
-type Server struct{}
+type Server struct {
+	detector   library.DetectorOperation
+	vulnClient vulnerability.Operation
+}
 
-func (s *Server) Detect(ctx context.Context, req *proto.LibDetectRequest) (res *proto.DetectResponse, err error) {
+func NewServer() Server {
 	// remoteURL and token are already empty for server
 	detector := library.NewDetector("", "")
-	vulns, err := detector.Detect(req.FilePath, rpc.ConvertFromRpcLibraries(req.Libraries))
+	vulnClient := vulnerability.NewClient()
+	return Server{detector: detector, vulnClient: vulnClient}
+}
+
+func (s *Server) Detect(ctx context.Context, req *proto.LibDetectRequest) (res *proto.DetectResponse, err error) {
+	vulns, err := s.detector.Detect(req.FilePath, rpc.ConvertFromRpcLibraries(req.Libraries))
 	if err != nil {
 		log.Logger.Warn(err)
-		return nil, err
+		return nil, xerrors.Errorf("failed to detect library vulnerabilities: %w", err)
 	}
 
-	vulnClient := vulnerability.NewClient()
-	vulnClient.FillInfo(vulns, false)
+	s.vulnClient.FillInfo(vulns, false)
 
 	return &proto.DetectResponse{Vulnerabilities: rpc.ConvertToRpcVulns(vulns)}, nil
 }
