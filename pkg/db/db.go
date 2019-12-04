@@ -43,7 +43,7 @@ func NewClient() Client {
 		githubClient: github.NewClient(),
 	}
 }
-func (c Client) NeedsUpdate(ctx context.Context, cliVersion string, light, skip bool) (bool, error) {
+func (c Client) NeedsUpdate(cliVersion string, light, skip bool) (bool, error) {
 	dbType := db.TypeFull
 	if light {
 		dbType = db.TypeLight

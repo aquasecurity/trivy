@@ -208,8 +208,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				clock: tc.clock,
 			}
 
-			ctx := context.Background()
-			needsUpdate, err := client.NeedsUpdate(ctx, "test", tc.light, tc.skip)
+			needsUpdate, err := client.NeedsUpdate("test", tc.light, tc.skip)
 
 			switch {
 			case tc.expectedError != nil:

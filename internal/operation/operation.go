@@ -35,7 +35,7 @@ func ClearCache() error {
 func DownloadDB(appVersion, cacheDir string, light, skipUpdate bool) error {
 	client := dbFile.NewClient()
 	ctx := context.Background()
-	needsUpdate, err := client.NeedsUpdate(ctx, appVersion, light, skipUpdate)
+	needsUpdate, err := client.NeedsUpdate(appVersion, light, skipUpdate)
 	if err != nil {
 		return xerrors.Errorf("database error: %w", err)
 	}
