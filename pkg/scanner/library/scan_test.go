@@ -6,7 +6,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
@@ -15,23 +14,6 @@ import (
 	"github.com/aquasecurity/fanal/extractor"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
-
-type mockDetector struct {
-	mock.Mock
-}
-
-func (_m *mockDetector) Detect(a string, b []ptypes.Library) ([]types.DetectedVulnerability, error) {
-	ret := _m.Called(a, b)
-	ret0 := ret.Get(0)
-	if ret0 == nil {
-		return nil, ret.Error(1)
-	}
-	vulns, ok := ret0.([]types.DetectedVulnerability)
-	if !ok {
-		return nil, ret.Error(1)
-	}
-	return vulns, ret.Error(1)
-}
 
 func TestNewScanner(t *testing.T) {
 	type args struct {
@@ -80,9 +62,6 @@ func TestScanner_Scan(t *testing.T) {
 	type detect struct {
 		input  detectInput
 		output detectOutput
-	}
-	type fields struct {
-		detector DetectorOperation
 	}
 	type args struct {
 		files extractor.FileMap
@@ -233,7 +212,7 @@ func TestScanner_Scan(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockDetector := new(mockDetector)
+			mockDetector := new(MockDetector)
 			for _, d := range tt.detect {
 				mockDetector.On("Detect", d.input.filePath, d.input.libs).Return(
 					d.output.vulns, d.output.err)

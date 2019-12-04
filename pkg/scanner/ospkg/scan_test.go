@@ -8,8 +8,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/stretchr/testify/mock"
-
 	"github.com/aquasecurity/trivy/internal/rpc/client/ospkg"
 
 	"github.com/stretchr/testify/assert"
@@ -20,28 +18,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-type MockDetector struct {
-	mock.Mock
-}
-
-func (_m *MockDetector) Detect(a, b string, c []analyzer.Package) ([]types.DetectedVulnerability, error) {
-	ret := _m.Called(a, b, c)
-	ret0 := ret.Get(0)
-	if ret0 == nil {
-		return nil, ret.Error(1)
-	}
-	vulns, ok := ret0.([]types.DetectedVulnerability)
-	if !ok {
-		return nil, ret.Error(1)
-	}
-	return vulns, ret.Error(1)
-}
-
 func TestMain(m *testing.M) {
 	log.InitLogger(false, true)
 	code := m.Run()
 	os.Exit(code)
 }
+
 func TestNewScanner(t *testing.T) {
 	type args struct {
 		remoteURL string
