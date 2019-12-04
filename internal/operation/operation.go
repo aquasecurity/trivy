@@ -4,6 +4,8 @@ import (
 	"context"
 	"os"
 
+	"github.com/aquasecurity/trivy/pkg/github"
+
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
@@ -33,7 +35,7 @@ func ClearCache() error {
 }
 
 func DownloadDB(appVersion, cacheDir string, light, skipUpdate bool) error {
-	client := dbFile.NewClient()
+	client := dbFile.NewClient(github.NewClient())
 	ctx := context.Background()
 	needsUpdate, err := client.NeedsUpdate(appVersion, light, skipUpdate)
 	if err != nil {

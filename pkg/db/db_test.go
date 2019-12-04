@@ -306,9 +306,7 @@ func TestClient_Download(t *testing.T) {
 			err = db.Init(dir)
 			require.NoError(t, err, tc.name)
 
-			client := Client{
-				githubClient: mockGitHubConfig,
-			}
+			client := NewClient(mockGitHubConfig)
 
 			ctx := context.Background()
 			err = client.Download(ctx, dir, tc.light)

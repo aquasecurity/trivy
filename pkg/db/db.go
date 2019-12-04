@@ -12,7 +12,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/github"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -36,11 +35,11 @@ type Client struct {
 	githubClient GitHubOperation
 }
 
-func NewClient() Client {
+func NewClient(gc GitHubOperation) Client {
 	return Client{
 		dbc:          db.Config{},
 		clock:        clock.RealClock{},
-		githubClient: github.NewClient(),
+		githubClient: gc,
 	}
 }
 func (c Client) NeedsUpdate(cliVersion string, light, skip bool) (bool, error) {
