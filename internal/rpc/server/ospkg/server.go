@@ -3,6 +3,8 @@ package ospkg
 import (
 	"context"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/internal/rpc"
 
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
@@ -12,11 +14,22 @@ import (
 	proto "github.com/aquasecurity/trivy/rpc/detector"
 )
 
-type Server struct{}
+type Server struct {
+	newDetector func(string, string, string, string) ospkg.DetectorOperation
+	vulnClient  vulnerability.Operation
+}
+
+func NewServer() Server {
+	vulnClient := vulnerability.NewClient()
+	return Server{
+		newDetector: ospkg.NewDetector,
+		vulnClient:  vulnClient,
+	}
+}
 
 func (s *Server) Detect(ctx context.Context, req *proto.OSDetectRequest) (res *proto.DetectResponse, err error) {
 	// remoteURL is already empty for server
-	detector := ospkg.NewDetector(req.OsFamily, req.OsName, "", "")
+	detector := s.newDetector(req.OsFamily, req.OsName, "", "")
 	if detector == nil {
 		// Unsupported OS
 		return nil, nil
@@ -24,11 +37,10 @@ func (s *Server) Detect(ctx context.Context, req *proto.OSDetectRequest) (res *p
 	vulns, err := detector.Detect(req.OsFamily, req.OsName, rpc.ConvertFromRpcPkgs(req.Packages))
 	if err != nil {
 		log.Logger.Warn(err)
-		return nil, err
+		return nil, xerrors.Errorf("failed to detect vulnerabilities")
 	}
 
-	vulnClient := vulnerability.NewClient()
-	vulnClient.FillInfo(vulns, false)
+	s.vulnClient.FillInfo(vulns, false)
 
 	return &proto.DetectResponse{Vulnerabilities: rpc.ConvertToRpcVulns(vulns)}, nil
 }
