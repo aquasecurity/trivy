@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bufio"
 	"os"
 	"testing"
 )
@@ -23,7 +24,7 @@ func TestIsGzip(t *testing.T) {
 				t.Fatalf("unknown error: %s", err)
 			}
 
-			got := IsGzip(f)
+			got := IsGzip(bufio.NewReader(f))
 			if got != tt.want {
 				t.Errorf("got %t, want %t", got, tt.want)
 			}

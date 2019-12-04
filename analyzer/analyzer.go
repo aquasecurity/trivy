@@ -1,6 +1,7 @@
 package analyzer
 
 import (
+	"bufio"
 	"compress/gzip"
 	"context"
 	"io"
@@ -136,12 +137,14 @@ func (ac Config) Analyze(ctx context.Context, imageName string, opts ...types.Do
 
 func (ac Config) AnalyzeFile(ctx context.Context, f *os.File) (fileMap extractor.FileMap, err error) {
 	var r io.Reader
-	r = f
-	if utils.IsGzip(f) {
-		r, err = gzip.NewReader(f)
+	br := bufio.NewReader(f)
+	if utils.IsGzip(br) {
+		r, err = gzip.NewReader(br)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to open gzip: %w", err)
 		}
+	} else {
+		r = br
 	}
 	fileMap, err = ac.Extractor.ExtractFromFile(ctx, r, RequiredFilenames())
 	if err != nil {
