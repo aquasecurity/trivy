@@ -40,13 +40,14 @@ func run(c config.Config) (err error) {
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
+	cache := cache.Initialize(utils.CacheDir())
 
 	if c.Reset {
-		return reset()
+		return reset(cache)
 	}
 
 	if c.ClearCache {
-		return clearCache()
+		return clearCache(cache)
 	}
 
 	if err = db.Init(c.CacheDir); err != nil {
@@ -93,9 +94,9 @@ func run(c config.Config) (err error) {
 	return nil
 }
 
-func reset() (err error) {
+func reset(c cache.Cache) (err error) {
 	log.Logger.Info("Resetting...")
-	if err = cache.Clear(); err != nil {
+	if err = c.Clear(); err != nil {
 		return xerrors.New("failed to remove image layer cache")
 	}
 	if err = os.RemoveAll(utils.CacheDir()); err != nil {
@@ -104,9 +105,9 @@ func reset() (err error) {
 	return nil
 }
 
-func clearCache() error {
+func clearCache(c cache.Cache) error {
 	log.Logger.Info("Removing image caches...")
-	if err := cache.Clear(); err != nil {
+	if err := c.Clear(); err != nil {
 		return xerrors.New("failed to remove image layer cache")
 	}
 	return nil
