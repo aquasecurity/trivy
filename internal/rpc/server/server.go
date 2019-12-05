@@ -19,7 +19,6 @@ import (
 	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	rpc "github.com/aquasecurity/trivy/rpc/detector"
 
-	"github.com/aquasecurity/trivy/internal/rpc/server/library"
 	"github.com/aquasecurity/trivy/internal/rpc/server/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/twitchtv/twirp"
@@ -50,7 +49,7 @@ func ListenAndServe(addr string, c config.Config) error {
 	osHandler := rpc.NewOSDetectorServer(&ospkg.Server{}, nil)
 	mux.Handle(rpc.OSDetectorPathPrefix, withToken(withWaitGroup(osHandler), c.Token))
 
-	libHandler := rpc.NewLibDetectorServer(&library.Server{}, nil)
+	libHandler := rpc.NewLibDetectorServer(initializeLibServer(), nil)
 	mux.Handle(rpc.LibDetectorPathPrefix, withToken(withWaitGroup(libHandler), c.Token))
 
 	log.Logger.Infof("Listening %s...", addr)

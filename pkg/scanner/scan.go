@@ -7,11 +7,16 @@ import (
 	"os"
 	"sort"
 
+	"github.com/google/wire"
+
 	"github.com/aquasecurity/trivy/pkg/report"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/extractor"
+	rpcLibDetector "github.com/aquasecurity/trivy/internal/rpc/client/library"
+	libDetector "github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/scanner/library"
+	libScanner "github.com/aquasecurity/trivy/pkg/scanner/library"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -19,7 +24,27 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (report.Results, error) {
+var StandaloneSet = wire.NewSet(
+	libDetector.SuperSet,
+	libScanner.NewScanner,
+	NewScanner,
+)
+
+var ClientSet = wire.NewSet(
+	rpcLibDetector.SuperSet,
+	libScanner.NewScanner,
+	NewScanner,
+)
+
+type Scanner struct {
+	libScanner library.Scanner
+}
+
+func NewScanner(libScanner library.Scanner) Scanner {
+	return Scanner{libScanner: libScanner}
+}
+
+func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (report.Results, error) {
 	results := report.Results{}
 	ctx := context.Background()
 
@@ -72,8 +97,7 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (repor
 	}
 
 	if utils.StringInSlice("library", scanOptions.VulnType) {
-		scanner := library.NewScanner(scanOptions.RemoteURL, scanOptions.Token)
-		libVulns, err := scanner.Scan(files)
+		libVulns, err := s.libScanner.Scan(files)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to scan libraries: %w", err)
 		}
@@ -94,8 +118,8 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (repor
 	return results, nil
 }
 
-func ScanFile(f *os.File) (report.Results, error) {
-	vulns, err := library.ScanFile(f)
+func (s Scanner) ScanFile(f *os.File) (report.Results, error) {
+	vulns, err := s.libScanner.ScanFile(f)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to scan libraries in file: %w", err)
 	}

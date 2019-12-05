@@ -1,16 +1,10 @@
 package library
 
 import (
+	"io/ioutil"
 	"os"
-	"path/filepath"
 
-	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/scanner/library/bundler"
-	"github.com/aquasecurity/trivy/pkg/scanner/library/cargo"
-	"github.com/aquasecurity/trivy/pkg/scanner/library/composer"
-	"github.com/aquasecurity/trivy/pkg/scanner/library/node"
-	"github.com/aquasecurity/trivy/pkg/scanner/library/python"
-	"github.com/knqyf263/go-version"
+	"github.com/aquasecurity/trivy/pkg/detector/library"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
@@ -26,11 +20,10 @@ import (
 )
 
 type Scanner struct {
-	detector DetectorOperation
+	detector library.DetectorOperation
 }
 
-func NewScanner(remoteURL, token string) Scanner {
-	detector := NewDetector(remoteURL, token)
+func NewScanner(detector library.DetectorOperation) Scanner {
 	return Scanner{detector: detector}
 }
 
@@ -52,49 +45,23 @@ func (s Scanner) Scan(files extractor.FileMap) (map[string][]types.DetectedVulne
 	return vulnerabilities, nil
 }
 
-type ScannerOperation interface {
-	ParseLockfile(*os.File) ([]ptypes.Library, error)
-	Detect(string, *version.Version) ([]types.DetectedVulnerability, error)
-	Type() string
-}
-
-func newScanner(filename string) ScannerOperation {
-	var scanner ScannerOperation
-	switch filename {
-	case "Gemfile.lock":
-		scanner = bundler.NewScanner()
-	case "Cargo.lock":
-		scanner = cargo.NewScanner()
-	case "composer.lock":
-		scanner = composer.NewScanner()
-	case "package-lock.json":
-		scanner = node.NewScanner(node.ScannerTypeNpm)
-	case "yarn.lock":
-		scanner = node.NewScanner(node.ScannerTypeYarn)
-	case "Pipfile.lock":
-		scanner = python.NewScanner(python.ScannerTypePipenv)
-	case "poetry.lock":
-		scanner = python.NewScanner(python.ScannerTypePoetry)
-	default:
-		return nil
+func (s Scanner) ScanFile(f *os.File) ([]types.DetectedVulnerability, error) {
+	content, err := ioutil.ReadAll(f)
+	if err != nil {
+		return nil, err
 	}
-	return scanner
-}
-
-func ScanFile(f *os.File) ([]types.DetectedVulnerability, error) {
-	scanner := newScanner(filepath.Base(f.Name()))
-	if scanner == nil {
-		return nil, xerrors.New("unknown file type")
+	files := extractor.FileMap{
+		f.Name(): content,
 	}
 
-	pkgs, err := scanner.ParseLockfile(f)
+	results, err := s.Scan(files)
 	if err != nil {
 		return nil, err
 	}
 
-	vulns, err := detect(scanner, pkgs)
-	if err != nil {
-		return nil, err
+	// need only 1 result
+	for _, vulns := range results {
+		return vulns, nil
 	}
-	return vulns, nil
+	return nil, nil
 }

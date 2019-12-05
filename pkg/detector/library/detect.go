@@ -1,11 +1,10 @@
-package detector
+package library
 
 import (
 	"path/filepath"
 
-	library2 "github.com/aquasecurity/trivy/pkg/scanner/library"
+	"github.com/google/wire"
 
-	"github.com/aquasecurity/trivy/internal/rpc/client/library"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/knqyf263/go-version"
 
@@ -16,45 +15,41 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+var SuperSet = wire.NewSet(
+	wire.Struct(new(DriverFactory)),
+	wire.Bind(new(Factory), new(DriverFactory)),
+	NewDetector,
+)
+
 type DetectorOperation interface {
 	Detect(string, []ptypes.Library) ([]types.DetectedVulnerability, error)
 }
 
-func NewDetectorOption() {
-
+type Detector struct {
+	driverFactory Factory
 }
 
-type DetectorOption struct {
-	RemoteURL string
-	Token     string
+func NewDetector(factory Factory) DetectorOperation {
+	return Detector{driverFactory: factory}
 }
-
-func NewDetector(option DetectorOption) DetectorOperation {
-	if option.RemoteURL != "" {
-		return library.NewDetectClient(option.RemoteURL, option.Token)
-	}
-	return Detector{}
-}
-
-type Detector struct{}
 
 func (d Detector) Detect(filePath string, pkgs []ptypes.Library) ([]types.DetectedVulnerability, error) {
 	log.Logger.Debugf("Detecting library vulnerabilities, path: %s", filePath)
-	scanner := library2.newScanner(filepath.Base(filePath))
-	if scanner == nil {
+	driver := d.driverFactory.NewDriver(filepath.Base(filePath))
+	if driver == nil {
 		return nil, xerrors.New("unknown file type")
 	}
 
-	vulns, err := detect(scanner, pkgs)
+	vulns, err := detect(driver, pkgs)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to scan %s vulnerabilities: %w", library2.Type(), err)
+		return nil, xerrors.Errorf("failed to scan %s vulnerabilities: %w", driver.Type(), err)
 	}
 
 	return vulns, nil
 }
 
-func detect(scanner library2.ScannerOperation, libs []ptypes.Library) ([]types.DetectedVulnerability, error) {
-	log.Logger.Infof("Detecting %s vulnerabilities...", library2.Type())
+func detect(driver Driver, libs []ptypes.Library) ([]types.DetectedVulnerability, error) {
+	log.Logger.Infof("Detecting %s vulnerabilities...", driver.Type())
 	var vulnerabilities []types.DetectedVulnerability
 	for _, lib := range libs {
 		v, err := version.NewVersion(lib.Version)
@@ -63,9 +58,9 @@ func detect(scanner library2.ScannerOperation, libs []ptypes.Library) ([]types.D
 			continue
 		}
 
-		vulns, err := library2.Detect(lib.Name, v)
+		vulns, err := driver.Detect(lib.Name, v)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to detect %s vulnerabilities: %w", library2.Type(), err)
+			return nil, xerrors.Errorf("failed to detect %s vulnerabilities: %w", driver.Type(), err)
 		}
 		vulnerabilities = append(vulnerabilities, vulns...)
 	}

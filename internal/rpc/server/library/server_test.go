@@ -5,6 +5,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/detector/library"
+
 	"github.com/aquasecurity/trivy/pkg/log"
 
 	"golang.org/x/xerrors"
@@ -16,7 +18,6 @@ import (
 
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/scanner/library"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	proto "github.com/aquasecurity/trivy/rpc/detector"
@@ -133,10 +134,7 @@ func TestServer_Detect(t *testing.T) {
 			mockVulnClient := new(vulnerability.MockVulnClient)
 			mockVulnClient.On("FillInfo", mock.Anything, mock.Anything)
 
-			s := &Server{
-				detector:   mockDetector,
-				vulnClient: mockVulnClient,
-			}
+			s := NewServer(mockDetector, mockVulnClient)
 			ctx := context.TODO()
 			gotRes, err := s.Detect(ctx, tt.args.req)
 			if tt.wantErr != "" {

@@ -19,8 +19,7 @@ type Server struct {
 	vulnClient  vulnerability.Operation
 }
 
-func NewServer() Server {
-	vulnClient := vulnerability.NewClient()
+func NewServer(vulnClient vulnerability.Client) Server {
 	return Server{
 		newDetector: ospkg.NewDetector,
 		vulnClient:  vulnClient,

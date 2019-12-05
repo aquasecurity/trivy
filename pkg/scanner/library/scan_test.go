@@ -3,52 +3,17 @@ package library
 import (
 	"testing"
 
+	library2 "github.com/aquasecurity/trivy/pkg/detector/library"
+
 	"golang.org/x/xerrors"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	"github.com/aquasecurity/trivy/internal/rpc/client/library"
-
 	"github.com/aquasecurity/fanal/extractor"
+	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
-
-func TestNewScanner(t *testing.T) {
-	type args struct {
-		remoteURL string
-		token     string
-	}
-	tests := []struct {
-		name string
-		args args
-		want DetectorOperation
-	}{
-		{
-			name: "standalone",
-			args: args{
-				remoteURL: "",
-				token:     "",
-			},
-			want: Detector{},
-		},
-		{
-			name: "rpc client",
-			args: args{
-				remoteURL: "http://localhost:8080",
-				token:     "token",
-			},
-			want: library.DetectClient{},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := NewScanner(tt.args.remoteURL, tt.args.token)
-			assert.IsType(t, tt.want, got.detector, tt.name)
-		})
-	}
-}
 
 func TestScanner_Scan(t *testing.T) {
 	type detectInput struct {
@@ -212,7 +177,7 @@ func TestScanner_Scan(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockDetector := new(MockDetector)
+			mockDetector := new(library2.MockDetector)
 			for _, d := range tt.detect {
 				mockDetector.On("Detect", d.input.filePath, d.input.libs).Return(
 					d.output.vulns, d.output.err)

@@ -1,4 +1,4 @@
-package detector
+package library
 
 import (
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"

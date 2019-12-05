@@ -3,15 +3,22 @@ package library
 import (
 	"context"
 
+	"github.com/aquasecurity/trivy/pkg/detector/library"
+
+	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/internal/rpc"
-
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
-
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/scanner/library"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	proto "github.com/aquasecurity/trivy/rpc/detector"
+)
+
+var SuperSet = wire.NewSet(
+	library.SuperSet,
+	vulnerability.SuperSet,
+	wire.Bind(new(vulnerability.Operation), new(vulnerability.Client)),
+	NewServer,
 )
 
 type Server struct {
@@ -19,11 +26,8 @@ type Server struct {
 	vulnClient vulnerability.Operation
 }
 
-func NewServer() Server {
-	// remoteURL and token are already empty for server
-	detector := library.NewDetector("", "")
-	vulnClient := vulnerability.NewClient()
-	return Server{detector: detector, vulnClient: vulnClient}
+func NewServer(detector library.DetectorOperation, vulnClient vulnerability.Operation) *Server {
+	return &Server{detector: detector, vulnClient: vulnClient}
 }
 
 func (s *Server) Detect(ctx context.Context, req *proto.LibDetectRequest) (res *proto.DetectResponse, err error) {
