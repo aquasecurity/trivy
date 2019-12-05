@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"os"
 	"testing"
 
 	"github.com/aquasecurity/fanal/extractor"
@@ -52,7 +53,7 @@ func (m mockOSAnalyzer) RequiredFiles() []string {
 	return []string{"file1", "file2"}
 }
 
-func TestAnalyze(t *testing.T) {
+func TestConfig_Analyze(t *testing.T) {
 	testCases := []struct {
 		name                string
 		saveLocalImageFunc  func(ctx context.Context, imageName string) (io.Reader, error)
@@ -107,4 +108,52 @@ func TestAnalyze(t *testing.T) {
 		// reset the gnarly global state
 		osAnalyzers = []OSAnalyzer{}
 	}
+}
+
+func TestConfig_AnalyzeFile(t *testing.T) {
+	testCases := []struct {
+		name                string
+		extractFromFileFunc func(ctx context.Context, r io.Reader, filenames []string) (fileMap extractor.FileMap, err error)
+		inputFile           string
+		expectedError       error
+		expectedFileMap     extractor.FileMap
+	}{
+		{
+			name:            "happy path, valid tar.gz file",
+			inputFile:       "testdata/alpine.tar.gz",
+			expectedFileMap: extractor.FileMap{},
+		},
+		{
+			name:            "happy path, valid tar file",
+			expectedFileMap: extractor.FileMap{},
+			inputFile:       "../utils/testdata/test.tar",
+		},
+		{
+			name:          "sad path, valid file but ExtractFromFile fails",
+			expectedError: errors.New("failed to extract files from tar: extract from file failed"),
+			extractFromFileFunc: func(ctx context.Context, r io.Reader, filenames []string) (fileMap extractor.FileMap, err error) {
+				return nil, errors.New("extract from file failed")
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		ac := Config{
+			Extractor: mockDockerExtractor{
+				extractFromFile: tc.extractFromFileFunc,
+			},
+		}
+
+		f, _ := os.Open(tc.inputFile)
+		defer f.Close()
+		fm, err := ac.AnalyzeFile(context.TODO(), f)
+		switch {
+		case tc.expectedError != nil:
+			assert.Equal(t, tc.expectedError.Error(), err.Error(), tc.name)
+		default:
+			assert.NoError(t, err, tc.name)
+		}
+		assert.Equal(t, tc.expectedFileMap, fm, tc.name)
+	}
+
 }
