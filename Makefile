@@ -7,6 +7,13 @@ GOSRC=$(GOPATH)/src
 
 u := $(if $(update),-u)
 
+$(GOBIN)/wire:
+	GO111MODULE=off go get github.com/google/wire/cmd/wire
+
+.PHONY: wire
+wire: $(GOBIN)/golangci-lint
+	wire gen ./...
+
 .PHONY: deps
 deps:
 	go get ${u} -d
