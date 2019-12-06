@@ -3,40 +3,36 @@ package ospkg
 import (
 	"context"
 
+	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/internal/rpc"
-
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
-
+	detector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	proto "github.com/aquasecurity/trivy/rpc/detector"
 )
 
+var SuperSet = wire.NewSet(
+	detector.SuperSet,
+	vulnerability.SuperSet,
+	NewServer,
+)
+
 type Server struct {
-	newDetector func(string, string, string, string) ospkg.DetectorOperation
-	vulnClient  vulnerability.Operation
+	detector   detector.Operation
+	vulnClient vulnerability.Operation
 }
 
-func NewServer(vulnClient vulnerability.Client) Server {
-	return Server{
-		newDetector: ospkg.NewDetector,
-		vulnClient:  vulnClient,
-	}
+func NewServer(detector detector.Operation, vulnClient vulnerability.Operation) *Server {
+	return &Server{detector: detector, vulnClient: vulnClient}
 }
 
 func (s *Server) Detect(ctx context.Context, req *proto.OSDetectRequest) (res *proto.DetectResponse, err error) {
-	// remoteURL is already empty for server
-	detector := s.newDetector(req.OsFamily, req.OsName, "", "")
-	if detector == nil {
-		// Unsupported OS
-		return nil, nil
-	}
-	vulns, err := detector.Detect(req.OsFamily, req.OsName, rpc.ConvertFromRpcPkgs(req.Packages))
+	vulns, err := s.detector.Detect(req.OsFamily, req.OsName, rpc.ConvertFromRpcPkgs(req.Packages))
 	if err != nil {
 		log.Logger.Warn(err)
-		return nil, xerrors.Errorf("failed to detect vulnerabilities")
+		return nil, xerrors.Errorf("failed to detect OS package vulnerabilities")
 	}
 
 	s.vulnClient.FillInfo(vulns, false)

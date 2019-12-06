@@ -3,7 +3,7 @@ package library
 import (
 	"context"
 
-	"github.com/aquasecurity/trivy/pkg/detector/library"
+	detector "github.com/aquasecurity/trivy/pkg/detector/library"
 
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
@@ -15,18 +15,17 @@ import (
 )
 
 var SuperSet = wire.NewSet(
-	library.SuperSet,
+	detector.SuperSet,
 	vulnerability.SuperSet,
-	wire.Bind(new(vulnerability.Operation), new(vulnerability.Client)),
 	NewServer,
 )
 
 type Server struct {
-	detector   library.DetectorOperation
+	detector   detector.Operation
 	vulnClient vulnerability.Operation
 }
 
-func NewServer(detector library.DetectorOperation, vulnClient vulnerability.Operation) *Server {
+func NewServer(detector detector.Operation, vulnClient vulnerability.Operation) *Server {
 	return &Server{detector: detector, vulnClient: vulnClient}
 }
 

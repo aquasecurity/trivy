@@ -4,11 +4,11 @@ import (
 	"os"
 	"testing"
 
+	ospkg2 "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+
 	"golang.org/x/xerrors"
 
 	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/internal/rpc/client/ospkg"
 
 	"github.com/stretchr/testify/assert"
 
@@ -22,85 +22,6 @@ func TestMain(m *testing.M) {
 	log.InitLogger(false, true)
 	code := m.Run()
 	os.Exit(code)
-}
-
-func TestNewScanner(t *testing.T) {
-	type args struct {
-		remoteURL string
-		token     string
-		files     extractor.FileMap
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    Scanner
-		wantErr string
-	}{
-		{
-			name: "happy path: local",
-			args: args{
-				remoteURL: "",
-				token:     "",
-				files: extractor.FileMap{
-					"etc/alpine-release": []byte(`3.10.2`),
-				},
-			},
-			want: Scanner{
-				os: analyzer.OS{
-					Name:   "3.10.2",
-					Family: "alpine",
-				},
-				files: extractor.FileMap{
-					"etc/alpine-release": []byte(`3.10.2`),
-				},
-				detector: Detector{},
-			},
-		},
-		{
-			name: "happy path: rpc",
-			args: args{
-				remoteURL: "http://localhost:8080",
-				token:     "token",
-				files: extractor.FileMap{
-					"etc/alpine-release": []byte(`3.10.2`),
-				},
-			},
-			want: Scanner{
-				os: analyzer.OS{
-					Name:   "3.10.2",
-					Family: "alpine",
-				},
-				files: extractor.FileMap{
-					"etc/alpine-release": []byte(`3.10.2`),
-				},
-				detector: ospkg.DetectClient{},
-			},
-		},
-		{
-			name: "unknown error",
-			args: args{
-				files: extractor.FileMap{
-					"etc/unknown-release": []byte(`foo`),
-				},
-			},
-			wantErr: "failed to analyze OS: Unknown OS",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewScanner(tt.args.remoteURL, tt.args.token, tt.args.files)
-			if tt.wantErr != "" {
-				assert.EqualError(t, err, tt.wantErr, tt.name)
-				return
-			} else {
-				assert.NoError(t, err, tt.name)
-			}
-
-			assert.Equal(t, tt.want.os, got.os, tt.name)
-			assert.Equal(t, tt.want.files, got.files, tt.name)
-			assert.IsType(t, tt.want.detector, got.detector, tt.name)
-		})
-	}
 }
 
 func TestScanner_Scan(t *testing.T) {
@@ -119,7 +40,6 @@ func TestScanner_Scan(t *testing.T) {
 	}
 
 	type fields struct {
-		os    analyzer.OS
 		files extractor.FileMap
 	}
 	type want struct {
@@ -137,11 +57,8 @@ func TestScanner_Scan(t *testing.T) {
 		{
 			name: "happy path",
 			fields: fields{
-				os: analyzer.OS{
-					Name:   "3.10.2",
-					Family: "alpine",
-				},
 				files: extractor.FileMap{
+					"etc/alpine-release": []byte("3.10.2"),
 					"lib/apk/db/installed": []byte(`C:Q11Ing8/u1VIdY9czSxaDO9wJg72I=
 P:musl
 V:1.1.22-r3
@@ -194,12 +111,9 @@ F:usr/lib
 		{
 			name: "sad path",
 			fields: fields{
-				os: analyzer.OS{
-					Name:   "3.10.2",
-					Family: "alpine",
-				},
 				files: extractor.FileMap{
-					"invalid": []byte(`invalid`),
+					"etc/alpine-release": []byte("3.10.2"),
+					"invalid":            []byte(`invalid`),
 				},
 			},
 			want: want{err: analyzer.ErrPkgAnalysis.Error()},
@@ -207,11 +121,8 @@ F:usr/lib
 		{
 			name: "Detect returns an error",
 			fields: fields{
-				os: analyzer.OS{
-					Name:   "3.10.2",
-					Family: "alpine",
-				},
 				files: extractor.FileMap{
+					"etc/alpine-release": []byte("3.10.2"),
 					"lib/apk/db/installed": []byte(`C:Q11Ing8/u1VIdY9czSxaDO9wJg72I=
 P:musl
 V:1.1.22-r3
@@ -238,16 +149,12 @@ A:x86_64
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockDetector := new(MockDetector)
+			mockDetector := new(ospkg2.MockDetector)
 			mockDetector.On("Detect", tt.detect.input.osFamily, tt.detect.input.osName,
 				tt.detect.input.pkgs).Return(tt.detect.output.vulns, tt.detect.output.err)
 
-			s := Scanner{
-				os:       tt.fields.os,
-				files:    tt.fields.files,
-				detector: mockDetector,
-			}
-			got, got1, got2, err := s.Scan()
+			s := NewScanner(mockDetector)
+			got, got1, got2, err := s.Scan(tt.fields.files)
 
 			if tt.want.err != "" {
 				require.NotNil(t, err, tt.name)

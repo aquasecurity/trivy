@@ -5,6 +5,8 @@ import (
 	"os"
 	"testing"
 
+	ospkg2 "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+
 	"github.com/aquasecurity/trivy/pkg/log"
 
 	"golang.org/x/xerrors"
@@ -16,7 +18,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	proto "github.com/aquasecurity/trivy/rpc/detector"
@@ -116,26 +117,19 @@ func TestServer_Detect(t *testing.T) {
 					err: xerrors.New("error"),
 				},
 			},
-			wantErr: "failed to detect vulnerabilities",
+			wantErr: "failed to detect OS package vulnerabilities",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockDetector := new(ospkg.MockDetector)
+			mockDetector := new(ospkg2.MockDetector)
 			mockDetector.On("Detect", tt.detect.input.osFamily, tt.detect.input.osName,
 				tt.detect.input.pkgs).Return(tt.detect.output.vulns, tt.detect.output.err)
 
 			mockVulnClient := new(vulnerability.MockVulnClient)
 			mockVulnClient.On("FillInfo", mock.Anything, mock.Anything)
 
-			newDetector := func(string, string, string, string) ospkg.DetectorOperation {
-				return mockDetector
-			}
-
-			s := &Server{
-				newDetector: newDetector,
-				vulnClient:  mockVulnClient,
-			}
+			s := NewServer(mockDetector, mockVulnClient)
 			gotRes, err := s.Detect(context.TODO(), tt.args.req)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)

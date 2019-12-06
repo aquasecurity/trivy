@@ -1,7 +1,7 @@
 package ospkg
 
 import (
-	"errors"
+	detector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
@@ -19,37 +19,22 @@ import (
 	"golang.org/x/xerrors"
 )
 
-var (
-	ErrUnsupportedOS = errors.New("unsupported os")
-)
-
 type Scanner struct {
-	os       analyzer.OS
-	files    extractor.FileMap
-	detector DetectorOperation
+	detector detector.Operation
 }
 
-func NewScanner(remoteURL, token string, files extractor.FileMap) (Scanner, error) {
+func NewScanner(detector detector.Operation) Scanner {
+	return Scanner{detector: detector}
+}
+
+func (s Scanner) Scan(files extractor.FileMap) (string, string, []types.DetectedVulnerability, error) {
 	os, err := analyzer.GetOS(files)
 	if err != nil {
-		return Scanner{}, xerrors.Errorf("failed to analyze OS: %w", err)
+		return "", "", nil, xerrors.Errorf("failed to analyze OS: %w", err)
 	}
 	log.Logger.Debugf("OS family: %s, OS version: %s", os.Family, os.Name)
 
-	detector := NewDetector(os.Family, os.Name, remoteURL, token)
-	if detector == nil {
-		return Scanner{}, ErrUnsupportedOS
-	}
-
-	return Scanner{
-		os:       os,
-		files:    files,
-		detector: detector,
-	}, nil
-}
-
-func (s Scanner) Scan() (string, string, []types.DetectedVulnerability, error) {
-	pkgs, err := analyzer.GetPackages(s.files)
+	pkgs, err := analyzer.GetPackages(files)
 	if err != nil {
 		if xerrors.Is(err, ftypes.ErrNoRpmCmd) {
 			log.Logger.Error("'rpm' command is not installed")
@@ -58,7 +43,7 @@ func (s Scanner) Scan() (string, string, []types.DetectedVulnerability, error) {
 	}
 	log.Logger.Debugf("the number of packages: %d", len(pkgs))
 
-	pkgsFromCommands, err := analyzer.GetPackagesFromCommands(s.os, s.files)
+	pkgsFromCommands, err := analyzer.GetPackagesFromCommands(os, files)
 	if err != nil {
 		return "", "", nil, xerrors.Errorf("failed to analyze OS packages: %w", err)
 	}
@@ -67,12 +52,12 @@ func (s Scanner) Scan() (string, string, []types.DetectedVulnerability, error) {
 	pkgs = mergePkgs(pkgs, pkgsFromCommands)
 	log.Logger.Debugf("the number of packages: %d", len(pkgs))
 
-	vulns, err := s.detector.Detect(s.os.Family, s.os.Name, pkgs)
+	vulns, err := s.detector.Detect(os.Family, os.Name, pkgs)
 	if err != nil {
 		return "", "", nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 	}
 
-	return s.os.Family, s.os.Name, vulns, nil
+	return os.Family, os.Name, vulns, nil
 }
 
 func mergePkgs(pkgs, pkgsFromCommands []analyzer.Package) []analyzer.Package {

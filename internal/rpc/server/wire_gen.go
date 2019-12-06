@@ -8,17 +8,27 @@ package server
 import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/internal/rpc/server/library"
+	"github.com/aquasecurity/trivy/internal/rpc/server/ospkg"
 	library2 "github.com/aquasecurity/trivy/pkg/detector/library"
+	ospkg2 "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
 // Injectors from inject_server.go:
 
-func initializeLibServer() *library.Server {
-	driverFactory := library2.NewDriverFactory()
-	detectorOperation := library2.NewDetector(driverFactory)
+func initializeOspkgServer() *ospkg.Server {
+	detector := ospkg2.Detector{}
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
-	server := library.NewServer(detectorOperation, client)
+	server := ospkg.NewServer(detector, client)
+	return server
+}
+
+func initializeLibServer() *library.Server {
+	driverFactory := library2.DriverFactory{}
+	detector := library2.NewDetector(driverFactory)
+	config := db.Config{}
+	client := vulnerability.NewClient(config)
+	server := library.NewServer(detector, client)
 	return server
 }
