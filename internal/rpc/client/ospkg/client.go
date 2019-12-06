@@ -18,7 +18,7 @@ import (
 )
 
 var SuperSet = wire.NewSet(
-	&http.Client{},
+	wire.Struct(new(http.Client)),
 	NewProtobufClient,
 	NewDetector,
 )
