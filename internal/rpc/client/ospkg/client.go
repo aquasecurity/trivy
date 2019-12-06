@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/google/wire"
+
 	"github.com/aquasecurity/trivy/internal/rpc/client"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -15,19 +17,32 @@ import (
 	"golang.org/x/xerrors"
 )
 
-type DetectClient struct {
-	token  string
+var SuperSet = wire.NewSet(
+	wire.Struct(new(http.Client)),
+	NewProtobufClient,
+	NewDetector,
+)
+
+type RemoteURL string
+
+func NewProtobufClient(remoteURL RemoteURL, client *http.Client) detector.OSDetector {
+	return detector.NewOSDetectorProtobufClient(string(remoteURL), client)
+}
+
+type Token string
+
+type Detector struct {
+	token  Token
 	client detector.OSDetector
 }
 
-func NewDetectClient(remoteURL, token string) DetectClient {
-	client := detector.NewOSDetectorProtobufClient(remoteURL, &http.Client{})
-	return DetectClient{token: token, client: client}
+func NewDetector(token Token, detector detector.OSDetector) Detector {
+	return Detector{token: token, client: detector}
 }
 
-func (d DetectClient) Detect(osFamily, osName string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, error) {
-	ctx := context.Background()
-	res, err := d.client.Detect(client.WithToken(ctx, d.token), &detector.OSDetectRequest{
+func (d Detector) Detect(osFamily, osName string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, error) {
+	ctx := client.WithToken(context.Background(), string(d.token))
+	res, err := d.client.Detect(ctx, &detector.OSDetectRequest{
 		OsFamily: osFamily,
 		OsName:   osName,
 		Packages: rpc.ConvertToRpcPkgs(pkgs),

@@ -4,34 +4,50 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/google/wire"
+
 	"github.com/aquasecurity/trivy/internal/rpc/client"
 
-	"github.com/aquasecurity/trivy/internal/rpc"
+	r "github.com/aquasecurity/trivy/internal/rpc"
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	"github.com/aquasecurity/trivy/rpc/detector"
+	rpc "github.com/aquasecurity/trivy/rpc/detector"
 	"golang.org/x/xerrors"
 )
 
-type DetectClient struct {
-	token  string
-	client detector.LibDetector
+var SuperSet = wire.NewSet(
+	wire.Struct(new(http.Client)),
+	NewProtobufClient,
+	NewDetector,
+)
+
+type RemoteURL string
+
+func NewProtobufClient(remoteURL RemoteURL, client *http.Client) rpc.LibDetector {
+	return rpc.NewLibDetectorProtobufClient(string(remoteURL), client)
 }
 
-func NewDetectClient(remoteURL, token string) DetectClient {
-	client := detector.NewLibDetectorProtobufClient(remoteURL, &http.Client{})
-	return DetectClient{token: token, client: client}
+type Token string
+
+type Detector struct {
+	token  Token
+	client rpc.LibDetector
 }
 
-func (d DetectClient) Detect(filePath string, libs []ptypes.Library) ([]types.DetectedVulnerability, error) {
-	res, err := d.client.Detect(client.WithToken(context.Background(), d.token), &detector.LibDetectRequest{
+func NewDetector(token Token, detector rpc.LibDetector) Detector {
+	return Detector{token: token, client: detector}
+}
+
+func (d Detector) Detect(filePath string, libs []ptypes.Library) ([]types.DetectedVulnerability, error) {
+	ctx := client.WithToken(context.Background(), string(d.token))
+	res, err := d.client.Detect(ctx, &rpc.LibDetectRequest{
 		FilePath:  filePath,
-		Libraries: rpc.ConvertToRpcLibraries(libs),
+		Libraries: r.ConvertToRpcLibraries(libs),
 	})
 	if err != nil {
 		return nil, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
-	return rpc.ConvertFromRpcVulns(res.Vulnerabilities), nil
+	return r.ConvertFromRpcVulns(res.Vulnerabilities), nil
 }

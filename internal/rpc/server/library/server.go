@@ -3,28 +3,39 @@ package library
 import (
 	"context"
 
+	"github.com/google/wire"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/internal/rpc"
-
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
-
+	detector "github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/scanner/library"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	proto "github.com/aquasecurity/trivy/rpc/detector"
 )
 
-type Server struct{}
+var SuperSet = wire.NewSet(
+	detector.SuperSet,
+	vulnerability.SuperSet,
+	NewServer,
+)
+
+type Server struct {
+	detector   detector.Operation
+	vulnClient vulnerability.Operation
+}
+
+func NewServer(detector detector.Operation, vulnClient vulnerability.Operation) *Server {
+	return &Server{detector: detector, vulnClient: vulnClient}
+}
 
 func (s *Server) Detect(ctx context.Context, req *proto.LibDetectRequest) (res *proto.DetectResponse, err error) {
-	// remoteURL and token are already empty for server
-	detector := library.NewDetector("", "")
-	vulns, err := detector.Detect(req.FilePath, rpc.ConvertFromRpcLibraries(req.Libraries))
+	vulns, err := s.detector.Detect(req.FilePath, rpc.ConvertFromRpcLibraries(req.Libraries))
 	if err != nil {
 		log.Logger.Warn(err)
-		return nil, err
+		return nil, xerrors.Errorf("failed to detect library vulnerabilities: %w", err)
 	}
 
-	vulnClient := vulnerability.NewClient()
-	vulnClient.FillInfo(vulns, false)
+	s.vulnClient.FillInfo(vulns, false)
 
 	return &proto.DetectResponse{Vulnerabilities: rpc.ConvertToRpcVulns(vulns)}, nil
 }
