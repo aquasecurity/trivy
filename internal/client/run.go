@@ -4,16 +4,16 @@ import (
 	l "log"
 	"os"
 
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
-
-	"github.com/aquasecurity/trivy/internal/client/config"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
-	"github.com/aquasecurity/trivy/pkg/scanner"
-	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/urfave/cli"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/internal/client/config"
+	"github.com/aquasecurity/trivy/internal/rpc/client/library"
+	"github.com/aquasecurity/trivy/internal/rpc/client/ospkg"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 func Run(cliCtx *cli.Context) error {
@@ -46,12 +46,14 @@ func run(c config.Config) (err error) {
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
+	scanner := initializeScanner(ospkg.Token(c.Token), library.Token(c.Token),
+		ospkg.RemoteURL(c.RemoteAddr), library.RemoteURL(c.RemoteAddr))
 	results, err := scanner.ScanImage(c.ImageName, c.Input, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
 
-	vulnClient := vulnerability.NewClient()
+	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
 		results[i].Vulnerabilities = vulnClient.Filter(results[i].Vulnerabilities,
 			c.Severities, c.IgnoreUnfixed, c.IgnoreFile)

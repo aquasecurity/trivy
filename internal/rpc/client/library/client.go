@@ -5,27 +5,26 @@ import (
 	"net/http"
 
 	"github.com/google/wire"
-
-	"github.com/aquasecurity/trivy/internal/rpc/client"
-
-	r "github.com/aquasecurity/trivy/internal/rpc"
-	"github.com/aquasecurity/trivy/pkg/types"
+	"golang.org/x/xerrors"
 
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	r "github.com/aquasecurity/trivy/internal/rpc"
+	"github.com/aquasecurity/trivy/internal/rpc/client"
+	detector "github.com/aquasecurity/trivy/pkg/detector/library"
+	"github.com/aquasecurity/trivy/pkg/types"
 	rpc "github.com/aquasecurity/trivy/rpc/detector"
-	"golang.org/x/xerrors"
 )
 
 var SuperSet = wire.NewSet(
-	wire.Struct(new(http.Client)),
 	NewProtobufClient,
 	NewDetector,
+	wire.Bind(new(detector.Operation), new(Detector)),
 )
 
 type RemoteURL string
 
-func NewProtobufClient(remoteURL RemoteURL, client *http.Client) rpc.LibDetector {
-	return rpc.NewLibDetectorProtobufClient(string(remoteURL), client)
+func NewProtobufClient(remoteURL RemoteURL) rpc.LibDetector {
+	return rpc.NewLibDetectorProtobufClient(string(remoteURL), &http.Client{})
 }
 
 type Token string

@@ -5,51 +5,49 @@ import (
 	"net/http"
 
 	"github.com/google/wire"
-
-	"github.com/aquasecurity/trivy/internal/rpc/client"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-
-	"github.com/aquasecurity/trivy/internal/rpc"
+	r "github.com/aquasecurity/trivy/internal/rpc"
+	"github.com/aquasecurity/trivy/internal/rpc/client"
+	detector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
-
-	"github.com/aquasecurity/trivy/rpc/detector"
-	"golang.org/x/xerrors"
+	rpc "github.com/aquasecurity/trivy/rpc/detector"
 )
 
 var SuperSet = wire.NewSet(
-	wire.Struct(new(http.Client)),
 	NewProtobufClient,
 	NewDetector,
+	wire.Bind(new(detector.Operation), new(Detector)),
 )
 
 type RemoteURL string
 
-func NewProtobufClient(remoteURL RemoteURL, client *http.Client) detector.OSDetector {
-	return detector.NewOSDetectorProtobufClient(string(remoteURL), client)
+func NewProtobufClient(remoteURL RemoteURL) rpc.OSDetector {
+	return rpc.NewOSDetectorProtobufClient(string(remoteURL), &http.Client{})
 }
 
 type Token string
 
 type Detector struct {
 	token  Token
-	client detector.OSDetector
+	client rpc.OSDetector
 }
 
-func NewDetector(token Token, detector detector.OSDetector) Detector {
+func NewDetector(token Token, detector rpc.OSDetector) Detector {
 	return Detector{token: token, client: detector}
 }
 
 func (d Detector) Detect(osFamily, osName string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, error) {
 	ctx := client.WithToken(context.Background(), string(d.token))
-	res, err := d.client.Detect(ctx, &detector.OSDetectRequest{
+	res, err := d.client.Detect(ctx, &rpc.OSDetectRequest{
 		OsFamily: osFamily,
 		OsName:   osName,
-		Packages: rpc.ConvertToRpcPkgs(pkgs),
+		Packages: r.ConvertToRpcPkgs(pkgs),
 	})
 	if err != nil {
 		return nil, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
-	return rpc.ConvertFromRpcVulns(res.Vulnerabilities), nil
+	return r.ConvertFromRpcVulns(res.Vulnerabilities), nil
 }
