@@ -1,0 +1,8 @@
+NAME="SLES"
+VERSION="15-SP1"
+VERSION_ID="15.1"
+PRETTY_NAME="SUSE Linux Enterprise Server 15 SP1"
+ID="sles"
+ID_LIKE="suse"
+ANSI_COLOR="0;32"
+CPE_NAME="cpe:/o:suse:sles:15:sp1"
