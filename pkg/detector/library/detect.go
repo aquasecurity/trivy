@@ -19,9 +19,10 @@ var SuperSet = wire.NewSet(
 	wire.Struct(new(DriverFactory)),
 	wire.Bind(new(Factory), new(DriverFactory)),
 	NewDetector,
+	wire.Bind(new(Operation), new(Detector)),
 )
 
-type DetectorOperation interface {
+type Operation interface {
 	Detect(string, []ptypes.Library) ([]types.DetectedVulnerability, error)
 }
 
@@ -29,7 +30,7 @@ type Detector struct {
 	driverFactory Factory
 }
 
-func NewDetector(factory Factory) DetectorOperation {
+func NewDetector(factory Factory) Detector {
 	return Detector{driverFactory: factory}
 }
 

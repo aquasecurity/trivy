@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/aquasecurity/trivy/pkg/detector/library"
+	detector "github.com/aquasecurity/trivy/pkg/detector/library"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
@@ -20,10 +20,10 @@ import (
 )
 
 type Scanner struct {
-	detector library.DetectorOperation
+	detector detector.Operation
 }
 
-func NewScanner(detector library.DetectorOperation) Scanner {
+func NewScanner(detector detector.Operation) Scanner {
 	return Scanner{detector: detector}
 }
 
