@@ -34,11 +34,14 @@ const (
 	// OpenSUSE is done
 	OpenSUSE = "opensuse"
 
-	// OpenSUSELeap is
+	// OpenSUSELeap isdone
 	OpenSUSELeap = "opensuse.leap"
 
 	// OpenSUSETumbleweed is done
 	OpenSUSETumbleweed = "opensuse.tumbleweed"
+
+	// SUSE Linux Enterplise Server is
+	SLES = "suse linux enterprise server"
 
 	// Alpine is done
 	Alpine = "alpine"
