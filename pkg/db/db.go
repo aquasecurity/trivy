@@ -23,6 +23,11 @@ const (
 )
 
 type Operation interface {
+	NeedsUpdate(ctx context.Context, cliVersion string, light, skip bool) (bool, error)
+	Download(ctx context.Context, cacheDir string, light bool) error
+}
+
+type dbOperation interface {
 	GetMetadata() (db.Metadata, error)
 }
 
@@ -31,7 +36,7 @@ type GitHubOperation interface {
 }
 
 type Client struct {
-	dbc          Operation
+	dbc          dbOperation
 	clock        clock.Clock
 	githubClient GitHubOperation
 }
@@ -43,6 +48,7 @@ func NewClient() Client {
 		githubClient: github.NewClient(),
 	}
 }
+
 func (c Client) NeedsUpdate(ctx context.Context, cliVersion string, light, skip bool) (bool, error) {
 	dbType := db.TypeFull
 	if light {
