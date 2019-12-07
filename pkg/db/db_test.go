@@ -17,6 +17,7 @@ import (
 	clocktesting "k8s.io/utils/clock/testing"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/github"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -37,23 +38,6 @@ func (_m *MockConfig) GetMetadata() (db.Metadata, error) {
 		return db.Metadata{}, ret.Error(1)
 	}
 	return metadata, ret.Error(1)
-}
-
-type MockGitHubClient struct {
-	mock.Mock
-}
-
-func (_m *MockGitHubClient) DownloadDB(ctx context.Context, fileName string) (io.ReadCloser, error) {
-	ret := _m.Called(ctx, fileName)
-	ret0 := ret.Get(0)
-	if ret0 == nil {
-		return nil, ret.Error(1)
-	}
-	rc, ok := ret0.(io.ReadCloser)
-	if !ok {
-		return nil, ret.Error(1)
-	}
-	return rc, ret.Error(1)
 }
 
 func TestClient_NeedsUpdate(t *testing.T) {
@@ -286,7 +270,7 @@ func TestClient_Download(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			mockGitHubConfig := new(MockGitHubClient)
+			mockGitHubClient := new(github.MockClient)
 			for _, dd := range tc.downloadDB {
 				var rc io.ReadCloser
 				if dd.output.fileName != "" {
@@ -295,7 +279,7 @@ func TestClient_Download(t *testing.T) {
 					rc = f
 				}
 
-				mockGitHubConfig.On("DownloadDB", mock.Anything, dd.input).Return(
+				mockGitHubClient.On("DownloadDB", mock.Anything, dd.input).Return(
 					rc, dd.output.err,
 				)
 			}
@@ -308,7 +292,7 @@ func TestClient_Download(t *testing.T) {
 			require.NoError(t, err, tc.name)
 
 			client := Client{
-				githubClient: mockGitHubConfig,
+				githubClient: mockGitHubClient,
 			}
 
 			ctx := context.Background()
@@ -321,7 +305,7 @@ func TestClient_Download(t *testing.T) {
 				assert.NoError(t, err, tc.name)
 			}
 
-			mockGitHubConfig.AssertExpectations(t)
+			mockGitHubClient.AssertExpectations(t)
 		})
 	}
 }
