@@ -40,6 +40,10 @@ func TestAnalyze(t *testing.T) {
 			path: "./testdata/sles_151",
 			os:   analyzer.OS{Family: os.SLES, Name: "15.1"},
 		},
+		"openSUSE Tumbleweed": {
+			path: "./testdata/opensuse_leap_tumbleweed",
+			os:   analyzer.OS{Family: os.OpenSUSETumbleweed, Name: "20191204"},
+		},
 		"Invalid": {
 			path:    "./testdata/not_suse",
 			wantErr: os.AnalyzeOSError,
