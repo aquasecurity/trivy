@@ -224,8 +224,7 @@ func NewClientCommand() cli.Command {
 		Name:    "client",
 		Aliases: []string{"c"},
 		Usage:   "client mode",
-		// ToDO
-		Action: client.Run,
+		Action:  client.Run,
 		Flags: []cli.Flag{
 			templateFlag,
 			formatFlag,
@@ -246,7 +245,7 @@ func NewClientCommand() cli.Command {
 			token,
 			cli.StringFlag{
 				Name:   "remote",
-				Value:  "http://localhost:8080",
+				Value:  "http://localhost:4154",
 				Usage:  "server address",
 				EnvVar: "TRIVY_REMOTE",
 			},
@@ -259,8 +258,7 @@ func NewServerCommand() cli.Command {
 		Name:    "server",
 		Aliases: []string{"s"},
 		Usage:   "server mode",
-		// ToDO
-		Action: server.Run,
+		Action:  server.Run,
 		Flags: []cli.Flag{
 			skipUpdateFlag,
 			downloadDBOnlyFlag,
@@ -275,7 +273,7 @@ func NewServerCommand() cli.Command {
 			token,
 			cli.StringFlag{
 				Name:   "listen",
-				Value:  "localhost:8080",
+				Value:  "localhost:4154",
 				Usage:  "listen address",
 				EnvVar: "TRIVY_LISTEN",
 			},
