@@ -10,15 +10,15 @@ type MockDetector struct {
 	mock.Mock
 }
 
-func (_m *MockDetector) Detect(a, b string, c []analyzer.Package) ([]types.DetectedVulnerability, error) {
+func (_m *MockDetector) Detect(a, b string, c []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
 	ret := _m.Called(a, b, c)
 	ret0 := ret.Get(0)
 	if ret0 == nil {
-		return nil, ret.Error(1)
+		return nil, false, ret.Error(2)
 	}
 	vulns, ok := ret0.([]types.DetectedVulnerability)
 	if !ok {
-		return nil, ret.Error(1)
+		return nil, false, ret.Error(2)
 	}
-	return vulns, ret.Error(1)
+	return vulns, ret.Bool(1), ret.Error(2)
 }

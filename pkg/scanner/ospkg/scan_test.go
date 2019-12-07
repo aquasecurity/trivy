@@ -32,6 +32,7 @@ func TestScanner_Scan(t *testing.T) {
 	}
 	type detectOutput struct {
 		vulns []types.DetectedVulnerability
+		eosl  bool
 		err   error
 	}
 	type detect struct {
@@ -151,7 +152,7 @@ A:x86_64
 		t.Run(tt.name, func(t *testing.T) {
 			mockDetector := new(ospkg2.MockDetector)
 			mockDetector.On("Detect", tt.detect.input.osFamily, tt.detect.input.osName,
-				tt.detect.input.pkgs).Return(tt.detect.output.vulns, tt.detect.output.err)
+				tt.detect.input.pkgs).Return(tt.detect.output.vulns, tt.detect.output.eosl, tt.detect.output.err)
 
 			s := NewScanner(mockDetector)
 			got, got1, got2, err := s.Scan(tt.fields.files)

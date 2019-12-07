@@ -37,6 +37,7 @@ func TestServer_Detect(t *testing.T) {
 	}
 	type detectOutput struct {
 		vulns []types.DetectedVulnerability
+		eosl  bool
 		err   error
 	}
 	type detect struct {
@@ -124,7 +125,7 @@ func TestServer_Detect(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mockDetector := new(ospkg2.MockDetector)
 			mockDetector.On("Detect", tt.detect.input.osFamily, tt.detect.input.osName,
-				tt.detect.input.pkgs).Return(tt.detect.output.vulns, tt.detect.output.err)
+				tt.detect.input.pkgs).Return(tt.detect.output.vulns, tt.detect.output.eosl, tt.detect.output.err)
 
 			mockVulnClient := new(vulnerability.MockVulnClient)
 			mockVulnClient.On("FillInfo", mock.Anything, mock.Anything)

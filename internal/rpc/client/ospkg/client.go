@@ -38,7 +38,7 @@ func NewDetector(token Token, detector rpc.OSDetector) Detector {
 	return Detector{token: token, client: detector}
 }
 
-func (d Detector) Detect(osFamily, osName string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, error) {
+func (d Detector) Detect(osFamily, osName string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
 	ctx := client.WithToken(context.Background(), string(d.token))
 	res, err := d.client.Detect(ctx, &rpc.OSDetectRequest{
 		OsFamily: osFamily,
@@ -46,8 +46,8 @@ func (d Detector) Detect(osFamily, osName string, pkgs []analyzer.Package) ([]ty
 		Packages: r.ConvertToRpcPkgs(pkgs),
 	})
 	if err != nil {
-		return nil, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
+		return nil, false, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
-	return r.ConvertFromRpcVulns(res.Vulnerabilities), nil
+	return r.ConvertFromRpcVulns(res.Vulnerabilities), res.Eosl, nil
 }

@@ -52,9 +52,13 @@ func (s Scanner) Scan(files extractor.FileMap) (string, string, []types.Detected
 	pkgs = mergePkgs(pkgs, pkgsFromCommands)
 	log.Logger.Debugf("the number of packages: %d", len(pkgs))
 
-	vulns, err := s.detector.Detect(os.Family, os.Name, pkgs)
+	vulns, eosl, err := s.detector.Detect(os.Family, os.Name, pkgs)
 	if err != nil {
 		return "", "", nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
+	}
+	if eosl {
+		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", os.Family, os.Name)
+		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
 	}
 
 	return os.Family, os.Name, vulns, nil

@@ -29,7 +29,7 @@ func NewServer(detector detector.Operation, vulnClient vulnerability.Operation) 
 }
 
 func (s *Server) Detect(ctx context.Context, req *proto.OSDetectRequest) (res *proto.DetectResponse, err error) {
-	vulns, err := s.detector.Detect(req.OsFamily, req.OsName, rpc.ConvertFromRpcPkgs(req.Packages))
+	vulns, eosl, err := s.detector.Detect(req.OsFamily, req.OsName, rpc.ConvertFromRpcPkgs(req.Packages))
 	if err != nil {
 		log.Logger.Warn(err)
 		return nil, xerrors.Errorf("failed to detect OS package vulnerabilities")
@@ -37,5 +37,5 @@ func (s *Server) Detect(ctx context.Context, req *proto.OSDetectRequest) (res *p
 
 	s.vulnClient.FillInfo(vulns, false)
 
-	return &proto.DetectResponse{Vulnerabilities: rpc.ConvertToRpcVulns(vulns)}, nil
+	return &proto.DetectResponse{Vulnerabilities: rpc.ConvertToRpcVulns(vulns), Eosl: eosl}, nil
 }
