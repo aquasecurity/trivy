@@ -14,7 +14,6 @@ type Config struct {
 	logger  *zap.SugaredLogger
 
 	Quiet          bool
-	NoProgress     bool
 	Debug          bool
 	CacheDir       string
 	Reset          bool
@@ -40,7 +39,6 @@ func New(c *cli.Context) (Config, error) {
 		logger:  logger,
 
 		Quiet:          quiet,
-		NoProgress:     c.Bool("no-progress"),
 		Debug:          debug,
 		CacheDir:       c.String("cache-dir"),
 		Reset:          c.Bool("reset"),

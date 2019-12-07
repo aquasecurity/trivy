@@ -264,9 +264,7 @@ func NewServerCommand() cli.Command {
 			downloadDBOnlyFlag,
 			resetFlag,
 			quietFlag,
-			noProgressFlag,
 			debugFlag,
-			ignoreFileFlag,
 			cacheDirFlag,
 
 			// original flags
