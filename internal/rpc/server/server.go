@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"sync"
@@ -12,7 +11,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/internal/rpc/server/ospkg"
 	"github.com/aquasecurity/trivy/internal/server/config"
 	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -42,7 +40,7 @@ func ListenAndServe(addr string, c config.Config) error {
 
 	mux := http.NewServeMux()
 
-	osHandler := rpc.NewOSDetectorServer(&ospkg.Server{}, nil)
+	osHandler := rpc.NewOSDetectorServer(initializeOspkgServer(), nil)
 	mux.Handle(rpc.OSDetectorPathPrefix, withToken(withWaitGroup(osHandler), c.Token))
 
 	libHandler := rpc.NewLibDetectorServer(initializeLibServer(), nil)
@@ -55,16 +53,11 @@ func ListenAndServe(addr string, c config.Config) error {
 
 func withToken(base http.Handler, token string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-
 		if token != "" && token != r.Header.Get("Trivy-Token") {
 			rpc.WriteError(w, twirp.NewError(twirp.Unauthenticated, "invalid token"))
 			return
 		}
 		base.ServeHTTP(w, r)
-
-		end := time.Now()
-		fmt.Printf("%s\n", end.Sub(start))
 	})
 }
 
