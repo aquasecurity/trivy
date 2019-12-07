@@ -77,7 +77,7 @@ func updateDBWorker(appVersion, cacheDir string, dbUpdateWg, requestWg *sync.Wai
 
 		log.Logger.Info("Updating DB...")
 		if err = hotUpdateDB(ctx, client, cacheDir, dbUpdateWg, requestWg); err != nil {
-			log.Logger.Error("%+v", err)
+			log.Logger.Errorf("%+v\n", err)
 			continue
 		}
 	}
