@@ -17,3 +17,8 @@ func initializeLibServer() *library.Server {
 	wire.Build(library.SuperSet)
 	return &library.Server{}
 }
+
+func initializeDBWorker() dbWorker {
+	wire.Build(SuperSet)
+	return dbWorker{}
+}

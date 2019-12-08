@@ -41,6 +41,10 @@ func (r Repository) DownloadAsset(ctx context.Context, id int64) (io.ReadCloser,
 	return r.repository.DownloadReleaseAsset(ctx, r.owner, r.repoName, id)
 }
 
+type Operation interface {
+	DownloadDB(ctx context.Context, fileName string) (io.ReadCloser, error)
+}
+
 type Client struct {
 	Repository RepositoryInterface
 }

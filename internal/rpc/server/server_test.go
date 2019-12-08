@@ -134,7 +134,7 @@ func Test_dbWorker_update(t *testing.T) {
 					}).Return(tt.download.err)
 			}
 
-			w := NewDBWorker(mockDBClient)
+			w := newDBWorker(mockDBClient)
 
 			var dbUpdateWg, requestWg sync.WaitGroup
 			err = w.update(context.Background(), tt.args.appVersion, cacheDir,

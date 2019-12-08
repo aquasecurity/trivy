@@ -8,6 +8,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/wire"
+
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
@@ -17,6 +19,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	rpc "github.com/aquasecurity/trivy/rpc/detector"
+)
+
+var SuperSet = wire.NewSet(
+	dbFile.SuperSet,
+	newDBWorker,
 )
 
 func ListenAndServe(addr string, c config.Config) error {
@@ -38,7 +45,7 @@ func ListenAndServe(addr string, c config.Config) error {
 	}
 
 	go func() {
-		worker := NewDBWorker(dbFile.NewClient())
+		worker := initializeDBWorker()
 		ctx := context.Background()
 		for {
 			time.Sleep(1 * time.Hour)
@@ -75,7 +82,7 @@ type dbWorker struct {
 	dbClient dbFile.Operation
 }
 
-func NewDBWorker(dbClient dbFile.Operation) dbWorker {
+func newDBWorker(dbClient dbFile.Operation) dbWorker {
 	return dbWorker{dbClient: dbClient}
 }
 

@@ -7,9 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"k8s.io/utils/clock"
-
+	"github.com/google/wire"
 	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/github"
@@ -22,6 +22,16 @@ const (
 	lightDB = "trivy-light.db.gz"
 )
 
+var SuperSet = wire.NewSet(
+	wire.Struct(new(clock.RealClock)),
+	wire.Bind(new(clock.Clock), new(clock.RealClock)),
+	wire.Struct(new(db.Config)),
+	github.NewClient,
+	wire.Bind(new(github.Operation), new(github.Client)),
+	NewClient,
+	wire.Bind(new(Operation), new(Client)),
+)
+
 type Operation interface {
 	NeedsUpdate(ctx context.Context, cliVersion string, light, skip bool) (bool, error)
 	Download(ctx context.Context, cacheDir string, light bool) error
@@ -31,21 +41,17 @@ type dbOperation interface {
 	GetMetadata() (db.Metadata, error)
 }
 
-type GitHubOperation interface {
-	DownloadDB(ctx context.Context, fileName string) (io.ReadCloser, error)
-}
-
 type Client struct {
 	dbc          dbOperation
+	githubClient github.Operation
 	clock        clock.Clock
-	githubClient GitHubOperation
 }
 
-func NewClient() Client {
+func NewClient(dbc db.Config, githubClient github.Operation, clock clock.Clock) Client {
 	return Client{
-		dbc:          db.Config{},
-		clock:        clock.RealClock{},
-		githubClient: github.NewClient(),
+		dbc:          dbc,
+		githubClient: githubClient,
+		clock:        clock,
 	}
 }
 
