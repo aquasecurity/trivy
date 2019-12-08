@@ -41,6 +41,7 @@ func DownloadDB(appVersion, cacheDir string, light, skipUpdate bool) error {
 	}
 
 	if needsUpdate {
+		log.Logger.Info("Need to update DB")
 		if err = db.Close(); err != nil {
 			return xerrors.Errorf("failed db close: %w", err)
 		}
