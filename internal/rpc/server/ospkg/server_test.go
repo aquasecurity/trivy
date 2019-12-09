@@ -141,6 +141,7 @@ func TestServer_Detect(t *testing.T) {
 
 			assert.Equal(t, tt.wantRes, gotRes, tt.name)
 			mockDetector.AssertExpectations(t)
+			mockVulnClient.AssertExpectations(t)
 		})
 	}
 }
