@@ -113,8 +113,8 @@ func (c *Config) Init() (err error) {
 		utils.Quiet = true
 	}
 
-	// --clear-cache and --reset don't conduct the scan
-	if c.ClearCache || c.Reset {
+	// --clear-cache, --download-db-only and --reset don't conduct the scan
+	if c.ClearCache || c.DownloadDBOnly || c.Reset {
 		return nil
 	}
 
