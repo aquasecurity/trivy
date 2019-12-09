@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"sync"
@@ -59,16 +58,11 @@ func ListenAndServe(addr string, c config.Config) error {
 
 func withToken(base http.Handler, token string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-
 		if token != "" && token != r.Header.Get("Trivy-Token") {
 			rpc.WriteError(w, twirp.NewError(twirp.Unauthenticated, "invalid token"))
 			return
 		}
 		base.ServeHTTP(w, r)
-
-		end := time.Now()
-		fmt.Printf("%s\n", end.Sub(start))
 	})
 }
 
