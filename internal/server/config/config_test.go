@@ -6,9 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest/observer"
-
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -46,8 +43,9 @@ func TestNew(t *testing.T) {
 
 			tt.want.context = c
 
-			_, err := New(c)
+			got, err := New(c)
 			assert.NoError(t, err, tt.name)
+			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
 }
@@ -130,9 +128,6 @@ func TestConfig_Init(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			core, obs := observer.New(zap.InfoLevel)
-			logger := zap.New(core)
-
 			app := cli.NewApp()
 			set := flag.NewFlagSet("test", 0)
 			ctx := cli.NewContext(app, set, nil)
@@ -140,7 +135,6 @@ func TestConfig_Init(t *testing.T) {
 
 			c := &Config{
 				context:        ctx,
-				logger:         logger.Sugar(),
 				Quiet:          tt.fields.Quiet,
 				NoProgress:     tt.fields.NoProgress,
 				Debug:          tt.fields.Debug,
@@ -151,13 +145,6 @@ func TestConfig_Init(t *testing.T) {
 			}
 
 			err := c.Init()
-
-			// tests log messages
-			var gotMessages []string
-			for _, entry := range obs.AllUntimed() {
-				gotMessages = append(gotMessages, entry.Message)
-			}
-			assert.Equal(t, tt.logs, gotMessages, tt.name)
 
 			// test the error
 			switch {
@@ -170,7 +157,6 @@ func TestConfig_Init(t *testing.T) {
 			}
 
 			tt.want.context = ctx
-			tt.want.logger = logger.Sugar()
 			assert.Equal(t, &tt.want, c, tt.name)
 		})
 	}
