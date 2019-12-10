@@ -14,8 +14,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/stretchr/testify/mock"
-
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -30,25 +28,13 @@ func TestMain(m *testing.M) {
 }
 
 func TestServer_Detect(t *testing.T) {
-	type detectInput struct {
-		filePath string
-		libs     []ptypes.Library
-	}
-	type detectOutput struct {
-		vulns []types.DetectedVulnerability
-		err   error
-	}
-	type detect struct {
-		input  detectInput
-		output detectOutput
-	}
 	type args struct {
 		req *proto.LibDetectRequest
 	}
 	tests := []struct {
 		name    string
 		args    args
-		detect  detect
+		detect  library.DetectExpectation
 		wantRes *proto.DetectResponse
 		wantErr string
 	}{
@@ -62,15 +48,15 @@ func TestServer_Detect(t *testing.T) {
 					},
 				},
 			},
-			detect: detect{
-				input: detectInput{
-					filePath: "app/Pipfile.lock",
-					libs: []ptypes.Library{
+			detect: library.DetectExpectation{
+				Args: library.DetectInput{
+					FilePath: "app/Pipfile.lock",
+					Libs: []ptypes.Library{
 						{Name: "django", Version: "3.0.0"},
 					},
 				},
-				output: detectOutput{
-					vulns: []types.DetectedVulnerability{
+				ReturnArgs: library.DetectOutput{
+					Vulns: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2019-0001",
 							PkgName:          "test",
@@ -111,15 +97,15 @@ func TestServer_Detect(t *testing.T) {
 					},
 				},
 			},
-			detect: detect{
-				input: detectInput{
-					filePath: "app/Pipfile.lock",
-					libs: []ptypes.Library{
+			detect: library.DetectExpectation{
+				Args: library.DetectInput{
+					FilePath: "app/Pipfile.lock",
+					Libs: []ptypes.Library{
 						{Name: "django", Version: "3.0.0"},
 					},
 				},
-				output: detectOutput{
-					err: xerrors.New("error"),
+				ReturnArgs: library.DetectOutput{
+					Err: xerrors.New("error"),
 				},
 			},
 			wantErr: "failed to detect library vulnerabilities",
@@ -127,12 +113,8 @@ func TestServer_Detect(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockDetector := new(library.MockDetector)
-			mockDetector.On("Detect", tt.detect.input.filePath, tt.detect.input.libs).Return(
-				tt.detect.output.vulns, tt.detect.output.err)
-
-			mockVulnClient := new(vulnerability.MockVulnClient)
-			mockVulnClient.On("FillInfo", mock.Anything, mock.Anything)
+			mockDetector := library.NewMockDetector([]library.DetectExpectation{tt.detect})
+			mockVulnClient := vulnerability.NewMockVulnClient()
 
 			s := NewServer(mockDetector, mockVulnClient)
 			ctx := context.TODO()
