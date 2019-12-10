@@ -117,7 +117,7 @@ func TestServer_Detect(t *testing.T) {
 					err: xerrors.New("error"),
 				},
 			},
-			wantErr: "failed to detect OS package vulnerabilities",
+			wantErr: "failed to detect vulnerabilities of OS packages: error",
 		},
 	}
 	for _, tt := range tests {
