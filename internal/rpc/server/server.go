@@ -66,7 +66,7 @@ func updateDBWorker(appVersion, cacheDir string, dbUpdateWg, requestWg *sync.Wai
 	ctx := context.Background()
 
 	for {
-		time.Sleep(10 * time.Second)
+		time.Sleep(1 * time.Hour)
 		needsUpdate, err := client.NeedsUpdate(ctx, appVersion, false, false)
 		if err != nil {
 			log.Logger.Error(err)
@@ -77,7 +77,7 @@ func updateDBWorker(appVersion, cacheDir string, dbUpdateWg, requestWg *sync.Wai
 
 		log.Logger.Info("Updating DB...")
 		if err = hotUpdateDB(ctx, client, cacheDir, dbUpdateWg, requestWg); err != nil {
-			log.Logger.Error("%+v", err)
+			log.Logger.Errorf("%+v\n", err)
 			continue
 		}
 	}
