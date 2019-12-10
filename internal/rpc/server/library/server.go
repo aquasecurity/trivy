@@ -32,8 +32,9 @@ func NewServer(detector detector.Operation, vulnClient vulnerability.Operation) 
 func (s *Server) Detect(ctx context.Context, req *proto.LibDetectRequest) (res *proto.DetectResponse, err error) {
 	vulns, err := s.detector.Detect(req.FilePath, rpc.ConvertFromRpcLibraries(req.Libraries))
 	if err != nil {
-		log.Logger.Warn(err)
-		return nil, xerrors.Errorf("failed to detect library vulnerabilities: %w", err)
+		err = xerrors.Errorf("failed to detect library vulnerabilities: %w", err)
+		log.Logger.Error(err)
+		return nil, err
 	}
 
 	s.vulnClient.FillInfo(vulns, false)

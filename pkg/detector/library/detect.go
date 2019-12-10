@@ -55,7 +55,8 @@ func detect(driver Driver, libs []ptypes.Library) ([]types.DetectedVulnerability
 	for _, lib := range libs {
 		v, err := version.NewVersion(lib.Version)
 		if err != nil {
-			log.Logger.Debug(err)
+			log.Logger.Debugf("invalid version, library: %s, version: %s, error: %s\n",
+				lib.Name, lib.Version, err)
 			continue
 		}
 
