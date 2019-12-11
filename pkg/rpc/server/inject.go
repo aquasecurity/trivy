@@ -3,19 +3,19 @@
 package server
 
 import (
-	library2 "github.com/aquasecurity/trivy/pkg/rpc/server/library"
-	ospkg2 "github.com/aquasecurity/trivy/pkg/rpc/server/ospkg"
+	"github.com/aquasecurity/trivy/pkg/rpc/server/library"
+	"github.com/aquasecurity/trivy/pkg/rpc/server/ospkg"
 	"github.com/google/wire"
 )
 
-func initializeOspkgServer() *ospkg2.Server {
-	wire.Build(ospkg2.SuperSet)
-	return &ospkg2.Server{}
+func initializeOspkgServer() *ospkg.Server {
+	wire.Build(ospkg.SuperSet)
+	return &ospkg.Server{}
 }
 
-func initializeLibServer() *library2.Server {
-	wire.Build(library2.SuperSet)
-	return &library2.Server{}
+func initializeLibServer() *library.Server {
+	wire.Build(library.SuperSet)
+	return &library.Server{}
 }
 
 func initializeDBWorker() dbWorker {
