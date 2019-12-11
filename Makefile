@@ -11,7 +11,7 @@ $(GOBIN)/wire:
 	GO111MODULE=off go get github.com/google/wire/cmd/wire
 
 .PHONY: wire
-wire: $(GOBIN)/golangci-lint
+wire: $(GOBIN)/wire
 	wire gen ./...
 
 .PHONY: deps

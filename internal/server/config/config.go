@@ -2,16 +2,13 @@ package config
 
 import (
 	"github.com/urfave/cli"
-	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 type Config struct {
 	context *cli.Context
-	logger  *zap.SugaredLogger
 
 	Quiet          bool
 	Debug          bool
@@ -30,13 +27,8 @@ type Config struct {
 func New(c *cli.Context) (Config, error) {
 	debug := c.Bool("debug")
 	quiet := c.Bool("quiet")
-	logger, err := log.NewLogger(debug, quiet)
-	if err != nil {
-		return Config{}, xerrors.New("failed to create a logger")
-	}
 	return Config{
 		context: c,
-		logger:  logger,
 
 		Quiet:          quiet,
 		Debug:          debug,
