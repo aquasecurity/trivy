@@ -32,7 +32,7 @@ func (s *Server) Detect(ctx context.Context, req *proto.OSDetectRequest) (res *p
 	vulns, eosl, err := s.detector.Detect(req.OsFamily, req.OsName, rpc.ConvertFromRpcPkgs(req.Packages))
 	if err != nil {
 		log.Logger.Warn(err)
-		return nil, xerrors.Errorf("failed to detect OS package vulnerabilities")
+		return nil, xerrors.Errorf("failed to detect OS package vulnerabilities: %w", err)
 	}
 
 	s.vulnClient.FillInfo(vulns, false)
