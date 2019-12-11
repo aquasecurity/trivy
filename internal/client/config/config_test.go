@@ -24,9 +24,10 @@ func TestNew(t *testing.T) {
 	}{
 		{
 			name: "happy path",
-			args: []string{"-quiet", "--no-progress", "--reset", "--skip-update"},
+			args: []string{"-quiet", "--cache-dir", "/tmp/test"},
 			want: Config{
-				Quiet: true,
+				Quiet:    true,
+				CacheDir: "/tmp/test",
 			},
 		},
 	}
@@ -35,17 +36,19 @@ func TestNew(t *testing.T) {
 			app := &cli.App{}
 			set := flag.NewFlagSet("test", 0)
 			set.Bool("quiet", false, "")
-			set.Bool("no-progress", false, "")
-			set.Bool("reset", false, "")
-			set.Bool("skip-update", false, "")
+			set.String("cache-dir", "", "")
 
 			c := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
 
-			tt.want.context = c
+			got, err := New(c)
 
-			_, err := New(c)
+			// avoid to compare these values because these values are pointer
+			tt.want.context = c
+			tt.want.logger = got.logger
+
 			assert.NoError(t, err, tt.name)
+			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
 }
