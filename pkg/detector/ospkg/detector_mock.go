@@ -17,6 +17,7 @@ type DetectInput struct {
 }
 type DetectOutput struct {
 	Vulns []types.DetectedVulnerability
+	Eosl  bool
 	Err   error
 }
 type DetectExpectation struct {
@@ -28,7 +29,7 @@ func NewMockDetector(detectExpectations []DetectExpectation) *MockDetector {
 	mockDetector := new(MockDetector)
 	for _, e := range detectExpectations {
 		mockDetector.On("Detect", e.Args.OSFamily, e.Args.OSName, e.Args.Pkgs).Return(
-			e.ReturnArgs.Vulns, e.ReturnArgs.Err)
+			e.ReturnArgs.Vulns, e.ReturnArgs.Eosl, e.ReturnArgs.Err)
 	}
 	return mockDetector
 }
