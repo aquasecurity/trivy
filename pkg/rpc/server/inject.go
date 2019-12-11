@@ -3,9 +3,10 @@
 package server
 
 import (
+	"github.com/google/wire"
+
 	"github.com/aquasecurity/trivy/pkg/rpc/server/library"
 	"github.com/aquasecurity/trivy/pkg/rpc/server/ospkg"
-	"github.com/google/wire"
 )
 
 func initializeOspkgServer() *ospkg.Server {

@@ -9,19 +9,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/log"
-
-	"github.com/stretchr/testify/require"
-
 	"github.com/aquasecurity/trivy-db/pkg/db"
-
-	"github.com/stretchr/testify/mock"
-
-	"github.com/stretchr/testify/assert"
-
 	dbFile "github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func TestMain(m *testing.M) {
