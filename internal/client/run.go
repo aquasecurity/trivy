@@ -1,7 +1,6 @@
 package client
 
 import (
-	l "log"
 	"os"
 
 	"github.com/urfave/cli"
@@ -26,7 +25,7 @@ func Run(cliCtx *cli.Context) error {
 
 func run(c config.Config) (err error) {
 	if err = log.InitLogger(c.Debug, c.Quiet); err != nil {
-		l.Fatal(err)
+		return xerrors.Errorf("failed to initialize a logger: %w", err)
 	}
 
 	// initialize config
