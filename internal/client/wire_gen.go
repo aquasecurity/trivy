@@ -7,8 +7,8 @@ package client
 
 import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/internal/rpc/client/library"
-	"github.com/aquasecurity/trivy/internal/rpc/client/ospkg"
+	"github.com/aquasecurity/trivy/pkg/rpc/client/library"
+	"github.com/aquasecurity/trivy/pkg/rpc/client/ospkg"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	library2 "github.com/aquasecurity/trivy/pkg/scanner/library"
 	ospkg2 "github.com/aquasecurity/trivy/pkg/scanner/ospkg"

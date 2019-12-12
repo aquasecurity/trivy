@@ -4,13 +4,14 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/aquasecurity/trivy/pkg/rpc/client"
+
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	r "github.com/aquasecurity/trivy/internal/rpc"
-	"github.com/aquasecurity/trivy/internal/rpc/client"
 	detector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+	r "github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/types"
 	rpc "github.com/aquasecurity/trivy/rpc/detector"
 )

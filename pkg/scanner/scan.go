@@ -13,10 +13,10 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/extractor"
-	rpcLibDetector "github.com/aquasecurity/trivy/internal/rpc/client/library"
-	rpcOSDetector "github.com/aquasecurity/trivy/internal/rpc/client/ospkg"
 	libDetector "github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+	rpcLibDetector "github.com/aquasecurity/trivy/pkg/rpc/client/library"
+	rpcOSDetector "github.com/aquasecurity/trivy/pkg/rpc/client/ospkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/library"
 	libScanner "github.com/aquasecurity/trivy/pkg/scanner/library"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"

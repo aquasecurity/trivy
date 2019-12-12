@@ -4,8 +4,11 @@ import (
 	"context"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"sync"
 	"time"
+
+	"github.com/google/wire"
 
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
@@ -16,6 +19,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	rpc "github.com/aquasecurity/trivy/rpc/detector"
+)
+
+var SuperSet = wire.NewSet(
+	dbFile.SuperSet,
+	newDBWorker,
 )
 
 func ListenAndServe(addr string, c config.Config) error {
@@ -36,7 +44,16 @@ func ListenAndServe(addr string, c config.Config) error {
 		})
 	}
 
-	go updateDBWorker(c.AppVersion, c.CacheDir, dbUpdateWg, requestWg)
+	go func() {
+		worker := initializeDBWorker()
+		ctx := context.Background()
+		for {
+			time.Sleep(1 * time.Hour)
+			if err := worker.update(ctx, c.AppVersion, c.CacheDir, dbUpdateWg, requestWg); err != nil {
+				log.Logger.Errorf("%+v\n", err)
+			}
+		}
+	}()
 
 	mux := http.NewServeMux()
 
@@ -61,36 +78,38 @@ func withToken(base http.Handler, token string) http.Handler {
 	})
 }
 
-func updateDBWorker(appVersion, cacheDir string, dbUpdateWg, requestWg *sync.WaitGroup) {
-	client := dbFile.NewClient()
-	ctx := context.Background()
-
-	for {
-		time.Sleep(1 * time.Hour)
-		needsUpdate, err := client.NeedsUpdate(ctx, appVersion, false, false)
-		if err != nil {
-			log.Logger.Error(err)
-			continue
-		} else if !needsUpdate {
-			continue
-		}
-
-		log.Logger.Info("Updating DB...")
-		if err = hotUpdateDB(ctx, client, cacheDir, dbUpdateWg, requestWg); err != nil {
-			log.Logger.Errorf("failed DB update: %s\n", err)
-			continue
-		}
-	}
+type dbWorker struct {
+	dbClient dbFile.Operation
 }
 
-func hotUpdateDB(ctx context.Context, client dbFile.Client, cacheDir string,
+func newDBWorker(dbClient dbFile.Operation) dbWorker {
+	return dbWorker{dbClient: dbClient}
+}
+
+func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 	dbUpdateWg, requestWg *sync.WaitGroup) error {
+	needsUpdate, err := w.dbClient.NeedsUpdate(ctx, appVersion, false, false)
+	if err != nil {
+		return xerrors.Errorf("failed to check if db needs an update")
+	} else if !needsUpdate {
+		return nil
+	}
+
+	log.Logger.Info("Updating DB...")
+	if err = w.hotUpdate(ctx, cacheDir, dbUpdateWg, requestWg); err != nil {
+		return xerrors.Errorf("failed DB hot update")
+	}
+	return nil
+}
+
+func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, requestWg *sync.WaitGroup) error {
 	tmpDir, err := ioutil.TempDir("", "db")
 	if err != nil {
 		return xerrors.Errorf("failed to create a temp dir: %w", err)
 	}
+	defer os.RemoveAll(tmpDir)
 
-	if err := client.Download(ctx, tmpDir, false); err != nil {
+	if err := w.dbClient.Download(ctx, tmpDir, false); err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 

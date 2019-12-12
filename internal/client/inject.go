@@ -3,8 +3,8 @@
 package client
 
 import (
-	"github.com/aquasecurity/trivy/internal/rpc/client/library"
-	"github.com/aquasecurity/trivy/internal/rpc/client/ospkg"
+	"github.com/aquasecurity/trivy/pkg/rpc/client/library"
+	"github.com/aquasecurity/trivy/pkg/rpc/client/ospkg"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	"github.com/google/wire"

@@ -7,14 +7,17 @@ package server
 
 import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/internal/rpc/server/library"
-	"github.com/aquasecurity/trivy/internal/rpc/server/ospkg"
+	db2 "github.com/aquasecurity/trivy/pkg/db"
 	library2 "github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkg2 "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+	"github.com/aquasecurity/trivy/pkg/github"
+	"github.com/aquasecurity/trivy/pkg/rpc/server/library"
+	"github.com/aquasecurity/trivy/pkg/rpc/server/ospkg"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
+	"k8s.io/utils/clock"
 )
 
-// Injectors from inject_server.go:
+// Injectors from inject.go:
 
 func initializeOspkgServer() *ospkg.Server {
 	detector := ospkg2.Detector{}
@@ -31,4 +34,13 @@ func initializeLibServer() *library.Server {
 	client := vulnerability.NewClient(config)
 	server := library.NewServer(detector, client)
 	return server
+}
+
+func initializeDBWorker() dbWorker {
+	config := db.Config{}
+	client := github.NewClient()
+	realClock := clock.RealClock{}
+	dbClient := db2.NewClient(config, client, realClock)
+	serverDbWorker := newDBWorker(dbClient)
+	return serverDbWorker
 }

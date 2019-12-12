@@ -3,7 +3,7 @@ package server
 import (
 	l "log"
 
-	"github.com/aquasecurity/trivy/internal/rpc/server"
+	"github.com/aquasecurity/trivy/pkg/rpc/server"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/internal/operation"
