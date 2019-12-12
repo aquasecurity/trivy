@@ -24,7 +24,7 @@ type Config struct {
 	AppVersion string
 }
 
-func New(c *cli.Context) (Config, error) {
+func New(c *cli.Context) Config {
 	debug := c.Bool("debug")
 	quiet := c.Bool("quiet")
 	return Config{
@@ -38,7 +38,7 @@ func New(c *cli.Context) (Config, error) {
 		SkipUpdate:     c.Bool("skip-update"),
 		Listen:         c.String("listen"),
 		Token:          c.String("token"),
-	}, nil
+	}
 }
 
 func (c *Config) Init() (err error) {

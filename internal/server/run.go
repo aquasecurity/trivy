@@ -12,12 +12,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func Run(cliCtx *cli.Context) error {
-	c, err := config.New(cliCtx)
-	if err != nil {
-		return err
-	}
-	return run(c)
+func Run(ctx *cli.Context) error {
+	return run(config.New(ctx))
 }
 
 func run(c config.Config) (err error) {

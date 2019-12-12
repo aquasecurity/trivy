@@ -42,8 +42,7 @@ func TestNew(t *testing.T) {
 
 			tt.want.context = c
 
-			got, err := New(c)
-			assert.NoError(t, err, tt.name)
+			got := New(c)
 			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
