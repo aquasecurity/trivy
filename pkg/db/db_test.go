@@ -192,8 +192,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				clock: tc.clock,
 			}
 
-			ctx := context.Background()
-			needsUpdate, err := client.NeedsUpdate(ctx, "test", tc.light, tc.skip)
+			needsUpdate, err := client.NeedsUpdate(context.Background(), "test", tc.light, tc.skip)
 
 			switch {
 			case tc.expectedError != nil:
@@ -291,10 +290,7 @@ func TestClient_Download(t *testing.T) {
 			err = db.Init(dir)
 			require.NoError(t, err, tc.name)
 
-			client := Client{
-				githubClient: mockGitHubClient,
-			}
-
+			client := NewClient(db.Config{}, mockGitHubClient, nil)
 			ctx := context.Background()
 			err = client.Download(ctx, dir, tc.light)
 
