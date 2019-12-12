@@ -55,6 +55,7 @@ func TestServer_Detect(t *testing.T) {
 					},
 				},
 				ReturnArgs: ospkg.DetectOutput{
+					Eosl: false,
 					Vulns: []types.DetectedVulnerability{
 						{
 							VulnerabilityID: "CVE-2019-0001",

@@ -26,7 +26,7 @@ var (
 )
 
 type Operation interface {
-	Detect(string, string, []analyzer.Package) ([]types.DetectedVulnerability, error)
+	Detect(string, string, []analyzer.Package) ([]types.DetectedVulnerability, bool, error)
 }
 
 type Driver interface {
@@ -36,23 +36,20 @@ type Driver interface {
 
 type Detector struct{}
 
-func (d Detector) Detect(osFamily, osName string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, error) {
+func (d Detector) Detect(osFamily, osName string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
 	driver := newDriver(osFamily, osName)
 	if driver == nil {
-		return nil, ErrUnsupportedOS
+		return nil, false, ErrUnsupportedOS
 	}
 
-	if !driver.IsSupportedVersion(osFamily, osName) {
-		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFamily, osName)
-		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
-	}
+	eosl := !driver.IsSupportedVersion(osFamily, osName)
 
 	vulns, err := driver.Detect(osName, pkgs)
 	if err != nil {
-		return nil, xerrors.Errorf("failed detection: %w", err)
+		return nil, false, xerrors.Errorf("failed detection: %w", err)
 	}
 
-	return vulns, nil
+	return vulns, eosl, nil
 }
 
 func newDriver(osFamily, osName string) Driver {

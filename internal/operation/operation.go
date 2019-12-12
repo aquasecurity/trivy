@@ -8,7 +8,6 @@ import (
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -33,7 +32,7 @@ func ClearCache() error {
 }
 
 func DownloadDB(appVersion, cacheDir string, light, skipUpdate bool) error {
-	client := dbFile.NewClient()
+	client := initializeDBClient()
 	ctx := context.Background()
 	needsUpdate, err := client.NeedsUpdate(ctx, appVersion, light, skipUpdate)
 	if err != nil {
@@ -41,6 +40,7 @@ func DownloadDB(appVersion, cacheDir string, light, skipUpdate bool) error {
 	}
 
 	if needsUpdate {
+		log.Logger.Info("Need to update DB")
 		if err = db.Close(); err != nil {
 			return xerrors.Errorf("failed db close: %w", err)
 		}

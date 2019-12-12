@@ -11,7 +11,6 @@ type Config struct {
 	context *cli.Context
 
 	Quiet          bool
-	NoProgress     bool
 	Debug          bool
 	CacheDir       string
 	Reset          bool
@@ -32,7 +31,6 @@ func New(c *cli.Context) (Config, error) {
 		context: c,
 
 		Quiet:          quiet,
-		NoProgress:     c.Bool("no-progress"),
 		Debug:          debug,
 		CacheDir:       c.String("cache-dir"),
 		Reset:          c.Bool("reset"),

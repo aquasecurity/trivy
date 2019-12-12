@@ -169,7 +169,7 @@ func TestDetectClient_Detect(t *testing.T) {
 				tt.detect.output.res, tt.detect.output.err)
 
 			d := NewDetector(tt.fields.token, mockDetector)
-			got, err := d.Detect(tt.args.osFamily, tt.args.osName, tt.args.pkgs)
+			got, _, err := d.Detect(tt.args.osFamily, tt.args.osName, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

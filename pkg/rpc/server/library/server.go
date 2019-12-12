@@ -3,13 +3,12 @@ package library
 import (
 	"context"
 
-	detector "github.com/aquasecurity/trivy/pkg/detector/library"
-
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/internal/rpc"
+	detector "github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	proto "github.com/aquasecurity/trivy/rpc/detector"
 )

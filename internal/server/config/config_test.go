@@ -23,7 +23,6 @@ func TestNew(t *testing.T) {
 			args: []string{"-quiet", "--no-progress", "--reset", "--skip-update"},
 			want: Config{
 				Quiet:      true,
-				NoProgress: true,
 				Reset:      true,
 				SkipUpdate: true,
 			},
@@ -54,7 +53,6 @@ func TestConfig_Init(t *testing.T) {
 	type fields struct {
 		context        *cli.Context
 		Quiet          bool
-		NoProgress     bool
 		Debug          bool
 		CacheDir       string
 		Reset          bool
@@ -136,7 +134,6 @@ func TestConfig_Init(t *testing.T) {
 			c := &Config{
 				context:        ctx,
 				Quiet:          tt.fields.Quiet,
-				NoProgress:     tt.fields.NoProgress,
 				Debug:          tt.fields.Debug,
 				CacheDir:       tt.fields.CacheDir,
 				Reset:          tt.fields.Reset,
