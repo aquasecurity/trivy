@@ -245,7 +245,7 @@ func NewClientCommand() cli.Command {
 			token,
 			cli.StringFlag{
 				Name:   "remote",
-				Value:  "http://localhost:4154",
+				Value:  "http://localhost:4954",
 				Usage:  "server address",
 				EnvVar: "TRIVY_REMOTE",
 			},
@@ -271,7 +271,7 @@ func NewServerCommand() cli.Command {
 			token,
 			cli.StringFlag{
 				Name:   "listen",
-				Value:  "localhost:4154",
+				Value:  "localhost:4954",
 				Usage:  "listen address",
 				EnvVar: "TRIVY_LISTEN",
 			},
