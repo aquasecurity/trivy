@@ -1,18 +1,18 @@
-package standalone
+package client
 
 import (
-	l "log"
 	"os"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/internal/operation"
-	"github.com/aquasecurity/trivy/internal/standalone/config"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
-	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/urfave/cli"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/internal/client/config"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/rpc/client/library"
+	"github.com/aquasecurity/trivy/pkg/rpc/client/ospkg"
+	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 func Run(cliCtx *cli.Context) error {
@@ -25,7 +25,7 @@ func Run(cliCtx *cli.Context) error {
 
 func run(c config.Config) (err error) {
 	if err = log.InitLogger(c.Debug, c.Quiet); err != nil {
-		l.Fatal(err)
+		return xerrors.Errorf("failed to initialize a logger: %w", err)
 	}
 
 	// initialize config
@@ -37,34 +37,16 @@ func run(c config.Config) (err error) {
 	utils.SetCacheDir(c.CacheDir)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
-	if c.Reset {
-		return operation.Reset()
-	}
-
-	if c.ClearCache {
-		return operation.ClearCache()
-	}
-
-	if err = db.Init(c.CacheDir); err != nil {
-		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
-	}
-
-	// download the database file
-	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, c.Light, c.SkipUpdate); err != nil {
-		return err
-	}
-
-	if c.DownloadDBOnly {
-		return nil
-	}
-
 	scanOptions := types.ScanOptions{
-		VulnType: c.VulnType,
-		Timeout:  c.Timeout,
+		VulnType:  c.VulnType,
+		Timeout:   c.Timeout,
+		RemoteURL: c.RemoteAddr,
+		Token:     c.Token,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	scanner := initializeScanner()
+	scanner := initializeScanner(ospkg.Token(c.Token), library.Token(c.Token),
+		ospkg.RemoteURL(c.RemoteAddr), library.RemoteURL(c.RemoteAddr))
 	results, err := scanner.ScanImage(c.ImageName, c.Input, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
@@ -72,12 +54,11 @@ func run(c config.Config) (err error) {
 
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
-		vulnClient.FillInfo(results[i].Vulnerabilities, c.Light)
 		results[i].Vulnerabilities = vulnClient.Filter(results[i].Vulnerabilities,
 			c.Severities, c.IgnoreUnfixed, c.IgnoreFile)
 	}
 
-	if err = report.WriteResults(c.Format, c.Output, results, c.Template, c.Light); err != nil {
+	if err = report.WriteResults(c.Format, c.Output, results, c.Template, false); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
