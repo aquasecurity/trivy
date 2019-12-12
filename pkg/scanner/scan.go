@@ -7,19 +7,52 @@ import (
 	"os"
 	"sort"
 
+	"github.com/google/wire"
+
 	"github.com/aquasecurity/trivy/pkg/report"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/extractor"
+	libDetector "github.com/aquasecurity/trivy/pkg/detector/library"
+	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+	rpcLibDetector "github.com/aquasecurity/trivy/pkg/rpc/client/library"
+	rpcOSDetector "github.com/aquasecurity/trivy/pkg/rpc/client/ospkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/library"
+	libScanner "github.com/aquasecurity/trivy/pkg/scanner/library"
 	"github.com/aquasecurity/trivy/pkg/scanner/ospkg"
+	ospkgScanner "github.com/aquasecurity/trivy/pkg/scanner/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/xerrors"
 )
 
-func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (report.Results, error) {
+var StandaloneSet = wire.NewSet(
+	ospkgDetector.SuperSet,
+	ospkgScanner.NewScanner,
+	libDetector.SuperSet,
+	libScanner.NewScanner,
+	NewScanner,
+)
+
+var ClientSet = wire.NewSet(
+	rpcOSDetector.SuperSet,
+	ospkgScanner.NewScanner,
+	rpcLibDetector.SuperSet,
+	libScanner.NewScanner,
+	NewScanner,
+)
+
+type Scanner struct {
+	ospkgScanner ospkg.Scanner
+	libScanner   library.Scanner
+}
+
+func NewScanner(ospkgScanner ospkg.Scanner, libScanner library.Scanner) Scanner {
+	return Scanner{ospkgScanner: ospkgScanner, libScanner: libScanner}
+}
+
+func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (report.Results, error) {
 	results := report.Results{}
 	ctx := context.Background()
 
@@ -53,9 +86,9 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (repor
 	}
 
 	if utils.StringInSlice("os", scanOptions.VulnType) {
-		osFamily, osVersion, osVulns, err := ospkg.Scan(files)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to scan image: %w", err)
+		osFamily, osVersion, osVulns, err := s.ospkgScanner.Scan(files)
+		if err != nil && err != ospkgDetector.ErrUnsupportedOS {
+			return nil, xerrors.Errorf("failed to scan the image: %w", err)
 		}
 		if osFamily != "" {
 			imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion)
@@ -67,7 +100,7 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (repor
 	}
 
 	if utils.StringInSlice("library", scanOptions.VulnType) {
-		libVulns, err := library.Scan(files, scanOptions)
+		libVulns, err := s.libScanner.Scan(files)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to scan libraries: %w", err)
 		}
@@ -88,8 +121,8 @@ func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (repor
 	return results, nil
 }
 
-func ScanFile(f *os.File) (report.Results, error) {
-	vulns, err := library.ScanFile(f)
+func (s Scanner) ScanFile(f *os.File) (report.Results, error) {
+	vulns, err := s.libScanner.ScanFile(f)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to scan libraries in file: %w", err)
 	}

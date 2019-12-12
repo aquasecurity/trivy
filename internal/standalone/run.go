@@ -1,20 +1,16 @@
 package standalone
 
 import (
-	"context"
 	l "log"
 	"os"
 
-	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/internal/operation"
 	"github.com/aquasecurity/trivy/internal/standalone/config"
-	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
-	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	"github.com/urfave/cli"
 	"golang.org/x/xerrors"
 )
@@ -42,11 +38,11 @@ func run(c config.Config) (err error) {
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
 	if c.Reset {
-		return reset()
+		return operation.Reset()
 	}
 
 	if c.ClearCache {
-		return clearCache()
+		return operation.ClearCache()
 	}
 
 	if err = db.Init(c.CacheDir); err != nil {
@@ -54,7 +50,7 @@ func run(c config.Config) (err error) {
 	}
 
 	// download the database file
-	if err = downloadDB(c.AppVersion, c.CacheDir, c.Light, c.SkipUpdate); err != nil {
+	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, c.Light, c.SkipUpdate); err != nil {
 		return err
 	}
 
@@ -68,15 +64,17 @@ func run(c config.Config) (err error) {
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
+	scanner := initializeScanner()
 	results, err := scanner.ScanImage(c.ImageName, c.Input, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
 
-	vulnClient := vulnerability.NewClient()
+	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
-		results[i].Vulnerabilities = vulnClient.FillAndFilter(results[i].Vulnerabilities,
-			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.Light)
+		vulnClient.FillInfo(results[i].Vulnerabilities, c.Light)
+		results[i].Vulnerabilities = vulnClient.Filter(results[i].Vulnerabilities,
+			c.Severities, c.IgnoreUnfixed, c.IgnoreFile)
 	}
 
 	if err = report.WriteResults(c.Format, c.Output, results, c.Template, c.Light); err != nil {
@@ -90,47 +88,5 @@ func run(c config.Config) (err error) {
 			}
 		}
 	}
-	return nil
-}
-
-func reset() (err error) {
-	log.Logger.Info("Resetting...")
-	if err = cache.Clear(); err != nil {
-		return xerrors.New("failed to remove image layer cache")
-	}
-	if err = os.RemoveAll(utils.CacheDir()); err != nil {
-		return xerrors.New("failed to remove cache")
-	}
-	return nil
-}
-
-func clearCache() error {
-	log.Logger.Info("Removing image caches...")
-	if err := cache.Clear(); err != nil {
-		return xerrors.New("failed to remove image layer cache")
-	}
-	return nil
-}
-
-func downloadDB(appVersion, cacheDir string, light, skipUpdate bool) error {
-	client := dbFile.NewClient()
-	ctx := context.Background()
-	if err := client.Download(ctx, appVersion, cacheDir, light, skipUpdate); err != nil {
-		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
-	}
-	// for debug
-	if err := showDBInfo(); err != nil {
-		return xerrors.Errorf("failed to show database info")
-	}
-	return nil
-}
-
-func showDBInfo() error {
-	metadata, err := db.Config{}.GetMetadata()
-	if err != nil {
-		return xerrors.Errorf("something wrong with DB: %w", err)
-	}
-	log.Logger.Debugf("DB Schema: %d, Type: %d, UpdatedAt: %s, NextUpdate: %s",
-		metadata.Version, metadata.Type, metadata.UpdatedAt, metadata.NextUpdate)
 	return nil
 }
