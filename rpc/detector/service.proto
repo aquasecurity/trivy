@@ -15,6 +15,7 @@ message OSDetectRequest {
 
 message DetectResponse {
   repeated Vulnerability vulnerabilities = 1;
+  bool                   eosl            = 2;
 }
 
 message Package {

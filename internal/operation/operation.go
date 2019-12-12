@@ -4,13 +4,10 @@ import (
 	"context"
 	"os"
 
-	"github.com/aquasecurity/trivy/pkg/github"
-
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -35,14 +32,15 @@ func ClearCache() error {
 }
 
 func DownloadDB(appVersion, cacheDir string, light, skipUpdate bool) error {
-	client := dbFile.NewClient(github.NewClient())
+	client := initializeDBClient()
 	ctx := context.Background()
-	needsUpdate, err := client.NeedsUpdate(appVersion, light, skipUpdate)
+	needsUpdate, err := client.NeedsUpdate(ctx, appVersion, light, skipUpdate)
 	if err != nil {
 		return xerrors.Errorf("database error: %w", err)
 	}
 
 	if needsUpdate {
+		log.Logger.Info("Need to update DB")
 		if err = db.Close(); err != nil {
 			return xerrors.Errorf("failed db close: %w", err)
 		}
