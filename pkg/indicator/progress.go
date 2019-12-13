@@ -1,10 +1,11 @@
 package utils
 
 import (
+	"io"
 	"time"
 
 	"github.com/briandowns/spinner"
-	pb "gopkg.in/cheggaaa/pb.v1"
+	pb "github.com/cheggaaa/pb/v3"
 )
 
 var (
@@ -37,28 +38,32 @@ func (s *Spinner) Stop() {
 	s.client.Stop()
 }
 
-// TODO: Expose an interface for progressbar
 type ProgressBar struct {
-	client *pb.ProgressBar
+	quiet bool
+	bar   *pb.ProgressBar
 }
 
-func PbStartNew(total int) *ProgressBar {
-	if Quiet {
+func NewProgressBar(quiet bool) ProgressBar {
+	return ProgressBar{quiet: quiet}
+}
+
+func (p ProgressBar) Start(total int64) *ProgressBar {
+	if p.quiet {
 		return &ProgressBar{}
 	}
-	bar := pb.StartNew(total)
-	return &ProgressBar{client: bar}
+	bar := pb.Full.Start64(total)
+	return &ProgressBar{bar: bar}
 }
 
-func (p *ProgressBar) Increment() {
-	if p.client == nil {
-		return
+func (p *ProgressBar) NewProxyReader(r io.Reader) io.Reader {
+	if p.quiet {
+		return r
 	}
-	p.client.Increment()
+	return p.bar.NewProxyReader(r)
 }
 func (p *ProgressBar) Finish() {
-	if p.client == nil {
+	if p.quiet {
 		return
 	}
-	p.client.Finish()
+	p.bar.Finish()
 }
