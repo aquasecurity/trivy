@@ -19,7 +19,7 @@ func initializeLibServer() *library.Server {
 	return &library.Server{}
 }
 
-func initializeDBWorker() dbWorker {
+func initializeDBWorker(quiet bool) dbWorker {
 	wire.Build(SuperSet)
 	return dbWorker{}
 }

@@ -11,6 +11,7 @@ import (
 	library2 "github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkg2 "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/github"
+	"github.com/aquasecurity/trivy/pkg/indicator"
 	"github.com/aquasecurity/trivy/pkg/rpc/server/library"
 	"github.com/aquasecurity/trivy/pkg/rpc/server/ospkg"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
@@ -36,11 +37,12 @@ func initializeLibServer() *library.Server {
 	return server
 }
 
-func initializeDBWorker() dbWorker {
+func initializeDBWorker(quiet bool) dbWorker {
 	config := db.Config{}
 	client := github.NewClient()
+	progressBar := indicator.NewProgressBar(quiet)
 	realClock := clock.RealClock{}
-	dbClient := db2.NewClient(config, client, realClock)
+	dbClient := db2.NewClient(config, client, progressBar, realClock)
 	serverDbWorker := newDBWorker(dbClient)
 	return serverDbWorker
 }

@@ -9,15 +9,17 @@ import (
 	db2 "github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/github"
+	"github.com/aquasecurity/trivy/pkg/indicator"
 	"k8s.io/utils/clock"
 )
 
 // Injectors from inject.go:
 
-func initializeDBClient() db.Client {
+func initializeDBClient(quiet bool) db.Client {
 	config := db2.Config{}
 	client := github.NewClient()
+	progressBar := indicator.NewProgressBar(quiet)
 	realClock := clock.RealClock{}
-	dbClient := db.NewClient(config, client, realClock)
+	dbClient := db.NewClient(config, client, progressBar, realClock)
 	return dbClient
 }
