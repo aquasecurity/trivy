@@ -28,19 +28,22 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
   - [Basic](#basic)
   - [Docker](#docker)
 - [Examples](#examples)
-  - [Scan an image](#scan-an-image)
-  - [Scan an image file](#scan-an-image-file)
-  - [Save the results as JSON](#save-the-results-as-json)
-  - [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
-  - [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
-  - [Skip an update of vulnerability DB](#skip-update-of-vulnerability-db)
-  - [Ignore unfixed vulnerabilities](#ignore-unfixed-vulnerabilities)
-  - [Specify exit code](#specify-exit-code)
-  - [Ignore the specified vulnerabilities](#ignore-the-specified-vulnerabilities)
-  - [Clear image caches](#clear-image-caches)
-  - [Reset](#reset)
-  - [Lightweight DB](#use-lightweight-db)
+  - [Standalone](#standalone)
+    - [Scan an image](#scan-an-image)
+    - [Scan an image file](#scan-an-image-file)
+    - [Save the results as JSON](#save-the-results-as-json)
+    - [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
+    - [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
+    - [Skip an update of vulnerability DB](#skip-update-of-vulnerability-db)
+    - [Ignore unfixed vulnerabilities](#ignore-unfixed-vulnerabilities)
+    - [Specify exit code](#specify-exit-code)
+    - [Ignore the specified vulnerabilities](#ignore-the-specified-vulnerabilities)
+    - [Clear image caches](#clear-image-caches)
+    - [Reset](#reset)
+    - [Lightweight DB](#use-lightweight-db)
   - [Client/Server](#client--server)
+    - [Server](#server)
+    - [Client](#client)
 - [Continuous Integration (CI)](#continuous-integration-ci)
   - [Travis CI](#travis-ci)
   - [CircleCI](#circleci)
@@ -255,6 +258,8 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 </details>
 
 # Examples
+
+## Standalone
 
 ### Scan an image
 
@@ -1081,9 +1086,10 @@ Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 </details>
 
 
-### Client / Server
-Trivy has client/server mode.
+## Client / Server
+Trivy has client/server mode. Trivy server has vulnerability database and Trivy client doesn't have to download vulnerability database. It is useful if you want to scan images at multiple locations and do not want to download the database at every location.
 
+### Server
 At first, you need to launch Trivy server. It downloads vulnerability database automatically and continue to fetch the latest DB in the background.
 ```
 $ trivy server --listen localhost:8080
@@ -1092,6 +1098,7 @@ $ trivy server --listen localhost:8080
 2019-12-12T15:17:56.707+0200    INFO    Listening localhost:8080...
 ```
 
+### Client
 Then, specify the remote address.
 ```
 $ trivy client --remote http://localhost:8080 alpine:3.10
@@ -1374,8 +1381,8 @@ OPTIONS:
 
 ```
 
-## Client / Server
-Also, Trivy has two sub commands, client and server.
+## Sub commands
+Trivy has two sub commands, client and server.
 
 ```
 NAME:
