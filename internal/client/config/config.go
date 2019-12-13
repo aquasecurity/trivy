@@ -12,7 +12,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 type Config struct {
@@ -86,10 +85,6 @@ func (c *Config) Init() (err error) {
 	c.Severities = c.splitSeverity(c.severities)
 	c.VulnType = strings.Split(c.vulnType, ",")
 	c.AppVersion = c.context.App.Version
-
-	if c.Quiet {
-		utils.Quiet = true
-	}
 
 	// --clear-cache doesn't conduct the scan
 	if c.ClearCache {

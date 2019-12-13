@@ -3,8 +3,6 @@ package config
 import (
 	"github.com/urfave/cli"
 	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 type Config struct {
@@ -47,9 +45,6 @@ func (c *Config) Init() (err error) {
 	}
 
 	c.AppVersion = c.context.App.Version
-
-	// A server always suppresses a progress bar
-	utils.Quiet = true
 
 	return nil
 }
