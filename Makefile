@@ -3,8 +3,16 @@ LDFLAGS=-ldflags "-s -w -X=main.version=$(VERSION)"
 
 GOPATH=$(shell go env GOPATH)
 GOBIN=$(GOPATH)/bin
+GOSRC=$(GOPATH)/src
 
 u := $(if $(update),-u)
+
+$(GOBIN)/wire:
+	GO111MODULE=off go get github.com/google/wire/cmd/wire
+
+.PHONY: wire
+wire: $(GOBIN)/wire
+	wire gen ./...
 
 .PHONY: deps
 deps:
@@ -29,9 +37,17 @@ test-integration: integration/testdata/fixtures/*.tar.gz
 lint: $(GOBIN)/golangci-lint
 	$(GOBIN)/golangci-lint run
 
+.PHONY: fmt
+fmt:
+	find ./ -name "*.proto" | xargs clang-format -i
+
 .PHONY: build
 build:
 	go build $(LDFLAGS) ./cmd/trivy
+
+.PHONY: protoc
+protoc:
+	protoc --proto_path=$(GOSRC):. --twirp_out=. --go_out=. ./rpc/detector/service.proto
 
 .PHONY: install
 install:

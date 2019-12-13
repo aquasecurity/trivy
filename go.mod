@@ -9,13 +9,16 @@ require (
 	github.com/briandowns/spinner v0.0.0-20190319032542-ac46072a5a91
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/genuinetools/reg v0.16.1
+	github.com/golang/protobuf v1.3.1
 	github.com/google/go-github/v28 v28.1.1
+	github.com/google/wire v0.3.0
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/knqyf263/go-version v1.1.1
 	github.com/kylelemons/godebug v1.1.0
 	github.com/olekukonko/tablewriter v0.0.2-0.20190607075207-195002e6e56a
 	github.com/stretchr/testify v1.4.0
+	github.com/twitchtv/twirp v5.9.0+incompatible
 	github.com/urfave/cli v1.20.0
 	go.etcd.io/bbolt v1.3.3 // indirect
 	go.uber.org/atomic v1.5.1 // indirect
