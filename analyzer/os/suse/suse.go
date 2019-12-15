@@ -1,4 +1,4 @@
-package opensuse
+package suse
 
 import (
 	"bufio"
@@ -14,13 +14,12 @@ import (
 )
 
 func init() {
-	analyzer.RegisterOSAnalyzer(&opensuseOSAnalyzer{})
+	analyzer.RegisterOSAnalyzer(&suseOSAnalyzer{})
 }
 
-type opensuseOSAnalyzer struct{}
+type suseOSAnalyzer struct{}
 
-// TODO : need investigation
-func (a opensuseOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error) {
+func (a suseOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error) {
 	for _, filename := range a.RequiredFiles() {
 		file, ok := fileMap[filename]
 		if !ok {
@@ -40,6 +39,10 @@ func (a opensuseOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, err
 				}
 				continue
 			}
+			if strings.HasPrefix(line, "NAME=\"SLES") {
+				suseName = os.SLES
+				continue
+			}
 
 			if suseName != "" && strings.HasPrefix(line, "VERSION_ID=") {
 				return analyzer.OS{
@@ -49,10 +52,10 @@ func (a opensuseOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, err
 			}
 		}
 	}
-	return analyzer.OS{}, xerrors.Errorf("opensuse: %w", os.AnalyzeOSError)
+	return analyzer.OS{}, xerrors.Errorf("suse: %w", os.AnalyzeOSError)
 }
 
-func (a opensuseOSAnalyzer) RequiredFiles() []string {
+func (a suseOSAnalyzer) RequiredFiles() []string {
 	return []string{
 		"usr/lib/os-release",
 		"etc/os-release",
