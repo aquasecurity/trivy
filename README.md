@@ -28,17 +28,22 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
   - [Basic](#basic)
   - [Docker](#docker)
 - [Examples](#examples)
-  - [Scan an image](#scan-an-image)
-  - [Scan an image file](#scan-an-image-file)
-  - [Save the results as JSON](#save-the-results-as-json)
-  - [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
-  - [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
-  - [Skip an update of vulnerability DB](#skip-update-of-vulnerability-db)
-  - [Ignore unfixed vulnerabilities](#ignore-unfixed-vulnerabilities)
-  - [Specify exit code](#specify-exit-code)
-  - [Ignore the specified vulnerabilities](#ignore-the-specified-vulnerabilities)
-  - [Clear image caches](#clear-image-caches)
-  - [Reset](#reset)
+  - [Standalone](#standalone)
+    - [Scan an image](#scan-an-image)
+    - [Scan an image file](#scan-an-image-file)
+    - [Save the results as JSON](#save-the-results-as-json)
+    - [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
+    - [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
+    - [Skip an update of vulnerability DB](#skip-update-of-vulnerability-db)
+    - [Ignore unfixed vulnerabilities](#ignore-unfixed-vulnerabilities)
+    - [Specify exit code](#specify-exit-code)
+    - [Ignore the specified vulnerabilities](#ignore-the-specified-vulnerabilities)
+    - [Clear image caches](#clear-image-caches)
+    - [Reset](#reset)
+    - [Lightweight DB](#use-lightweight-db)
+  - [Client/Server](#client--server)
+    - [Server](#server)
+    - [Client](#client)
 - [Continuous Integration (CI)](#continuous-integration-ci)
   - [Travis CI](#travis-ci)
   - [CircleCI](#circleci)
@@ -253,6 +258,8 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 </details>
 
 # Examples
+
+## Standalone
 
 ### Scan an image
 
@@ -1078,6 +1085,46 @@ Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 ```
 </details>
 
+
+## Client / Server
+Trivy has client/server mode. Trivy server has vulnerability database and Trivy client doesn't have to download vulnerability database. It is useful if you want to scan images at multiple locations and do not want to download the database at every location.
+
+### Server
+At first, you need to launch Trivy server. It downloads vulnerability database automatically and continue to fetch the latest DB in the background.
+```
+$ trivy server --listen localhost:8080
+2019-12-12T15:17:06.551+0200    INFO    Need to update DB
+2019-12-12T15:17:56.706+0200    INFO    Reopening DB...
+2019-12-12T15:17:56.707+0200    INFO    Listening localhost:8080...
+```
+
+### Client
+Then, specify the remote address.
+```
+$ trivy client --remote http://localhost:8080 alpine:3.10
+```
+
+<details>
+<summary>Result</summary>
+
+```
+alpine:3.10 (alpine 3.10.2)
+===========================
+Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
+
++---------+------------------+----------+-------------------+---------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |
++---------+------------------+----------+-------------------+---------------+
+| openssl | CVE-2019-1549    | MEDIUM   | 1.1.1c-r0         | 1.1.1d-r0     |
++         +------------------+          +                   +               +
+|         | CVE-2019-1563    |          |                   |               |
++         +------------------+----------+                   +               +
+|         | CVE-2019-1547    | LOW      |                   |               |
++---------+------------------+----------+-------------------+---------------+
+```
+</details>
+
+
 ### Deprecated options
 
 `--only-update`, `--refresh` and `--auto-refresh` are deprecated since they are unnecessary now. These options will be removed at the next version
@@ -1297,6 +1344,7 @@ Trivy scans a tar image with the following format.
   - https://github.com/RustSec/advisory-db
 
 # Usage
+## Standalone
 
 ```
 NAME:
@@ -1331,6 +1379,53 @@ OPTIONS:
   --help, -h                  show help
   --version, -v               print the version
 
+```
+
+## Sub commands
+Trivy has two sub commands, client and server.
+
+```
+NAME:
+   trivy client - client mode
+
+USAGE:
+   trivy client [command options] [arguments...]
+
+OPTIONS:
+   --template value, -t value  output template [$TRIVY_TEMPLATE]
+   --format value, -f value    format (table, json, template) (default: "table") [$TRIVY_FORMAT]
+   --input value, -i value     input file path instead of image name [$TRIVY_INPUT]
+   --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
+   --output value, -o value    output file name [$TRIVY_OUTPUT]
+   --exit-code value           Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
+   --clear-cache, -c           clear image caches without scanning [$TRIVY_CLEAR_CACHE]
+   --quiet, -q                 suppress progress bar and log output [$TRIVY_QUIET]
+   --ignore-unfixed            display only fixed vulnerabilities [$TRIVY_IGNORE_UNFIXED]
+   --debug, -d                 debug mode [$TRIVY_DEBUG]
+   --vuln-type value           comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
+   --ignorefile value          specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
+   --cache-dir value           use as cache directory, but image cache is stored in /path/to/cache/fanal (default: "/Users/teppei/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
+   --timeout value             docker timeout (default: 1m0s) [$TRIVY_TIMEOUT]
+   --token value               for authentication [$TRIVY_TOKEN]
+   --remote value              server address (default: "http://localhost:4954") [$TRIVY_REMOTE]
+```
+
+```
+NAME:
+   trivy server - server mode
+
+USAGE:
+   trivy server [command options] [arguments...]
+
+OPTIONS:
+   --skip-update       skip db update [$TRIVY_SKIP_UPDATE]
+   --download-db-only  download/update vulnerability database but don't run a scan [$TRIVY_DOWNLOAD_DB_ONLY]
+   --reset             remove all caches and database [$TRIVY_RESET]
+   --quiet, -q         suppress progress bar and log output [$TRIVY_QUIET]
+   --debug, -d         debug mode [$TRIVY_DEBUG]
+   --cache-dir value   use as cache directory, but image cache is stored in /path/to/cache/fanal (default: "/Users/teppei/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
+   --token value       for authentication [$TRIVY_TOKEN]
+   --listen value      listen address (default: "localhost:4954") [$TRIVY_LISTEN]
 ```
 
 # Comparison with other scanners

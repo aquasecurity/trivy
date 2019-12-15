@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package trivy.detector;
+option  go_package = "detector";
+
+service OSDetector {
+  rpc Detect(OSDetectRequest) returns (DetectResponse);
+}
+
+message OSDetectRequest {
+  string           os_family = 1;
+  string           os_name   = 2;
+  repeated Package packages  = 3;
+}
+
+message DetectResponse {
+  repeated Vulnerability vulnerabilities = 1;
+  bool                   eosl            = 2;
+}
+
+message Package {
+  // binary package
+  // e.g. bind-utils
+  string name    = 1;
+  string version = 2;
+  string release = 3;
+  int32  epoch   = 4;
+  string arch    = 5;
+  // src package containing some binary packages
+  // e.g. bind
+  string src_name    = 6;
+  string src_version = 7;
+  string src_release = 8;
+  int32  src_epoch   = 9;
+}
+
+service LibDetector {
+  rpc Detect(LibDetectRequest) returns (DetectResponse);
+}
+
+message LibDetectRequest {
+  string           file_path = 1;
+  repeated Library libraries = 2;
+}
+
+message Library {
+  string name    = 1;
+  string version = 2;
+}
+
+message Vulnerability {
+  string          vulnerability_id  = 1;
+  string          pkg_name          = 2;
+  string          installed_version = 3;
+  string          fixed_version     = 4;
+  string          title             = 5;
+  string          description       = 6;
+  Severity        severity          = 7;
+  repeated string references        = 8;
+}
+
+enum Severity {
+  UNKNOWN  = 0;
+  LOW      = 1;
+  MEDIUM   = 2;
+  HIGH     = 3;
+  CRITICAL = 4;
+}
