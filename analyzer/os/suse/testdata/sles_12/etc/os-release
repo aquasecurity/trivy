@@ -1,0 +1,8 @@
+NAME="SLES"
+VERSION="12"
+VERSION_ID="12"
+PRETTY_NAME="SUSE Linux Enterprise Server 12"
+ID="sles"
+ID_LIKE="suse"
+ANSI_COLOR="0;32"
+CPE_NAME="cpe:/o:suse:sles:12"
