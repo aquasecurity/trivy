@@ -13,6 +13,7 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/extractor/docker"
 	libDetector "github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	rpcLibDetector "github.com/aquasecurity/trivy/pkg/rpc/client/library"
@@ -58,15 +59,24 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 
 	var target string
 	var files extractor.FileMap
+	var ac analyzer.Config
+	dockerOption, err := types.GetDockerOption()
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get docker option: %w", err)
+	}
+
+	if imageName != "" {
+		dockerOption.Timeout = scanOptions.Timeout
+	}
+	ext, err := docker.NewDockerExtractor(dockerOption)
+	if err != nil {
+		return nil, err
+	}
+	ac = analyzer.Config{Extractor: ext}
+
 	if imageName != "" {
 		target = imageName
-		dockerOption, err := types.GetDockerOption()
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get docker option: %w", err)
-		}
-
-		dockerOption.Timeout = scanOptions.Timeout
-		files, err = analyzer.Analyze(ctx, imageName, dockerOption)
+		files, err = ac.Analyze(ctx, imageName, dockerOption)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to analyze image: %w", err)
 		}
@@ -77,7 +87,7 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 			return nil, xerrors.Errorf("failed to open stream: %w", err)
 		}
 
-		files, err = analyzer.AnalyzeFile(ctx, rc)
+		files, err = ac.AnalyzeFile(ctx, rc)
 		if err != nil {
 			return nil, err
 		}
