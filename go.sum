@@ -60,6 +60,7 @@ github.com/docker/go-units v0.4.0 h1:3uh0PgVws3nIA0Q+MwDC8yjEPf9zjRfZZWXZYDct3Tw
 github.com/docker/go-units v0.4.0/go.mod h1:fgPhTUdO+D/Jk86RDLlptpiXQzgHJF7gydDDbaIK4Dk=
 github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 h1:UhxFibDNY/bfvqU5CAUmr9zpesgbU6SWc8/B4mflAE4=
 github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7/go.mod h1:cyGadeNEkKy96OOhEzfZl+yxihPEzKnqJwvfuSUqbZE=
+github.com/dustin/go-humanize v1.0.0 h1:VSnTsYCnlFHaM2/igO1h6X3HA71jcobQuxemgkq4zYo=
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/eapache/go-resiliency v1.1.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5mFgVsvEsIPBvNs=
 github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21/go.mod h1:+020luEh2TKB4/GOp8oxxtq0Daoen/Cii55CzbTV6DU=
@@ -173,12 +174,8 @@ github.com/prometheus/procfs v0.0.0-20190507164030-5867b95ac084/go.mod h1:TjEm7z
 github.com/prometheus/tsdb v0.7.1/go.mod h1:qhTCs0VvXwvX/y3TZrWD7rabWM+ijKTux40TwIPHuXU=
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/shurcooL/httpfs v0.0.0-20181222201310-74dc9339e414/go.mod h1:ZY1cvUeJuFPAdZ/B6v7RHavJWZn2YPVFQ1OSXhCGOkg=
-github.com/simar7/gokv v0.1.0 h1:5DoScIR7r6w6DCJPXFlSGKU2SOmpLeSfZkINVyVaPmI=
-github.com/simar7/gokv v0.1.0/go.mod h1:vixfnOzH16g5QN5Uij1q4zSVbNp3iJu2D6xgIPM4ZSE=
-github.com/simar7/gokv v0.3.2 h1:UAcjZs5nsoAKyGxHMOJgGZs7Q9Yeub40Gb54YRW1Fo8=
-github.com/simar7/gokv v0.3.2/go.mod h1:jXjPspRkuCDCRTRBgfGsfXvW8ofOGh3Y+tjZvoFr7XU=
-github.com/simar7/gokv v0.3.3-0.20191213063627-21f89164966d h1:lsqk9OujJz7FwE7pP7ZMjH2pWaGO4QPSPEJ7JSsuOO8=
-github.com/simar7/gokv v0.3.3-0.20191213063627-21f89164966d/go.mod h1:jXjPspRkuCDCRTRBgfGsfXvW8ofOGh3Y+tjZvoFr7XU=
+github.com/simar7/gokv v0.3.3-0.20191216080237-ab4446a6841b h1:2qPkc0Hnrd6IhlxioXb0RG/NBmIPx2b5y9Z1IKriuxQ=
+github.com/simar7/gokv v0.3.3-0.20191216080237-ab4446a6841b/go.mod h1:jXjPspRkuCDCRTRBgfGsfXvW8ofOGh3Y+tjZvoFr7XU=
 github.com/sirupsen/logrus v1.2.0 h1:juTguoYk5qI21pwyTXY3B3Y5cOTH3ZUyZCg1v/mihuo=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.4.1 h1:GL2rEmy6nsikmW0r8opw9JIRScdMF5hA8cOYLH7In1k=
