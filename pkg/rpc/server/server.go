@@ -58,19 +58,19 @@ func ListenAndServe(addr string, c config.Config) error {
 	mux := http.NewServeMux()
 
 	osHandler := rpc.NewOSDetectorServer(initializeOspkgServer(), nil)
-	mux.Handle(rpc.OSDetectorPathPrefix, withToken(withWaitGroup(osHandler), c.Token))
+	mux.Handle(rpc.OSDetectorPathPrefix, withToken(withWaitGroup(osHandler), c.Token, c.TokenHeader))
 
 	libHandler := rpc.NewLibDetectorServer(initializeLibServer(), nil)
-	mux.Handle(rpc.LibDetectorPathPrefix, withToken(withWaitGroup(libHandler), c.Token))
+	mux.Handle(rpc.LibDetectorPathPrefix, withToken(withWaitGroup(libHandler), c.Token, c.TokenHeader))
 
 	log.Logger.Infof("Listening %s...", addr)
 
 	return http.ListenAndServe(addr, mux)
 }
 
-func withToken(base http.Handler, token string) http.Handler {
+func withToken(base http.Handler, token, tokenHeader string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if token != "" && token != r.Header.Get("Trivy-Token") {
+		if token != "" && token != r.Header.Get(tokenHeader) {
 			rpc.WriteError(w, twirp.NewError(twirp.Unauthenticated, "invalid token"))
 			return
 		}
