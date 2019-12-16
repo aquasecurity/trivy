@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/fanal/extractor"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -92,6 +91,12 @@ func TestConfig_Analyze(t *testing.T) {
 			},
 		},
 	}
+
+	// cleanup global state from other tests
+	commandAnalyzers = []CommandAnalyzer{}
+	pkgAnalyzers = []PkgAnalyzer{}
+	osAnalyzers = []OSAnalyzer{}
+	libAnalyzers = []LibraryAnalyzer{}
 
 	for _, tc := range testCases {
 		RegisterOSAnalyzer(mockOSAnalyzer{})
