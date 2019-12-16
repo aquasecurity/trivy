@@ -101,7 +101,7 @@ func NewDockerExtractor(option types.DockerOption) (Extractor, error) {
 	return NewDockerExtractorWithCache(option, bolt.Options{
 		RootBucketName: "fanal",
 		Path:           utils.CacheDir() + "/cache.db", // TODO: Make this configurable via a public method
-		Codec:          encoding.Gob,
+		Codec:          encoding.Raw,
 	})
 }
 
@@ -200,7 +200,7 @@ func (d Extractor) SaveLocalImage(ctx context.Context, imageName string) (io.Rea
 			return nil, xerrors.Errorf("failed to read saved image: %w", err)
 		}
 
-		e, err := zstd.NewWriter(nil, zstd.WithEncoderLevel(zstd.SpeedDefault))
+		e, err := zstd.NewWriter(nil, zstd.WithEncoderLevel(zstd.SpeedFastest))
 		if err != nil {
 			return nil, err
 		}
@@ -420,7 +420,7 @@ func getFilteredTarballBuffer(tr *tar.Reader, requiredFilenames []string) (bytes
 func (d Extractor) storeLayerInCache(cacheBuf bytes.Buffer, dig digest.Digest) {
 	// compress tar to zstd before storing to cache
 	var dst bytes.Buffer
-	w, _ := zstd.NewWriter(&dst)
+	w, _ := zstd.NewWriter(&dst, zstd.WithEncoderLevel(zstd.SpeedFastest))
 	_, _ = io.Copy(w, &cacheBuf)
 	_ = w.Close()
 
