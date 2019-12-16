@@ -29,18 +29,20 @@ func NewProtobufClient(remoteURL RemoteURL) rpc.LibDetector {
 }
 
 type Token string
+type TokenHeader string
 
 type Detector struct {
-	token  Token
-	client rpc.LibDetector
+	token       Token
+	tokenHeader TokenHeader
+	client      rpc.LibDetector
 }
 
-func NewDetector(token Token, detector rpc.LibDetector) Detector {
-	return Detector{token: token, client: detector}
+func NewDetector(token Token, tokenHeader TokenHeader, detector rpc.LibDetector) Detector {
+	return Detector{token: token, tokenHeader: tokenHeader, client: detector}
 }
 
 func (d Detector) Detect(filePath string, libs []ptypes.Library) ([]types.DetectedVulnerability, error) {
-	ctx := client.WithToken(context.Background(), string(d.token))
+	ctx := client.WithToken(context.Background(), string(d.token), string(d.tokenHeader))
 	res, err := d.client.Detect(ctx, &rpc.LibDetectRequest{
 		FilePath:  filePath,
 		Libraries: r.ConvertToRpcLibraries(libs),

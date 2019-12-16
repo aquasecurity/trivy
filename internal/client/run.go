@@ -45,7 +45,8 @@ func run(c config.Config) (err error) {
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	scanner := initializeScanner(ospkg.Token(c.Token), library.Token(c.Token),
+	scanner := initializeScanner(ospkg.Token(c.Token), ospkg.TokenHeader(c.TokenHeader),
+		library.Token(c.Token), library.TokenHeader(c.TokenHeader),
 		ospkg.RemoteURL(c.RemoteAddr), library.RemoteURL(c.RemoteAddr))
 	results, err := scanner.ScanImage(c.ImageName, c.Input, scanOptions)
 	if err != nil {
