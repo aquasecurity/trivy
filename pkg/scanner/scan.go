@@ -13,6 +13,7 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/extractor/docker"
 	libDetector "github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	rpcLibDetector "github.com/aquasecurity/trivy/pkg/rpc/client/library"
@@ -58,15 +59,24 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 
 	var target string
 	var files extractor.FileMap
+	var ac analyzer.Config
+	dockerOption, err := types.GetDockerOption()
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get docker option: %w", err)
+	}
+
+	if imageName != "" {
+		dockerOption.Timeout = scanOptions.Timeout
+	}
+	ext, err := docker.NewDockerExtractor(dockerOption)
+	if err != nil {
+		return nil, err
+	}
+	ac = analyzer.Config{Extractor: ext}
+
 	if imageName != "" {
 		target = imageName
-		dockerOption, err := types.GetDockerOption()
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get docker option: %w", err)
-		}
-
-		dockerOption.Timeout = scanOptions.Timeout
-		files, err = analyzer.Analyze(ctx, imageName, dockerOption)
+		files, err = ac.Analyze(ctx, imageName, dockerOption)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to analyze image: %w", err)
 		}
@@ -77,7 +87,7 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 			return nil, xerrors.Errorf("failed to open stream: %w", err)
 		}
 
-		files, err = analyzer.AnalyzeFile(ctx, rc)
+		files, err = ac.AnalyzeFile(ctx, rc)
 		if err != nil {
 			return nil, err
 		}
@@ -93,7 +103,7 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 		if osFamily != "" {
 			imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion)
 			results = append(results, report.Result{
-				FileName:        imageDetail,
+				Target:          imageDetail,
 				Vulnerabilities: osVulns,
 			})
 		}
@@ -108,12 +118,12 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 		var libResults report.Results
 		for path, vulns := range libVulns {
 			libResults = append(libResults, report.Result{
-				FileName:        path,
+				Target:          path,
 				Vulnerabilities: vulns,
 			})
 		}
 		sort.Slice(libResults, func(i, j int) bool {
-			return libResults[i].FileName < libResults[j].FileName
+			return libResults[i].Target < libResults[j].Target
 		})
 		results = append(results, libResults...)
 	}
@@ -127,7 +137,7 @@ func (s Scanner) ScanFile(f *os.File) (report.Results, error) {
 		return nil, xerrors.Errorf("failed to scan libraries in file: %w", err)
 	}
 	results := report.Results{
-		{FileName: f.Name(), Vulnerabilities: vulns},
+		{Target: f.Name(), Vulnerabilities: vulns},
 	}
 	return results, nil
 }

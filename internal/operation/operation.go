@@ -14,6 +14,7 @@ import (
 
 func Reset() (err error) {
 	log.Logger.Info("Resetting...")
+	cache := cache.Initialize(utils.CacheDir())
 	if err = cache.Clear(); err != nil {
 		return xerrors.New("failed to remove image layer cache")
 	}
@@ -25,6 +26,7 @@ func Reset() (err error) {
 
 func ClearCache() error {
 	log.Logger.Info("Removing image caches...")
+	cache := cache.Initialize(utils.CacheDir())
 	if err := cache.Clear(); err != nil {
 		return xerrors.New("failed to remove image layer cache")
 	}

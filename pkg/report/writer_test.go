@@ -117,7 +117,7 @@ func TestReportWriter_Table(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			inputResults := report.Results{
 				{
-					FileName:        "foo",
+					Target:          "foo",
 					Vulnerabilities: tc.detectedVulns,
 				},
 			}
@@ -151,7 +151,7 @@ func TestReportWriter_JSON(t *testing.T) {
 			},
 			expectedJSON: report.Results{
 				report.Result{
-					FileName: "foojson",
+					Target: "foojson",
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "123",
@@ -179,7 +179,7 @@ func TestReportWriter_JSON(t *testing.T) {
 
 			inputResults := report.Results{
 				{
-					FileName:        "foojson",
+					Target:          "foojson",
 					Vulnerabilities: tc.detectedVulns,
 				},
 			}
@@ -236,7 +236,7 @@ func TestReportWriter_Template(t *testing.T) {
 			tmplWritten := bytes.Buffer{}
 			inputResults := report.Results{
 				{
-					FileName:        "foojson",
+					Target:          "foojson",
 					Vulnerabilities: tc.detectedVulns,
 				},
 			}
