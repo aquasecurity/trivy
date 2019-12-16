@@ -45,7 +45,7 @@ func ListenAndServe(addr string, c config.Config) error {
 	}
 
 	go func() {
-		worker := initializeDBWorker()
+		worker := initializeDBWorker(true)
 		ctx := context.Background()
 		for {
 			time.Sleep(1 * time.Hour)

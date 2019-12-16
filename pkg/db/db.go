@@ -13,8 +13,8 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/github"
+	"github.com/aquasecurity/trivy/pkg/indicator"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 const (
@@ -23,11 +23,21 @@ const (
 )
 
 var SuperSet = wire.NewSet(
+	// indicator.ProgressBar
+	indicator.NewProgressBar,
+
+	// clock.Clock
 	wire.Struct(new(clock.RealClock)),
 	wire.Bind(new(clock.Clock), new(clock.RealClock)),
+
+	// db.Config
 	wire.Struct(new(db.Config)),
+
+	// github.Client
 	github.NewClient,
 	wire.Bind(new(github.Operation), new(github.Client)),
+
+	// db.Client
 	NewClient,
 	wire.Bind(new(Operation), new(Client)),
 )
@@ -44,13 +54,15 @@ type dbOperation interface {
 type Client struct {
 	dbc          dbOperation
 	githubClient github.Operation
+	pb           indicator.ProgressBar
 	clock        clock.Clock
 }
 
-func NewClient(dbc db.Config, githubClient github.Operation, clock clock.Clock) Client {
+func NewClient(dbc db.Config, githubClient github.Operation, pb indicator.ProgressBar, clock clock.Clock) Client {
 	return Client{
 		dbc:          dbc,
 		githubClient: githubClient,
+		pb:           pb,
 		clock:        clock,
 	}
 }
@@ -102,23 +114,21 @@ func (c Client) NeedsUpdate(ctx context.Context, cliVersion string, light, skip 
 
 func (c Client) Download(ctx context.Context, cacheDir string, light bool) error {
 	dbFile := fullDB
-	message := " Downloading Full DB file..."
 	if light {
 		dbFile = lightDB
-		message = " Downloading Lightweight DB file..."
 	}
 
-	spinner := utils.NewSpinner(message)
-	spinner.Start()
-	defer spinner.Stop()
-
-	rc, err := c.githubClient.DownloadDB(ctx, dbFile)
+	rc, size, err := c.githubClient.DownloadDB(ctx, dbFile)
 	if err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 	defer rc.Close()
 
-	gr, err := gzip.NewReader(rc)
+	bar := c.pb.Start(int64(size))
+	barReader := bar.NewProxyReader(rc)
+	defer bar.Finish()
+
+	gr, err := gzip.NewReader(barReader)
 	if err != nil {
 		return xerrors.Errorf("invalid gzip file: %w", err)
 	}

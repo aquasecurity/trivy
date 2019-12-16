@@ -3,11 +3,12 @@ package db
 import (
 	"context"
 	"errors"
-	"io"
 	"io/ioutil"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/aquasecurity/trivy/pkg/indicator"
 
 	"github.com/stretchr/testify/require"
 
@@ -208,30 +209,21 @@ func TestClient_NeedsUpdate(t *testing.T) {
 }
 
 func TestClient_Download(t *testing.T) {
-	type downloadDBOutput struct {
-		fileName string
-		err      error
-	}
-	type downloadDB struct {
-		input  string
-		output downloadDBOutput
-	}
-
 	testCases := []struct {
 		name            string
 		light           bool
-		downloadDB      []downloadDB
+		downloadDB      []github.DownloadDBExpectation
 		expectedContent []byte
 		expectedError   error
 	}{
 		{
 			name:  "happy path",
 			light: false,
-			downloadDB: []downloadDB{
+			downloadDB: []github.DownloadDBExpectation{
 				{
-					input: fullDB,
-					output: downloadDBOutput{
-						fileName: "testdata/test.db.gz",
+					Args: github.DownloadDBInput{FileName: fullDB},
+					ReturnArgs: github.DownloadDBOutput{
+						FileName: "testdata/test.db.gz",
 					},
 				},
 			},
@@ -239,11 +231,11 @@ func TestClient_Download(t *testing.T) {
 		{
 			name:  "DownloadDB returns an error",
 			light: false,
-			downloadDB: []downloadDB{
+			downloadDB: []github.DownloadDBExpectation{
 				{
-					input: fullDB,
-					output: downloadDBOutput{
-						err: xerrors.New("download failed"),
+					Args: github.DownloadDBInput{FileName: fullDB},
+					ReturnArgs: github.DownloadDBOutput{
+						Err: xerrors.New("download failed"),
 					},
 				},
 			},
@@ -252,11 +244,11 @@ func TestClient_Download(t *testing.T) {
 		{
 			name:  "invalid gzip",
 			light: false,
-			downloadDB: []downloadDB{
+			downloadDB: []github.DownloadDBExpectation{
 				{
-					input: fullDB,
-					output: downloadDBOutput{
-						fileName: "testdata/invalid.db.gz",
+					Args: github.DownloadDBInput{FileName: fullDB},
+					ReturnArgs: github.DownloadDBOutput{
+						FileName: "testdata/invalid.db.gz",
 					},
 				},
 			},
@@ -269,19 +261,8 @@ func TestClient_Download(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			mockGitHubClient := new(github.MockClient)
-			for _, dd := range tc.downloadDB {
-				var rc io.ReadCloser
-				if dd.output.fileName != "" {
-					f, err := os.Open(dd.output.fileName)
-					assert.NoError(t, err, tc.name)
-					rc = f
-				}
-
-				mockGitHubClient.On("DownloadDB", mock.Anything, dd.input).Return(
-					rc, dd.output.err,
-				)
-			}
+			mockGitHubClient, err := github.NewMockClient(tc.downloadDB)
+			require.NoError(t, err, tc.name)
 
 			dir, err := ioutil.TempDir("", "db")
 			require.NoError(t, err, tc.name)
@@ -290,7 +271,8 @@ func TestClient_Download(t *testing.T) {
 			err = db.Init(dir)
 			require.NoError(t, err, tc.name)
 
-			client := NewClient(db.Config{}, mockGitHubClient, nil)
+			pb := indicator.NewProgressBar(true)
+			client := NewClient(db.Config{}, mockGitHubClient, pb, nil)
 			ctx := context.Background()
 			err = client.Download(ctx, dir, tc.light)
 

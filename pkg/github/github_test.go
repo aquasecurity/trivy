@@ -451,7 +451,7 @@ func TestClient_DownloadDB(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			rc, err := client.DownloadDB(ctx, tc.fileName)
+			rc, _, err := client.DownloadDB(ctx, tc.fileName)
 
 			switch {
 			case tc.expectedError != nil:
