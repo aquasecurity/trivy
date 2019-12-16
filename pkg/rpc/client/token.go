@@ -9,10 +9,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-var (
-	buildRequestHeaderFunc = buildRequestHeader
-)
-
 func buildRequestHeader(inputHeaders map[string]string) http.Header {
 	header := make(http.Header)
 	for k, v := range inputHeaders {
@@ -23,7 +19,7 @@ func buildRequestHeader(inputHeaders map[string]string) http.Header {
 
 func WithToken(ctx context.Context, token, tokenHeader string) context.Context {
 	// Prepare custom header
-	header := buildRequestHeaderFunc(map[string]string{tokenHeader: token})
+	header := buildRequestHeader(map[string]string{tokenHeader: token})
 
 	// Attach the headers to a context
 	ctxWithToken, err := twirp.WithHTTPRequestHeaders(ctx, header)

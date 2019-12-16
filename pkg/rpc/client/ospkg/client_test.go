@@ -48,7 +48,8 @@ func TestDetectClient_Detect(t *testing.T) {
 	}
 
 	type fields struct {
-		token Token
+		token       Token
+		tokenHeader TokenHeader
 	}
 	type args struct {
 		osFamily string
@@ -168,7 +169,7 @@ func TestDetectClient_Detect(t *testing.T) {
 			mockDetector.On("Detect", mock.Anything, tt.detect.input.req).Return(
 				tt.detect.output.res, tt.detect.output.err)
 
-			d := NewDetector(tt.fields.token, mockDetector)
+			d := NewDetector(tt.fields.token, tt.fields.tokenHeader, mockDetector)
 			got, _, err := d.Detect(tt.args.osFamily, tt.args.osName, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
