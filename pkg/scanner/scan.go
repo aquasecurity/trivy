@@ -103,7 +103,7 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 		if osFamily != "" {
 			imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion)
 			results = append(results, report.Result{
-				FileName:        imageDetail,
+				Target:          imageDetail,
 				Vulnerabilities: osVulns,
 			})
 		}
@@ -118,12 +118,12 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 		var libResults report.Results
 		for path, vulns := range libVulns {
 			libResults = append(libResults, report.Result{
-				FileName:        path,
+				Target:          path,
 				Vulnerabilities: vulns,
 			})
 		}
 		sort.Slice(libResults, func(i, j int) bool {
-			return libResults[i].FileName < libResults[j].FileName
+			return libResults[i].Target < libResults[j].Target
 		})
 		results = append(results, libResults...)
 	}
@@ -137,7 +137,7 @@ func (s Scanner) ScanFile(f *os.File) (report.Results, error) {
 		return nil, xerrors.Errorf("failed to scan libraries in file: %w", err)
 	}
 	results := report.Results{
-		{FileName: f.Name(), Vulnerabilities: vulns},
+		{Target: f.Name(), Vulnerabilities: vulns},
 	}
 	return results, nil
 }
