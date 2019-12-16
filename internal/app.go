@@ -144,6 +144,13 @@ var (
 		Usage:  "for authentication",
 		EnvVar: "TRIVY_TOKEN",
 	}
+
+	tokenHeader = cli.StringFlag{
+		Name:   "token-header",
+		Value:  "Trivy-Token",
+		Usage:  "specify a header name for token",
+		EnvVar: "TRIVY_TOKEN_HEADER",
+	}
 )
 
 func NewApp(version string) *cli.App {
@@ -243,6 +250,7 @@ func NewClientCommand() cli.Command {
 
 			// original flags
 			token,
+			tokenHeader,
 			cli.StringFlag{
 				Name:   "remote",
 				Value:  "http://localhost:4954",
@@ -269,6 +277,7 @@ func NewServerCommand() cli.Command {
 
 			// original flags
 			token,
+			tokenHeader,
 			cli.StringFlag{
 				Name:   "listen",
 				Value:  "localhost:4954",
