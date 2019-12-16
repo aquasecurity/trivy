@@ -13,12 +13,31 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/fanal/cache"
+	"github.com/klauspost/compress/zstd"
+
 	"github.com/aquasecurity/fanal/extractor"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/docker/docker/client"
+	"github.com/genuinetools/reg/registry"
+	"github.com/opencontainers/go-digest"
+	bolt "github.com/simar7/gokv/bbolt"
+	kvtypes "github.com/simar7/gokv/types"
 	"github.com/stretchr/testify/assert"
 )
+
+// TODO: Use a memory based FS rather than actual fs
+// context: https://github.com/aquasecurity/fanal/pull/51#discussion_r352337762
+func setupCache() (*bolt.Store, *os.File, error) {
+	f, err := ioutil.TempFile(".", "Bolt_TestStore-*")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	s, err := bolt.NewStore(bolt.Options{
+		Path: f.Name(),
+	})
+	return s, f, err
+}
 
 func TestExtractFromFile(t *testing.T) {
 	vectors := []struct {
@@ -187,35 +206,81 @@ func TestExtractFiles(t *testing.T) {
 }
 
 func TestDockerExtractor_SaveLocalImage(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		httpPath := r.URL.String()
-		switch {
-		case strings.Contains(httpPath, "images/get?names=fooimage"):
-			_, _ = fmt.Fprint(w, "foocontent")
-		default:
-			assert.FailNow(t, "unexpected path accessed: ", r.URL.String())
-		}
-	}))
-	defer ts.Close()
-
-	c, err := client.NewClientWithOpts(client.WithHost(ts.URL))
-	assert.NoError(t, err)
-
-	// setup cache
-	tempCacheDir, _ := ioutil.TempDir("", "TestDockerExtractor_SaveLocalImage-*")
-	defer func() {
-		_ = os.RemoveAll(tempCacheDir)
-	}()
-
-	de := Extractor{
-		Option: types.DockerOption{},
-		Client: c,
-		Cache:  cache.Initialize(tempCacheDir),
+	testCases := []struct {
+		name              string
+		expectedImageData string
+		cacheHit          bool
+	}{
+		{
+			name:              "happy path with cache miss",
+			expectedImageData: "foofromdocker",
+		},
+		{
+			name:              "happy path with cache hit",
+			cacheHit:          true,
+			expectedImageData: "foofromcache",
+		},
 	}
 
-	r, err := de.SaveLocalImage(context.TODO(), "fooimage")
-	assert.NotNil(t, r)
-	assert.NoError(t, err)
+	for _, tc := range testCases {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			httpPath := r.URL.String()
+			switch {
+			case strings.Contains(httpPath, "images/get?names=fooimage"):
+				_, _ = fmt.Fprint(w, "foofromdocker")
+			default:
+				assert.FailNow(t, "unexpected path accessed: ", r.URL.String())
+			}
+		}))
+		defer ts.Close()
+
+		c, err := client.NewClientWithOpts(client.WithHost(ts.URL))
+		assert.NoError(t, err)
+
+		// setup cache
+		s, f, err := setupCache()
+		defer func() {
+			_ = f.Close()
+			_ = os.RemoveAll(f.Name())
+		}()
+		assert.NoError(t, err)
+
+		if tc.cacheHit {
+			e, _ := zstd.NewWriter(nil, zstd.WithEncoderLevel(zstd.SpeedDefault))
+			dst := e.EncodeAll([]byte("foofromcache"), nil)
+			_ = s.Set(kvtypes.SetItemInput{
+				BucketName: "imagebucket",
+				Key:        "fooimage",
+				Value:      dst,
+			})
+		}
+
+		de := Extractor{
+			Option: types.DockerOption{},
+			Client: c,
+			Cache:  s,
+		}
+
+		r, err := de.SaveLocalImage(context.TODO(), "fooimage")
+		actualSavedTarBytes, _ := ioutil.ReadAll(r)
+		assert.Equal(t, []byte(tc.expectedImageData), actualSavedTarBytes[:], tc.name)
+		assert.NoError(t, err, tc.name)
+
+		// check the cache for what was stored
+		var actualValue []byte
+		found, err := de.Cache.Get(kvtypes.GetItemInput{
+			BucketName: "imagebucket",
+			Key:        "fooimage",
+			Value:      &actualValue,
+		})
+
+		assert.NoError(t, err, tc.name)
+		assert.True(t, found, tc.name)
+
+		dec, _ := zstd.NewReader(nil)
+		actualStoredValue, _ := dec.DecodeAll(actualValue, nil)
+		assert.Equal(t, tc.expectedImageData, string(actualStoredValue), tc.name)
+	}
 }
 
 func TestDockerExtractor_Extract(t *testing.T) {
@@ -232,22 +297,28 @@ func TestDockerExtractor_Extract(t *testing.T) {
 		{
 			name: "happy path",
 			manifestResp: `{
-		  "schemaVersion": 2,
-		  "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
-		  "layers": [
-		     {
-		        "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
-		        "size": 153263,
-		        "digest": "sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b"
-		     }
-		  ]
+		 "schemaVersion": 2,
+		 "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+		 "layers": [
+		    {
+		       "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+		       "size": 153263,
+		       "digest": "sha256:shafortestdirslashhelloworlddottxt"
+		    },
+		    {
+		       "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+		       "size": 153263,
+		       "digest": "sha256:shafortestdirslashbadworlddottxt"
+		    }
+		 ]
 		}`,
 			fileName:      "testdata/testdir.tar.gz", // includes helloworld.txt and badworld.txt
 			blobData:      "foo",
-			fileToExtract: []string{"testdir/helloworld.txt"},
+			fileToExtract: []string{"testdir/helloworld.txt", "testdir/badworld.txt"},
 			expectedFileMap: extractor.FileMap{
 				"/config":                []uint8{0x66, 0x6f, 0x6f},
 				"testdir/helloworld.txt": []uint8{0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0xa},
+				"testdir/badworld.txt":   []uint8{0x62, 0x61, 0x64, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0xa},
 			},
 		},
 		{
@@ -263,20 +334,20 @@ func TestDockerExtractor_Extract(t *testing.T) {
 		{
 			name: "sad path: corrupt layer data invalid gzip",
 			manifestResp: `{
-		 "schemaVersion": 2,
-		 "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
-		 "layers": [
-		    {
-		       "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
-		       "size": 153263,
-		       "digest": "sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b"
-		    }
-		 ]
+		"schemaVersion": 2,
+		"mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+		"layers": [
+		 {
+		    "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+		    "size": 153263,
+		    "digest": "sha256:shaforinvalidgzipfile"
+		 }
+		]
 		}`,
 			fileName:        "testdata/opq.tar",
 			blobData:        "foo",
 			expectedFileMap: extractor.FileMap(nil),
-			expectedError:   "invalid gzip: gzip: invalid header",
+			expectedError:   "could not init gzip reader: gzip: invalid header",
 		},
 	}
 
@@ -287,8 +358,14 @@ func TestDockerExtractor_Extract(t *testing.T) {
 			case strings.Contains(httpPath, "/v2/library/fooimage/manifests/latest"):
 				w.Header().Set("Content-Type", "application/vnd.docker.distribution.manifest.v2+json")
 				_, _ = fmt.Fprint(w, tc.manifestResp)
-			case strings.Contains(httpPath, "/v2/library/fooimage/blobs/sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b"):
-				b, _ := ioutil.ReadFile(tc.fileName)
+			case strings.Contains(httpPath, "/v2/library/fooimage/blobs/sha256:shafortestdirslashhelloworlddottxt"):
+				b, _ := ioutil.ReadFile("testdata/helloworld.tar.gz")
+				_, _ = w.Write(b)
+			case strings.Contains(httpPath, "/v2/library/fooimage/blobs/sha256:shafortestdirslashbadworlddottxt"):
+				b, _ := ioutil.ReadFile("testdata/badworld.tar.gz")
+				_, _ = w.Write(b)
+			case strings.Contains(httpPath, "/v2/library/fooimage/blobs/sha256:shaforinvalidgzipfile"):
+				b, _ := ioutil.ReadFile("testdata/opq.tar")
 				_, _ = w.Write(b)
 			case strings.Contains(httpPath, "/v2/library/fooimage/blobs/"):
 				_, _ = w.Write([]byte(tc.blobData))
@@ -302,10 +379,12 @@ func TestDockerExtractor_Extract(t *testing.T) {
 		assert.NoError(t, err)
 
 		// setup cache
-		tempCacheDir, _ := ioutil.TempDir("", "TestDockerExtractor_Extract-*")
+		s, f, err := setupCache()
 		defer func() {
-			_ = os.RemoveAll(tempCacheDir)
+			_ = f.Close()
+			_ = os.RemoveAll(f.Name())
 		}()
+		assert.NoError(t, err)
 
 		de := Extractor{
 			Option: types.DockerOption{
@@ -315,7 +394,7 @@ func TestDockerExtractor_Extract(t *testing.T) {
 				Timeout:  time.Second * 1000,
 			},
 			Client: c,
-			Cache:  cache.Initialize(tempCacheDir),
+			Cache:  s,
 		}
 
 		tsURL := strings.TrimPrefix(ts.URL, "http://")
@@ -337,4 +416,174 @@ func TestDockerExtractor_Extract(t *testing.T) {
 		}
 		assert.Equal(t, tc.expectedFileMap, fm, tc.name)
 	}
+}
+
+func TestDocker_ExtractLayerWorker(t *testing.T) {
+	goodtarzstdgolden, _ := ioutil.ReadFile("testdata/testdir.tar.zstd")
+	goodReturnedTarContent, _ := ioutil.ReadFile("testdata/goodTarContent.golden")
+
+	testCases := []struct {
+		name                       string
+		cacheHit                   bool
+		garbageCache               bool
+		requiredFiles              []string
+		expectedCacheContents      []byte
+		expectedReturnedTarContent []byte
+	}{
+		{
+			name:                       "happy path with cache miss and write back",
+			cacheHit:                   false,
+			requiredFiles:              []string{"testdir/helloworld.txt", "testdir/badworld.txt"},
+			expectedCacheContents:      goodtarzstdgolden,
+			expectedReturnedTarContent: goodReturnedTarContent,
+		},
+		{
+			name:                       "happy path with cache hit with garbage cache and write back",
+			cacheHit:                   true,
+			garbageCache:               true,
+			requiredFiles:              []string{"testdir/helloworld.txt", "testdir/badworld.txt"},
+			expectedCacheContents:      goodtarzstdgolden,
+			expectedReturnedTarContent: goodReturnedTarContent,
+		},
+		{
+			name:                       "happy path with cache hit",
+			cacheHit:                   true,
+			expectedCacheContents:      goodtarzstdgolden,
+			expectedReturnedTarContent: goodReturnedTarContent,
+		},
+		{
+			name:                       "happy path with cache miss but no write back",
+			cacheHit:                   false,
+			expectedCacheContents:      []byte{0x28, 0xb5, 0x2f, 0xfd, 0x4, 0x60, 0x1, 0x0, 0x0, 0x99, 0xe9, 0xd8, 0x51}, // just the empty tar header
+			expectedReturnedTarContent: []byte{},
+		},
+	}
+
+	for _, tc := range testCases {
+		inputDigest := digest.Digest("sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b")
+
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			httpPath := r.URL.String()
+			switch {
+			case strings.Contains(httpPath, "/v2/library/fooimage/blobs/sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b"):
+				layerData, _ := ioutil.ReadFile("testdata/testdir.tar.gz")
+				_, _ = w.Write(layerData)
+			default:
+				assert.FailNow(t, "unexpected path accessed: ", fmt.Sprintf("%s %s", r.URL.String(), tc.name))
+			}
+		}))
+		defer ts.Close()
+
+		c, err := client.NewClientWithOpts(client.WithHost(ts.URL))
+		assert.NoError(t, err)
+
+		// setup cache
+		s, f, err := setupCache()
+		defer func() {
+			_ = f.Close()
+			_ = os.RemoveAll(f.Name())
+		}()
+		assert.NoError(t, err, tc.name)
+
+		if tc.cacheHit {
+			switch tc.garbageCache {
+			case true:
+				garbage, _ := ioutil.ReadFile("testdata/invalidgzvalidtar.tar.gz")
+				assert.NoError(t, s.Set(kvtypes.SetItemInput{
+					BucketName: LayerTarsBucket,
+					Key:        string(inputDigest),
+					Value:      garbage,
+				}), tc.name)
+			default:
+				assert.NoError(t, s.Set(kvtypes.SetItemInput{
+					BucketName: LayerTarsBucket,
+					Key:        string(inputDigest),
+					Value:      goodtarzstdgolden,
+				}), tc.name)
+			}
+		}
+
+		de := Extractor{
+			Option: types.DockerOption{
+				AuthURL:  ts.URL,
+				NonSSL:   true,
+				SkipPing: true,
+				Timeout:  time.Second * 1000,
+			},
+			Client: c,
+			Cache:  s,
+		}
+
+		tsUrl := strings.TrimPrefix(ts.URL, "http://")
+		inputImage := registry.Image{
+			Domain: tsUrl,
+			Path:   "library/fooimage",
+			Tag:    "latest",
+		}
+
+		layerCh := make(chan layer)
+		errCh := make(chan error)
+		r, err := de.createRegistryClient(context.TODO(), inputImage.Domain)
+		go func() {
+			de.extractLayerWorker(inputDigest, r, context.TODO(), inputImage, errCh, layerCh, tc.requiredFiles)
+		}()
+
+		var errRecieved error
+		var layerReceived layer
+
+		select {
+		case errRecieved = <-errCh:
+			assert.FailNow(t, "unexpected error received, err: ", fmt.Sprintf("%s, %s", errRecieved, tc.name))
+		case layerReceived = <-layerCh:
+			assert.Equal(t, inputDigest, layerReceived.ID, tc.name)
+			got, _ := ioutil.ReadAll(layerReceived.Content)
+			assert.Equal(t, tc.expectedReturnedTarContent, got, tc.name)
+		}
+
+		// check cache contents
+		var actualCacheContents []byte
+		found, err := s.Get(kvtypes.GetItemInput{
+			BucketName: LayerTarsBucket,
+			Key:        string(inputDigest),
+			Value:      &actualCacheContents,
+		})
+
+		assert.True(t, found, tc.name)
+		assert.NoError(t, err, tc.name)
+		assert.Equal(t, tc.expectedCacheContents, actualCacheContents, tc.name)
+	}
+}
+
+func TestDocker_ExtractLayerFiles(t *testing.T) {
+	de := Extractor{}
+
+	layerCh := make(chan layer)
+	errCh := make(chan error)
+	inputFilenames := []string{"var/foo", "etc/test/bar"}
+
+	f, _ := os.Open("testdata/opq2.tar")
+	defer f.Close()
+
+	go func() {
+		layerCh <- layer{
+			ID:      "sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b",
+			Content: f,
+		}
+	}()
+
+	filesInLayers := map[string]extractor.FileMap{}
+	opqInLayers := map[string]extractor.OPQDirs{}
+	err := de.extractLayerFiles(context.TODO(), layerCh, errCh, filesInLayers, opqInLayers, inputFilenames)
+	assert.NoError(t, err)
+	assert.Equal(t, map[string]extractor.FileMap{
+		"sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b": {
+			"etc/test/bar": {0x62, 0x61, 0x72, 0xa},
+			"var/.wh.foo":  {},
+		},
+	}, filesInLayers)
+	assert.Equal(t, map[string]extractor.OPQDirs{
+		"sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b": {
+			"etc/test",
+		},
+	}, opqInLayers)
 }

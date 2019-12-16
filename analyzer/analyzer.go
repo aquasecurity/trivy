@@ -7,14 +7,11 @@ import (
 	"io"
 	"os"
 
-	"github.com/aquasecurity/fanal/utils"
-
-	"github.com/aquasecurity/fanal/types"
-
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/fanal/utils"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"golang.org/x/xerrors"
 )
 
 var (
