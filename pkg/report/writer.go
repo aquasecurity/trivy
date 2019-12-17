@@ -19,7 +19,7 @@ import (
 type Results []Result
 
 type Result struct {
-	FileName        string                        `json:"Target"`
+	Target          string                        `json:"Target"`
 	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities"`
 }
 
@@ -101,8 +101,8 @@ func (tw TableWriter) write(result Result) {
 		results = append(results, r)
 	}
 
-	fmt.Printf("\n%s\n", result.FileName)
-	fmt.Println(strings.Repeat("=", len(result.FileName)))
+	fmt.Printf("\n%s\n", result.Target)
+	fmt.Println(strings.Repeat("=", len(result.Target)))
 	fmt.Printf("Total: %d (%s)\n\n", len(result.Vulnerabilities), strings.Join(results, ", "))
 
 	if len(result.Vulnerabilities) == 0 {
