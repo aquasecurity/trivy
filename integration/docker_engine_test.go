@@ -1,3 +1,5 @@
+// +build integration
+
 package integration
 
 import (
@@ -30,7 +32,8 @@ func TestRun_WithDockerEngine(t *testing.T) {
 
 	for _, tc := range testCases {
 		ctx := context.Background()
-		testfile, _ := os.Open(tc.testfile)
+		testfile, err := os.Open(tc.testfile)
+		require.NoError(t, err, tc.name)
 		cli, err := client.NewClientWithOpts(client.FromEnv)
 		require.NoError(t, err, tc.name)
 
