@@ -1,6 +1,8 @@
 defaults: &defaults
   docker :
     - image: aquasec/trivy-ci:latest
+    - setup_remote_docker:
+        version: 17.03.0-ce
   environment:
     CGO_ENABLED: "0"
 
