@@ -1,6 +1,6 @@
 [
   {
-    "Target": "testdata/fixtures/opensuse-leap-151.tar (opensuse.leap 15.1)",
+    "Target": "testdata/fixtures/opensuse-leap-151.tar.gz (opensuse.leap 15.1)",
     "Vulnerabilities": [
       {
         "VulnerabilityID": "openSUSE-SU-2019:2596-1",
