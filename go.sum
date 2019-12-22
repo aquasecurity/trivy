@@ -36,6 +36,8 @@ github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b/go.mod 
 github.com/aquasecurity/trivy v0.1.6/go.mod h1:5hobyhxLzDtxruHzPxpND2PUKOssvGUdE9BocpJUwo4=
 github.com/aquasecurity/trivy-db v0.0.0-20191120190201-a6645984b409 h1:RrFBrw3qZXH/AIEtEYF1WgYhXae3VPPaaPIJic5p1gw=
 github.com/aquasecurity/trivy-db v0.0.0-20191120190201-a6645984b409/go.mod h1:vYzX1UhX0o29E+/nuFJTgUJBM5UA7I/NftnbBcYyYRE=
+github.com/aquasecurity/trivy-db v0.0.0-20191222123228-36bf1bf29ab9 h1:FfNgJ7du1fq6vAKm3kN5jK9DWdF0N2nckbA/fhW2c4g=
+github.com/aquasecurity/trivy-db v0.0.0-20191222123228-36bf1bf29ab9/go.mod h1:Uf9bXd50zTHtWTP7+7u5+OFCPtUVrmsS4v0RXd7E5lw=
 github.com/aquasecurity/vuln-list-update v0.0.0-20191016075347-3d158c2bf9a2 h1:xbdUfr2KE4THsFx9CFWtWpU91lF+YhgP46moV94nYTA=
 github.com/aquasecurity/vuln-list-update v0.0.0-20191016075347-3d158c2bf9a2/go.mod h1:6NhOP0CjZJL27bZZcaHECtzWdwDDm2g6yCY0QgXEGQQ=
 github.com/araddon/dateparse v0.0.0-20190426192744-0d74ffceef83 h1:ukTLOeMC0aVxbJWVg6hOsVJ0VPIo8w++PbNsze/pqF8=
