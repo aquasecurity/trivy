@@ -1,14 +1,12 @@
 package suse
 
 import (
-	"fmt"
-	"strings"
 	"time"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	fos "github.com/aquasecurity/fanal/analyzer/os"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	suseoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/suse-oval"
+	susecvrf "github.com/aquasecurity/trivy-db/pkg/vulnsrc/suse-cvrf"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -58,46 +56,40 @@ type Scanner struct {
 	family string
 }
 
-func NewScanner(family string) *Scanner {
-	return &Scanner{
-		vs:     suseoval.NewVulnSrc(),
-		clock:  clock.RealClock{},
-		family: family,
+type SUSEType int
+
+const (
+	SUSEEnterpriseLinux SUSEType = iota
+	OpenSUSE
+)
+
+func NewScanner(t SUSEType) *Scanner {
+	switch t {
+	case SUSEEnterpriseLinux:
+		return &Scanner{
+			vs:    susecvrf.NewVulnSrc(susecvrf.SUSEEnterpriseLinux),
+			clock: clock.RealClock{},
+		}
+	case OpenSUSE:
+		return &Scanner{
+			vs:    susecvrf.NewVulnSrc(susecvrf.OpenSUSE),
+			clock: clock.RealClock{},
+		}
 	}
+	return nil
 }
 
 func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting SUSE vulnerabilities...")
-
 	log.Logger.Debugf("SUSE: os version: %s", osVer)
 	log.Logger.Debugf("SUSE: the number of packages: %d", len(pkgs))
 
-	DBPrefix := ""
-	switch s.family {
-	case fos.SLES:
-		DBPrefix = "SUSE Enterprise Linux "
-		fmt.Println(osVer)
-		if strings.Count(osVer, ".") > 0 {
-			osVer = osVer[:strings.Index(osVer, ".")]
-		}
-	case fos.OpenSUSELeap:
-		DBPrefix = "OpenSUSE Leap "
-		// Not Supported
-		// case fos.OpenSUSETumbleweed:
-		// 	DBPrefix = "OpenSUSE Leap "
-		// 	latestVersionIndex := len(suse.SuseOSes[suse.OpenSUSELeap])
-		// 	osVer = suse.SuseOSes[suse.OpenSUSELeap][latestVersionIndex]
-	default:
-		return nil, xerrors.New("unsupported SUSE family")
-	}
-
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.vs.Get(DBPrefix+osVer, pkg.SrcName)
+		advisories, err := s.vs.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get SUSE advisory: %w", err)
 		}
-		fmt.Println(advisories)
 
 		installed := utils.FormatVersion(pkg)
 		installedVersion := version.NewVersion(installed)

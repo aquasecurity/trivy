@@ -70,9 +70,9 @@ func newDriver(osFamily, osName string) Driver {
 	case fos.Oracle:
 		d = oracle.NewScanner()
 	case fos.OpenSUSELeap:
-		d = suse.NewScanner(fos.OpenSUSELeap)
+		d = suse.NewScanner(suse.SUSEEnterpriseLinux)
 	case fos.SLES:
-		d = suse.NewScanner(fos.SLES)
+		d = suse.NewScanner(suse.OpenSUSE)
 	default:
 		log.Logger.Warnf("unsupported os : %s", osFamily)
 		return nil
