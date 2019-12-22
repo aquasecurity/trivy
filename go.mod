@@ -3,9 +3,9 @@ module github.com/aquasecurity/trivy
 go 1.13
 
 require (
-	github.com/aquasecurity/fanal v0.0.0-20191215125351-0473ad881a79
+	github.com/aquasecurity/fanal v0.0.0-20191224121451-2a69338483ef
 	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
-	github.com/aquasecurity/trivy-db v0.0.0-20191223151440-3e45ca45a297
+	github.com/aquasecurity/trivy-db v0.0.0-20191224154616-33c9f5432b3d
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/cheggaaa/pb/v3 v3.0.3
 	github.com/genuinetools/reg v0.16.0
@@ -20,12 +20,10 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/twitchtv/twirp v5.9.0+incompatible
 	github.com/urfave/cli v1.20.0
-	go.etcd.io/bbolt v1.3.3 // indirect
 	go.uber.org/atomic v1.5.1 // indirect
 	go.uber.org/multierr v1.4.0 // indirect
 	go.uber.org/zap v1.13.0
 	golang.org/x/crypto v0.0.0-20190510104115-cbcb75029529
-	golang.org/x/net v0.0.0-20191014212845-da9a3fd4c582 // indirect
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
 	golang.org/x/tools v0.0.0-20191121040551-947d4aa89328 // indirect
 	golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898
