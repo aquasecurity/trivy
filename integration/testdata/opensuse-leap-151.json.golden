@@ -1,0 +1,103 @@
+[
+  {
+    "Target": "testdata/fixtures/opensuse-leap-151.tar.gz (opensuse.leap 15.1)",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "openSUSE-SU-2019:2596-1",
+        "PkgName": "cpio",
+        "InstalledVersion": "2.12-lp151.2.68",
+        "FixedVersion": "2.12-lp151.3.3.1",
+        "Title": "Security update for cpio",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00076.html",
+          "https://www.suse.com/support/security/rating/"
+        ]
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2019:2611-1",
+        "PkgName": "libidn2-0",
+        "InstalledVersion": "2.0.4-lp151.2.3",
+        "FixedVersion": "2.2.0-lp151.3.3.1",
+        "Title": "Security update for libidn2",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00009.html",
+          "https://www.suse.com/support/security/rating/"
+        ]
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2019:2551-1",
+        "PkgName": "libncurses6",
+        "InstalledVersion": "6.1-lp151.5.41",
+        "FixedVersion": "6.1-lp151.6.3.1",
+        "Title": "Security update for ncurses",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+          "https://www.suse.com/support/security/rating/"
+        ]
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2019:2689-1",
+        "PkgName": "libssh4",
+        "InstalledVersion": "0.8.7-lp151.2.3.1",
+        "FixedVersion": "0.8.7-lp151.2.6.1",
+        "Title": "Security update for libssh",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00033.html",
+          "https://www.suse.com/support/security/rating/"
+        ]
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2019:2612-1",
+        "PkgName": "libxml2-2",
+        "InstalledVersion": "2.9.7-lp151.5.3.1",
+        "FixedVersion": "2.9.7-lp151.5.6.1",
+        "Title": "Security update for libxml2",
+        "Severity": "UNKNOWN",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00010.html",
+          "https://www.suse.com/support/security/rating/"
+        ]
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2019:2551-1",
+        "PkgName": "ncurses-utils",
+        "InstalledVersion": "6.1-lp151.5.41",
+        "FixedVersion": "6.1-lp151.6.3.1",
+        "Title": "Security update for ncurses",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+          "https://www.suse.com/support/security/rating/"
+        ]
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2019:2672-1",
+        "PkgName": "permissions",
+        "InstalledVersion": "20181116-lp151.4.6.1",
+        "FixedVersion": "20181116-lp151.4.9.1",
+        "Title": "Security update for permissions",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00024.html",
+          "https://www.suse.com/support/security/rating/"
+        ]
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2019:2551-1",
+        "PkgName": "terminfo-base",
+        "InstalledVersion": "6.1-lp151.5.41",
+        "FixedVersion": "6.1-lp151.6.3.1",
+        "Title": "Security update for ncurses",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+          "https://www.suse.com/support/security/rating/"
+        ]
+      }
+    ]
+  }
+]
