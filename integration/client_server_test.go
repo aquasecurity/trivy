@@ -258,6 +258,22 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/oraclelinux-8-slim.json.golden",
 		},
 		{
+			name: "opensuse leap 15.1 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/opensuse-leap-151.tar.gz",
+			},
+			golden: "testdata/opensuse-leap-151.json.golden",
+		},
+		{
+			name: "opensuse leap 42.3 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/opensuse-leap-423.tar.gz",
+			},
+			golden: "testdata/opensuse-leap-423.json.golden",
+		},
+		{
 			name: "invalid token",
 			testArgs: args{
 				Version:     "dev",

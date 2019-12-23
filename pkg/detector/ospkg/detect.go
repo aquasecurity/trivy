@@ -6,6 +6,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/oracle"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/suse"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/google/wire"
@@ -68,6 +69,10 @@ func newDriver(osFamily, osName string) Driver {
 		d = amazon.NewScanner()
 	case fos.Oracle:
 		d = oracle.NewScanner()
+	case fos.OpenSUSELeap:
+		d = suse.NewScanner(suse.OpenSUSE)
+	case fos.SLES:
+		d = suse.NewScanner(suse.SUSEEnterpriseLinux)
 	default:
 		log.Logger.Warnf("unsupported os : %s", osFamily)
 		return nil
