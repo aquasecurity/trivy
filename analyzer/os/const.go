@@ -43,6 +43,9 @@ const (
 	// SUSE Linux Enterplise Server is done
 	SLES = "suse linux enterprise server"
 
+	// Photon OS done
+	Photon = "photon"
+
 	// Alpine is done
 	Alpine = "alpine"
 )
