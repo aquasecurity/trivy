@@ -7,6 +7,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/internal/client/config"
+	"github.com/aquasecurity/trivy/internal/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/rpc/client/library"
@@ -36,6 +37,10 @@ func run(c config.Config) (err error) {
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
+
+	if c.ClearCache {
+		return operation.ClearCache()
+	}
 
 	scanOptions := types.ScanOptions{
 		VulnType:  c.VulnType,
