@@ -50,7 +50,8 @@ func run(c config.Config) (err error) {
 	}
 
 	// download the database file
-	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, c.Light, c.SkipUpdate); err != nil {
+	noProgress := c.Quiet || c.NoProgress
+	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.Light, c.SkipUpdate); err != nil {
 		return err
 	}
 

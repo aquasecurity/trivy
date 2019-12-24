@@ -13,7 +13,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 type Config struct {
@@ -97,10 +96,6 @@ func (c *Config) Init() (err error) {
 	// add token to custom headers
 	if c.token != "" {
 		c.CustomHeaders.Set(c.tokenHeader, c.token)
-	}
-
-	if c.Quiet {
-		utils.Quiet = true
 	}
 
 	// --clear-cache doesn't conduct the scan

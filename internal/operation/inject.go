@@ -7,7 +7,7 @@ import (
 	"github.com/google/wire"
 )
 
-func initializeDBClient() db.Client {
+func initializeDBClient(quiet bool) db.Client {
 	wire.Build(db.SuperSet)
 	return db.Client{}
 }

@@ -33,8 +33,8 @@ func ClearCache() error {
 	return nil
 }
 
-func DownloadDB(appVersion, cacheDir string, light, skipUpdate bool) error {
-	client := initializeDBClient()
+func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) error {
+	client := initializeDBClient(quiet)
 	ctx := context.Background()
 	needsUpdate, err := client.NeedsUpdate(ctx, appVersion, light, skipUpdate)
 	if err != nil {
@@ -46,6 +46,7 @@ func DownloadDB(appVersion, cacheDir string, light, skipUpdate bool) error {
 		if err = db.Close(); err != nil {
 			return xerrors.Errorf("failed db close: %w", err)
 		}
+		log.Logger.Info("Downloading DB...")
 		if err := client.Download(ctx, cacheDir, light); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}
