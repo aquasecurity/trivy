@@ -18,11 +18,10 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestWithToken(t *testing.T) {
+func TestWithCustomHeaders(t *testing.T) {
 	type args struct {
-		ctx         context.Context
-		token       string
-		tokenHeader string
+		ctx           context.Context
+		customHeaders http.Header
 	}
 	tests := []struct {
 		name string
@@ -32,9 +31,10 @@ func TestWithToken(t *testing.T) {
 		{
 			name: "happy path",
 			args: args{
-				ctx:         context.Background(),
-				token:       "token",
-				tokenHeader: "Trivy-Token",
+				ctx: context.Background(),
+				customHeaders: http.Header{
+					"Trivy-Token": []string{"token"},
+				},
 			},
 			want: http.Header{
 				"Trivy-Token": []string{"token"},
@@ -43,15 +43,16 @@ func TestWithToken(t *testing.T) {
 		{
 			name: "sad path, invalid headers passed in",
 			args: args{
-				ctx:         context.Background(),
-				token:       "token",
-				tokenHeader: "Content-Type",
+				ctx: context.Background(),
+				customHeaders: http.Header{
+					"Content-Type": []string{"token"},
+				},
 			},
 			want: http.Header(nil),
 		},
 	}
 	for _, tt := range tests {
-		gotCtx := WithToken(tt.args.ctx, tt.args.token, tt.args.tokenHeader)
+		gotCtx := WithCustomHeaders(tt.args.ctx, tt.args.customHeaders)
 		header, _ := twirp.HTTPRequestHeaders(gotCtx)
 		assert.Equal(t, tt.want, header, tt.name)
 	}

@@ -17,12 +17,12 @@ import (
 
 // Injectors from inject.go:
 
-func initializeScanner(ospkgToken ospkg.Token, ospkgTokenHeader ospkg.TokenHeader, libToken library.Token, libTokenHeader library.TokenHeader, ospkgURL ospkg.RemoteURL, libURL library.RemoteURL) scanner.Scanner {
+func initializeScanner(ospkgCustomHeaders ospkg.CustomHeaders, libraryCustomHeaders library.CustomHeaders, ospkgURL ospkg.RemoteURL, libURL library.RemoteURL) scanner.Scanner {
 	osDetector := ospkg.NewProtobufClient(ospkgURL)
-	detector := ospkg.NewDetector(ospkgToken, ospkgTokenHeader, osDetector)
+	detector := ospkg.NewDetector(ospkgCustomHeaders, osDetector)
 	ospkgScanner := ospkg2.NewScanner(detector)
 	libDetector := library.NewProtobufClient(libURL)
-	libraryDetector := library.NewDetector(libToken, libTokenHeader, libDetector)
+	libraryDetector := library.NewDetector(libraryCustomHeaders, libDetector)
 	libraryScanner := library2.NewScanner(libraryDetector)
 	scannerScanner := scanner.NewScanner(ospkgScanner, libraryScanner)
 	return scannerScanner

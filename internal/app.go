@@ -4,15 +4,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy/internal/client"
-	"github.com/aquasecurity/trivy/internal/server"
-
-	"github.com/aquasecurity/trivy/internal/standalone"
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
+	"github.com/urfave/cli"
 
 	"github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/internal/client"
+	"github.com/aquasecurity/trivy/internal/server"
+	"github.com/aquasecurity/trivy/internal/standalone"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/urfave/cli"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
 var (
@@ -256,6 +255,11 @@ func NewClientCommand() cli.Command {
 				Value:  "http://localhost:4954",
 				Usage:  "server address",
 				EnvVar: "TRIVY_REMOTE",
+			},
+			cli.StringSliceFlag{
+				Name:   "custom-headers",
+				Usage:  "custom headers",
+				EnvVar: "TRIVY_CUSTOM_HEADERS",
 			},
 		},
 	}

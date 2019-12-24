@@ -10,8 +10,7 @@ import (
 	"github.com/google/wire"
 )
 
-func initializeScanner(ospkgToken ospkg.Token, ospkgTokenHeader ospkg.TokenHeader,
-	libToken library.Token, libTokenHeader library.TokenHeader,
+func initializeScanner(ospkgCustomHeaders ospkg.CustomHeaders, libraryCustomHeaders library.CustomHeaders,
 	ospkgURL ospkg.RemoteURL, libURL library.RemoteURL) scanner.Scanner {
 	wire.Build(scanner.ClientSet)
 	return scanner.Scanner{}

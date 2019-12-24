@@ -48,9 +48,9 @@ func TestDetectClient_Detect(t *testing.T) {
 	}
 
 	type fields struct {
-		token       Token
-		tokenHeader TokenHeader
+		customHeaders CustomHeaders
 	}
+
 	type args struct {
 		filePath string
 		libs     []ptypes.Library
@@ -66,8 +66,9 @@ func TestDetectClient_Detect(t *testing.T) {
 		{
 			name: "happy path",
 			fields: fields{
-				token:       "token",
-				tokenHeader: "Trivy-Token",
+				customHeaders: CustomHeaders{
+					"Trivy-Token": []string{"token"},
+				},
 			},
 			args: args{
 				filePath: "app/Pipfile.lock",
@@ -143,7 +144,7 @@ func TestDetectClient_Detect(t *testing.T) {
 			mockDetector.On("Detect", mock.Anything, tt.detect.input.req).Return(
 				tt.detect.output.res, tt.detect.output.err)
 
-			d := NewDetector(tt.fields.token, tt.fields.tokenHeader, mockDetector)
+			d := NewDetector(tt.fields.customHeaders, mockDetector)
 			got, err := d.Detect(tt.args.filePath, tt.args.libs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
