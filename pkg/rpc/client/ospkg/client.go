@@ -28,19 +28,19 @@ func NewProtobufClient(remoteURL RemoteURL) rpc.OSDetector {
 	return rpc.NewOSDetectorProtobufClient(string(remoteURL), &http.Client{})
 }
 
-type Token string
+type CustomHeaders http.Header
 
 type Detector struct {
-	token  Token
-	client rpc.OSDetector
+	customHeaders CustomHeaders
+	client        rpc.OSDetector
 }
 
-func NewDetector(token Token, detector rpc.OSDetector) Detector {
-	return Detector{token: token, client: detector}
+func NewDetector(customHeaders CustomHeaders, detector rpc.OSDetector) Detector {
+	return Detector{customHeaders: customHeaders, client: detector}
 }
 
 func (d Detector) Detect(osFamily, osName string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
-	ctx := client.WithToken(context.Background(), string(d.token))
+	ctx := client.WithCustomHeaders(context.Background(), http.Header(d.customHeaders))
 	res, err := d.client.Detect(ctx, &rpc.OSDetectRequest{
 		OsFamily: osFamily,
 		OsName:   osName,

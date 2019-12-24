@@ -28,19 +28,19 @@ func NewProtobufClient(remoteURL RemoteURL) rpc.LibDetector {
 	return rpc.NewLibDetectorProtobufClient(string(remoteURL), &http.Client{})
 }
 
-type Token string
+type CustomHeaders http.Header
 
 type Detector struct {
-	token  Token
-	client rpc.LibDetector
+	customHeaders CustomHeaders
+	client        rpc.LibDetector
 }
 
-func NewDetector(token Token, detector rpc.LibDetector) Detector {
-	return Detector{token: token, client: detector}
+func NewDetector(customHeaders CustomHeaders, detector rpc.LibDetector) Detector {
+	return Detector{customHeaders: customHeaders, client: detector}
 }
 
 func (d Detector) Detect(filePath string, libs []ptypes.Library) ([]types.DetectedVulnerability, error) {
-	ctx := client.WithToken(context.Background(), string(d.token))
+	ctx := client.WithCustomHeaders(context.Background(), http.Header(d.customHeaders))
 	res, err := d.client.Detect(ctx, &rpc.LibDetectRequest{
 		FilePath:  filePath,
 		Libraries: r.ConvertToRpcLibraries(libs),

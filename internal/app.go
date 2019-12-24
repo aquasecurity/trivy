@@ -4,15 +4,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy/internal/client"
-	"github.com/aquasecurity/trivy/internal/server"
-
-	"github.com/aquasecurity/trivy/internal/standalone"
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
+	"github.com/urfave/cli"
 
 	"github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/internal/client"
+	"github.com/aquasecurity/trivy/internal/server"
+	"github.com/aquasecurity/trivy/internal/standalone"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/urfave/cli"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
 var (
@@ -144,6 +143,13 @@ var (
 		Usage:  "for authentication",
 		EnvVar: "TRIVY_TOKEN",
 	}
+
+	tokenHeader = cli.StringFlag{
+		Name:   "token-header",
+		Value:  "Trivy-Token",
+		Usage:  "specify a header name for token",
+		EnvVar: "TRIVY_TOKEN_HEADER",
+	}
 )
 
 func NewApp(version string) *cli.App {
@@ -243,11 +249,17 @@ func NewClientCommand() cli.Command {
 
 			// original flags
 			token,
+			tokenHeader,
 			cli.StringFlag{
 				Name:   "remote",
 				Value:  "http://localhost:4954",
 				Usage:  "server address",
 				EnvVar: "TRIVY_REMOTE",
+			},
+			cli.StringSliceFlag{
+				Name:   "custom-headers",
+				Usage:  "custom headers",
+				EnvVar: "TRIVY_CUSTOM_HEADERS",
 			},
 		},
 	}
@@ -269,6 +281,7 @@ func NewServerCommand() cli.Command {
 
 			// original flags
 			token,
+			tokenHeader,
 			cli.StringFlag{
 				Name:   "listen",
 				Value:  "localhost:4954",

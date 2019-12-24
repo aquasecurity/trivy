@@ -41,11 +41,10 @@ func run(c config.Config) (err error) {
 		VulnType:  c.VulnType,
 		Timeout:   c.Timeout,
 		RemoteURL: c.RemoteAddr,
-		Token:     c.Token,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	scanner := initializeScanner(ospkg.Token(c.Token), library.Token(c.Token),
+	scanner := initializeScanner(ospkg.CustomHeaders(c.CustomHeaders), library.CustomHeaders(c.CustomHeaders),
 		ospkg.RemoteURL(c.RemoteAddr), library.RemoteURL(c.RemoteAddr))
 	results, err := scanner.ScanImage(c.ImageName, c.Input, scanOptions)
 	if err != nil {

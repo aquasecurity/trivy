@@ -44,6 +44,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
   - [Client/Server](#client--server)
     - [Server](#server)
     - [Client](#client)
+    - [Authentication](#authentication)
 - [Continuous Integration (CI)](#continuous-integration-ci)
   - [Travis CI](#travis-ci)
   - [CircleCI](#circleci)
@@ -1126,6 +1127,15 @@ Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 ```
 </details>
 
+### Authentication
+
+```
+$ trivy server --listen localhost:8080 --token dummy
+```
+
+```
+$ trivy client --remote http://localhost:8080 --token dummy alpine:3.10
+```
 
 ### Deprecated options
 
