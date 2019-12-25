@@ -19,13 +19,22 @@ import (
 
 // Injectors from inject.go:
 
-func initializeScanner() scanner.Scanner {
+func initializeCacheClient(cacheDir string) (operation.Cache, error) {
+	cacheCache, err := cache.New(cacheDir)
+	if err != nil {
+		return operation.Cache{}, err
+	}
+	operationCache := operation.NewCache(cacheCache)
+	return operationCache, nil
+}
+
+func initializeScanner(c cache.Cache) scanner.Scanner {
 	detector := ospkg.Detector{}
 	ospkgScanner := ospkg2.NewScanner(detector)
 	driverFactory := library.DriverFactory{}
 	libraryDetector := library.NewDetector(driverFactory)
 	libraryScanner := library2.NewScanner(libraryDetector)
-	scannerScanner := scanner.NewScanner(ospkgScanner, libraryScanner)
+	scannerScanner := scanner.NewScanner(c, ospkgScanner, libraryScanner)
 	return scannerScanner
 }
 
