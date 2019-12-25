@@ -15,28 +15,29 @@ import (
 
 	"github.com/klauspost/compress/zstd"
 
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/extractor"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/docker/docker/client"
 	"github.com/genuinetools/reg/registry"
 	"github.com/opencontainers/go-digest"
-	bolt "github.com/simar7/gokv/bbolt"
-	kvtypes "github.com/simar7/gokv/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // TODO: Use a memory based FS rather than actual fs
 // context: https://github.com/aquasecurity/fanal/pull/51#discussion_r352337762
-func setupCache() (*bolt.Store, *os.File, error) {
-	f, err := ioutil.TempFile(".", "Bolt_TestStore-*")
+func setupCache() (cache.Cache, string, error) {
+	dir, err := ioutil.TempDir("", "Cache_TestStore-*")
 	if err != nil {
-		return nil, nil, err
+		return nil, "", err
 	}
 
-	s, err := bolt.NewStore(bolt.Options{
-		Path: f.Name(),
-	})
-	return s, f, err
+	c, err := cache.New(dir)
+	if err != nil {
+		return nil, "", err
+	}
+	return c, dir, nil
 }
 
 func TestExtractFromFile(t *testing.T) {
@@ -238,27 +239,20 @@ func TestDockerExtractor_SaveLocalImage(t *testing.T) {
 		assert.NoError(t, err)
 
 		// setup cache
-		s, f, err := setupCache()
-		defer func() {
-			_ = f.Close()
-			_ = os.RemoveAll(f.Name())
-		}()
+		cache, tmpDir, err := setupCache()
+		defer os.RemoveAll(tmpDir)
 		assert.NoError(t, err)
 
 		if tc.cacheHit {
 			e, _ := zstd.NewWriter(nil, zstd.WithEncoderLevel(zstd.SpeedDefault))
 			dst := e.EncodeAll([]byte("foofromcache"), nil)
-			_ = s.Set(kvtypes.SetItemInput{
-				BucketName: "imagebucket",
-				Key:        "fooimage",
-				Value:      dst,
-			})
+			_ = cache.Set(KVImageBucket, "fooimage", dst)
 		}
 
 		de := Extractor{
 			Option: types.DockerOption{},
 			Client: c,
-			Cache:  s,
+			cache:  cache,
 		}
 
 		r, err := de.SaveLocalImage(context.TODO(), "fooimage")
@@ -268,11 +262,7 @@ func TestDockerExtractor_SaveLocalImage(t *testing.T) {
 
 		// check the cache for what was stored
 		var actualValue []byte
-		found, err := de.Cache.Get(kvtypes.GetItemInput{
-			BucketName: "imagebucket",
-			Key:        "fooimage",
-			Value:      &actualValue,
-		})
+		found, err := de.cache.Get(KVImageBucket, "fooimage", &actualValue)
 
 		assert.NoError(t, err, tc.name)
 		assert.True(t, found, tc.name)
@@ -379,12 +369,9 @@ func TestDockerExtractor_Extract(t *testing.T) {
 		assert.NoError(t, err)
 
 		// setup cache
-		s, f, err := setupCache()
-		defer func() {
-			_ = f.Close()
-			_ = os.RemoveAll(f.Name())
-		}()
+		s, tmpDir, err := setupCache()
 		assert.NoError(t, err)
+		defer os.RemoveAll(tmpDir)
 
 		de := Extractor{
 			Option: types.DockerOption{
@@ -394,7 +381,7 @@ func TestDockerExtractor_Extract(t *testing.T) {
 				Timeout:  time.Second * 1000,
 			},
 			Client: c,
-			Cache:  s,
+			cache:  s,
 		}
 
 		tsURL := strings.TrimPrefix(ts.URL, "http://")
@@ -478,28 +465,17 @@ func TestDocker_ExtractLayerWorker(t *testing.T) {
 		assert.NoError(t, err)
 
 		// setup cache
-		s, f, err := setupCache()
-		defer func() {
-			_ = f.Close()
-			_ = os.RemoveAll(f.Name())
-		}()
-		assert.NoError(t, err, tc.name)
+		s, tmpDir, err := setupCache()
+		require.NoError(t, err, tc.name)
+		defer os.RemoveAll(tmpDir)
 
 		if tc.cacheHit {
 			switch tc.garbageCache {
 			case true:
 				garbage, _ := ioutil.ReadFile("testdata/invalidgzvalidtar.tar.gz")
-				assert.NoError(t, s.Set(kvtypes.SetItemInput{
-					BucketName: LayerTarsBucket,
-					Key:        string(inputDigest),
-					Value:      garbage,
-				}), tc.name)
+				assert.NoError(t, s.Set(LayerTarsBucket, string(inputDigest), garbage))
 			default:
-				assert.NoError(t, s.Set(kvtypes.SetItemInput{
-					BucketName: LayerTarsBucket,
-					Key:        string(inputDigest),
-					Value:      goodtarzstdgolden,
-				}), tc.name)
+				assert.NoError(t, s.Set(LayerTarsBucket, string(inputDigest), goodtarzstdgolden))
 			}
 		}
 
@@ -511,7 +487,7 @@ func TestDocker_ExtractLayerWorker(t *testing.T) {
 				Timeout:  time.Second * 1000,
 			},
 			Client: c,
-			Cache:  s,
+			cache:  s,
 		}
 
 		tsUrl := strings.TrimPrefix(ts.URL, "http://")
@@ -542,11 +518,7 @@ func TestDocker_ExtractLayerWorker(t *testing.T) {
 
 		// check cache contents
 		var actualCacheContents []byte
-		found, err := s.Get(kvtypes.GetItemInput{
-			BucketName: LayerTarsBucket,
-			Key:        string(inputDigest),
-			Value:      &actualCacheContents,
-		})
+		found, err := s.Get(LayerTarsBucket, string(inputDigest), &actualCacheContents)
 
 		assert.True(t, found, tc.name)
 		assert.NoError(t, err, tc.name)

@@ -48,8 +48,10 @@ func run() (err error) {
 	clearCache := flag.Bool("clear", false, "clear cache")
 	flag.Parse()
 
-	c := cache.Initialize(utils.CacheDir() + "/cache.db")
-
+	c, err := cache.New(utils.CacheDir())
+	if err != nil {
+		return err
+	}
 	if *clearCache {
 		if err = c.Clear(); err != nil {
 			return xerrors.Errorf("%w", err)
@@ -63,7 +65,7 @@ func run() (err error) {
 		SkipPing: true,
 	}
 
-	ext, err := docker.NewDockerExtractor(opt)
+	ext, err := docker.NewDockerExtractor(opt, c)
 	if err != nil {
 		return err
 	}

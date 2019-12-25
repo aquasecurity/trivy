@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 )
 
 var (
@@ -17,8 +16,7 @@ func CacheDir() string {
 	if err != nil {
 		cacheDir = os.TempDir()
 	}
-	dir := filepath.Join(cacheDir, "fanal")
-	return dir
+	return cacheDir
 }
 
 func StringInSlice(a string, list []string) bool {
