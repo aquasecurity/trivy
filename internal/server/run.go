@@ -29,10 +29,15 @@ func run(c config.Config) (err error) {
 
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
+	cacheClient, err := cache.New(c.CacheDir)
+	if err != nil {
+		return xerrors.Errorf("unable to initialize cache client: %w", err)
+	}
+	cacheOperation := operation.NewCache(cacheClient)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
 	if c.Reset {
-		return operation.Reset()
+		return cacheOperation.ClearAll()
 	}
 
 	if err = db.Init(c.CacheDir); err != nil {
