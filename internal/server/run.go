@@ -4,7 +4,6 @@ import (
 	"github.com/urfave/cli"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/internal/operation"
 	"github.com/aquasecurity/trivy/internal/server/config"
@@ -29,15 +28,12 @@ func run(c config.Config) (err error) {
 
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
-	cacheClient, err := cache.New(c.CacheDir)
-	if err != nil {
-		return xerrors.Errorf("unable to initialize cache client: %w", err)
-	}
-	cacheOperation := operation.NewCache(cacheClient)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
+	// server doesn't have image cache
+	cacheOperation := operation.NewCache(nil)
 	if c.Reset {
-		return cacheOperation.ClearAll()
+		return cacheOperation.ClearDB()
 	}
 
 	if err = db.Init(c.CacheDir); err != nil {

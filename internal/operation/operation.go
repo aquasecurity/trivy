@@ -26,11 +26,18 @@ func NewCache(client cache.Cache) Cache {
 	return Cache{client: client}
 }
 
-func (c Cache) ClearAll() (err error) {
-	log.Logger.Info("Resetting...")
-	if err = c.client.Clear(); err != nil {
-		return xerrors.New("failed to remove image layer cache")
+func (c Cache) Reset() (err error) {
+	if err := c.ClearDB(); err != nil {
+		return err
 	}
+	if err := c.ClearImages(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c Cache) ClearDB() (err error) {
+	log.Logger.Info("Removing DB file...")
 	if err = os.RemoveAll(utils.CacheDir()); err != nil {
 		return xerrors.New("failed to remove cache")
 	}

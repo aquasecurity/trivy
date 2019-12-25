@@ -44,7 +44,7 @@ func run(c config.Config) (err error) {
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
 	if c.Reset {
-		return cacheOperation.ClearAll()
+		return cacheOperation.Reset()
 	}
 	if c.ClearCache {
 		return cacheOperation.ClearImages()
