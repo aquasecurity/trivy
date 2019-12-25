@@ -41,10 +41,11 @@ func run(c config.Config) (err error) {
 	if err != nil {
 		return xerrors.Errorf("unable to initialize cache client: %w", err)
 	}
+	cacheOperation := operation.NewCache(cacheClient)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
 	if c.ClearCache {
-		return operation.ClearCache()
+		return cacheOperation.ClearImages()
 	}
 
 	scanOptions := types.ScanOptions{
