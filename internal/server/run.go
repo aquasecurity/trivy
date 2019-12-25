@@ -1,15 +1,16 @@
 package server
 
 import (
-	"github.com/aquasecurity/trivy/pkg/rpc/server"
+	"github.com/urfave/cli"
+	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/internal/operation"
 	"github.com/aquasecurity/trivy/internal/server/config"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/rpc/server"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/urfave/cli"
-	"golang.org/x/xerrors"
 )
 
 func Run(ctx *cli.Context) error {
