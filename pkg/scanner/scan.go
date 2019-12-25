@@ -45,12 +45,13 @@ var ClientSet = wire.NewSet(
 )
 
 type Scanner struct {
+	cacheClient  cache.Cache
 	ospkgScanner ospkg.Scanner
 	libScanner   library.Scanner
 }
 
-func NewScanner(ospkgScanner ospkg.Scanner, libScanner library.Scanner) Scanner {
-	return Scanner{ospkgScanner: ospkgScanner, libScanner: libScanner}
+func NewScanner(cacheClient cache.Cache, ospkgScanner ospkg.Scanner, libScanner library.Scanner) Scanner {
+	return Scanner{cacheClient: cacheClient, ospkgScanner: ospkgScanner, libScanner: libScanner}
 }
 
 func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (report.Results, error) {
@@ -68,7 +69,7 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 	if imageName != "" {
 		dockerOption.Timeout = scanOptions.Timeout
 	}
-	ext, err := docker.NewDockerExtractor(dockerOption)
+	ext, err := docker.NewDockerExtractor(dockerOption, s.cacheClient)
 	if err != nil {
 		return nil, err
 	}
