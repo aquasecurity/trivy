@@ -33,6 +33,7 @@ func getSession(option types.DockerOption) (*session.Session, error) {
 						credentials.Value{
 							AccessKeyID:     option.AwsAccessKey,
 							SecretAccessKey: option.AwsSecretKey,
+							SessionToken:    option.AwsSessionToken,
 						},
 					),
 				},
