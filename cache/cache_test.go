@@ -3,6 +3,7 @@ package cache
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -10,13 +11,10 @@ import (
 
 func TestRealCache_Clear(t *testing.T) {
 	d, _ := ioutil.TempDir("", "TestRealCache_Clear")
-	c := Initialize(d)
+	defer os.RemoveAll(d)
+	c, err := New(d)
+	assert.NoError(t, err)
 	assert.NoError(t, c.Clear())
-	_, err := os.Stat(d)
+	_, err = os.Stat(filepath.Join(d, "fanal"))
 	assert.True(t, os.IsNotExist(err))
-
-	t.Run("sad path, cache dir doesn't exist", func(t *testing.T) {
-		c := Initialize(".")
-		assert.Equal(t, "failed to remove cache", c.Clear().Error())
-	})
 }

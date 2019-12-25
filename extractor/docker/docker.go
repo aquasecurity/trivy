@@ -14,9 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/simar7/gokv/encoding"
-
 	"github.com/aquasecurity/fanal/analyzer/library"
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/extractor"
 	"github.com/aquasecurity/fanal/extractor/docker/token/ecr"
 	"github.com/aquasecurity/fanal/extractor/docker/token/gcr"
@@ -28,8 +27,6 @@ import (
 	"github.com/klauspost/compress/zstd"
 	"github.com/knqyf263/nested"
 	"github.com/opencontainers/go-digest"
-	bolt "github.com/simar7/gokv/bbolt"
-	kvtypes "github.com/simar7/gokv/types"
 	"golang.org/x/xerrors"
 )
 
@@ -72,11 +69,11 @@ type layer struct {
 
 type Extractor struct {
 	Client *client.Client
-	Cache  *bolt.Store
 	Option types.DockerOption
+	cache  cache.Cache
 }
 
-func NewDockerExtractorWithCache(option types.DockerOption, cacheOptions bolt.Options) (Extractor, error) {
+func NewDockerExtractor(option types.DockerOption, cache cache.Cache) (Extractor, error) {
 	RegisterRegistry(&gcr.GCR{})
 	RegisterRegistry(&ecr.ECR{})
 
@@ -85,24 +82,11 @@ func NewDockerExtractorWithCache(option types.DockerOption, cacheOptions bolt.Op
 		return Extractor{}, xerrors.Errorf("error initializing docker extractor: %w", err)
 	}
 
-	var kv *bolt.Store
-	if kv, err = bolt.NewStore(cacheOptions); err != nil {
-		return Extractor{}, xerrors.Errorf("error initializing cache: %w", err)
-	}
-
 	return Extractor{
 		Option: option,
 		Client: cli,
-		Cache:  kv,
+		cache:  cache,
 	}, nil
-}
-
-func NewDockerExtractor(option types.DockerOption) (Extractor, error) {
-	return NewDockerExtractorWithCache(option, bolt.Options{
-		RootBucketName: "fanal",
-		Path:           utils.CacheDir() + "/cache.db", // TODO: Make this configurable via a public method
-		Codec:          encoding.Raw,
-	})
 }
 
 func applyLayers(layerPaths []string, filesInLayers map[string]extractor.FileMap, opqInLayers map[string]extractor.OPQDirs) (extractor.FileMap, error) {
@@ -171,11 +155,7 @@ func (d Extractor) SaveLocalImage(ctx context.Context, imageName string) (io.Rea
 	var storedReader io.Reader
 
 	var storedImageBytes []byte
-	found, err := d.Cache.Get(kvtypes.GetItemInput{
-		BucketName: KVImageBucket,
-		Key:        imageName,
-		Value:      &storedImageBytes,
-	})
+	found, err := d.cache.Get(KVImageBucket, imageName, &storedImageBytes)
 
 	if found {
 		dec, _ := zstd.NewReader(nil)
@@ -206,11 +186,7 @@ func (d Extractor) SaveLocalImage(ctx context.Context, imageName string) (io.Rea
 		}
 
 		dst := e.EncodeAll(savedImage, nil)
-		if err := d.Cache.BatchSet(kvtypes.BatchSetItemInput{
-			BucketName: "imagebucket",
-			Keys:       []string{imageName},
-			Values:     dst,
-		}); err != nil {
+		if err := d.cache.Set(KVImageBucket, imageName, dst); err != nil {
 			log.Println(err)
 		}
 	}
@@ -318,11 +294,7 @@ func (d Extractor) extractLayerWorker(dig digest.Digest, r *registry.Registry, c
 	var cacheContent []byte
 	var cacheBuf bytes.Buffer
 
-	found, _ := d.Cache.Get(kvtypes.GetItemInput{
-		BucketName: LayerTarsBucket,
-		Key:        string(dig),
-		Value:      &cacheContent,
-	})
+	found, _ := d.cache.Get(LayerTarsBucket, string(dig), &cacheContent)
 
 	if found {
 		b, errTar := extractTarFromTarZstd(cacheContent)
@@ -424,11 +396,7 @@ func (d Extractor) storeLayerInCache(cacheBuf bytes.Buffer, dig digest.Digest) {
 	_, _ = io.Copy(w, &cacheBuf)
 	_ = w.Close()
 
-	if err := d.Cache.BatchSet(kvtypes.BatchSetItemInput{
-		BucketName: LayerTarsBucket,
-		Keys:       []string{string(dig)},
-		Values:     dst.Bytes(),
-	}); err != nil {
+	if err := d.cache.Set(LayerTarsBucket, string(dig), dst.Bytes()); err != nil {
 		log.Printf("an error occurred while caching: %s", err)
 	}
 }
