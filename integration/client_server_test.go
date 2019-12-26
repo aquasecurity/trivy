@@ -20,13 +20,15 @@ import (
 
 func TestClientServer(t *testing.T) {
 	type args struct {
-		Version       string
-		IgnoreUnfixed bool
-		Severity      []string
-		IgnoreIDs     []string
-		Input         string
-		ClientToken   string
-		ServerToken   string
+		Version           string
+		IgnoreUnfixed     bool
+		Severity          []string
+		IgnoreIDs         []string
+		Input             string
+		ClientToken       string
+		ClientTokenHeader string
+		ServerToken       string
+		ServerTokenHeader string
 	}
 	cases := []struct {
 		name     string
@@ -45,10 +47,12 @@ func TestClientServer(t *testing.T) {
 		{
 			name: "alpine 3.10 integration with token",
 			testArgs: args{
-				Version:     "dev",
-				Input:       "testdata/fixtures/alpine-310.tar.gz",
-				ClientToken: "token",
-				ServerToken: "token",
+				Version:           "dev",
+				Input:             "testdata/fixtures/alpine-310.tar.gz",
+				ClientToken:       "token",
+				ClientTokenHeader: "Trivy-Token",
+				ServerToken:       "token",
+				ServerTokenHeader: "Trivy-Token",
 			},
 			golden: "testdata/alpine-310.json.golden",
 		},
@@ -276,10 +280,24 @@ func TestClientServer(t *testing.T) {
 		{
 			name: "invalid token",
 			testArgs: args{
-				Version:     "dev",
-				Input:       "testdata/fixtures/distroless-base.tar.gz",
-				ClientToken: "invalidtoken",
-				ServerToken: "token",
+				Version:           "dev",
+				Input:             "testdata/fixtures/distroless-base.tar.gz",
+				ClientToken:       "invalidtoken",
+				ClientTokenHeader: "Trivy-Token",
+				ServerToken:       "token",
+				ServerTokenHeader: "Trivy-Token",
+			},
+			wantErr: "twirp error unauthenticated: invalid token",
+		},
+		{
+			name: "invalid token header",
+			testArgs: args{
+				Version:           "dev",
+				Input:             "testdata/fixtures/distroless-base.tar.gz",
+				ClientToken:       "valid-token",
+				ClientTokenHeader: "Trivy-Token",
+				ServerToken:       "valid-token",
+				ServerTokenHeader: "Invalid",
 			},
 			wantErr: "twirp error unauthenticated: invalid token",
 		},
@@ -299,7 +317,7 @@ func TestClientServer(t *testing.T) {
 				// Setup CLI App
 				app := internal.NewApp(c.testArgs.Version)
 				app.Writer = ioutil.Discard
-				osArgs := setupServer(addr, c.testArgs.ServerToken, cacheDir)
+				osArgs := setupServer(addr, c.testArgs.ServerToken, c.testArgs.ServerTokenHeader, cacheDir)
 
 				// Run Trivy server
 				require.NoError(t, app.Run(osArgs), c.name)
@@ -313,7 +331,7 @@ func TestClientServer(t *testing.T) {
 			app.Writer = ioutil.Discard
 
 			osArgs, outputFile, cleanup := setupClient(t, c.testArgs.IgnoreUnfixed, c.testArgs.Severity,
-				c.testArgs.IgnoreIDs, addr, c.testArgs.ClientToken, c.testArgs.Input, cacheDir, c.golden)
+				c.testArgs.IgnoreIDs, addr, c.testArgs.ClientToken, c.testArgs.ClientTokenHeader, c.testArgs.Input, cacheDir, c.golden)
 			defer cleanup()
 
 			// Run Trivy client
@@ -338,16 +356,16 @@ func TestClientServer(t *testing.T) {
 	}
 }
 
-func setupServer(addr, token, cacheDir string) []string {
+func setupServer(addr, token, tokenHeader, cacheDir string) []string {
 	osArgs := []string{"trivy", "server", "--skip-update", "--cache-dir", cacheDir, "--listen", addr}
 	if token != "" {
-		osArgs = append(osArgs, []string{"--token", token}...)
+		osArgs = append(osArgs, []string{"--token", token, "--token-header", tokenHeader}...)
 	}
 	return osArgs
 }
 
 func setupClient(t *testing.T, ignoreUnfixed bool, severity, ignoreIDs []string,
-	addr, token, input, cacheDir, golden string) ([]string, string, func()) {
+	addr, token, tokenHeader, input, cacheDir, golden string) ([]string, string, func()) {
 	t.Helper()
 	osArgs := []string{"trivy", "client", "--cache-dir", cacheDir,
 		"--format", "json", "--remote", "http://" + addr}
@@ -371,7 +389,7 @@ func setupClient(t *testing.T, ignoreUnfixed bool, severity, ignoreIDs []string,
 		osArgs = append(osArgs, []string{"--ignorefile", trivyIgnore}...)
 	}
 	if token != "" {
-		osArgs = append(osArgs, []string{"--token", token}...)
+		osArgs = append(osArgs, []string{"--token", token, "--token-header", tokenHeader}...)
 	}
 	if input != "" {
 		osArgs = append(osArgs, []string{"--input", input}...)
