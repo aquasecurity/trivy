@@ -4,6 +4,7 @@ import (
 	l "log"
 	"os"
 
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/internal/operation"
 	"github.com/aquasecurity/trivy/internal/standalone/config"
@@ -35,14 +36,18 @@ func run(c config.Config) (err error) {
 
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
+	cacheClient, err := cache.New(c.CacheDir)
+	if err != nil {
+		return xerrors.Errorf("unable to initialize cache client: %w", err)
+	}
+	cacheOperation := operation.NewCache(cacheClient)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
 	if c.Reset {
-		return operation.Reset()
+		return cacheOperation.Reset()
 	}
-
 	if c.ClearCache {
-		return operation.ClearCache()
+		return cacheOperation.ClearImages()
 	}
 
 	if err = db.Init(c.CacheDir); err != nil {
@@ -65,7 +70,7 @@ func run(c config.Config) (err error) {
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	scanner := initializeScanner()
+	scanner := initializeScanner(cacheClient)
 	results, err := scanner.ScanImage(c.ImageName, c.Input, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
