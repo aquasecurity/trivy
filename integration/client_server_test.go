@@ -36,247 +36,247 @@ func TestClientServer(t *testing.T) {
 		golden   string
 		wantErr  string
 	}{
-		//{
-		//	name: "alpine 3.10 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/alpine-310.tar.gz",
-		//	},
-		//	golden: "testdata/alpine-310.json.golden",
-		//},
-		//{
-		//	name: "alpine 3.10 integration with token",
-		//	testArgs: args{
-		//		Version:           "dev",
-		//		Input:             "testdata/fixtures/alpine-310.tar.gz",
-		//		ClientToken:       "token",
-		//		ClientTokenHeader: "Trivy-Token",
-		//		ServerToken:       "token",
-		//		ServerTokenHeader: "Trivy-Token",
-		//	},
-		//	golden: "testdata/alpine-310.json.golden",
-		//},
-		//{
-		//	name: "alpine 3.10 integration with --ignore-unfixed option",
-		//	testArgs: args{
-		//		Version:       "dev",
-		//		IgnoreUnfixed: true,
-		//		Input:         "testdata/fixtures/alpine-310.tar.gz",
-		//	},
-		//	golden: "testdata/alpine-310-ignore-unfixed.json.golden",
-		//},
-		//{
-		//	name: "alpine 3.10 integration with medium and high severity",
-		//	testArgs: args{
-		//		Version:       "dev",
-		//		IgnoreUnfixed: true,
-		//		Severity:      []string{"MEDIUM", "HIGH"},
-		//		Input:         "testdata/fixtures/alpine-310.tar.gz",
-		//	},
-		//	golden: "testdata/alpine-310-medium-high.json.golden",
-		//},
-		//{
-		//	name: "alpine 3.10 integration with .trivyignore",
-		//	testArgs: args{
-		//		Version:       "dev",
-		//		IgnoreUnfixed: false,
-		//		IgnoreIDs:     []string{"CVE-2019-1549", "CVE-2019-1563"},
-		//		Input:         "testdata/fixtures/alpine-310.tar.gz",
-		//	},
-		//	golden: "testdata/alpine-310-ignore-cveids.json.golden",
-		//},
-		//{
-		//	name: "alpine 3.9 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/alpine-39.tar.gz",
-		//	},
-		//	golden: "testdata/alpine-39.json.golden",
-		//},
-		//{
-		//	name: "debian buster integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/debian-buster.tar.gz",
-		//	},
-		//	golden: "testdata/debian-buster.json.golden",
-		//},
-		//{
-		//	name: "debian buster integration with --ignore-unfixed option",
-		//	testArgs: args{
-		//		Version:       "dev",
-		//		IgnoreUnfixed: true,
-		//		Input:         "testdata/fixtures/debian-buster.tar.gz",
-		//	},
-		//	golden: "testdata/debian-buster-ignore-unfixed.json.golden",
-		//},
-		//{
-		//	name: "debian stretch integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/debian-stretch.tar.gz",
-		//	},
-		//	golden: "testdata/debian-stretch.json.golden",
-		//},
-		//{
-		//	name: "ubuntu 18.04 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/ubuntu-1804.tar.gz",
-		//	},
-		//	golden: "testdata/ubuntu-1804.json.golden",
-		//},
-		//{
-		//	name: "ubuntu 18.04 integration with --ignore-unfixed option",
-		//	testArgs: args{
-		//		Version:       "dev",
-		//		IgnoreUnfixed: true,
-		//		Input:         "testdata/fixtures/ubuntu-1804.tar.gz",
-		//	},
-		//	golden: "testdata/ubuntu-1804-ignore-unfixed.json.golden",
-		//},
-		//{
-		//	name: "ubuntu 16.04 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/ubuntu-1604.tar.gz",
-		//	},
-		//	golden: "testdata/ubuntu-1604.json.golden",
-		//},
-		//{
-		//	name: "centos 7 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/centos-7.tar.gz",
-		//	},
-		//	golden: "testdata/centos-7.json.golden",
-		//},
-		//{
-		//	name: "centos 7 integration with --ignore-unfixed option",
-		//	testArgs: args{
-		//		Version:       "dev",
-		//		IgnoreUnfixed: true,
-		//		Input:         "testdata/fixtures/centos-7.tar.gz",
-		//	},
-		//	golden: "testdata/centos-7-ignore-unfixed.json.golden",
-		//},
-		//{
-		//	name: "centos 7 integration with critical severity",
-		//	testArgs: args{
-		//		Version:       "dev",
-		//		IgnoreUnfixed: true,
-		//		Severity:      []string{"CRITICAL"},
-		//		Input:         "testdata/fixtures/centos-7.tar.gz",
-		//	},
-		//	golden: "testdata/centos-7-critical.json.golden",
-		//},
-		//{
-		//	name: "centos 7 integration with low and high severity",
-		//	testArgs: args{
-		//		Version:       "dev",
-		//		IgnoreUnfixed: true,
-		//		Severity:      []string{"LOW", "HIGH"},
-		//		Input:         "testdata/fixtures/centos-7.tar.gz",
-		//	},
-		//	golden: "testdata/centos-7-low-high.json.golden",
-		//},
-		//{
-		//	name: "centos 6 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/centos-6.tar.gz",
-		//	},
-		//	golden: "testdata/centos-6.json.golden",
-		//},
-		//{
-		//	name: "ubi 7 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/ubi-7.tar.gz",
-		//	},
-		//	golden: "testdata/ubi-7.json.golden",
-		//},
-		//{
-		//	name: "distroless base integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/distroless-base.tar.gz",
-		//	},
-		//	golden: "testdata/distroless-base.json.golden",
-		//},
-		//{
-		//	name: "distroless base integration with --ignore-unfixed option",
-		//	testArgs: args{
-		//		Version:       "dev",
-		//		IgnoreUnfixed: true,
-		//		Input:         "testdata/fixtures/distroless-base.tar.gz",
-		//	},
-		//	golden: "testdata/distroless-base-ignore-unfixed.json.golden",
-		//},
-		//{
-		//	name: "distroless python27 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/distroless-python27.tar.gz",
-		//	},
-		//	golden: "testdata/distroless-python27.json.golden",
-		//},
-		//{
-		//	name: "amazon 1 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/amazon-1.tar.gz",
-		//	},
-		//	golden: "testdata/amazon-1.json.golden",
-		//},
-		//{
-		//	name: "amazon 2 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/amazon-2.tar.gz",
-		//	},
-		//	golden: "testdata/amazon-2.json.golden",
-		//},
-		//{
-		//	name: "oracle 6 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/oraclelinux-6-slim.tar.gz",
-		//	},
-		//	golden: "testdata/oraclelinux-6-slim.json.golden",
-		//},
-		//{
-		//	name: "oracle 7 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/oraclelinux-7-slim.tar.gz",
-		//	},
-		//	golden: "testdata/oraclelinux-7-slim.json.golden",
-		//},
-		//{
-		//	name: "oracle 8 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/oraclelinux-8-slim.tar.gz",
-		//	},
-		//	golden: "testdata/oraclelinux-8-slim.json.golden",
-		//},
-		//{
-		//	name: "opensuse leap 15.1 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/opensuse-leap-151.tar.gz",
-		//	},
-		//	golden: "testdata/opensuse-leap-151.json.golden",
-		//},
-		//{
-		//	name: "opensuse leap 42.3 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/opensuse-leap-423.tar.gz",
-		//	},
-		//	golden: "testdata/opensuse-leap-423.json.golden",
-		//},
+		{
+			name: "alpine 3.10 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.json.golden",
+		},
+		{
+			name: "alpine 3.10 integration with token",
+			testArgs: args{
+				Version:           "dev",
+				Input:             "testdata/fixtures/alpine-310.tar.gz",
+				ClientToken:       "token",
+				ClientTokenHeader: "Trivy-Token",
+				ServerToken:       "token",
+				ServerTokenHeader: "Trivy-Token",
+			},
+			golden: "testdata/alpine-310.json.golden",
+		},
+		{
+			name: "alpine 3.10 integration with --ignore-unfixed option",
+			testArgs: args{
+				Version:       "dev",
+				IgnoreUnfixed: true,
+				Input:         "testdata/fixtures/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310-ignore-unfixed.json.golden",
+		},
+		{
+			name: "alpine 3.10 integration with medium and high severity",
+			testArgs: args{
+				Version:       "dev",
+				IgnoreUnfixed: true,
+				Severity:      []string{"MEDIUM", "HIGH"},
+				Input:         "testdata/fixtures/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310-medium-high.json.golden",
+		},
+		{
+			name: "alpine 3.10 integration with .trivyignore",
+			testArgs: args{
+				Version:       "dev",
+				IgnoreUnfixed: false,
+				IgnoreIDs:     []string{"CVE-2019-1549", "CVE-2019-1563"},
+				Input:         "testdata/fixtures/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310-ignore-cveids.json.golden",
+		},
+		{
+			name: "alpine 3.9 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/alpine-39.tar.gz",
+			},
+			golden: "testdata/alpine-39.json.golden",
+		},
+		{
+			name: "debian buster integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/debian-buster.tar.gz",
+			},
+			golden: "testdata/debian-buster.json.golden",
+		},
+		{
+			name: "debian buster integration with --ignore-unfixed option",
+			testArgs: args{
+				Version:       "dev",
+				IgnoreUnfixed: true,
+				Input:         "testdata/fixtures/debian-buster.tar.gz",
+			},
+			golden: "testdata/debian-buster-ignore-unfixed.json.golden",
+		},
+		{
+			name: "debian stretch integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/debian-stretch.tar.gz",
+			},
+			golden: "testdata/debian-stretch.json.golden",
+		},
+		{
+			name: "ubuntu 18.04 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/ubuntu-1804.tar.gz",
+			},
+			golden: "testdata/ubuntu-1804.json.golden",
+		},
+		{
+			name: "ubuntu 18.04 integration with --ignore-unfixed option",
+			testArgs: args{
+				Version:       "dev",
+				IgnoreUnfixed: true,
+				Input:         "testdata/fixtures/ubuntu-1804.tar.gz",
+			},
+			golden: "testdata/ubuntu-1804-ignore-unfixed.json.golden",
+		},
+		{
+			name: "ubuntu 16.04 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/ubuntu-1604.tar.gz",
+			},
+			golden: "testdata/ubuntu-1604.json.golden",
+		},
+		{
+			name: "centos 7 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/centos-7.tar.gz",
+			},
+			golden: "testdata/centos-7.json.golden",
+		},
+		{
+			name: "centos 7 integration with --ignore-unfixed option",
+			testArgs: args{
+				Version:       "dev",
+				IgnoreUnfixed: true,
+				Input:         "testdata/fixtures/centos-7.tar.gz",
+			},
+			golden: "testdata/centos-7-ignore-unfixed.json.golden",
+		},
+		{
+			name: "centos 7 integration with critical severity",
+			testArgs: args{
+				Version:       "dev",
+				IgnoreUnfixed: true,
+				Severity:      []string{"CRITICAL"},
+				Input:         "testdata/fixtures/centos-7.tar.gz",
+			},
+			golden: "testdata/centos-7-critical.json.golden",
+		},
+		{
+			name: "centos 7 integration with low and high severity",
+			testArgs: args{
+				Version:       "dev",
+				IgnoreUnfixed: true,
+				Severity:      []string{"LOW", "HIGH"},
+				Input:         "testdata/fixtures/centos-7.tar.gz",
+			},
+			golden: "testdata/centos-7-low-high.json.golden",
+		},
+		{
+			name: "centos 6 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/centos-6.tar.gz",
+			},
+			golden: "testdata/centos-6.json.golden",
+		},
+		{
+			name: "ubi 7 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/ubi-7.tar.gz",
+			},
+			golden: "testdata/ubi-7.json.golden",
+		},
+		{
+			name: "distroless base integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/distroless-base.tar.gz",
+			},
+			golden: "testdata/distroless-base.json.golden",
+		},
+		{
+			name: "distroless base integration with --ignore-unfixed option",
+			testArgs: args{
+				Version:       "dev",
+				IgnoreUnfixed: true,
+				Input:         "testdata/fixtures/distroless-base.tar.gz",
+			},
+			golden: "testdata/distroless-base-ignore-unfixed.json.golden",
+		},
+		{
+			name: "distroless python27 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/distroless-python27.tar.gz",
+			},
+			golden: "testdata/distroless-python27.json.golden",
+		},
+		{
+			name: "amazon 1 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/amazon-1.tar.gz",
+			},
+			golden: "testdata/amazon-1.json.golden",
+		},
+		{
+			name: "amazon 2 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/amazon-2.tar.gz",
+			},
+			golden: "testdata/amazon-2.json.golden",
+		},
+		{
+			name: "oracle 6 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/oraclelinux-6-slim.tar.gz",
+			},
+			golden: "testdata/oraclelinux-6-slim.json.golden",
+		},
+		{
+			name: "oracle 7 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/oraclelinux-7-slim.tar.gz",
+			},
+			golden: "testdata/oraclelinux-7-slim.json.golden",
+		},
+		{
+			name: "oracle 8 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/oraclelinux-8-slim.tar.gz",
+			},
+			golden: "testdata/oraclelinux-8-slim.json.golden",
+		},
+		{
+			name: "opensuse leap 15.1 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/opensuse-leap-151.tar.gz",
+			},
+			golden: "testdata/opensuse-leap-151.json.golden",
+		},
+		{
+			name: "opensuse leap 42.3 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/opensuse-leap-423.tar.gz",
+			},
+			golden: "testdata/opensuse-leap-423.json.golden",
+		},
 		{
 			name: "photon 1.0 integration",
 			testArgs: args{
@@ -285,46 +285,46 @@ func TestClientServer(t *testing.T) {
 			},
 			golden: "testdata/photon-10.json.golden",
 		},
-		//{
-		//	name: "photon 2.0 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/photon-20.tar.gz",
-		//	},
-		//	golden: "testdata/photon-20.json.golden",
-		//},
-		//{
-		//	name: "photon 3.0 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Input:   "testdata/fixtures/photon-30.tar.gz",
-		//	},
-		//	golden: "testdata/photon-30.json.golden",
-		//},
-		//{
-		//	name: "invalid token",
-		//	testArgs: args{
-		//		Version:           "dev",
-		//		Input:             "testdata/fixtures/distroless-base.tar.gz",
-		//		ClientToken:       "invalidtoken",
-		//		ClientTokenHeader: "Trivy-Token",
-		//		ServerToken:       "token",
-		//		ServerTokenHeader: "Trivy-Token",
-		//	},
-		//	wantErr: "twirp error unauthenticated: invalid token",
-		//},
-		//{
-		//	name: "invalid token header",
-		//	testArgs: args{
-		//		Version:           "dev",
-		//		Input:             "testdata/fixtures/distroless-base.tar.gz",
-		//		ClientToken:       "valid-token",
-		//		ClientTokenHeader: "Trivy-Token",
-		//		ServerToken:       "valid-token",
-		//		ServerTokenHeader: "Invalid",
-		//	},
-		//	wantErr: "twirp error unauthenticated: invalid token",
-		//},
+		{
+			name: "photon 2.0 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/photon-20.tar.gz",
+			},
+			golden: "testdata/photon-20.json.golden",
+		},
+		{
+			name: "photon 3.0 integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/photon-30.tar.gz",
+			},
+			golden: "testdata/photon-30.json.golden",
+		},
+		{
+			name: "invalid token",
+			testArgs: args{
+				Version:           "dev",
+				Input:             "testdata/fixtures/distroless-base.tar.gz",
+				ClientToken:       "invalidtoken",
+				ClientTokenHeader: "Trivy-Token",
+				ServerToken:       "token",
+				ServerTokenHeader: "Trivy-Token",
+			},
+			wantErr: "twirp error unauthenticated: invalid token",
+		},
+		{
+			name: "invalid token header",
+			testArgs: args{
+				Version:           "dev",
+				Input:             "testdata/fixtures/distroless-base.tar.gz",
+				ClientToken:       "valid-token",
+				ClientTokenHeader: "Trivy-Token",
+				ServerToken:       "valid-token",
+				ServerTokenHeader: "Invalid",
+			},
+			wantErr: "twirp error unauthenticated: invalid token",
+		},
 	}
 
 	for _, c := range cases {
