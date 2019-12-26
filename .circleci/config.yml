@@ -72,12 +72,6 @@ workflows:
     jobs:
       - unit-test
       - integration-test:
-            docker_version: 17.03.0-ce
-      - integration-test:
-            docker_version: 17.12.0-ce
-      - integration-test:
-            docker_version: 18.06.0-ce
-      - integration-test:
             docker_version: 18.09.3
       - release:
           filters:
