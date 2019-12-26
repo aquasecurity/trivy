@@ -1,0 +1,28 @@
+[
+  {
+    "Target": "testdata/fixtures/photon-10.tar.gz (photon 1.0)",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2012-6711",
+        "PkgName": "bash",
+        "InstalledVersion": "4.3.48-3.ph1",
+        "FixedVersion": "4.3.48-4.ph1",
+        "Severity": "HIGH"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1547",
+        "PkgName": "openssl",
+        "InstalledVersion": "1.0.2s-1.ph1",
+        "FixedVersion": "1.0.2t-1.ph1",
+        "Severity": "MEDIUM"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1563",
+        "PkgName": "openssl",
+        "InstalledVersion": "1.0.2s-1.ph1",
+        "FixedVersion": "1.0.2t-1.ph1",
+        "Severity": "LOW"
+      }
+    ]
+  }
+]

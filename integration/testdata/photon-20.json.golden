@@ -1,0 +1,91 @@
+[
+  {
+    "Target": "testdata/fixtures/photon-20.tar.gz (photon 2.0)",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2019-5481",
+        "PkgName": "curl",
+        "InstalledVersion": "7.59.0-7.ph2",
+        "FixedVersion": "7.59.0-9.ph2",
+        "Severity": "CRITICAL"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5482",
+        "PkgName": "curl",
+        "InstalledVersion": "7.59.0-7.ph2",
+        "FixedVersion": "7.59.0-9.ph2",
+        "Severity": "CRITICAL"
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16890",
+        "PkgName": "curl",
+        "InstalledVersion": "7.59.0-7.ph2",
+        "FixedVersion": "7.59.0-8.ph2",
+        "Severity": "MEDIUM"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5481",
+        "PkgName": "curl-libs",
+        "InstalledVersion": "7.59.0-7.ph2",
+        "FixedVersion": "7.59.0-9.ph2",
+        "Severity": "CRITICAL"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5482",
+        "PkgName": "curl-libs",
+        "InstalledVersion": "7.59.0-7.ph2",
+        "FixedVersion": "7.59.0-9.ph2",
+        "Severity": "CRITICAL"
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16890",
+        "PkgName": "curl-libs",
+        "InstalledVersion": "7.59.0-7.ph2",
+        "FixedVersion": "7.59.0-8.ph2",
+        "Severity": "MEDIUM"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5094",
+        "PkgName": "e2fsprogs-libs",
+        "InstalledVersion": "1.43.4-2.ph2",
+        "FixedVersion": "1.43.4-3.ph2",
+        "Severity": "MEDIUM"
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20843",
+        "PkgName": "expat-libs",
+        "InstalledVersion": "2.2.4-1.ph2",
+        "FixedVersion": "2.2.4-2.ph2",
+        "Severity": "HIGH"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-13115",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.8.2-1.ph2",
+        "FixedVersion": "1.9.0-1.ph2",
+        "Severity": "HIGH"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1547",
+        "PkgName": "openssl",
+        "InstalledVersion": "1.0.2s-1.ph2",
+        "FixedVersion": "1.0.2t-1.ph2",
+        "Severity": "MEDIUM"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1563",
+        "PkgName": "openssl",
+        "InstalledVersion": "1.0.2s-1.ph2",
+        "FixedVersion": "1.0.2t-1.ph2",
+        "Severity": "LOW"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-16168",
+        "PkgName": "sqlite-libs",
+        "InstalledVersion": "3.27.2-3.ph2",
+        "FixedVersion": "3.27.2-5.ph2",
+        "Severity": "HIGH"
+      }
+    ]
+  }
+]

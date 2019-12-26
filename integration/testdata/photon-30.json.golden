@@ -1,0 +1,63 @@
+[
+  {
+    "Target": "testdata/fixtures/photon-30.tar.gz (photon 3.0)",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2019-5481",
+        "PkgName": "curl",
+        "InstalledVersion": "7.61.1-4.ph3",
+        "FixedVersion": "7.61.1-5.ph3",
+        "Severity": "CRITICAL"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5482",
+        "PkgName": "curl",
+        "InstalledVersion": "7.61.1-4.ph3",
+        "FixedVersion": "7.61.1-5.ph3",
+        "Severity": "CRITICAL"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5481",
+        "PkgName": "curl-libs",
+        "InstalledVersion": "7.61.1-4.ph3",
+        "FixedVersion": "7.61.1-5.ph3",
+        "Severity": "CRITICAL"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5482",
+        "PkgName": "curl-libs",
+        "InstalledVersion": "7.61.1-4.ph3",
+        "FixedVersion": "7.61.1-5.ph3",
+        "Severity": "CRITICAL"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5094",
+        "PkgName": "e2fsprogs-libs",
+        "InstalledVersion": "1.44.3-2.ph3",
+        "FixedVersion": "1.44.3-3.ph3",
+        "Severity": "MEDIUM"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1547",
+        "PkgName": "openssl",
+        "InstalledVersion": "1.0.2s-1.ph3",
+        "FixedVersion": "1.0.2t-1.ph3",
+        "Severity": "MEDIUM"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1563",
+        "PkgName": "openssl",
+        "InstalledVersion": "1.0.2s-1.ph3",
+        "FixedVersion": "1.0.2t-1.ph3",
+        "Severity": "LOW"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-16168",
+        "PkgName": "sqlite-libs",
+        "InstalledVersion": "3.27.2-3.ph3",
+        "FixedVersion": "3.27.2-5.ph3",
+        "Severity": "HIGH"
+      }
+    ]
+  }
+]
