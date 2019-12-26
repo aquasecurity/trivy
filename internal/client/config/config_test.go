@@ -2,7 +2,9 @@ package config
 
 import (
 	"flag"
+	"net/http"
 	"os"
+	"reflect"
 	"testing"
 	"time"
 
@@ -83,6 +85,8 @@ func TestConfig_Init(t *testing.T) {
 		onlyUpdate     string
 		refresh        bool
 		autoRefresh    bool
+		token          string
+		tokenHeader    string
 	}
 	tests := []struct {
 		name    string
@@ -95,20 +99,27 @@ func TestConfig_Init(t *testing.T) {
 		{
 			name: "happy path",
 			fields: fields{
-				severities: "CRITICAL",
-				vulnType:   "os",
-				Quiet:      true,
+				severities:  "CRITICAL",
+				vulnType:    "os",
+				Quiet:       true,
+				token:       "foobar",
+				tokenHeader: "Trivy-Token",
 			},
 			args: []string{"alpine:3.10"},
 			want: Config{
-				AppVersion: "0.0.0",
-				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-				severities: "CRITICAL",
-				ImageName:  "alpine:3.10",
-				VulnType:   []string{"os"},
-				vulnType:   "os",
-				Output:     os.Stdout,
-				Quiet:      true,
+				AppVersion:  "0.0.0",
+				Severities:  []dbTypes.Severity{dbTypes.SeverityCritical},
+				severities:  "CRITICAL",
+				ImageName:   "alpine:3.10",
+				VulnType:    []string{"os"},
+				vulnType:    "os",
+				Output:      os.Stdout,
+				Quiet:       true,
+				token:       "foobar",
+				tokenHeader: "Trivy-Token",
+				CustomHeaders: http.Header{
+					"Trivy-Token": []string{"foobar"},
+				},
 			},
 		},
 		{
@@ -122,13 +133,14 @@ func TestConfig_Init(t *testing.T) {
 				"unknown severity option: unknown severity: INVALID",
 			},
 			want: Config{
-				AppVersion: "0.0.0",
-				Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
-				severities: "CRITICAL,INVALID",
-				ImageName:  "centos:7",
-				VulnType:   []string{"os", "library"},
-				vulnType:   "os,library",
-				Output:     os.Stdout,
+				AppVersion:    "0.0.0",
+				Severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
+				severities:    "CRITICAL,INVALID",
+				ImageName:     "centos:7",
+				VulnType:      []string{"os", "library"},
+				vulnType:      "os,library",
+				Output:        os.Stdout,
+				CustomHeaders: make(http.Header),
 			},
 		},
 		{
@@ -143,13 +155,14 @@ func TestConfig_Init(t *testing.T) {
 				"You should avoid using the :latest tag as it is cached. You need to specify '--clear-cache' option when :latest image is changed",
 			},
 			want: Config{
-				AppVersion: "0.0.0",
-				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-				severities: "LOW",
-				ImageName:  "gcr.io/distroless/base",
-				VulnType:   []string{"os", "library"},
-				vulnType:   "os,library",
-				Output:     os.Stdout,
+				AppVersion:    "0.0.0",
+				Severities:    []dbTypes.Severity{dbTypes.SeverityLow},
+				severities:    "LOW",
+				ImageName:     "gcr.io/distroless/base",
+				VulnType:      []string{"os", "library"},
+				vulnType:      "os,library",
+				Output:        os.Stdout,
+				CustomHeaders: make(http.Header),
 			},
 		},
 		{
@@ -200,6 +213,8 @@ func TestConfig_Init(t *testing.T) {
 				ExitCode:      tt.fields.ExitCode,
 				ImageName:     tt.fields.ImageName,
 				Output:        tt.fields.Output,
+				token:         tt.fields.token,
+				tokenHeader:   tt.fields.tokenHeader,
 			}
 
 			err := c.Init()
@@ -224,6 +239,35 @@ func TestConfig_Init(t *testing.T) {
 			tt.want.context = ctx
 			tt.want.logger = logger.Sugar()
 			assert.Equal(t, &tt.want, c, tt.name)
+		})
+	}
+}
+
+func Test_splitCustomHeaders(t *testing.T) {
+	type args struct {
+		headers []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want http.Header
+	}{
+		{
+			name: "happy path",
+			args: args{
+				headers: []string{"x-api-token:foo bar", "Authorization:user:password"},
+			},
+			want: http.Header{
+				"X-Api-Token":   []string{"foo bar"},
+				"Authorization": []string{"user:password"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := splitCustomHeaders(tt.args.headers); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("splitCustomHeaders() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
