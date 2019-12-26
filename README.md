@@ -1101,6 +1101,12 @@ $ trivy server --listen localhost:8080
 2019-12-12T15:17:56.707+0200    INFO    Listening localhost:8080...
 ```
 
+If you want to accept a connection from outside, you have to specify `0.0.0.0` or your ip address, not `localhost`.
+
+```
+$ trivy server --listen 0.0.0.0:8080
+```
+
 ### Client
 Then, specify the remote address.
 ```
