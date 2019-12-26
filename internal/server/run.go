@@ -1,15 +1,15 @@
 package server
 
 import (
-	"github.com/aquasecurity/trivy/pkg/rpc/server"
+	"github.com/urfave/cli"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/internal/operation"
 	"github.com/aquasecurity/trivy/internal/server/config"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/rpc/server"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/urfave/cli"
-	"golang.org/x/xerrors"
 )
 
 func Run(ctx *cli.Context) error {
@@ -30,8 +30,10 @@ func run(c config.Config) (err error) {
 	utils.SetCacheDir(c.CacheDir)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
+	// server doesn't have image cache
+	cacheOperation := operation.NewCache(nil)
 	if c.Reset {
-		return operation.Reset()
+		return cacheOperation.ClearDB()
 	}
 
 	if err = db.Init(c.CacheDir); err != nil {

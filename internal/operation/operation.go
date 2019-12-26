@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
@@ -12,22 +13,40 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-func Reset() (err error) {
-	log.Logger.Info("Resetting...")
-	cache := cache.Initialize(utils.CacheDir())
-	if err = cache.Clear(); err != nil {
-		return xerrors.New("failed to remove image layer cache")
+var SuperSet = wire.NewSet(
+	cache.New,
+	NewCache,
+)
+
+type Cache struct {
+	client cache.Cache
+}
+
+func NewCache(client cache.Cache) Cache {
+	return Cache{client: client}
+}
+
+func (c Cache) Reset() (err error) {
+	if err := c.ClearDB(); err != nil {
+		return err
 	}
+	if err := c.ClearImages(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c Cache) ClearDB() (err error) {
+	log.Logger.Info("Removing DB file...")
 	if err = os.RemoveAll(utils.CacheDir()); err != nil {
 		return xerrors.New("failed to remove cache")
 	}
 	return nil
 }
 
-func ClearCache() error {
+func (c Cache) ClearImages() error {
 	log.Logger.Info("Removing image caches...")
-	cache := cache.Initialize(utils.CacheDir())
-	if err := cache.Clear(); err != nil {
+	if err := c.client.Clear(); err != nil {
 		return xerrors.New("failed to remove image layer cache")
 	}
 	return nil

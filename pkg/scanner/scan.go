@@ -8,14 +8,16 @@ import (
 	"sort"
 
 	"github.com/google/wire"
-
-	"github.com/aquasecurity/trivy/pkg/report"
+	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/extractor"
 	"github.com/aquasecurity/fanal/extractor/docker"
 	libDetector "github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+	"github.com/aquasecurity/trivy/pkg/report"
 	rpcLibDetector "github.com/aquasecurity/trivy/pkg/rpc/client/library"
 	rpcOSDetector "github.com/aquasecurity/trivy/pkg/rpc/client/ospkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/library"
@@ -24,8 +26,6 @@ import (
 	ospkgScanner "github.com/aquasecurity/trivy/pkg/scanner/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"golang.org/x/crypto/ssh/terminal"
-	"golang.org/x/xerrors"
 )
 
 var StandaloneSet = wire.NewSet(
@@ -45,12 +45,13 @@ var ClientSet = wire.NewSet(
 )
 
 type Scanner struct {
+	cacheClient  cache.Cache
 	ospkgScanner ospkg.Scanner
 	libScanner   library.Scanner
 }
 
-func NewScanner(ospkgScanner ospkg.Scanner, libScanner library.Scanner) Scanner {
-	return Scanner{ospkgScanner: ospkgScanner, libScanner: libScanner}
+func NewScanner(cacheClient cache.Cache, ospkgScanner ospkg.Scanner, libScanner library.Scanner) Scanner {
+	return Scanner{cacheClient: cacheClient, ospkgScanner: ospkgScanner, libScanner: libScanner}
 }
 
 func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (report.Results, error) {
@@ -68,7 +69,7 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 	if imageName != "" {
 		dockerOption.Timeout = scanOptions.Timeout
 	}
-	ext, err := docker.NewDockerExtractor(dockerOption)
+	ext, err := docker.NewDockerExtractor(dockerOption, s.cacheClient)
 	if err != nil {
 		return nil, err
 	}
