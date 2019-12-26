@@ -6,6 +6,7 @@
 package client
 
 import (
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/rpc/client/library"
 	"github.com/aquasecurity/trivy/pkg/rpc/client/ospkg"
@@ -17,14 +18,14 @@ import (
 
 // Injectors from inject.go:
 
-func initializeScanner(ospkgCustomHeaders ospkg.CustomHeaders, libraryCustomHeaders library.CustomHeaders, ospkgURL ospkg.RemoteURL, libURL library.RemoteURL) scanner.Scanner {
+func initializeScanner(cacheClient cache.Cache, ospkgCustomHeaders ospkg.CustomHeaders, libraryCustomHeaders library.CustomHeaders, ospkgURL ospkg.RemoteURL, libURL library.RemoteURL) scanner.Scanner {
 	osDetector := ospkg.NewProtobufClient(ospkgURL)
 	detector := ospkg.NewDetector(ospkgCustomHeaders, osDetector)
 	ospkgScanner := ospkg2.NewScanner(detector)
 	libDetector := library.NewProtobufClient(libURL)
 	libraryDetector := library.NewDetector(libraryCustomHeaders, libDetector)
 	libraryScanner := library2.NewScanner(libraryDetector)
-	scannerScanner := scanner.NewScanner(ospkgScanner, libraryScanner)
+	scannerScanner := scanner.NewScanner(cacheClient, ospkgScanner, libraryScanner)
 	return scannerScanner
 }
 

@@ -1,3 +1,5 @@
+version: 2.1
+
 defaults: &defaults
   docker :
     - image: aquasec/trivy-ci:latest
@@ -5,7 +7,7 @@ defaults: &defaults
     CGO_ENABLED: "0"
 
 jobs:
-  test:
+  unit-test:
     <<: *defaults
     steps:
       - checkout
@@ -22,6 +24,15 @@ jobs:
       - run:
           name: Test
           command: make test
+  integration-test:
+    <<: *defaults
+    parameters:
+      docker_version:
+        type: string
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: << parameters.docker_version >>
       - run:
           name: Integration Test
           command: make test-integration
@@ -54,13 +65,18 @@ jobs:
       - run:
           name: Create deb repository
           command: ci/deploy-deb.sh
-            
+
 workflows:
   version: 2
   release:
-    jobs:  
-      - test
+    jobs:
+      - unit-test
+      - integration-test:
+            docker_version: 18.09.3
       - release:
+          requires:
+            - unit-test
+            - integration-test
           filters:
             branches:
               ignore: /.*/

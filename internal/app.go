@@ -114,7 +114,7 @@ var (
 	cacheDirFlag = cli.StringFlag{
 		Name:   "cache-dir",
 		Value:  utils.DefaultCacheDir(),
-		Usage:  "use as cache directory, but image cache is stored in /path/to/cache/fanal",
+		Usage:  "cache directory",
 		EnvVar: "TRIVY_CACHE_DIR",
 	}
 

@@ -3,13 +3,15 @@ module github.com/aquasecurity/trivy
 go 1.13
 
 require (
-	github.com/aquasecurity/fanal v0.0.0-20191224121451-2a69338483ef
+	github.com/aquasecurity/fanal v0.0.0-20191225115707-0939236aadb8
 	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
 	github.com/aquasecurity/trivy-db v0.0.0-20191224154616-33c9f5432b3d
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/cheggaaa/pb/v3 v3.0.3
+	github.com/docker/docker v0.0.0-20180924202107-a9c061deec0f
 	github.com/genuinetools/reg v0.16.0
-	github.com/golang/protobuf v1.3.1
+	github.com/gogo/protobuf v1.2.2-0.20190723190241-65acae22fc9d // indirect
+	github.com/golang/protobuf v1.3.2
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/wire v0.3.0
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
