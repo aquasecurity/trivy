@@ -8,6 +8,7 @@ require (
 	github.com/aquasecurity/trivy-db v0.0.0-20191223151440-3e45ca45a297
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/cheggaaa/pb/v3 v3.0.3
+	github.com/docker/docker v0.0.0-20180924202107-a9c061deec0f
 	github.com/genuinetools/reg v0.16.0
 	github.com/golang/protobuf v1.3.1
 	github.com/google/go-github/v28 v28.1.1
