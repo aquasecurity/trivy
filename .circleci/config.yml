@@ -74,9 +74,6 @@ workflows:
       - integration-test:
             docker_version: 18.09.3
       - release:
-          requires:
-            - unit-test
-            - integration-test
           filters:
             branches:
               ignore: /.*/
