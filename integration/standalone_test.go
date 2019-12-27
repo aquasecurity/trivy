@@ -311,6 +311,36 @@ func TestRun_WithTar(t *testing.T) {
 			},
 			golden: "testdata/opensuse-leap-423.json.golden",
 		},
+		{
+			name: "photon 1.0 integration",
+			testArgs: args{
+				Version:    "dev",
+				SkipUpdate: true,
+				Format:     "json",
+				Input:      "testdata/fixtures/photon-10.tar.gz",
+			},
+			golden: "testdata/photon-10.json.golden",
+		},
+		{
+			name: "photon 2.0 integration",
+			testArgs: args{
+				Version:    "dev",
+				SkipUpdate: true,
+				Format:     "json",
+				Input:      "testdata/fixtures/photon-20.tar.gz",
+			},
+			golden: "testdata/photon-20.json.golden",
+		},
+		{
+			name: "photon 3.0 integration",
+			testArgs: args{
+				Version:    "dev",
+				SkipUpdate: true,
+				Format:     "json",
+				Input:      "testdata/fixtures/photon-30.tar.gz",
+			},
+			golden: "testdata/photon-30.json.golden",
+		},
 	}
 
 	for _, c := range cases {
