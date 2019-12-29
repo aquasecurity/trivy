@@ -29,7 +29,8 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
   - [Docker](#docker)
 - [Examples](#examples)
   - [Standalone](#standalone)
-    - [Scan an image](#scan-an-image)
+    - [Scan an image name (tag)](#scan-an-image-name-tag)
+    - [Scan an image name (digest)](#scan-an-image-name-digest)
     - [Scan an image file](#scan-an-image-file)
     - [Save the results as JSON](#save-the-results-as-json)
     - [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
@@ -264,7 +265,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 ## Standalone
 
-### Scan an image
+### Scan an image name (tag)
 
 Simply specify an image name (and a tag).
 
@@ -475,6 +476,39 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 |         |                  |          |                   |               | memory exhaustion in               |
 |         |                  |          |                   |               | django.utils.numberformat.format() |
 +---------+------------------+----------+-------------------+---------------+------------------------------------+
+```
+
+</details>
+
+
+### Scan an image name (digest)
+
+Specify an image name with digest.
+
+```
+$ trivy alpine@sha256:c19173c5ada610a5989151111163d28a67368362762534d8a8121ce95cf2bd5a
+```
+
+<details>
+<summary>Result</summary>
+
+```
+2019-12-29T12:52:16.216+0100	INFO	Need to update DB
+2019-12-29T12:52:16.217+0100	INFO	Downloading DB...
+2019-12-29T12:52:21.913+0100	INFO	Reopening DB...
+2019-12-29T12:52:23.317+0100	INFO	Detecting Alpine vulnerabilities...
+
+alpine@sha256:c19173c5ada610a5989151111163d28a67368362762534d8a8121ce95cf2bd5a (alpine 3.10.3)
+==============================================================================================
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| openssl | CVE-2019-1551    | MEDIUM   | 1.1.1d-r0         | 1.1.1d-r2     | openssl: Integer overflow in   |
+|         |                  |          |                   |               | RSAZ modular exponentiation on |
+|         |                  |          |                   |               | x86_64                         |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
 ```
 
 </details>
