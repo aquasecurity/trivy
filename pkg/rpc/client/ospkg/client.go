@@ -3,16 +3,12 @@ package ospkg
 import (
 	"context"
 	"net/http"
-	"time"
 
-	"github.com/cenkalti/backoff"
 	"github.com/google/wire"
-	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	detector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
-	"github.com/aquasecurity/trivy/pkg/log"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -50,30 +46,14 @@ func (d Detector) Detect(osFamily, osName string, pkgs []analyzer.Package) ([]ty
 	ctx := client.WithCustomHeaders(context.Background(), http.Header(d.customHeaders))
 
 	var res *rpc.DetectResponse
-	operation := func() error {
+	err := r.Retry(func() error {
 		var err error
 		res, err = d.client.Detect(ctx, &rpc.OSDetectRequest{
 			OsFamily: osFamily,
 			OsName:   osName,
 			Packages: r.ConvertToRpcPkgs(pkgs),
 		})
-		if err != nil {
-			twerr, ok := err.(twirp.Error)
-			if !ok {
-				return backoff.Permanent(err)
-			}
-			if twerr.Code() == twirp.Unavailable {
-				return err
-			}
-			return backoff.Permanent(err)
-		}
-		return nil
-	}
-
-	b := backoff.WithMaxRetries(backoff.NewExponentialBackOff(), maxRetries)
-	err := backoff.RetryNotify(operation, b, func(err error, _ time.Duration) {
-		log.Logger.Warn(err)
-		log.Logger.Info("Retrying HTTP request...")
+		return err
 	})
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
