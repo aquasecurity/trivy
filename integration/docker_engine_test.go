@@ -38,6 +38,10 @@ func TestRun_WithDockerEngine(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		// Copy DB file
+		cacheDir := gunzipDB()
+		//defer os.RemoveAll(cacheDir)
+
 		ctx := context.Background()
 		defer ctx.Done()
 
@@ -63,18 +67,12 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			require.NoError(t, err, tc.name)
 		}
 
-		// run trivy
-		tmpDir, err := ioutil.TempDir("", "integration-docker-engine-*")
-		require.NoError(t, err)
-		defer func() {
-			os.RemoveAll(tmpDir)
-		}()
-
-		of, err := ioutil.TempFile(tmpDir, "integration-docker-engine-output-file-*")
+		of, err := ioutil.TempFile("", "integration-docker-engine-output-file-*")
 		require.NoError(t, err, tc.name)
-		app := internal.NewApp("dev")
+		defer os.Remove(of.Name())
 
-		trivyArgs := []string{"--skip-update", "--quiet", "--cache-dir", tmpDir, "--format=json"}
+		// run trivy
+		app := internal.NewApp("dev")
 		trivyArgs := []string{"trivy", "--skip-update", "--cache-dir", cacheDir, "--format=json"}
 		if !tc.invalidImage {
 			trivyArgs = append(trivyArgs, "--output", of.Name())
