@@ -38,70 +38,71 @@ func TestRun_WithDockerEngine(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		ctx := context.Background()
-		defer ctx.Done()
+		t.Run(tc.name, func(t *testing.T) {
+			// Copy DB file
+			cacheDir := gunzipDB()
+			defer os.RemoveAll(cacheDir)
 
-		cli, err := client.NewClientWithOpts(client.FromEnv)
-		require.NoError(t, err, tc.name)
+			ctx := context.Background()
+			defer ctx.Done()
 
-		if !tc.invalidImage {
-			testfile, err := os.Open(tc.testfile)
+			cli, err := client.NewClientWithOpts(client.FromEnv)
 			require.NoError(t, err, tc.name)
 
-			// ensure image doesnt already exists
-			_, _ = cli.ImageRemove(ctx, tc.testfile, types.ImageRemoveOptions{
-				Force:         true,
-				PruneChildren: true,
-			})
+			if !tc.invalidImage {
+				testfile, err := os.Open(tc.testfile)
+				require.NoError(t, err, tc.name)
 
-			// load image into docker engine
-			_, err = cli.ImageLoad(ctx, testfile, true)
+				// ensure image doesnt already exists
+				_, _ = cli.ImageRemove(ctx, tc.testfile, types.ImageRemoveOptions{
+					Force:         true,
+					PruneChildren: true,
+				})
+
+				// load image into docker engine
+				_, err = cli.ImageLoad(ctx, testfile, true)
+				require.NoError(t, err, tc.name)
+
+				// tag our image to something unique
+				err = cli.ImageTag(ctx, "alpine:3.10", tc.testfile)
+				require.NoError(t, err, tc.name)
+			}
+
+			of, err := ioutil.TempFile("", "integration-docker-engine-output-file-*")
 			require.NoError(t, err, tc.name)
+			defer os.Remove(of.Name())
 
-			// tag our image to something unique
-			err = cli.ImageTag(ctx, "alpine:3.10", tc.testfile)
-			require.NoError(t, err, tc.name)
-		}
+			// run trivy
+			app := internal.NewApp("dev")
+			trivyArgs := []string{"trivy", "--skip-update", "--cache-dir", cacheDir, "--format=json"}
+			if !tc.invalidImage {
+				trivyArgs = append(trivyArgs, "--output", of.Name())
+			}
+			trivyArgs = append(trivyArgs, tc.testfile)
 
-		// run trivy
-		tmpDir, err := ioutil.TempDir("", "integration-docker-engine-*")
-		require.NoError(t, err)
-		defer func() {
-			os.RemoveAll(tmpDir)
-		}()
+			err = app.Run(trivyArgs)
+			switch {
+			case tc.expectedError != "":
+				assert.Equal(t, tc.expectedError, err.Error(), tc.name)
+			default:
+				assert.NoError(t, err, tc.name)
+			}
 
-		of, err := ioutil.TempFile(tmpDir, "integration-docker-engine-output-file-*")
-		require.NoError(t, err, tc.name)
-		app := internal.NewApp("dev")
+			if !tc.invalidImage {
+				// check for vulnerability output info
+				got, err := ioutil.ReadAll(of)
+				assert.NoError(t, err, tc.name)
+				want, err := ioutil.ReadFile(tc.expectedOutputFile)
+				assert.NoError(t, err, tc.name)
+				assert.JSONEq(t, string(want), string(got), tc.name)
 
-		trivyArgs := []string{"--skip-update", "--quiet", "--cache-dir", tmpDir, "--format=json"}
-		if !tc.invalidImage {
-			trivyArgs = append(trivyArgs, "--output", of.Name())
-		}
-		trivyArgs = append(trivyArgs, tc.testfile)
-
-		err = app.Run(trivyArgs)
-		switch {
-		case tc.expectedError != "":
-			assert.Equal(t, tc.expectedError, err.Error(), tc.name)
-		default:
-			assert.NoError(t, err, tc.name)
-		}
-
-		if !tc.invalidImage {
-			// check for vulnerability output info
-			got, err := ioutil.ReadAll(of)
-			assert.NoError(t, err, tc.name)
-			want, err := ioutil.ReadFile(tc.expectedOutputFile)
-			assert.NoError(t, err, tc.name)
-			assert.JSONEq(t, string(want), string(got), tc.name)
-
-			// cleanup
-			_, err = cli.ImageRemove(ctx, tc.testfile, types.ImageRemoveOptions{
-				Force:         true,
-				PruneChildren: true,
-			})
-			assert.NoError(t, err, tc.name)
-		}
+				// cleanup
+				_, err = cli.ImageRemove(ctx, tc.testfile, types.ImageRemoveOptions{
+					Force:         true,
+					PruneChildren: true,
+				})
+				assert.NoError(t, err, tc.name)
+			}
+		})
 	}
 }
