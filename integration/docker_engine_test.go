@@ -75,6 +75,7 @@ func TestRun_WithDockerEngine(t *testing.T) {
 		app := internal.NewApp("dev")
 
 		trivyArgs := []string{"--skip-update", "--quiet", "--cache-dir", tmpDir, "--format=json"}
+		trivyArgs := []string{"trivy", "--skip-update", "--cache-dir", cacheDir, "--format=json"}
 		if !tc.invalidImage {
 			trivyArgs = append(trivyArgs, "--output", of.Name())
 		}
