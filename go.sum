@@ -52,6 +52,8 @@ github.com/briandowns/spinner v0.0.0-20190319032542-ac46072a5a91 h1:GMmnK0dvr0Sf
 github.com/briandowns/spinner v0.0.0-20190319032542-ac46072a5a91/go.mod h1:hw/JEQBIE+c/BLI4aKM8UU8v+ZqrD3h7HC27kKt8JQU=
 github.com/caarlos0/env/v6 v6.0.0 h1:NZt6FAoB8ieKO5lEwRdwCzYxWFx7ZYF2R7UcoyaWtyc=
 github.com/caarlos0/env/v6 v6.0.0/go.mod h1:+wdyOmtjoZIW2GJOc2OYa5NoOFuWD/bIpWqm30NgtRk=
+github.com/cenkalti/backoff v2.2.1+incompatible h1:tNowT99t7UNflLxfYYSlKYsBpXdEet03Pg2g16Swow4=
+github.com/cenkalti/backoff v2.2.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/cheggaaa/pb/v3 v3.0.3 h1:8WApbyUmgMOz7WIxJVNK0IRDcRfAmTxcEdi0TuxjdP4=
 github.com/cheggaaa/pb/v3 v3.0.3/go.mod h1:Pp35CDuiEpHa/ZLGCtBbM6CBwMstv1bJlG884V+73Yc=
