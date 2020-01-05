@@ -228,7 +228,7 @@ func (d Extractor) Extract(ctx context.Context, imageName string, filenames []st
 	for _, ref := range m.Manifest.Layers {
 		layerIDs = append(layerIDs, string(ref.Digest))
 		go func(dig digest.Digest) {
-			d.extractLayerWorker(dig, r, ctx, image, errCh, layerCh, filenames)
+			d.extractLayerWorker(dig, r, ctx, image, errCh, layerCh)
 		}(ref.Digest)
 	}
 
@@ -289,50 +289,40 @@ func (d Extractor) extractLayerFiles(ctx context.Context, layerCh chan layer, er
 	return nil
 }
 
-func (d Extractor) extractLayerWorker(dig digest.Digest, r *registry.Registry, ctx context.Context, image registry.Image, errCh chan error, layerCh chan layer, filenames []string) {
-	var tarContent bytes.Buffer
+func (d Extractor) extractLayerWorker(dig digest.Digest, r *registry.Registry, ctx context.Context, image registry.Image, errCh chan error, layerCh chan layer) {
 	var cacheContent []byte
-	var cacheBuf bytes.Buffer
 
 	found, _ := d.cache.Get(LayerTarsBucket, string(dig), &cacheContent)
 
 	if found {
-		b, errTar := extractTarFromTarZstd(cacheContent)
-		n, errWrite := cacheBuf.Write(b)
-		if errTar != nil || len(b) <= 0 || errWrite != nil || n <= 0 {
-			found = false
+		b, err := extractTarFromTarZstd(cacheContent)
+		if err == nil && len(b) > 0 {
+			cacheBuf := bytes.NewBuffer(b)
+			layerCh <- layer{ID: dig, Content: ioutil.NopCloser(cacheBuf)}
+			return
 		}
 	}
 
-	if !found {
-		rc, err := r.DownloadLayer(ctx, image.Path, dig)
-		if err != nil {
-			errCh <- xerrors.Errorf("failed to download the layer(%s): %w", dig, err)
-			return
-		}
-		defer rc.Close()
-
-		// read the incoming gzip from the layer
-		gzipReader, err := gzip.NewReader(rc)
-		if err != nil {
-			errCh <- xerrors.Errorf("could not init gzip reader: %w", err)
-			return
-		}
-		defer gzipReader.Close()
-
-		tarReader := tar.NewReader(io.TeeReader(gzipReader, &tarContent))
-
-		if len(filenames) > 0 {
-			if cacheBuf, err = getFilteredTarballBuffer(tarReader, filenames); err != nil {
-				errCh <- err
-				return
-			}
-		}
-
-		d.storeLayerInCache(cacheBuf, dig)
+	rc, err := r.DownloadLayer(ctx, image.Path, dig)
+	if err != nil {
+		errCh <- xerrors.Errorf("failed to download the layer(%s): %w", dig, err)
+		return
 	}
+	defer rc.Close()
 
-	layerCh <- layer{ID: dig, Content: ioutil.NopCloser(&cacheBuf)}
+	// read the incoming gzip from the layer
+	gzipReader, err := gzip.NewReader(rc)
+	if err != nil {
+		errCh <- xerrors.Errorf("could not init gzip reader: %w", err)
+		return
+	}
+	defer gzipReader.Close()
+
+	b := bytes.NewBuffer(nil)
+	tr := io.TeeReader(gzipReader, b)
+	d.storeLayerInCache(tr, dig)
+	layerCh <- layer{ID: dig, Content: ioutil.NopCloser(b)}
+
 	return
 }
 
@@ -352,48 +342,11 @@ func extractTarFromTarZstd(cacheContent []byte) ([]byte, error) {
 	return tarContent, nil
 }
 
-func getFilteredTarballBuffer(tr *tar.Reader, requiredFilenames []string) (bytes.Buffer, error) {
-	var cacheBuf bytes.Buffer
-	// Create a new tar to store in the cache
-	twc := tar.NewWriter(&cacheBuf)
-	defer twc.Close()
-
-	// check what files are inside the tar
-	for {
-		hdr, err := tr.Next()
-		if err == io.EOF {
-			break // end of archive
-		}
-		if err != nil {
-			return cacheBuf, xerrors.Errorf("%s: invalid tar: %w", ErrFailedCacheWrite, err)
-		}
-		if !utils.StringInSlice(hdr.Name, requiredFilenames) {
-			continue
-		}
-
-		hdrtwc := &tar.Header{
-			Name: hdr.Name,
-			Mode: 0600,
-			Size: hdr.Size,
-		}
-
-		if err := twc.WriteHeader(hdrtwc); err != nil {
-			return cacheBuf, xerrors.Errorf("%s: %s", ErrFailedCacheWrite, err)
-		}
-
-		_, err = io.Copy(twc, tr)
-		if err != nil {
-			return cacheBuf, xerrors.Errorf("%s: %s", ErrFailedCacheWrite, err)
-		}
-	}
-	return cacheBuf, nil
-}
-
-func (d Extractor) storeLayerInCache(cacheBuf bytes.Buffer, dig digest.Digest) {
+func (d Extractor) storeLayerInCache(r io.Reader, dig digest.Digest) {
 	// compress tar to zstd before storing to cache
 	var dst bytes.Buffer
 	w, _ := zstd.NewWriter(&dst, zstd.WithEncoderLevel(zstd.SpeedFastest))
-	_, _ = io.Copy(w, &cacheBuf)
+	_, _ = io.Copy(w, r)
 	_ = w.Close()
 
 	if err := d.cache.Set(LayerTarsBucket, string(dig), dst.Bytes()); err != nil {

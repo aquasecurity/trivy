@@ -19,10 +19,7 @@ import (
 	"github.com/aquasecurity/fanal/extractor"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/docker/docker/client"
-	"github.com/genuinetools/reg/registry"
-	"github.com/opencontainers/go-digest"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // TODO: Use a memory based FS rather than actual fs
@@ -402,127 +399,6 @@ func TestDockerExtractor_Extract(t *testing.T) {
 			assert.NoError(t, err, tc.name)
 		}
 		assert.Equal(t, tc.expectedFileMap, fm, tc.name)
-	}
-}
-
-func TestDocker_ExtractLayerWorker(t *testing.T) {
-	goodtarzstdgolden, _ := ioutil.ReadFile("testdata/testdir.tar.zstd")
-	goodReturnedTarContent, _ := ioutil.ReadFile("testdata/goodTarContent.golden")
-
-	testCases := []struct {
-		name                       string
-		cacheHit                   bool
-		garbageCache               bool
-		requiredFiles              []string
-		expectedCacheContents      []byte
-		expectedReturnedTarContent []byte
-	}{
-		{
-			name:                       "happy path with cache miss and write back",
-			cacheHit:                   false,
-			requiredFiles:              []string{"testdir/helloworld.txt", "testdir/badworld.txt"},
-			expectedCacheContents:      goodtarzstdgolden,
-			expectedReturnedTarContent: goodReturnedTarContent,
-		},
-		{
-			name:                       "happy path with cache hit with garbage cache and write back",
-			cacheHit:                   true,
-			garbageCache:               true,
-			requiredFiles:              []string{"testdir/helloworld.txt", "testdir/badworld.txt"},
-			expectedCacheContents:      goodtarzstdgolden,
-			expectedReturnedTarContent: goodReturnedTarContent,
-		},
-		{
-			name:                       "happy path with cache hit",
-			cacheHit:                   true,
-			expectedCacheContents:      goodtarzstdgolden,
-			expectedReturnedTarContent: goodReturnedTarContent,
-		},
-		{
-			name:                       "happy path with cache miss but no write back",
-			cacheHit:                   false,
-			expectedCacheContents:      []byte{0x28, 0xb5, 0x2f, 0xfd, 0x4, 0x60, 0x1, 0x0, 0x0, 0x99, 0xe9, 0xd8, 0x51}, // just the empty tar header
-			expectedReturnedTarContent: []byte{},
-		},
-	}
-
-	for _, tc := range testCases {
-		inputDigest := digest.Digest("sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b")
-
-		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			httpPath := r.URL.String()
-			switch {
-			case strings.Contains(httpPath, "/v2/library/fooimage/blobs/sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b"):
-				layerData, _ := ioutil.ReadFile("testdata/testdir.tar.gz")
-				_, _ = w.Write(layerData)
-			default:
-				assert.FailNow(t, "unexpected path accessed: ", fmt.Sprintf("%s %s", r.URL.String(), tc.name))
-			}
-		}))
-		defer ts.Close()
-
-		c, err := client.NewClientWithOpts(client.WithHost(ts.URL))
-		assert.NoError(t, err)
-
-		// setup cache
-		s, tmpDir, err := setupCache()
-		require.NoError(t, err, tc.name)
-		defer os.RemoveAll(tmpDir)
-
-		if tc.cacheHit {
-			switch tc.garbageCache {
-			case true:
-				garbage, _ := ioutil.ReadFile("testdata/invalidgzvalidtar.tar.gz")
-				assert.NoError(t, s.Set(LayerTarsBucket, string(inputDigest), garbage))
-			default:
-				assert.NoError(t, s.Set(LayerTarsBucket, string(inputDigest), goodtarzstdgolden))
-			}
-		}
-
-		de := Extractor{
-			Option: types.DockerOption{
-				AuthURL:  ts.URL,
-				NonSSL:   true,
-				SkipPing: true,
-				Timeout:  time.Second * 1000,
-			},
-			Client: c,
-			cache:  s,
-		}
-
-		tsUrl := strings.TrimPrefix(ts.URL, "http://")
-		inputImage := registry.Image{
-			Domain: tsUrl,
-			Path:   "library/fooimage",
-			Tag:    "latest",
-		}
-
-		layerCh := make(chan layer)
-		errCh := make(chan error)
-		r, err := de.createRegistryClient(context.TODO(), inputImage.Domain)
-		go func() {
-			de.extractLayerWorker(inputDigest, r, context.TODO(), inputImage, errCh, layerCh, tc.requiredFiles)
-		}()
-
-		var errRecieved error
-		var layerReceived layer
-
-		select {
-		case errRecieved = <-errCh:
-			assert.FailNow(t, "unexpected error received, err: ", fmt.Sprintf("%s, %s", errRecieved, tc.name))
-		case layerReceived = <-layerCh:
-			assert.Equal(t, inputDigest, layerReceived.ID, tc.name)
-			got, _ := ioutil.ReadAll(layerReceived.Content)
-			assert.Equal(t, tc.expectedReturnedTarContent, got, tc.name)
-		}
-
-		// check cache contents
-		var actualCacheContents []byte
-		found, err := s.Get(LayerTarsBucket, string(inputDigest), &actualCacheContents)
-
-		assert.True(t, found, tc.name)
-		assert.NoError(t, err, tc.name)
-		assert.Equal(t, tc.expectedCacheContents, actualCacheContents, tc.name)
 	}
 }
 
