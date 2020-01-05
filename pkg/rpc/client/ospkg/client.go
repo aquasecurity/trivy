@@ -15,10 +15,6 @@ import (
 	rpc "github.com/aquasecurity/trivy/rpc/detector"
 )
 
-const (
-	maxRetries = 10
-)
-
 var SuperSet = wire.NewSet(
 	NewProtobufClient,
 	NewDetector,
