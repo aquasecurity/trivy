@@ -19,6 +19,7 @@ import (
 func TestRun_WithDockerEngine(t *testing.T) {
 	testCases := []struct {
 		name               string
+		imageTag           string
 		invalidImage       bool
 		testfile           string
 		expectedOutputFile string
@@ -26,8 +27,45 @@ func TestRun_WithDockerEngine(t *testing.T) {
 	}{
 		{
 			name:               "happy path, valid image path, alpine:3.10",
+			imageTag:           "alpine:3.10",
 			expectedOutputFile: "testdata/alpine-310.json.golden",
 			testfile:           "testdata/fixtures/alpine-310.tar.gz",
+		},
+		{
+			name:               "happy path, valid image path, amazonlinux:1",
+			imageTag:           "amazonlinux:1",
+			expectedOutputFile: "testdata/amazon-1.json.golden",
+			testfile:           "testdata/fixtures/amazon-1.tar.gz",
+		},
+		{
+			name:               "happy path, valid image path, centos:6",
+			imageTag:           "centos:6",
+			expectedOutputFile: "testdata/centos-6.json.golden",
+			testfile:           "testdata/fixtures/centos-6.tar.gz",
+		},
+		{
+			name:               "happy path, valid image path, debian:buster",
+			imageTag:           "debian:buster",
+			expectedOutputFile: "testdata/debian-buster.json.golden",
+			testfile:           "testdata/fixtures/debian-buster.tar.gz",
+		},
+		{
+			name:               "happy path, valid image path, distroless:base",
+			imageTag:           "gcr.io/distroless/base:latest",
+			expectedOutputFile: "testdata/distroless-base.json.golden",
+			testfile:           "testdata/fixtures/distroless-base.tar.gz",
+		},
+		{
+			name:               "happy path, valid image path, oraclelinux:6-slim",
+			imageTag:           "oraclelinux:6-slim",
+			expectedOutputFile: "testdata/oraclelinux-6-slim.json.golden",
+			testfile:           "testdata/fixtures/oraclelinux-6-slim.tar.gz",
+		},
+		{
+			name:               "happy path, valid image path, ubuntu:16.04",
+			imageTag:           "ubuntu:16.04",
+			expectedOutputFile: "testdata/ubuntu-1604.json.golden",
+			testfile:           "testdata/fixtures/ubuntu-1604.tar.gz",
 		},
 		{
 			name:          "sad path, invalid image",
@@ -64,7 +102,7 @@ func TestRun_WithDockerEngine(t *testing.T) {
 				require.NoError(t, err, tc.name)
 
 				// tag our image to something unique
-				err = cli.ImageTag(ctx, "alpine:3.10", tc.testfile)
+				err = cli.ImageTag(ctx, tc.imageTag, tc.testfile)
 				require.NoError(t, err, tc.name)
 			}
 
