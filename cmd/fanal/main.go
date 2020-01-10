@@ -48,10 +48,8 @@ func run() (err error) {
 	clearCache := flag.Bool("clear", false, "clear cache")
 	flag.Parse()
 
-	c, err := cache.New(utils.CacheDir())
-	if err != nil {
-		return err
-	}
+	c := cache.Initialize(utils.CacheDir())
+
 	if *clearCache {
 		if err = c.Clear(); err != nil {
 			return xerrors.Errorf("%w", err)
