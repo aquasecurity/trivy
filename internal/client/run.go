@@ -37,10 +37,7 @@ func run(c config.Config) (err error) {
 
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
-	cacheClient, err := cache.New(c.CacheDir)
-	if err != nil {
-		return xerrors.Errorf("unable to initialize cache client: %w", err)
-	}
+	cacheClient := cache.Initialize(c.CacheDir)
 	cacheOperation := operation.NewCache(cacheClient)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
