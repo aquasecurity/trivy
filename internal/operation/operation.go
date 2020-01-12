@@ -14,7 +14,7 @@ import (
 )
 
 var SuperSet = wire.NewSet(
-	cache.New,
+	cache.Initialize,
 	NewCache,
 )
 
