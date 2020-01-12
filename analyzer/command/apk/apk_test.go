@@ -165,7 +165,7 @@ func TestAnalyze(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %s", err)
 		}
-		apkIndexArchive = &apkIndex{}
+		apkIndexArchive := &apkIndex{}
 		if err = json.NewDecoder(f).Decode(apkIndexArchive); err != nil {
 			t.Fatalf("unexpected error: %s", err)
 		}
@@ -306,6 +306,26 @@ func TestResolveDependency(t *testing.T) {
 				"musl":        {},
 			},
 		},
+		"circular dependencies": {
+			pkgName:             "nodejs",
+			apkIndexArchivePath: "testdata/history_v3.7.json",
+			expected: map[string]struct{}{
+				"busybox":               {},
+				"c-ares":                {},
+				"ca-certificates":       {},
+				"http-parser":           {},
+				"libcrypto1.0":          {},
+				"libgcc":                {},
+				"libressl2.6-libcrypto": {},
+				"libssl1.0":             {},
+				"libstdc++":             {},
+				"libuv":                 {},
+				"musl":                  {},
+				"nodejs":                {},
+				"nodejs-npm":            {},
+				"zlib":                  {},
+			},
+		},
 	}
 	analyzer := alpineCmdAnalyzer{}
 	for testName, v := range tests {
@@ -313,10 +333,12 @@ func TestResolveDependency(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %s", err)
 		}
+		apkIndexArchive := &apkIndex{}
 		if err = json.NewDecoder(f).Decode(&apkIndexArchive); err != nil {
 			t.Fatalf("unexpected error: %s", err)
 		}
-		pkgs := analyzer.resolveDependency(v.pkgName)
+		circularDependencyCheck := map[string]struct{}{}
+		pkgs := analyzer.resolveDependency(apkIndexArchive, v.pkgName, circularDependencyCheck)
 		actual := map[string]struct{}{}
 		for _, pkg := range pkgs {
 			actual[pkg] = struct{}{}
@@ -422,8 +444,7 @@ func TestGuessVersion(t *testing.T) {
 	}
 	analyzer := alpineCmdAnalyzer{}
 	for testName, v := range tests {
-		apkIndexArchive = v.apkIndexArchive
-		actual := analyzer.guessVersion(v.pkgs, v.createdAt)
+		actual := analyzer.guessVersion(v.apkIndexArchive, v.pkgs, v.createdAt)
 		if !reflect.DeepEqual(v.expected, actual) {
 			t.Errorf("[%s]\n%s", testName, pretty.Compare(v.expected, actual))
 		}
