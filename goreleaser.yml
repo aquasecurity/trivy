@@ -33,7 +33,7 @@ nfpms:
     homepage: "https://github.com/aquasecurity"
     maintainer: "Teppei Fukuda <knqyf263@gmail.com>"
     description: "A Fast Vulnerability Scanner for Containers"
-    license: "MIT"
+    license: "AGPL-3.0"
     name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
     replacements:
       amd64: 64bit
