@@ -1248,7 +1248,7 @@ stages:
 
 trivy:
   stage: test
-  image: docker:19.03.1
+  image: docker:19.03.5
   services:
     - name: docker:dind
       entrypoint: ["env", "-u", "DOCKER_HOST"]
@@ -1266,12 +1266,21 @@ trivy:
     - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
   allow_failure: true
   script:
+    # Build image
     - docker build -t trivy-ci-test:$CI_COMMIT_SHA .
+    # Build report
+    - ./trivy --exit-code 0 --cache-dir $CI_PROJECT_DIR/.trivycache/ --no-progress  --format template --template "@contrib/gitlab.tpl"-o ${CI_PROJECT_DIR}/gl-container-scanning-report.json trivy-ci-test:$CI_COMMIT_SHA
+    # Print report
     - ./trivy --exit-code 0 --cache-dir $CI_PROJECT_DIR/.trivycache/ --no-progress --severity HIGH trivy-ci-test:$CI_COMMIT_SHA
-    - ./trivy --exit-code 1 --severity CRITICAL  --no-progress trivy-ci-test:$CI_COMMIT_SHA
+    # Fail on high and critical vulnerabilities
+    - ./trivy --exit-code 1 --cache-dir $CI_PROJECT_DIR/.trivycache/ --severity CRITICAL  --no-progress trivy-ci-test:$CI_COMMIT_SHA
   cache:
     paths:
       - $CI_PROJECT_DIR/.trivycache/
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/
+  artifacts:
+    reports:
+      container_scanning: ${CI_PROJECT_DIR}/gl-container-scanning-report.json
 ```   
 
 ## Authorization for Private Docker Registry
