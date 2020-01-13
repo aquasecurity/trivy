@@ -20,10 +20,7 @@ import (
 // Injectors from inject.go:
 
 func initializeCacheClient(cacheDir string) (operation.Cache, error) {
-	cacheCache, err := cache.New(cacheDir)
-	if err != nil {
-		return operation.Cache{}, err
-	}
+	cacheCache := cache.Initialize(cacheDir)
 	operationCache := operation.NewCache(cacheCache)
 	return operationCache, nil
 }
