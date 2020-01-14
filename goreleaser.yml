@@ -65,6 +65,7 @@ archives:
     files:
       - README.md
       - LICENSE
+      - contrib/gitlab.tpl
 
 brews:
   -
