@@ -23,3 +23,9 @@ lint: devel-deps
 cover: devel-deps
 	goveralls
 
+integration/testdata/fixtures/*.tar.gz:
+	git clone https://github.com/aquasecurity/trivy-test-images.git integration/testdata/fixtures
+
+.PHONY: test-integration
+test-integration: integration/testdata/fixtures/*.tar.gz
+	go test -v -tags=integration ./integration/...

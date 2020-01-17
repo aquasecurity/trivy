@@ -1,16 +1,26 @@
 language: go
 
+dist: bionic
+
 go:
   - "1.13"
+
 before_install:
   - go get github.com/mattn/goveralls
   - go get golang.org/x/tools/cmd/cover
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+
 script:
   - env GO111MODULE=on go test -v -covermode=count -coverprofile=coverage.out ./...
+  - make test-integration
     #  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN; fi
 
 addons:
   apt:
+    update: true
     packages: 
       - rpm
       - libdb-dev
