@@ -1269,11 +1269,11 @@ trivy:
     # Build image
     - docker build -t trivy-ci-test:$CI_COMMIT_SHA .
     # Build report
-    - ./trivy --exit-code 0 --cache-dir $CI_PROJECT_DIR/.trivycache/ --no-progress  --format template --template "@contrib/gitlab.tpl"-o ${CI_PROJECT_DIR}/gl-container-scanning-report.json trivy-ci-test:$CI_COMMIT_SHA
+    - ./trivy --exit-code 0 --cache-dir $CI_PROJECT_DIR/.trivycache/ --no-progress  --format template --template "@contrib/gitlab.tpl" -o ${CI_PROJECT_DIR}/gl-container-scanning-report.json trivy-ci-test:$CI_COMMIT_SHA
     # Print report
     - ./trivy --exit-code 0 --cache-dir $CI_PROJECT_DIR/.trivycache/ --no-progress --severity HIGH trivy-ci-test:$CI_COMMIT_SHA
     # Fail on high and critical vulnerabilities
-    - ./trivy --exit-code 1 --cache-dir $CI_PROJECT_DIR/.trivycache/ --severity CRITICAL  --no-progress trivy-ci-test:$CI_COMMIT_SHA
+    - ./trivy --exit-code 1 --cache-dir $CI_PROJECT_DIR/.trivycache/ --severity CRITICAL --no-progress trivy-ci-test:$CI_COMMIT_SHA
   cache:
     paths:
       - $CI_PROJECT_DIR/.trivycache/
