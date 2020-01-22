@@ -1,0 +1,62 @@
+name: Test
+on: [push, pull_request]
+jobs:
+  unittest:
+    name: Unit Test
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
+
+    - name: Install dependencies
+      run: sudo apt-get install libdb-dev
+
+    - name: Run unit tests
+      run: make test
+
+  integration:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
+
+    - name: Install dependencies
+      run: sudo apt-get install libdb-dev
+
+    - name: Run instegration tests
+      run: make test-integration
+
+  bench:
+    name: Benchmark
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
+
+    - name: Install dependencies
+      run: sudo apt-get install libdb-dev
+
+    - name: Run Benchmark
+      run: make test-performance
