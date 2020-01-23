@@ -49,7 +49,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 - [Continuous Integration (CI)](#continuous-integration-ci)
   - [Travis CI](#travis-ci)
   - [CircleCI](#circleci)
-  - [GitLab CI](#gitlab)
+  - [GitLab CI](#gitlab-ci)
   - [Authorization for Private Docker Registry](#authorization-for-private-docker-registry)
 - [Vulnerability Detection](#vulnerability-detection)
   - [OS Packages](#os-packages)
@@ -1239,7 +1239,7 @@ workflows:
 Example: https://circleci.com/gh/aquasecurity/trivy-ci-test  
 Repository: https://github.com/aquasecurity/trivy-ci-test
 
-## GitLab
+## GitLab CI
 
 ```
 $ cat .gitlab-ci.yml
@@ -1248,7 +1248,7 @@ stages:
 
 trivy:
   stage: test
-  image: docker:19.03.5
+  image: docker:stable
   services:
     - name: docker:dind
       entrypoint: ["env", "-u", "DOCKER_HOST"]
@@ -1258,6 +1258,7 @@ trivy:
     DOCKER_DRIVER: overlay2
     # See https://github.com/docker-library/docker/pull/166
     DOCKER_TLS_CERTDIR: ""
+    IMAGE: trivy-ci-test:$CI_COMMIT_SHA
   before_script:
     - apk add --no-cache curl
     - export VERSION=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
@@ -1267,21 +1268,21 @@ trivy:
   allow_failure: true
   script:
     # Build image
-    - docker build -t trivy-ci-test:$CI_COMMIT_SHA .
+    - docker build -t $IMAGE .
     # Build report
-    - ./trivy --exit-code 0 --cache-dir $CI_PROJECT_DIR/.trivycache/ --no-progress  --format template --template "@contrib/gitlab.tpl" -o ${CI_PROJECT_DIR}/gl-container-scanning-report.json trivy-ci-test:$CI_COMMIT_SHA
+    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE
     # Print report
-    - ./trivy --exit-code 0 --cache-dir $CI_PROJECT_DIR/.trivycache/ --no-progress --severity HIGH trivy-ci-test:$CI_COMMIT_SHA
+    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE
     # Fail on high and critical vulnerabilities
-    - ./trivy --exit-code 1 --cache-dir $CI_PROJECT_DIR/.trivycache/ --severity CRITICAL --no-progress trivy-ci-test:$CI_COMMIT_SHA
+    - ./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE
   cache:
     paths:
-      - $CI_PROJECT_DIR/.trivycache/
-  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/
+      - .trivycache/
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/ (Container Scanning report is available on GitLab EE Ultimate or GitLab.com Gold)
   artifacts:
     reports:
-      container_scanning: ${CI_PROJECT_DIR}/gl-container-scanning-report.json
-```   
+      container_scanning: gl-container-scanning-report.json
+```
 
 ## Authorization for Private Docker Registry
 
