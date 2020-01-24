@@ -100,8 +100,8 @@ var testCases = []testCase{
 		imageFile:            "testdata/fixtures/vulnimage.tar.gz",
 		expectedFiles:        []string{"etc/os-release", "node-app/package-lock.json", "python-app/Pipfile.lock", "ruby-app/Gemfile.lock", "rust-app/Cargo.lock", "/config", "etc/alpine-release", "lib/apk/db/installed", "php-app/composer.lock"},
 		expectedOS:           analyzer.OS{Name: "3.7.1", Family: "alpine"},
-		expectedLibraries:    "testdata/goldens/knqyf263vuln-image:1.2.3.expectedlibs.golden",
-		expectedPkgsFromCmds: "testdata/goldens/knqyf263vuln-image:1.2.3.expectedpkgsfromcmds.golden",
+		expectedLibraries:    "testdata/goldens/knqyf263vuln-image1.2.3.expectedlibs.golden",
+		expectedPkgsFromCmds: "testdata/goldens/knqyf263vuln-image1.2.3.expectedpkgsfromcmds.golden",
 	},
 }
 
@@ -270,7 +270,11 @@ func checkPackageFromCommands(t *testing.T, actualFiles extractor.FileMap, osFou
 func checkPackages(actualFiles extractor.FileMap, t *testing.T, tc testCase) {
 	actualPkgs, err := analyzer.GetPackages(actualFiles)
 	require.NoError(t, err)
-	data, _ := ioutil.ReadFile(fmt.Sprintf("testdata/goldens/%s.expectedpackages.golden", strings.ReplaceAll(tc.imageName, "/", "")))
+
+	r := strings.NewReplacer("/", "", ":", "")
+	goldenFile := fmt.Sprintf("testdata/goldens/%s.expectedpackages.golden", r.Replace(tc.imageName))
+
+	data, _ := ioutil.ReadFile(goldenFile)
 	var expectedPkgs []analyzer.Package
 	json.Unmarshal(data, &expectedPkgs)
 	assert.ElementsMatch(t, expectedPkgs, actualPkgs, tc.name)
