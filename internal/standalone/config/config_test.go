@@ -169,6 +169,48 @@ func TestConfig_Init(t *testing.T) {
 			},
 		},
 		{
+			name: "invalid option combination: --template enabled without --format",
+			fields: fields{
+				Template:   "@contrib/gitlab.tpl",
+				severities: "LOW",
+			},
+			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
+			logs: []string{
+				"--template is ignored because --format template is not specified. Use --template option with --format template option.",
+			},
+			want: Config{
+				AppVersion: "0.0.0",
+				ImageName:  "gitlab/gitlab-ce:12.7.2-ce.0",
+				Output:     os.Stdout,
+				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				severities: "LOW",
+				Template:   "@contrib/gitlab.tpl",
+				VulnType:   []string{""},
+			},
+		},
+		{
+			name: "invalid option combination: --template and --format json",
+			fields: fields{
+				Format:     "json",
+				Template:   "@contrib/gitlab.tpl",
+				severities: "LOW",
+			},
+			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
+			logs: []string{
+				"--template is ignored because --format json is specified. Use --template option with --format template option.",
+			},
+			want: Config{
+				AppVersion: "0.0.0",
+				Format:     "json",
+				ImageName:  "gitlab/gitlab-ce:12.7.2-ce.0",
+				Output:     os.Stdout,
+				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				severities: "LOW",
+				Template:   "@contrib/gitlab.tpl",
+				VulnType:   []string{""},
+			},
+		},
+		{
 			name: "with latest tag",
 			fields: fields{
 				onlyUpdate: "alpine",
