@@ -5,12 +5,209 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/fanal/analyzer"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestMain(m *testing.M) {
 	log.InitLogger(false, false)
 	os.Exit(m.Run())
+}
+
+func TestScanner_Detect(t *testing.T) {
+	type args struct {
+		osVer string
+		pkgs  []analyzer.Package
+	}
+	tests := []struct {
+		name    string
+		args    args
+		get     []dbTypes.GetExpectation
+		want    []types.DetectedVulnerability
+		wantErr bool
+	}{
+		{
+			name: "happy path: src pkg name is different from bin pkg name",
+			args: args{
+				osVer: "7.6",
+				pkgs: []analyzer.Package{
+					{
+						Name:       "vim-minimal",
+						Version:    "7.4.160",
+						Release:    "5.el7",
+						Epoch:      2,
+						Arch:       "x86_64",
+						SrcName:    "vim",
+						SrcVersion: "7.4.160",
+						SrcRelease: "5.el7",
+						SrcEpoch:   2,
+					},
+				},
+			},
+			get: []dbTypes.GetExpectation{
+				{
+					Args: dbTypes.GetArgs{
+						Release: "7",
+						PkgName: "vim",
+					},
+					Returns: dbTypes.GetReturns{
+						Advisories: []dbTypes.Advisory{
+							{
+								VulnerabilityID: "CVE-2017-5953",
+								FixedVersion:    "",
+							},
+							{
+								VulnerabilityID: "CVE-2017-6350",
+								FixedVersion:    "",
+							},
+						},
+					},
+				},
+				{
+					Args: dbTypes.GetArgs{
+						Release: "7",
+						PkgName: "vim-minimal",
+					},
+					Returns: dbTypes.GetReturns{
+						Advisories: []dbTypes.Advisory{
+							{
+								VulnerabilityID: "CVE-2019-12735",
+								FixedVersion:    "2:7.4.160-6.el7_6",
+							},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2017-5953",
+					PkgName:          "vim-minimal",
+					InstalledVersion: "2:7.4.160-5.el7",
+				},
+				{
+					VulnerabilityID:  "CVE-2017-6350",
+					PkgName:          "vim-minimal",
+					InstalledVersion: "2:7.4.160-5.el7",
+				},
+				{
+					VulnerabilityID:  "CVE-2019-12735",
+					PkgName:          "vim-minimal",
+					InstalledVersion: "2:7.4.160-5.el7",
+					FixedVersion:     "2:7.4.160-6.el7_6",
+				},
+			},
+		},
+		{
+			name: "happy path: src pkg name is the same as bin pkg name",
+			args: args{
+				osVer: "6.5",
+				pkgs: []analyzer.Package{
+					{
+						Name:       "nss",
+						Version:    "3.36.0",
+						Release:    "7.1.el7_6",
+						Epoch:      0,
+						Arch:       "x86_64",
+						SrcName:    "nss",
+						SrcVersion: "3.36.0",
+						SrcRelease: "7.4.160",
+						SrcEpoch:   0,
+					},
+				},
+			},
+			get: []dbTypes.GetExpectation{
+				{
+					Args: dbTypes.GetArgs{
+						Release: "6",
+						PkgName: "nss",
+					},
+					Returns: dbTypes.GetReturns{
+						Advisories: []dbTypes.Advisory{
+							{
+								VulnerabilityID: "CVE-2015-2808",
+								FixedVersion:    "",
+							},
+							{
+								VulnerabilityID: "CVE-2016-2183",
+								FixedVersion:    "",
+							},
+							{
+								VulnerabilityID: "CVE-2018-12404",
+								FixedVersion:    "3.44.0-4.el7",
+							},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2015-2808",
+					PkgName:          "nss",
+					InstalledVersion: "3.36.0-7.1.el7_6",
+				},
+				{
+					VulnerabilityID:  "CVE-2016-2183",
+					PkgName:          "nss",
+					InstalledVersion: "3.36.0-7.1.el7_6",
+				},
+				{
+					VulnerabilityID:  "CVE-2018-12404",
+					PkgName:          "nss",
+					InstalledVersion: "3.36.0-7.1.el7_6",
+					FixedVersion:     "3.44.0-4.el7",
+				},
+			},
+		},
+		{
+			name: "sad path: Get returns an error",
+			args: args{
+				osVer: "5",
+				pkgs: []analyzer.Package{
+					{
+						Name:       "nss",
+						Version:    "3.36.0",
+						Release:    "7.1.el7_6",
+						Epoch:      0,
+						Arch:       "x86_64",
+						SrcName:    "nss",
+						SrcVersion: "3.36.0",
+						SrcRelease: "7.4.160",
+						SrcEpoch:   0,
+					},
+				},
+			},
+			get: []dbTypes.GetExpectation{
+				{
+					Args: dbTypes.GetArgs{
+						Release: "5",
+						PkgName: "nss",
+					},
+					Returns: dbTypes.GetReturns{
+						Err: xerrors.New("error"),
+					},
+				},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockVs := new(dbTypes.MockVulnSrc)
+			mockVs.ApplyGetExpectations(tt.get)
+			s := &Scanner{
+				vs: mockVs,
+			}
+			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)
+			require.Equal(t, tt.wantErr, err != nil)
+			assert.Equal(t, tt.want, got)
+		})
+	}
 }
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
