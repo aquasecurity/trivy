@@ -166,6 +166,17 @@ func TestConfig_Init(t *testing.T) {
 			},
 		},
 		{
+			name: "sad: multiple image names",
+			fields: fields{
+				severities: "MEDIUM",
+			},
+			args: []string{"centos:7", "alpine:3.10"},
+			logs: []string{
+				"multiple images cannot be specified",
+			},
+			wantErr: "arguments error",
+		},
+		{
 			name: "sad: no image name",
 			fields: fields{
 				severities: "MEDIUM",
