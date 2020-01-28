@@ -211,6 +211,26 @@ func TestConfig_Init(t *testing.T) {
 			},
 		},
 		{
+			name: "invalid option combination: --format template without --template",
+			fields: fields{
+				Format:     "template",
+				severities: "LOW",
+			},
+			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
+			logs: []string{
+				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
+			},
+			want: Config{
+				AppVersion: "0.0.0",
+				Format:     "template",
+				ImageName:  "gitlab/gitlab-ce:12.7.2-ce.0",
+				Output:     os.Stdout,
+				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				severities: "LOW",
+				VulnType:   []string{""},
+			},
+		},
+		{
 			name: "with latest tag",
 			fields: fields{
 				onlyUpdate: "alpine",
