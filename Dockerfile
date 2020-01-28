@@ -9,7 +9,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$(g
 
 
 # LAYER compress — — — — — — — — — — — — — — — — — — — — — — —
-FROM alpine:3.9 AS compress
+FROM alpine:3.11 AS compress
 COPY --from=builder /trivy /usr/local/bin/trivy
 
 RUN set -eux && apk --update --no-cache add \
@@ -21,7 +21,7 @@ RUN set -eux && apk --update --no-cache add \
 
 
 # LAYER final — — — — — — — — — — — — — — — — — — — — — — — —
-FROM alpine:3.9 AS final
+FROM alpine:3.11 AS final
 COPY --from=compress /usr/local/bin/trivy /usr/local/bin/trivy
 
 RUN set -eux && apk --update --no-cache add \
