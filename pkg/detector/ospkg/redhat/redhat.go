@@ -57,25 +57,42 @@ func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.Detecte
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
+		// For Red Hat Security Data API containing only source package names
 		advisories, err := s.vs.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
 		}
 
-		installed := utils.FormatSrcVersion(pkg)
+		installed := utils.FormatVersion(pkg)
 		installedVersion := version.NewVersion(installed)
-		for _, adv := range advisories {
-			fixedVersion := version.NewVersion(adv.FixedVersion)
 
+		for _, adv := range advisories {
+			if adv.FixedVersion != "" {
+				continue
+			}
 			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 			}
+			vulns = append(vulns, vuln)
+		}
+
+		// For Red Hat OVAL containing only binary package names
+		advisories, err = s.vs.Get(osVer, pkg.Name)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
+		}
+
+		for _, adv := range advisories {
+			fixedVersion := version.NewVersion(adv.FixedVersion)
 			if installedVersion.LessThan(fixedVersion) {
-				vuln.FixedVersion = fixedVersion.String()
-				vulns = append(vulns, vuln)
-			} else if adv.FixedVersion == "" {
+				vuln := types.DetectedVulnerability{
+					VulnerabilityID:  adv.VulnerabilityID,
+					PkgName:          pkg.Name,
+					InstalledVersion: installed,
+					FixedVersion:     fixedVersion.String(),
+				}
 				vulns = append(vulns, vuln)
 			}
 		}

@@ -12629,6 +12629,32 @@
         ]
       },
       {
+        "VulnerabilityID": "CVE-2019-12735",
+        "PkgName": "vim-minimal",
+        "InstalledVersion": "2:7.4.629-5.el6_8.1",
+        "FixedVersion": "2:7.4.629-5.el6_10.2",
+        "Title": "vim/neovim: ':source!' command allows arbitrary command execution via modelines",
+        "Description": "getchar.c in Vim before 8.1.1365 and Neovim before 0.3.6 allows remote attackers to execute arbitrary OS commands via the :source! command in a modeline, as demonstrated by execute in Vim, and assert_fails or nvim_input in Neovim.",
+        "Severity": "CRITICAL",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00031.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00036.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00037.html",
+          "http://www.securityfocus.com/bid/108724",
+          "https://bugs.debian.org/930020",
+          "https://bugs.debian.org/930024",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12735",
+          "https://github.com/neovim/neovim/pull/10082",
+          "https://github.com/numirias/security/blob/master/doc/2019-06-04_ace-vim-neovim.md",
+          "https://github.com/vim/vim/commit/53575521406739cf20bbe4e384d88e7dca11f040",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2BMDSHTF754TITC6AQJPCS5IRIDMMIM7/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TRIRBC2YRGKPAWVRMZS4SZTGGCVRVZPR/",
+          "https://usn.ubuntu.com/4016-1/",
+          "https://usn.ubuntu.com/4016-2/",
+          "https://www.debian.org/security/2019/dsa-4467"
+        ]
+      },
+      {
         "VulnerabilityID": "CVE-2017-5953",
         "PkgName": "vim-minimal",
         "InstalledVersion": "2:7.4.629-5.el6_8.1",
