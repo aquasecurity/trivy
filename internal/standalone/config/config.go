@@ -118,6 +118,9 @@ func (c *Config) Init() (err error) {
 		c.logger.Error(`trivy requires at least 1 argument or --input option`)
 		cli.ShowAppHelp(c.context)
 		return xerrors.New("arguments error")
+	} else if len(args) > 1 {
+		c.logger.Error(`multiple images cannot be specified`)
+		return xerrors.New("arguments error")
 	}
 
 	c.Output = os.Stdout

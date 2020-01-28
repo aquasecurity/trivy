@@ -205,6 +205,17 @@ func TestConfig_Init(t *testing.T) {
 			wantErr: "The --skip-update and --download-db-only option can not be specified both",
 		},
 		{
+			name: "sad: multiple image names",
+			fields: fields{
+				severities: "MEDIUM",
+			},
+			args: []string{"centos:7", "alpine:3.10"},
+			logs: []string{
+				"multiple images cannot be specified",
+			},
+			wantErr: "arguments error",
+		},
+		{
 			name: "sad: no image name",
 			fields: fields{
 				severities: "MEDIUM",
