@@ -97,6 +97,16 @@ func New(c *cli.Context) (Config, error) {
 }
 
 func (c *Config) Init() (err error) {
+	if c.Template != "" {
+		if c.Format == "" {
+			c.logger.Warn("--template is ignored because --format template is not specified. Use --template option with --format template option.")
+		} else if c.Format != "template" {
+			c.logger.Warnf("--template is ignored because --format %s is specified. Use --template option with --format template option.", c.Format)
+		}
+	}
+	if c.Format == "template" && c.Template == "" {
+		c.logger.Warn("--format template is ignored because --template not is specified. Specify --template option when you use --format template.")
+	}
 	if c.onlyUpdate != "" || c.refresh || c.autoRefresh {
 		c.logger.Warn("--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.")
 	}
