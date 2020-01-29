@@ -13,7 +13,7 @@ func TestSetAndGetAndClear(t *testing.T) {
 	tempCacheDir, _ := ioutil.TempDir("", "TestCacheDir-*")
 	f, _ := ioutil.TempFile(tempCacheDir, "foo.bar.baz-*")
 
-	c := Initialize(tempCacheDir)
+	c := New(tempCacheDir)
 
 	// set
 	expectedCacheContents := "foo bar baz"

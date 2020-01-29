@@ -38,7 +38,7 @@ import (
 
 func main() {
 	if err := run(); err != nil {
-		log.Fatal(err)
+		log.Fatalf("%+v", err)
 	}
 }
 
@@ -48,7 +48,7 @@ func run() (err error) {
 	clearCache := flag.Bool("clear", false, "clear cache")
 	flag.Parse()
 
-	c := cache.Initialize(utils.CacheDir())
+	c := cache.New(utils.CacheDir())
 
 	if *clearCache {
 		if err = c.Clear(); err != nil {
@@ -63,10 +63,7 @@ func run() (err error) {
 		SkipPing: true,
 	}
 
-	ext, err := docker.NewDockerExtractor(opt, c)
-	if err != nil {
-		return err
-	}
+	ext := docker.NewDockerExtractor(opt, c)
 	ac := analyzer.Config{Extractor: ext}
 
 	var files extractor.FileMap
@@ -76,12 +73,7 @@ func run() (err error) {
 			return err
 		}
 	} else {
-		rc, err := openStream(*tarPath)
-		if err != nil {
-			return err
-		}
-
-		files, err = ac.AnalyzeFile(ctx, rc)
+		files, err = ac.AnalyzeFile(ctx, *tarPath)
 		if err != nil {
 			return err
 		}
