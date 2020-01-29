@@ -8,19 +8,17 @@ import (
 	"net/http/httptest"
 	"os"
 	"path"
-	"reflect"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/genuinetools/reg/registry"
-	"github.com/opencontainers/go-digest"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/extractor/image"
 	"github.com/aquasecurity/fanal/types"
-	"github.com/docker/docker/client"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestExtractFromFile(t *testing.T) {
@@ -112,20 +110,16 @@ func TestExtractFromFile(t *testing.T) {
 
 	for _, v := range vectors {
 		t.Run(path.Base(v.file), func(t *testing.T) {
-			f, err := os.Open(v.file)
-			if err != nil {
-				t.Fatalf("Open() error: %v", err)
-			}
-			defer f.Close()
+			imageRef := image.Reference{Name: v.file, IsFile: true}
+			dir, err := ioutil.TempDir("", "Extract")
+			require.NoError(t, err, v.file)
 
-			d := Extractor{}
-			fm, err := d.ExtractFromFile(context.TODO(), f, v.filenames)
-			if v.err != err {
-				t.Errorf("err: got %v, want %v", v.err, err)
-			}
-			if !reflect.DeepEqual(fm, v.FileMap) {
-				t.Errorf("FilesMap: got %v, want %v", fm, v.FileMap)
-			}
+			c := cache.New(dir)
+			d := NewDockerExtractor(types.DockerOption{Timeout: 10 * time.Second}, c)
+
+			fm, err := d.Extract(context.TODO(), imageRef, []string{"docker-archive:"}, v.filenames)
+			assert.NoError(t, err, v.file)
+			assert.Equal(t, v.FileMap, fm, v.file)
 		})
 	}
 }
@@ -176,49 +170,11 @@ func TestExtractFiles(t *testing.T) {
 
 			d := Extractor{}
 			fm, opqDirs, err := d.ExtractFiles(f, v.filenames)
-			if v.err != err {
-				t.Errorf("err: got %v, want %v", v.err, err)
-			}
-			if !reflect.DeepEqual(opqDirs, v.opqDirs) {
-				t.Errorf("OPQDirs: got %v, want %v", opqDirs, v.opqDirs)
-			}
-			if !reflect.DeepEqual(fm, v.FileMap) {
-				t.Errorf("FilesMap: got %v, want %v", fm, v.FileMap)
-			}
+			assert.Equal(t, v.err, err, v.file)
+			assert.Equal(t, v.opqDirs, opqDirs, v.file)
+			assert.Equal(t, v.FileMap, fm, v.file)
 		})
 	}
-}
-
-func TestDockerExtractor_SaveLocalImage(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		httpPath := r.URL.String()
-		switch {
-		case strings.Contains(httpPath, "images/get?names=fooimage"):
-			_, _ = fmt.Fprint(w, "foocontent")
-		default:
-			assert.FailNow(t, "unexpected path accessed: ", r.URL.String())
-		}
-	}))
-	defer ts.Close()
-
-	c, err := client.NewClientWithOpts(client.WithHost(ts.URL))
-	assert.NoError(t, err)
-
-	// setup cache
-	tempCacheDir, _ := ioutil.TempDir("", "TestDockerExtractor_SaveLocalImage-*")
-	defer func() {
-		_ = os.RemoveAll(tempCacheDir)
-	}()
-
-	de := Extractor{
-		Option: types.DockerOption{},
-		Client: c,
-		cache:  cache.Initialize(tempCacheDir),
-	}
-
-	r, err := de.SaveLocalImage(context.TODO(), "fooimage")
-	assert.NotNil(t, r)
-	assert.NoError(t, err)
 }
 
 func TestDockerExtractor_Extract(t *testing.T) {
@@ -237,6 +193,11 @@ func TestDockerExtractor_Extract(t *testing.T) {
 			manifestResp: `{
 		  "schemaVersion": 2,
 		  "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+          "config": {
+            "mediaType": "application/vnd.docker.container.image.v1+json",
+            "size": 1512,
+            "digest": "sha256:2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
+          },
 		  "layers": [
 		     {
 		        "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
@@ -256,18 +217,23 @@ func TestDockerExtractor_Extract(t *testing.T) {
 		{
 			name:          "sad path: invalid manifest response",
 			manifestResp:  "badManifestResponse",
-			expectedError: "failed to get the v2 manifest: invalid character 'b' looking for beginning of value",
+			expectedError: "invalid character 'b' looking for beginning of value",
 		},
 		{
 			name:          "sad path: bad image name",
 			imageName:     "https://docker/very/bad/imagename",
-			expectedError: `failed to parse the image: parsing image "https://docker/very/bad/imagename" failed: invalid reference format`,
+			expectedError: `invalid reference format`,
 		},
 		{
 			name: "sad path: corrupt layer data invalid gzip",
 			manifestResp: `{
 		 "schemaVersion": 2,
 		 "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+          "config": {
+            "mediaType": "application/vnd.docker.container.image.v1+json",
+            "size": 1512,
+            "digest": "sha256:2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
+          },
 		 "layers": [
 		    {
 		       "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
@@ -276,195 +242,66 @@ func TestDockerExtractor_Extract(t *testing.T) {
 		    }
 		 ]
 		}`,
-			fileName:        "testdata/opq.tar",
+			fileName:        "testdata/testdir.tar.zstd",
 			blobData:        "foo",
 			expectedFileMap: extractor.FileMap(nil),
-			expectedError:   "invalid gzip: gzip: invalid header",
+			expectedError:   "failed to extract files: failed to extract the archive: unexpected EOF",
 		},
 	}
 
 	for _, tc := range testCases {
-		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			httpPath := r.URL.String()
+		t.Run(tc.name, func(t *testing.T) {
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				httpPath := r.URL.String()
+				switch {
+				case strings.Contains(httpPath, "/v2/library/fooimage/manifests/latest"):
+					w.Header().Set("Content-Type", "application/vnd.docker.distribution.manifest.v2+json")
+					_, _ = fmt.Fprint(w, tc.manifestResp)
+				case strings.Contains(httpPath, "/v2/library/fooimage/blobs/sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b"):
+					b, _ := ioutil.ReadFile(tc.fileName)
+					_, _ = w.Write(b)
+				case strings.Contains(httpPath, "/v2/library/fooimage/blobs/"):
+					_, _ = w.Write([]byte(tc.blobData))
+				case strings.HasPrefix(httpPath, "/v2/"):
+					_, _ = w.Write([]byte("ok"))
+				default:
+					assert.FailNow(t, "unexpected path accessed: ", r.URL.String())
+				}
+			}))
+			defer ts.Close()
+
+			// setup cache
+			tempCacheDir, _ := ioutil.TempDir("", "TestDockerExtractor_Extract-*")
+			defer func() {
+				_ = os.RemoveAll(tempCacheDir)
+			}()
+
+			de := NewDockerExtractor(types.DockerOption{
+				InsecureSkipTLSVerify: true,
+				SkipPing:              true,
+				Timeout:               1000 * time.Second,
+			}, cache.New(tempCacheDir))
+
+			tsURL := strings.TrimPrefix(ts.URL, "http://")
+
+			var imageRef image.Reference
 			switch {
-			case strings.Contains(httpPath, "/v2/library/fooimage/manifests/latest"):
-				w.Header().Set("Content-Type", "application/vnd.docker.distribution.manifest.v2+json")
-				_, _ = fmt.Fprint(w, tc.manifestResp)
-			case strings.Contains(httpPath, "/v2/library/fooimage/blobs/sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b"):
-				b, _ := ioutil.ReadFile(tc.fileName)
-				_, _ = w.Write(b)
-			case strings.Contains(httpPath, "/v2/library/fooimage/blobs/"):
-				_, _ = w.Write([]byte(tc.blobData))
+			case tc.imageName != "":
+				imageRef = image.Reference{Name: tc.imageName, IsFile: false}
 			default:
-				assert.FailNow(t, "unexpected path accessed: ", r.URL.String())
+				imageRef = image.Reference{Name: tsURL + "/library/fooimage", IsFile: false}
 			}
-		}))
-		defer ts.Close()
+			fm, err := de.Extract(context.TODO(), imageRef, []string{"docker://"}, tc.fileToExtract)
 
-		c, err := client.NewClientWithOpts(client.WithHost(ts.URL))
-		assert.NoError(t, err)
-
-		// setup cache
-		tempCacheDir, _ := ioutil.TempDir("", "TestDockerExtractor_Extract-*")
-		defer func() {
-			_ = os.RemoveAll(tempCacheDir)
-		}()
-
-		de := Extractor{
-			Option: types.DockerOption{
-				AuthURL:  ts.URL,
-				NonSSL:   true,
-				SkipPing: true,
-				Timeout:  time.Second * 1000,
-			},
-			Client: c,
-			cache:  cache.Initialize(tempCacheDir),
-		}
-
-		tsURL := strings.TrimPrefix(ts.URL, "http://")
-
-		var imageName string
-		switch {
-		case tc.imageName != "":
-			imageName = tc.imageName
-		default:
-			imageName = tsURL + "/library/fooimage"
-		}
-		fm, err := de.Extract(context.TODO(), imageName, tc.fileToExtract)
-
-		switch {
-		case tc.expectedError != "":
-			assert.Equal(t, tc.expectedError, err.Error(), tc.name)
-		default:
-			assert.NoError(t, err, tc.name)
-		}
-		assert.Equal(t, tc.expectedFileMap, fm, tc.name)
-	}
-}
-
-func TestDocker_ExtractLayerWorker(t *testing.T) {
-	goodCacheContents, _ := ioutil.ReadFile("testdata/testdir.tar.gz")
-	goodReturnedTarContent, _ := ioutil.ReadFile("testdata/goodTarContentAll.golden")
-	badTarCacheData, _ := ioutil.ReadFile("testdata/invalidgzvalidtar.tar.gz")
-
-	testCases := []struct {
-		name                       string
-		cacheHit                   bool
-		garbageCache               bool
-		requiredFiles              []string
-		expectedCacheContents      []byte
-		expectedReturnedTarContent []byte
-		expectedError              string
-	}{
-		{
-			name:                       "happy path with cache miss and write back",
-			cacheHit:                   false,
-			requiredFiles:              []string{"testdir/helloworld.txt", "testdir/badworld.txt"},
-			expectedCacheContents:      goodCacheContents,
-			expectedReturnedTarContent: goodReturnedTarContent,
-		},
-		{
-			name:                  "happy path with cache hit with garbage cache",
-			cacheHit:              true,
-			garbageCache:          true,
-			requiredFiles:         []string{"testdir/helloworld.txt", "testdir/badworld.txt"},
-			expectedCacheContents: badTarCacheData,
-			expectedError:         "invalid gzip: gzip: invalid header",
-		},
-		{
-			name:                       "happy path with cache hit",
-			cacheHit:                   true,
-			expectedCacheContents:      goodCacheContents,
-			expectedReturnedTarContent: goodReturnedTarContent,
-		},
-	}
-
-	for _, tc := range testCases {
-		inputDigest := digest.Digest("sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b")
-
-		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			httpPath := r.URL.String()
 			switch {
-			case strings.Contains(httpPath, "/v2/library/fooimage/blobs/sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b"):
-				layerData, _ := ioutil.ReadFile("testdata/testdir.tar.gz")
-				_, _ = w.Write(layerData)
+			case tc.expectedError != "":
+				require.NotNil(t, err, tc.name)
+				assert.Contains(t, err.Error(), tc.expectedError, tc.name)
 			default:
-				assert.FailNow(t, "unexpected path accessed: ", fmt.Sprintf("%s %s", r.URL.String(), tc.name))
+				assert.NoError(t, err, tc.name)
 			}
-		}))
-		defer ts.Close()
-
-		c, err := client.NewClientWithOpts(client.WithHost(ts.URL))
-		assert.NoError(t, err)
-
-		// setup cache
-		tmpDir, _ := ioutil.TempDir("", "TestDocker_ExtractLayerWorker-*")
-		s := cache.Initialize(tmpDir)
-		defer os.RemoveAll(tmpDir)
-
-		if tc.cacheHit {
-			switch tc.garbageCache {
-			case true:
-				garbage, _ := os.Open("testdata/invalidgzvalidtar.tar.gz")
-				defer garbage.Close()
-				r, err := s.Set(string(inputDigest), garbage)
-				assert.NoError(t, err)
-				_, _ = ioutil.ReadAll(r) // trigger the write
-			default:
-				goodTar, _ := os.Open("testdata/testdir.tar.gz")
-				defer goodTar.Close()
-				r, err := s.Set(string(inputDigest), goodTar)
-				assert.NoError(t, err)
-				_, _ = ioutil.ReadAll(r) // trigger the write
-			}
-		}
-
-		de := Extractor{
-			Option: types.DockerOption{
-				AuthURL:  ts.URL,
-				NonSSL:   true,
-				SkipPing: true,
-				Timeout:  time.Second * 1000,
-			},
-			Client: c,
-			cache:  s,
-		}
-
-		tsUrl := strings.TrimPrefix(ts.URL, "http://")
-		inputImage := registry.Image{
-			Domain: tsUrl,
-			Path:   "library/fooimage",
-			Tag:    "latest",
-		}
-
-		layerCh := make(chan layer)
-		errCh := make(chan error)
-		r, err := de.createRegistryClient(context.TODO(), inputImage.Domain)
-		go func() {
-			de.extractLayerWorker(inputDigest, r, context.TODO(), inputImage, errCh, layerCh)
-		}()
-
-		var errRecieved error
-		var layerReceived layer
-
-		select {
-		case errRecieved = <-errCh:
-			if tc.garbageCache {
-				assert.Equal(t, tc.expectedError, errRecieved.Error(), tc.name)
-			} else {
-				assert.FailNow(t, "unexpected error received, err: ", fmt.Sprintf("%s, %s", errRecieved, tc.name))
-			}
-		case layerReceived = <-layerCh:
-			assert.Equal(t, inputDigest, layerReceived.ID, tc.name)
-			got, _ := ioutil.ReadAll(layerReceived.Content)
-			assert.Equal(t, tc.expectedReturnedTarContent, got, tc.name)
-		}
-
-		// check cache contents
-		foundReader := s.Get(string(inputDigest))
-		actualContents, err := ioutil.ReadAll(foundReader)
-		assert.NoError(t, err)
-		assert.Equal(t, tc.expectedCacheContents, actualContents, tc.name)
+			assert.Equal(t, tc.expectedFileMap, fm, tc.name)
+		})
 	}
 }
 
@@ -478,16 +315,20 @@ func TestDocker_ExtractLayerFiles(t *testing.T) {
 	f, _ := os.Open("testdata/opq2.tar")
 	defer f.Close()
 
+	calledCleanup := false
 	go func() {
 		layerCh <- layer{
-			ID:      "sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b",
-			Content: f,
+			id:      "sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b",
+			content: f,
+			cleanup: func() {
+				calledCleanup = true
+			},
 		}
 	}()
 
 	filesInLayers := map[string]extractor.FileMap{}
 	opqInLayers := map[string]extractor.OPQDirs{}
-	err := de.extractLayerFiles(context.TODO(), layerCh, errCh, inputFilenames, filesInLayers, opqInLayers)
+	err := de.extractLayerFiles(context.TODO(), layerCh, errCh, filesInLayers, opqInLayers, inputFilenames)
 	assert.NoError(t, err)
 	assert.Equal(t, map[string]extractor.FileMap{
 		"sha256:62d8908bee94c202b2d35224a221aaa2058318bfa9879fa541efaecba272331b": {
@@ -500,4 +341,5 @@ func TestDocker_ExtractLayerFiles(t *testing.T) {
 			"etc/test",
 		},
 	}, opqInLayers)
+	assert.True(t, calledCleanup)
 }

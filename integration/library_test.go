@@ -114,8 +114,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			ctx := context.Background()
 			d, _ := ioutil.TempDir("", "TestFanal_Library_*")
 			defer os.RemoveAll(d)
-			c := cache.Initialize(d)
-
+			c := cache.New(d)
 			opt := types.DockerOption{
 				Timeout:  600 * time.Second,
 				SkipPing: true,
@@ -135,13 +134,12 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			err = cli.ImageTag(ctx, tc.imageName, tc.imageFile)
 			require.NoError(t, err, tc.name)
 
-			ext, err := docker.NewDockerExtractor(opt, c)
-			require.NoError(t, err, tc.name)
+			ext := docker.NewDockerExtractor(opt, c)
 			ac := analyzer.Config{Extractor: ext}
 
 			// run tests twice, one without cache and with cache
 			for i := 1; i <= 2; i++ {
-				runChecks(t, "docker", ac, ctx, tc, d, c, nil)
+				runChecks(t, "docker", ac, ctx, tc, d, c, "")
 			}
 
 			// clear Cache
@@ -166,32 +164,16 @@ func TestFanal_Library_TarMode(t *testing.T) {
 			ctx := context.Background()
 			d, _ := ioutil.TempDir("", "TestFanal_Library_*")
 			defer os.RemoveAll(d)
-			c := cache.Initialize(d)
+			c := cache.New(d)
 
 			opt := types.DockerOption{
 				Timeout:  600 * time.Second,
 				SkipPing: true,
 			}
 
-			cli, err := client.NewClientWithOpts(client.FromEnv)
-			require.NoError(t, err, tc.name)
-
-			// ensure image doesnt already exists
-			_, _ = cli.ImageRemove(ctx, tc.imageFile, dtypes.ImageRemoveOptions{
-				Force:         true,
-				PruneChildren: true,
-			})
-
-			// open tar.gz file
-			testfile, err := os.Open(tc.imageFile)
-			require.NoError(t, err)
-			defer testfile.Close()
-
-			ext, err := docker.NewDockerExtractor(opt, c)
-			require.NoError(t, err, tc.name)
-
+			ext := docker.NewDockerExtractor(opt, c)
 			ac := analyzer.Config{Extractor: ext}
-			runChecks(t, "tar", ac, ctx, tc, d, nil, testfile)
+			runChecks(t, "tar", ac, ctx, tc, d, nil, tc.imageFile)
 
 			// clear Cache
 			require.NoError(t, c.Clear(), tc.name)
@@ -199,22 +181,16 @@ func TestFanal_Library_TarMode(t *testing.T) {
 	}
 }
 
-func runChecks(t *testing.T, mode string, ac analyzer.Config, ctx context.Context, tc testCase, d string, c cache.Cache, testfile *os.File) {
+func runChecks(t *testing.T, mode string, ac analyzer.Config, ctx context.Context, tc testCase, d string, c cache.Cache, testFile string) {
 	switch mode {
 	case "docker":
 		actualFiles, err := ac.Analyze(ctx, tc.imageFile)
 		require.NoError(t, err, tc.name)
 		commonChecks(t, actualFiles, tc)
-		checkCache(t, 1, d, tc)
-		r := c.Get(tc.imageFile)
-		actualCacheValue, err := ioutil.ReadAll(r)
-		require.NoError(t, err, tc.name)
-		assert.NotEmpty(t, actualCacheValue, tc.name)
 	case "tar":
-		actualFiles, err := ac.AnalyzeFile(ctx, testfile)
+		actualFiles, err := ac.AnalyzeFile(ctx, testFile)
 		require.NoError(t, err, tc.name)
 		commonChecks(t, actualFiles, tc)
-		checkCache(t, 0, d, tc)
 	}
 }
 
@@ -231,11 +207,6 @@ func checkFiles(t *testing.T, actualFiles extractor.FileMap, tc testCase) {
 		assert.Contains(t, tc.expectedFiles, file, tc.name)
 	}
 	assert.Equal(t, len(tc.expectedFiles), len(actualFiles), tc.name)
-}
-
-func checkCache(t *testing.T, numExpectedFiles int, d string, tc testCase) {
-	actualCachedFiles, _ := ioutil.ReadDir(d + "/fanal/")
-	require.Equal(t, numExpectedFiles, len(actualCachedFiles), tc.name)
 }
 
 func checkLibraries(actualFiles extractor.FileMap, t *testing.T, tc testCase) {

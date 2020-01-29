@@ -3,17 +3,20 @@ package types
 import "time"
 
 type DockerOption struct {
-	AuthURL         string
-	UserName        string
-	Password        string
-	GcpCredPath     string
+	// Auth
+	UserName string
+	Password string
+
+	// ECR
 	AwsAccessKey    string
 	AwsSecretKey    string
 	AwsSessionToken string
 	AwsRegion       string
-	Insecure        bool
-	Debug           bool
-	SkipPing        bool
-	NonSSL          bool
-	Timeout         time.Duration
+
+	// GCP
+	GcpCredPath string
+
+	SkipPing              bool
+	InsecureSkipTLSVerify bool
+	Timeout               time.Duration
 }

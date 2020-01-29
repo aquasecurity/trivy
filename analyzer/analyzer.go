@@ -1,19 +1,13 @@
 package analyzer
 
 import (
-	"bufio"
-	"compress/gzip"
 	"context"
-	"io"
-	"os"
-
-	"github.com/aquasecurity/fanal/utils"
-
-	"github.com/aquasecurity/fanal/types"
 
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/extractor/image"
+	"github.com/aquasecurity/fanal/types"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
@@ -118,37 +112,21 @@ func RequiredFilenames() []string {
 
 // TODO: Remove opts as they're no longer needed
 func (ac Config) Analyze(ctx context.Context, imageName string, opts ...types.DockerOption) (fileMap extractor.FileMap, err error) {
-	r, err := ac.Extractor.SaveLocalImage(ctx, imageName)
+	transports := []string{"docker-daemon:", "docker://"}
+	ref := image.Reference{Name: imageName, IsFile: false}
+	fileMap, err = ac.Extractor.Extract(ctx, ref, transports, RequiredFilenames())
 	if err != nil {
-		// when no docker daemon is installed or no image exists in the local machine
-		fileMap, err = ac.Extractor.Extract(ctx, imageName, RequiredFilenames())
-		if err != nil {
-			return nil, xerrors.Errorf("failed to extract files: %w", err)
-		}
-		return fileMap, nil
-	}
-
-	fileMap, err = ac.Extractor.ExtractFromFile(ctx, r, RequiredFilenames())
-	if err != nil {
-		return nil, xerrors.Errorf("failed to extract files from saved tar: %w", err)
+		return nil, xerrors.Errorf("failed to extract files: %w", err)
 	}
 	return fileMap, nil
 }
 
-func (ac Config) AnalyzeFile(ctx context.Context, f *os.File) (fileMap extractor.FileMap, err error) {
-	var r io.Reader
-	br := bufio.NewReader(f)
-	if utils.IsGzip(br) {
-		r, err = gzip.NewReader(br)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to open gzip: %w", err)
-		}
-	} else {
-		r = br
-	}
-	fileMap, err = ac.Extractor.ExtractFromFile(ctx, r, RequiredFilenames())
+func (ac Config) AnalyzeFile(ctx context.Context, filePath string) (fileMap extractor.FileMap, err error) {
+	transports := []string{"docker-archive:"}
+	ref := image.Reference{Name: filePath, IsFile: true}
+	fileMap, err = ac.Extractor.Extract(ctx, ref, transports, RequiredFilenames())
 	if err != nil {
-		return nil, xerrors.Errorf("failed to extract files from tar: %w", err)
+		return nil, xerrors.Errorf("failed to extract files: %w", err)
 	}
 	return fileMap, nil
 }
