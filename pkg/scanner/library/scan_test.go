@@ -2,6 +2,7 @@ package library
 
 import (
 	"testing"
+	"time"
 
 	library2 "github.com/aquasecurity/trivy/pkg/detector/library"
 
@@ -17,8 +18,10 @@ import (
 
 func TestScanner_Scan(t *testing.T) {
 	type detectInput struct {
-		filePath string
-		libs     []ptypes.Library
+		imageName string
+		filePath  string
+		created   time.Time
+		libs      []ptypes.Library
 	}
 	type detectOutput struct {
 		vulns []types.DetectedVulnerability
@@ -29,7 +32,9 @@ func TestScanner_Scan(t *testing.T) {
 		output detectOutput
 	}
 	type args struct {
-		files extractor.FileMap
+		imageName string
+		created   time.Time
+		files     extractor.FileMap
 	}
 	tests := []struct {
 		name    string
@@ -41,6 +46,8 @@ func TestScanner_Scan(t *testing.T) {
 		{
 			name: "happy",
 			args: args{
+				imageName: "alpine:3.10",
+				created:   time.Date(2019, 5, 11, 0, 7, 3, 510395965, time.UTC),
 				files: extractor.FileMap{
 					"app/Pipfile.lock": []byte(`{
     "_meta": {
@@ -94,7 +101,9 @@ func TestScanner_Scan(t *testing.T) {
 			detect: []detect{
 				{
 					input: detectInput{
-						filePath: "app/Pipfile.lock",
+						imageName: "alpine:3.10",
+						filePath:  "app/Pipfile.lock",
+						created:   time.Date(2019, 5, 11, 0, 7, 3, 510395965, time.UTC),
 						libs: []ptypes.Library{
 							{Name: "django", Version: "3.0.0"},
 						},
@@ -107,7 +116,9 @@ func TestScanner_Scan(t *testing.T) {
 				},
 				{
 					input: detectInput{
-						filePath: "app/package-lock.json",
+						imageName: "alpine:3.10",
+						filePath:  "app/package-lock.json",
+						created:   time.Date(2019, 5, 11, 0, 7, 3, 510395965, time.UTC),
 						libs: []ptypes.Library{
 							{Name: "react", Version: "16.8.6"},
 						},
@@ -131,6 +142,8 @@ func TestScanner_Scan(t *testing.T) {
 		{
 			name: "broken lock file",
 			args: args{
+				imageName: "alpine:3.10",
+				created:   time.Date(2019, 5, 11, 0, 7, 3, 510395965, time.UTC),
 				files: extractor.FileMap{
 					"app/Pipfile.lock": []byte(`{broken}`),
 				},
@@ -179,14 +192,14 @@ func TestScanner_Scan(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mockDetector := new(library2.MockDetector)
 			for _, d := range tt.detect {
-				mockDetector.On("Detect", d.input.filePath, d.input.libs).Return(
+				mockDetector.On("Detect", d.input.imageName, d.input.filePath, d.input.created, d.input.libs).Return(
 					d.output.vulns, d.output.err)
 			}
 
 			s := Scanner{
 				detector: mockDetector,
 			}
-			got, err := s.Scan(tt.args.files)
+			got, err := s.Scan(tt.args.imageName, tt.args.created, tt.args.files)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

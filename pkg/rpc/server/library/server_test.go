@@ -42,7 +42,8 @@ func TestServer_Detect(t *testing.T) {
 			name: "happy path",
 			args: args{
 				req: &proto.LibDetectRequest{
-					FilePath: "app/Pipfile.lock",
+					ImageName: "alpine:3.10",
+					FilePath:  "app/Pipfile.lock",
 					Libraries: []*proto.Library{
 						{Name: "django", Version: "3.0.0"},
 					},
@@ -91,7 +92,8 @@ func TestServer_Detect(t *testing.T) {
 			name: "Detect returns an error",
 			args: args{
 				req: &proto.LibDetectRequest{
-					FilePath: "app/Pipfile.lock",
+					ImageName: "alpine:3.10",
+					FilePath:  "app/Pipfile.lock",
 					Libraries: []*proto.Library{
 						{Name: "django", Version: "3.0.0"},
 					},
