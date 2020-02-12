@@ -53,7 +53,7 @@ func (s Scanner) Scan(files extractor.FileMap) (string, string, []types.Detected
 	pkgs = mergePkgs(pkgs, pkgsFromCommands)
 	log.Logger.Debugf("the number of packages: %d", len(pkgs))
 
-	vulns, eosl, err := s.detector.Detect(os.Family, os.Name, pkgs)
+	vulns, eosl, err := s.detector.Detect(os.Family, os.Name, "",, pkgs)
 	if err != nil {
 		return "", "", nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 	}

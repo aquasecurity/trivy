@@ -295,6 +295,8 @@ github.com/tomoyamachi/reg v0.16.1-0.20190706172545-2a2250fd7c00 h1:0e4vRd9YqnQB
 github.com/tomoyamachi/reg v0.16.1-0.20190706172545-2a2250fd7c00/go.mod h1:RQE7h2jyIxekQZ24/wad0c9RGP+KSq4XzHh7h83ALi8=
 github.com/twitchtv/twirp v5.9.0+incompatible h1:KBCo4NYCpE9alO1HAEcgninDnw/0AhPT1rZnHkkSqi8=
 github.com/twitchtv/twirp v5.9.0+incompatible/go.mod h1:RRJoFSAmTEh2weEqWtpPE3vFK5YBhA6bqp2l1kfCC5A=
+github.com/twitchtv/twirp v5.10.1+incompatible h1:35js8ID9rYPKkZ0qWnuZw+q+OuCWM1GIibu1F1YImjA=
+github.com/twitchtv/twirp v5.10.1+incompatible/go.mod h1:RRJoFSAmTEh2weEqWtpPE3vFK5YBhA6bqp2l1kfCC5A=
 github.com/urfave/cli v1.20.0 h1:fDqGv3UG/4jbVl/QkFwEdddtEDjh/5Ov6X+0B/3bPaw=
 github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijbERA=
 github.com/xanzy/ssh-agent v0.2.0/go.mod h1:0NyE30eGUDliuLEHJgYte/zncp2zdTStcOnWhgSqHD8=

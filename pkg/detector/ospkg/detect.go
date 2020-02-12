@@ -1,6 +1,8 @@
 package ospkg
 
 import (
+	"time"
+
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
@@ -28,7 +30,7 @@ var (
 )
 
 type Operation interface {
-	Detect(string, string, []analyzer.Package) ([]types.DetectedVulnerability, bool, error)
+	Detect(string, string, string, time.Time, []analyzer.Package) ([]types.DetectedVulnerability, bool, error)
 }
 
 type Driver interface {
@@ -38,7 +40,7 @@ type Driver interface {
 
 type Detector struct{}
 
-func (d Detector) Detect(osFamily, osName string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
+func (d Detector) Detect(imageName, osFamily, osName string, buildTime time.Time, pkgs []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
 	driver := newDriver(osFamily, osName)
 	if driver == nil {
 		return nil, false, ErrUnsupportedOS
