@@ -14,7 +14,7 @@ message OSDetectRequest {
   string                    os_name    = 2;
   repeated Package          packages   = 3;
   string                    image_name = 4;
-  google.protobuf.Timestamp build_time = 5;
+  google.protobuf.Timestamp created    = 5;
 }
 
 message DetectResponse {
@@ -43,8 +43,10 @@ service LibDetector {
 }
 
 message LibDetectRequest {
-  string           file_path = 1;
-  repeated Library libraries = 2;
+  string                    file_path  = 1;
+  repeated Library          libraries  = 2;
+  string                    image_name = 3;
+  google.protobuf.Timestamp created    = 4;
 }
 
 message Library {
