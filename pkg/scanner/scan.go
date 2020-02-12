@@ -132,15 +132,7 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 	return results, nil
 }
 
-func (s Scanner) ScanFile(f *os.File) (report.Results, error) {
-	vulns, err := s.libScanner.ScanFile(f)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to scan libraries in file: %w", err)
 	}
-	results := report.Results{
-		{Target: f.Name(), Vulnerabilities: vulns},
-	}
-	return results, nil
 }
 
 func openStream(path string) (*os.File, error) {

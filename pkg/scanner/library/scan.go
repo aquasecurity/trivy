@@ -44,24 +44,3 @@ func (s Scanner) Scan(files extractor.FileMap) (map[string][]types.DetectedVulne
 	}
 	return vulnerabilities, nil
 }
-
-func (s Scanner) ScanFile(f *os.File) ([]types.DetectedVulnerability, error) {
-	content, err := ioutil.ReadAll(f)
-	if err != nil {
-		return nil, err
-	}
-	files := extractor.FileMap{
-		f.Name(): content,
-	}
-
-	results, err := s.Scan(files)
-	if err != nil {
-		return nil, err
-	}
-
-	// need only 1 result
-	for _, vulns := range results {
-		return vulns, nil
-	}
-	return nil, nil
-}
