@@ -13,9 +13,11 @@ type MockDetector struct {
 }
 
 type DetectInput struct {
-	OSFamily string
-	OSName   string
-	Pkgs     []analyzer.Package
+	ImageName string
+	OSFamily  string
+	OSName    string
+	Created   time.Time
+	Pkgs      []analyzer.Package
 }
 type DetectOutput struct {
 	Vulns []types.DetectedVulnerability
@@ -30,7 +32,7 @@ type DetectExpectation struct {
 func NewMockDetector(detectExpectations []DetectExpectation) *MockDetector {
 	mockDetector := new(MockDetector)
 	for _, e := range detectExpectations {
-		mockDetector.On("Detect", e.Args.OSFamily, e.Args.OSName, e.Args.Pkgs).Return(
+		mockDetector.On("Detect", e.Args.ImageName, e.Args.OSFamily, e.Args.OSName, e.Args.Created, e.Args.Pkgs).Return(
 			e.ReturnArgs.Vulns, e.ReturnArgs.Eosl, e.ReturnArgs.Err)
 	}
 	return mockDetector

@@ -44,7 +44,7 @@ func NewDetector(customHeaders CustomHeaders, detector rpc.OSDetector) Detector 
 	return Detector{customHeaders: customHeaders, client: detector}
 }
 
-func (d Detector) Detect(imageName, osFamily, osName string, buildTime time.Time, pkgs []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
+func (d Detector) Detect(imageName, osFamily, osName string, created time.Time, pkgs []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
 	ctx := client.WithCustomHeaders(context.Background(), http.Header(d.customHeaders))
 
 	var res *rpc.DetectResponse
@@ -54,8 +54,8 @@ func (d Detector) Detect(imageName, osFamily, osName string, buildTime time.Time
 			ImageName: imageName,
 			OsFamily:  osFamily,
 			OsName:    osName,
-			BuildTime: func() *timestamp.Timestamp {
-				t, err := ptypes.TimestampProto(buildTime)
+			Created: func() *timestamp.Timestamp {
+				t, err := ptypes.TimestampProto(created)
 				if err != nil {
 					log.Logger.Warnf("invalid timestamp: %s", err)
 				}

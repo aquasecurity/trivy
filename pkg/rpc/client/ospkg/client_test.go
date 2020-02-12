@@ -54,7 +54,7 @@ func TestDetectClient_Detect(t *testing.T) {
 		imageName string
 		osFamily  string
 		osName    string
-		buildTime time.Time
+		created   time.Time
 		pkgs      []analyzer.Package
 	}
 	tests := []struct {
@@ -76,7 +76,7 @@ func TestDetectClient_Detect(t *testing.T) {
 				imageName: "alpine:3.10.2",
 				osFamily:  "alpine",
 				osName:    "3.10.2",
-				buildTime: time.Unix(1581498560, 0),
+				created:   time.Unix(1581498560, 0),
 				pkgs: []analyzer.Package{
 					{
 						Name:    "openssl",
@@ -92,7 +92,7 @@ func TestDetectClient_Detect(t *testing.T) {
 						OsFamily:  "alpine",
 						OsName:    "3.10.2",
 						ImageName: "alpine:3.10.2",
-						BuildTime: func() *timestamp.Timestamp {
+						Created: func() *timestamp.Timestamp {
 							t, _ := ptypes.TimestampProto(time.Unix(1581498560, 0))
 							return t
 						}(),
@@ -143,7 +143,7 @@ func TestDetectClient_Detect(t *testing.T) {
 				imageName: "alpine:3.10.2",
 				osFamily:  "alpine",
 				osName:    "3.10.2",
-				buildTime: time.Unix(1581498560, 0),
+				created:   time.Unix(1581498560, 0),
 				pkgs: []analyzer.Package{
 					{
 						Name:    "openssl",
@@ -159,7 +159,7 @@ func TestDetectClient_Detect(t *testing.T) {
 						ImageName: "alpine:3.10.2",
 						OsFamily:  "alpine",
 						OsName:    "3.10.2",
-						BuildTime: func() *timestamp.Timestamp {
+						Created: func() *timestamp.Timestamp {
 							t, _ := ptypes.TimestampProto(time.Unix(1581498560, 0))
 							return t
 						}(),
@@ -187,7 +187,7 @@ func TestDetectClient_Detect(t *testing.T) {
 				tt.detect.output.res, tt.detect.output.err)
 
 			d := NewDetector(tt.fields.customHeaders, mockDetector)
-			got, _, err := d.Detect(tt.args.imageName, tt.args.osFamily, tt.args.osName, tt.args.buildTime, tt.args.pkgs)
+			got, _, err := d.Detect(tt.args.imageName, tt.args.osFamily, tt.args.osName, tt.args.created, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

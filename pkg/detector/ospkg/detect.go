@@ -40,7 +40,7 @@ type Driver interface {
 
 type Detector struct{}
 
-func (d Detector) Detect(imageName, osFamily, osName string, buildTime time.Time, pkgs []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
+func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
 	driver := newDriver(osFamily, osName)
 	if driver == nil {
 		return nil, false, ErrUnsupportedOS
