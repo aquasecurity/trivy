@@ -97,7 +97,7 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 	}
 
 	if utils.StringInSlice("os", scanOptions.VulnType) {
-		osFamily, osVersion, osVulns, err := s.ospkgScanner.Scan(files)
+		osFamily, osVersion, osVulns, err := s.ospkgScanner.Scan("", files)
 		if err != nil && err != ospkgDetector.ErrUnsupportedOS {
 			return nil, xerrors.Errorf("failed to scan the image: %w", err)
 		}

@@ -36,8 +36,8 @@ func NewMockDetector(detectExpectations []DetectExpectation) *MockDetector {
 	return mockDetector
 }
 
-func (_m *MockDetector) Detect(a string, b string, s string, time time.Time, c []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
-	ret := _m.Called(a, b, c)
+func (_m *MockDetector) Detect(a string, b string, c string, d time.Time, e []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
+	ret := _m.Called(a, b, c, d, e)
 	ret0 := ret.Get(0)
 	if ret0 == nil {
 		return nil, false, ret.Error(2)

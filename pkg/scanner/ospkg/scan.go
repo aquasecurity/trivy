@@ -1,6 +1,8 @@
 package ospkg
 
 import (
+	"time"
+
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -28,7 +30,7 @@ func NewScanner(detector detector.Operation) Scanner {
 	return Scanner{detector: detector}
 }
 
-func (s Scanner) Scan(files extractor.FileMap) (string, string, []types.DetectedVulnerability, error) {
+func (s Scanner) Scan(imageName string, files extractor.FileMap) (string, string, []types.DetectedVulnerability, error) {
 	os, err := analyzer.GetOS(files)
 	if err != nil {
 		return "", "", nil, xerrors.Errorf("failed to analyze OS: %w", err)
@@ -53,7 +55,9 @@ func (s Scanner) Scan(files extractor.FileMap) (string, string, []types.Detected
 	pkgs = mergePkgs(pkgs, pkgsFromCommands)
 	log.Logger.Debugf("the number of packages: %d", len(pkgs))
 
-	vulns, eosl, err := s.detector.Detect(os.Family, os.Name, "",, pkgs)
+	timeStamp := files["/config"]
+
+	vulns, eosl, err := s.detector.Detect(imageName, os.Family, os.Name, time.Now(), pkgs)
 	if err != nil {
 		return "", "", nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 	}
