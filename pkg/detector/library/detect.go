@@ -35,7 +35,7 @@ func NewDetector(factory Factory) Detector {
 	return Detector{driverFactory: factory}
 }
 
-func (d Detector) Detect(s string, filePath string, _ time.Time, pkgs []ptypes.Library) ([]types.DetectedVulnerability, error) {
+func (d Detector) Detect(_ string, filePath string, _ time.Time, pkgs []ptypes.Library) ([]types.DetectedVulnerability, error) {
 	log.Logger.Debugf("Detecting library vulnerabilities, path: %s", filePath)
 	driver := d.driverFactory.NewDriver(filepath.Base(filePath))
 	if driver == nil {
