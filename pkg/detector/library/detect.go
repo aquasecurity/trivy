@@ -2,6 +2,7 @@ package library
 
 import (
 	"path/filepath"
+	"time"
 
 	"github.com/google/wire"
 
@@ -23,7 +24,7 @@ var SuperSet = wire.NewSet(
 )
 
 type Operation interface {
-	Detect(string, []ptypes.Library) ([]types.DetectedVulnerability, error)
+	Detect(string, string, time.Time, []ptypes.Library) ([]types.DetectedVulnerability, error)
 }
 
 type Detector struct {
@@ -34,7 +35,7 @@ func NewDetector(factory Factory) Detector {
 	return Detector{driverFactory: factory}
 }
 
-func (d Detector) Detect(filePath string, pkgs []ptypes.Library) ([]types.DetectedVulnerability, error) {
+func (d Detector) Detect(_ string, filePath string, _ time.Time, pkgs []ptypes.Library) ([]types.DetectedVulnerability, error) {
 	log.Logger.Debugf("Detecting library vulnerabilities, path: %s", filePath)
 	driver := d.driverFactory.NewDriver(filepath.Base(filePath))
 	if driver == nil {

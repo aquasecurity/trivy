@@ -3,14 +3,18 @@ package library
 import (
 	"context"
 	"testing"
+	"time"
 
 	"golang.org/x/xerrors"
+
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 
 	"github.com/stretchr/testify/assert"
 
 	"github.com/stretchr/testify/require"
 
-	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/detector"
@@ -52,8 +56,10 @@ func TestDetectClient_Detect(t *testing.T) {
 	}
 
 	type args struct {
-		filePath string
-		libs     []ptypes.Library
+		imageName string
+		filePath  string
+		created   time.Time
+		libs      []deptypes.Library
 	}
 	tests := []struct {
 		name    string
@@ -71,14 +77,22 @@ func TestDetectClient_Detect(t *testing.T) {
 				},
 			},
 			args: args{
-				filePath: "app/Pipfile.lock",
-				libs: []ptypes.Library{
+				imageName: "/tmp/alpine.tar",
+				filePath:  "app/Pipfile.lock",
+				created:   time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC),
+				libs: []deptypes.Library{
 					{Name: "django", Version: "3.0.0"},
 				},
 			},
 			detect: detect{
 				input: detectInput{req: &detector.LibDetectRequest{
-					FilePath: "app/Pipfile.lock",
+					ImageName: "/tmp/alpine.tar",
+					FilePath:  "app/Pipfile.lock",
+					Created: func() *timestamp.Timestamp {
+						d := time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC)
+						t, _ := ptypes.TimestampProto(d)
+						return t
+					}(),
 					Libraries: []*detector.Library{
 						{Name: "django", Version: "3.0.0"},
 					},
@@ -118,17 +132,25 @@ func TestDetectClient_Detect(t *testing.T) {
 			name:   "Detect returns an error",
 			fields: fields{},
 			args: args{
-				filePath: "app/Pipfile.lock",
-				libs: []ptypes.Library{
+				imageName: "/tmp/alpine.tar",
+				filePath:  "app/Pipfile.lock",
+				created:   time.Date(2019, 2, 1, 0, 0, 0, 0, time.UTC),
+				libs: []deptypes.Library{
 					{Name: "django", Version: "3.0.0"},
 				},
 			},
 			detect: detect{
 				input: detectInput{req: &detector.LibDetectRequest{
-					FilePath: "app/Pipfile.lock",
+					ImageName: "/tmp/alpine.tar",
+					FilePath:  "app/Pipfile.lock",
 					Libraries: []*detector.Library{
 						{Name: "django", Version: "3.0.0"},
 					},
+					Created: func() *timestamp.Timestamp {
+						d := time.Date(2019, 2, 1, 0, 0, 0, 0, time.UTC)
+						t, _ := ptypes.TimestampProto(d)
+						return t
+					}(),
 				},
 				},
 				output: detectOutput{
@@ -145,7 +167,7 @@ func TestDetectClient_Detect(t *testing.T) {
 				tt.detect.output.res, tt.detect.output.err)
 
 			d := NewDetector(tt.fields.customHeaders, mockDetector)
-			got, err := d.Detect(tt.args.filePath, tt.args.libs)
+			got, err := d.Detect(tt.args.imageName, tt.args.filePath, tt.args.created, tt.args.libs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

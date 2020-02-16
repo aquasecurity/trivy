@@ -3,18 +3,18 @@ package ospkg
 import (
 	"context"
 	"testing"
-
-	"golang.org/x/xerrors"
-
-	"github.com/stretchr/testify/assert"
-
-	"github.com/stretchr/testify/require"
+	"time"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/detector"
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+	"golang.org/x/xerrors"
 )
 
 type mockDetector struct {
@@ -51,9 +51,11 @@ func TestDetectClient_Detect(t *testing.T) {
 		customHeaders CustomHeaders
 	}
 	type args struct {
-		osFamily string
-		osName   string
-		pkgs     []analyzer.Package
+		imageName string
+		osFamily  string
+		osName    string
+		created   time.Time
+		pkgs      []analyzer.Package
 	}
 	tests := []struct {
 		name    string
@@ -71,8 +73,10 @@ func TestDetectClient_Detect(t *testing.T) {
 				},
 			},
 			args: args{
-				osFamily: "alpine",
-				osName:   "3.10.2",
+				imageName: "alpine:3.10.2",
+				osFamily:  "alpine",
+				osName:    "3.10.2",
+				created:   time.Unix(1581498560, 0),
 				pkgs: []analyzer.Package{
 					{
 						Name:    "openssl",
@@ -85,8 +89,13 @@ func TestDetectClient_Detect(t *testing.T) {
 			detect: detect{
 				input: detectInput{
 					req: &detector.OSDetectRequest{
-						OsFamily: "alpine",
-						OsName:   "3.10.2",
+						OsFamily:  "alpine",
+						OsName:    "3.10.2",
+						ImageName: "alpine:3.10.2",
+						Created: func() *timestamp.Timestamp {
+							t, _ := ptypes.TimestampProto(time.Unix(1581498560, 0))
+							return t
+						}(),
 						Packages: []*detector.Package{
 							{
 								Name:    "openssl",
@@ -131,8 +140,10 @@ func TestDetectClient_Detect(t *testing.T) {
 			name:   "Detect returns an error",
 			fields: fields{},
 			args: args{
-				osFamily: "alpine",
-				osName:   "3.10.2",
+				imageName: "alpine:3.10.2",
+				osFamily:  "alpine",
+				osName:    "3.10.2",
+				created:   time.Unix(1581498560, 0),
 				pkgs: []analyzer.Package{
 					{
 						Name:    "openssl",
@@ -145,8 +156,13 @@ func TestDetectClient_Detect(t *testing.T) {
 			detect: detect{
 				input: detectInput{
 					req: &detector.OSDetectRequest{
-						OsFamily: "alpine",
-						OsName:   "3.10.2",
+						ImageName: "alpine:3.10.2",
+						OsFamily:  "alpine",
+						OsName:    "3.10.2",
+						Created: func() *timestamp.Timestamp {
+							t, _ := ptypes.TimestampProto(time.Unix(1581498560, 0))
+							return t
+						}(),
 						Packages: []*detector.Package{
 							{
 								Name:    "openssl",
@@ -171,7 +187,7 @@ func TestDetectClient_Detect(t *testing.T) {
 				tt.detect.output.res, tt.detect.output.err)
 
 			d := NewDetector(tt.fields.customHeaders, mockDetector)
-			got, _, err := d.Detect(tt.args.osFamily, tt.args.osName, tt.args.pkgs)
+			got, _, err := d.Detect(tt.args.imageName, tt.args.osFamily, tt.args.osName, tt.args.created, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

@@ -1,6 +1,8 @@
 package ospkg
 
 import (
+	"time"
+
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/mock"
@@ -11,9 +13,11 @@ type MockDetector struct {
 }
 
 type DetectInput struct {
-	OSFamily string
-	OSName   string
-	Pkgs     []analyzer.Package
+	ImageName string
+	OSFamily  string
+	OSName    string
+	Created   time.Time
+	Pkgs      []analyzer.Package
 }
 type DetectOutput struct {
 	Vulns []types.DetectedVulnerability
@@ -28,14 +32,14 @@ type DetectExpectation struct {
 func NewMockDetector(detectExpectations []DetectExpectation) *MockDetector {
 	mockDetector := new(MockDetector)
 	for _, e := range detectExpectations {
-		mockDetector.On("Detect", e.Args.OSFamily, e.Args.OSName, e.Args.Pkgs).Return(
+		mockDetector.On("Detect", e.Args.ImageName, e.Args.OSFamily, e.Args.OSName, e.Args.Created, e.Args.Pkgs).Return(
 			e.ReturnArgs.Vulns, e.ReturnArgs.Eosl, e.ReturnArgs.Err)
 	}
 	return mockDetector
 }
 
-func (_m *MockDetector) Detect(a, b string, c []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
-	ret := _m.Called(a, b, c)
+func (_m *MockDetector) Detect(a string, b string, c string, d time.Time, e []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
+	ret := _m.Called(a, b, c, d, e)
 	ret0 := ret.Get(0)
 	if ret0 == nil {
 		return nil, false, ret.Error(2)

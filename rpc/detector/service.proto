@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 package trivy.detector;
 option  go_package = "detector";
 
@@ -8,9 +10,11 @@ service OSDetector {
 }
 
 message OSDetectRequest {
-  string           os_family = 1;
-  string           os_name   = 2;
-  repeated Package packages  = 3;
+  string                    os_family  = 1;
+  string                    os_name    = 2;
+  repeated Package          packages   = 3;
+  string                    image_name = 4;
+  google.protobuf.Timestamp created    = 5;
 }
 
 message DetectResponse {
@@ -39,8 +43,10 @@ service LibDetector {
 }
 
 message LibDetectRequest {
-  string           file_path = 1;
-  repeated Library libraries = 2;
+  string                    file_path  = 1;
+  repeated Library          libraries  = 2;
+  string                    image_name = 3;
+  google.protobuf.Timestamp created    = 4;
 }
 
 message Library {

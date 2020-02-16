@@ -2,6 +2,7 @@ package library
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
@@ -28,8 +29,8 @@ func NewServer(detector detector.Operation, vulnClient vulnerability.Operation) 
 	return &Server{detector: detector, vulnClient: vulnClient}
 }
 
-func (s *Server) Detect(ctx context.Context, req *proto.LibDetectRequest) (res *proto.DetectResponse, err error) {
-	vulns, err := s.detector.Detect(req.FilePath, rpc.ConvertFromRpcLibraries(req.Libraries))
+func (s *Server) Detect(_ context.Context, req *proto.LibDetectRequest) (res *proto.DetectResponse, err error) {
+	vulns, err := s.detector.Detect("", req.FilePath, time.Time{}, rpc.ConvertFromRpcLibraries(req.Libraries))
 	if err != nil {
 		err = xerrors.Errorf("failed to detect library vulnerabilities: %w", err)
 		log.Logger.Error(err)

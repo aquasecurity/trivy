@@ -3,6 +3,12 @@ package ospkg
 import (
 	"context"
 	"net/http"
+	"time"
+
+	"github.com/aquasecurity/trivy/pkg/log"
+
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
@@ -38,15 +44,23 @@ func NewDetector(customHeaders CustomHeaders, detector rpc.OSDetector) Detector 
 	return Detector{customHeaders: customHeaders, client: detector}
 }
 
-func (d Detector) Detect(osFamily, osName string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
+func (d Detector) Detect(imageName, osFamily, osName string, created time.Time, pkgs []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
 	ctx := client.WithCustomHeaders(context.Background(), http.Header(d.customHeaders))
 
 	var res *rpc.DetectResponse
 	err := r.Retry(func() error {
 		var err error
 		res, err = d.client.Detect(ctx, &rpc.OSDetectRequest{
-			OsFamily: osFamily,
-			OsName:   osName,
+			ImageName: imageName,
+			OsFamily:  osFamily,
+			OsName:    osName,
+			Created: func() *timestamp.Timestamp {
+				t, err := ptypes.TimestampProto(created)
+				if err != nil {
+					log.Logger.Warnf("invalid timestamp: %s", err)
+				}
+				return t
+			}(),
 			Packages: r.ConvertToRpcPkgs(pkgs),
 		})
 		return err

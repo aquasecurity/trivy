@@ -2,6 +2,7 @@ package ospkg
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
@@ -29,7 +30,7 @@ func NewServer(detector detector.Operation, vulnClient vulnerability.Operation) 
 }
 
 func (s *Server) Detect(ctx context.Context, req *proto.OSDetectRequest) (res *proto.DetectResponse, err error) {
-	vulns, eosl, err := s.detector.Detect(req.OsFamily, req.OsName, rpc.ConvertFromRpcPkgs(req.Packages))
+	vulns, eosl, err := s.detector.Detect("", req.OsFamily, req.OsName, time.Time{}, rpc.ConvertFromRpcPkgs(req.Packages))
 	if err != nil {
 		err = xerrors.Errorf("failed to detect vulnerabilities of OS packages: %w", err)
 		log.Logger.Error(err)

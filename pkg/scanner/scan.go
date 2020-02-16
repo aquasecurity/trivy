@@ -2,10 +2,12 @@ package scanner
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
 	"sort"
+	"time"
 
 	"github.com/google/wire"
 	"golang.org/x/crypto/ssh/terminal"
@@ -96,8 +98,13 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 		return nil, xerrors.New("image name or image file must be specified")
 	}
 
+	created, err := getCreated(files["/config"])
+	if err != nil {
+		return nil, err
+	}
+
 	if utils.StringInSlice("os", scanOptions.VulnType) {
-		osFamily, osVersion, osVulns, err := s.ospkgScanner.Scan(files)
+		osFamily, osVersion, osVulns, err := s.ospkgScanner.Scan(target, created, files)
 		if err != nil && err != ospkgDetector.ErrUnsupportedOS {
 			return nil, xerrors.Errorf("failed to scan the image: %w", err)
 		}
@@ -111,7 +118,7 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 	}
 
 	if utils.StringInSlice("library", scanOptions.VulnType) {
-		libVulns, err := s.libScanner.Scan(files)
+		libVulns, err := s.libScanner.Scan(target, created, files)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to scan libraries: %w", err)
 		}
@@ -132,15 +139,16 @@ func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOpt
 	return results, nil
 }
 
-func (s Scanner) ScanFile(f *os.File) (report.Results, error) {
-	vulns, err := s.libScanner.ScanFile(f)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to scan libraries in file: %w", err)
+type config struct {
+	Created time.Time
+}
+
+func getCreated(configBlob []byte) (time.Time, error) {
+	var config config
+	if err := json.Unmarshal(configBlob, &config); err != nil {
+		return time.Time{}, xerrors.Errorf("invalid config JSON: %w", err)
 	}
-	results := report.Results{
-		{Target: f.Name(), Vulnerabilities: vulns},
-	}
-	return results, nil
+	return config.Created, nil
 }
 
 func openStream(path string) (*os.File, error) {

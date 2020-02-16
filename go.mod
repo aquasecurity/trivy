@@ -3,6 +3,7 @@ module github.com/aquasecurity/trivy
 go 1.13
 
 require (
+	github.com/Microsoft/go-winio v0.4.15-0.20190919025122-fc70bd9a86b5 // indirect
 	github.com/aquasecurity/fanal v0.0.0-20200112144021-9a35ce3bd793
 	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
 	github.com/aquasecurity/trivy-db v0.0.0-20191226181755-d6cabf5bc5d1
@@ -20,8 +21,9 @@ require (
 	github.com/knqyf263/go-version v1.1.1
 	github.com/kylelemons/godebug v1.1.0
 	github.com/olekukonko/tablewriter v0.0.2-0.20190607075207-195002e6e56a
+	github.com/prometheus/procfs v0.0.5 // indirect
 	github.com/stretchr/testify v1.4.0
-	github.com/twitchtv/twirp v5.9.0+incompatible
+	github.com/twitchtv/twirp v5.10.1+incompatible
 	github.com/urfave/cli v1.20.0
 	go.uber.org/atomic v1.5.1 // indirect
 	go.uber.org/multierr v1.4.0 // indirect
