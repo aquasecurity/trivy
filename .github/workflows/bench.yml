@@ -1,0 +1,25 @@
+name: Benchmark
+on: pull_request
+jobs:
+  bench:
+    name: Benchmark
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
+
+    - name: Install dependencies
+      run: sudo apt-get install libdb-dev
+
+    - name: Install cob
+      run: curl -sfL https://raw.githubusercontent.com/knqyf263/cob/master/install.sh | sudo sh -s -- -b /usr/local/bin
+
+    - name: Run Benchmark
+      run: cob --threshold 0.7 --base origin/master --bench-cmd make --bench-args test-performance
