@@ -12,7 +12,7 @@ import (
 	"github.com/containers/image/transports/alltransports"
 	imageTypes "github.com/containers/image/types"
 	"github.com/docker/distribution/reference"
-	"github.com/opencontainers/go-digest"
+	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
@@ -21,11 +21,13 @@ import (
 
 type ImageSource interface {
 	GetBlob(ctx context.Context, info imageTypes.BlobInfo, cache imageTypes.BlobInfoCache) (reader io.ReadCloser, n int64, err error)
+	Close() error
 }
 
 type ImageCloser interface {
 	LayerInfos() (layerInfos []imageTypes.BlobInfo)
 	ConfigBlob(ctx context.Context) (blob []byte, err error)
+	Close() error
 }
 
 type Reference struct {
@@ -235,4 +237,13 @@ func (img *Image) GetBlob(ctx context.Context, dig digest.Digest) (io.ReadCloser
 	r, _ := img.cache.Set(dig.String(), stream)
 
 	return ioutil.NopCloser(r), cleanup, nil
+}
+
+func (img *Image) Close() {
+	if img.src != nil {
+		img.src.Close()
+	}
+	if img.rawSource != nil {
+		img.rawSource.Close()
+	}
 }
