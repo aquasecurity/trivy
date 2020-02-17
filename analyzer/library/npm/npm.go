@@ -31,7 +31,7 @@ func (a npmLibraryAnalyzer) Analyze(fileMap extractor.FileMap) (map[analyzer.Fil
 		r := bytes.NewBuffer(content)
 		libs, err := npm.Parse(r)
 		if err != nil {
-			return nil, xerrors.Errorf("invalid package-lock.json format: %w", err)
+			return nil, xerrors.Errorf("error with %s: %w", filename, err)
 		}
 		libMap[analyzer.FilePath(filename)] = libs
 	}

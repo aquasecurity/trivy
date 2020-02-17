@@ -151,7 +151,7 @@ func GetPackages(filesMap extractor.FileMap) ([]Package, error) {
 		if err != nil && err == ErrNoPkgsDetected {
 			continue
 		} else if err != nil {
-			return nil, xerrors.Errorf("failed to analyze packages: %w", err)
+			return nil, xerrors.Errorf("failed to get packages: %w", err)
 		}
 		return pkgs, nil
 	}
@@ -178,7 +178,7 @@ func GetLibraries(filesMap extractor.FileMap) (map[FilePath][]godeptypes.Library
 	for _, analyzer := range libAnalyzers {
 		libMap, err := analyzer.Analyze(filesMap)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to analyze libraries: %w", err)
+			return nil, xerrors.Errorf("failed to get libraries: %w", err)
 		}
 
 		for filePath, libs := range libMap {
