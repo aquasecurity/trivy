@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -112,7 +113,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
-			d, _ := ioutil.TempDir("", "TestFanal_Library_*")
+			d, _ := ioutil.TempDir("", "TestFanal_Library_")
 			defer os.RemoveAll(d)
 			c := cache.New(d)
 			opt := types.DockerOption{
@@ -127,8 +128,9 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			require.NoError(t, err)
 
 			// load image into docker engine
-			_, err = cli.ImageLoad(ctx, testfile, true)
+			resp, err := cli.ImageLoad(ctx, testfile, true)
 			require.NoError(t, err, tc.name)
+			io.Copy(ioutil.Discard, resp.Body)
 
 			// tag our image to something unique
 			err = cli.ImageTag(ctx, tc.imageName, tc.imageFile)
@@ -151,6 +153,14 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 				PruneChildren: true,
 			})
 			assert.NoError(t, err, tc.name)
+			_, err = cli.ImageRemove(ctx, tc.imageName, dtypes.ImageRemoveOptions{
+				Force:         true,
+				PruneChildren: true,
+			})
+			assert.NoError(t, err, tc.name)
+
+			// clear Cache
+			require.NoError(t, c.Clear(), tc.name)
 		})
 	}
 }
@@ -162,7 +172,7 @@ func TestFanal_Library_TarMode(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
-			d, _ := ioutil.TempDir("", "TestFanal_Library_*")
+			d, _ := ioutil.TempDir("", "TestFanal_Library_")
 			defer os.RemoveAll(d)
 			c := cache.New(d)
 

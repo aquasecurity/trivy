@@ -5,11 +5,13 @@ package integration
 import (
 	"context"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
 	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
@@ -27,8 +29,6 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpm"
-
-	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/extractor/docker"
 	"github.com/aquasecurity/fanal/types"
@@ -46,37 +46,37 @@ type testCase struct {
 
 var testCases = []testCase{
 	{
-		name:      "happy path, alpine:3.10",
+		name:      "happy path alpine:3.10",
 		imageName: "alpine:3.10",
 		imageFile: "testdata/fixtures/alpine-310.tar.gz",
 	},
 	{
-		name:      "happy path, amazonlinux:2",
+		name:      "happy path amazonlinux:2",
 		imageName: "amazonlinux:2",
 		imageFile: "testdata/fixtures/amazon-2.tar.gz",
 	},
 	{
-		name:      "happy path, debian:buster",
+		name:      "happy path debian:buster",
 		imageName: "debian:buster",
 		imageFile: "testdata/fixtures/debian-buster.tar.gz",
 	},
 	{
-		name:      "happy path, photon:1.0",
+		name:      "happy path photon:1.0",
 		imageName: "photon:1.0-20190823",
 		imageFile: "testdata/fixtures/photon-10.tar.gz",
 	},
 	{
-		name:      "happy path, registry.redhat.io/ubi7",
+		name:      "happy path registry.redhat.io/ubi7",
 		imageName: "registry.redhat.io/ubi7",
 		imageFile: "testdata/fixtures/ubi-7.tar.gz",
 	},
 	{
-		name:      "happy path, opensuse leap 15.1",
+		name:      "happy path opensuse leap 15.1",
 		imageName: "opensuse/leap:latest",
 		imageFile: "testdata/fixtures/opensuse-leap-151.tar.gz",
 	},
 	{
-		name:      "happy path, vulnimage with lock files",
+		name:      "happy path vulnimage with lock files",
 		imageName: "knqyf263/vuln-image:1.2.3",
 		imageFile: "testdata/fixtures/vulnimage.tar.gz",
 	},
@@ -103,50 +103,62 @@ func runChecksBench(b *testing.B, ctx context.Context, imageName string, ac anal
 	for i := 0; i < b.N; i++ {
 		run(b, ctx, imageName, ac)
 		if c != nil {
-			c.Clear()
+			_ = c.Clear()
 		}
 	}
 }
 
-func BenchmarkFanal_Library_DockerMode_WithoutCache(b *testing.B) {
-	benchCache, _ := ioutil.TempDir("", "BenchmarkFanal_Library_DockerMode_WithoutCache_*")
-	defer os.RemoveAll(benchCache)
-
+func BenchmarkDockerMode_WithoutCache(b *testing.B) {
 	for _, tc := range testCases {
-		ctx, imageName, c, cli, ac := setup(b, tc, benchCache)
+		tc := tc
 		b.Run(tc.name, func(b *testing.B) {
+			benchCache, err := ioutil.TempDir("", "DockerMode_WithoutCache_")
+			require.NoError(b, err)
+			defer os.RemoveAll(benchCache)
+
+			ctx, imageName, c, cli, ac := setup(b, tc, benchCache)
+
 			b.ReportAllocs()
 			b.ResetTimer()
 			runChecksBench(b, ctx, imageName, ac, c)
 			b.StopTimer()
-		})
 
-		teardown(b, ctx, imageName, cli)
+			teardown(b, ctx, tc.imageName, imageName, cli)
+		})
 	}
 }
 
-func BenchmarkFanal_Library_DockerMode_WithCache(b *testing.B) {
-	benchCache, _ := ioutil.TempDir("", "BenchmarkFanal_Library_DockerMode_WithCache_*")
-	defer os.RemoveAll(benchCache)
-
+func BenchmarkDockerMode_WithCache(b *testing.B) {
 	for _, tc := range testCases {
-		ctx, imageName, _, cli, ac := setup(b, tc, benchCache)
-		// run once to generate cache
-		run(b, ctx, imageName, ac)
-
+		tc := tc
 		b.Run(tc.name, func(b *testing.B) {
+			benchCache, err := ioutil.TempDir("", "DockerMode_WithCache_")
+			require.NoError(b, err)
+			defer os.RemoveAll(benchCache)
+
+			ctx, imageName, _, cli, ac := setup(b, tc, benchCache)
+			// run once to generate cache
+			run(b, ctx, imageName, ac)
+
 			b.ReportAllocs()
 			b.ResetTimer()
 			runChecksBench(b, ctx, imageName, ac, nil)
 			b.StopTimer()
+
+			teardown(b, ctx, tc.imageName, imageName, cli)
 		})
 
-		teardown(b, ctx, imageName, cli)
 	}
 }
 
-func teardown(b *testing.B, ctx context.Context, imageName string, cli *client.Client) {
-	_, err := cli.ImageRemove(ctx, imageName, dtypes.ImageRemoveOptions{
+func teardown(b *testing.B, ctx context.Context, originalImageName, imageName string, cli *client.Client) {
+	_, err := cli.ImageRemove(ctx, originalImageName, dtypes.ImageRemoveOptions{
+		Force:         true,
+		PruneChildren: true,
+	})
+	assert.NoError(b, err)
+
+	_, err = cli.ImageRemove(ctx, imageName, dtypes.ImageRemoveOptions{
 		Force:         true,
 		PruneChildren: true,
 	})
@@ -165,15 +177,24 @@ func setup(b *testing.B, tc testCase, cacheDir string) (context.Context, string,
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	require.NoError(b, err, tc.name)
 
-	testfile, err := os.Open(tc.imageFile)
+	// ensure image doesnt already exists
+	_, _ = cli.ImageRemove(ctx, tc.imageName, dtypes.ImageRemoveOptions{
+		Force:         true,
+		PruneChildren: true,
+	})
+
+	testFile, err := os.Open(tc.imageFile)
 	require.NoError(b, err)
 
 	// load image into docker engine
-	_, err = cli.ImageLoad(ctx, testfile, true)
+	resp, err := cli.ImageLoad(ctx, testFile, false)
 	require.NoError(b, err, tc.name)
 
+	// ensure an image has finished being loaded.
+	io.Copy(ioutil.Discard, resp.Body)
+	require.NoError(b, resp.Body.Close())
+
 	imageName := fmt.Sprintf("%s-%s", tc.imageName, nextRandom())
-	fmt.Println(imageName)
 
 	// tag our image to something unique
 	err = cli.ImageTag(ctx, tc.imageName, imageName)

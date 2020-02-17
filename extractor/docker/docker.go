@@ -9,6 +9,9 @@ import (
 	"strings"
 	"time"
 
+	digest "github.com/opencontainers/go-digest"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/fanal/analyzer/library"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/extractor"
@@ -18,8 +21,6 @@ import (
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/utils"
 	"github.com/knqyf263/nested"
-	"github.com/opencontainers/go-digest"
-	"golang.org/x/xerrors"
 )
 
 const (
@@ -110,6 +111,8 @@ func (d Extractor) Extract(ctx context.Context, imgRef image.Reference, transpor
 	if err != nil {
 		return nil, xerrors.Errorf("unable to initialize a image struct: %w", err)
 	}
+
+	defer img.Close()
 
 	var layerIDs []string
 	layers, err := img.LayerInfos()
