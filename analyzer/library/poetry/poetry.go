@@ -31,7 +31,7 @@ func (a poetryLibraryAnalyzer) Analyze(fileMap extractor.FileMap) (map[analyzer.
 		r := bytes.NewBuffer(content)
 		libs, err := poetry.Parse(r)
 		if err != nil {
-			return nil, xerrors.Errorf("invalid poetry.lock format: %w", err)
+			return nil, xerrors.Errorf("error with %s: %w", filename, err)
 		}
 		libMap[analyzer.FilePath(filename)] = libs
 	}
