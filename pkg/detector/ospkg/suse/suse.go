@@ -3,16 +3,17 @@ package suse
 import (
 	"time"
 
-	"github.com/aquasecurity/fanal/analyzer"
+	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
+
 	fos "github.com/aquasecurity/fanal/analyzer/os"
+	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	susecvrf "github.com/aquasecurity/trivy-db/pkg/vulnsrc/suse-cvrf"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 	version "github.com/knqyf263/go-rpm-version"
-	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 )
 
 var (
@@ -79,7 +80,7 @@ func NewScanner(t SUSEType) *Scanner {
 	return nil
 }
 
-func (s *Scanner) Detect(osVer string, pkgs []analyzer.Package) ([]types.DetectedVulnerability, error) {
+func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting SUSE vulnerabilities...")
 	log.Logger.Debugf("SUSE: os version: %s", osVer)
 	log.Logger.Debugf("SUSE: the number of packages: %d", len(pkgs))

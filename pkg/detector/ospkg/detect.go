@@ -3,6 +3,11 @@ package ospkg
 import (
 	"time"
 
+	"github.com/google/wire"
+	"golang.org/x/xerrors"
+
+	fos "github.com/aquasecurity/fanal/analyzer/os"
+	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
@@ -12,11 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/suse"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/google/wire"
-	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/fanal/analyzer"
-	fos "github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -30,17 +30,17 @@ var (
 )
 
 type Operation interface {
-	Detect(string, string, string, time.Time, []analyzer.Package) ([]types.DetectedVulnerability, bool, error)
+	Detect(string, string, string, time.Time, []ftypes.Package) ([]types.DetectedVulnerability, bool, error)
 }
 
 type Driver interface {
-	Detect(string, []analyzer.Package) ([]types.DetectedVulnerability, error)
+	Detect(string, []ftypes.Package) ([]types.DetectedVulnerability, error)
 	IsSupportedVersion(string, string) bool
 }
 
 type Detector struct{}
 
-func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []analyzer.Package) ([]types.DetectedVulnerability, bool, error) {
+func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
 	driver := newDriver(osFamily, osName)
 	if driver == nil {
 		return nil, false, ErrUnsupportedOS

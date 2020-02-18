@@ -1,18 +1,21 @@
 package rpc
 
 import (
-	"github.com/aquasecurity/fanal/analyzer"
+	ftypes "github.com/aquasecurity/fanal/types"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/rpc/detector"
+	"github.com/aquasecurity/trivy/rpc/common"
+	"github.com/aquasecurity/trivy/rpc/layer"
+	"github.com/aquasecurity/trivy/rpc/scanner"
 )
 
-func ConvertToRpcPkgs(pkgs []analyzer.Package) []*detector.Package {
-	var rpcPkgs []*detector.Package
+func ConvertToRpcPkgs(pkgs []ftypes.Package) []*common.Package {
+	var rpcPkgs []*common.Package
 	for _, pkg := range pkgs {
-		rpcPkgs = append(rpcPkgs, &detector.Package{
+		rpcPkgs = append(rpcPkgs, &common.Package{
 			Name:       pkg.Name,
 			Version:    pkg.Version,
 			Release:    pkg.Release,
@@ -27,10 +30,10 @@ func ConvertToRpcPkgs(pkgs []analyzer.Package) []*detector.Package {
 	return rpcPkgs
 }
 
-func ConvertFromRpcPkgs(rpcPkgs []*detector.Package) []analyzer.Package {
-	var pkgs []analyzer.Package
+func ConvertFromRpcPkgs(rpcPkgs []*common.Package) []ftypes.Package {
+	var pkgs []ftypes.Package
 	for _, pkg := range rpcPkgs {
-		pkgs = append(pkgs, analyzer.Package{
+		pkgs = append(pkgs, ftypes.Package{
 			Name:       pkg.Name,
 			Version:    pkg.Version,
 			Release:    pkg.Release,
@@ -45,7 +48,7 @@ func ConvertFromRpcPkgs(rpcPkgs []*detector.Package) []analyzer.Package {
 	return pkgs
 }
 
-func ConvertFromRpcLibraries(rpcLibs []*detector.Library) []ptypes.Library {
+func ConvertFromRpcLibraries(rpcLibs []*common.Library) []ptypes.Library {
 	var libs []ptypes.Library
 	for _, l := range rpcLibs {
 		libs = append(libs, ptypes.Library{
@@ -56,10 +59,10 @@ func ConvertFromRpcLibraries(rpcLibs []*detector.Library) []ptypes.Library {
 	return libs
 }
 
-func ConvertToRpcLibraries(libs []ptypes.Library) []*detector.Library {
-	var rpcLibs []*detector.Library
+func ConvertToRpcLibraries(libs []ptypes.Library) []*common.Library {
+	var rpcLibs []*common.Library
 	for _, l := range libs {
-		rpcLibs = append(rpcLibs, &detector.Library{
+		rpcLibs = append(rpcLibs, &common.Library{
 			Name:    l.Name,
 			Version: l.Version,
 		})
@@ -67,7 +70,7 @@ func ConvertToRpcLibraries(libs []ptypes.Library) []*detector.Library {
 	return rpcLibs
 }
 
-func ConvertFromRpcVulns(rpcVulns []*detector.Vulnerability) []types.DetectedVulnerability {
+func ConvertFromRpcVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulnerability {
 	var vulns []types.DetectedVulnerability
 	for _, vuln := range rpcVulns {
 		severity := dbTypes.Severity(vuln.Severity)
@@ -87,22 +90,22 @@ func ConvertFromRpcVulns(rpcVulns []*detector.Vulnerability) []types.DetectedVul
 	return vulns
 }
 
-func ConvertToRpcVulns(vulns []types.DetectedVulnerability) []*detector.Vulnerability {
-	var rpcVulns []*detector.Vulnerability
+func ConvertToRpcVulns(vulns []types.DetectedVulnerability) []*common.Vulnerability {
+	var rpcVulns []*common.Vulnerability
 	for _, vuln := range vulns {
 		severity, err := dbTypes.NewSeverity(vuln.Severity)
 		if err != nil {
 			log.Logger.Warn(err)
 		}
 
-		rpcVulns = append(rpcVulns, &detector.Vulnerability{
+		rpcVulns = append(rpcVulns, &common.Vulnerability{
 			VulnerabilityId:  vuln.VulnerabilityID,
 			PkgName:          vuln.PkgName,
 			InstalledVersion: vuln.InstalledVersion,
 			FixedVersion:     vuln.FixedVersion,
 			Title:            vuln.Title,
 			Description:      vuln.Description,
-			Severity:         detector.Severity(severity),
+			Severity:         common.Severity(severity),
 			References:       vuln.References,
 		})
 	}
