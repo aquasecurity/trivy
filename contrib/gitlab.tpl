@@ -2,12 +2,12 @@
 {
   "version": "2.3",
   "vulnerabilities": [
-  {{- $first := true }}
+  {{- $t_first := true }}
   {{- range . }}
   {{- $target := .Target }}
     {{- range .Vulnerabilities -}}
-    {{- if $first -}}
-      {{- $first = false -}}
+    {{- if $t_first -}}
+      {{- $t_first = false -}}
     {{ else -}}
       ,
     {{- end }}
@@ -60,10 +60,10 @@
         }
       ],
       "links": [
-        {{- $first := true -}}
+        {{- $l_first := true -}}
         {{- range .References -}}
-        {{- if $first -}}
-          {{- $first = false }}
+        {{- if $l_first -}}
+          {{- $l_first = false }}
         {{- else -}}
           ,
         {{- end -}}
