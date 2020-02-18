@@ -4,6 +4,7 @@ package integration
 
 import (
 	"context"
+	"io"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -256,8 +257,9 @@ func TestRun_WithDockerEngine(t *testing.T) {
 				})
 
 				// load image into docker engine
-				_, err = cli.ImageLoad(ctx, testfile, true)
+				res, err := cli.ImageLoad(ctx, testfile, true)
 				require.NoError(t, err, tc.name)
+				io.Copy(ioutil.Discard, res.Body)
 
 				// tag our image to something unique
 				err = cli.ImageTag(ctx, tc.imageTag, tc.testfile)
@@ -309,6 +311,10 @@ func TestRun_WithDockerEngine(t *testing.T) {
 
 				// cleanup
 				_, err = cli.ImageRemove(ctx, tc.testfile, types.ImageRemoveOptions{
+					Force:         true,
+					PruneChildren: true,
+				})
+				_, err = cli.ImageRemove(ctx, tc.imageTag, types.ImageRemoveOptions{
 					Force:         true,
 					PruneChildren: true,
 				})
