@@ -229,7 +229,7 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			name:          "sad path, invalid image",
 			invalidImage:  true,
 			testfile:      "badimage:latest",
-			expectedError: "error in image scan: failed to analyze image: failed to extract files: failed to get the v2 manifest: Get https://registry-1.docker.io/v2/library/badimage/manifests/latest: http: non-successful response (status=401 body=\"{\\\"errors\\\":[{\\\"code\\\":\\\"UNAUTHORIZED\\\",\\\"message\\\":\\\"authentication required\\\",\\\"detail\\\":[{\\\"Type\\\":\\\"repository\\\",\\\"Class\\\":\\\"\\\",\\\"Name\\\":\\\"library/badimage\\\",\\\"Action\\\":\\\"pull\\\"}]}]}\\n\")",
+			expectedError: "unable to initialize a image struct: Error reading manifest latest in docker.io/library/badimage",
 		},
 	}
 
@@ -293,7 +293,8 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			err = app.Run(trivyArgs)
 			switch {
 			case tc.expectedError != "":
-				assert.Equal(t, tc.expectedError, err.Error(), tc.name)
+				require.NotNil(t, err)
+				assert.Contains(t, err.Error(), tc.expectedError, tc.name)
 			default:
 				assert.NoError(t, err, tc.name)
 			}
