@@ -65,12 +65,17 @@ func run(c config.Config) (err error) {
 
 	scanOptions := types.ScanOptions{
 		VulnType: c.VulnType,
-		Timeout:  c.Timeout,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
+	dockerOption, err := types.GetDockerOption()
+	if err != nil {
+		return xerrors.Errorf("failed to get docker option: %w", err)
+	}
+	dockerOption.Timeout = c.Timeout
+
 	scanner := initializeScanner(cacheClient)
-	results, err := scanner.ScanImage(c.ImageName, c.Input, scanOptions)
+	results, err := scanner.ScanImage(c.ImageName, c.Input, scanOptions, dockerOption)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
