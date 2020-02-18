@@ -127,7 +127,7 @@ var (
 
 	timeoutFlag = cli.DurationFlag{
 		Name:   "timeout",
-		Value:  time.Second * 60,
+		Value:  time.Second * 120,
 		Usage:  "docker timeout",
 		EnvVar: "TRIVY_TIMEOUT",
 	}
