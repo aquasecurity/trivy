@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/extractor"
 	"github.com/aquasecurity/fanal/extractor/docker"
+	ftypes "github.com/aquasecurity/fanal/types"
 	libDetector "github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -56,21 +57,14 @@ func NewScanner(cacheClient cache.Cache, ospkgScanner ospkg.Scanner, libScanner 
 	return Scanner{cacheClient: cacheClient, ospkgScanner: ospkgScanner, libScanner: libScanner}
 }
 
-func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (report.Results, error) {
+func (s Scanner) ScanImage(imageName, filePath string, scanOptions types.ScanOptions, dockerOption ftypes.DockerOption) (report.Results, error) {
 	results := report.Results{}
 	ctx := context.Background()
 
 	var target string
 	var files extractor.FileMap
 	var ac analyzer.Config
-	dockerOption, err := types.GetDockerOption()
-	if err != nil {
-		return nil, xerrors.Errorf("failed to get docker option: %w", err)
-	}
 
-	if imageName != "" {
-		dockerOption.Timeout = scanOptions.Timeout
-	}
 	ext, err := docker.NewDockerExtractor(dockerOption, s.cacheClient)
 	if err != nil {
 		return nil, err
