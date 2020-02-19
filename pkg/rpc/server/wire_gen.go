@@ -14,6 +14,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/github"
 	"github.com/aquasecurity/trivy/pkg/indicator"
+	library2 "github.com/aquasecurity/trivy/pkg/rpc/server/library"
+	ospkg2 "github.com/aquasecurity/trivy/pkg/rpc/server/ospkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	"k8s.io/utils/clock"
@@ -31,6 +33,23 @@ func initializeScanServer(localLayerCache cache.LocalLayerCache) *ScanServer {
 	client := vulnerability.NewClient(config)
 	scanServer := NewScanServer(scanner, client)
 	return scanServer
+}
+
+func initializeOspkgServer() *ospkg2.Server {
+	detector := ospkg.Detector{}
+	config := db.Config{}
+	client := vulnerability.NewClient(config)
+	server := ospkg2.NewServer(detector, client)
+	return server
+}
+
+func initializeLibServer() *library2.Server {
+	driverFactory := library.DriverFactory{}
+	detector := library.NewDetector(driverFactory)
+	config := db.Config{}
+	client := vulnerability.NewClient(config)
+	server := library2.NewServer(detector, client)
+	return server
 }
 
 func initializeDBWorker(quiet bool) dbWorker {

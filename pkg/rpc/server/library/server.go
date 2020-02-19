@@ -20,6 +20,7 @@ var SuperSet = wire.NewSet(
 	NewServer,
 )
 
+// Server is for backward compatibility
 type Server struct {
 	detector   detector.Operation
 	vulnClient vulnerability.Operation
@@ -29,6 +30,7 @@ func NewServer(detector detector.Operation, vulnClient vulnerability.Operation) 
 	return &Server{detector: detector, vulnClient: vulnClient}
 }
 
+// Detect is for backward compatibility
 func (s *Server) Detect(_ context.Context, req *proto.LibDetectRequest) (res *proto.DetectResponse, err error) {
 	vulns, err := s.detector.Detect("", req.FilePath, time.Time{}, rpc.ConvertFromRpcLibraries(req.Libraries))
 	if err != nil {

@@ -19,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/rpc/detector"
+	rpcDetector "github.com/aquasecurity/trivy/rpc/detector"
 	rpcLayer "github.com/aquasecurity/trivy/rpc/layer"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
@@ -64,6 +65,14 @@ func ListenAndServe(addr string, c config.Config, fsCache cache.FSCache) error {
 
 	layerHandler := rpcLayer.NewLayerServer(NewLayerServer(fsCache), nil)
 	mux.Handle(rpcLayer.LayerPathPrefix, withToken(withWaitGroup(layerHandler), c.Token, c.TokenHeader))
+
+	// osHandler is for backward compatibility
+	osHandler := rpcDetector.NewOSDetectorServer(initializeOspkgServer(), nil)
+	mux.Handle(rpcDetector.OSDetectorPathPrefix, withToken(withWaitGroup(osHandler), c.Token, c.TokenHeader))
+
+	// libHandler is for backward compatibility
+	libHandler := rpcDetector.NewLibDetectorServer(initializeLibServer(), nil)
+	mux.Handle(rpcDetector.LibDetectorPathPrefix, withToken(withWaitGroup(libHandler), c.Token, c.TokenHeader))
 
 	log.Logger.Infof("Listening %s...", addr)
 
