@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package trivy.layer;
+package trivy.layer.v1;
 option  go_package = "layer";
 
 import "github.com/aquasecurity/trivy/rpc/common/service.proto";

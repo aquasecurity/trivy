@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package trivy.scanner;
+package trivy.scanner.v1;
 option  go_package = "scanner";
 
 import "github.com/aquasecurity/trivy/rpc/common/service.proto";
