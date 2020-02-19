@@ -2,6 +2,9 @@ package server
 
 import (
 	"context"
+	"encoding/json"
+
+	ftypes "github.com/aquasecurity/fanal/types"
 
 	"github.com/aquasecurity/trivy/pkg/scanner"
 
@@ -71,6 +74,17 @@ func (s *LayerServer) MissingLayers(_ context.Context, in *rpcLayer.Layers) (*rp
 	for _, layerID := range in.LayerIds {
 		b := s.cache.GetLayer(layerID)
 		if b == nil {
+			layerIDs = append(layerIDs, layerID)
+			continue
+		}
+
+		// check schema version in JSON
+		var l ftypes.LayerInfo
+		if err := json.Unmarshal(b, &l); err != nil {
+			layerIDs = append(layerIDs, layerID)
+			continue
+		}
+		if l.SchemaVersion != ftypes.LayerJSONSchemaVersion {
 			layerIDs = append(layerIDs, layerID)
 		}
 	}

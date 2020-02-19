@@ -367,12 +367,82 @@ func TestLayerServer_MissingLayers(t *testing.T) {
 						LayerID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 					},
 					Returns: cache.GetLayerReturns{
-						LayerBlob: []byte("foo"),
+						LayerBlob: []byte(`{"SchemaVersion": 1}`),
 					},
 				},
 			},
 			want: &rpcLayer.Layers{
 				LayerIds: []string{"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"},
+			},
+		},
+		{
+			name: "broken json",
+			args: args{
+				in: &rpcLayer.Layers{
+					LayerIds: []string{
+						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					},
+				},
+			},
+			getLayerExpectations: []cache.GetLayerExpectation{
+				{
+					Args: cache.GetLayerArgs{
+						LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					Returns: cache.GetLayerReturns{
+						LayerBlob: nil,
+					},
+				},
+				{
+					Args: cache.GetLayerArgs{
+						LayerID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					},
+					Returns: cache.GetLayerReturns{
+						LayerBlob: []byte(`broken`),
+					},
+				},
+			},
+			want: &rpcLayer.Layers{
+				LayerIds: []string{
+					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+				},
+			},
+		},
+		{
+			name: "schema version doesn't match",
+			args: args{
+				in: &rpcLayer.Layers{
+					LayerIds: []string{
+						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					},
+				},
+			},
+			getLayerExpectations: []cache.GetLayerExpectation{
+				{
+					Args: cache.GetLayerArgs{
+						LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					Returns: cache.GetLayerReturns{
+						LayerBlob: nil,
+					},
+				},
+				{
+					Args: cache.GetLayerArgs{
+						LayerID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					},
+					Returns: cache.GetLayerReturns{
+						LayerBlob: []byte(`{"SchemaVersion": -1}`),
+					},
+				},
+			},
+			want: &rpcLayer.Layers{
+				LayerIds: []string{
+					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+				},
 			},
 		},
 	}
