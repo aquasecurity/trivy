@@ -11,6 +11,9 @@ type DockerConfig struct {
 	UserName string `env:"TRIVY_USERNAME"`
 	Password string `env:"TRIVY_PASSWORD"`
 	Insecure bool   `env:"TRIVY_INSECURE" envDefault:"true"`
+
+	DockerCertPath string `env:"DOCKER_CERT_PATH"`
+	DockerHost     string `env:"DOCKER_HOST"`
 }
 
 func GetDockerOption(timeout time.Duration) (types.DockerOption, error) {
@@ -24,5 +27,7 @@ func GetDockerOption(timeout time.Duration) (types.DockerOption, error) {
 		Password:              cfg.Password,
 		Timeout:               timeout,
 		InsecureSkipTLSVerify: cfg.Insecure,
+		DockerDaemonCertPath:  cfg.DockerCertPath,
+		DockerDaemonHost:      cfg.DockerHost,
 	}, nil
 }
