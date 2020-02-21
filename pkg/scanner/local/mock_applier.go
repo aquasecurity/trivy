@@ -2,6 +2,7 @@
 
 package local
 
+import digest "github.com/opencontainers/go-digest"
 import mock "github.com/stretchr/testify/mock"
 import types "github.com/aquasecurity/fanal/types"
 
@@ -10,23 +11,30 @@ type MockApplier struct {
 	mock.Mock
 }
 
-type ApplyLayersArgs struct {
+type ApplierApplyLayersArgs struct {
+	ImageID          digest.Digest
+	ImageIDAnything  bool
 	LayerIDs         []string
 	LayerIDsAnything bool
 }
 
-type ApplyLayersReturns struct {
+type ApplierApplyLayersReturns struct {
 	Detail types.ImageDetail
 	Err    error
 }
 
-type ApplyLayersExpectation struct {
-	Args    ApplyLayersArgs
-	Returns ApplyLayersReturns
+type ApplierApplyLayersExpectation struct {
+	Args    ApplierApplyLayersArgs
+	Returns ApplierApplyLayersReturns
 }
 
-func (_m *MockApplier) ApplyApplyLayersExpectation(e ApplyLayersExpectation) {
+func (_m *MockApplier) ApplyApplyLayersExpectation(e ApplierApplyLayersExpectation) {
 	var args []interface{}
+	if e.Args.ImageIDAnything {
+		args = append(args, mock.Anything)
+	} else {
+		args = append(args, e.Args.ImageID)
+	}
 	if e.Args.LayerIDsAnything {
 		args = append(args, mock.Anything)
 	} else {
@@ -35,26 +43,26 @@ func (_m *MockApplier) ApplyApplyLayersExpectation(e ApplyLayersExpectation) {
 	_m.On("ApplyLayers", args...).Return(e.Returns.Detail, e.Returns.Err)
 }
 
-func (_m *MockApplier) ApplyApplyLayersExpectations(expectations []ApplyLayersExpectation) {
+func (_m *MockApplier) ApplyApplyLayersExpectations(expectations []ApplierApplyLayersExpectation) {
 	for _, e := range expectations {
 		_m.ApplyApplyLayersExpectation(e)
 	}
 }
 
-// ApplyLayers provides a mock function with given fields: layerIDs
-func (_m *MockApplier) ApplyLayers(layerIDs []string) (types.ImageDetail, error) {
-	ret := _m.Called(layerIDs)
+// ApplyLayers provides a mock function with given fields: imageID, layerIDs
+func (_m *MockApplier) ApplyLayers(imageID digest.Digest, layerIDs []string) (types.ImageDetail, error) {
+	ret := _m.Called(imageID, layerIDs)
 
 	var r0 types.ImageDetail
-	if rf, ok := ret.Get(0).(func([]string) types.ImageDetail); ok {
-		r0 = rf(layerIDs)
+	if rf, ok := ret.Get(0).(func(digest.Digest, []string) types.ImageDetail); ok {
+		r0 = rf(imageID, layerIDs)
 	} else {
 		r0 = ret.Get(0).(types.ImageDetail)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func([]string) error); ok {
-		r1 = rf(layerIDs)
+	if rf, ok := ret.Get(1).(func(digest.Digest, []string) error); ok {
+		r1 = rf(imageID, layerIDs)
 	} else {
 		r1 = ret.Error(1)
 	}

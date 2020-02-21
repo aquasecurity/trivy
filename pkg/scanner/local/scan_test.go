@@ -25,7 +25,7 @@ func TestScanner_Scan(t *testing.T) {
 	tests := []struct {
 		name                    string
 		args                    args
-		applyLayersExpectation  ApplyLayersExpectation
+		applyLayersExpectation  ApplierApplyLayersExpectation
 		ospkgDetectExpectations []OspkgDetectorDetectExpectation
 		libDetectExpectations   []LibraryDetectorDetectExpectation
 		wantResults             report.Results
@@ -40,11 +40,11 @@ func TestScanner_Scan(t *testing.T) {
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
 			},
-			applyLayersExpectation: ApplyLayersExpectation{
-				Args: ApplyLayersArgs{
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
 					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
-				Returns: ApplyLayersReturns{
+				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ImageDetail{
 						OS: &ftypes.OS{
 							Family: "alpine",
@@ -143,11 +143,11 @@ func TestScanner_Scan(t *testing.T) {
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
 			},
-			applyLayersExpectation: ApplyLayersExpectation{
-				Args: ApplyLayersArgs{
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
 					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
-				Returns: ApplyLayersReturns{
+				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ImageDetail{
 						OS: &ftypes.OS{},
 						Applications: []ftypes.Application{
@@ -204,11 +204,11 @@ func TestScanner_Scan(t *testing.T) {
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
 			},
-			applyLayersExpectation: ApplyLayersExpectation{
-				Args: ApplyLayersArgs{
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
 					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
-				Returns: ApplyLayersReturns{
+				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ImageDetail{
 						OS: &ftypes.OS{
 							Family: "fedora",
@@ -282,11 +282,11 @@ func TestScanner_Scan(t *testing.T) {
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options:  types.ScanOptions{VulnType: []string{"library"}},
 			},
-			applyLayersExpectation: ApplyLayersExpectation{
-				Args: ApplyLayersArgs{
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
 					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
-				Returns: ApplyLayersReturns{
+				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ImageDetail{
 						OS: &ftypes.OS{
 							Family: "alpine",
@@ -388,11 +388,11 @@ func TestScanner_Scan(t *testing.T) {
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
 			},
-			applyLayersExpectation: ApplyLayersExpectation{
-				Args: ApplyLayersArgs{
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
 					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
-				Returns: ApplyLayersReturns{
+				Returns: ApplierApplyLayersReturns{
 					Err: errors.New("error"),
 				},
 			},
@@ -405,11 +405,11 @@ func TestScanner_Scan(t *testing.T) {
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
 			},
-			applyLayersExpectation: ApplyLayersExpectation{
-				Args: ApplyLayersArgs{
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
 					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
-				Returns: ApplyLayersReturns{
+				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ImageDetail{
 						OS: &ftypes.OS{
 							Family: "alpine",
@@ -444,11 +444,11 @@ func TestScanner_Scan(t *testing.T) {
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options:  types.ScanOptions{VulnType: []string{"library"}},
 			},
-			applyLayersExpectation: ApplyLayersExpectation{
-				Args: ApplyLayersArgs{
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
 					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
-				Returns: ApplyLayersReturns{
+				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ImageDetail{
 						OS: &ftypes.OS{
 							Family: "alpine",

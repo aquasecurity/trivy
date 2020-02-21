@@ -229,8 +229,8 @@ func TestLayerServer_Put(t *testing.T) {
 					WhiteoutFiles: []string{"etc/hostname"},
 				},
 			},
-			putLayer: cache.PutLayerExpectation{
-				Args: cache.PutLayerArgs{
+			putLayer: cache.ImageCachePutLayerExpectation{
+				Args: cache.ImageCachePutLayerArgs{
 					LayerID:             "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 					DecompressedLayerID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 					LayerInfo: ftypes.LayerInfo{
@@ -295,15 +295,19 @@ func TestLayerServer_Put(t *testing.T) {
 		{
 			name: "sad path",
 			args: args{
-				in: &rpcLayer.PutRequest{},
+				in: &rpcCache.PutLayerRequest{
+					LayerInfo: &rpcCache.LayerInfo{
+						SchemaVersion: 1,
+					},
+				},
 			},
-			putLayer: cache.PutLayerExpectation{
-				Args: cache.PutLayerArgs{
+			putLayer: cache.ImageCachePutLayerExpectation{
+				Args: cache.ImageCachePutLayerArgs{
 					LayerIDAnything:             true,
 					DecompressedLayerIDAnything: true,
 					LayerInfoAnything:           true,
 				},
-				Returns: cache.PutLayerReturns{
+				Returns: cache.ImageCachePutLayerReturns{
 					Err: xerrors.New("error"),
 				},
 			},

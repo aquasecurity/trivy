@@ -27,7 +27,7 @@ func TestScanner_ScanImage(t *testing.T) {
 	tests := []struct {
 		name               string
 		args               args
-		analyzeExpectation AnalyzeExpectation
+		analyzeExpectation AnalyzerAnalyzeExpectation
 		scanExpectation    ScanExpectation
 		want               report.Results
 		wantErr            string
@@ -37,12 +37,12 @@ func TestScanner_ScanImage(t *testing.T) {
 			args: args{
 				options: types.ScanOptions{VulnType: []string{"os"}},
 			},
-			analyzeExpectation: AnalyzeExpectation{
-				Args: AnalyzeArgs{
+			analyzeExpectation: AnalyzerAnalyzeExpectation{
+				Args: AnalyzerAnalyzeArgs{
 					CtxAnything: true,
 				},
-				Returns: AnalyzeReturns{
-					Info: ftypes.ImageInfo{
+				Returns: AnalyzerAnalyzeReturns{
+					Info: ftypes.ImageReference{
 						Name:     "alpine:3.11",
 						ID:       "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 						LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -92,15 +92,15 @@ func TestScanner_ScanImage(t *testing.T) {
 			},
 		},
 		{
-			name: "sad path: Analyze returns an error",
+			name: "sad path: AnalyzerAnalyze returns an error",
 			args: args{
 				options: types.ScanOptions{VulnType: []string{"os"}},
 			},
-			analyzeExpectation: AnalyzeExpectation{
-				Args: AnalyzeArgs{
+			analyzeExpectation: AnalyzerAnalyzeExpectation{
+				Args: AnalyzerAnalyzeArgs{
 					CtxAnything: true,
 				},
-				Returns: AnalyzeReturns{
+				Returns: AnalyzerAnalyzeReturns{
 					Err: errors.New("error"),
 				},
 			},
@@ -111,12 +111,12 @@ func TestScanner_ScanImage(t *testing.T) {
 			args: args{
 				options: types.ScanOptions{VulnType: []string{"os"}},
 			},
-			analyzeExpectation: AnalyzeExpectation{
-				Args: AnalyzeArgs{
+			analyzeExpectation: AnalyzerAnalyzeExpectation{
+				Args: AnalyzerAnalyzeArgs{
 					CtxAnything: true,
 				},
-				Returns: AnalyzeReturns{
-					Info: ftypes.ImageInfo{
+				Returns: AnalyzerAnalyzeReturns{
+					Info: ftypes.ImageReference{
 						Name:     "alpine:3.11",
 						ID:       "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 						LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
