@@ -12,13 +12,13 @@ import (
 	"github.com/google/wire"
 )
 
-func initializeDockerScanner(ctx context.Context, imageName string, layerCache cache.LayerCache, localLayerCache cache.LocalLayerCache,
+func initializeDockerScanner(ctx context.Context, imageName string, layerCache cache.ImageCache, localImageCache cache.LocalImageCache,
 	timeout time.Duration) (scanner.Scanner, error) {
 	wire.Build(scanner.StandaloneDockerSet)
 	return scanner.Scanner{}, nil
 }
 
-func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.LayerCache, localLayerCache cache.LocalLayerCache,
+func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.ImageCache, localImageCache cache.LocalImageCache,
 	timeout time.Duration) (scanner.Scanner, error) {
 	wire.Build(scanner.StandaloneArchiveSet)
 	return scanner.Scanner{}, nil

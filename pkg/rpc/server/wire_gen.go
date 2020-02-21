@@ -23,7 +23,7 @@ import (
 
 // Injectors from inject.go:
 
-func initializeScanServer(localLayerCache cache.LocalLayerCache) *ScanServer {
+func initializeScanServer(localLayerCache cache.LocalImageCache) *ScanServer {
 	applier := analyzer.NewApplier(localLayerCache)
 	detector := ospkg.Detector{}
 	driverFactory := library.DriverFactory{}

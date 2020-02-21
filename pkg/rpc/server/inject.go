@@ -9,7 +9,7 @@ import (
 	"github.com/google/wire"
 )
 
-func initializeScanServer(localLayerCache cache.LocalLayerCache) *ScanServer {
+func initializeScanServer(localLayerCache cache.LocalImageCache) *ScanServer {
 	wire.Build(ScanSuperSet)
 	return &ScanServer{}
 }

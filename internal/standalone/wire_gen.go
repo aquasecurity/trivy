@@ -22,8 +22,8 @@ import (
 
 // Injectors from inject.go:
 
-func initializeDockerScanner(ctx context.Context, imageName string, layerCache cache.LayerCache, localLayerCache cache.LocalLayerCache, timeout time.Duration) (scanner.Scanner, error) {
-	applier := analyzer.NewApplier(localLayerCache)
+func initializeDockerScanner(ctx context.Context, imageName string, layerCache cache.ImageCache, localImageCache cache.LocalImageCache, timeout time.Duration) (scanner.Scanner, error) {
+	applier := analyzer.NewApplier(localImageCache)
 	detector := ospkg.Detector{}
 	driverFactory := library.DriverFactory{}
 	libraryDetector := library.NewDetector(driverFactory)
@@ -41,8 +41,8 @@ func initializeDockerScanner(ctx context.Context, imageName string, layerCache c
 	return scannerScanner, nil
 }
 
-func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.LayerCache, localLayerCache cache.LocalLayerCache, timeout time.Duration) (scanner.Scanner, error) {
-	applier := analyzer.NewApplier(localLayerCache)
+func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.ImageCache, localImageCache cache.LocalImageCache, timeout time.Duration) (scanner.Scanner, error) {
+	applier := analyzer.NewApplier(localImageCache)
 	detector := ospkg.Detector{}
 	driverFactory := library.DriverFactory{}
 	libraryDetector := library.NewDetector(driverFactory)

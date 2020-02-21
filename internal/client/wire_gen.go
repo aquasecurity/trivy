@@ -20,7 +20,7 @@ import (
 
 // Injectors from inject.go:
 
-func initializeDockerScanner(ctx context.Context, imageName string, layerCache cache.LayerCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration) (scanner.Scanner, error) {
+func initializeDockerScanner(ctx context.Context, imageName string, layerCache cache.ImageCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration) (scanner.Scanner, error) {
 	scannerScanner := client.NewProtobufClient(url)
 	clientScanner := client.NewScanner(customHeaders, scannerScanner)
 	dockerOption, err := types.GetDockerOption(timeout)
@@ -36,7 +36,7 @@ func initializeDockerScanner(ctx context.Context, imageName string, layerCache c
 	return scanner2, nil
 }
 
-func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.LayerCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration) (scanner.Scanner, error) {
+func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.ImageCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration) (scanner.Scanner, error) {
 	scannerScanner := client.NewProtobufClient(url)
 	clientScanner := client.NewScanner(customHeaders, scannerScanner)
 	dockerOption, err := types.GetDockerOption(timeout)
