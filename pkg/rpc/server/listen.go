@@ -18,9 +18,9 @@ import (
 	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
+	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	"github.com/aquasecurity/trivy/rpc/detector"
 	rpcDetector "github.com/aquasecurity/trivy/rpc/detector"
-	rpcLayer "github.com/aquasecurity/trivy/rpc/layer"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
@@ -63,8 +63,8 @@ func ListenAndServe(addr string, c config.Config, fsCache cache.FSCache) error {
 	scanHandler := rpcScanner.NewScannerServer(initializeScanServer(fsCache), nil)
 	mux.Handle(rpcScanner.ScannerPathPrefix, withToken(withWaitGroup(scanHandler), c.Token, c.TokenHeader))
 
-	layerHandler := rpcLayer.NewLayerServer(NewLayerServer(fsCache), nil)
-	mux.Handle(rpcLayer.LayerPathPrefix, withToken(withWaitGroup(layerHandler), c.Token, c.TokenHeader))
+	layerHandler := rpcCache.NewCacheServer(NewCacheServer(fsCache), nil)
+	mux.Handle(rpcCache.CachePathPrefix, withToken(withWaitGroup(layerHandler), c.Token, c.TokenHeader))
 
 	// osHandler is for backward compatibility
 	osHandler := rpcDetector.NewOSDetectorServer(initializeOspkgServer(), nil)
