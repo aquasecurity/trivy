@@ -55,5 +55,5 @@ func run(c config.Config) (err error) {
 		return nil
 	}
 
-	return server.ListenAndServe(c.Listen, c, fsCache)
+	return server.ListenAndServe(c, fsCache)
 }

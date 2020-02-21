@@ -29,7 +29,7 @@ var DBWorkerSuperSet = wire.NewSet(
 	newDBWorker,
 )
 
-func ListenAndServe(addr string, c config.Config, fsCache cache.FSCache) error {
+func ListenAndServe(c config.Config, fsCache cache.FSCache) error {
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
 
@@ -74,9 +74,9 @@ func ListenAndServe(addr string, c config.Config, fsCache cache.FSCache) error {
 	libHandler := rpcDetector.NewLibDetectorServer(initializeLibServer(), nil)
 	mux.Handle(rpcDetector.LibDetectorPathPrefix, withToken(withWaitGroup(libHandler), c.Token, c.TokenHeader))
 
-	log.Logger.Infof("Listening %s...", addr)
+	log.Logger.Infof("Listening %s...", c.Listen)
 
-	return http.ListenAndServe(addr, mux)
+	return http.ListenAndServe(c.Listen, mux)
 }
 
 func withToken(base http.Handler, token, tokenHeader string) http.Handler {
