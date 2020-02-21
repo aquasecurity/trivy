@@ -1,14 +1,16 @@
 package rpc
 
 import (
+	"github.com/golang/protobuf/ptypes"
+
 	ftypes "github.com/aquasecurity/fanal/types"
-	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/rpc/cache"
 	"github.com/aquasecurity/trivy/rpc/common"
-	"github.com/aquasecurity/trivy/rpc/layer"
 	"github.com/aquasecurity/trivy/rpc/scanner"
 )
 
@@ -48,10 +50,10 @@ func ConvertFromRpcPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 	return pkgs
 }
 
-func ConvertFromRpcLibraries(rpcLibs []*common.Library) []ptypes.Library {
-	var libs []ptypes.Library
+func ConvertFromRpcLibraries(rpcLibs []*common.Library) []deptypes.Library {
+	var libs []deptypes.Library
 	for _, l := range rpcLibs {
-		libs = append(libs, ptypes.Library{
+		libs = append(libs, deptypes.Library{
 			Name:    l.Name,
 			Version: l.Version,
 		})
@@ -59,7 +61,7 @@ func ConvertFromRpcLibraries(rpcLibs []*common.Library) []ptypes.Library {
 	return libs
 }
 
-func ConvertToRpcLibraries(libs []ptypes.Library) []*common.Library {
+func ConvertToRpcLibraries(libs []deptypes.Library) []*common.Library {
 	var rpcLibs []*common.Library
 	for _, l := range libs {
 		rpcLibs = append(rpcLibs, &common.Library{
@@ -172,14 +174,26 @@ func ConvertFromRpcApplications(rpcApps []*common.Application) []ftypes.Applicat
 	return apps
 }
 
-func ConvertFromRpcPutRequest(putRequest *layer.PutRequest) ftypes.LayerInfo {
+func ConvertFromRpcPutImageRequest(req *cache.PutImageRequest) ftypes.ImageInfo {
+	created, _ := ptypes.Timestamp(req.ImageInfo.Created)
+	return ftypes.ImageInfo{
+		SchemaVersion:   int(req.ImageInfo.SchemaVersion),
+		Architecture:    req.ImageInfo.Architecture,
+		Created:         created,
+		DockerVersion:   req.ImageInfo.DockerVersion,
+		OS:              req.ImageInfo.Os,
+		HistoryPackages: ConvertFromRpcPkgs(req.ImageInfo.HistoryPackages),
+	}
+}
+
+func ConvertFromRpcPutLayerRequest(req *cache.PutLayerRequest) ftypes.LayerInfo {
 	return ftypes.LayerInfo{
-		SchemaVersion: int(putRequest.SchemaVersion),
-		OS:            ConvertFromRpcOS(putRequest.Os),
-		PackageInfos:  ConvertFromRpcPackageInfos(putRequest.PackageInfos),
-		Applications:  ConvertFromRpcApplications(putRequest.Applications),
-		OpaqueDirs:    putRequest.OpaqueDirs,
-		WhiteoutFiles: putRequest.WhiteoutFiles,
+		SchemaVersion: int(req.LayerInfo.SchemaVersion),
+		OS:            ConvertFromRpcOS(req.LayerInfo.Os),
+		PackageInfos:  ConvertFromRpcPackageInfos(req.LayerInfo.PackageInfos),
+		Applications:  ConvertFromRpcApplications(req.LayerInfo.Applications),
+		OpaqueDirs:    req.LayerInfo.OpaqueDirs,
+		WhiteoutFiles: req.LayerInfo.WhiteoutFiles,
 	}
 }
 
@@ -193,26 +207,31 @@ func ConvertToRpcOS(fos *ftypes.OS) *common.OS {
 	}
 }
 
-func ConvertToRpcLayerInfo(layerID, decompressedLayerID string, layerInfo ftypes.LayerInfo) *layer.PutRequest {
+func ConvertToRpcImageInfo(imageID string, imageInfo ftypes.ImageInfo) *cache.PutImageRequest {
+	t, err := ptypes.TimestampProto(imageInfo.Created)
+	if err != nil {
+		log.Logger.Warnf("invalid timestamp: %s", err)
+	}
+
+	return &cache.PutImageRequest{
+		ImageId: imageID,
+		ImageInfo: &cache.ImageInfo{
+			SchemaVersion:   int32(imageInfo.SchemaVersion),
+			Architecture:    imageInfo.Architecture,
+			Created:         t,
+			DockerVersion:   imageInfo.DockerVersion,
+			Os:              imageInfo.OS,
+			HistoryPackages: ConvertToRpcPkgs(imageInfo.HistoryPackages),
+		},
+	}
+}
+
+func ConvertToRpcLayerInfo(layerID, decompressedLayerID string, layerInfo ftypes.LayerInfo) *cache.PutLayerRequest {
 	var packageInfos []*common.PackageInfo
 	for _, pkgInfo := range layerInfo.PackageInfos {
-		var pkgs []*common.Package
-		for _, pkg := range pkgInfo.Packages {
-			pkgs = append(pkgs, &common.Package{
-				Name:       pkg.Name,
-				Version:    pkg.Version,
-				Release:    pkg.Release,
-				Epoch:      int32(pkg.Epoch),
-				Arch:       pkg.Arch,
-				SrcName:    pkg.SrcName,
-				SrcVersion: pkg.SrcVersion,
-				SrcRelease: pkg.SrcRelease,
-				SrcEpoch:   int32(pkg.SrcEpoch),
-			})
-		}
 		packageInfos = append(packageInfos, &common.PackageInfo{
 			FilePath: pkgInfo.FilePath,
-			Packages: pkgs,
+			Packages: ConvertToRpcPkgs(pkgInfo.Packages),
 		})
 	}
 
@@ -233,20 +252,23 @@ func ConvertToRpcLayerInfo(layerID, decompressedLayerID string, layerInfo ftypes
 		})
 	}
 
-	return &layer.PutRequest{
+	return &cache.PutLayerRequest{
 		LayerId:             layerID,
 		DecompressedLayerId: decompressedLayerID,
-		SchemaVersion:       ftypes.LayerJSONSchemaVersion,
-		Os:                  ConvertToRpcOS(layerInfo.OS),
-		PackageInfos:        packageInfos,
-		Applications:        applications,
-		OpaqueDirs:          layerInfo.OpaqueDirs,
-		WhiteoutFiles:       layerInfo.WhiteoutFiles,
+		LayerInfo: &cache.LayerInfo{
+			SchemaVersion: ftypes.LayerJSONSchemaVersion,
+			Os:            ConvertToRpcOS(layerInfo.OS),
+			PackageInfos:  packageInfos,
+			Applications:  applications,
+			OpaqueDirs:    layerInfo.OpaqueDirs,
+			WhiteoutFiles: layerInfo.WhiteoutFiles,
+		},
 	}
 }
 
-func ConvertToRpcLayers(layerIDs []string) *layer.Layers {
-	return &layer.Layers{
+func ConvertToMissingLayersRequest(imageID string, layerIDs []string) *cache.MissingLayersRequest {
+	return &cache.MissingLayersRequest{
+		ImageId:  imageID,
 		LayerIds: layerIDs,
 	}
 }
