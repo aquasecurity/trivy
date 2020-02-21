@@ -74,7 +74,7 @@ type Driver interface {
 }
 
 type Analyzer interface {
-	Analyze(ctx context.Context) (info ftypes.ImageInfo, err error)
+	Analyze(ctx context.Context) (info ftypes.ImageReference, err error)
 }
 
 func NewScanner(driver Driver, ac Analyzer) Scanner {
