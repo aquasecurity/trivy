@@ -87,7 +87,8 @@ func run(c config.Config) (err error) {
 	}
 
 	scanOptions := types.ScanOptions{
-		VulnType: c.VulnType,
+		VulnType:            c.VulnType,
+		ScanRemovedPackages: c.ScanRemovedPkgs,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 

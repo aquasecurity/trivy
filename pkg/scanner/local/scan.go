@@ -81,8 +81,13 @@ func (s Scanner) Scan(target string, imageID digest.Digest, layerIDs []string, o
 	var results report.Results
 
 	if utils.StringInSlice("os", options.VulnType) {
+		pkgs := imageDetail.Packages
+		if options.ScanRemovedPackages {
+			pkgs = mergePkgs(pkgs, imageDetail.HistoryPackages)
+		}
+
 		var result *report.Result
-		result, eosl, err = s.scanOSPkg(target, imageDetail.OS.Family, imageDetail.OS.Name, imageDetail.Packages)
+		result, eosl, err = s.scanOSPkg(target, imageDetail.OS.Family, imageDetail.OS.Name, pkgs)
 		if err != nil {
 			return nil, nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
 		}
@@ -138,4 +143,19 @@ func (s Scanner) scanLibrary(apps []ftypes.Application) (report.Results, error) 
 		return results[i].Target < results[j].Target
 	})
 	return results, nil
+}
+
+func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {
+	// pkg has priority over pkgsFromCommands
+	uniqPkgs := map[string]struct{}{}
+	for _, pkg := range pkgs {
+		uniqPkgs[pkg.Name] = struct{}{}
+	}
+	for _, pkg := range pkgsFromCommands {
+		if _, ok := uniqPkgs[pkg.Name]; ok {
+			continue
+		}
+		pkgs = append(pkgs, pkg)
+	}
+	return pkgs
 }

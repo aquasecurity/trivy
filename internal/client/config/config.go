@@ -30,12 +30,13 @@ type Config struct {
 	Format   string
 	Template string
 
-	Timeout       time.Duration
-	vulnType      string
-	severities    string
-	IgnoreFile    string
-	IgnoreUnfixed bool
-	ExitCode      int
+	Timeout         time.Duration
+	ScanRemovedPkgs bool
+	vulnType        string
+	severities      string
+	IgnoreFile      string
+	IgnoreUnfixed   bool
+	ExitCode        int
 
 	RemoteAddr    string
 	token         string
@@ -73,12 +74,13 @@ func New(c *cli.Context) (Config, error) {
 		Format:   c.String("format"),
 		Template: c.String("template"),
 
-		Timeout:       c.Duration("timeout"),
-		vulnType:      c.String("vuln-type"),
-		severities:    c.String("severity"),
-		IgnoreFile:    c.String("ignorefile"),
-		IgnoreUnfixed: c.Bool("ignore-unfixed"),
-		ExitCode:      c.Int("exit-code"),
+		Timeout:         c.Duration("timeout"),
+		ScanRemovedPkgs: c.Bool("removed-pkgs"),
+		vulnType:        c.String("vuln-type"),
+		severities:      c.String("severity"),
+		IgnoreFile:      c.String("ignorefile"),
+		IgnoreUnfixed:   c.Bool("ignore-unfixed"),
+		ExitCode:        c.Int("exit-code"),
 
 		RemoteAddr:    c.String("remote"),
 		token:         c.String("token"),
