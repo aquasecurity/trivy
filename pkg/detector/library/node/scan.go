@@ -10,7 +10,7 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/npm"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/go-dep-parser/pkg/yarn"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/node"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -22,44 +22,30 @@ const (
 
 type Scanner struct {
 	scannerType string
-	vs          node.VulnSrc
+	vs          ghsa.VulnSrc
 }
 
 func NewScanner(scannerType string) *Scanner {
 	return &Scanner{
 		scannerType: scannerType,
-		vs:          node.NewVulnSrc(),
+		vs:          ghsa.NewVulnSrc(ghsa.Npm),
 	}
 }
 
 func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
-	replacer := strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc", " <", ", <", " >", ", >")
-	advisories, err := s.vs.Get(pkgName)
+	replacer := strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc")
+	ghsas, err := s.vs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
 	}
 
 	var vulns []types.DetectedVulnerability
-	for _, advisory := range advisories {
-		// e.g. <= 2.15.0 || >= 3.0.0 <= 3.8.2
-		//  => {"<=2.15.0", ">= 3.0.0, <= 3.8.2"}
+	for _, advisory := range ghsas {
 		var vulnerableVersions []string
-		for _, version := range strings.Split(advisory.VulnerableVersions, " || ") {
-			version = strings.TrimSpace(version)
-			vulnerableVersions = append(vulnerableVersions, replacer.Replace(version))
+		for _, vulnerableVersion := range advisory.VulnerableVersions {
+			vulnerableVersions = append(vulnerableVersions, replacer.Replace(vulnerableVersion))
 		}
-
 		if !utils.MatchVersions(pkgVer, vulnerableVersions) {
-			continue
-		}
-
-		var patchedVersions []string
-		for _, version := range strings.Split(advisory.PatchedVersions, " || ") {
-			version = strings.TrimSpace(version)
-			patchedVersions = append(patchedVersions, replacer.Replace(version))
-		}
-
-		if utils.MatchVersions(pkgVer, patchedVersions) {
 			continue
 		}
 
@@ -67,7 +53,7 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 			VulnerabilityID:  advisory.VulnerabilityID,
 			PkgName:          pkgName,
 			InstalledVersion: pkgVer.String(),
-			FixedVersion:     strings.Join(patchedVersions, ", "),
+			FixedVersion:     strings.Join(advisory.PatchedVersions, ", "),
 		}
 		vulns = append(vulns, vuln)
 	}

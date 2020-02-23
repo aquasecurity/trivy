@@ -9,7 +9,7 @@ import (
 
 	"github.com/aquasecurity/go-dep-parser/pkg/bundler"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	bundlerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/bundler"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -30,12 +30,8 @@ var (
 	)
 )
 
-type VulnSrc interface {
-	Get(pkgName string) ([]bundlerSrc.Advisory, error)
-}
-
 type Scanner struct {
-	vs VulnSrc
+	vs ghsa.VulnSrc
 }
 
 func massageLockFileVersion(version string) string {
@@ -47,33 +43,29 @@ func massageLockFileVersion(version string) string {
 
 func NewScanner() *Scanner {
 	return &Scanner{
-		vs: bundlerSrc.NewVulnSrc(),
+		vs: ghsa.NewVulnSrc(ghsa.Rubygems),
 	}
 }
 
 func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
-	advisories, err := s.vs.Get(pkgName)
+	var vulns []types.DetectedVulnerability
+	ghsas, err := s.vs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
 	}
-
-	var vulns []types.DetectedVulnerability
-	for _, advisory := range advisories {
-		if utils.MatchVersions(pkgVer, advisory.PatchedVersions) {
+	for _, advisory := range ghsas {
+		if !utils.MatchVersions(pkgVer, advisory.VulnerableVersions) {
 			continue
 		}
-		if utils.MatchVersions(pkgVer, advisory.UnaffectedVersions) {
-			continue
-		}
-
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  advisory.VulnerabilityID,
-			PkgName:          strings.TrimSpace(pkgName),
+			PkgName:          pkgName,
 			InstalledVersion: pkgVer.String(),
 			FixedVersion:     strings.Join(advisory.PatchedVersions, ", "),
 		}
 		vulns = append(vulns, vuln)
 	}
+
 	return vulns, nil
 }
 

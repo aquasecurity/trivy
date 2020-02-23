@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/composer"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	composerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/composer"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/knqyf263/go-version"
 )
@@ -21,12 +22,14 @@ const (
 )
 
 type Scanner struct {
-	vs composerSrc.VulnSrc
+	vs     composerSrc.VulnSrc
+	ghsavs ghsa.VulnSrc
 }
 
 func NewScanner() *Scanner {
 	return &Scanner{
-		vs: composerSrc.NewVulnSrc(),
+		vs:     composerSrc.NewVulnSrc(),
+		ghsavs: ghsa.NewVulnSrc(ghsa.Composer),
 	}
 }
 
@@ -62,6 +65,24 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 		}
 		vulns = append(vulns, vuln)
 	}
+
+	ghsas, err := s.ghsavs.Get(pkgName)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+	}
+	for _, advisory := range ghsas {
+		if !utils.MatchVersions(pkgVer, advisory.VulnerableVersions) {
+			continue
+		}
+		vuln := types.DetectedVulnerability{
+			VulnerabilityID:  advisory.VulnerabilityID,
+			PkgName:          pkgName,
+			InstalledVersion: pkgVer.String(),
+			FixedVersion:     strings.Join(advisory.PatchedVersions, ", "),
+		}
+		vulns = append(vulns, vuln)
+	}
+
 	return vulns, nil
 }
 
