@@ -32,7 +32,7 @@ var (
 	inputFlag = cli.StringFlag{
 		Name:   "input, i",
 		Value:  "",
-		Usage:  "input file path instead of image name",
+		Usage:  `input file path instead of image name ("-" for STDIN)`,
 		EnvVar: "TRIVY_INPUT",
 	}
 
