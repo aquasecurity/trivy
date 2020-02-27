@@ -5,10 +5,11 @@ import (
 	"bytes"
 	"log"
 
+	debVersion "github.com/knqyf263/go-deb-version"
+
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/extractor"
-
-	debVersion "github.com/knqyf263/go-deb-version"
+	"github.com/aquasecurity/fanal/types"
 )
 
 func init() {
@@ -17,8 +18,8 @@ func init() {
 
 type alpinePkgAnalyzer struct{}
 
-func (a alpinePkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Package, err error) {
-	var parsedPkgs []analyzer.Package
+func (a alpinePkgAnalyzer) Analyze(fileMap extractor.FileMap) (map[types.FilePath][]types.Package, error) {
+	pkgMap := map[types.FilePath][]types.Package{}
 	detected := false
 	for _, filename := range a.RequiredFiles() {
 		file, ok := fileMap[filename]
@@ -26,18 +27,18 @@ func (a alpinePkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.P
 			continue
 		}
 		scanner := bufio.NewScanner(bytes.NewBuffer(file))
-		parsedPkgs = a.parseApkInfo(scanner)
-		pkgs = append(pkgs, parsedPkgs...)
+		parsedPkgs := a.parseApkInfo(scanner)
+		pkgMap[types.FilePath(filename)] = parsedPkgs
 		detected = true
 	}
 	if !detected {
-		return pkgs, analyzer.ErrNoPkgsDetected
+		return nil, analyzer.ErrNoPkgsDetected
 	}
-	return pkgs, nil
+	return pkgMap, nil
 }
 
-func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []analyzer.Package) {
-	var pkg analyzer.Package
+func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []types.Package) {
+	var pkg types.Package
 	var version string
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -47,7 +48,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []analyzer
 			if analyzer.CheckPackage(&pkg) {
 				pkgs = append(pkgs, pkg)
 			}
-			pkg = analyzer.Package{}
+			pkg = types.Package{}
 			continue
 		}
 
@@ -63,7 +64,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []analyzer
 			pkg.Version = version
 		case "o:":
 			origin := string(line[2:])
-			originPkg := analyzer.Package{
+			originPkg := types.Package{
 				Name:    origin,
 				Version: version,
 			}
@@ -79,7 +80,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []analyzer
 
 	return a.uniquePkgs(pkgs)
 }
-func (a alpinePkgAnalyzer) uniquePkgs(pkgs []analyzer.Package) (uniqPkgs []analyzer.Package) {
+func (a alpinePkgAnalyzer) uniquePkgs(pkgs []types.Package) (uniqPkgs []types.Package) {
 	uniq := map[string]struct{}{}
 	for _, pkg := range pkgs {
 		if _, ok := uniq[pkg.Name]; ok {

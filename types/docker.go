@@ -16,7 +16,11 @@ type DockerOption struct {
 	// GCP
 	GcpCredPath string
 
-	SkipPing              bool
+	// Docker daemon
+	DockerDaemonCertPath string
+	DockerDaemonHost     string
+
 	InsecureSkipTLSVerify bool
+	SkipPing              bool
 	Timeout               time.Duration
 }

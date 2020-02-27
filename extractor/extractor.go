@@ -2,15 +2,16 @@ package extractor
 
 import (
 	"context"
-	"io"
 
-	"github.com/aquasecurity/fanal/extractor/image"
+	digest "github.com/opencontainers/go-digest"
 )
 
 type FileMap map[string][]byte
-type OPQDirs []string
 
 type Extractor interface {
-	Extract(ctx context.Context, imageRef image.Reference, transports, filenames []string) (FileMap, error)
-	ExtractFiles(layer io.Reader, filenames []string) (FileMap, OPQDirs, error)
+	ImageName() (imageName string)
+	ImageID() (imageID digest.Digest)
+	ConfigBlob(ctx context.Context) (configBlob []byte, err error)
+	LayerIDs() (layerIDs []string)
+	ExtractLayerFiles(ctx context.Context, dig digest.Digest, filenames []string) (decompressedLayerId digest.Digest, files FileMap, opqDirs []string, whFiles []string, err error)
 }

@@ -9,15 +9,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/extractor/docker"
-
-	"github.com/aquasecurity/fanal/analyzer/os"
-	"github.com/pkg/errors"
-
 	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/extractor/docker"
+	"github.com/aquasecurity/fanal/types"
 )
 
 func init() {
@@ -54,7 +53,7 @@ const (
 	apkIndexArchiveURL = "https://raw.githubusercontent.com/knqyf263/apkIndex-archive/master/alpine/v%s/main/x86_64/history.json"
 )
 
-func (a alpineCmdAnalyzer) Analyze(targetOS analyzer.OS, fileMap extractor.FileMap) (pkgs []analyzer.Package, err error) {
+func (a alpineCmdAnalyzer) Analyze(targetOS types.OS, fileMap extractor.FileMap) (pkgs []types.Package, err error) {
 	if targetOS.Family != os.Alpine {
 		return nil, xerrors.New("not target")
 	}
@@ -81,7 +80,7 @@ func (a alpineCmdAnalyzer) Analyze(targetOS analyzer.OS, fileMap extractor.FileM
 	}
 	return pkgs, nil
 }
-func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS analyzer.OS) (*apkIndex, error) {
+func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, error) {
 	// 3.9.3 => 3.9
 	osVer := targetOS.Name
 	if strings.Count(osVer, ".") > 1 {
@@ -103,14 +102,14 @@ func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS analyzer.OS) (*apkIndex
 	return apkIndexArchive, nil
 }
 
-func (a alpineCmdAnalyzer) parseConfig(apkIndexArchive *apkIndex, config docker.Config) (packages []analyzer.Package) {
+func (a alpineCmdAnalyzer) parseConfig(apkIndexArchive *apkIndex, config docker.Config) (packages []types.Package) {
 	envs := map[string]string{}
 	for _, env := range config.ContainerConfig.Env {
 		index := strings.Index(env, "=")
 		envs["$"+env[:index]] = env[index+1:]
 	}
 
-	uniqPkgs := map[string]analyzer.Package{}
+	uniqPkgs := map[string]types.Package{}
 	for _, history := range config.History {
 		pkgs := a.parseCommand(history.CreatedBy, envs)
 		pkgs = a.resolveDependencies(apkIndexArchive, pkgs)
@@ -219,7 +218,7 @@ type historyVersion struct {
 	BuiltAt int
 }
 
-func (a alpineCmdAnalyzer) guessVersion(apkIndexArchive *apkIndex, originalPkgs []string, createdAt time.Time) (pkgs []analyzer.Package) {
+func (a alpineCmdAnalyzer) guessVersion(apkIndexArchive *apkIndex, originalPkgs []string, createdAt time.Time) (pkgs []types.Package) {
 	for _, pkg := range originalPkgs {
 		archive, ok := apkIndexArchive.Package[pkg]
 		if !ok {
@@ -250,14 +249,14 @@ func (a alpineCmdAnalyzer) guessVersion(apkIndexArchive *apkIndex, originalPkgs 
 			continue
 		}
 
-		pkgs = append(pkgs, analyzer.Package{
+		pkgs = append(pkgs, types.Package{
 			Name:    pkg,
 			Version: candidateVersion,
 		})
 
 		// Add origin package name
 		if archive.Origin != "" && archive.Origin != pkg {
-			pkgs = append(pkgs, analyzer.Package{
+			pkgs = append(pkgs, types.Package{
 				Name:    archive.Origin,
 				Version: candidateVersion,
 			})

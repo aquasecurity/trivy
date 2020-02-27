@@ -6,35 +6,35 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/os"
+	"github.com/aquasecurity/fanal/types"
 )
 
 func TestAnalyze(t *testing.T) {
 	var tests = map[string]struct {
 		path    string
-		os      analyzer.OS
+		os      types.OS
 		wantErr error
 	}{
 		"CentOS": {
 			path: "./testdata/centos",
-			os:   analyzer.OS{Family: os.CentOS, Name: "7.6.1810"},
+			os:   types.OS{Family: os.CentOS, Name: "7.6.1810"},
 		},
 		"Fedora29": {
 			path: "./testdata/fedora_29",
-			os:   analyzer.OS{Family: os.Fedora, Name: "29"},
+			os:   types.OS{Family: os.Fedora, Name: "29"},
 		},
 		"Fedora31": {
 			path: "./testdata/fedora_31",
-			os:   analyzer.OS{Family: os.Fedora, Name: "31"},
+			os:   types.OS{Family: os.Fedora, Name: "31"},
 		},
 		"Oracle7": {
 			path: "./testdata/oracle_7",
-			os:   analyzer.OS{Family: os.Oracle, Name: "7.6"},
+			os:   types.OS{Family: os.Oracle, Name: "7.6"},
 		},
 		"Redhat6": {
 			path: "./testdata/redhat_6",
-			os:   analyzer.OS{Family: os.RedHat, Name: "6.2"},
+			os:   types.OS{Family: os.RedHat, Name: "6.2"},
 		},
 		"Invalid": {
 			path:    "./testdata/not_redhatbase",

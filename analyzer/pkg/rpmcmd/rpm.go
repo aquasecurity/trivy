@@ -23,31 +23,34 @@ func init() {
 
 type rpmCmdPkgAnalyzer struct{}
 
-func (a rpmCmdPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Package, err error) {
+func (a rpmCmdPkgAnalyzer) Analyze(fileMap extractor.FileMap) (map[types.FilePath][]types.Package, error) {
 	if !utils.IsCommandAvailable("rpm") {
 		return nil, types.ErrNoRpmCmd
 	}
-	var parsedPkgs []analyzer.Package
+
+	pkgMap := map[types.FilePath][]types.Package{}
 	detected := false
 	for _, filename := range a.RequiredFiles() {
 		file, ok := fileMap[filename]
 		if !ok {
 			continue
 		}
-		parsedPkgs, err = a.parsePkgInfo(file)
-		pkgs = append(pkgs, parsedPkgs...)
+		parsedPkgs, err := a.parsePkgInfo(file)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse the pkg info: %w", err)
+		}
+
+		pkgMap[types.FilePath(filename)] = parsedPkgs
 		detected = true
 	}
 	if !detected {
-		return pkgs, analyzer.ErrNoPkgsDetected
+		return nil, analyzer.ErrNoPkgsDetected
 	}
-	if err != nil {
-		return nil, xerrors.Errorf("failed to parse the pkg info: %w", err)
-	}
-	return pkgs, nil
+
+	return pkgMap, nil
 }
 
-func (a rpmCmdPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []analyzer.Package, err error) {
+func (a rpmCmdPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []types.Package, err error) {
 	tmpDir, err := ioutil.TempDir("", "rpm")
 	defer os.RemoveAll(tmpDir)
 	if err != nil {
@@ -80,7 +83,7 @@ func (a rpmCmdPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []analyzer.Pa
 	return pkgs, nil
 }
 
-func parseRPMOutput(line string) (pkg analyzer.Package, err error) {
+func parseRPMOutput(line string) (pkg types.Package, err error) {
 	fields := strings.Fields(line)
 	if len(fields) != 6 {
 		return pkg, xerrors.Errorf("Failed to parse package line: %s", line)
@@ -104,7 +107,7 @@ func parseRPMOutput(line string) (pkg analyzer.Package, err error) {
 		srcName, srcVer, srcRel, _, _ = splitFileName(fields[4])
 	}
 
-	return analyzer.Package{
+	return types.Package{
 		Name:       fields[0],
 		Epoch:      epoch,
 		Version:    fields[2],

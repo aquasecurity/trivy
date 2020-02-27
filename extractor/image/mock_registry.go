@@ -11,23 +11,23 @@ type MockRegistry struct {
 	mock.Mock
 }
 
-type CheckOptionsArgs struct {
+type RegistryCheckOptionsArgs struct {
 	Domain         string
 	DomainAnything bool
 	Option         types.DockerOption
 	OptionAnything bool
 }
 
-type CheckOptionsReturns struct {
+type RegistryCheckOptionsReturns struct {
 	_a0 error
 }
 
-type CheckOptionsExpectation struct {
-	Args    CheckOptionsArgs
-	Returns CheckOptionsReturns
+type RegistryCheckOptionsExpectation struct {
+	Args    RegistryCheckOptionsArgs
+	Returns RegistryCheckOptionsReturns
 }
 
-func (_m *MockRegistry) ApplyCheckOptionsExpectation(e CheckOptionsExpectation) {
+func (_m *MockRegistry) ApplyCheckOptionsExpectation(e RegistryCheckOptionsExpectation) {
 	var args []interface{}
 	if e.Args.DomainAnything {
 		args = append(args, mock.Anything)
@@ -42,7 +42,7 @@ func (_m *MockRegistry) ApplyCheckOptionsExpectation(e CheckOptionsExpectation) 
 	_m.On("CheckOptions", args...).Return(e.Returns._a0)
 }
 
-func (_m *MockRegistry) ApplyCheckOptionsExpectations(expectations []CheckOptionsExpectation) {
+func (_m *MockRegistry) ApplyCheckOptionsExpectations(expectations []RegistryCheckOptionsExpectation) {
 	for _, e := range expectations {
 		_m.ApplyCheckOptionsExpectation(e)
 	}
@@ -62,23 +62,23 @@ func (_m *MockRegistry) CheckOptions(domain string, option types.DockerOption) e
 	return r0
 }
 
-type GetCredentialArgs struct {
+type RegistryGetCredentialArgs struct {
 	Ctx         context.Context
 	CtxAnything bool
 }
 
-type GetCredentialReturns struct {
+type RegistryGetCredentialReturns struct {
 	_a0 string
 	_a1 string
 	_a2 error
 }
 
-type GetCredentialExpectation struct {
-	Args    GetCredentialArgs
-	Returns GetCredentialReturns
+type RegistryGetCredentialExpectation struct {
+	Args    RegistryGetCredentialArgs
+	Returns RegistryGetCredentialReturns
 }
 
-func (_m *MockRegistry) ApplyGetCredentialExpectation(e GetCredentialExpectation) {
+func (_m *MockRegistry) ApplyGetCredentialExpectation(e RegistryGetCredentialExpectation) {
 	var args []interface{}
 	if e.Args.CtxAnything {
 		args = append(args, mock.Anything)
@@ -88,7 +88,7 @@ func (_m *MockRegistry) ApplyGetCredentialExpectation(e GetCredentialExpectation
 	_m.On("GetCredential", args...).Return(e.Returns._a0, e.Returns._a1, e.Returns._a2)
 }
 
-func (_m *MockRegistry) ApplyGetCredentialExpectations(expectations []GetCredentialExpectation) {
+func (_m *MockRegistry) ApplyGetCredentialExpectations(expectations []RegistryGetCredentialExpectation) {
 	for _, e := range expectations {
 		_m.ApplyGetCredentialExpectation(e)
 	}

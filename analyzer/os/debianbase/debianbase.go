@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"strings"
 
+	"github.com/aquasecurity/fanal/types"
+
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer/os"
@@ -19,7 +21,7 @@ func init() {
 
 type debianbaseOSAnalyzer struct{}
 
-func (a debianbaseOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error) {
+func (a debianbaseOSAnalyzer) Analyze(fileMap extractor.FileMap) (types.OS, error) {
 	if file, ok := fileMap["etc/lsb-release"]; ok {
 		isUbuntu := false
 		scanner := bufio.NewScanner(bytes.NewBuffer(file))
@@ -31,7 +33,7 @@ func (a debianbaseOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, e
 			}
 
 			if isUbuntu && strings.HasPrefix(line, "DISTRIB_RELEASE=") {
-				return analyzer.OS{
+				return types.OS{
 					Family: os.Ubuntu,
 					Name:   strings.TrimSpace(line[16:]),
 				}, nil
@@ -43,10 +45,10 @@ func (a debianbaseOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, e
 		scanner := bufio.NewScanner(bytes.NewBuffer(file))
 		for scanner.Scan() {
 			line := scanner.Text()
-			return analyzer.OS{Family: os.Debian, Name: line}, nil
+			return types.OS{Family: os.Debian, Name: line}, nil
 		}
 	}
-	return analyzer.OS{}, xerrors.Errorf("debianbase: %w", os.AnalyzeOSError)
+	return types.OS{}, xerrors.Errorf("debianbase: %w", os.AnalyzeOSError)
 }
 
 func (a debianbaseOSAnalyzer) RequiredFiles() []string {
