@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"strings"
 
+	"github.com/aquasecurity/fanal/types"
+
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer/os"
@@ -19,7 +21,7 @@ func init() {
 
 type suseOSAnalyzer struct{}
 
-func (a suseOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error) {
+func (a suseOSAnalyzer) Analyze(fileMap extractor.FileMap) (types.OS, error) {
 	for _, filename := range a.RequiredFiles() {
 		file, ok := fileMap[filename]
 		if !ok {
@@ -45,14 +47,14 @@ func (a suseOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error) 
 			}
 
 			if suseName != "" && strings.HasPrefix(line, "VERSION_ID=") {
-				return analyzer.OS{
+				return types.OS{
 					Family: suseName,
 					Name:   strings.TrimSpace(line[12 : len(line)-1]),
 				}, nil
 			}
 		}
 	}
-	return analyzer.OS{}, xerrors.Errorf("suse: %w", os.AnalyzeOSError)
+	return types.OS{}, xerrors.Errorf("suse: %w", os.AnalyzeOSError)
 }
 
 func (a suseOSAnalyzer) RequiredFiles() []string {

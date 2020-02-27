@@ -5,26 +5,26 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/types"
 )
 
 func TestParseRpmInfo(t *testing.T) {
 	var tests = map[string]struct {
 		path string
-		pkgs []analyzer.Package
+		pkgs []types.Package
 	}{
 		"Valid": {
 			path: "./testdata/valid",
 			// cp ./testdata/valid /path/to/testdir/Packages
 			// rpm --dbpath /path/to/testdir -qa --qf "{Name: \"%{NAME}\", Epoch: %{EPOCHNUM}, Version: \"%{VERSION}\", Release: \"%{RELEASE}\", Arch: \"%{ARCH}\"\},\n"
-			pkgs: []analyzer.Package{
+			pkgs: []types.Package{
 				{Name: "centos-release", Epoch: 0, Version: "7", Release: "1.1503.el7.centos.2.8", Arch: "x86_64"},
 				{Name: "filesystem", Epoch: 0, Version: "3.2", Release: "18.el7", Arch: "x86_64"},
 			},
 		},
 		"ValidBig": {
 			path: "./testdata/valid_big",
-			pkgs: []analyzer.Package{
+			pkgs: []types.Package{
 				{Name: "publicsuffix-list-dafsa", Epoch: 0, Version: "20180514", Release: "1.fc28", Arch: "noarch"},
 				{Name: "libreport-filesystem", Epoch: 0, Version: "2.9.5", Release: "1.fc28", Arch: "x86_64"},
 				{Name: "fedora-gpg-keys", Epoch: 0, Version: "28", Release: "5", Arch: "noarch"},

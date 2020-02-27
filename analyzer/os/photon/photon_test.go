@@ -6,27 +6,27 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/os"
+	"github.com/aquasecurity/fanal/types"
 )
 
 func TestAnalyze(t *testing.T) {
 	var tests = map[string]struct {
 		path    string
-		os      analyzer.OS
+		os      types.OS
 		wantErr error
 	}{
 		"photon1.0": {
 			path: "./testdata/photon_1",
-			os:   analyzer.OS{Family: os.Photon, Name: "1.0"},
+			os:   types.OS{Family: os.Photon, Name: "1.0"},
 		},
 		"photon2.0": {
 			path: "./testdata/photon_2",
-			os:   analyzer.OS{Family: os.Photon, Name: "2.0"},
+			os:   types.OS{Family: os.Photon, Name: "2.0"},
 		},
 		"photon3.0": {
 			path: "./testdata/photon_3",
-			os:   analyzer.OS{Family: os.Photon, Name: "3.0"},
+			os:   types.OS{Family: os.Photon, Name: "3.0"},
 		},
 		"Invalid": {
 			path:    "./testdata/not_photon",

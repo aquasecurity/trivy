@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/aquasecurity/fanal/types"
-	imageTypes "github.com/containers/image/types"
+	imageTypes "github.com/containers/image/v5/types"
 )
 
 var (

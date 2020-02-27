@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"testing"
 	"time"
@@ -82,28 +83,19 @@ var testCases = []testCase{
 	},
 }
 
-func run(b *testing.B, ctx context.Context, imageName string, ac analyzer.Config) {
-	actualFiles, err := ac.Analyze(ctx, imageName)
-	require.NoError(b, err)
-
-	osFound, err := analyzer.GetOS(actualFiles)
-	require.NoError(b, err)
-
-	_, err = analyzer.GetPackages(actualFiles)
-	require.NoError(b, err)
-
-	_, err = analyzer.GetPackagesFromCommands(osFound, actualFiles)
-	require.NoError(b, err)
-
-	_, err = analyzer.GetLibraries(actualFiles)
+func run(b *testing.B, ctx context.Context, ac analyzer.Config) {
+	_, err := ac.Analyze(ctx)
 	require.NoError(b, err)
 }
 
-func runChecksBench(b *testing.B, ctx context.Context, imageName string, ac analyzer.Config, c cache.Cache) {
+func runChecksBench(b *testing.B, ctx context.Context, imageName, cacheDir string, ac analyzer.Config, c cache.Cache) {
 	for i := 0; i < b.N; i++ {
-		run(b, ctx, imageName, ac)
+		run(b, ctx, ac)
 		if c != nil {
+			b.StopTimer()
 			_ = c.Clear()
+			ac, c = initializeAnalyzer(b, ctx, imageName, cacheDir)
+			b.StartTimer()
 		}
 	}
 }
@@ -120,7 +112,7 @@ func BenchmarkDockerMode_WithoutCache(b *testing.B) {
 
 			b.ReportAllocs()
 			b.ResetTimer()
-			runChecksBench(b, ctx, imageName, ac, c)
+			runChecksBench(b, ctx, imageName, benchCache, ac, c)
 			b.StopTimer()
 
 			teardown(b, ctx, tc.imageName, imageName, cli)
@@ -138,11 +130,11 @@ func BenchmarkDockerMode_WithCache(b *testing.B) {
 
 			ctx, imageName, _, cli, ac := setup(b, tc, benchCache)
 			// run once to generate cache
-			run(b, ctx, imageName, ac)
+			run(b, ctx, ac)
 
 			b.ReportAllocs()
 			b.ResetTimer()
-			runChecksBench(b, ctx, imageName, ac, nil)
+			runChecksBench(b, ctx, imageName, benchCache, ac, nil)
 			b.StopTimer()
 
 			teardown(b, ctx, tc.imageName, imageName, cli)
@@ -167,12 +159,6 @@ func teardown(b *testing.B, ctx context.Context, originalImageName, imageName st
 
 func setup(b *testing.B, tc testCase, cacheDir string) (context.Context, string, cache.Cache, *client.Client, analyzer.Config) {
 	ctx := context.Background()
-	c := cache.New(cacheDir)
-
-	opt := types.DockerOption{
-		Timeout:  600 * time.Second,
-		SkipPing: true,
-	}
 
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	require.NoError(b, err, tc.name)
@@ -194,13 +180,30 @@ func setup(b *testing.B, tc testCase, cacheDir string) (context.Context, string,
 	io.Copy(ioutil.Discard, resp.Body)
 	require.NoError(b, resp.Body.Close())
 
-	imageName := fmt.Sprintf("%s-%s", tc.imageName, nextRandom())
+	rs := rand.NewSource(time.Now().UnixNano())
+	imageName := fmt.Sprintf("%s-%d", tc.imageName, rand.New(rs).Intn(1000000))
 
 	// tag our image to something unique
 	err = cli.ImageTag(ctx, tc.imageName, imageName)
 	require.NoError(b, err, tc.name)
 
-	ext := docker.NewDockerExtractor(opt, c)
-	ac := analyzer.Config{Extractor: ext}
+	ac, c := initializeAnalyzer(b, ctx, imageName, cacheDir)
+
 	return ctx, imageName, c, cli, ac
+}
+
+func initializeAnalyzer(b *testing.B, ctx context.Context, imageName, cacheDir string) (analyzer.Config, cache.Cache) {
+	c, err := cache.NewFSCache(cacheDir)
+	require.NoError(b, err)
+
+	opt := types.DockerOption{
+		Timeout:  600 * time.Second,
+		SkipPing: true,
+	}
+
+	ext, err := docker.NewDockerExtractor(ctx, imageName, opt)
+	require.NoError(b, err)
+
+	ac := analyzer.New(ext, c)
+	return ac, c
 }

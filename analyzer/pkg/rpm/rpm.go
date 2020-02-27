@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/types"
 	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
 )
 
@@ -18,28 +19,28 @@ func init() {
 
 type rpmPkgAnalyzer struct{}
 
-func (a rpmPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Package, err error) {
-	var parsedPkgs []analyzer.Package
+func (a rpmPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs map[types.FilePath][]types.Package, err error) {
+	pkgMap := map[types.FilePath][]types.Package{}
 	detected := false
 	for _, filename := range a.RequiredFiles() {
 		file, ok := fileMap[filename]
 		if !ok {
 			continue
 		}
-		parsedPkgs, err = a.parsePkgInfo(file)
-		pkgs = append(pkgs, parsedPkgs...)
+		parsedPkgs, err := a.parsePkgInfo(file)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse the pkg info: %w", err)
+		}
+		pkgMap[types.FilePath(filename)] = parsedPkgs
 		detected = true
 	}
 	if !detected {
 		return nil, analyzer.ErrNoPkgsDetected
 	}
-	if err != nil {
-		return nil, xerrors.Errorf("failed to parse the pkg info: %w", err)
-	}
-	return pkgs, nil
+	return pkgMap, nil
 }
 
-func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []analyzer.Package, err error) {
+func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []types.Package, err error) {
 	tmpDir, err := ioutil.TempDir("", "rpm")
 	defer os.RemoveAll(tmpDir)
 	if err != nil {
@@ -69,7 +70,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []analyzer.Packa
 		if arch == "" {
 			arch = "(none)"
 		}
-		p := analyzer.Package{
+		p := types.Package{
 			Name:    pkg.Name,
 			Epoch:   pkg.Epoch,
 			Version: pkg.Version,

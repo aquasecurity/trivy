@@ -6,19 +6,18 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/aquasecurity/fanal/types"
 	"github.com/kylelemons/godebug/pretty"
-
-	"github.com/aquasecurity/fanal/analyzer"
 )
 
 func TestParseApkInfo(t *testing.T) {
 	var tests = map[string]struct {
 		path string
-		pkgs []analyzer.Package
+		pkgs []types.Package
 	}{
 		"Valid": {
 			path: "./testdata/apk",
-			pkgs: []analyzer.Package{
+			pkgs: []types.Package{
 				{Name: "musl", Version: "1.1.14-r10"},
 				{Name: "busybox", Version: "1.24.2-r9"},
 				{Name: "alpine-baselayout", Version: "3.0.3-r0"},

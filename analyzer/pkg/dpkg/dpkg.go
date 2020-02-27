@@ -8,6 +8,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/aquasecurity/fanal/types"
+
 	"github.com/aquasecurity/fanal/utils"
 
 	mapset "github.com/deckarep/golang-set"
@@ -29,7 +31,8 @@ func init() {
 
 type debianPkgAnalyzer struct{}
 
-func (a debianPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.Package, err error) {
+func (a debianPkgAnalyzer) Analyze(fileMap extractor.FileMap) (map[types.FilePath][]types.Package, error) {
+	pkgMap := map[types.FilePath][]types.Package{}
 	detected := false
 	for filename, targetBytes := range fileMap {
 		dir := filepath.Dir(filename) + "/"
@@ -37,17 +40,18 @@ func (a debianPkgAnalyzer) Analyze(fileMap extractor.FileMap) (pkgs []analyzer.P
 			continue
 		}
 		scanner := bufio.NewScanner(bytes.NewBuffer(targetBytes))
-		pkgs = append(pkgs, a.parseDpkginfo(scanner)...)
+		parsedPkgs := a.parseDpkginfo(scanner)
+		pkgMap[types.FilePath(filename)] = parsedPkgs
 		detected = true
 	}
 	if !detected {
-		return pkgs, analyzer.ErrNoPkgsDetected
+		return nil, analyzer.ErrNoPkgsDetected
 	}
-	return pkgs, nil
+	return pkgMap, nil
 }
 
-func (a debianPkgAnalyzer) parseDpkginfo(scanner *bufio.Scanner) (pkgs []analyzer.Package) {
-	var pkg *analyzer.Package
+func (a debianPkgAnalyzer) parseDpkginfo(scanner *bufio.Scanner) (pkgs []types.Package) {
+	var pkg *types.Package
 	pkgMap := mapset.NewSet()
 
 	for scanner.Scan() {
@@ -66,16 +70,16 @@ func (a debianPkgAnalyzer) parseDpkginfo(scanner *bufio.Scanner) (pkgs []analyze
 	return pkgs
 }
 
-func mapsetToSlice(features mapset.Set) []analyzer.Package {
-	uniqueLayerFeatures := make([]analyzer.Package, 0, features.Cardinality())
+func mapsetToSlice(features mapset.Set) []types.Package {
+	uniqueLayerFeatures := make([]types.Package, 0, features.Cardinality())
 	for f := range features.Iter() {
-		feature := f.(analyzer.Package)
+		feature := f.(types.Package)
 		uniqueLayerFeatures = append(uniqueLayerFeatures, feature)
 	}
 	return uniqueLayerFeatures
 }
 
-func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *analyzer.Package) {
+func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) {
 	var (
 		name          string
 		version       string
@@ -120,7 +124,7 @@ func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *analyzer.P
 		log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", name, version)
 		return nil
 	}
-	pkg = &analyzer.Package{Name: name, Version: version}
+	pkg = &types.Package{Name: name, Version: version}
 
 	// Source version and names are computed from binary package names and versions
 	// in dpkg.

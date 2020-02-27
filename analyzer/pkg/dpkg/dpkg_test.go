@@ -7,19 +7,18 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/aquasecurity/fanal/types"
 	"github.com/kylelemons/godebug/pretty"
-
-	"github.com/aquasecurity/fanal/analyzer"
 )
 
 func TestParseApkInfo(t *testing.T) {
 	var tests = map[string]struct {
 		path string
-		pkgs []analyzer.Package
+		pkgs []types.Package
 	}{
 		"Valid": {
 			path: "./testdata/dpkg",
-			pkgs: []analyzer.Package{
+			pkgs: []types.Package{
 				{Name: "adduser", Version: "3.116ubuntu1", SrcName: "adduser", SrcVersion: "3.116ubuntu1"},
 				{Name: "apt", Version: "1.6.3ubuntu0.1", SrcName: "apt", SrcVersion: "1.6.3ubuntu0.1"},
 				{Name: "base-files", Version: "10.1ubuntu2.2", SrcName: "base-files", SrcVersion: "10.1ubuntu2.2"},
@@ -114,7 +113,7 @@ func TestParseApkInfo(t *testing.T) {
 		},
 		"Corrupsed": {
 			path: "./testdata/corrupsed",
-			pkgs: []analyzer.Package{
+			pkgs: []types.Package{
 				{Name: "libgcc1", Version: "1:5.1.1-12ubuntu1", SrcName: "gcc-5", SrcVersion: "5.1.1-12ubuntu1"},
 				{Name: "libpam-modules-bin", Version: "1.1.8-3.1ubuntu3", SrcName: "pam", SrcVersion: "1.1.8-3.1ubuntu3"},
 				{Name: "libpam-runtime", Version: "1.1.8-3.1ubuntu3", SrcName: "pam", SrcVersion: "1.1.8-3.1ubuntu3"},
@@ -123,7 +122,7 @@ func TestParseApkInfo(t *testing.T) {
 		},
 		"OnlyApt": {
 			path: "./testdata/dpkg_apt",
-			pkgs: []analyzer.Package{
+			pkgs: []types.Package{
 				{Name: "apt", Version: "1.6.3ubuntu0.1", SrcName: "apt", SrcVersion: "1.6.3ubuntu0.1"},
 			},
 		},
@@ -145,7 +144,7 @@ func TestParseApkInfo(t *testing.T) {
 	}
 }
 
-func sortPkgByName(pkgs []analyzer.Package) []analyzer.Package {
+func sortPkgByName(pkgs []types.Package) []types.Package {
 	sort.Slice(pkgs, func(i, j int) bool {
 		if pkgs[i].Name != pkgs[j].Name {
 			return pkgs[i].Name < pkgs[j].Name

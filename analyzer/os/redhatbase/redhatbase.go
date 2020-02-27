@@ -6,6 +6,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/aquasecurity/fanal/types"
+
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer/os"
@@ -22,19 +24,19 @@ type redhatOSAnalyzer struct{}
 
 var redhatRe = regexp.MustCompile(`(.*) release (\d[\d\.]*)`)
 
-func (a redhatOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error) {
+func (a redhatOSAnalyzer) Analyze(fileMap extractor.FileMap) (types.OS, error) {
 	if file, ok := fileMap["etc/centos-release"]; ok {
 		scanner := bufio.NewScanner(bytes.NewBuffer(file))
 		for scanner.Scan() {
 			line := scanner.Text()
 			result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
 			if len(result) != 3 {
-				return analyzer.OS{}, xerrors.New("cent: Invalid centos-release")
+				return types.OS{}, xerrors.New("cent: Invalid centos-release")
 			}
 
 			switch strings.ToLower(result[1]) {
 			case "centos", "centos linux":
-				return analyzer.OS{Family: os.CentOS, Name: result[2]}, nil
+				return types.OS{Family: os.CentOS, Name: result[2]}, nil
 			}
 		}
 	}
@@ -45,9 +47,9 @@ func (a redhatOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error
 			line := scanner.Text()
 			result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
 			if len(result) != 3 {
-				return analyzer.OS{}, xerrors.New("oracle: Invalid oracle-release")
+				return types.OS{}, xerrors.New("oracle: Invalid oracle-release")
 			}
-			return analyzer.OS{Family: os.Oracle, Name: result[2]}, nil
+			return types.OS{Family: os.Oracle, Name: result[2]}, nil
 		}
 	}
 
@@ -65,40 +67,40 @@ func (a redhatOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error
 			line := scanner.Text()
 			result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
 			if len(result) != 3 {
-				return analyzer.OS{}, xerrors.New("redhat: Invalid redhat-release")
+				return types.OS{}, xerrors.New("redhat: Invalid redhat-release")
 			}
 
 			switch strings.ToLower(result[1]) {
 			case "centos", "centos linux":
-				return analyzer.OS{Family: os.CentOS, Name: result[2]}, nil
+				return types.OS{Family: os.CentOS, Name: result[2]}, nil
 			case "oracle", "oracle linux", "oracle linux server":
-				return analyzer.OS{Family: os.Oracle, Name: result[2]}, nil
+				return types.OS{Family: os.Oracle, Name: result[2]}, nil
 			case "fedora", "fedora linux":
-				return analyzer.OS{Family: os.Fedora, Name: result[2]}, nil
+				return types.OS{Family: os.Fedora, Name: result[2]}, nil
 			default:
-				return analyzer.OS{Family: os.RedHat, Name: result[2]}, nil
+				return types.OS{Family: os.RedHat, Name: result[2]}, nil
 			}
 		}
 	}
 
-	return analyzer.OS{}, xerrors.Errorf("redhatbase: %w", os.AnalyzeOSError)
+	return types.OS{}, xerrors.Errorf("redhatbase: %w", os.AnalyzeOSError)
 }
 
-func parseFedoraRelease(file []byte) (analyzer.OS, error) {
+func parseFedoraRelease(file []byte) (types.OS, error) {
 	scanner := bufio.NewScanner(bytes.NewBuffer(file))
 	for scanner.Scan() {
 		line := scanner.Text()
 		result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
 		if len(result) != 3 {
-			return analyzer.OS{}, xerrors.New("cent: Invalid fedora-release")
+			return types.OS{}, xerrors.New("cent: Invalid fedora-release")
 		}
 
 		switch strings.ToLower(result[1]) {
 		case "fedora", "fedora linux":
-			return analyzer.OS{Family: os.Fedora, Name: result[2]}, nil
+			return types.OS{Family: os.Fedora, Name: result[2]}, nil
 		}
 	}
-	return analyzer.OS{}, xerrors.Errorf("redhatbase: %w", os.AnalyzeOSError)
+	return types.OS{}, xerrors.Errorf("redhatbase: %w", os.AnalyzeOSError)
 }
 
 func (a redhatOSAnalyzer) RequiredFiles() []string {

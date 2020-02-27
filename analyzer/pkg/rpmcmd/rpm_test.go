@@ -5,26 +5,25 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/aquasecurity/fanal/types"
 	"github.com/kylelemons/godebug/pretty"
-
-	"github.com/aquasecurity/fanal/analyzer"
 )
 
 func TestParseRpmInfo(t *testing.T) {
 	var tests = map[string]struct {
 		path string
-		pkgs []analyzer.Package
+		pkgs []types.Package
 	}{
 		"Valid": {
 			path: "./testdata/valid",
-			pkgs: []analyzer.Package{
+			pkgs: []types.Package{
 				{Name: "centos-release", Version: "7", Release: "1.1503.el7.centos.2.8", Epoch: 0, SrcName: "centos-release", SrcVersion: "7", SrcRelease: "1.1503.el7.centos.2.8", SrcEpoch: 0, Arch: "x86_64"},
 				{Name: "filesystem", Version: "3.2", Release: "18.el7", Epoch: 0, SrcName: "filesystem", SrcVersion: "3.2", SrcRelease: "18.el7", SrcEpoch: 0, Arch: "x86_64"},
 			},
 		},
 		"ValidBig": {
 			path: "./testdata/valid_big",
-			pkgs: []analyzer.Package{
+			pkgs: []types.Package{
 				{Name: "publicsuffix-list-dafsa", Version: "20180514", Release: "1.fc28", Epoch: 0, SrcName: "publicsuffix-list", SrcVersion: "20180514", SrcRelease: "1.fc28", SrcEpoch: 0, Arch: "noarch"},
 				{Name: "libreport-filesystem", Version: "2.9.5", Release: "1.fc28", Epoch: 0, SrcName: "libreport", SrcVersion: "2.9.5", SrcRelease: "1.fc28", SrcEpoch: 0, Arch: "x86_64"},
 				{Name: "fedora-gpg-keys", Version: "28", Release: "5", Epoch: 0, SrcName: "fedora-repos", SrcVersion: "28", SrcRelease: "5", SrcEpoch: 0, Arch: "noarch"},

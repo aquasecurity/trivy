@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"bytes"
 
+	"github.com/aquasecurity/fanal/types"
+
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer/os"
@@ -18,7 +20,7 @@ func init() {
 
 type alpineOSAnalyzer struct{}
 
-func (a alpineOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error) {
+func (a alpineOSAnalyzer) Analyze(fileMap extractor.FileMap) (types.OS, error) {
 	for _, filename := range a.RequiredFiles() {
 		file, ok := fileMap[filename]
 		if !ok {
@@ -27,10 +29,10 @@ func (a alpineOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error
 		scanner := bufio.NewScanner(bytes.NewBuffer(file))
 		for scanner.Scan() {
 			line := scanner.Text()
-			return analyzer.OS{Family: os.Alpine, Name: line}, nil
+			return types.OS{Family: os.Alpine, Name: line}, nil
 		}
 	}
-	return analyzer.OS{}, xerrors.Errorf("alpine: %w", os.AnalyzeOSError)
+	return types.OS{}, xerrors.Errorf("alpine: %w", os.AnalyzeOSError)
 }
 
 func (a alpineOSAnalyzer) RequiredFiles() []string {

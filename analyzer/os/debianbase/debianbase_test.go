@@ -4,29 +4,30 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/aquasecurity/fanal/types"
+
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/os"
 )
 
 func TestAnalyze(t *testing.T) {
 	var tests = map[string]struct {
 		path    string
-		os      analyzer.OS
+		os      types.OS
 		wantErr error
 	}{
 		"Debian9": {
 			path: "./testdata/debian_9",
-			os:   analyzer.OS{Family: os.Debian, Name: "9.8"},
+			os:   types.OS{Family: os.Debian, Name: "9.8"},
 		},
 		"DebianSid": {
 			path: "./testdata/debian_sid",
-			os:   analyzer.OS{Family: os.Debian, Name: "buster/sid"},
+			os:   types.OS{Family: os.Debian, Name: "buster/sid"},
 		},
 		"Ubuntu18": {
 			path: "./testdata/ubuntu_18",
-			os:   analyzer.OS{Family: os.Ubuntu, Name: "18.04"},
+			os:   types.OS{Family: os.Ubuntu, Name: "18.04"},
 		},
 		"Invalid": {
 			path:    "./testdata/not_debianbase",

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/aquasecurity/fanal/types"
+
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer/os"
@@ -20,7 +22,7 @@ func init() {
 
 type amazonlinuxOSAnalyzer struct{}
 
-func (a amazonlinuxOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, error) {
+func (a amazonlinuxOSAnalyzer) Analyze(fileMap extractor.FileMap) (types.OS, error) {
 	for _, filename := range a.RequiredFiles() {
 		file, ok := fileMap[filename]
 		if !ok {
@@ -32,19 +34,19 @@ func (a amazonlinuxOSAnalyzer) Analyze(fileMap extractor.FileMap) (analyzer.OS, 
 			fields := strings.Fields(line)
 			// Only Amazon Linux Prefix
 			if strings.HasPrefix(line, "Amazon Linux release 2") {
-				return analyzer.OS{
+				return types.OS{
 					Family: os.Amazon,
 					Name:   fmt.Sprintf("%s %s", fields[3], fields[4]),
 				}, nil
 			} else if strings.HasPrefix(line, "Amazon Linux") {
-				return analyzer.OS{
+				return types.OS{
 					Family: os.Amazon,
 					Name:   strings.Join(fields[2:], " "),
 				}, nil
 			}
 		}
 	}
-	return analyzer.OS{}, xerrors.Errorf("amazon linux: %w", os.AnalyzeOSError)
+	return types.OS{}, xerrors.Errorf("amazon linux: %w", os.AnalyzeOSError)
 }
 
 func (a amazonlinuxOSAnalyzer) RequiredFiles() []string {

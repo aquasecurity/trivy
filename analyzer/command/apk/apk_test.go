@@ -8,22 +8,22 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/fanal/types"
+
 	"github.com/aquasecurity/fanal/extractor"
 
 	"github.com/kylelemons/godebug/pretty"
-
-	"github.com/aquasecurity/fanal/analyzer"
 )
 
 func TestAnalyze(t *testing.T) {
 	var tests = map[string]struct {
-		targetOS            analyzer.OS
+		targetOS            types.OS
 		fileMap             extractor.FileMap
 		apkIndexArchivePath string
-		expected            []analyzer.Package
+		expected            []types.Package
 	}{
 		"old": {
-			targetOS: analyzer.OS{
+			targetOS: types.OS{
 				Family: "alpine",
 				Name:   "3.9.1",
 			},
@@ -34,7 +34,7 @@ func TestAnalyze(t *testing.T) {
 			expected:            nil,
 		},
 		"new": {
-			targetOS: analyzer.OS{
+			targetOS: types.OS{
 				Family: "alpine",
 				Name:   "3.9.1",
 			},
@@ -42,7 +42,7 @@ func TestAnalyze(t *testing.T) {
 				"/config": []byte(`{"architecture":"amd64","config":{"Hostname":"","Domainname":"","User":"","AttachStdin":false,"AttachStdout":false,"AttachStderr":false,"Tty":false,"OpenStdin":false,"StdinOnce":false,"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","PHPIZE_DEPS=autoconf \t\tdpkg-dev dpkg \t\tfile \t\tg++ \t\tgcc \t\tlibc-dev \t\tmake \t\tpkgconf \t\tre2c","PHP_INI_DIR=/usr/local/etc/php","PHP_CFLAGS=-fstack-protector-strong -fpic -fpie -O2","PHP_CPPFLAGS=-fstack-protector-strong -fpic -fpie -O2","PHP_LDFLAGS=-Wl,-O1 -Wl,--hash-style=both -pie","GPG_KEYS=CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D","PHP_VERSION=7.3.5","PHP_URL=https://www.php.net/get/php-7.3.5.tar.xz/from/this/mirror","PHP_ASC_URL=https://www.php.net/get/php-7.3.5.tar.xz.asc/from/this/mirror","PHP_SHA256=e1011838a46fd4a195c8453b333916622d7ff5bce4aca2d9d99afac142db2472","PHP_MD5=","COMPOSER_ALLOW_SUPERUSER=1","COMPOSER_HOME=/tmp","COMPOSER_VERSION=1.7.3"],"Cmd":["composer"],"ArgsEscaped":true,"Image":"sha256:45a1f30c00e614b0d90bb2a24affba0a304ff27660ad4717987fefe067cadec8","Volumes":null,"WorkingDir":"/app","Entrypoint":["/bin/sh","/docker-entrypoint.sh"],"OnBuild":null,"Labels":null},"container":"47d9d33b3d5abb0316dba1a0bfcbc12a6fa88d98ad30170c41d30718003de82e","container_config":{"Hostname":"47d9d33b3d5a","Domainname":"","User":"","AttachStdin":false,"AttachStdout":false,"AttachStderr":false,"Tty":false,"OpenStdin":false,"StdinOnce":false,"Env":["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","PHPIZE_DEPS=autoconf \t\tdpkg-dev dpkg \t\tfile \t\tg++ \t\tgcc \t\tlibc-dev \t\tmake \t\tpkgconf \t\tre2c","PHP_INI_DIR=/usr/local/etc/php","PHP_CFLAGS=-fstack-protector-strong -fpic -fpie -O2","PHP_CPPFLAGS=-fstack-protector-strong -fpic -fpie -O2","PHP_LDFLAGS=-Wl,-O1 -Wl,--hash-style=both -pie","GPG_KEYS=CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D","PHP_VERSION=7.3.5","PHP_URL=https://www.php.net/get/php-7.3.5.tar.xz/from/this/mirror","PHP_ASC_URL=https://www.php.net/get/php-7.3.5.tar.xz.asc/from/this/mirror","PHP_SHA256=e1011838a46fd4a195c8453b333916622d7ff5bce4aca2d9d99afac142db2472","PHP_MD5=","COMPOSER_ALLOW_SUPERUSER=1","COMPOSER_HOME=/tmp","COMPOSER_VERSION=1.7.3"],"Cmd":["/bin/sh","-c","#(nop) ","CMD [\"composer\"]"],"ArgsEscaped":true,"Image":"sha256:45a1f30c00e614b0d90bb2a24affba0a304ff27660ad4717987fefe067cadec8","Volumes":null,"WorkingDir":"/app","Entrypoint":["/bin/sh","/docker-entrypoint.sh"],"OnBuild":null,"Labels":{}},"created":"2019-05-11T05:10:20.331457195Z","docker_version":"18.06.1-ce","history":[{"created":"2019-05-11T00:07:03.358250803Z","created_by":"/bin/sh -c #(nop) ADD file:a86aea1f3a7d68f6ae03397b99ea77f2e9ee901c5c59e59f76f93adbb4035913 in / "},{"created":"2019-05-11T00:07:03.510395965Z","created_by":"/bin/sh -c #(nop)  CMD [\"/bin/sh\"]","empty_layer":true},{"created":"2019-05-11T03:04:43.08006936Z","created_by":"/bin/sh -c #(nop)  ENV PHPIZE_DEPS=autoconf \t\tdpkg-dev dpkg \t\tfile \t\tg++ \t\tgcc \t\tlibc-dev \t\tmake \t\tpkgconf \t\tre2c","empty_layer":true},{"created":"2019-05-11T03:04:44.655269947Z","created_by":"/bin/sh -c apk add --no-cache \t\tca-certificates \t\tcurl \t\ttar \t\txz \t\topenssl"},{"created":"2019-05-11T03:04:45.787769041Z","created_by":"/bin/sh -c set -x \t\u0026\u0026 addgroup -g 82 -S www-data \t\u0026\u0026 adduser -u 82 -D -S -G www-data www-data"},{"created":"2019-05-11T03:04:46.047800659Z","created_by":"/bin/sh -c #(nop)  ENV PHP_INI_DIR=/usr/local/etc/php","empty_layer":true},{"created":"2019-05-11T03:04:47.131691293Z","created_by":"/bin/sh -c set -eux; \tmkdir -p \"$PHP_INI_DIR/conf.d\"; \t[ ! -d /var/www/html ]; \tmkdir -p /var/www/html; \tchown www-data:www-data /var/www/html; \tchmod 777 /var/www/html"},{"created":"2019-05-11T03:04:47.360137598Z","created_by":"/bin/sh -c #(nop)  ENV PHP_CFLAGS=-fstack-protector-strong -fpic -fpie -O2","empty_layer":true},{"created":"2019-05-11T03:04:47.624002469Z","created_by":"/bin/sh -c #(nop)  ENV PHP_CPPFLAGS=-fstack-protector-strong -fpic -fpie -O2","empty_layer":true},{"created":"2019-05-11T03:04:47.823552655Z","created_by":"/bin/sh -c #(nop)  ENV PHP_LDFLAGS=-Wl,-O1 -Wl,--hash-style=both -pie","empty_layer":true},{"created":"2019-05-11T03:04:48.090975339Z","created_by":"/bin/sh -c #(nop)  ENV GPG_KEYS=CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D","empty_layer":true},{"created":"2019-05-11T03:04:48.311134986Z","created_by":"/bin/sh -c #(nop)  ENV PHP_VERSION=7.3.5","empty_layer":true},{"created":"2019-05-11T03:04:48.546724822Z","created_by":"/bin/sh -c #(nop)  ENV PHP_URL=https://www.php.net/get/php-7.3.5.tar.xz/from/this/mirror PHP_ASC_URL=https://www.php.net/get/php-7.3.5.tar.xz.asc/from/this/mirror","empty_layer":true},{"created":"2019-05-11T03:04:48.787069773Z","created_by":"/bin/sh -c #(nop)  ENV PHP_SHA256=e1011838a46fd4a195c8453b333916622d7ff5bce4aca2d9d99afac142db2472 PHP_MD5=","empty_layer":true},{"created":"2019-05-11T03:04:54.588915046Z","created_by":"/bin/sh -c set -xe; \t\tapk add --no-cache --virtual .fetch-deps \t\tgnupg \t\twget \t; \t\tmkdir -p /usr/src; \tcd /usr/src; \t\twget -O php.tar.xz \"$PHP_URL\"; \t\tif [ -n \"$PHP_SHA256\" ]; then \t\techo \"$PHP_SHA256 *php.tar.xz\" | sha256sum -c -; \tfi; \tif [ -n \"$PHP_MD5\" ]; then \t\techo \"$PHP_MD5 *php.tar.xz\" | md5sum -c -; \tfi; \t\tif [ -n \"$PHP_ASC_URL\" ]; then \t\twget -O php.tar.xz.asc \"$PHP_ASC_URL\"; \t\texport GNUPGHOME=\"$(mktemp -d)\"; \t\tfor key in $GPG_KEYS; do \t\t\tgpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys \"$key\"; \t\tdone; \t\tgpg --batch --verify php.tar.xz.asc php.tar.xz; \t\tcommand -v gpgconf \u003e /dev/null \u0026\u0026 gpgconf --kill all; \t\trm -rf \"$GNUPGHOME\"; \tfi; \t\tapk del --no-network .fetch-deps"},{"created":"2019-05-11T03:04:54.86888363Z","created_by":"/bin/sh -c #(nop) COPY file:ce57c04b70896f77cc11eb2766417d8a1240fcffe5bba92179ec78c458844110 in /usr/local/bin/ "},{"created":"2019-05-11T03:12:28.585346378Z","created_by":"/bin/sh -c set -xe \t\u0026\u0026 apk add --no-cache --virtual .build-deps \t\t$PHPIZE_DEPS \t\targon2-dev \t\tcoreutils \t\tcurl-dev \t\tlibedit-dev \t\tlibsodium-dev \t\tlibxml2-dev \t\topenssl-dev \t\tsqlite-dev \t\t\u0026\u0026 export CFLAGS=\"$PHP_CFLAGS\" \t\tCPPFLAGS=\"$PHP_CPPFLAGS\" \t\tLDFLAGS=\"$PHP_LDFLAGS\" \t\u0026\u0026 docker-php-source extract \t\u0026\u0026 cd /usr/src/php \t\u0026\u0026 gnuArch=\"$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)\" \t\u0026\u0026 ./configure \t\t--build=\"$gnuArch\" \t\t--with-config-file-path=\"$PHP_INI_DIR\" \t\t--with-config-file-scan-dir=\"$PHP_INI_DIR/conf.d\" \t\t\t\t--enable-option-checking=fatal \t\t\t\t--with-mhash \t\t\t\t--enable-ftp \t\t--enable-mbstring \t\t--enable-mysqlnd \t\t--with-password-argon2 \t\t--with-sodium=shared \t\t\t\t--with-curl \t\t--with-libedit \t\t--with-openssl \t\t--with-zlib \t\t\t\t$(test \"$gnuArch\" = 's390x-linux-gnu' \u0026\u0026 echo '--without-pcre-jit') \t\t\t\t$PHP_EXTRA_CONFIGURE_ARGS \t\u0026\u0026 make -j \"$(nproc)\" \t\u0026\u0026 find -type f -name '*.a' -delete \t\u0026\u0026 make install \t\u0026\u0026 { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \t\u0026\u0026 make clean \t\t\u0026\u0026 cp -v php.ini-* \"$PHP_INI_DIR/\" \t\t\u0026\u0026 cd / \t\u0026\u0026 docker-php-source delete \t\t\u0026\u0026 runDeps=\"$( \t\tscanelf --needed --nobanner --format '%n#p' --recursive /usr/local \t\t\t| tr ',' '\\n' \t\t\t| sort -u \t\t\t| awk 'system(\"[ -e /usr/local/lib/\" $1 \" ]\") == 0 { next } { print \"so:\" $1 }' \t)\" \t\u0026\u0026 apk add --no-cache $runDeps \t\t\u0026\u0026 apk del --no-network .build-deps \t\t\u0026\u0026 pecl update-channels \t\u0026\u0026 rm -rf /tmp/pear ~/.pearrc"},{"created":"2019-05-11T03:12:29.098563791Z","created_by":"/bin/sh -c #(nop) COPY multi:03970f7b3773444b9f7f244f89d3ceeb4253ac6599f0ba0a4c0306c5bf7d1b9b in /usr/local/bin/ "},{"created":"2019-05-11T03:12:30.099974579Z","created_by":"/bin/sh -c docker-php-ext-enable sodium"},{"created":"2019-05-11T03:12:30.266754534Z","created_by":"/bin/sh -c #(nop)  ENTRYPOINT [\"docker-php-entrypoint\"]","empty_layer":true},{"created":"2019-05-11T03:12:30.414982715Z","created_by":"/bin/sh -c #(nop)  CMD [\"php\" \"-a\"]","empty_layer":true},{"created":"2019-05-11T05:10:12.574223281Z","created_by":"/bin/sh -c apk add --no-cache --virtual .composer-rundeps git subversion openssh mercurial tini bash patch make zip unzip coreutils  \u0026\u0026 apk add --no-cache --virtual .build-deps zlib-dev libzip-dev  \u0026\u0026 docker-php-ext-configure zip --with-libzip  \u0026\u0026 docker-php-ext-install -j$(getconf _NPROCESSORS_ONLN) zip opcache  \u0026\u0026 runDeps=\"$(     scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions       | tr ',' '\\n'       | sort -u       | awk 'system(\"[ -e /usr/local/lib/\" $1 \" ]\") == 0 { next } { print \"so:\" $1 }'     )\"  \u0026\u0026 apk add --no-cache --virtual .composer-phpext-rundeps $runDeps  \u0026\u0026 apk del .build-deps  \u0026\u0026 printf \"# composer php cli ini settings\\ndate.timezone=UTC\\nmemory_limit=-1\\nopcache.enable_cli=1\\n\" \u003e $PHP_INI_DIR/php-cli.ini"},{"created":"2019-05-11T05:10:12.831274473Z","created_by":"/bin/sh -c #(nop)  ENV COMPOSER_ALLOW_SUPERUSER=1","empty_layer":true},{"created":"2019-05-11T05:10:13.003330711Z","created_by":"/bin/sh -c #(nop)  ENV COMPOSER_HOME=/tmp","empty_layer":true},{"created":"2019-05-11T05:10:18.503381656Z","created_by":"/bin/sh -c #(nop)  ENV COMPOSER_VERSION=1.7.3","empty_layer":true},{"created":"2019-05-11T05:10:19.619504049Z","created_by":"/bin/sh -c curl --silent --fail --location --retry 3 --output /tmp/installer.php --url https://raw.githubusercontent.com/composer/getcomposer.org/cb19f2aa3aeaa2006c0cd69a7ef011eb31463067/web/installer  \u0026\u0026 php -r \"     \\$signature = '48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5';     \\$hash = hash('sha384', file_get_contents('/tmp/installer.php'));     if (!hash_equals(\\$signature, \\$hash)) {       unlink('/tmp/installer.php');       echo 'Integrity check failed, installer is either corrupt or worse.' . PHP_EOL;       exit(1);     }\"  \u0026\u0026 php /tmp/installer.php --no-ansi --install-dir=/usr/bin --filename=composer --version=${COMPOSER_VERSION}  \u0026\u0026 composer --ansi --version --no-interaction  \u0026\u0026 rm -f /tmp/installer.php"},{"created":"2019-05-11T05:10:19.803213107Z","created_by":"/bin/sh -c #(nop) COPY file:0bcb2d1c76549e38469db832f5bcfcb4c538b26748a9d4246cc64f35a23280d0 in /docker-entrypoint.sh "},{"created":"2019-05-11T05:10:19.987396089Z","created_by":"/bin/sh -c #(nop) WORKDIR /app"},{"created":"2019-05-11T05:10:20.159217819Z","created_by":"/bin/sh -c #(nop)  ENTRYPOINT [\"/bin/sh\" \"/docker-entrypoint.sh\"]","empty_layer":true},{"created":"2019-05-11T05:10:20.331457195Z","created_by":"/bin/sh -c #(nop)  CMD [\"composer\"]","empty_layer":true}],"os":"linux","rootfs":{"type":"layers","diff_ids":["sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81","sha256:3575e617b5f4845d72ac357ea1712be9037c1f73e8893fa4a5b887be964f8f59","sha256:414e112bbb2c35bef0e76708e87a68b521a011a1941fe6d062e30da800c69d1f","sha256:21f626200b4c7decb2150402d3b801a886ef9dab022d11478eb3240b2a1bb175","sha256:64a9089492da43bf6f8f3b3b45aafee7d71f1dfd6464477e27b43b4dbe1da341","sha256:c60e74b6df1608ee7a080978a9f5eddce48dd4d7366b65a5ec00c6e96deabfae","sha256:489ab25ac6f9d77b5868493bfccc72bcbfaa85d8f393cdd21f3a6cb6e0256c15","sha256:5a8c7d3402d369f0f5838b74da5c2bd3eaa64c6bbd8d8e11d7ec0affb074c276","sha256:fe6bde799f85946dbed35f5f614532d68a9f8b62f3f42ae9164740c3d0a6296a","sha256:40dd29f574f814717669b34efc4ae527a3af0829a2cccb9ec4f077a8cb2766cc","sha256:0d5d3c0e6691d3c6d24dc782de33d64d490226c503414da0df93b8f605f93da5","sha256:41467c77644ee108b8ef3e89db7f235ebb720ed4a4041bf746d7342193e6bc7d","sha256:6a64ec219cdeecfe63aac5b7f43fb3cb6651c6b1a02ebbde6deeabf8a7e3b345"]}}`),
 			},
 			apkIndexArchivePath: "testdata/history_v3.9.json",
-			expected: []analyzer.Package{
+			expected: []types.Package{
 				{Name: "acl", Version: "2.2.52-r5"},
 				{Name: "apr", Version: "1.6.5-r0"},
 				{Name: "apr-util", Version: "1.6.1-r5"},
@@ -354,7 +354,7 @@ func TestGuessVersion(t *testing.T) {
 		apkIndexArchive *apkIndex
 		pkgs            []string
 		createdAt       time.Time
-		expected        []analyzer.Package
+		expected        []types.Package
 	}{
 		"normal": {
 			apkIndexArchive: &apkIndex{
@@ -370,7 +370,7 @@ func TestGuessVersion(t *testing.T) {
 			},
 			pkgs:      []string{"busybox"},
 			createdAt: time.Unix(200, 0),
-			expected: []analyzer.Package{
+			expected: []types.Package{
 				{
 					Name:    "busybox",
 					Version: "1.24.2-r1",
@@ -407,7 +407,7 @@ func TestGuessVersion(t *testing.T) {
 			},
 			pkgs:      []string{"busybox", "openssl"},
 			createdAt: time.Unix(200, 0),
-			expected: []analyzer.Package{
+			expected: []types.Package{
 				{
 					Name:    "busybox",
 					Version: "1.24.2-r1",
@@ -430,7 +430,7 @@ func TestGuessVersion(t *testing.T) {
 			},
 			pkgs:      []string{"sqlite-dev"},
 			createdAt: time.Unix(500, 0),
-			expected: []analyzer.Package{
+			expected: []types.Package{
 				{
 					Name:    "sqlite-dev",
 					Version: "3.26.0-r3",
