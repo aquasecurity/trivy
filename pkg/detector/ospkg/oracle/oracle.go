@@ -64,11 +64,13 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 		installed := utils.FormatVersion(pkg)
 		installedVersion := version.NewVersion(installed)
 		for _, adv := range advisories {
+			// TODO: We don't seem to ignore advisories with no FixedVersion like we do elsewhere, expected?
 			fixedVersion := version.NewVersion(adv.FixedVersion)
 			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
+				LayerID:          pkg.LayerID,
 			}
 			if installedVersion.LessThan(fixedVersion) {
 				vuln.FixedVersion = adv.FixedVersion
