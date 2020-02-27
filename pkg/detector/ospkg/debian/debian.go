@@ -88,6 +88,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 					PkgName:          pkg.Name,
 					InstalledVersion: installed,
 					FixedVersion:     adv.FixedVersion,
+					LayerID:          pkg.LayerID,
 				}
 				vulns = append(vulns, vuln)
 			}
@@ -101,6 +102,8 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
+				//FixedVersion: adv.FixedVersion, // TODO: Why is this missing?
+				LayerID: pkg.LayerID,
 			}
 			vulns = append(vulns, vuln)
 		}
