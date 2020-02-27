@@ -4,13 +4,15 @@ import (
 	"os"
 	"testing"
 
+	"github.com/aquasecurity/trivy/rpc/common"
+
+	ftypes "github.com/aquasecurity/fanal/types"
+
 	"github.com/aquasecurity/trivy/pkg/log"
 
-	"github.com/aquasecurity/fanal/analyzer"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/rpc/detector"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,17 +24,17 @@ func TestMain(m *testing.M) {
 
 func TestConvertToRpcPkgs(t *testing.T) {
 	type args struct {
-		pkgs []analyzer.Package
+		pkgs []ftypes.Package
 	}
 	tests := []struct {
 		name string
 		args args
-		want []*detector.Package
+		want []*common.Package
 	}{
 		{
 			name: "happy path",
 			args: args{
-				pkgs: []analyzer.Package{
+				pkgs: []ftypes.Package{
 					{
 						Name:       "binary",
 						Version:    "1.2.3",
@@ -46,7 +48,7 @@ func TestConvertToRpcPkgs(t *testing.T) {
 					},
 				},
 			},
-			want: []*detector.Package{
+			want: []*common.Package{
 				{
 					Name:       "binary",
 					Version:    "1.2.3",
@@ -71,16 +73,16 @@ func TestConvertToRpcPkgs(t *testing.T) {
 
 func TestConvertFromRpcPkgs(t *testing.T) {
 	type args struct {
-		rpcPkgs []*detector.Package
+		rpcPkgs []*common.Package
 	}
 	tests := []struct {
 		name string
 		args args
-		want []analyzer.Package
+		want []ftypes.Package
 	}{
 		{
 			args: args{
-				rpcPkgs: []*detector.Package{
+				rpcPkgs: []*common.Package{
 					{
 						Name:       "binary",
 						Version:    "1.2.3",
@@ -94,7 +96,7 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 					},
 				},
 			},
-			want: []analyzer.Package{
+			want: []ftypes.Package{
 				{
 					Name:       "binary",
 					Version:    "1.2.3",
@@ -119,7 +121,7 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 
 func TestConvertFromRpcLibraries(t *testing.T) {
 	type args struct {
-		rpcLibs []*detector.Library
+		rpcLibs []*common.Library
 	}
 	tests := []struct {
 		name string
@@ -129,7 +131,7 @@ func TestConvertFromRpcLibraries(t *testing.T) {
 		{
 			name: "happy path",
 			args: args{
-				rpcLibs: []*detector.Library{
+				rpcLibs: []*common.Library{
 					{Name: "foo", Version: "1.2.3"},
 					{Name: "bar", Version: "4.5.6"},
 				},
@@ -155,7 +157,7 @@ func TestConvertToRpcLibraries(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []*detector.Library
+		want []*common.Library
 	}{
 		{
 			name: "happy path",
@@ -165,7 +167,7 @@ func TestConvertToRpcLibraries(t *testing.T) {
 					{Name: "bar", Version: "4.5.6"},
 				},
 			},
-			want: []*detector.Library{
+			want: []*common.Library{
 				{Name: "foo", Version: "1.2.3"},
 				{Name: "bar", Version: "4.5.6"},
 			},
@@ -181,7 +183,7 @@ func TestConvertToRpcLibraries(t *testing.T) {
 
 func TestConvertFromRpcVulns(t *testing.T) {
 	type args struct {
-		rpcVulns []*detector.Vulnerability
+		rpcVulns []*common.Vulnerability
 	}
 	tests := []struct {
 		name string
@@ -191,7 +193,7 @@ func TestConvertFromRpcVulns(t *testing.T) {
 		{
 			name: "happy path",
 			args: args{
-				rpcVulns: []*detector.Vulnerability{
+				rpcVulns: []*common.Vulnerability{
 					{
 						VulnerabilityId:  "CVE-2019-0001",
 						PkgName:          "foo",
@@ -199,7 +201,7 @@ func TestConvertFromRpcVulns(t *testing.T) {
 						FixedVersion:     "1.2.4",
 						Title:            "DoS",
 						Description:      "Denial of Service",
-						Severity:         detector.Severity_CRITICAL,
+						Severity:         common.Severity_CRITICAL,
 						References:       []string{"http://example.com"},
 					},
 				},
@@ -235,7 +237,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []*detector.Vulnerability
+		want []*common.Vulnerability
 	}{
 		{
 			name: "happy path",
@@ -255,7 +257,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 					},
 				},
 			},
-			want: []*detector.Vulnerability{
+			want: []*common.Vulnerability{
 				{
 					VulnerabilityId:  "CVE-2019-0001",
 					PkgName:          "foo",
@@ -263,7 +265,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 					FixedVersion:     "1.2.4",
 					Title:            "DoS",
 					Description:      "Denial of Service",
-					Severity:         detector.Severity_MEDIUM,
+					Severity:         common.Severity_MEDIUM,
 					References:       []string{"http://example.com"},
 				},
 			},
@@ -286,7 +288,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 					},
 				},
 			},
-			want: []*detector.Vulnerability{
+			want: []*common.Vulnerability{
 				{
 					VulnerabilityId:  "CVE-2019-0002",
 					PkgName:          "bar",
@@ -294,7 +296,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 					FixedVersion:     "1.2.4",
 					Title:            "DoS",
 					Description:      "Denial of Service",
-					Severity:         detector.Severity_UNKNOWN,
+					Severity:         common.Severity_UNKNOWN,
 					References:       []string{"http://example.com"},
 				},
 			},

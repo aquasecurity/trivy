@@ -104,6 +104,12 @@ var (
 		EnvVar: "TRIVY_DEBUG",
 	}
 
+	removedPkgsFlag = cli.BoolFlag{
+		Name:   "removed-pkgs",
+		Usage:  "detect vulnerabilities of removed packages (only for Alpine)",
+		EnvVar: "TRIVY_REMOVED_PKGS",
+	}
+
 	vulnTypeFlag = cli.StringFlag{
 		Name:   "vuln-type",
 		Value:  "os,library",
@@ -127,7 +133,7 @@ var (
 
 	timeoutFlag = cli.DurationFlag{
 		Name:   "timeout",
-		Value:  time.Second * 60,
+		Value:  time.Second * 120,
 		Usage:  "docker timeout",
 		EnvVar: "TRIVY_TIMEOUT",
 	}
@@ -192,6 +198,7 @@ OPTIONS:
 		noProgressFlag,
 		ignoreUnfixedFlag,
 		debugFlag,
+		removedPkgsFlag,
 		vulnTypeFlag,
 		cacheDirFlag,
 		ignoreFileFlag,
@@ -242,6 +249,7 @@ func NewClientCommand() cli.Command {
 			quietFlag,
 			ignoreUnfixedFlag,
 			debugFlag,
+			removedPkgsFlag,
 			vulnTypeFlag,
 			ignoreFileFlag,
 			cacheDirFlag,

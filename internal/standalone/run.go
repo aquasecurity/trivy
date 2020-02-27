@@ -1,6 +1,7 @@
 package standalone
 
 import (
+	"context"
 	"io/ioutil"
 	l "log"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/standalone/config"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/urfave/cli"
@@ -38,7 +40,11 @@ func run(c config.Config) (err error) {
 
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
-	cacheClient := cache.Initialize(c.CacheDir)
+	cacheClient, err := cache.NewFSCache(c.CacheDir)
+	if err != nil {
+		return xerrors.Errorf("unable to initialize the cache: %w", err)
+	}
+
 	cacheOperation := operation.NewCache(cacheClient)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
@@ -63,19 +69,30 @@ func run(c config.Config) (err error) {
 		return nil
 	}
 
+	var scanner scanner.Scanner
+	ctx := context.Background()
+
+	if c.Input != "" {
+		// scan tar file
+		scanner, err = initializeArchiveScanner(ctx, c.Input, cacheClient, cacheClient, c.Timeout)
+		if err != nil {
+			return xerrors.Errorf("unable to initialize the archive scanner: %w", err)
+		}
+	} else {
+		// scan an image in Docker Engine or Docker Registry
+		scanner, err = initializeDockerScanner(ctx, c.ImageName, cacheClient, cacheClient, c.Timeout)
+		if err != nil {
+			return xerrors.Errorf("unable to initialize the docker scanner: %w", err)
+		}
+	}
+
 	scanOptions := types.ScanOptions{
-		VulnType: c.VulnType,
+		VulnType:            c.VulnType,
+		ScanRemovedPackages: c.ScanRemovedPkgs,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	dockerOption, err := types.GetDockerOption()
-	if err != nil {
-		return xerrors.Errorf("failed to get docker option: %w", err)
-	}
-	dockerOption.Timeout = c.Timeout
-
-	scanner := initializeScanner(cacheClient)
-	results, err := scanner.ScanImage(c.ImageName, c.Input, scanOptions, dockerOption)
+	results, err := scanner.ScanImage(scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}

@@ -3,18 +3,26 @@
 package client
 
 import (
+	"context"
+	"time"
+
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/rpc/client/library"
-	"github.com/aquasecurity/trivy/pkg/rpc/client/ospkg"
+	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	"github.com/google/wire"
 )
 
-func initializeScanner(cacheClient cache.Cache, ospkgCustomHeaders ospkg.CustomHeaders, libraryCustomHeaders library.CustomHeaders,
-	ospkgURL ospkg.RemoteURL, libURL library.RemoteURL) scanner.Scanner {
-	wire.Build(scanner.ClientSet)
-	return scanner.Scanner{}
+func initializeDockerScanner(ctx context.Context, imageName string, layerCache cache.ImageCache, customHeaders client.CustomHeaders,
+	url client.RemoteURL, timeout time.Duration) (scanner.Scanner, error) {
+	wire.Build(scanner.RemoteDockerSet)
+	return scanner.Scanner{}, nil
+}
+
+func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.ImageCache, customHeaders client.CustomHeaders,
+	url client.RemoteURL, timeout time.Duration) (scanner.Scanner, error) {
+	wire.Build(scanner.RemoteArchiveSet)
+	return scanner.Scanner{}, nil
 }
 
 func initializeVulnerabilityClient() vulnerability.Client {

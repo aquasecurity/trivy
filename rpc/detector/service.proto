@@ -1,3 +1,4 @@
+// for backward compatibility
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
@@ -5,37 +6,23 @@ import "google/protobuf/timestamp.proto";
 package trivy.detector;
 option  go_package = "detector";
 
+import "github.com/aquasecurity/trivy/rpc/common/service.proto";
+
 service OSDetector {
   rpc Detect(OSDetectRequest) returns (DetectResponse);
 }
 
 message OSDetectRequest {
-  string                    os_family  = 1;
-  string                    os_name    = 2;
-  repeated Package          packages   = 3;
+  string   os_family                   = 1;
+  string   os_name                     = 2;
+  repeated common.Package   packages   = 3;
   string                    image_name = 4;
   google.protobuf.Timestamp created    = 5;
 }
 
 message DetectResponse {
-  repeated Vulnerability vulnerabilities = 1;
-  bool                   eosl            = 2;
-}
-
-message Package {
-  // binary package
-  // e.g. bind-utils
-  string name    = 1;
-  string version = 2;
-  string release = 3;
-  int32  epoch   = 4;
-  string arch    = 5;
-  // src package containing some binary packages
-  // e.g. bind
-  string src_name    = 6;
-  string src_version = 7;
-  string src_release = 8;
-  int32  src_epoch   = 9;
+  repeated common.Vulnerability vulnerabilities = 1;
+  bool                          eosl            = 2;
 }
 
 service LibDetector {
@@ -43,32 +30,8 @@ service LibDetector {
 }
 
 message LibDetectRequest {
-  string                    file_path  = 1;
-  repeated Library          libraries  = 2;
+  string   file_path                   = 1;
+  repeated common.Library   libraries  = 2;
   string                    image_name = 3;
   google.protobuf.Timestamp created    = 4;
-}
-
-message Library {
-  string name    = 1;
-  string version = 2;
-}
-
-message Vulnerability {
-  string          vulnerability_id  = 1;
-  string          pkg_name          = 2;
-  string          installed_version = 3;
-  string          fixed_version     = 4;
-  string          title             = 5;
-  string          description       = 6;
-  Severity        severity          = 7;
-  repeated string references        = 8;
-}
-
-enum Severity {
-  UNKNOWN  = 0;
-  LOW      = 1;
-  MEDIUM   = 2;
-  HIGH     = 3;
-  CRITICAL = 4;
 }

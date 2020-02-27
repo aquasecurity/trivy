@@ -3,21 +3,25 @@
 package standalone
 
 import (
+	"context"
+	"time"
+
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/trivy/internal/operation"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	"github.com/google/wire"
 )
 
-func initializeCacheClient(cacheDir string) (operation.Cache, error) {
-	wire.Build(operation.SuperSet)
-	return operation.Cache{}, nil
+func initializeDockerScanner(ctx context.Context, imageName string, layerCache cache.ImageCache, localImageCache cache.LocalImageCache,
+	timeout time.Duration) (scanner.Scanner, error) {
+	wire.Build(scanner.StandaloneDockerSet)
+	return scanner.Scanner{}, nil
 }
 
-func initializeScanner(c cache.Cache) scanner.Scanner {
-	wire.Build(scanner.StandaloneSet)
-	return scanner.Scanner{}
+func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.ImageCache, localImageCache cache.LocalImageCache,
+	timeout time.Duration) (scanner.Scanner, error) {
+	wire.Build(scanner.StandaloneArchiveSet)
+	return scanner.Scanner{}, nil
 }
 
 func initializeVulnerabilityClient() vulnerability.Client {
