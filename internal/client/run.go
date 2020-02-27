@@ -52,14 +52,14 @@ func run(c config.Config) (err error) {
 		scanner, err = initializeArchiveScanner(ctx, c.Input, remoteCache,
 			client.CustomHeaders(c.CustomHeaders), client.RemoteURL(c.RemoteAddr), c.Timeout)
 		if err != nil {
-			return err
+			return xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 		}
 	} else {
 		// scan an image in Docker Engine or Docker Registry
 		scanner, err = initializeDockerScanner(ctx, c.ImageName, remoteCache,
 			client.CustomHeaders(c.CustomHeaders), client.RemoteURL(c.RemoteAddr), c.Timeout)
 		if err != nil {
-			return err
+			return xerrors.Errorf("unable to initialize the docker scanner: %w", err)
 		}
 	}
 

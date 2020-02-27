@@ -42,7 +42,7 @@ func run(c config.Config) (err error) {
 	utils.SetCacheDir(c.CacheDir)
 	cacheClient, err := cache.NewFSCache(c.CacheDir)
 	if err != nil {
-		return err
+		return xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
 
 	cacheOperation := operation.NewCache(cacheClient)
@@ -76,13 +76,13 @@ func run(c config.Config) (err error) {
 		// scan tar file
 		scanner, err = initializeArchiveScanner(ctx, c.Input, cacheClient, cacheClient, c.Timeout)
 		if err != nil {
-			return err
+			return xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 		}
 	} else {
 		// scan an image in Docker Engine or Docker Registry
 		scanner, err = initializeDockerScanner(ctx, c.ImageName, cacheClient, cacheClient, c.Timeout)
 		if err != nil {
-			return err
+			return xerrors.Errorf("unable to initialize the docker scanner: %w", err)
 		}
 	}
 

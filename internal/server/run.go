@@ -33,7 +33,7 @@ func run(c config.Config) (err error) {
 
 	fsCache, err := cache.NewFSCache(utils.CacheDir())
 	if err != nil {
-		return err
+		return xerrors.Errorf("unable to initialize cache: %w", err)
 	}
 
 	// server doesn't have image cache
