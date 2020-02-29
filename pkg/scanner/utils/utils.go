@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	replacer = strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc")
+	replacer = strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc", ".v", ".M", "-RC", ".RELEASE")
 )
 
 func MatchVersions(currentVersion *version.Version, rangeVersions []string) bool {
