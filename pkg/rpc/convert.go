@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"github.com/golang/protobuf/ptypes"
+	"github.com/opencontainers/go-digest"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
@@ -109,6 +110,7 @@ func ConvertToRpcVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			Description:      vuln.Description,
 			Severity:         common.Severity(severity),
 			References:       vuln.References,
+			LayerId:          string(vuln.LayerID),
 		})
 	}
 	return rpcVulns
@@ -131,6 +133,7 @@ func ConvertFromRpcResults(rpcResults []*scanner.Result) []report.Result {
 					Severity:    severity.String(),
 					References:  vuln.References,
 				},
+				LayerID: digest.Digest(vuln.LayerId),
 			})
 		}
 		results = append(results, report.Result{
