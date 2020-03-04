@@ -29,8 +29,12 @@ github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRF
 github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239/go.mod h1:2FmKhYUyUczH0OGQWaF5ceTx0UBShxjsH6f8oGKYe2c=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/aquasecurity/fanal v0.0.0-20190819081512-f04452b627c6/go.mod h1:enEz4FFetw4XAbkffaYgyCVq1556R9Ry+noqT4rq9BE=
-github.com/aquasecurity/fanal v0.0.0-20200221125056-947c2a5bb130 h1:OAwolcJ+dj0hDbPh/jSQlOMXxDti0LoOKvgR7e+hzVA=
-github.com/aquasecurity/fanal v0.0.0-20200221125056-947c2a5bb130/go.mod h1:yPZqe/vMN0QDXBIl3kE9s793zU9NSQuEHGWLlL85bG8=
+github.com/aquasecurity/fanal v0.0.0-20200227190905-e6c70ea926f2 h1:JMl/GoKqP3IXC+Z7AcQoyvMJHTeFK6Jlx4b4I9OBvTY=
+github.com/aquasecurity/fanal v0.0.0-20200227190905-e6c70ea926f2/go.mod h1:yPZqe/vMN0QDXBIl3kE9s793zU9NSQuEHGWLlL85bG8=
+github.com/aquasecurity/fanal v0.0.0-20200304033950-dabfae104bf6 h1:jLdxIDH7wINkQuoFhEczREmBywXuNYNYWIHPHRVf8F0=
+github.com/aquasecurity/fanal v0.0.0-20200304033950-dabfae104bf6/go.mod h1:yPZqe/vMN0QDXBIl3kE9s793zU9NSQuEHGWLlL85bG8=
+github.com/aquasecurity/fanal v0.0.0-20200304162519-e868f4e5037b h1:OCBTZZNWA+O3NI5Ba99YYAy6h3nQUfU6eEgYJt9QI6I=
+github.com/aquasecurity/fanal v0.0.0-20200304162519-e868f4e5037b/go.mod h1:yPZqe/vMN0QDXBIl3kE9s793zU9NSQuEHGWLlL85bG8=
 github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b h1:55Ulc/gvfWm4ylhVaR7MxOwujRjA6et7KhmUbSgUFf4=
 github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b/go.mod h1:BpNTD9vHfrejKsED9rx04ldM1WIbeyXGYxUrqTVwxVQ=
 github.com/aquasecurity/trivy v0.1.6/go.mod h1:5hobyhxLzDtxruHzPxpND2PUKOssvGUdE9BocpJUwo4=

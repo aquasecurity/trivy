@@ -230,7 +230,7 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			name:          "sad path, invalid image",
 			invalidImage:  true,
 			testfile:      "badimage:latest",
-			expectedError: "unable to initialize a image struct: Error reading manifest latest in docker.io/library/badimage",
+			expectedError: "unable to initialize a image struct: failed to initialize source: Error reading manifest latest in docker.io/library/badimage",
 		},
 	}
 

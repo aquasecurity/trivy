@@ -1,52 +1,34 @@
-package debian
+package ubuntu
 
 import (
 	"os"
 	"testing"
 	"time"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
 	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
+
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-type MockOvalConfig struct {
+type MockUbuntuConfig struct {
 	update func(string) error
 	get    func(string, string) ([]dbTypes.Advisory, error)
 }
 
-func (mdc MockOvalConfig) Update(a string) error {
-	if mdc.update != nil {
-		return mdc.update(a)
+func (muc MockUbuntuConfig) Update(a string) error {
+	if muc.update != nil {
+		return muc.update(a)
 	}
 	return nil
 }
 
-func (mdc MockOvalConfig) Get(a string, b string) ([]dbTypes.Advisory, error) {
-	if mdc.get != nil {
-		return mdc.get(a, b)
-	}
-	return []dbTypes.Advisory{}, nil
-}
-
-type MockDebianConfig struct {
-	update func(string) error
-	get    func(string, string) ([]dbTypes.Advisory, error)
-}
-
-func (mdc MockDebianConfig) Update(a string) error {
-	if mdc.update != nil {
-		return mdc.update(a)
-	}
-	return nil
-}
-
-func (mdc MockDebianConfig) Get(a string, b string) ([]dbTypes.Advisory, error) {
-	if mdc.get != nil {
-		return mdc.get(a, b)
+func (muc MockUbuntuConfig) Get(a string, b string) ([]dbTypes.Advisory, error) {
+	if muc.get != nil {
+		return muc.get(a, b)
 	}
 	return []dbTypes.Advisory{}, nil
 }
@@ -63,33 +45,39 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 		osVersion string
 		expected  bool
 	}{
-		"debian7": {
+		"ubuntu12.04 eol ends": {
 			now:       time.Date(2019, 3, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "debian",
-			osVersion: "7",
-			expected:  false,
-		},
-		"debian8": {
-			now:       time.Date(2019, 3, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "debian",
-			osVersion: "8.11",
+			osFamily:  "ubuntu",
+			osVersion: "12.04",
 			expected:  true,
 		},
-		"debian8 eol ends": {
-			now:       time.Date(2020, 7, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "debian",
-			osVersion: "8.0",
+		"ubuntu12.04": {
+			now:       time.Date(2019, 4, 31, 23, 59, 59, 0, time.UTC),
+			osFamily:  "ubuntu",
+			osVersion: "12.04",
 			expected:  false,
 		},
-		"debian9": {
-			now:       time.Date(2020, 7, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "debian",
-			osVersion: "9",
+		"ubuntu12.10": {
+			now:       time.Date(2019, 4, 31, 23, 59, 59, 0, time.UTC),
+			osFamily:  "ubuntu",
+			osVersion: "12.10",
+			expected:  false,
+		},
+		"ubuntu18.04": {
+			now:       time.Date(2019, 4, 31, 23, 59, 59, 0, time.UTC),
+			osFamily:  "ubuntu",
+			osVersion: "18.04",
+			expected:  true,
+		},
+		"ubuntu19.04": {
+			now:       time.Date(2019, 4, 31, 23, 59, 59, 0, time.UTC),
+			osFamily:  "ubuntu",
+			osVersion: "19.04",
 			expected:  true,
 		},
 		"unknown": {
-			now:       time.Date(2020, 7, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "debian",
+			now:       time.Date(2019, 4, 31, 23, 59, 59, 0, time.UTC),
+			osFamily:  "ubuntu",
 			osVersion: "unknown",
 			expected:  false,
 		},
@@ -109,21 +97,11 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 func TestScanner_Detect(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
 		s := &Scanner{
-			vs: MockDebianConfig{
+			vs: MockUbuntuConfig{
 				get: func(s string, s2 string) (advisories []dbTypes.Advisory, err error) {
 					return []dbTypes.Advisory{
 						{
-							VulnerabilityID: "debian-123",
-							FixedVersion:    "3.0.0",
-						},
-					}, nil
-				},
-			},
-			ovalVs: MockOvalConfig{
-				get: func(s string, s2 string) (advisories []dbTypes.Advisory, e error) {
-					return []dbTypes.Advisory{
-						{
-							VulnerabilityID: "oval-123",
+							VulnerabilityID: "ubuntu-123",
 							FixedVersion:    "3.0.0",
 						},
 					}, nil
@@ -140,25 +118,15 @@ func TestScanner_Detect(t *testing.T) {
 				SrcVersion: "2.1.0",
 				LayerID:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 			},
-			{
-				Name: "foopkg",
-			},
 		})
 		assert.NoError(t, err)
 		assert.Equal(t, []types.DetectedVulnerability{
 			{
-				VulnerabilityID:  "oval-123",
+				VulnerabilityID:  "ubuntu-123",
 				PkgName:          "testpkg",
 				InstalledVersion: "2.1.0-test-hotfix",
 				FixedVersion:     "3.0.0",
 				LayerID:          "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-			},
-			{
-				VulnerabilityID:  "debian-123",
-				PkgName:          "testpkg",
-				InstalledVersion: "2.1.0-test-hotfix",
-				//FixedVersion:     "3.0.0",
-				LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 			},
 		}, vuls)
 	})

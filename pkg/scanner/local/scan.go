@@ -5,8 +5,6 @@ import (
 	"sort"
 	"time"
 
-	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 
@@ -58,7 +56,7 @@ type OspkgDetector interface {
 }
 
 type LibraryDetector interface {
-	Detect(imageName, filePath string, created time.Time, pkgs []ptypes.Library) (detectedVulns []types.DetectedVulnerability, err error)
+	Detect(imageName, filePath string, created time.Time, pkgs []ftypes.LibraryInfo) (detectedVulns []types.DetectedVulnerability, err error)
 }
 
 type Scanner struct {

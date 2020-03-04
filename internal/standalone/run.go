@@ -72,19 +72,21 @@ func run(c config.Config) (err error) {
 	var scanner scanner.Scanner
 	ctx := context.Background()
 
+	var cleanup func()
 	if c.Input != "" {
 		// scan tar file
-		scanner, err = initializeArchiveScanner(ctx, c.Input, cacheClient, cacheClient, c.Timeout)
+		scanner, cleanup, err = initializeArchiveScanner(ctx, c.Input, cacheClient, cacheClient, c.Timeout)
 		if err != nil {
 			return xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 		}
 	} else {
 		// scan an image in Docker Engine or Docker Registry
-		scanner, err = initializeDockerScanner(ctx, c.ImageName, cacheClient, cacheClient, c.Timeout)
+		scanner, cleanup, err = initializeDockerScanner(ctx, c.ImageName, cacheClient, cacheClient, c.Timeout)
 		if err != nil {
 			return xerrors.Errorf("unable to initialize the docker scanner: %w", err)
 		}
 	}
+	defer cleanup()
 
 	scanOptions := types.ScanOptions{
 		VulnType:            c.VulnType,
