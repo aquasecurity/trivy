@@ -5,6 +5,8 @@ import (
 	"os"
 	"testing"
 
+	ftypes "github.com/aquasecurity/fanal/types"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
@@ -32,7 +34,7 @@ func TestServer_Detect(t *testing.T) {
 	tests := []struct {
 		name                string
 		args                args
-		detectExpectation   library.DetectExpectation
+		detectExpectation   library.OperationDetectExpectation
 		fillInfoExpectation vulnerability.FillInfoExpectation
 		wantRes             *proto.DetectResponse
 		wantErr             string
@@ -48,14 +50,16 @@ func TestServer_Detect(t *testing.T) {
 					},
 				},
 			},
-			detectExpectation: library.DetectExpectation{
-				Args: library.DetectInput{
+			detectExpectation: library.OperationDetectExpectation{
+				Args: library.OperationDetectArgs{
 					FilePath: "app/Pipfile.lock",
-					Libs: []ptypes.Library{
-						{Name: "django", Version: "3.0.0"},
+					Pkgs: []ftypes.LibraryInfo{
+						{
+							Library: ptypes.Library{Name: "django", Version: "3.0.0"},
+						},
 					},
 				},
-				ReturnArgs: library.DetectOutput{
+				Returns: library.OperationDetectReturns{
 					Vulns: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2019-0001",
@@ -117,14 +121,14 @@ func TestServer_Detect(t *testing.T) {
 					},
 				},
 			},
-			detectExpectation: library.DetectExpectation{
-				Args: library.DetectInput{
+			detectExpectation: library.OperationDetectExpectation{
+				Args: library.OperationDetectArgs{
 					FilePath: "app/Pipfile.lock",
-					Libs: []ptypes.Library{
-						{Name: "django", Version: "3.0.0"},
+					Pkgs: []ftypes.LibraryInfo{
+						{Library: ptypes.Library{Name: "django", Version: "3.0.0"}},
 					},
 				},
-				ReturnArgs: library.DetectOutput{
+				Returns: library.OperationDetectReturns{
 					Err: xerrors.New("error"),
 				},
 			},
@@ -133,7 +137,8 @@ func TestServer_Detect(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockDetector := library.NewMockDetector([]library.DetectExpectation{tt.detectExpectation})
+			mockDetector := new(library.MockOperation)
+			mockDetector.ApplyDetectExpectation(tt.detectExpectation)
 			mockVulnClient := new(vulnerability.MockOperation)
 			mockVulnClient.ApplyFillInfoExpectation(tt.fillInfoExpectation)
 
