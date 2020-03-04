@@ -15,15 +15,16 @@ type OS struct {
 }
 
 type Package struct {
-	Name       string `json:",omitempty"`
-	Version    string `json:",omitempty"`
-	Release    string `json:",omitempty"`
-	Epoch      int    `json:",omitempty"`
-	Arch       string `json:",omitempty"`
-	SrcName    string `json:",omitempty"`
-	SrcVersion string `json:",omitempty"`
-	SrcRelease string `json:",omitempty"`
-	SrcEpoch   int    `json:",omitempty"`
+	Name       string        `json:",omitempty"`
+	Version    string        `json:",omitempty"`
+	Release    string        `json:",omitempty"`
+	Epoch      int           `json:",omitempty"`
+	Arch       string        `json:",omitempty"`
+	SrcName    string        `json:",omitempty"`
+	SrcVersion string        `json:",omitempty"`
+	SrcRelease string        `json:",omitempty"`
+	SrcEpoch   int           `json:",omitempty"`
+	LayerID    digest.Digest `json:",omitempty"`
 }
 
 type SrcPackage struct {
@@ -37,10 +38,15 @@ type PackageInfo struct {
 	Packages []Package
 }
 
+type LibraryInfo struct {
+	Library godeptypes.Library `json:",omitempty"`
+	LayerID digest.Digest      `json:",omitempty"`
+}
+
 type Application struct {
 	Type      string
 	FilePath  string
-	Libraries []godeptypes.Library
+	Libraries []LibraryInfo
 }
 
 type ImageReference struct {
@@ -72,6 +78,7 @@ type ImageInfo struct {
 
 // LayerInfo is stored in cache
 type LayerInfo struct {
+	ID            digest.Digest `json:",omitempty"`
 	SchemaVersion int
 	OS            *OS           `json:",omitempty"`
 	PackageInfos  []PackageInfo `json:",omitempty"`

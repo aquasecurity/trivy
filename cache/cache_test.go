@@ -114,14 +114,18 @@ func TestFSCache_GetLayer(t *testing.T) {
 					{
 						Type:     "composer",
 						FilePath: "php-app/composer.lock",
-						Libraries: []depTypes.Library{
+						Libraries: []types.LibraryInfo{
 							{
-								Name:    "guzzlehttp/guzzle",
-								Version: "6.2.0",
+								Library: depTypes.Library{
+									Name:    "guzzlehttp/guzzle",
+									Version: "6.2.0",
+								},
 							},
 							{
-								Name:    "guzzlehttp/promises",
-								Version: "v1.3.1",
+								Library: depTypes.Library{
+									Name:    "guzzlehttp/promises",
+									Version: "v1.3.1",
+								},
 							},
 						},
 					},
@@ -215,9 +219,19 @@ func TestFSCache_PutLayer(t *testing.T) {
 						{
 							Type:     "composer",
 							FilePath: "php-app/composer.lock",
-							Libraries: []depTypes.Library{
-								{Name: "guzzlehttp/guzzle", Version: "6.2.0"},
-								{Name: "guzzlehttp/promises", Version: "v1.3.1"},
+							Libraries: []types.LibraryInfo{
+								{
+									Library: depTypes.Library{
+										Name:    "guzzlehttp/guzzle",
+										Version: "6.2.0",
+									},
+								},
+								{
+									Library: depTypes.Library{
+										Name:    "guzzlehttp/promises",
+										Version: "v1.3.1",
+									},
+								},
 							},
 						},
 					},
@@ -248,14 +262,18 @@ func TestFSCache_PutLayer(t *testing.T) {
 				      "Type": "composer",
 				      "FilePath": "php-app/composer.lock",
 				      "Libraries": [
-				        {
-				          "Name": "guzzlehttp/guzzle",
-				          "Version": "6.2.0"
-				        },
-				        {
-				          "Name": "guzzlehttp/promises",
-				          "Version": "v1.3.1"
-				        }
+                        {
+                           "Library":{
+                              "Name":"guzzlehttp/guzzle",
+                              "Version":"6.2.0"
+                           }
+                        },
+                        {
+                           "Library":{
+                              "Name":"guzzlehttp/promises",
+                              "Version":"v1.3.1"
+                           }
+                        }
 				      ]
 				    }
 				  ],

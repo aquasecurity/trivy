@@ -8,7 +8,8 @@
     "SrcName": "gcc",
     "SrcVersion": "5.3.0",
     "SrcRelease": "6.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "ncurses",
@@ -19,7 +20,8 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.0",
     "SrcRelease": "9.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "bash",
@@ -30,7 +32,8 @@
     "SrcName": "bash",
     "SrcVersion": "4.3.48",
     "SrcRelease": "3.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "pkg-config",
@@ -41,7 +44,8 @@
     "SrcName": "pkg-config",
     "SrcVersion": "0.28",
     "SrcRelease": "3.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "libgpg-error",
@@ -52,7 +56,8 @@
     "SrcName": "libgpg-error",
     "SrcVersion": "1.27",
     "SrcRelease": "1.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "libassuan",
@@ -63,7 +68,8 @@
     "SrcName": "libassuan",
     "SrcVersion": "2.5.1",
     "SrcRelease": "1.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "bzip2",
@@ -74,7 +80,8 @@
     "SrcName": "bzip2",
     "SrcVersion": "1.0.6",
     "SrcRelease": "7.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "gpgme",
@@ -85,7 +92,8 @@
     "SrcName": "gpgme",
     "SrcVersion": "1.6.0",
     "SrcRelease": "2.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "coreutils",
@@ -96,7 +104,8 @@
     "SrcName": "coreutils",
     "SrcVersion": "8.25",
     "SrcRelease": "2.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "libssh2",
@@ -107,7 +116,8 @@
     "SrcName": "libssh2",
     "SrcVersion": "1.9.0",
     "SrcRelease": "1.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "nspr",
@@ -118,7 +128,8 @@
     "SrcName": "nspr",
     "SrcVersion": "4.21",
     "SrcRelease": "1.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "nss",
@@ -129,7 +140,8 @@
     "SrcName": "nss",
     "SrcVersion": "3.44",
     "SrcRelease": "2.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "util-linux",
@@ -140,7 +152,8 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.27.1",
     "SrcRelease": "4.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "librepo",
@@ -151,7 +164,8 @@
     "SrcName": "librepo",
     "SrcVersion": "1.7.17",
     "SrcRelease": "3.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "file",
@@ -162,7 +176,8 @@
     "SrcName": "file",
     "SrcVersion": "5.24",
     "SrcRelease": "3.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "tcsh",
@@ -173,7 +188,8 @@
     "SrcName": "tcsh",
     "SrcVersion": "6.19.00",
     "SrcRelease": "7.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "popt",
@@ -184,7 +200,8 @@
     "SrcName": "popt",
     "SrcVersion": "1.16",
     "SrcRelease": "2.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "libcap",
@@ -195,7 +212,8 @@
     "SrcName": "libcap",
     "SrcVersion": "2.25",
     "SrcRelease": "2.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "libdb",
@@ -206,7 +224,8 @@
     "SrcName": "libdb",
     "SrcVersion": "5.3.28",
     "SrcRelease": "1.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "hawkey",
@@ -217,7 +236,8 @@
     "SrcName": "hawkey",
     "SrcVersion": "2014.1",
     "SrcRelease": "6.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "photon-release",
@@ -228,7 +248,8 @@
     "SrcName": "photon-release",
     "SrcVersion": "1.0",
     "SrcRelease": "6.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "vim",
@@ -239,7 +260,8 @@
     "SrcName": "vim",
     "SrcVersion": "7.4",
     "SrcRelease": "12.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "which",
@@ -250,7 +272,8 @@
     "SrcName": "which",
     "SrcVersion": "2.21",
     "SrcRelease": "2.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "filesystem",
@@ -261,7 +284,8 @@
     "SrcName": "filesystem",
     "SrcVersion": "1.1",
     "SrcRelease": "4.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "glibc",
@@ -272,7 +296,8 @@
     "SrcName": "glibc",
     "SrcVersion": "2.22",
     "SrcRelease": "26.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "readline",
@@ -283,7 +308,8 @@
     "SrcName": "readline",
     "SrcVersion": "6.3",
     "SrcRelease": "5.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "zlib",
@@ -294,7 +320,8 @@
     "SrcName": "zlib",
     "SrcVersion": "1.2.8",
     "SrcRelease": "5.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "openssl",
@@ -305,7 +332,8 @@
     "SrcName": "openssl",
     "SrcVersion": "1.0.2s",
     "SrcRelease": "1.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "libstdc++",
@@ -316,7 +344,8 @@
     "SrcName": "gcc",
     "SrcVersion": "5.3.0",
     "SrcRelease": "6.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "expat",
@@ -327,7 +356,8 @@
     "SrcName": "expat",
     "SrcVersion": "2.2.4",
     "SrcRelease": "2.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "pcre",
@@ -338,7 +368,8 @@
     "SrcName": "pcre",
     "SrcVersion": "8.41",
     "SrcRelease": "2.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "gmp",
@@ -349,7 +380,8 @@
     "SrcName": "gmp",
     "SrcVersion": "6.0.0a",
     "SrcRelease": "3.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "ca-certificates",
@@ -360,7 +392,8 @@
     "SrcName": "ca-certificates",
     "SrcVersion": "20190521",
     "SrcRelease": "1.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "curl",
@@ -371,7 +404,8 @@
     "SrcName": "curl",
     "SrcVersion": "7.59.0",
     "SrcRelease": "8.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "sqlite-autoconf",
@@ -382,7 +416,8 @@
     "SrcName": "sqlite-autoconf",
     "SrcVersion": "3.27.2",
     "SrcRelease": "3.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "libffi",
@@ -393,7 +428,8 @@
     "SrcName": "libffi",
     "SrcVersion": "3.2.1",
     "SrcRelease": "2.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "glib",
@@ -404,7 +440,8 @@
     "SrcName": "glib",
     "SrcVersion": "2.58.3",
     "SrcRelease": "1.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "elfutils-libelf",
@@ -415,7 +452,8 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.176",
     "SrcRelease": "1.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "grep",
@@ -426,7 +464,8 @@
     "SrcName": "grep",
     "SrcVersion": "2.21",
     "SrcRelease": "2.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "lua",
@@ -437,7 +476,8 @@
     "SrcName": "lua",
     "SrcVersion": "5.3.2",
     "SrcRelease": "2.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "attr",
@@ -448,7 +488,8 @@
     "SrcName": "attr",
     "SrcVersion": "2.4.47",
     "SrcRelease": "3.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "rpm",
@@ -459,7 +500,8 @@
     "SrcName": "rpm",
     "SrcVersion": "4.13.0.2",
     "SrcRelease": "1.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "libsolv",
@@ -470,7 +512,8 @@
     "SrcName": "libsolv",
     "SrcVersion": "0.6.19",
     "SrcRelease": "6.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "tdnf",
@@ -481,7 +524,8 @@
     "SrcName": "tdnf",
     "SrcVersion": "1.1.0",
     "SrcRelease": "3.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "photon-repos",
@@ -492,7 +536,8 @@
     "SrcName": "photon-repos",
     "SrcVersion": "1.0",
     "SrcRelease": "4.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "findutils",
@@ -503,7 +548,8 @@
     "SrcName": "findutils",
     "SrcVersion": "4.6.0",
     "SrcRelease": "2.ph1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   },
   {
     "Name": "gpg-pubkey",
@@ -514,6 +560,7 @@
     "SrcName": "",
     "SrcVersion": "",
     "SrcRelease": "",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
   }
 ]

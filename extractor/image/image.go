@@ -39,6 +39,7 @@ type Image interface {
 	ConfigInfo() imageTypes.BlobInfo
 	ConfigBlob(context.Context) ([]byte, error)
 	GetLayer(ctx context.Context, dig digest.Digest) (reader io.ReadCloser, err error)
+	Close() (err error)
 }
 
 type RealImage struct {
@@ -161,11 +162,16 @@ func (img RealImage) GetLayer(ctx context.Context, dig digest.Digest) (io.ReadCl
 	return stream, nil
 }
 
-func (img RealImage) Close() {
+func (img RealImage) Close() error {
 	if img.src != nil {
-		img.src.Close()
+		if err := img.src.Close(); err != nil {
+			return xerrors.Errorf("unable to close image source: %w", err)
+		}
 	}
 	if img.rawSource != nil {
-		img.rawSource.Close()
+		if err := img.rawSource.Close(); err != nil {
+			return xerrors.Errorf("unable to close image source: %w", err)
+		}
 	}
+	return nil
 }
