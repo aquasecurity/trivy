@@ -8,7 +8,8 @@
     "SrcName": "cracklib",
     "SrcVersion": "2.9.6",
     "SrcRelease": "lp151.3.69",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libtirpc-netconfig",
@@ -19,7 +20,8 @@
     "SrcName": "libtirpc",
     "SrcVersion": "1.0.2",
     "SrcRelease": "lp151.4.8",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "system-user-root",
@@ -30,7 +32,8 @@
     "SrcName": "system-user-root",
     "SrcVersion": "20190513",
     "SrcRelease": "lp151.3.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "glibc",
@@ -41,7 +44,8 @@
     "SrcName": "glibc",
     "SrcVersion": "2.26",
     "SrcRelease": "lp151.18.7",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libverto1",
@@ -52,7 +56,8 @@
     "SrcName": "libverto",
     "SrcVersion": "0.2.6",
     "SrcRelease": "lp151.4.70",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libsepol1",
@@ -63,7 +68,8 @@
     "SrcName": "libsepol",
     "SrcVersion": "2.8",
     "SrcRelease": "lp151.1.36",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libpopt0",
@@ -74,7 +80,8 @@
     "SrcName": "popt",
     "SrcVersion": "1.16",
     "SrcRelease": "lp151.3.67",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libnpth0",
@@ -85,7 +92,8 @@
     "SrcName": "npth",
     "SrcVersion": "1.5",
     "SrcRelease": "lp151.3.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "liblua5_3-5",
@@ -96,7 +104,8 @@
     "SrcName": "lua53",
     "SrcVersion": "5.3.4",
     "SrcRelease": "lp151.3.25",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libgpg-error0",
@@ -107,7 +116,8 @@
     "SrcName": "libgpg-error",
     "SrcVersion": "1.29",
     "SrcRelease": "lp151.2.4",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libgcc_s1",
@@ -118,7 +128,8 @@
     "SrcName": "gcc8",
     "SrcVersion": "8.2.1+r264010",
     "SrcRelease": "lp151.1.33",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libcap2",
@@ -129,7 +140,8 @@
     "SrcName": "libcap",
     "SrcVersion": "2.25",
     "SrcRelease": "lp151.3.70",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libaudit1",
@@ -140,7 +152,8 @@
     "SrcName": "audit",
     "SrcVersion": "2.8.1",
     "SrcRelease": "lp151.4.66",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "fillup",
@@ -151,7 +164,8 @@
     "SrcName": "fillup",
     "SrcVersion": "1.42",
     "SrcRelease": "lp151.3.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libselinux1",
@@ -162,7 +176,8 @@
     "SrcName": "libselinux",
     "SrcVersion": "2.8",
     "SrcRelease": "lp151.1.30",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libassuan0",
@@ -173,7 +188,8 @@
     "SrcName": "libassuan",
     "SrcVersion": "2.5.1",
     "SrcRelease": "lp151.3.3",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libstdc++6",
@@ -184,7 +200,8 @@
     "SrcName": "gcc8",
     "SrcVersion": "8.2.1+r264010",
     "SrcRelease": "lp151.1.33",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libacl1",
@@ -195,7 +212,8 @@
     "SrcName": "acl",
     "SrcVersion": "2.2.52",
     "SrcRelease": "lp151.4.29",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libncurses6",
@@ -206,7 +224,8 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
     "SrcRelease": "lp151.5.41",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libboost_system1_66_0",
@@ -217,7 +236,8 @@
     "SrcName": "boost-base",
     "SrcVersion": "1.66.0",
     "SrcRelease": "lp151.4.5",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libproxy1",
@@ -228,7 +248,8 @@
     "SrcName": "libproxy",
     "SrcVersion": "0.4.15",
     "SrcRelease": "lp151.3.3",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "ncurses-utils",
@@ -239,7 +260,8 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
     "SrcRelease": "lp151.5.41",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libz1",
@@ -250,7 +272,8 @@
     "SrcName": "zlib",
     "SrcVersion": "1.2.11",
     "SrcRelease": "lp151.5.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libsqlite3-0",
@@ -261,7 +284,8 @@
     "SrcName": "sqlite3",
     "SrcVersion": "3.28.0",
     "SrcRelease": "lp151.2.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libnghttp2-14",
@@ -272,7 +296,8 @@
     "SrcName": "nghttp2",
     "SrcVersion": "1.39.2",
     "SrcRelease": "lp151.3.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "liblz4-1",
@@ -283,7 +308,8 @@
     "SrcName": "lz4",
     "SrcVersion": "1.8.0",
     "SrcRelease": "lp151.3.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libbz2-1",
@@ -294,7 +320,8 @@
     "SrcName": "bzip2",
     "SrcVersion": "1.0.6",
     "SrcRelease": "lp151.5.9.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libudev1",
@@ -305,7 +332,8 @@
     "SrcName": "systemd",
     "SrcVersion": "234",
     "SrcRelease": "lp151.26.4.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libopenssl1_1",
@@ -316,7 +344,8 @@
     "SrcName": "openssl-1_1",
     "SrcVersion": "1.1.0i",
     "SrcRelease": "lp151.8.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libxml2-2",
@@ -327,7 +356,8 @@
     "SrcName": "libxml2",
     "SrcVersion": "2.9.7",
     "SrcRelease": "lp151.5.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libsystemd0",
@@ -338,7 +368,8 @@
     "SrcName": "systemd",
     "SrcVersion": "234",
     "SrcRelease": "lp151.26.4.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libldap-2_4-2",
@@ -349,7 +380,8 @@
     "SrcName": "openldap2",
     "SrcVersion": "2.4.46",
     "SrcRelease": "lp151.10.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libmount1",
@@ -360,7 +392,8 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
     "SrcRelease": "lp151.3.3.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libelf1",
@@ -371,7 +404,8 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.168",
     "SrcRelease": "lp151.4.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libssh4",
@@ -382,7 +416,8 @@
     "SrcName": "libssh",
     "SrcVersion": "0.8.7",
     "SrcRelease": "lp151.2.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "procps",
@@ -393,7 +428,8 @@
     "SrcName": "procps",
     "SrcVersion": "3.3.15",
     "SrcRelease": "lp151.6.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libmagic1",
@@ -404,7 +440,8 @@
     "SrcName": "file",
     "SrcVersion": "5.32",
     "SrcRelease": "lp151.7.22",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libsemanage1",
@@ -415,7 +452,8 @@
     "SrcName": "libsemanage",
     "SrcVersion": "2.8",
     "SrcRelease": "lp151.1.32",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libaugeas0",
@@ -426,7 +464,8 @@
     "SrcName": "augeas",
     "SrcVersion": "1.10.1",
     "SrcRelease": "lp151.2.3",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libtirpc3",
@@ -437,7 +476,8 @@
     "SrcName": "libtirpc",
     "SrcVersion": "1.0.2",
     "SrcRelease": "lp151.4.8",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libcrack2",
@@ -448,7 +488,8 @@
     "SrcName": "cracklib",
     "SrcVersion": "2.9.6",
     "SrcRelease": "lp151.3.69",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "sed",
@@ -459,7 +500,8 @@
     "SrcName": "sed",
     "SrcVersion": "4.4",
     "SrcRelease": "lp151.3.4",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "findutils",
@@ -470,7 +512,8 @@
     "SrcName": "findutils",
     "SrcVersion": "4.6.0",
     "SrcRelease": "lp151.3.71",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "cpio",
@@ -481,7 +524,8 @@
     "SrcName": "cpio",
     "SrcVersion": "2.12",
     "SrcRelease": "lp151.2.68",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "update-alternatives",
@@ -492,7 +536,8 @@
     "SrcName": "update-alternatives",
     "SrcVersion": "1.19.0.4",
     "SrcRelease": "lp151.3.67",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "gawk",
@@ -503,7 +548,8 @@
     "SrcName": "gawk",
     "SrcVersion": "4.2.1",
     "SrcRelease": "lp151.2.70",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libtasn1-6",
@@ -514,7 +560,8 @@
     "SrcName": "libtasn1",
     "SrcVersion": "4.13",
     "SrcRelease": "lp151.4.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libsolv-tools",
@@ -525,7 +572,8 @@
     "SrcName": "libsolv",
     "SrcVersion": "0.7.6",
     "SrcRelease": "lp151.2.3.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libtasn1",
@@ -536,7 +584,8 @@
     "SrcName": "libtasn1",
     "SrcVersion": "4.13",
     "SrcRelease": "lp151.4.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "gpg2",
@@ -547,7 +596,8 @@
     "SrcName": "gpg2",
     "SrcVersion": "2.2.5",
     "SrcRelease": "lp151.6.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libgpgme11",
@@ -558,7 +608,8 @@
     "SrcName": "gpgme",
     "SrcVersion": "1.10.0",
     "SrcRelease": "lp151.4.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libzypp",
@@ -569,7 +620,8 @@
     "SrcName": "libzypp",
     "SrcVersion": "17.15.0",
     "SrcRelease": "lp151.2.3.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "sysuser-shadow",
@@ -580,7 +632,8 @@
     "SrcName": "sysuser-tools",
     "SrcVersion": "2.0",
     "SrcRelease": "lp151.3.70",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libutempter0",
@@ -591,7 +644,8 @@
     "SrcName": "utempter",
     "SrcVersion": "1.1.6",
     "SrcRelease": "lp151.4.70",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "aaa_base",
@@ -602,7 +656,8 @@
     "SrcName": "aaa_base",
     "SrcVersion": "84.87+git20180409.04c9dae",
     "SrcRelease": "lp151.5.12.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "openSUSE-build-key",
@@ -613,7 +668,8 @@
     "SrcName": "openSUSE-build-key",
     "SrcVersion": "1.0",
     "SrcRelease": "lp151.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "p11-kit",
@@ -624,7 +680,8 @@
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.2",
     "SrcRelease": "lp151.3.3",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "openssl",
@@ -635,7 +692,8 @@
     "SrcName": "openssl",
     "SrcVersion": "1.1.0i",
     "SrcRelease": "lp151.1.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "ca-certificates-mozilla",
@@ -646,7 +704,8 @@
     "SrcName": "ca-certificates-mozilla",
     "SrcVersion": "2.34",
     "SrcRelease": "lp151.2.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "gpg-pubkey",
@@ -657,7 +716,8 @@
     "SrcName": "",
     "SrcVersion": "",
     "SrcRelease": "",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "boost-license1_66_0",
@@ -668,7 +728,8 @@
     "SrcName": "boost-base",
     "SrcVersion": "1.66.0",
     "SrcRelease": "lp151.4.5",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "file-magic",
@@ -679,7 +740,8 @@
     "SrcName": "file",
     "SrcVersion": "5.32",
     "SrcRelease": "lp151.7.22",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "openSUSE-release-appliance-docker",
@@ -690,7 +752,8 @@
     "SrcName": "openSUSE-release",
     "SrcVersion": "15.1",
     "SrcRelease": "lp151.301.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "filesystem",
@@ -701,7 +764,8 @@
     "SrcName": "filesystem",
     "SrcVersion": "15.0",
     "SrcRelease": "lp151.9.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "perl-base",
@@ -712,7 +776,8 @@
     "SrcName": "perl",
     "SrcVersion": "5.26.1",
     "SrcRelease": "lp151.8.37",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libunistring2",
@@ -723,7 +788,8 @@
     "SrcName": "libunistring",
     "SrcVersion": "0.9.9",
     "SrcRelease": "lp151.2.3",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libsasl2-3",
@@ -734,7 +800,8 @@
     "SrcName": "cyrus-sasl",
     "SrcVersion": "2.1.26",
     "SrcRelease": "lp151.5.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libpcre1",
@@ -745,7 +812,8 @@
     "SrcName": "pcre",
     "SrcVersion": "8.41",
     "SrcRelease": "lp151.5.67",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libnettle6",
@@ -756,7 +824,8 @@
     "SrcName": "libnettle",
     "SrcVersion": "3.4.1",
     "SrcRelease": "lp151.1.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libkeyutils1",
@@ -767,7 +836,8 @@
     "SrcName": "keyutils",
     "SrcVersion": "1.5.10",
     "SrcRelease": "lp151.4.70",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libgmp10",
@@ -778,7 +848,8 @@
     "SrcName": "gmp",
     "SrcVersion": "6.1.2",
     "SrcRelease": "lp151.3.70",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libffi7",
@@ -789,7 +860,8 @@
     "SrcName": "libffi",
     "SrcVersion": "3.2.1.git259",
     "SrcRelease": "lp151.5.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libcap-ng0",
@@ -800,7 +872,8 @@
     "SrcName": "libcap-ng",
     "SrcVersion": "0.7.9",
     "SrcRelease": "lp151.3.39",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libattr1",
@@ -811,7 +884,8 @@
     "SrcName": "attr",
     "SrcVersion": "2.4.47",
     "SrcRelease": "lp151.3.70",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libidn2-0",
@@ -822,7 +896,8 @@
     "SrcName": "libidn2",
     "SrcVersion": "2.0.4",
     "SrcRelease": "lp151.2.3",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libksba8",
@@ -833,7 +908,8 @@
     "SrcName": "libksba",
     "SrcVersion": "1.3.5",
     "SrcRelease": "lp151.3.3",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libhogweed4",
@@ -844,7 +920,8 @@
     "SrcName": "libnettle",
     "SrcVersion": "3.4.1",
     "SrcRelease": "lp151.1.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libp11-kit0",
@@ -855,7 +932,8 @@
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.2",
     "SrcRelease": "lp151.3.3",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libpsl5",
@@ -866,7 +944,8 @@
     "SrcName": "libpsl",
     "SrcVersion": "0.20.1",
     "SrcRelease": "lp151.2.43",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libmodman1",
@@ -877,7 +956,8 @@
     "SrcName": "libmodman",
     "SrcVersion": "2.0.1",
     "SrcRelease": "lp151.2.3",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "terminfo-base",
@@ -888,7 +968,8 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
     "SrcRelease": "lp151.5.41",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libboost_thread1_66_0",
@@ -899,7 +980,8 @@
     "SrcName": "boost-base",
     "SrcVersion": "1.66.0",
     "SrcRelease": "lp151.4.5",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libzstd1",
@@ -910,7 +992,8 @@
     "SrcName": "zstd",
     "SrcVersion": "1.4.2",
     "SrcRelease": "lp151.3.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libuuid1",
@@ -921,7 +1004,8 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
     "SrcRelease": "lp151.3.3.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libsmartcols1",
@@ -932,7 +1016,8 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
     "SrcRelease": "lp151.3.3.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "liblzma5",
@@ -943,7 +1028,8 @@
     "SrcName": "xz",
     "SrcVersion": "5.2.3",
     "SrcRelease": "lp151.4.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libcom_err2",
@@ -954,7 +1040,8 @@
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.43.8",
     "SrcRelease": "lp151.5.6.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libgcrypt20",
@@ -965,7 +1052,8 @@
     "SrcName": "libgcrypt",
     "SrcVersion": "1.8.2",
     "SrcRelease": "lp151.9.4.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libreadline7",
@@ -976,7 +1064,8 @@
     "SrcName": "bash",
     "SrcVersion": "4.4",
     "SrcRelease": "lp151.10.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libblkid1",
@@ -987,7 +1076,8 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
     "SrcRelease": "lp151.3.3.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libdw1",
@@ -998,7 +1088,8 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.168",
     "SrcRelease": "lp151.4.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "bash",
@@ -1009,7 +1100,8 @@
     "SrcName": "bash",
     "SrcVersion": "4.4",
     "SrcRelease": "lp151.10.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "krb5",
@@ -1020,7 +1112,8 @@
     "SrcName": "krb5",
     "SrcVersion": "1.16.3",
     "SrcRelease": "lp151.2.6.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libfdisk1",
@@ -1031,7 +1124,8 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
     "SrcRelease": "lp151.3.3.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libprocps7",
@@ -1042,7 +1136,8 @@
     "SrcName": "procps",
     "SrcVersion": "3.3.15",
     "SrcRelease": "lp151.6.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libebl-plugins",
@@ -1053,7 +1148,8 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.168",
     "SrcRelease": "lp151.4.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libcurl4",
@@ -1064,7 +1160,8 @@
     "SrcName": "curl",
     "SrcVersion": "7.60.0",
     "SrcRelease": "lp151.5.6.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libzio1",
@@ -1075,7 +1172,8 @@
     "SrcName": "libzio",
     "SrcVersion": "1.06",
     "SrcRelease": "lp151.3.71",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libusb-1_0-0",
@@ -1086,7 +1184,8 @@
     "SrcName": "libusb-1_0",
     "SrcVersion": "1.0.21",
     "SrcRelease": "lp151.2.3",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "cracklib",
@@ -1097,7 +1196,8 @@
     "SrcName": "cracklib",
     "SrcVersion": "2.9.6",
     "SrcRelease": "lp151.3.69",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "info",
@@ -1108,7 +1208,8 @@
     "SrcName": "texinfo",
     "SrcVersion": "6.5",
     "SrcRelease": "lp151.5.69",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libnsl2",
@@ -1119,7 +1220,8 @@
     "SrcName": "libnsl",
     "SrcVersion": "1.2.0",
     "SrcRelease": "lp151.3.67",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "grep",
@@ -1130,7 +1232,8 @@
     "SrcName": "grep",
     "SrcVersion": "3.1",
     "SrcRelease": "lp151.3.29",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "diffutils",
@@ -1141,7 +1244,8 @@
     "SrcName": "diffutils",
     "SrcVersion": "3.6",
     "SrcRelease": "lp151.3.3",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "coreutils",
@@ -1152,7 +1256,8 @@
     "SrcName": "coreutils",
     "SrcVersion": "8.29",
     "SrcRelease": "lp151.3.3",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "rpm",
@@ -1163,7 +1268,8 @@
     "SrcName": "rpm",
     "SrcVersion": "4.14.1",
     "SrcRelease": "lp151.13.10",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "pinentry",
@@ -1174,7 +1280,8 @@
     "SrcName": "pinentry",
     "SrcVersion": "1.1.0",
     "SrcRelease": "lp151.4.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "permissions",
@@ -1185,7 +1292,8 @@
     "SrcName": "permissions",
     "SrcVersion": "20181116",
     "SrcRelease": "lp151.4.6.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "openSUSE-release",
@@ -1196,7 +1304,8 @@
     "SrcName": "openSUSE-release",
     "SrcVersion": "15.1",
     "SrcRelease": "lp151.301.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "libgnutls30",
@@ -1207,7 +1316,8 @@
     "SrcName": "gnutls",
     "SrcVersion": "3.6.7",
     "SrcRelease": "lp151.2.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "pam",
@@ -1218,7 +1328,8 @@
     "SrcName": "pam",
     "SrcVersion": "1.3.0",
     "SrcRelease": "lp151.7.38",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "shadow",
@@ -1229,7 +1340,8 @@
     "SrcName": "shadow",
     "SrcVersion": "4.6",
     "SrcRelease": "lp151.2.3.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "zypper",
@@ -1240,7 +1352,8 @@
     "SrcName": "zypper",
     "SrcVersion": "1.14.30",
     "SrcRelease": "lp151.2.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "system-group-hardware",
@@ -1251,7 +1364,8 @@
     "SrcName": "system-users",
     "SrcVersion": "20170617",
     "SrcRelease": "lp151.4.70",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "util-linux",
@@ -1262,7 +1376,8 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
     "SrcRelease": "lp151.3.3.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "kubic-locale-archive",
@@ -1273,7 +1388,8 @@
     "SrcName": "kubic-locale-archive",
     "SrcVersion": "2.26",
     "SrcRelease": "lp151.4.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "netcfg",
@@ -1284,7 +1400,8 @@
     "SrcName": "netcfg",
     "SrcVersion": "11.6",
     "SrcRelease": "lp151.2.2",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "p11-kit-tools",
@@ -1295,7 +1412,8 @@
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.2",
     "SrcRelease": "lp151.3.3",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "openssl-1_1",
@@ -1306,7 +1424,8 @@
     "SrcName": "openssl-1_1",
     "SrcVersion": "1.1.0i",
     "SrcRelease": "lp151.8.3.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "ca-certificates",
@@ -1317,7 +1436,8 @@
     "SrcName": "ca-certificates",
     "SrcVersion": "2+git20170807.10b2785",
     "SrcRelease": "lp151.7.1",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "gpg-pubkey",
@@ -1328,7 +1448,8 @@
     "SrcName": "",
     "SrcVersion": "",
     "SrcRelease": "",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   },
   {
     "Name": "gpg-pubkey",
@@ -1339,6 +1460,7 @@
     "SrcName": "",
     "SrcVersion": "",
     "SrcRelease": "",
-    "SrcEpoch": 0
+    "SrcEpoch":0,
+    "LayerID":"sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
   }
 ]

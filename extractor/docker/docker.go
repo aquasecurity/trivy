@@ -52,32 +52,36 @@ func init() {
 	image.RegisterRegistry(&ecr.ECR{})
 }
 
-func NewDockerExtractor(ctx context.Context, imageName string, option types.DockerOption) (Extractor, error) {
+func NewDockerExtractor(ctx context.Context, imageName string, option types.DockerOption) (Extractor, func(), error) {
 	ref := image.Reference{Name: imageName, IsFile: false}
 	transports := []string{"docker-daemon:", "docker://"}
 	return newDockerExtractor(ctx, ref, transports, option)
 }
 
-func NewDockerArchiveExtractor(ctx context.Context, fileName string, option types.DockerOption) (Extractor, error) {
+func NewDockerArchiveExtractor(ctx context.Context, fileName string, option types.DockerOption) (Extractor, func(), error) {
 	ref := image.Reference{Name: fileName, IsFile: true}
 	transports := []string{"docker-archive:"}
 	return newDockerExtractor(ctx, ref, transports, option)
 }
 
 func newDockerExtractor(ctx context.Context, imgRef image.Reference, transports []string,
-	option types.DockerOption) (Extractor, error) {
+	option types.DockerOption) (Extractor, func(), error) {
 	ctx, cancel := context.WithTimeout(ctx, option.Timeout)
 	defer cancel()
 
 	img, err := image.NewImage(ctx, imgRef, transports, option)
 	if err != nil {
-		return Extractor{}, xerrors.Errorf("unable to initialize a image struct: %w", err)
+		return Extractor{}, nil, xerrors.Errorf("unable to initialize a image struct: %w", err)
+	}
+
+	cleanup := func() {
+		_ = img.Close()
 	}
 
 	return Extractor{
 		option: option,
 		image:  img,
-	}, nil
+	}, cleanup, nil
 }
 
 func ApplyLayers(layers []types.LayerInfo) types.ImageDetail {
@@ -98,9 +102,15 @@ func ApplyLayers(layers []types.LayerInfo) types.ImageDetail {
 		}
 
 		for _, pkgInfo := range layer.PackageInfos {
+			for i := range pkgInfo.Packages {
+				pkgInfo.Packages[i].LayerID = layer.ID
+			}
 			nestedMap.SetByString(pkgInfo.FilePath, sep, pkgInfo)
 		}
 		for _, app := range layer.Applications {
+			for i := range app.Libraries {
+				app.Libraries[i].LayerID = layer.ID
+			}
 			nestedMap.SetByString(app.FilePath, sep, app)
 		}
 	}

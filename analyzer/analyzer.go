@@ -5,16 +5,14 @@ import (
 	"encoding/json"
 	"sort"
 
-	"github.com/aquasecurity/fanal/extractor/docker"
 	"github.com/containers/image/v5/manifest"
 	digest "github.com/opencontainers/go-digest"
-
-	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/types"
-
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/extractor"
+	"github.com/aquasecurity/fanal/extractor/docker"
+	"github.com/aquasecurity/fanal/types"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
@@ -234,6 +232,7 @@ func (a Applier) ApplyLayers(imageID digest.Digest, layerIDs []string) (types.Im
 		if layer.SchemaVersion == 0 {
 			return types.ImageDetail{}, xerrors.Errorf("layer cache missing: %s", layerID)
 		}
+		layer.ID = digest.Digest(layerID)
 		layers = append(layers, layer)
 	}
 
@@ -312,28 +311,20 @@ func GetLibraries(filesMap extractor.FileMap) ([]types.Application, error) {
 			return nil, xerrors.Errorf("failed to get libraries: %w", err)
 		}
 
+		var lis []types.LibraryInfo
 		for filePath, libs := range libMap {
+			for _, lib := range libs {
+				lis = append(lis, types.LibraryInfo{
+					Library: lib,
+				})
+			}
+
 			results = append(results, types.Application{
 				Type:      analyzer.Name(),
 				FilePath:  string(filePath),
-				Libraries: libs,
+				Libraries: lis,
 			})
 		}
 	}
 	return results, nil
-}
-
-func mergePkgs(pkgs, pkgsFromCommands []types.Package) []types.Package {
-	// pkg has priority over pkgsFromCommands
-	uniqPkgs := map[string]struct{}{}
-	for _, pkg := range pkgs {
-		uniqPkgs[pkg.Name] = struct{}{}
-	}
-	for _, pkg := range pkgsFromCommands {
-		if _, ok := uniqPkgs[pkg.Name]; ok {
-			continue
-		}
-		pkgs = append(pkgs, pkg)
-	}
-	return pkgs
 }

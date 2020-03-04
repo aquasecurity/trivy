@@ -35,7 +35,6 @@ import (
 	"github.com/aquasecurity/fanal/types"
 	dtypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -88,33 +87,31 @@ func run(b *testing.B, ctx context.Context, ac analyzer.Config) {
 	require.NoError(b, err)
 }
 
-func runChecksBench(b *testing.B, ctx context.Context, imageName, cacheDir string, ac analyzer.Config, c cache.Cache) {
-	for i := 0; i < b.N; i++ {
-		run(b, ctx, ac)
-		if c != nil {
-			b.StopTimer()
-			_ = c.Clear()
-			ac, c = initializeAnalyzer(b, ctx, imageName, cacheDir)
-			b.StartTimer()
-		}
-	}
-}
-
 func BenchmarkDockerMode_WithoutCache(b *testing.B) {
 	for _, tc := range testCases {
-		tc := tc
 		b.Run(tc.name, func(b *testing.B) {
 			benchCache, err := ioutil.TempDir("", "DockerMode_WithoutCache_")
 			require.NoError(b, err)
 			defer os.RemoveAll(benchCache)
 
-			ctx, imageName, c, cli, ac := setup(b, tc, benchCache)
+			ctx, imageName, cli := setup(b, tc)
 
 			b.ReportAllocs()
 			b.ResetTimer()
-			runChecksBench(b, ctx, imageName, benchCache, ac, c)
-			b.StopTimer()
+			for i := 0; i < b.N; i++ {
+				b.StopTimer()
+				ac, c, cleanup := initializeAnalyzer(b, ctx, imageName, benchCache)
+				b.StartTimer()
 
+				run(b, ctx, ac)
+
+				b.StopTimer()
+				cleanup()
+				_ = c.Clear()
+				b.StartTimer()
+			}
+
+			b.StopTimer()
 			teardown(b, ctx, tc.imageName, imageName, cli)
 		})
 	}
@@ -122,19 +119,24 @@ func BenchmarkDockerMode_WithoutCache(b *testing.B) {
 
 func BenchmarkDockerMode_WithCache(b *testing.B) {
 	for _, tc := range testCases {
-		tc := tc
 		b.Run(tc.name, func(b *testing.B) {
 			benchCache, err := ioutil.TempDir("", "DockerMode_WithCache_")
 			require.NoError(b, err)
 			defer os.RemoveAll(benchCache)
 
-			ctx, imageName, _, cli, ac := setup(b, tc, benchCache)
+			ctx, imageName, cli := setup(b, tc)
+
+			ac, _, cleanup := initializeAnalyzer(b, ctx, imageName, benchCache)
+			defer cleanup()
+
 			// run once to generate cache
 			run(b, ctx, ac)
 
 			b.ReportAllocs()
 			b.ResetTimer()
-			runChecksBench(b, ctx, imageName, benchCache, ac, nil)
+			for i := 0; i < b.N; i++ {
+				run(b, ctx, ac)
+			}
 			b.StopTimer()
 
 			teardown(b, ctx, tc.imageName, imageName, cli)
@@ -148,16 +150,16 @@ func teardown(b *testing.B, ctx context.Context, originalImageName, imageName st
 		Force:         true,
 		PruneChildren: true,
 	})
-	assert.NoError(b, err)
+	require.NoError(b, err)
 
 	_, err = cli.ImageRemove(ctx, imageName, dtypes.ImageRemoveOptions{
 		Force:         true,
 		PruneChildren: true,
 	})
-	assert.NoError(b, err)
+	require.NoError(b, err)
 }
 
-func setup(b *testing.B, tc testCase, cacheDir string) (context.Context, string, cache.Cache, *client.Client, analyzer.Config) {
+func setup(b *testing.B, tc testCase) (context.Context, string, *client.Client) {
 	ctx := context.Background()
 
 	cli, err := client.NewClientWithOpts(client.FromEnv)
@@ -187,12 +189,10 @@ func setup(b *testing.B, tc testCase, cacheDir string) (context.Context, string,
 	err = cli.ImageTag(ctx, tc.imageName, imageName)
 	require.NoError(b, err, tc.name)
 
-	ac, c := initializeAnalyzer(b, ctx, imageName, cacheDir)
-
-	return ctx, imageName, c, cli, ac
+	return ctx, imageName, cli
 }
 
-func initializeAnalyzer(b *testing.B, ctx context.Context, imageName, cacheDir string) (analyzer.Config, cache.Cache) {
+func initializeAnalyzer(b *testing.B, ctx context.Context, imageName, cacheDir string) (analyzer.Config, cache.Cache, func()) {
 	c, err := cache.NewFSCache(cacheDir)
 	require.NoError(b, err)
 
@@ -201,9 +201,9 @@ func initializeAnalyzer(b *testing.B, ctx context.Context, imageName, cacheDir s
 		SkipPing: true,
 	}
 
-	ext, err := docker.NewDockerExtractor(ctx, imageName, opt)
+	ext, cleanup, err := docker.NewDockerExtractor(ctx, imageName, opt)
 	require.NoError(b, err)
 
 	ac := analyzer.New(ext, c)
-	return ac, c
+	return ac, c, cleanup
 }
