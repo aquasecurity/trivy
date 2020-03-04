@@ -13,15 +13,15 @@ import (
 )
 
 func initializeDockerScanner(ctx context.Context, imageName string, layerCache cache.ImageCache, localImageCache cache.LocalImageCache,
-	timeout time.Duration) (scanner.Scanner, error) {
+	timeout time.Duration) (scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneDockerSet)
-	return scanner.Scanner{}, nil
+	return scanner.Scanner{}, nil, nil
 }
 
 func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.ImageCache, localImageCache cache.LocalImageCache,
-	timeout time.Duration) (scanner.Scanner, error) {
+	timeout time.Duration) (scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneArchiveSet)
-	return scanner.Scanner{}, nil
+	return scanner.Scanner{}, nil, nil
 }
 
 func initializeVulnerabilityClient() vulnerability.Client {
