@@ -51,12 +51,14 @@ func ConvertFromRpcPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 	return pkgs
 }
 
-func ConvertFromRpcLibraries(rpcLibs []*common.Library) []deptypes.Library {
-	var libs []deptypes.Library
+func ConvertFromRpcLibraries(rpcLibs []*common.Library) []ftypes.LibraryInfo {
+	var libs []ftypes.LibraryInfo
 	for _, l := range rpcLibs {
-		libs = append(libs, deptypes.Library{
-			Name:    l.Name,
-			Version: l.Version,
+		libs = append(libs, ftypes.LibraryInfo{
+			Library: deptypes.Library{
+				Name:    l.Name,
+				Version: l.Version,
+			},
 		})
 	}
 	return libs
@@ -243,8 +245,8 @@ func ConvertToRpcLayerInfo(layerID, decompressedLayerID string, layerInfo ftypes
 		var libs []*common.Library
 		for _, lib := range app.Libraries {
 			libs = append(libs, &common.Library{
-				Name:    lib.Name,
-				Version: lib.Version,
+				Name:    lib.Library.Name,
+				Version: lib.Library.Version,
 			})
 
 		}

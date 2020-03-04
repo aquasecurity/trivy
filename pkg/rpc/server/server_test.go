@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+
 	"github.com/golang/protobuf/ptypes/timestamp"
 
 	"github.com/golang/protobuf/ptypes"
@@ -17,7 +19,6 @@ import (
 
 	"github.com/aquasecurity/fanal/cache"
 	ftypes "github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/scanner"
@@ -380,14 +381,18 @@ func TestCacheServer_PutLayer(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "php-app/composer.lock",
-								Libraries: []godeptypes.Library{
+								Libraries: []ftypes.LibraryInfo{
 									{
-										Name:    "guzzlehttp/guzzle",
-										Version: "6.2.0",
+										Library: deptypes.Library{
+											Name:    "guzzlehttp/guzzle",
+											Version: "6.2.0",
+										},
 									},
 									{
-										Name:    "guzzlehttp/promises",
-										Version: "v1.3.1",
+										Library: deptypes.Library{
+											Name:    "guzzlehttp/promises",
+											Version: "v1.3.1",
+										},
 									},
 								},
 							},
