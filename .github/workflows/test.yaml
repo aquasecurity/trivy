@@ -14,4 +14,4 @@ jobs:
       uses: goreleaser/goreleaser-action@v1
       with:
         version: latest
-        args: release --rm-dist --skip-publish
+        args: release --snapshot --rm-dist --skip-publish
