@@ -24,10 +24,6 @@ func init() {
 type rpmCmdPkgAnalyzer struct{}
 
 func (a rpmCmdPkgAnalyzer) Analyze(fileMap extractor.FileMap) (map[types.FilePath][]types.Package, error) {
-	if !utils.IsCommandAvailable("rpm") {
-		return nil, types.ErrNoRpmCmd
-	}
-
 	pkgMap := map[types.FilePath][]types.Package{}
 	detected := false
 	for _, filename := range a.RequiredFiles() {
@@ -51,6 +47,9 @@ func (a rpmCmdPkgAnalyzer) Analyze(fileMap extractor.FileMap) (map[types.FilePat
 }
 
 func (a rpmCmdPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []types.Package, err error) {
+	if !utils.IsCommandAvailable("rpm") {
+		return nil, types.ErrNoRpmCmd
+	}
 	tmpDir, err := ioutil.TempDir("", "rpm")
 	defer os.RemoveAll(tmpDir)
 	if err != nil {
