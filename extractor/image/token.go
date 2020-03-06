@@ -21,6 +21,10 @@ func RegisterRegistry(registry Registry) {
 }
 
 func GetToken(ctx context.Context, domain string, opt types.DockerOption) (auth *imageTypes.DockerAuthConfig) {
+	if opt.UserName != "" || opt.Password != "" {
+		return &imageTypes.DockerAuthConfig{Username: opt.UserName, Password: opt.Password}
+	}
+
 	var username, password string
 
 	// check registry which particular to get credential
