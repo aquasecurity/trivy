@@ -3,7 +3,7 @@ module github.com/aquasecurity/trivy
 go 1.13
 
 require (
-	github.com/aquasecurity/fanal v0.0.0-20200306093250-5d9dd72b60d3
+	github.com/aquasecurity/fanal v0.0.0-20200306122936-f0a17242a9a0
 	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
 	github.com/aquasecurity/trivy-db v0.0.0-20191226181755-d6cabf5bc5d1
 	github.com/caarlos0/env/v6 v6.0.0
