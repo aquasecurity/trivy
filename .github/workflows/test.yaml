@@ -1,7 +1,7 @@
 name: Test
 on: pull_request
 jobs:
-  test:
+  build-test:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
