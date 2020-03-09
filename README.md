@@ -1216,7 +1216,7 @@ jobs:
       - run:
           name: Install trivy
           command: |
-            apk add --update curl
+            apk add --update-cache --upgrade curl rpm
             VERSION=$(
                 curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | \
                 grep '"tag_name":' | \
