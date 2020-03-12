@@ -148,7 +148,7 @@ func TestScanner_ScanImage(t *testing.T) {
 			analyzer.ApplyAnalyzeExpectation(tt.analyzeExpectation)
 
 			s := NewScanner(d, analyzer)
-			got, err := s.ScanImage(tt.args.options)
+			got, _, err := s.ScanImage(tt.args.options)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)

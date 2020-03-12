@@ -81,11 +81,11 @@ func NewScanner(driver Driver, ac Analyzer) Scanner {
 	return Scanner{driver: driver, analyzer: ac}
 }
 
-func (s Scanner) ScanImage(options types.ScanOptions) (report.Results, error) {
+func (s Scanner) ScanImage(options types.ScanOptions) (report.Results, *ftypes.OS, error) {
 	ctx := context.Background()
 	imageInfo, err := s.analyzer.Analyze(ctx)
 	if err != nil {
-		return nil, xerrors.Errorf("failed analysis: %w", err)
+		return nil, nil, xerrors.Errorf("failed analysis: %w", err)
 	}
 
 	log.Logger.Debugf("Image ID: %s", imageInfo.ID)
@@ -93,12 +93,12 @@ func (s Scanner) ScanImage(options types.ScanOptions) (report.Results, error) {
 
 	results, osFound, eosl, err := s.driver.Scan(imageInfo.Name, imageInfo.ID, imageInfo.LayerIDs, options)
 	if err != nil {
-		return nil, xerrors.Errorf("scan failed: %w", err)
+		return nil, nil, xerrors.Errorf("scan failed: %w", err)
 	}
 	if eosl {
 		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
 		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
 	}
 
-	return results, nil
+	return results, nil, nil
 }
