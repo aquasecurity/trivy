@@ -3,7 +3,7 @@ builds:
   -
     main: cmd/trivy/main.go
     binary: trivy
-    ldflags: 
+    ldflags:
       - -s -w
       - "-extldflags '-static'"
       - -X main.version={{.Version}}
@@ -31,7 +31,7 @@ nfpms:
     homepage: "https://github.com/aquasecurity"
     maintainer: "Teppei Fukuda <knqyf263@gmail.com>"
     description: "A Fast Vulnerability Scanner for Containers"
-    license: "AGPL-3.0"
+    license: "Apache-2.0"
     file_name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
     replacements:
       amd64: 64bit
