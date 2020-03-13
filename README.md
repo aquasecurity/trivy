@@ -4,7 +4,7 @@
 [![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
 [![CircleCI](https://circleci.com/gh/aquasecurity/trivy.svg?style=svg)](https://circleci.com/gh/aquasecurity/trivy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/aquasecurity/trivy)](https://goreportcard.com/report/github.com/aquasecurity/trivy)
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
 [![Docker image](https://images.microbadger.com/badges/version/aquasec/trivy.svg)](https://microbadger.com/images/aquasec/trivy "Get your own version badge on microbadger.com")
 
 A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI.
@@ -96,7 +96,7 @@ See [here](#continuous-integration-ci) for details.
   - **Suitable for CI** such as Travis CI, CircleCI, Jenkins, etc.
   - See [CI Example](#continuous-integration-ci)
 
-Please see [LICENSE](https://github.com/aquasecurity/trivy/blob/master/LICENSE) for Trivy licensing information. Note that Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only. 
+Please see [LICENSE](https://github.com/aquasecurity/trivy/blob/master/LICENSE) for Trivy licensing information. Note that Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only.
 
 # Installation
 
@@ -1076,7 +1076,7 @@ The lightweight DB doesn't contain vulnerability detail such as descriptions and
 
 
 This option is useful when you don't need vulnerability details and is suitable for CI/CD.
-To find the additional information, you can search vulnerability details on the NVD website.  
+To find the additional information, you can search vulnerability details on the NVD website.
 https://nvd.nist.gov/vuln/search
 
 ```
@@ -1197,7 +1197,7 @@ cache:
     - $HOME/.cache/trivy
 ```
 
-Example: https://travis-ci.org/aquasecurity/trivy-ci-test  
+Example: https://travis-ci.org/aquasecurity/trivy-ci-test
 Repository: https://github.com/aquasecurity/trivy-ci-test
 
 ## CircleCI
@@ -1236,7 +1236,7 @@ workflows:
       - build
 ```
 
-Example: https://circleci.com/gh/aquasecurity/trivy-ci-test  
+Example: https://circleci.com/gh/aquasecurity/trivy-ci-test
 Repository: https://github.com/aquasecurity/trivy-ci-test
 
 ## GitLab CI
@@ -1629,7 +1629,7 @@ $ brew install aquasecurity/trivy/trivy
 
 ### GitHub Rate limiting
 
-Specify GITHUB_TOKEN for authentication  
+Specify GITHUB_TOKEN for authentication
 https://developer.github.com/v3/#rate-limiting
 
 ```
@@ -1647,7 +1647,7 @@ $ trivy --reset
 # Related Projects
 
 - [Remic](https://github.com/knqyf263/remic)
-  - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies  
+  - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies
 ---
 
 # Credits
