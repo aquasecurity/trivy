@@ -1656,10 +1656,6 @@ $ trivy --reset
 - Special thanks to [Masahiro Fujimura](https://github.com/masahiro331)
 - Special thanks to [Naoki Harima](https://github.com/XapiMa)
 
-# License
-
-This repository is available under the [GNU Affero General Public License v3.0](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
-
 # Author
 
 [Teppei Fukuda](https://github.com/knqyf263) (knqyf263)
