@@ -1,8 +1,12 @@
 package internal
 
 import (
+	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
+
+	"github.com/aquasecurity/trivy-db/pkg/db"
 
 	"github.com/urfave/cli"
 
@@ -10,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/client"
 	"github.com/aquasecurity/trivy/internal/server"
 	"github.com/aquasecurity/trivy/internal/standalone"
+	ttypes "github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
@@ -174,6 +179,16 @@ OPTIONS:
   {{range $index, $option := .VisibleFlags}}{{if $index}}
   {{end}}{{$option}}{{end}}{{end}}
 `
+	cli.VersionPrinter = func(c *cli.Context) {
+		db.Init(utils.DefaultCacheDir())
+		metadata, _ := db.Config{}.GetMetadata()
+		b, _ := json.Marshal(ttypes.VersionInfo{
+			TrivyVersion:           version,
+			VulnerabilityDBVersion: metadata,
+		})
+		fmt.Println(string(b))
+	}
+
 	app := cli.NewApp()
 	app.Name = "trivy"
 	app.Version = version

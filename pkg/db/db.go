@@ -105,7 +105,7 @@ func (c Client) NeedsUpdate(ctx context.Context, cliVersion string, light, skip 
 	}
 
 	if db.SchemaVersion == metadata.Version && metadata.Type == dbType &&
-		c.clock.Now().Before(metadata.NextUpdate) {
+		c.clock.Now().Before(*(metadata.NextUpdate)) {
 		log.Logger.Debug("DB update was skipped because DB is the latest")
 		return false, nil
 	}
