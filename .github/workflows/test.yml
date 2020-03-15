@@ -9,7 +9,6 @@ jobs:
     name: Unit Test
     runs-on: ubuntu-latest
     steps:
-
     - name: Set up Go 1.13
       uses: actions/setup-go@v1
       with:
@@ -28,7 +27,6 @@ jobs:
     name: Integration Test
     runs-on: ubuntu-latest
     steps:
-
     - name: Set up Go 1.13
       uses: actions/setup-go@v1
       with:
@@ -41,5 +39,5 @@ jobs:
     - name: Install dependencies
       run: sudo apt-get install libdb-dev
 
-    - name: Run instegration tests
+    - name: Run integration tests
       run: make test-integration
