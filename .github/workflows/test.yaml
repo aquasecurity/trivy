@@ -1,0 +1,17 @@
+name: Test
+on: pull_request
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up go
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13.x
+    - name: Run GoReleaser
+      uses: goreleaser/goreleaser-action@v1
+      with:
+        version: latest
+        args: release --snapshot --rm-dist --skip-publish
