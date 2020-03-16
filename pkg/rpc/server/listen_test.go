@@ -70,8 +70,8 @@ func Test_dbWorker_update(t *testing.T) {
 			want: db.Metadata{
 				Version:    1,
 				Type:       db.TypeFull,
-				NextUpdate: &timeNextUpdate,
-				UpdatedAt:  &timeUpdateAt,
+				NextUpdate: timeNextUpdate,
+				UpdatedAt:  timeUpdateAt,
 			},
 		},
 		{

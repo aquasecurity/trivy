@@ -67,7 +67,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    1,
 					Type:       db.TypeFull,
-					NextUpdate: &timeNextUpdateDay1,
+					NextUpdate: timeNextUpdateDay1,
 				},
 			},
 			expected: true,
@@ -90,7 +90,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    1,
 					Type:       db.TypeFull,
-					NextUpdate: &timeNextUpdateDay1,
+					NextUpdate: timeNextUpdateDay1,
 				},
 			},
 			expected: true,
@@ -103,7 +103,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    0,
 					Type:       db.TypeFull,
-					NextUpdate: &timeNextUpdateDay1,
+					NextUpdate: timeNextUpdateDay1,
 				},
 			},
 			expected: true,
@@ -116,7 +116,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    1,
 					Type:       db.TypeFull,
-					NextUpdate: &timeNextUpdateDay1,
+					NextUpdate: timeNextUpdateDay1,
 				},
 			},
 			skip:     true,
@@ -130,7 +130,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    1,
 					Type:       db.TypeFull,
-					NextUpdate: &timeNextUpdateDay2,
+					NextUpdate: timeNextUpdateDay2,
 				},
 			},
 			expected: false,
@@ -143,7 +143,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    2,
 					Type:       db.TypeFull,
-					NextUpdate: &timeNextUpdateDay2,
+					NextUpdate: timeNextUpdateDay2,
 				},
 			},
 			expectedError: xerrors.New("the version of DB schema doesn't match. Local DB: 2, Expected: 1"),
@@ -166,7 +166,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    0,
 					Type:       db.TypeFull,
-					NextUpdate: &timeNextUpdateDay1,
+					NextUpdate: timeNextUpdateDay1,
 				},
 			},
 			skip:          true,
