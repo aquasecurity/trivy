@@ -53,7 +53,7 @@ func Test_showVersion(t *testing.T) {
 				outputFormat: "json",
 				version:      "1.2.3",
 			},
-			expectedOutput: `{"TrivyVersion":"1.2.3","VulnerabilityDBVersion":{"Version":42,"Type":1,"NextUpdate":"2020-03-16T16:57:00-07:00","UpdatedAt":"2020-03-16T16:40:20-07:00"}}
+			expectedOutput: `{"Trivy":"1.2.3","VulnerabilityDB":{"Version":42,"Type":1,"NextUpdate":"2020-03-16T16:57:00-07:00","UpdatedAt":"2020-03-16T16:40:20-07:00"}}
 `,
 			createDB: true,
 		},
