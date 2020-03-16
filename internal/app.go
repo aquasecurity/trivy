@@ -3,6 +3,7 @@ package internal
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -183,23 +184,7 @@ OPTIONS:
   {{end}}{{$option}}{{end}}{{end}}
 `
 	cli.VersionPrinter = func(c *cli.Context) {
-		db.Init(c.String("cache-dir"))
-		metadata, _ := db.Config{}.GetMetadata()
-		switch c.String("format") {
-		case "json":
-			b, _ := json.Marshal(ttypes.VersionInfo{
-				TrivyVersion:           version,
-				VulnerabilityDBVersion: metadata,
-			})
-			fmt.Println(string(b))
-		default:
-			table := tablewriter.NewWriter(os.Stdout)
-			table.SetHeader([]string{"Component", "Version"})
-			table.Append([]string{"Trivy", version})
-			table.Append([]string{"Vulnerability DB", metadata.UpdatedAt.String()})
-			table.Render()
-		}
-
+		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, os.Stdout)
 	}
 
 	app := cli.NewApp()
@@ -258,6 +243,29 @@ OPTIONS:
 
 	app.Action = standalone.Run
 	return app
+}
+
+func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
+	db.Init(cacheDir)
+	metadata, err := db.Config{}.GetMetadata()
+	if err != nil {
+		fmt.Fprintf(outputWriter, "unable to display current version: %s", err.Error())
+		return
+	}
+	switch outputFormat {
+	case "json":
+		b, _ := json.Marshal(ttypes.VersionInfo{
+			TrivyVersion:           version,
+			VulnerabilityDBVersion: metadata,
+		})
+		fmt.Fprintln(outputWriter, string(b))
+	default:
+		table := tablewriter.NewWriter(outputWriter)
+		table.SetHeader([]string{"Component", "Version"})
+		table.Append([]string{"Trivy", version})
+		table.Append([]string{"Vulnerability DB", metadata.UpdatedAt.String()})
+		table.Render()
+	}
 }
 
 func NewClientCommand() cli.Command {
