@@ -9,12 +9,13 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer"
+	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
+	"github.com/aquasecurity/trivy/rpc/common"
 	proto "github.com/aquasecurity/trivy/rpc/detector"
 )
 
@@ -29,11 +30,12 @@ func TestServer_Detect(t *testing.T) {
 		req *proto.OSDetectRequest
 	}
 	tests := []struct {
-		name    string
-		args    args
-		detect  ospkg.DetectExpectation
-		wantRes *proto.DetectResponse
-		wantErr string
+		name                string
+		args                args
+		detectExpectation   ospkg.DetectExpectation
+		fillInfoExpectation vulnerability.FillInfoExpectation
+		wantRes             *proto.DetectResponse
+		wantErr             string
 	}{
 		{
 			name: "happy path",
@@ -41,16 +43,16 @@ func TestServer_Detect(t *testing.T) {
 				req: &proto.OSDetectRequest{
 					OsFamily: "alpine",
 					OsName:   "3.10.2",
-					Packages: []*proto.Package{
+					Packages: []*common.Package{
 						{Name: "musl", Version: "1.1.22-r3"},
 					},
 				},
 			},
-			detect: ospkg.DetectExpectation{
+			detectExpectation: ospkg.DetectExpectation{
 				Args: ospkg.DetectInput{
 					OSFamily: "alpine",
 					OSName:   "3.10.2",
-					Pkgs: []analyzer.Package{
+					Pkgs: []ftypes.Package{
 						{Name: "musl", Version: "1.1.22-r3"},
 					},
 				},
@@ -66,12 +68,25 @@ func TestServer_Detect(t *testing.T) {
 					},
 				},
 			},
+			fillInfoExpectation: vulnerability.FillInfoExpectation{
+				Args: vulnerability.FillInfoArgs{
+					Vulns: []types.DetectedVulnerability{
+						{
+							VulnerabilityID: "CVE-2019-0001",
+							PkgName:         "musl",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: "HIGH",
+							}},
+					},
+					Light: false,
+				},
+			},
 			wantRes: &proto.DetectResponse{
-				Vulnerabilities: []*proto.Vulnerability{
+				Vulnerabilities: []*common.Vulnerability{
 					{
 						VulnerabilityId: "CVE-2019-0001",
 						PkgName:         "musl",
-						Severity:        proto.Severity_HIGH,
+						Severity:        common.Severity_HIGH,
 					},
 				},
 			},
@@ -82,16 +97,16 @@ func TestServer_Detect(t *testing.T) {
 				req: &proto.OSDetectRequest{
 					OsFamily: "alpine",
 					OsName:   "3.10.2",
-					Packages: []*proto.Package{
+					Packages: []*common.Package{
 						{Name: "musl", Version: "1.1.22-r3"},
 					},
 				},
 			},
-			detect: ospkg.DetectExpectation{
+			detectExpectation: ospkg.DetectExpectation{
 				Args: ospkg.DetectInput{
 					OSFamily: "alpine",
 					OSName:   "3.10.2",
-					Pkgs: []analyzer.Package{
+					Pkgs: []ftypes.Package{
 						{Name: "musl", Version: "1.1.22-r3"},
 					},
 				},
@@ -104,8 +119,9 @@ func TestServer_Detect(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockDetector := ospkg.NewMockDetector([]ospkg.DetectExpectation{tt.detect})
-			mockVulnClient := vulnerability.NewMockVulnClient()
+			mockDetector := ospkg.NewMockDetector([]ospkg.DetectExpectation{tt.detectExpectation})
+			mockVulnClient := new(vulnerability.MockOperation)
+			mockVulnClient.ApplyFillInfoExpectation(tt.fillInfoExpectation)
 
 			s := NewServer(mockDetector, mockVulnClient)
 			gotRes, err := s.Detect(context.TODO(), tt.args.req)

@@ -14,15 +14,16 @@ import (
 )
 
 var SuperSet = wire.NewSet(
-	cache.Initialize,
+	cache.NewFSCache,
+	wire.Bind(new(cache.LocalImageCache), new(cache.FSCache)),
 	NewCache,
 )
 
 type Cache struct {
-	client cache.Cache
+	client cache.LocalImageCache
 }
 
-func NewCache(client cache.Cache) Cache {
+func NewCache(client cache.LocalImageCache) Cache {
 	return Cache{client: client}
 }
 

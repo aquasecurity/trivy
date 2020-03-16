@@ -6,9 +6,10 @@ import (
 	"testing"
 	"time"
 
+	ftypes "github.com/aquasecurity/fanal/types"
+
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/fanal/analyzer"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 
@@ -23,7 +24,7 @@ func TestMain(m *testing.M) {
 func TestScanner_Detect(t *testing.T) {
 	type args struct {
 		osVer string
-		pkgs  []analyzer.Package
+		pkgs  []ftypes.Package
 	}
 	type getInput struct {
 		osVer   string
@@ -52,10 +53,11 @@ func TestScanner_Detect(t *testing.T) {
 			name: "happy path",
 			args: args{
 				osVer: "3.10.2",
-				pkgs: []analyzer.Package{
+				pkgs: []ftypes.Package{
 					{
 						Name:    "ansible",
 						Version: "2.6.4",
+						LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					{
 						Name:    "invalid",
@@ -102,6 +104,7 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2019-10217",
 					InstalledVersion: "2.6.4",
 					FixedVersion:     "2.8.4-r0",
+					LayerID:          "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 				},
 			},
 		},
@@ -109,7 +112,7 @@ func TestScanner_Detect(t *testing.T) {
 			name: "contain rc",
 			args: args{
 				osVer: "3.9",
-				pkgs: []analyzer.Package{
+				pkgs: []ftypes.Package{
 					{
 						Name:    "jq",
 						Version: "1.6-r0",
@@ -150,7 +153,7 @@ func TestScanner_Detect(t *testing.T) {
 			name: "Get returns an error",
 			args: args{
 				osVer: "3.8.1",
-				pkgs: []analyzer.Package{
+				pkgs: []ftypes.Package{
 					{
 						Name:    "jq",
 						Version: "1.6-r0",

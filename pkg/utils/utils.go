@@ -1,11 +1,9 @@
 package utils
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -71,25 +69,6 @@ func FileWalk(root string, targetFiles map[string]struct{}, walkFn func(r io.Rea
 	return nil
 }
 
-func IsCommandAvailable(name string) bool {
-	cmd := exec.Command(name, "--help")
-	if err := cmd.Run(); err != nil {
-		return false
-	}
-	return true
-}
-
-func Exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return true, err
-}
-
 func StringInSlice(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
@@ -97,18 +76,6 @@ func StringInSlice(a string, list []string) bool {
 		}
 	}
 	return false
-}
-
-func Exec(command string, args []string) (string, error) {
-	cmd := exec.Command(command, args...)
-	var stdoutBuf, stderrBuf bytes.Buffer
-	cmd.Stdout = &stdoutBuf
-	cmd.Stderr = &stderrBuf
-	if err := cmd.Run(); err != nil {
-		log.Logger.Debug(stderrBuf.String())
-		return "", xerrors.Errorf("failed to exec: %w", err)
-	}
-	return stdoutBuf.String(), nil
 }
 
 func FilterTargets(prefixPath string, targets map[string]struct{}) (map[string]struct{}, error) {

@@ -4,12 +4,12 @@ import (
 	"path/filepath"
 	"time"
 
+	ftypes "github.com/aquasecurity/fanal/types"
+
 	"github.com/google/wire"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/knqyf263/go-version"
-
-	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 
 	"golang.org/x/xerrors"
 
@@ -24,7 +24,7 @@ var SuperSet = wire.NewSet(
 )
 
 type Operation interface {
-	Detect(string, string, time.Time, []ptypes.Library) ([]types.DetectedVulnerability, error)
+	Detect(imageName string, filePath string, created time.Time, pkgs []ftypes.LibraryInfo) (vulns []types.DetectedVulnerability, err error)
 }
 
 type Detector struct {
@@ -35,7 +35,7 @@ func NewDetector(factory Factory) Detector {
 	return Detector{driverFactory: factory}
 }
 
-func (d Detector) Detect(_ string, filePath string, _ time.Time, pkgs []ptypes.Library) ([]types.DetectedVulnerability, error) {
+func (d Detector) Detect(_, filePath string, _ time.Time, pkgs []ftypes.LibraryInfo) ([]types.DetectedVulnerability, error) {
 	log.Logger.Debugf("Detecting library vulnerabilities, path: %s", filePath)
 	driver := d.driverFactory.NewDriver(filepath.Base(filePath))
 	if driver == nil {
@@ -50,20 +50,24 @@ func (d Detector) Detect(_ string, filePath string, _ time.Time, pkgs []ptypes.L
 	return vulns, nil
 }
 
-func detect(driver Driver, libs []ptypes.Library) ([]types.DetectedVulnerability, error) {
+func detect(driver Driver, libs []ftypes.LibraryInfo) ([]types.DetectedVulnerability, error) {
 	log.Logger.Infof("Detecting %s vulnerabilities...", driver.Type())
 	var vulnerabilities []types.DetectedVulnerability
 	for _, lib := range libs {
-		v, err := version.NewVersion(lib.Version)
+		v, err := version.NewVersion(lib.Library.Version)
 		if err != nil {
 			log.Logger.Debugf("invalid version, library: %s, version: %s, error: %s\n",
-				lib.Name, lib.Version, err)
+				lib.Library.Name, lib.Library.Version, err)
 			continue
 		}
 
-		vulns, err := driver.Detect(lib.Name, v)
+		vulns, err := driver.Detect(lib.Library.Name, v)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to detect %s vulnerabilities: %w", driver.Type(), err)
+		}
+
+		for i := range vulns {
+			vulns[i].LayerID = lib.LayerID
 		}
 		vulnerabilities = append(vulnerabilities, vulns...)
 	}
