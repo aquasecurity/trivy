@@ -183,7 +183,7 @@ OPTIONS:
   {{end}}{{$option}}{{end}}{{end}}
 `
 	cli.VersionPrinter = func(c *cli.Context) {
-		db.Init(utils.DefaultCacheDir())
+		db.Init(c.String("cache-dir"))
 		metadata, _ := db.Config{}.GetMetadata()
 		switch c.String("format") {
 		case "json":
