@@ -3,8 +3,11 @@ package internal
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 	"time"
+
+	"github.com/olekukonko/tablewriter"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 
@@ -182,11 +185,21 @@ OPTIONS:
 	cli.VersionPrinter = func(c *cli.Context) {
 		db.Init(utils.DefaultCacheDir())
 		metadata, _ := db.Config{}.GetMetadata()
-		b, _ := json.Marshal(ttypes.VersionInfo{
-			TrivyVersion:           version,
-			VulnerabilityDBVersion: metadata,
-		})
-		fmt.Println(string(b))
+		switch c.String("format") {
+		case "json":
+			b, _ := json.Marshal(ttypes.VersionInfo{
+				TrivyVersion:           version,
+				VulnerabilityDBVersion: metadata,
+			})
+			fmt.Println(string(b))
+		default:
+			table := tablewriter.NewWriter(os.Stdout)
+			table.SetHeader([]string{"Component", "Version"})
+			table.Append([]string{"Trivy", version})
+			table.Append([]string{"Vulnerability DB", metadata.UpdatedAt.String()})
+			table.Render()
+		}
+
 	}
 
 	app := cli.NewApp()
