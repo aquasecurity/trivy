@@ -44,8 +44,8 @@ func Test_showVersion(t *testing.T) {
 | Trivy              | 1.2.3                         |
 | VulnDB Type        | Light                         |
 | VulnDB Version     |                            42 |
-| VulnDB Updated At  | 2020-03-16 16:40:20 -0700 PDT |
-| VulnDB Next Update | 2020-03-16 16:57:00 -0700 PDT |
+| VulnDB Updated At  | 2020-03-16 23:40:20 +0000 UTC |
+| VulnDB Next Update | 2020-03-16 23:57:00 +0000 UTC |
 +--------------------+-------------------------------+
 `,
 			createDB: true,
@@ -56,7 +56,7 @@ func Test_showVersion(t *testing.T) {
 				outputFormat: "json",
 				version:      "1.2.3",
 			},
-			expectedOutput: `{"Trivy":"1.2.3","VulnerabilityDB":{"Version":42,"Type":1,"NextUpdate":"2020-03-16T16:57:00-07:00","UpdatedAt":"2020-03-16T16:40:20-07:00"}}
+			expectedOutput: `{"Trivy":"1.2.3","VulnerabilityDB":{"Version":42,"Type":1,"NextUpdate":"2020-03-16T23:57:00Z","UpdatedAt":"2020-03-16T23:40:20Z"}}
 `,
 			createDB: true,
 		},

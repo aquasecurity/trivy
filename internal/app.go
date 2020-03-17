@@ -256,8 +256,13 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 	switch outputFormat {
 	case "json":
 		b, _ := json.Marshal(ttypes.VersionInfo{
-			Trivy:           version,
-			VulnerabilityDB: metadata,
+			Trivy: version,
+			VulnerabilityDB: db.Metadata{
+				Version:    metadata.Version,
+				Type:       metadata.Type,
+				NextUpdate: metadata.NextUpdate.UTC(),
+				UpdatedAt:  metadata.UpdatedAt.UTC(),
+			},
 		})
 		fmt.Fprintln(outputWriter, string(b))
 	default:
@@ -271,8 +276,8 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 			table.Append([]string{"VulnDB Type", "Light"})
 		}
 		table.Append([]string{"VulnDB Version", strconv.Itoa(metadata.Version)})
-		table.Append([]string{"VulnDB Updated At", metadata.UpdatedAt.String()})
-		table.Append([]string{"VulnDB Next Update", metadata.NextUpdate.String()})
+		table.Append([]string{"VulnDB Updated At", metadata.UpdatedAt.UTC().String()})
+		table.Append([]string{"VulnDB Next Update", metadata.NextUpdate.UTC().String()})
 		table.Render()
 	}
 }
