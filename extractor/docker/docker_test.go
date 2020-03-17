@@ -85,7 +85,7 @@ func TestApplyLayers(t *testing.T) {
 									Version: "1.2.3",
 									Release: "4.5.6",
 								},
-								{
+								{ // added
 									Name:    "musl",
 									Version: "1.2.4",
 									Release: "4.5.7",
@@ -94,6 +94,27 @@ func TestApplyLayers(t *testing.T) {
 						},
 					},
 					WhiteoutFiles: []string{"app/composer.lock"},
+				},
+				{
+					SchemaVersion: 1,
+					ID:            "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "lib/apk/db/installed",
+							Packages: []types.Package{
+								{
+									Name:    "openssl",
+									Version: "1.2.3",
+									Release: "4.5.6",
+								},
+								{
+									Name:    "musl",
+									Version: "1.2.4",
+									Release: "4.5.8", // updated
+								},
+							},
+						},
+					},
 				},
 			},
 			expectedImageDetail: types.ImageDetail{
@@ -105,14 +126,14 @@ func TestApplyLayers(t *testing.T) {
 					{
 						Name:    "musl",
 						Version: "1.2.4",
-						Release: "4.5.7",
-						LayerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						Release: "4.5.8",
+						LayerID: "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4",
 					},
 					{
 						Name:    "openssl",
 						Version: "1.2.3",
 						Release: "4.5.6",
-						LayerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 				},
 				Applications: []types.Application{
@@ -126,6 +147,129 @@ func TestApplyLayers(t *testing.T) {
 									Version: "1.2.3",
 								},
 								LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy path with removed and updated lockfile",
+			inputLayers: []types.LayerInfo{
+				{
+					SchemaVersion: 1,
+					ID:            "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					OS: &types.OS{
+						Family: "alpine",
+						Name:   "3.10",
+					},
+					Applications: []types.Application{
+						{
+							Type:     "gem",
+							FilePath: "app/Gemfile.lock",
+							Libraries: []types.LibraryInfo{
+								{
+									Library: godeptypes.Library{
+										Name:    "rails",
+										Version: "5.0.0",
+									},
+								},
+								{
+									Library: godeptypes.Library{
+										Name:    "rack",
+										Version: "4.0.0",
+									},
+								},
+							},
+						},
+						{
+							Type:     "composer",
+							FilePath: "app/composer.lock",
+							Libraries: []types.LibraryInfo{
+								{
+									Library: godeptypes.Library{
+										Name:    "phplibrary1",
+										Version: "6.6.6",
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					SchemaVersion: 1,
+					ID:            "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					Applications: []types.Application{
+						{
+							Type:     "gem",
+							FilePath: "app/Gemfile.lock",
+							Libraries: []types.LibraryInfo{
+								{
+									Library: godeptypes.Library{
+										Name:    "rails",
+										Version: "6.0.0",
+									},
+								},
+								{
+									Library: godeptypes.Library{
+										Name:    "rack",
+										Version: "4.0.0",
+									},
+								},
+							},
+						},
+						{
+							Type:     "composer",
+							FilePath: "app/composer2.lock",
+							Libraries: []types.LibraryInfo{
+								{
+									Library: godeptypes.Library{
+										Name:    "phplibrary1",
+										Version: "6.6.6",
+									},
+								},
+							},
+						},
+					},
+					WhiteoutFiles: []string{"app/composer.lock"},
+				},
+			},
+			expectedImageDetail: types.ImageDetail{
+				OS: &types.OS{
+					Family: "alpine",
+					Name:   "3.10",
+				},
+				Applications: []types.Application{
+					{
+						Type:     "gem",
+						FilePath: "app/Gemfile.lock",
+						Libraries: []types.LibraryInfo{
+							{
+								Library: godeptypes.Library{
+									Name:    "rack",
+									Version: "4.0.0",
+								},
+								LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							},
+							{
+								Library: godeptypes.Library{
+									Name:    "rails",
+									Version: "6.0.0",
+								},
+								LayerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+							},
+						},
+					},
+					{
+						Type:     "composer",
+						FilePath: "app/composer2.lock",
+						Libraries: []types.LibraryInfo{
+							{
+								Library: godeptypes.Library{
+									Name:    "phplibrary1",
+									Version: "6.6.6",
+								},
+								LayerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 							},
 						},
 					},
@@ -211,11 +355,21 @@ func TestApplyLayers(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		gotImageDetail := ApplyLayers(tc.inputLayers)
-		sort.Slice(gotImageDetail.Packages, func(i, j int) bool {
-			return gotImageDetail.Packages[i].Name < gotImageDetail.Packages[j].Name
+		t.Run(tc.name, func(t *testing.T) {
+			gotImageDetail := ApplyLayers(tc.inputLayers)
+			sort.Slice(gotImageDetail.Packages, func(i, j int) bool {
+				return gotImageDetail.Packages[i].Name < gotImageDetail.Packages[j].Name
+			})
+			sort.Slice(gotImageDetail.Applications, func(i, j int) bool {
+				return gotImageDetail.Applications[i].FilePath < gotImageDetail.Applications[j].FilePath
+			})
+			for _, app := range gotImageDetail.Applications {
+				sort.Slice(app.Libraries, func(i, j int) bool {
+					return app.Libraries[i].Library.Name < app.Libraries[j].Library.Name
+				})
+			}
+			assert.Equal(t, tc.expectedImageDetail, gotImageDetail, tc.name)
 		})
-		assert.Equal(t, tc.expectedImageDetail, gotImageDetail, tc.name)
 	}
 }
 

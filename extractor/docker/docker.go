@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+
 	"github.com/aquasecurity/fanal/extractor/image/token/ecr"
 	"github.com/aquasecurity/fanal/extractor/image/token/gcr"
 	digest "github.com/opencontainers/go-digest"
@@ -84,6 +86,49 @@ func newDockerExtractor(ctx context.Context, imgRef image.Reference, transports 
 	}, cleanup, nil
 }
 
+func containsPackage(e types.Package, s []types.Package) bool {
+	for _, a := range s {
+		if a.Name == e.Name && a.Version == e.Version && a.Release == e.Release {
+			return true
+		}
+	}
+	return false
+}
+
+func containsLibrary(e godeptypes.Library, s []types.LibraryInfo) bool {
+	for _, a := range s {
+		if e.Name == a.Library.Name && e.Version == a.Library.Version {
+			return true
+		}
+	}
+	return false
+}
+
+func lookupOriginLayerForPkg(pkg types.Package, layers []types.LayerInfo) digest.Digest {
+	for _, layer := range layers {
+		for _, info := range layer.PackageInfos {
+			if containsPackage(pkg, info.Packages) {
+				return layer.ID
+			}
+		}
+	}
+	return ""
+}
+
+func lookupOriginLayerForLib(filePath string, lib godeptypes.Library, layers []types.LayerInfo) digest.Digest {
+	for _, layer := range layers {
+		for _, layerApp := range layer.Applications {
+			if filePath != layerApp.FilePath {
+				continue
+			}
+			if containsLibrary(lib, layerApp.Libraries) {
+				return layer.ID
+			}
+		}
+	}
+	return ""
+}
+
 func ApplyLayers(layers []types.LayerInfo) types.ImageDetail {
 	sep := "/"
 	nestedMap := nested.Nested{}
@@ -102,15 +147,9 @@ func ApplyLayers(layers []types.LayerInfo) types.ImageDetail {
 		}
 
 		for _, pkgInfo := range layer.PackageInfos {
-			for i := range pkgInfo.Packages {
-				pkgInfo.Packages[i].LayerID = layer.ID
-			}
 			nestedMap.SetByString(pkgInfo.FilePath, sep, pkgInfo)
 		}
 		for _, app := range layer.Applications {
-			for i := range app.Libraries {
-				app.Libraries[i].LayerID = layer.ID
-			}
 			nestedMap.SetByString(app.FilePath, sep, app)
 		}
 	}
@@ -124,6 +163,18 @@ func ApplyLayers(layers []types.LayerInfo) types.ImageDetail {
 		}
 		return nil
 	})
+
+	for i, pkg := range mergedLayer.Packages {
+		originLayerID := lookupOriginLayerForPkg(pkg, layers)
+		mergedLayer.Packages[i].LayerID = originLayerID
+	}
+
+	for _, app := range mergedLayer.Applications {
+		for i, libInfo := range app.Libraries {
+			originLayerID := lookupOriginLayerForLib(app.FilePath, libInfo.Library, layers)
+			app.Libraries[i].LayerID = originLayerID
+		}
+	}
 
 	return mergedLayer
 }
