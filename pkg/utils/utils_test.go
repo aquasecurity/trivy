@@ -79,8 +79,8 @@ func TestFileWalk(t *testing.T) {
 	}
 
 	targetFiles := map[string]struct{}{
-		"dir/foo2": {},
-		"dir/foo3": {},
+		filepath.Join("dir", "foo2"): {},
+		filepath.Join("dir", "foo3"): {},
 	}
 	err = FileWalk(td, targetFiles, walker)
 	if err != nil {
@@ -109,9 +109,9 @@ func TestFilterTargets(t *testing.T) {
 		"normal": {
 			prefix: "dir",
 			targets: map[string]struct{}{
-				"dir/file1": {},
-				"dir/file2": {},
-				"foo/bar":   {},
+				filepath.Join("dir", "file1"): {},
+				filepath.Join("dir", "file2"): {},
+				filepath.Join("foo", "bar"):   {},
 			},
 			expected: map[string]struct{}{
 				"file1": {},
@@ -122,8 +122,8 @@ func TestFilterTargets(t *testing.T) {
 		"other directory with the same prefix": {
 			prefix: "dir",
 			targets: map[string]struct{}{
-				"dir/file1":  {},
-				"dir2/file2": {},
+				filepath.Join("dir", "file1"):  {},
+				filepath.Join("dir2", "file2"): {},
 			},
 			expected: map[string]struct{}{
 				"file1": {},

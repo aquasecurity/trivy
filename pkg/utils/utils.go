@@ -86,7 +86,7 @@ func FilterTargets(prefixPath string, targets map[string]struct{}) (map[string]s
 			if err != nil {
 				return nil, xerrors.Errorf("error in filepath rel: %w", err)
 			}
-			if strings.HasPrefix(rel, "../") {
+			if strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
 				continue
 			}
 			filtered[rel] = struct{}{}
