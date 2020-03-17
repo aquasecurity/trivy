@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -263,7 +264,15 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 		table := tablewriter.NewWriter(outputWriter)
 		table.SetHeader([]string{"Component", "Version"})
 		table.Append([]string{"Trivy", version})
-		table.Append([]string{"Vulnerability DB", metadata.UpdatedAt.String()})
+		switch metadata.Type {
+		case 0:
+			table.Append([]string{"VulnDB Type", "Full"})
+		case 1:
+			table.Append([]string{"VulnDB Type", "Light"})
+		}
+		table.Append([]string{"VulnDB Version", strconv.Itoa(metadata.Version)})
+		table.Append([]string{"VulnDB Updated At", metadata.UpdatedAt.String()})
+		table.Append([]string{"VulnDB Next Update", metadata.NextUpdate.String()})
 		table.Render()
 	}
 }

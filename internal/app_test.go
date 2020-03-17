@@ -38,12 +38,15 @@ func Test_showVersion(t *testing.T) {
 				outputFormat: "table",
 				version:      "1.2.3",
 			},
-			expectedOutput: `+------------------+-------------------------------+
-|    COMPONENT     |            VERSION            |
-+------------------+-------------------------------+
-| Trivy            | 1.2.3                         |
-| Vulnerability DB | 2020-03-16 16:40:20 -0700 PDT |
-+------------------+-------------------------------+
+			expectedOutput: `+--------------------+-------------------------------+
+|     COMPONENT      |            VERSION            |
++--------------------+-------------------------------+
+| Trivy              | 1.2.3                         |
+| VulnDB Type        | Light                         |
+| VulnDB Version     |                            42 |
+| VulnDB Updated At  | 2020-03-16 16:40:20 -0700 PDT |
+| VulnDB Next Update | 2020-03-16 16:57:00 -0700 PDT |
++--------------------+-------------------------------+
 `,
 			createDB: true,
 		},
