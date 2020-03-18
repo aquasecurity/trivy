@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -185,7 +184,7 @@ OPTIONS:
   {{end}}{{$option}}{{end}}{{end}}
 `
 	cli.VersionPrinter = func(c *cli.Context) {
-		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, os.Stdout)
+		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
 	}
 
 	app := cli.NewApp()
