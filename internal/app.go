@@ -4,11 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"strconv"
 	"strings"
 	"time"
-
-	"github.com/olekukonko/tablewriter"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 
@@ -265,19 +262,21 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 		})
 		fmt.Fprintln(outputWriter, string(b))
 	default:
-		table := tablewriter.NewWriter(outputWriter)
-		table.SetHeader([]string{"Component", "Version"})
-		table.Append([]string{"Trivy", version})
+		var dbType string
 		switch metadata.Type {
 		case 0:
-			table.Append([]string{"VulnDB Type", "Full"})
+			dbType = "Full"
 		case 1:
-			table.Append([]string{"VulnDB Type", "Light"})
+			dbType = "Light"
 		}
-		table.Append([]string{"VulnDB Version", strconv.Itoa(metadata.Version)})
-		table.Append([]string{"VulnDB Updated At", metadata.UpdatedAt.UTC().String()})
-		table.Append([]string{"VulnDB Next Update", metadata.NextUpdate.UTC().String()})
-		table.Render()
+
+		fmt.Fprintf(outputWriter, `Version: %s
+Vulnerability DB:
+  Type: %s
+  Version: %d
+  UpdatedAt: %s
+  NextUpdate: %s
+`, version, dbType, metadata.Version, metadata.UpdatedAt.UTC().String(), metadata.NextUpdate.UTC().String())
 	}
 }
 
