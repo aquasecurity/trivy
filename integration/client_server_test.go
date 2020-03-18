@@ -431,7 +431,9 @@ func setupClient(t *testing.T, ignoreUnfixed bool, severity, ignoreIDs []string,
 
 	cleanup := func() {
 		_ = os.Remove(ignoreTmpDir)
-		_ = os.Remove(outputFile)
+		if !*update {
+			_ = os.Remove(outputFile)
+		}
 	}
 
 	osArgs = append(osArgs, []string{"--output", outputFile}...)
