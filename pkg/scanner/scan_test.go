@@ -71,6 +71,18 @@ func TestScanner_ScanImage(t *testing.T) {
 								},
 							},
 						},
+						{
+							Target: "node-app/package-lock.json",
+							Vulnerabilities: []types.DetectedVulnerability{
+								{
+									VulnerabilityID:  "CVE-2019-11358",
+									PkgName:          "jquery",
+									InstalledVersion: "3.3.9",
+									FixedVersion:     ">=3.4.0",
+									LayerID:          "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+								},
+							},
+						},
 					},
 					OsFound: &ftypes.OS{
 						Family: "alpine",
@@ -88,6 +100,18 @@ func TestScanner_ScanImage(t *testing.T) {
 							PkgName:          "vim",
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "1.2.4",
+							LayerID:          "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+						},
+					},
+				},
+				{
+					Target: "node-app/package-lock.json",
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2019-11358",
+							PkgName:          "jquery",
+							InstalledVersion: "3.3.9",
+							FixedVersion:     ">=3.4.0",
 							LayerID:          "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 						},
 					},
