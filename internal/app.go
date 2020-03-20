@@ -252,7 +252,7 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 	switch outputFormat {
 	case "json":
 		b, _ := json.Marshal(ttypes.VersionInfo{
-			Trivy: version,
+			Version: version,
 			VulnerabilityDB: db.Metadata{
 				Version:    metadata.Version,
 				Type:       metadata.Type,

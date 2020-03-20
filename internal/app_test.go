@@ -53,7 +53,7 @@ Vulnerability DB:
 				outputFormat: "json",
 				version:      "1.2.3",
 			},
-			expectedOutput: `{"Trivy":"1.2.3","VulnerabilityDB":{"Version":42,"Type":1,"NextUpdate":"2020-03-16T23:57:00Z","UpdatedAt":"2020-03-16T23:40:20Z"}}
+			expectedOutput: `{"Version":"1.2.3","VulnerabilityDB":{"Version":42,"Type":1,"NextUpdate":"2020-03-16T23:57:00Z","UpdatedAt":"2020-03-16T23:40:20Z"}}
 `,
 			createDB: true,
 		},
