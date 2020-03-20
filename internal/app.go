@@ -15,10 +15,14 @@ import (
 	"github.com/aquasecurity/trivy/internal/client"
 	"github.com/aquasecurity/trivy/internal/server"
 	"github.com/aquasecurity/trivy/internal/standalone"
-	ttypes "github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
+
+type VersionInfo struct {
+	Version         string      `json:",omitempty"`
+	VulnerabilityDB db.Metadata `json:",omitempty"`
+}
 
 var (
 	templateFlag = cli.StringFlag{
@@ -251,7 +255,7 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 	}
 	switch outputFormat {
 	case "json":
-		b, _ := json.Marshal(ttypes.VersionInfo{
+		b, _ := json.Marshal(VersionInfo{
 			Version: version,
 			VulnerabilityDB: db.Metadata{
 				Version:    metadata.Version,
