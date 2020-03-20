@@ -25,6 +25,9 @@ func TestMain(m *testing.M) {
 }
 
 func Test_dbWorker_update(t *testing.T) {
+	timeNextUpdate := time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC)
+	timeUpdateAt := time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC)
+
 	type needsUpdateInput struct {
 		appVersion string
 		skip       bool
@@ -67,8 +70,8 @@ func Test_dbWorker_update(t *testing.T) {
 			want: db.Metadata{
 				Version:    1,
 				Type:       db.TypeFull,
-				NextUpdate: time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC),
-				UpdatedAt:  time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC),
+				NextUpdate: timeNextUpdate,
+				UpdatedAt:  timeUpdateAt,
 			},
 		},
 		{

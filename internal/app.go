@@ -1,8 +1,13 @@
 package internal
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
 	"strings"
 	"time"
+
+	"github.com/aquasecurity/trivy-db/pkg/db"
 
 	"github.com/urfave/cli"
 
@@ -13,6 +18,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
+
+type VersionInfo struct {
+	Version         string      `json:",omitempty"`
+	VulnerabilityDB db.Metadata `json:",omitempty"`
+}
 
 var (
 	templateFlag = cli.StringFlag{
@@ -174,6 +184,10 @@ OPTIONS:
   {{range $index, $option := .VisibleFlags}}{{if $index}}
   {{end}}{{$option}}{{end}}{{end}}
 `
+	cli.VersionPrinter = func(c *cli.Context) {
+		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
+	}
+
 	app := cli.NewApp()
 	app.Name = "trivy"
 	app.Version = version
@@ -230,6 +244,44 @@ OPTIONS:
 
 	app.Action = standalone.Run
 	return app
+}
+
+func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
+	db.Init(cacheDir)
+	metadata, err := db.Config{}.GetMetadata()
+	if err != nil {
+		fmt.Fprintf(outputWriter, "unable to display current version: %s", err.Error())
+		return
+	}
+	switch outputFormat {
+	case "json":
+		b, _ := json.Marshal(VersionInfo{
+			Version: version,
+			VulnerabilityDB: db.Metadata{
+				Version:    metadata.Version,
+				Type:       metadata.Type,
+				NextUpdate: metadata.NextUpdate.UTC(),
+				UpdatedAt:  metadata.UpdatedAt.UTC(),
+			},
+		})
+		fmt.Fprintln(outputWriter, string(b))
+	default:
+		var dbType string
+		switch metadata.Type {
+		case 0:
+			dbType = "Full"
+		case 1:
+			dbType = "Light"
+		}
+
+		fmt.Fprintf(outputWriter, `Version: %s
+Vulnerability DB:
+  Type: %s
+  Version: %d
+  UpdatedAt: %s
+  NextUpdate: %s
+`, version, dbType, metadata.Version, metadata.UpdatedAt.UTC().String(), metadata.NextUpdate.UTC().String())
+	}
 }
 
 func NewClientCommand() cli.Command {

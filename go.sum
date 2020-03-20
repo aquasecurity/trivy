@@ -34,8 +34,8 @@ github.com/aquasecurity/fanal v0.0.0-20200317181056-f28b6d21845c/go.mod h1:yPZqe
 github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b h1:55Ulc/gvfWm4ylhVaR7MxOwujRjA6et7KhmUbSgUFf4=
 github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b/go.mod h1:BpNTD9vHfrejKsED9rx04ldM1WIbeyXGYxUrqTVwxVQ=
 github.com/aquasecurity/trivy v0.1.6/go.mod h1:5hobyhxLzDtxruHzPxpND2PUKOssvGUdE9BocpJUwo4=
-github.com/aquasecurity/trivy-db v0.0.0-20191226181755-d6cabf5bc5d1 h1:IVXoVH8ejJuBdxgH/+er2WjBxc0tqIGuBCqI5aWW3A0=
-github.com/aquasecurity/trivy-db v0.0.0-20191226181755-d6cabf5bc5d1/go.mod h1:Uf9bXd50zTHtWTP7+7u5+OFCPtUVrmsS4v0RXd7E5lw=
+github.com/aquasecurity/trivy-db v0.0.0-20200318223623-7d3e67b057d4 h1:DeVT3LzIgKc+5sGhSGusWL+JZ/kiWGjKjQYeshz/gOk=
+github.com/aquasecurity/trivy-db v0.0.0-20200318223623-7d3e67b057d4/go.mod h1:Uf9bXd50zTHtWTP7+7u5+OFCPtUVrmsS4v0RXd7E5lw=
 github.com/aquasecurity/vuln-list-update v0.0.0-20191016075347-3d158c2bf9a2 h1:xbdUfr2KE4THsFx9CFWtWpU91lF+YhgP46moV94nYTA=
 github.com/aquasecurity/vuln-list-update v0.0.0-20191016075347-3d158c2bf9a2/go.mod h1:6NhOP0CjZJL27bZZcaHECtzWdwDDm2g6yCY0QgXEGQQ=
 github.com/araddon/dateparse v0.0.0-20190426192744-0d74ffceef83/go.mod h1:SLqhdZcd+dF3TEVL2RMoob5bBP5R1P1qkox+HtCBgGI=
