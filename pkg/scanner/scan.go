@@ -100,5 +100,5 @@ func (s Scanner) ScanImage(options types.ScanOptions) (report.Results, *ftypes.O
 		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
 	}
 
-	return results, nil, nil
+	return results, osFound, nil
 }

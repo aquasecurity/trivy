@@ -29,7 +29,8 @@ func TestScanner_ScanImage(t *testing.T) {
 		args               args
 		analyzeExpectation AnalyzerAnalyzeExpectation
 		scanExpectation    ScanExpectation
-		want               report.Results
+		wantResults        report.Results
+		wantOSFound        *ftypes.OS
 		wantErr            string
 	}{
 		{
@@ -78,7 +79,7 @@ func TestScanner_ScanImage(t *testing.T) {
 					Eols: true,
 				},
 			},
-			want: report.Results{
+			wantResults: report.Results{
 				{
 					Target: "alpine:3.11",
 					Vulnerabilities: []types.DetectedVulnerability{
@@ -91,6 +92,10 @@ func TestScanner_ScanImage(t *testing.T) {
 						},
 					},
 				},
+			},
+			wantOSFound: &ftypes.OS{
+				Family: "alpine",
+				Name:   "3.10",
 			},
 		},
 		{
@@ -148,7 +153,7 @@ func TestScanner_ScanImage(t *testing.T) {
 			analyzer.ApplyAnalyzeExpectation(tt.analyzeExpectation)
 
 			s := NewScanner(d, analyzer)
-			got, _, err := s.ScanImage(tt.args.options)
+			gotResults, gotOSFound, err := s.ScanImage(tt.args.options)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -157,7 +162,8 @@ func TestScanner_ScanImage(t *testing.T) {
 				require.NoError(t, err, tt.name)
 			}
 
-			assert.Equal(t, tt.want, got)
+			assert.Equal(t, tt.wantResults, gotResults, tt.name)
+			assert.Equal(t, tt.wantOSFound, gotOSFound, tt.name)
 		})
 	}
 }
