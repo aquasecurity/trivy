@@ -247,23 +247,11 @@ OPTIONS:
 }
 
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
-	if db.Init(cacheDir) != nil {
-		switch outputFormat {
-		case "json":
-			b, _ := json.Marshal(VersionInfo{
-				Version: version,
-			})
-			fmt.Fprintln(outputWriter, string(b))
-		default:
-			fmt.Fprintf(outputWriter, "Version: %s\n", version)
-		}
-		return
-	}
+	var dbMeta *db.Metadata
 
-	metadata, _ := db.Config{}.GetMetadata()
-	switch outputFormat {
-	case "json":
-		var dbMeta *db.Metadata
+	err := db.Init(cacheDir)
+	if err == nil {
+		metadata, _ := db.Config{}.GetMetadata()
 		if !metadata.UpdatedAt.IsZero() && !metadata.NextUpdate.IsZero() && metadata.Version != 0 {
 			dbMeta = &db.Metadata{
 				Version:    metadata.Version,
@@ -272,27 +260,33 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 				UpdatedAt:  metadata.UpdatedAt.UTC(),
 			}
 		}
+	}
+
+	switch outputFormat {
+	case "json":
 		b, _ := json.Marshal(VersionInfo{
 			Version:         version,
 			VulnerabilityDB: dbMeta,
 		})
 		fmt.Fprintln(outputWriter, string(b))
 	default:
-		var dbType string
-		switch metadata.Type {
-		case 0:
-			dbType = "Full"
-		case 1:
-			dbType = "Light"
-		}
-
-		fmt.Fprintf(outputWriter, `Version: %s
-Vulnerability DB:
+		output := fmt.Sprintf("Version: %s\n", version)
+		if dbMeta != nil {
+			var dbType string
+			switch dbMeta.Type {
+			case 0:
+				dbType = "Full"
+			case 1:
+				dbType = "Light"
+			}
+			output += fmt.Sprintf(`Vulnerability DB:
   Type: %s
   Version: %d
   UpdatedAt: %s
   NextUpdate: %s
-`, version, dbType, metadata.Version, metadata.UpdatedAt.UTC().String(), metadata.NextUpdate.UTC().String())
+`, dbType, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC())
+		}
+		fmt.Fprintf(outputWriter, output)
 	}
 }
 
