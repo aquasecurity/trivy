@@ -247,7 +247,19 @@ OPTIONS:
 }
 
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
-	db.Init(cacheDir)
+	if db.Init(cacheDir) != nil {
+		switch outputFormat {
+		case "json":
+			b, _ := json.Marshal(VersionInfo{
+				Version: version,
+			})
+			fmt.Fprintln(outputWriter, string(b))
+		default:
+			fmt.Fprintf(outputWriter, "Version: %s\n", version)
+		}
+		return
+	}
+
 	metadata, _ := db.Config{}.GetMetadata()
 	switch outputFormat {
 	case "json":
