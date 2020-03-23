@@ -60,10 +60,11 @@ Vulnerability DB:
 		{
 			name: "sad path, no DB is available",
 			args: args{
-				outputFormat: "table",
+				outputFormat: "json",
 				version:      "1.2.3",
 			},
-			expectedOutput: `unable to display current version: unexpected end of JSON input`,
+			expectedOutput: `{"Version":"1.2.3"}
+`,
 		},
 	}
 	for _, tt := range tests {

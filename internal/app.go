@@ -20,8 +20,8 @@ import (
 )
 
 type VersionInfo struct {
-	Version         string      `json:",omitempty"`
-	VulnerabilityDB db.Metadata `json:",omitempty"`
+	Version         string       `json:",omitempty"`
+	VulnerabilityDB *db.Metadata `json:",omitempty"`
 }
 
 var (
@@ -248,21 +248,21 @@ OPTIONS:
 
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
 	db.Init(cacheDir)
-	metadata, err := db.Config{}.GetMetadata()
-	if err != nil {
-		fmt.Fprintf(outputWriter, "unable to display current version: %s", err.Error())
-		return
-	}
+	metadata, _ := db.Config{}.GetMetadata()
 	switch outputFormat {
 	case "json":
-		b, _ := json.Marshal(VersionInfo{
-			Version: version,
-			VulnerabilityDB: db.Metadata{
+		var dbMeta *db.Metadata
+		if !metadata.UpdatedAt.IsZero() && !metadata.NextUpdate.IsZero() && metadata.Version != 0 {
+			dbMeta = &db.Metadata{
 				Version:    metadata.Version,
 				Type:       metadata.Type,
 				NextUpdate: metadata.NextUpdate.UTC(),
 				UpdatedAt:  metadata.UpdatedAt.UTC(),
-			},
+			}
+		}
+		b, _ := json.Marshal(VersionInfo{
+			Version:         version,
+			VulnerabilityDB: dbMeta,
 		})
 		fmt.Fprintln(outputWriter, string(b))
 	default:
