@@ -5,6 +5,8 @@ import (
 	"errors"
 	"testing"
 
+	ftypes "github.com/aquasecurity/fanal/types"
+
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -14,7 +16,6 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/scanner"

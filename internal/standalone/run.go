@@ -94,14 +94,15 @@ func run(c config.Config) (err error) {
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	results, osFound, err := scanner.ScanImage(scanOptions)
+	results, err := scanner.ScanImage(scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
 
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
-		vulnClient.FillInfo(results[i].Vulnerabilities, c.Light, osFound)
+		//vulnClient.FillInfo(results[i].Vulnerabilities, c.Light)
+		vulnClient.FillInfo(results[i], c.Light)
 		results[i].Vulnerabilities = vulnClient.Filter(results[i].Vulnerabilities,
 			c.Severities, c.IgnoreUnfixed, c.IgnoreFile)
 	}

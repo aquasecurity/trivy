@@ -120,6 +120,7 @@ func (s Scanner) scanOSPkg(target, osFamily, osName string, pkgs []ftypes.Packag
 	result := &report.Result{
 		Target:          imageDetail,
 		Vulnerabilities: vulns,
+		Type:            osFamily,
 	}
 	return result, eosl, nil
 }
@@ -135,6 +136,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application) (report.Results, error) 
 		results = append(results, report.Result{
 			Target:          app.FilePath,
 			Vulnerabilities: vulns,
+			Type:            app.Type,
 		})
 	}
 	sort.Slice(results, func(i, j int) bool {
