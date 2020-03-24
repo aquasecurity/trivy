@@ -14,6 +14,10 @@ $(GOBIN)/wire:
 wire: $(GOBIN)/wire
 	wire gen ./...
 
+.PHONY: mock
+mock: $(GOBIN)/mockery
+	mockery -all -inpkg -case=snake -dir $(DIR)
+
 .PHONY: deps
 deps:
 	go get ${u} -d
