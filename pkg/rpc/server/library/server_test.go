@@ -5,19 +5,19 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/detector/library"
-
-	"github.com/aquasecurity/trivy/pkg/log"
-
-	"golang.org/x/xerrors"
+	ftypes "github.com/aquasecurity/fanal/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/xerrors"
 
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/detector/library"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
+	"github.com/aquasecurity/trivy/rpc/common"
 	proto "github.com/aquasecurity/trivy/rpc/detector"
 )
 
@@ -32,30 +32,34 @@ func TestServer_Detect(t *testing.T) {
 		req *proto.LibDetectRequest
 	}
 	tests := []struct {
-		name    string
-		args    args
-		detect  library.DetectExpectation
-		wantRes *proto.DetectResponse
-		wantErr string
+		name                string
+		args                args
+		detectExpectation   library.OperationDetectExpectation
+		fillInfoExpectation vulnerability.FillInfoExpectation
+		wantRes             *proto.DetectResponse
+		wantErr             string
 	}{
 		{
 			name: "happy path",
 			args: args{
 				req: &proto.LibDetectRequest{
-					FilePath: "app/Pipfile.lock",
-					Libraries: []*proto.Library{
+					ImageName: "alpine:3.10",
+					FilePath:  "app/Pipfile.lock",
+					Libraries: []*common.Library{
 						{Name: "django", Version: "3.0.0"},
 					},
 				},
 			},
-			detect: library.DetectExpectation{
-				Args: library.DetectInput{
+			detectExpectation: library.OperationDetectExpectation{
+				Args: library.OperationDetectArgs{
 					FilePath: "app/Pipfile.lock",
-					Libs: []ptypes.Library{
-						{Name: "django", Version: "3.0.0"},
+					Pkgs: []ftypes.LibraryInfo{
+						{
+							Library: ptypes.Library{Name: "django", Version: "3.0.0"},
+						},
 					},
 				},
-				ReturnArgs: library.DetectOutput{
+				Returns: library.OperationDetectReturns{
 					Vulns: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2019-0001",
@@ -72,8 +76,27 @@ func TestServer_Detect(t *testing.T) {
 					},
 				},
 			},
+			fillInfoExpectation: vulnerability.FillInfoExpectation{
+				Args: vulnerability.FillInfoArgs{
+					Vulns: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2019-0001",
+							PkgName:          "test",
+							InstalledVersion: "1",
+							FixedVersion:     "2",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "title",
+								Description: "description",
+								Severity:    "MEDIUM",
+								References:  []string{"http://example.com"},
+							},
+						},
+					},
+					Light: false,
+				},
+			},
 			wantRes: &proto.DetectResponse{
-				Vulnerabilities: []*proto.Vulnerability{
+				Vulnerabilities: []*common.Vulnerability{
 					{
 						VulnerabilityId:  "CVE-2019-0001",
 						PkgName:          "test",
@@ -81,7 +104,7 @@ func TestServer_Detect(t *testing.T) {
 						FixedVersion:     "2",
 						Title:            "title",
 						Description:      "description",
-						Severity:         proto.Severity_MEDIUM,
+						Severity:         common.Severity_MEDIUM,
 						References:       []string{"http://example.com"},
 					},
 				},
@@ -91,20 +114,21 @@ func TestServer_Detect(t *testing.T) {
 			name: "Detect returns an error",
 			args: args{
 				req: &proto.LibDetectRequest{
-					FilePath: "app/Pipfile.lock",
-					Libraries: []*proto.Library{
+					ImageName: "alpine:3.10",
+					FilePath:  "app/Pipfile.lock",
+					Libraries: []*common.Library{
 						{Name: "django", Version: "3.0.0"},
 					},
 				},
 			},
-			detect: library.DetectExpectation{
-				Args: library.DetectInput{
+			detectExpectation: library.OperationDetectExpectation{
+				Args: library.OperationDetectArgs{
 					FilePath: "app/Pipfile.lock",
-					Libs: []ptypes.Library{
-						{Name: "django", Version: "3.0.0"},
+					Pkgs: []ftypes.LibraryInfo{
+						{Library: ptypes.Library{Name: "django", Version: "3.0.0"}},
 					},
 				},
-				ReturnArgs: library.DetectOutput{
+				Returns: library.OperationDetectReturns{
 					Err: xerrors.New("error"),
 				},
 			},
@@ -113,8 +137,10 @@ func TestServer_Detect(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockDetector := library.NewMockDetector([]library.DetectExpectation{tt.detect})
-			mockVulnClient := vulnerability.NewMockVulnClient()
+			mockDetector := new(library.MockOperation)
+			mockDetector.ApplyDetectExpectation(tt.detectExpectation)
+			mockVulnClient := new(vulnerability.MockOperation)
+			mockVulnClient.ApplyFillInfoExpectation(tt.fillInfoExpectation)
 
 			s := NewServer(mockDetector, mockVulnClient)
 			ctx := context.TODO()

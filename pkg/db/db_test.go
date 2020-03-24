@@ -42,6 +42,9 @@ func (_m *MockConfig) GetMetadata() (db.Metadata, error) {
 }
 
 func TestClient_NeedsUpdate(t *testing.T) {
+	timeNextUpdateDay1 := time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC)
+	timeNextUpdateDay2 := time.Date(2019, 10, 2, 0, 0, 0, 0, time.UTC)
+
 	type getMetadataOutput struct {
 		metadata db.Metadata
 		err      error
@@ -64,7 +67,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    1,
 					Type:       db.TypeFull,
-					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
+					NextUpdate: timeNextUpdateDay1,
 				},
 			},
 			expected: true,
@@ -87,7 +90,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    1,
 					Type:       db.TypeFull,
-					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
+					NextUpdate: timeNextUpdateDay1,
 				},
 			},
 			expected: true,
@@ -100,7 +103,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    0,
 					Type:       db.TypeFull,
-					NextUpdate: time.Date(2020, 9, 1, 0, 0, 0, 0, time.UTC),
+					NextUpdate: timeNextUpdateDay1,
 				},
 			},
 			expected: true,
@@ -113,7 +116,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    1,
 					Type:       db.TypeFull,
-					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
+					NextUpdate: timeNextUpdateDay1,
 				},
 			},
 			skip:     true,
@@ -127,7 +130,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    1,
 					Type:       db.TypeFull,
-					NextUpdate: time.Date(2019, 10, 2, 0, 0, 0, 0, time.UTC),
+					NextUpdate: timeNextUpdateDay2,
 				},
 			},
 			expected: false,
@@ -140,7 +143,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    2,
 					Type:       db.TypeFull,
-					NextUpdate: time.Date(2019, 10, 2, 0, 0, 0, 0, time.UTC),
+					NextUpdate: timeNextUpdateDay2,
 				},
 			},
 			expectedError: xerrors.New("the version of DB schema doesn't match. Local DB: 2, Expected: 1"),
@@ -163,7 +166,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				metadata: db.Metadata{
 					Version:    0,
 					Type:       db.TypeFull,
-					NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
+					NextUpdate: timeNextUpdateDay1,
 				},
 			},
 			skip:          true,

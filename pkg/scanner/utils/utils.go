@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aquasecurity/fanal/analyzer"
-
+	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/knqyf263/go-version"
 )
@@ -28,11 +27,11 @@ func MatchVersions(currentVersion *version.Version, rangeVersions []string) bool
 	return false
 }
 
-func FormatVersion(pkg analyzer.Package) string {
+func FormatVersion(pkg types.Package) string {
 	return formatVersion(pkg.Epoch, pkg.Version, pkg.Release)
 }
 
-func FormatSrcVersion(pkg analyzer.Package) string {
+func FormatSrcVersion(pkg types.Package) string {
 	return formatVersion(pkg.SrcEpoch, pkg.SrcVersion, pkg.SrcRelease)
 }
 

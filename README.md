@@ -4,7 +4,7 @@
 [![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
 [![CircleCI](https://circleci.com/gh/aquasecurity/trivy.svg?style=svg)](https://circleci.com/gh/aquasecurity/trivy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/aquasecurity/trivy)](https://goreportcard.com/report/github.com/aquasecurity/trivy)
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
 [![Docker image](https://images.microbadger.com/badges/version/aquasec/trivy.svg)](https://microbadger.com/images/aquasec/trivy "Get your own version badge on microbadger.com")
 
 A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI.
@@ -33,6 +33,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
     - [Scan an image name (digest)](#scan-an-image-name-digest)
     - [Scan an image file](#scan-an-image-file)
     - [Save the results as JSON](#save-the-results-as-json)
+    - [Save the results using a template](#save-the-results-using-a-template)
     - [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
     - [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
     - [Skip an update of vulnerability DB](#skip-update-of-vulnerability-db)
@@ -49,7 +50,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 - [Continuous Integration (CI)](#continuous-integration-ci)
   - [Travis CI](#travis-ci)
   - [CircleCI](#circleci)
-  - [GitLab CI](#gitlab)
+  - [GitLab CI](#gitlab-ci)
   - [Authorization for Private Docker Registry](#authorization-for-private-docker-registry)
 - [Vulnerability Detection](#vulnerability-detection)
   - [OS Packages](#os-packages)
@@ -96,7 +97,7 @@ See [here](#continuous-integration-ci) for details.
   - **Suitable for CI** such as Travis CI, CircleCI, Jenkins, etc.
   - See [CI Example](#continuous-integration-ci)
 
-Please see [LICENSE](https://github.com/aquasecurity/trivy/blob/master/LICENSE) for Trivy licensing information. Note that Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only. 
+Please see [LICENSE](https://github.com/aquasecurity/trivy/blob/master/LICENSE) for Trivy licensing information. Note that Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only.
 
 # Installation
 
@@ -688,6 +689,25 @@ $ trivy -f json -o results.json golang:1.12-alpine
 
 </details>
 
+### Save the results using a template
+
+```
+$ trivy --format template --template "{{ range . }} {{ .Target }} {{ end }}" golang:1.12-alpine
+```
+<details>
+<summary>Result</summary>
+```
+2020-01-02T18:02:32.856+0100    INFO    Detecting Alpine vulnerabilities...
+ golang:1.12-alpine (alpine 3.10.2)
+```
+</details>
+
+You can load templates from a file prefixing the template path with an @.
+
+```
+$ trivy --format template --template "@/path/to/template" golang:1.12-alpine
+```
+
 ### Filter the vulnerabilities by severities
 
 ```
@@ -1090,7 +1110,7 @@ The lightweight DB doesn't contain vulnerability detail such as descriptions and
 
 
 This option is useful when you don't need vulnerability details and is suitable for CI/CD.
-To find the additional information, you can search vulnerability details on the NVD website.  
+To find the additional information, you can search vulnerability details on the NVD website.
 https://nvd.nist.gov/vuln/search
 
 ```
@@ -1211,7 +1231,7 @@ cache:
     - $HOME/.cache/trivy
 ```
 
-Example: https://travis-ci.org/aquasecurity/trivy-ci-test  
+Example: https://travis-ci.org/aquasecurity/trivy-ci-test
 Repository: https://github.com/aquasecurity/trivy-ci-test
 
 ## CircleCI
@@ -1230,7 +1250,7 @@ jobs:
       - run:
           name: Install trivy
           command: |
-            apk add --update curl
+            apk add --update-cache --upgrade curl rpm
             VERSION=$(
                 curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | \
                 grep '"tag_name":' | \
@@ -1250,10 +1270,10 @@ workflows:
       - build
 ```
 
-Example: https://circleci.com/gh/aquasecurity/trivy-ci-test  
+Example: https://circleci.com/gh/aquasecurity/trivy-ci-test
 Repository: https://github.com/aquasecurity/trivy-ci-test
 
-## GitLab
+## GitLab CI
 
 ```
 $ cat .gitlab-ci.yml
@@ -1262,7 +1282,7 @@ stages:
 
 trivy:
   stage: test
-  image: docker:19.03.1
+  image: docker:stable
   services:
     - name: docker:dind
       entrypoint: ["env", "-u", "DOCKER_HOST"]
@@ -1272,6 +1292,7 @@ trivy:
     DOCKER_DRIVER: overlay2
     # See https://github.com/docker-library/docker/pull/166
     DOCKER_TLS_CERTDIR: ""
+    IMAGE: trivy-ci-test:$CI_COMMIT_SHA
   before_script:
     - apk add --no-cache curl
     - export VERSION=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
@@ -1280,13 +1301,22 @@ trivy:
     - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
   allow_failure: true
   script:
-    - docker build -t trivy-ci-test:$CI_COMMIT_SHA .
-    - ./trivy --exit-code 0 --cache-dir $CI_PROJECT_DIR/.trivycache/ --no-progress --severity HIGH trivy-ci-test:$CI_COMMIT_SHA
-    - ./trivy --exit-code 1 --severity CRITICAL  --no-progress trivy-ci-test:$CI_COMMIT_SHA
+    # Build image
+    - docker build -t $IMAGE .
+    # Build report
+    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE
+    # Print report
+    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE
+    # Fail on high and critical vulnerabilities
+    - ./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE
   cache:
     paths:
-      - $CI_PROJECT_DIR/.trivycache/
-```   
+      - .trivycache/
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/ (Container Scanning report is available on GitLab EE Ultimate or GitLab.com Gold)
+  artifacts:
+    reports:
+      container_scanning: gl-container-scanning-report.json
+```
 
 ## Authorization for Private Docker Registry
 
@@ -1338,11 +1368,11 @@ export TRIVY_NON_SSL=true
 
 ## OS Packages
 
-The unfixed/unfixable vulnerabilities mean that the patch has not yet been provided on their distribution.
+The unfixed/unfixable vulnerabilities mean that the patch has not yet been provided on their distribution. Trivy doesn't support self-compiled packages/binaries, but official packages provided by vendors such as Red Hat and Debian.
 
 | OS                           | Supported Versions                       | Target Packages               | Detection of unfixed vulnerabilities |
 | ---------------------------- | ---------------------------------------- | ----------------------------- | :----------------------------------: |
-| Alpine Linux                 | 2.2 - 2.7, 3.0 - 3.10                    | Installed by apk              |                  NO                  |
+| Alpine Linux                 | 2.2 - 2.7, 3.0 - 3.11                    | Installed by apk              |                  NO                  |
 | Red Hat Universal Base Image | 7, 8                                     | Installed by yum/rpm          |                 YES                  |
 | Red Hat Enterprise Linux     | 6, 7, 8                                  | Installed by yum/rpm          |                 YES                  |
 | CentOS                       | 6, 7                                     | Installed by yum/rpm          |                 YES                  |
@@ -1633,7 +1663,7 @@ $ brew install aquasecurity/trivy/trivy
 
 ### GitHub Rate limiting
 
-Specify GITHUB_TOKEN for authentication  
+Specify GITHUB_TOKEN for authentication
 https://developer.github.com/v3/#rate-limiting
 
 ```
@@ -1651,7 +1681,7 @@ $ trivy --reset
 # Related Projects
 
 - [Remic](https://github.com/knqyf263/remic)
-  - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies  
+  - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies
 ---
 
 # Credits
@@ -1659,10 +1689,6 @@ $ trivy --reset
 - Special thanks to [Tomoya Amachi](https://github.com/tomoyamachi)
 - Special thanks to [Masahiro Fujimura](https://github.com/masahiro331)
 - Special thanks to [Naoki Harima](https://github.com/XapiMa)
-
-# License
-
-This repository is available under the [GNU Affero General Public License v3.0](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
 
 # Author
 

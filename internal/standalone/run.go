@@ -1,8 +1,11 @@
 package standalone
 
 import (
+	"context"
+	"io/ioutil"
 	l "log"
 	"os"
+	"strings"
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -10,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/standalone/config"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/urfave/cli"
@@ -36,10 +40,11 @@ func run(c config.Config) (err error) {
 
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
-	cacheClient, err := cache.New(c.CacheDir)
+	cacheClient, err := cache.NewFSCache(c.CacheDir)
 	if err != nil {
-		return xerrors.Errorf("unable to initialize cache client: %w", err)
+		return xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
+
 	cacheOperation := operation.NewCache(cacheClient)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
@@ -64,14 +69,32 @@ func run(c config.Config) (err error) {
 		return nil
 	}
 
+	var scanner scanner.Scanner
+	ctx := context.Background()
+
+	var cleanup func()
+	if c.Input != "" {
+		// scan tar file
+		scanner, cleanup, err = initializeArchiveScanner(ctx, c.Input, cacheClient, cacheClient, c.Timeout)
+		if err != nil {
+			return xerrors.Errorf("unable to initialize the archive scanner: %w", err)
+		}
+	} else {
+		// scan an image in Docker Engine or Docker Registry
+		scanner, cleanup, err = initializeDockerScanner(ctx, c.ImageName, cacheClient, cacheClient, c.Timeout)
+		if err != nil {
+			return xerrors.Errorf("unable to initialize the docker scanner: %w", err)
+		}
+	}
+	defer cleanup()
+
 	scanOptions := types.ScanOptions{
-		VulnType: c.VulnType,
-		Timeout:  c.Timeout,
+		VulnType:            c.VulnType,
+		ScanRemovedPackages: c.ScanRemovedPkgs,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	scanner := initializeScanner(cacheClient)
-	results, err := scanner.ScanImage(c.ImageName, c.Input, scanOptions)
+	results, err := scanner.ScanImage(scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
@@ -83,7 +106,17 @@ func run(c config.Config) (err error) {
 			c.Severities, c.IgnoreUnfixed, c.IgnoreFile)
 	}
 
-	if err = report.WriteResults(c.Format, c.Output, results, c.Template, c.Light); err != nil {
+	template := c.Template
+
+	if strings.HasPrefix(c.Template, "@") {
+		buf, err := ioutil.ReadFile(strings.TrimPrefix(c.Template, "@"))
+		if err != nil {
+			return xerrors.Errorf("Error retrieving template from path: %w", err)
+		}
+		template = string(buf)
+	}
+
+	if err = report.WriteResults(c.Format, c.Output, results, template, c.Light); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 

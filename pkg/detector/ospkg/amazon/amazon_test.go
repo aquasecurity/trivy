@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest/observer"
 
-	"github.com/aquasecurity/fanal/analyzer"
+	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -52,13 +52,14 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		}
 
-		vuls, err := s.Detect("3.1.0", []analyzer.Package{
+		vuls, err := s.Detect("3.1.0", []ftypes.Package{
 			{
 				Name:       "testpkg",
 				Version:    "2.1.0",
 				Release:    "hotfix",
 				SrcRelease: "test-hotfix",
 				SrcVersion: "2.1.0",
+				LayerID:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 			},
 			{
 				Name: "foopkg",
@@ -71,6 +72,7 @@ func TestScanner_Detect(t *testing.T) {
 				PkgName:          "testpkg",
 				InstalledVersion: "2.1.0-hotfix",
 				FixedVersion:     "3.0.0",
+				LayerID:          "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 			},
 		}, vuls)
 
@@ -89,7 +91,7 @@ func TestScanner_Detect(t *testing.T) {
 				},
 			},
 		}
-		vuls, err := s.Detect("foo", []analyzer.Package{
+		vuls, err := s.Detect("foo", []ftypes.Package{
 			{
 				Name: "testpkg",
 			},
@@ -115,7 +117,7 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		}
 
-		vuls, err := s.Detect("3.1.0", []analyzer.Package{
+		vuls, err := s.Detect("3.1.0", []ftypes.Package{
 			{
 				Name:    "testpkg",
 				Version: "badsourceversion",
@@ -144,7 +146,7 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		}
 
-		vuls, err := s.Detect("3.1.0", []analyzer.Package{
+		vuls, err := s.Detect("3.1.0", []ftypes.Package{
 			{
 				Name:    "testpkg",
 				Version: "3.1.0",

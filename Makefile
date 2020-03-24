@@ -47,7 +47,7 @@ build:
 
 .PHONY: protoc
 protoc:
-	protoc --proto_path=$(GOSRC):. --twirp_out=. --go_out=. ./rpc/detector/service.proto
+	find ./rpc/ -name "*.proto" -type f -exec protoc --proto_path=$(GOSRC):. --twirp_out=. --go_out=. {} \;
 
 .PHONY: install
 install:

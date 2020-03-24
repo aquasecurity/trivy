@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package trivy.scanner.v1;
+option  go_package = "scanner";
+
+import "github.com/aquasecurity/trivy/rpc/common/service.proto";
+
+service Scanner {
+  rpc Scan(ScanRequest) returns (ScanResponse);
+}
+
+message ScanRequest {
+  string          target    = 1;  // image name or tar file path
+  string          image_id  = 2;
+  repeated string layer_ids = 3;
+  ScanOptions     options   = 4;
+}
+
+message ScanOptions {
+  repeated string vuln_type = 1;
+}
+
+message ScanResponse {
+  common.OS       os      = 1;
+  bool            eosl    = 2;
+  repeated Result results = 3;
+}
+
+// Result is the same as github.com/aquasecurity/trivy/pkg/report.Result
+message Result {
+  string   target                               = 1;
+  repeated common.Vulnerability vulnerabilities = 2;
+}

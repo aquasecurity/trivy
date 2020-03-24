@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package trivy.cache.v1;
+option  go_package = "cache";
+
+import "google/protobuf/timestamp.proto";
+import "github.com/aquasecurity/trivy/rpc/common/service.proto";
+import "google/protobuf/empty.proto";
+
+service Cache {
+  rpc PutImage(PutImageRequest) returns (google.protobuf.Empty);
+  rpc PutLayer(PutLayerRequest) returns (google.protobuf.Empty);
+  rpc MissingLayers(MissingLayersRequest) returns (MissingLayersResponse);
+}
+
+message ImageInfo {
+  int32                     schema_version = 1;
+  string                    architecture   = 2;
+  google.protobuf.Timestamp created        = 3;
+  string                    docker_version = 4;
+  string                    os             = 5;
+  repeated common.Package history_packages = 6;
+}
+
+message PutImageRequest {
+  string    image_id   = 1;
+  ImageInfo image_info = 2;
+}
+
+message LayerInfo {
+  int32     schema_version                   = 1;
+  common.OS os                               = 2;
+  repeated common.PackageInfo package_infos  = 3;
+  repeated common.Application applications   = 4;
+  repeated string             opaque_dirs    = 5;
+  repeated string             whiteout_files = 6;
+}
+
+message PutLayerRequest {
+  string    layer_id              = 1;
+  string    decompressed_layer_id = 2;
+  LayerInfo layer_info            = 3;
+}
+
+message PutResponse {
+  common.OS os   = 1;
+  bool      eosl = 2;
+}
+
+message MissingLayersRequest {
+  string          image_id  = 1;
+  repeated string layer_ids = 2;
+}
+
+message MissingLayersResponse {
+  bool            missing_image     = 1;
+  repeated string missing_layer_ids = 2;
+}

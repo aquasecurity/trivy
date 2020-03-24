@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/urfave/cli"
 	"golang.org/x/xerrors"
 
@@ -30,8 +31,13 @@ func run(c config.Config) (err error) {
 	utils.SetCacheDir(c.CacheDir)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
+	fsCache, err := cache.NewFSCache(utils.CacheDir())
+	if err != nil {
+		return xerrors.Errorf("unable to initialize cache: %w", err)
+	}
+
 	// server doesn't have image cache
-	cacheOperation := operation.NewCache(nil)
+	cacheOperation := operation.NewCache(fsCache)
 	if c.Reset {
 		return cacheOperation.ClearDB()
 	}
@@ -49,5 +55,5 @@ func run(c config.Config) (err error) {
 		return nil
 	}
 
-	return server.ListenAndServe(c.Listen, c)
+	return server.ListenAndServe(c, fsCache)
 }
