@@ -60,21 +60,38 @@ Vulnerability DB:
 		{
 			name: "sad path, no DB is available",
 			args: args{
-				outputFormat: "table",
+				outputFormat: "json",
 				version:      "1.2.3",
 			},
-			expectedOutput: `unable to display current version: unexpected end of JSON input`,
+			expectedOutput: `{"Version":"1.2.3"}
+`,
+		},
+		{
+			name: "sad path, bogus cache dir",
+			args: args{
+				outputFormat: "json",
+				version:      "1.2.3",
+				cacheDir:     "/foo/bar/bogus",
+			},
+			expectedOutput: `{"Version":"1.2.3"}
+`,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d, _ := ioutil.TempDir("", "Test_showVersion-*")
-			defer func() {
-				os.RemoveAll(d)
-			}()
+			var cacheDir string
+			switch {
+			case tt.args.cacheDir != "":
+				cacheDir = tt.args.cacheDir
+			default:
+				cacheDir, _ = ioutil.TempDir("", "Test_showVersion-*")
+				defer func() {
+					os.RemoveAll(cacheDir)
+				}()
+			}
 
 			if tt.createDB {
-				db.Init(d)
+				db.Init(cacheDir)
 				db.Config{}.SetMetadata(db.Metadata{
 					Version:    42,
 					Type:       1,
@@ -87,7 +104,7 @@ Vulnerability DB:
 			var wb []byte
 			fw := fakeIOWriter{written: wb}
 
-			showVersion(d, tt.args.outputFormat, tt.args.version, &fw)
+			showVersion(cacheDir, tt.args.outputFormat, tt.args.version, &fw)
 			assert.Equal(t, tt.expectedOutput, string(fw.written), tt.name)
 		})
 	}
