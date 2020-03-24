@@ -104,29 +104,29 @@ func containsLibrary(e godeptypes.Library, s []types.LibraryInfo) bool {
 	return false
 }
 
-func lookupOriginLayerForPkg(pkg types.Package, layers []types.LayerInfo) digest.Digest {
+func lookupOriginLayerForPkg(pkg types.Package, layers []types.LayerInfo) (string, string) {
 	for _, layer := range layers {
 		for _, info := range layer.PackageInfos {
 			if containsPackage(pkg, info.Packages) {
-				return layer.ID
+				return layer.Digest, layer.DiffID
 			}
 		}
 	}
-	return ""
+	return "", ""
 }
 
-func lookupOriginLayerForLib(filePath string, lib godeptypes.Library, layers []types.LayerInfo) digest.Digest {
+func lookupOriginLayerForLib(filePath string, lib godeptypes.Library, layers []types.LayerInfo) (string, string) {
 	for _, layer := range layers {
 		for _, layerApp := range layer.Applications {
 			if filePath != layerApp.FilePath {
 				continue
 			}
 			if containsLibrary(lib, layerApp.Libraries) {
-				return layer.ID
+				return layer.Digest, layer.DiffID
 			}
 		}
 	}
-	return ""
+	return "", ""
 }
 
 func ApplyLayers(layers []types.LayerInfo) types.ImageDetail {
@@ -165,14 +165,20 @@ func ApplyLayers(layers []types.LayerInfo) types.ImageDetail {
 	})
 
 	for i, pkg := range mergedLayer.Packages {
-		originLayerID := lookupOriginLayerForPkg(pkg, layers)
-		mergedLayer.Packages[i].LayerID = originLayerID
+		originLayerDigest, originLayerDiffID := lookupOriginLayerForPkg(pkg, layers)
+		mergedLayer.Packages[i].Layer = types.Layer{
+			Digest: originLayerDigest,
+			DiffID: originLayerDiffID,
+		}
 	}
 
 	for _, app := range mergedLayer.Applications {
 		for i, libInfo := range app.Libraries {
-			originLayerID := lookupOriginLayerForLib(app.FilePath, libInfo.Library, layers)
-			app.Libraries[i].LayerID = originLayerID
+			originLayerDigest, originLayerDiffID := lookupOriginLayerForLib(app.FilePath, libInfo.Library, layers)
+			app.Libraries[i].Layer = types.Layer{
+				Digest: originLayerDigest,
+				DiffID: originLayerDiffID,
+			}
 		}
 	}
 

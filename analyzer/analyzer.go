@@ -174,6 +174,8 @@ func (ac Config) analyzeLayer(ctx context.Context, dig digest.Digest) (digest.Di
 	}
 
 	layerInfo := types.LayerInfo{
+		Digest:        string(dig),
+		DiffID:        string(decompressedLayerID),
 		SchemaVersion: types.LayerJSONSchemaVersion,
 		OS:            os,
 		PackageInfos:  pkgs,
@@ -232,7 +234,6 @@ func (a Applier) ApplyLayers(imageID digest.Digest, layerIDs []string) (types.Im
 		if layer.SchemaVersion == 0 {
 			return types.ImageDetail{}, xerrors.Errorf("layer cache missing: %s", layerID)
 		}
-		layer.ID = digest.Digest(layerID)
 		layers = append(layers, layer)
 	}
 
