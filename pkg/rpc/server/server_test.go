@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	vulnerability2 "github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+
 	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
@@ -75,6 +77,7 @@ func TestScanServer_Scan(t *testing.T) {
 									Vulnerability:    dbTypes.Vulnerability{},
 								},
 							},
+							Type: vulnerability2.Alpine,
 						},
 					},
 					OsFound: &ftypes.OS{
@@ -94,7 +97,8 @@ func TestScanServer_Scan(t *testing.T) {
 							Vulnerability:    dbTypes.Vulnerability{},
 						},
 					},
-					Light: false,
+					ReportType: vulnerability2.Alpine,
+					Light:      false,
 				},
 			},
 			want: &rpcScanner.ScanResponse{
