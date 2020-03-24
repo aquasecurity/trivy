@@ -200,6 +200,8 @@ func TestFSCache_PutLayer(t *testing.T) {
 				decompressedLayerID: "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
 				layerInfo: types.LayerInfo{
 					SchemaVersion: 1,
+					Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					DiffID:        "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
 					OS: &types.OS{
 						Family: "alpine",
 						Name:   "3.10",
@@ -242,6 +244,8 @@ func TestFSCache_PutLayer(t *testing.T) {
 			want: `
 				{
 				  "SchemaVersion": 1,
+				  "Digest": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+				  "DiffID": "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
 				  "OS": {
 				    "Family": "alpine",
 				    "Name": "3.10"
@@ -252,7 +256,8 @@ func TestFSCache_PutLayer(t *testing.T) {
 				      "Packages": [
 				        {
 				          "Name": "musl",
-				          "Version": "1.1.22-r3"
+				          "Version": "1.1.22-r3",
+						  "Layer": {}
 				        }
 				      ]
 				    }
@@ -266,13 +271,15 @@ func TestFSCache_PutLayer(t *testing.T) {
                            "Library":{
                               "Name":"guzzlehttp/guzzle",
                               "Version":"6.2.0"
-                           }
+                           },
+						   "Layer": {}
                         },
                         {
                            "Library":{
                               "Name":"guzzlehttp/promises",
                               "Version":"v1.3.1"
-                           }
+                           },
+						   "Layer": {}
                         }
 				      ]
 				    }
@@ -375,7 +382,8 @@ func TestFSCache_PutImage(t *testing.T) {
 				  "HistoryPackages": [
 				    {
 				      "Name": "musl",
-				      "Version": "1.2.3"
+				      "Version": "1.2.3",
+					  "Layer": {}
 				    }
 				  ]
 				}
