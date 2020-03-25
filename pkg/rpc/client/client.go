@@ -59,5 +59,9 @@ func (s Scanner) Scan(target string, imageID digest.Digest, layerIDs []string, o
 		return nil, nil, false, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
-	return r.ConvertFromRpcResults(res.Results), r.ConvertFromRpcOS(res.Os), res.Eosl, nil
+	var resultType string
+	if len(res.Results) > 0 {
+		resultType = res.Results[0].Type
+	}
+	return r.ConvertFromRpcResults(res.Results, resultType), r.ConvertFromRpcOS(res.Os), res.Eosl, nil
 }

@@ -30,4 +30,5 @@ message ScanResponse {
 message Result {
   string   target                               = 1;
   repeated common.Vulnerability vulnerabilities = 2;
+  string                        type            = 3;
 }
