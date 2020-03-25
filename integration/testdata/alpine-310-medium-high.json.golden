@@ -1,6 +1,7 @@
 [
   {
     "Target": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+    "Type": "alpine",
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-1549",

@@ -1,6 +1,7 @@
 [
   {
     "Target": "testdata/fixtures/debian-buster.tar.gz (debian 10.1)",
+    "Type": "debian",
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-5094",

@@ -1,6 +1,7 @@
 [
   {
     "Target": "testdata/fixtures/debian-stretch.tar.gz (debian 9.9)",
+    "Type": "debian",
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2011-3374",

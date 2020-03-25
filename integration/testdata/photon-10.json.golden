@@ -1,6 +1,7 @@
 [
   {
     "Target": "testdata/fixtures/photon-10.tar.gz (photon 1.0)",
+    "Type": "photon",
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2012-6711",

@@ -1,6 +1,7 @@
 [
   {
     "Target": "testdata/fixtures/oraclelinux-7-slim.tar.gz (oracle 7.6)",
+    "Type": "oracle",
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2018-16842",

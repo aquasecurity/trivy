@@ -1,6 +1,7 @@
 [
   {
     "Target": "testdata/fixtures/photon-30.tar.gz (photon 3.0)",
+    "Type": "photon",
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-5481",

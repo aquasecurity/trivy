@@ -1,6 +1,7 @@
 [
   {
     "Target": "testdata/fixtures/ubi-7.tar.gz (redhat 7.7)",
+    "Type": "redhat",
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2015-5186",

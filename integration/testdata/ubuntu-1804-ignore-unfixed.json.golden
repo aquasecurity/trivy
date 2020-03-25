@@ -1,6 +1,7 @@
 [
   {
     "Target": "testdata/fixtures/ubuntu-1804.tar.gz (ubuntu 18.04)",
+    "Type": "ubuntu",
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-5094",

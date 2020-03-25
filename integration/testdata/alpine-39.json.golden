@@ -1,6 +1,7 @@
 [
   {
     "Target": "testdata/fixtures/alpine-39.tar.gz (alpine 3.9.4)",
+    "Type": "alpine",
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-14697",

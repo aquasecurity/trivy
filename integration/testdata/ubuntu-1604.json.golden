@@ -1,6 +1,7 @@
 [
   {
     "Target": "testdata/fixtures/ubuntu-1604.tar.gz (ubuntu 16.04)",
+    "Type": "ubuntu",
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2016-2779",
