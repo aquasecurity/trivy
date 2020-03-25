@@ -78,7 +78,8 @@ func TestServer_Detect(t *testing.T) {
 								Severity: "HIGH",
 							}},
 					},
-					Light: false,
+					ReportType: "alpine",
+					Light:      false,
 				},
 			},
 			wantRes: &proto.DetectResponse{
