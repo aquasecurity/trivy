@@ -92,7 +92,6 @@ func TestServer_Detect(t *testing.T) {
 							},
 						},
 					},
-					Light: false,
 				},
 			},
 			wantRes: &proto.DetectResponse{

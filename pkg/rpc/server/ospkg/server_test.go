@@ -20,7 +20,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
+	_ = log.InitLogger(false, false)
 	code := m.Run()
 	os.Exit(code)
 }
@@ -78,7 +78,6 @@ func TestServer_Detect(t *testing.T) {
 								Severity: "HIGH",
 							}},
 					},
-					Light: false,
 				},
 			},
 			wantRes: &proto.DetectResponse{

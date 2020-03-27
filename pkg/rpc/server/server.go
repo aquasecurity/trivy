@@ -43,7 +43,7 @@ func (s *ScanServer) Scan(_ context.Context, in *rpcScanner.ScanRequest) (*rpcSc
 	}
 
 	for i := range results {
-		s.vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type, false)
+		s.vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
 	}
 	return rpc.ConvertToRpcScanResponse(results, os, eosl), nil
 }

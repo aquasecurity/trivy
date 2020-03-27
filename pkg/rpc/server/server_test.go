@@ -96,7 +96,6 @@ func TestScanServer_Scan(t *testing.T) {
 						},
 					},
 					ReportType: "alpine",
-					Light:      false,
 				},
 			},
 			want: &rpcScanner.ScanResponse{
