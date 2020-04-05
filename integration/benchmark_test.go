@@ -51,39 +51,20 @@ var testCases = []testCase{
 		imageFile: "testdata/fixtures/alpine-310.tar.gz",
 	},
 	{
-		name:      "happy path amazonlinux:2",
-		imageName: "amazonlinux:2",
-		imageFile: "testdata/fixtures/amazon-2.tar.gz",
-	},
-	{
-		name:      "happy path debian:buster",
-		imageName: "debian:buster",
-		imageFile: "testdata/fixtures/debian-buster.tar.gz",
-	},
-	{
-		name:      "happy path photon:1.0",
-		imageName: "photon:1.0-20190823",
-		imageFile: "testdata/fixtures/photon-10.tar.gz",
-	},
-	{
-		name:      "happy path registry.redhat.io/ubi7",
-		imageName: "registry.redhat.io/ubi7",
-		imageFile: "testdata/fixtures/ubi-7.tar.gz",
-	},
-	{
-		name:      "happy path opensuse leap 15.1",
-		imageName: "opensuse/leap:latest",
-		imageFile: "testdata/fixtures/opensuse-leap-151.tar.gz",
-	},
-	{
 		name:      "happy path vulnimage with lock files",
 		imageName: "knqyf263/vuln-image:1.2.3",
 		imageFile: "testdata/fixtures/vulnimage.tar.gz",
 	},
 }
 
-func run(b *testing.B, ctx context.Context, ac analyzer.Config) {
-	_, err := ac.Analyze(ctx)
+func run(b *testing.B, ctx context.Context, imageName string, c cache.Cache, opt types.DockerOption) {
+	ext, cleanup, err := docker.NewDockerExtractor(ctx, imageName, opt)
+	defer cleanup()
+	require.NoError(b, err)
+
+	ac := analyzer.New(ext, c)
+
+	_, err = ac.Analyze(ctx)
 	require.NoError(b, err)
 }
 
@@ -100,13 +81,12 @@ func BenchmarkDockerMode_WithoutCache(b *testing.B) {
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				b.StopTimer()
-				ac, c, cleanup := initializeAnalyzer(b, ctx, imageName, benchCache)
+				c, opt := initialize(b, benchCache)
 				b.StartTimer()
 
-				run(b, ctx, ac)
+				run(b, ctx, imageName, c, opt)
 
 				b.StopTimer()
-				cleanup()
 				_ = c.Clear()
 				b.StartTimer()
 			}
@@ -126,16 +106,15 @@ func BenchmarkDockerMode_WithCache(b *testing.B) {
 
 			ctx, imageName, cli := setup(b, tc)
 
-			ac, _, cleanup := initializeAnalyzer(b, ctx, imageName, benchCache)
-			defer cleanup()
+			c, opt := initialize(b, benchCache)
 
 			// run once to generate cache
-			run(b, ctx, ac)
+			run(b, ctx, imageName, c, opt)
 
 			b.ReportAllocs()
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
-				run(b, ctx, ac)
+				run(b, ctx, imageName, c, opt)
 			}
 			b.StopTimer()
 
@@ -192,7 +171,7 @@ func setup(b *testing.B, tc testCase) (context.Context, string, *client.Client) 
 	return ctx, imageName, cli
 }
 
-func initializeAnalyzer(b *testing.B, ctx context.Context, imageName, cacheDir string) (analyzer.Config, cache.Cache, func()) {
+func initialize(b *testing.B, cacheDir string) (cache.Cache, types.DockerOption) {
 	c, err := cache.NewFSCache(cacheDir)
 	require.NoError(b, err)
 
@@ -200,10 +179,5 @@ func initializeAnalyzer(b *testing.B, ctx context.Context, imageName, cacheDir s
 		Timeout:  600 * time.Second,
 		SkipPing: true,
 	}
-
-	ext, cleanup, err := docker.NewDockerExtractor(ctx, imageName, opt)
-	require.NoError(b, err)
-
-	ac := analyzer.New(ext, c)
-	return ac, c, cleanup
+	return c, opt
 }
