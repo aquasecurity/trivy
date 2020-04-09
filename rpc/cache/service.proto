@@ -34,12 +34,13 @@ message LayerInfo {
   repeated common.Application applications   = 4;
   repeated string             opaque_dirs    = 5;
   repeated string             whiteout_files = 6;
+  string                      digest         = 7;
+  string                      diff_id        = 8;
 }
 
 message PutLayerRequest {
-  string    layer_id              = 1;
-  string    decompressed_layer_id = 2;
-  LayerInfo layer_info            = 3;
+  string    diff_id    = 1;
+  LayerInfo layer_info = 3;
 }
 
 message PutResponse {

@@ -72,7 +72,7 @@ func (s *CacheServer) PutLayer(_ context.Context, in *rpcCache.PutLayerRequest) 
 		return nil, xerrors.Errorf("empty layer info")
 	}
 	layerInfo := rpc.ConvertFromRpcPutLayerRequest(in)
-	if err := s.cache.PutLayer(in.LayerId, in.DecompressedLayerId, layerInfo); err != nil {
+	if err := s.cache.PutLayer(in.DiffId, layerInfo); err != nil {
 		return nil, xerrors.Errorf("unable to store layer info in cache: %w", err)
 	}
 	return &google_protobuf.Empty{}, nil
