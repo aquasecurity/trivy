@@ -7,7 +7,9 @@
         "PkgName": "libssh2",
         "InstalledVersion": "1.4.2-2.el6_7.1",
         "FixedVersion": "1.4.2-3.0.1.el6_10.1",
-        "LayerID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08",
+        "Layer": {
+          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
+        },
         "Title": "libssh2: Integer overflow in transport read resulting in out of bounds write",
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "CRITICAL",
@@ -37,7 +39,9 @@
         "PkgName": "libssh2",
         "InstalledVersion": "1.4.2-2.el6_7.1",
         "FixedVersion": "1.4.2-3.0.1.el6_10.1",
-        "LayerID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08",
+        "Layer": {
+          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
+        },
         "Title": "libssh2: Integer overflow in keyboard interactive handling resulting in out of bounds write",
         "Description": "An integer overflow flaw, which could lead to an out of bounds write, was discovered in libssh2 before 1.8.1 in the way keyboard prompt requests are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "MEDIUM",
@@ -61,7 +65,9 @@
         "PkgName": "libssh2",
         "InstalledVersion": "1.4.2-2.el6_7.1",
         "FixedVersion": "1.4.2-3.0.1.el6_10.1",
-        "LayerID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08",
+        "Layer": {
+          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
+        },
         "Title": "libssh2: Integer overflow in SSH packet processing channel resulting in out of bounds write",
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit signal are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "MEDIUM",
@@ -85,7 +91,9 @@
         "PkgName": "libssh2",
         "InstalledVersion": "1.4.2-2.el6_7.1",
         "FixedVersion": "1.4.2-2.0.1.el6_7.1",
-        "LayerID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08",
+        "Layer": {
+          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
+        },
         "Title": "libssh2: Out-of-bounds memory comparison with specially crafted message channel request",
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit status message and no payload are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
@@ -113,7 +121,9 @@
         "PkgName": "libssh2",
         "InstalledVersion": "1.4.2-2.el6_7.1",
         "FixedVersion": "1.4.2-3.0.1.el6_10.1",
-        "LayerID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08",
+        "Layer": {
+          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
+        },
         "Title": "libssh2: Integer overflow in user authenticate keyboard interactive allows out-of-bounds writes",
         "Description": "A flaw was found in libssh2 before 1.8.1. A server could send a multiple keyboard interactive response messages whose total length are greater than unsigned char max characters. This value is used as an index to copy memory causing in an out of bounds memory write error.",
         "Severity": "MEDIUM",
@@ -137,7 +147,9 @@
         "PkgName": "openssl",
         "InstalledVersion": "1.0.1e-57.0.6.el6",
         "FixedVersion": "1.0.1e-58.0.1.el6_10",
-        "LayerID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08",
+        "Layer": {
+          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
+        },
         "Title": "openssl: 0-byte record padding oracle",
         "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
         "Severity": "MEDIUM",

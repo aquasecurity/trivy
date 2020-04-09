@@ -7,7 +7,9 @@
         "PkgName": "curl",
         "InstalledVersion": "7.61.1-11.91.amzn1",
         "FixedVersion": "7.61.1-12.93.amzn1",
-        "LayerID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "HIGH",
@@ -24,7 +26,9 @@
         "PkgName": "curl",
         "InstalledVersion": "7.61.1-11.91.amzn1",
         "FixedVersion": "7.61.1-12.93.amzn1",
-        "LayerID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "HIGH",
@@ -42,7 +46,9 @@
         "PkgName": "libcurl",
         "InstalledVersion": "7.61.1-11.91.amzn1",
         "FixedVersion": "7.61.1-12.93.amzn1",
-        "LayerID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "HIGH",
@@ -59,7 +65,9 @@
         "PkgName": "libcurl",
         "InstalledVersion": "7.61.1-11.91.amzn1",
         "FixedVersion": "7.61.1-12.93.amzn1",
-        "LayerID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "HIGH",
@@ -77,7 +85,9 @@
         "PkgName": "libnghttp2",
         "InstalledVersion": "1.21.1-1.4.amzn1",
         "FixedVersion": "1.31.1-2.5.amzn1",
-        "LayerID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
         "Title": "HTTP/2: large amount of data requests leads to denial of service",
         "Description": "Some HTTP/2 implementations are vulnerable to window size manipulation and stream prioritization manipulation, potentially leading to a denial of service. The attacker requests a large amount of data from a specified resource over multiple streams. They manipulate window size and stream priority to force the server to queue the data in 1-byte chunks. Depending on how efficiently this data is queued, this can consume excess CPU, memory, or both.",
         "Severity": "HIGH",
@@ -106,7 +116,9 @@
         "PkgName": "libnghttp2",
         "InstalledVersion": "1.21.1-1.4.amzn1",
         "FixedVersion": "1.31.1-2.5.amzn1",
-        "LayerID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
         "Title": "HTTP/2: flood using PRIORITY frames results in excessive resource consumption",
         "Description": "Some HTTP/2 implementations are vulnerable to resource loops, potentially leading to a denial of service. The attacker creates multiple request streams and continually shuffles the priority of the streams in a way that causes substantial churn to the priority tree. This can consume excess CPU.",
         "Severity": "HIGH",

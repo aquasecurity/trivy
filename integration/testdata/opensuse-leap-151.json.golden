@@ -7,7 +7,9 @@
         "PkgName": "cpio",
         "InstalledVersion": "2.12-lp151.2.68",
         "FixedVersion": "2.12-lp151.3.3.1",
-        "LayerID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
         "Title": "Security update for cpio",
         "Severity": "MEDIUM",
         "References": [
@@ -20,7 +22,9 @@
         "PkgName": "libidn2-0",
         "InstalledVersion": "2.0.4-lp151.2.3",
         "FixedVersion": "2.2.0-lp151.3.3.1",
-        "LayerID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
         "Title": "Security update for libidn2",
         "Severity": "MEDIUM",
         "References": [
@@ -33,7 +37,9 @@
         "PkgName": "libncurses6",
         "InstalledVersion": "6.1-lp151.5.41",
         "FixedVersion": "6.1-lp151.6.3.1",
-        "LayerID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
         "Title": "Security update for ncurses",
         "Severity": "MEDIUM",
         "References": [
@@ -46,7 +52,9 @@
         "PkgName": "libssh4",
         "InstalledVersion": "0.8.7-lp151.2.3.1",
         "FixedVersion": "0.8.7-lp151.2.6.1",
-        "LayerID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
         "Title": "Security update for libssh",
         "Severity": "MEDIUM",
         "References": [
@@ -59,7 +67,9 @@
         "PkgName": "libxml2-2",
         "InstalledVersion": "2.9.7-lp151.5.3.1",
         "FixedVersion": "2.9.7-lp151.5.6.1",
-        "LayerID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
         "Title": "Security update for libxml2",
         "Severity": "UNKNOWN",
         "References": [
@@ -72,7 +82,9 @@
         "PkgName": "ncurses-utils",
         "InstalledVersion": "6.1-lp151.5.41",
         "FixedVersion": "6.1-lp151.6.3.1",
-        "LayerID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
         "Title": "Security update for ncurses",
         "Severity": "MEDIUM",
         "References": [
@@ -85,7 +97,9 @@
         "PkgName": "permissions",
         "InstalledVersion": "20181116-lp151.4.6.1",
         "FixedVersion": "20181116-lp151.4.9.1",
-        "LayerID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
         "Title": "Security update for permissions",
         "Severity": "MEDIUM",
         "References": [
@@ -98,7 +112,9 @@
         "PkgName": "terminfo-base",
         "InstalledVersion": "6.1-lp151.5.41",
         "FixedVersion": "6.1-lp151.6.3.1",
-        "LayerID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
         "Title": "Security update for ncurses",
         "Severity": "MEDIUM",
         "References": [

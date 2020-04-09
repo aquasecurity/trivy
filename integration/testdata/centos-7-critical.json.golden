@@ -7,7 +7,9 @@
         "PkgName": "curl",
         "InstalledVersion": "7.29.0-51.el7",
         "FixedVersion": "7.29.0-51.el7_6.3",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "curl: NTLM password overflow via integer overflow",
         "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
         "Severity": "CRITICAL",
@@ -30,7 +32,9 @@
         "PkgName": "libcurl",
         "InstalledVersion": "7.29.0-51.el7",
         "FixedVersion": "7.29.0-51.el7_6.3",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "curl: NTLM password overflow via integer overflow",
         "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
         "Severity": "CRITICAL",
@@ -53,7 +57,9 @@
         "PkgName": "libssh2",
         "InstalledVersion": "1.4.3-12.el7",
         "FixedVersion": "1.4.3-12.el7_6.2",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "libssh2: Integer overflow in transport read resulting in out of bounds write",
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "CRITICAL",
@@ -83,7 +89,9 @@
         "PkgName": "systemd",
         "InstalledVersion": "219-62.el7_6.5",
         "FixedVersion": "219-67.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "systemd: line splitting via fgets() allows for state injection during daemon-reexec",
         "Description": "A vulnerability in unit_deserialize of systemd allows an attacker to supply arbitrary state across systemd re-execution via NotifyAccess. This can be used to improperly influence systemd execution and possibly lead to root privilege escalation. Affected releases are systemd versions up to and including 239.",
         "Severity": "CRITICAL",
@@ -103,7 +111,9 @@
         "PkgName": "systemd-libs",
         "InstalledVersion": "219-62.el7_6.5",
         "FixedVersion": "219-67.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "systemd: line splitting via fgets() allows for state injection during daemon-reexec",
         "Description": "A vulnerability in unit_deserialize of systemd allows an attacker to supply arbitrary state across systemd re-execution via NotifyAccess. This can be used to improperly influence systemd execution and possibly lead to root privilege escalation. Affected releases are systemd versions up to and including 239.",
         "Severity": "CRITICAL",
@@ -123,7 +133,9 @@
         "PkgName": "vim-minimal",
         "InstalledVersion": "2:7.4.160-5.el7",
         "FixedVersion": "2:7.4.160-6.el7_6",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "vim/neovim: ':source!' command allows arbitrary command execution via modelines",
         "Description": "getchar.c in Vim before 8.1.1365 and Neovim before 0.3.6 allows remote attackers to execute arbitrary OS commands via the :source! command in a modeline, as demonstrated by execute in Vim, and assert_fails or nvim_input in Neovim.",
         "Severity": "CRITICAL",

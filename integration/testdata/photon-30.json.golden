@@ -7,7 +7,9 @@
         "PkgName": "curl",
         "InstalledVersion": "7.61.1-4.ph3",
         "FixedVersion": "7.61.1-5.ph3",
-        "LayerID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd",
+        "Layer": {
+          "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
+        },
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "HIGH",
@@ -24,7 +26,9 @@
         "PkgName": "curl",
         "InstalledVersion": "7.61.1-4.ph3",
         "FixedVersion": "7.61.1-5.ph3",
-        "LayerID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd",
+        "Layer": {
+          "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
+        },
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "HIGH",
@@ -42,7 +46,9 @@
         "PkgName": "curl-libs",
         "InstalledVersion": "7.61.1-4.ph3",
         "FixedVersion": "7.61.1-5.ph3",
-        "LayerID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd",
+        "Layer": {
+          "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
+        },
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "HIGH",
@@ -59,7 +65,9 @@
         "PkgName": "curl-libs",
         "InstalledVersion": "7.61.1-4.ph3",
         "FixedVersion": "7.61.1-5.ph3",
-        "LayerID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd",
+        "Layer": {
+          "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
+        },
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "HIGH",
@@ -77,7 +85,9 @@
         "PkgName": "e2fsprogs-libs",
         "InstalledVersion": "1.44.3-2.ph3",
         "FixedVersion": "1.44.3-3.ph3",
-        "LayerID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd",
+        "Layer": {
+          "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
+        },
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "References": [
@@ -94,7 +104,9 @@
         "PkgName": "openssl",
         "InstalledVersion": "1.0.2s-1.ph3",
         "FixedVersion": "1.0.2t-1.ph3",
-        "LayerID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd",
+        "Layer": {
+          "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
+        },
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "MEDIUM",
@@ -114,7 +126,9 @@
         "PkgName": "openssl",
         "InstalledVersion": "1.0.2s-1.ph3",
         "FixedVersion": "1.0.2t-1.ph3",
-        "LayerID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd",
+        "Layer": {
+          "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
+        },
         "Title": "openssl: side-channel weak encryption vulnerability",
         "Description": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "LOW",
@@ -135,7 +149,9 @@
         "PkgName": "sqlite-libs",
         "InstalledVersion": "3.27.2-3.ph3",
         "FixedVersion": "3.27.2-5.ph3",
-        "LayerID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd",
+        "Layer": {
+          "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
+        },
         "Description": "In SQLite through 3.29.0, whereLoopAddBtreeIndex in sqlite3.c can crash a browser or other application because of missing validation of a sqlite_stat1 sz field, aka a \"severe division by zero in the query planner.\"",
         "Severity": "MEDIUM",
         "References": [
