@@ -243,7 +243,7 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			ctx := context.Background()
 			defer ctx.Done()
 
-			cli, err := client.NewClientWithOpts(client.FromEnv)
+			cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 			require.NoError(t, err, tc.name)
 
 			if !tc.invalidImage {
