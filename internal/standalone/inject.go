@@ -19,9 +19,9 @@ func initializeDockerScanner(ctx context.Context, imageName string, layerCache c
 }
 
 func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.ImageCache, localImageCache cache.LocalImageCache,
-	timeout time.Duration) (scanner.Scanner, func(), error) {
+	timeout time.Duration) (scanner.Scanner, error) {
 	wire.Build(scanner.StandaloneArchiveSet)
-	return scanner.Scanner{}, nil, nil
+	return scanner.Scanner{}, nil
 }
 
 func initializeVulnerabilityClient() vulnerability.Client {

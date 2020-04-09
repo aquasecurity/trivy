@@ -47,10 +47,10 @@ func run(c config.Config) (err error) {
 	ctx := context.Background()
 	remoteCache := cache.NewRemoteCache(cache.RemoteURL(c.RemoteAddr), c.CustomHeaders)
 
-	var cleanup func()
+	cleanup := func() {}
 	if c.Input != "" {
 		// scan tar file
-		scanner, cleanup, err = initializeArchiveScanner(ctx, c.Input, remoteCache,
+		scanner, err = initializeArchiveScanner(ctx, c.Input, remoteCache,
 			client.CustomHeaders(c.CustomHeaders), client.RemoteURL(c.RemoteAddr), c.Timeout)
 		if err != nil {
 			return xerrors.Errorf("unable to initialize the archive scanner: %w", err)
