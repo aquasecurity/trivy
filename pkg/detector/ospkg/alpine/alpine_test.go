@@ -57,7 +57,9 @@ func TestScanner_Detect(t *testing.T) {
 					{
 						Name:    "ansible",
 						Version: "2.6.4",
-						LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
 					},
 					{
 						Name:    "invalid",
@@ -104,7 +106,9 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2019-10217",
 					InstalledVersion: "2.6.4",
 					FixedVersion:     "2.8.4-r0",
-					LayerID:          "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
 				},
 			},
 		},

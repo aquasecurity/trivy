@@ -116,7 +116,9 @@ func TestScanner_Detect(t *testing.T) {
 				Release:    "hotfix",
 				SrcRelease: "test-hotfix",
 				SrcVersion: "2.1.0",
-				LayerID:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+				Layer: ftypes.Layer{
+					DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+				},
 			},
 		})
 		assert.NoError(t, err)
@@ -126,7 +128,9 @@ func TestScanner_Detect(t *testing.T) {
 				PkgName:          "testpkg",
 				InstalledVersion: "2.1.0-test-hotfix",
 				FixedVersion:     "3.0.0",
-				LayerID:          "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+				Layer: ftypes.Layer{
+					DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+				},
 			},
 		}, vuls)
 	})
