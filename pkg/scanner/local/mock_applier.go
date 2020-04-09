@@ -2,7 +2,6 @@
 
 package local
 
-import digest "github.com/opencontainers/go-digest"
 import mock "github.com/stretchr/testify/mock"
 import types "github.com/aquasecurity/fanal/types"
 
@@ -12,7 +11,7 @@ type MockApplier struct {
 }
 
 type ApplierApplyLayersArgs struct {
-	ImageID          digest.Digest
+	ImageID          string
 	ImageIDAnything  bool
 	LayerIDs         []string
 	LayerIDsAnything bool
@@ -50,18 +49,18 @@ func (_m *MockApplier) ApplyApplyLayersExpectations(expectations []ApplierApplyL
 }
 
 // ApplyLayers provides a mock function with given fields: imageID, layerIDs
-func (_m *MockApplier) ApplyLayers(imageID digest.Digest, layerIDs []string) (types.ImageDetail, error) {
+func (_m *MockApplier) ApplyLayers(imageID string, layerIDs []string) (types.ImageDetail, error) {
 	ret := _m.Called(imageID, layerIDs)
 
 	var r0 types.ImageDetail
-	if rf, ok := ret.Get(0).(func(digest.Digest, []string) types.ImageDetail); ok {
+	if rf, ok := ret.Get(0).(func(string, []string) types.ImageDetail); ok {
 		r0 = rf(imageID, layerIDs)
 	} else {
 		r0 = ret.Get(0).(types.ImageDetail)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(digest.Digest, []string) error); ok {
+	if rf, ok := ret.Get(1).(func(string, []string) error); ok {
 		r1 = rf(imageID, layerIDs)
 	} else {
 		r1 = ret.Error(1)
