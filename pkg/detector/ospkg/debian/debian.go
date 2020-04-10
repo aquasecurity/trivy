@@ -63,6 +63,8 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
+		// This bucket has only fixed vulnerabilities.
+		// To detect vulnerabilities, it is necessary to compare versions between the installed version and the patched version.
 		advisories, err := s.ovalVs.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get debian OVAL: %w", err)
@@ -93,6 +95,9 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				vulns = append(vulns, vuln)
 			}
 		}
+
+		// This bucket has only unfixed vulnerabilities which don't have a patched version.
+		// It is unnecessary to compare versions since it should be always vulnerable to an unfixed vulnerability.
 		advisories, err = s.vs.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get debian advisory: %w", err)
