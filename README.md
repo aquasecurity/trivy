@@ -1207,9 +1207,10 @@ $ cat .circleci/config.yml
 jobs:
   build:
     docker:
-      - image: docker:18.09-git
+      - image: docker:stable-git
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Build image
           command: docker build -t trivy-ci-test:${CIRCLE_SHA1} .
