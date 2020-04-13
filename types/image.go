@@ -4,7 +4,6 @@ import (
 	"time"
 
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	digest "github.com/opencontainers/go-digest"
 )
 
 type FilePath string
@@ -56,7 +55,7 @@ type Application struct {
 
 type ImageReference struct {
 	Name     string // image name or tar file name
-	ID       digest.Digest
+	ID       string
 	LayerIDs []string
 }
 

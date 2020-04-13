@@ -21,6 +21,7 @@ type DockerOption struct {
 	DockerDaemonHost     string
 
 	InsecureSkipTLSVerify bool
-	SkipPing              bool
+	NonSSL                bool
+	SkipPing              bool // this is ignored now
 	Timeout               time.Duration
 }

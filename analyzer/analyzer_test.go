@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	digest "github.com/opencontainers/go-digest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
@@ -62,11 +61,10 @@ func TestConfig_Analyze(t *testing.T) {
 			putLayerExpectations: []cache.ImageCachePutLayerExpectation{
 				{
 					Args: cache.ImageCachePutLayerArgs{
-						LayerID:             "sha256:77cae8ab23bf486355d1b3191259705374f4a11d483b24964d2f729dd8c076a0",
-						DecompressedLayerID: "sha256:77cae8ab23bf486355d1b3191259705374f4a11d483b24964d2f729dd8c076a0",
+						DiffID: "sha256:77cae8ab23bf486355d1b3191259705374f4a11d483b24964d2f729dd8c076a0",
 						LayerInfo: types.LayerInfo{
 							SchemaVersion: 1,
-							Digest:        "sha256:77cae8ab23bf486355d1b3191259705374f4a11d483b24964d2f729dd8c076a0",
+							Digest:        "",
 							DiffID:        "sha256:77cae8ab23bf486355d1b3191259705374f4a11d483b24964d2f729dd8c076a0",
 							OS: &types.OS{
 								Family: "alpine",
@@ -106,22 +104,30 @@ func TestConfig_Analyze(t *testing.T) {
 			imagePath: "testdata/vuln-image.tar.gz",
 			missingLayerExpectation: cache.ImageCacheMissingLayersExpectation{
 				Args: cache.ImageCacheMissingLayersArgs{
-					ImageID:  "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
-					LayerIDs: []string{"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5", "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7", "sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566"},
+					ImageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
+					LayerIDs: []string{
+						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
+					},
 				},
 				Returns: cache.ImageCacheMissingLayersReturns{
-					MissingLayerIDs: []string{"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5", "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7"},
+					MissingLayerIDs: []string{
+						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					},
 				},
 			},
 			putLayerExpectations: []cache.ImageCachePutLayerExpectation{
 				{
 					Args: cache.ImageCachePutLayerArgs{
-						LayerID:             "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-						DecompressedLayerID: "sha256:d9441f7754ba1423ee11793b5db6390256e44097c2fc25e75a5fab19e6dc7911",
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						LayerInfo: types.LayerInfo{
 							SchemaVersion: 1,
-							Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							DiffID:        "sha256:d9441f7754ba1423ee11793b5db6390256e44097c2fc25e75a5fab19e6dc7911",
+							Digest:        "",
+							DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							OS:            &types.OS{Family: "debian", Name: "9.9"},
 							PackageInfos:  []types.PackageInfo{{FilePath: "var/lib/dpkg/status.d/base", Packages: []types.Package{{Name: "base-files", Version: "9.9+deb9u9", Release: "", Epoch: 0, Arch: "", SrcName: "base-files", SrcVersion: "9.9+deb9u9", SrcRelease: "", SrcEpoch: 0}}}, {FilePath: "var/lib/dpkg/status.d/netbase", Packages: []types.Package{{Name: "netbase", Version: "5.4", Release: "", Epoch: 0, Arch: "", SrcName: "netbase", SrcVersion: "5.4", SrcRelease: "", SrcEpoch: 0}}}, {FilePath: "var/lib/dpkg/status.d/tzdata", Packages: []types.Package{{Name: "tzdata", Version: "2019a-0+deb9u1", Release: "", Epoch: 0, Arch: "", SrcName: "tzdata", SrcVersion: "2019a-0+deb9u1", SrcRelease: "", SrcEpoch: 0}}}},
 						},
@@ -129,23 +135,21 @@ func TestConfig_Analyze(t *testing.T) {
 				},
 				{
 					Args: cache.ImageCachePutLayerArgs{
-						LayerID:             "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-						DecompressedLayerID: "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
+						DiffID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 						LayerInfo: types.LayerInfo{
 							SchemaVersion: 1,
-							Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-							DiffID:        "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
+							Digest:        "",
+							DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 							PackageInfos:  []types.PackageInfo{{FilePath: "var/lib/dpkg/status.d/libc6", Packages: []types.Package{{Name: "libc6", Version: "2.24-11+deb9u4", Release: "", Epoch: 0, Arch: "", SrcName: "glibc", SrcVersion: "2.24-11+deb9u4", SrcRelease: "", SrcEpoch: 0}}}, {FilePath: "var/lib/dpkg/status.d/libssl1", Packages: []types.Package{{Name: "libssl1.1", Version: "1.1.0k-1~deb9u1", Release: "", Epoch: 0, Arch: "", SrcName: "openssl", SrcVersion: "1.1.0k-1~deb9u1", SrcRelease: "", SrcEpoch: 0}}}, {FilePath: "var/lib/dpkg/status.d/openssl", Packages: []types.Package{{Name: "openssl", Version: "1.1.0k-1~deb9u1", Release: "", Epoch: 0, Arch: "", SrcName: "openssl", SrcVersion: "1.1.0k-1~deb9u1", SrcRelease: "", SrcEpoch: 0}}}},
 						},
 					},
 				},
 				{
 					Args: cache.ImageCachePutLayerArgs{
-						LayerID:             "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-						DecompressedLayerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 						LayerInfo: types.LayerInfo{
 							SchemaVersion: 1,
-							Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+							Digest:        "",
 							DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 							Applications: []types.Application{{Type: "composer", FilePath: "php-app/composer.lock",
 								Libraries: []types.LibraryInfo{
@@ -171,9 +175,14 @@ func TestConfig_Analyze(t *testing.T) {
 				},
 			},
 			want: types.ImageReference{
-				Name:     "testdata/vuln-image.tar.gz",
-				ID:       "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
-				LayerIDs: []string{"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5", "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7", "sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566"},
+				Name: "testdata/vuln-image.tar.gz",
+				ID:   "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
+				LayerIDs: []string{
+					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
+				},
 			},
 		},
 		{
@@ -205,11 +214,10 @@ func TestConfig_Analyze(t *testing.T) {
 			putLayerExpectations: []cache.ImageCachePutLayerExpectation{
 				{
 					Args: cache.ImageCachePutLayerArgs{
-						LayerID:             "sha256:77cae8ab23bf486355d1b3191259705374f4a11d483b24964d2f729dd8c076a0",
-						DecompressedLayerID: "sha256:77cae8ab23bf486355d1b3191259705374f4a11d483b24964d2f729dd8c076a0",
+						DiffID: "sha256:77cae8ab23bf486355d1b3191259705374f4a11d483b24964d2f729dd8c076a0",
 						LayerInfo: types.LayerInfo{
 							SchemaVersion: 1,
-							Digest:        "sha256:77cae8ab23bf486355d1b3191259705374f4a11d483b24964d2f729dd8c076a0",
+							Digest:        "",
 							DiffID:        "sha256:77cae8ab23bf486355d1b3191259705374f4a11d483b24964d2f729dd8c076a0",
 							OS: &types.OS{
 								Family: "alpine",
@@ -236,9 +244,8 @@ func TestConfig_Analyze(t *testing.T) {
 			mockCache.ApplyPutLayerExpectations(tt.putLayerExpectations)
 			mockCache.ApplyPutImageExpectations(tt.putImageExpectations)
 
-			d, cleanup, err := docker.NewDockerArchiveExtractor(context.Background(), tt.imagePath, types.DockerOption{})
+			d, err := docker.NewDockerArchiveExtractor(context.Background(), tt.imagePath, types.DockerOption{})
 			require.NoError(t, err, tt.name)
-			defer cleanup()
 
 			ac := analyzer.New(d, mockCache)
 			got, err := ac.Analyze(context.Background())
@@ -255,7 +262,7 @@ func TestConfig_Analyze(t *testing.T) {
 
 func TestApplier_ApplyLayers(t *testing.T) {
 	type args struct {
-		imageID  digest.Digest
+		imageID  string
 		layerIDs []string
 	}
 	tests := []struct {

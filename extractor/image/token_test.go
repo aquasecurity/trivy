@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/google/go-containerregistry/pkg/authn"
+
 	"github.com/aquasecurity/fanal/types"
-	imageTypes "github.com/containers/image/v5/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,14 +18,14 @@ func TestGetToken(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		wantAuth *imageTypes.DockerAuthConfig
+		wantAuth authn.Basic
 	}{
 		{
 			name: "happy path",
 			args: args{
 				domain: "docker.io",
 			},
-			wantAuth: nil,
+			wantAuth: authn.Basic{},
 		},
 		{
 			name: "happy path with a credential",
@@ -35,7 +36,7 @@ func TestGetToken(t *testing.T) {
 					Password: "pass",
 				},
 			},
-			wantAuth: &imageTypes.DockerAuthConfig{
+			wantAuth: authn.Basic{
 				Username: "user",
 				Password: "pass",
 			},

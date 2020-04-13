@@ -3,8 +3,9 @@ package image
 import (
 	"context"
 
+	"github.com/google/go-containerregistry/pkg/authn"
+
 	"github.com/aquasecurity/fanal/types"
-	imageTypes "github.com/containers/image/v5/types"
 )
 
 var (
@@ -20,12 +21,10 @@ func RegisterRegistry(registry Registry) {
 	registries = append(registries, registry)
 }
 
-func GetToken(ctx context.Context, domain string, opt types.DockerOption) (auth *imageTypes.DockerAuthConfig) {
+func GetToken(ctx context.Context, domain string, opt types.DockerOption) (auth authn.Basic) {
 	if opt.UserName != "" || opt.Password != "" {
-		return &imageTypes.DockerAuthConfig{Username: opt.UserName, Password: opt.Password}
+		return authn.Basic{Username: opt.UserName, Password: opt.Password}
 	}
-
-	var username, password string
 
 	// check registry which particular to get credential
 	for _, registry := range registries {
@@ -33,12 +32,12 @@ func GetToken(ctx context.Context, domain string, opt types.DockerOption) (auth 
 		if err != nil {
 			continue
 		}
-		username, password, err = registry.GetCredential(ctx)
+		username, password, err := registry.GetCredential(ctx)
 		if err != nil {
 			// only skip check registry if error occurred
 			break
 		}
-		return &imageTypes.DockerAuthConfig{Username: username, Password: password}
+		return authn.Basic{Username: username, Password: password}
 	}
-	return nil
+	return authn.Basic{}
 }

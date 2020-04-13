@@ -67,15 +67,15 @@ func run() (err error) {
 		SkipPing: true,
 	}
 
+	cleanup := func() {}
 	var ext extractor.Extractor
-	var cleanup func()
 	if len(args) > 0 {
 		ext, cleanup, err = docker.NewDockerExtractor(ctx, args[0], opt)
 		if err != nil {
 			return err
 		}
 	} else {
-		ext, cleanup, err = docker.NewDockerArchiveExtractor(ctx, *tarPath, opt)
+		ext, err = docker.NewDockerArchiveExtractor(ctx, *tarPath, opt)
 		if err != nil {
 			return err
 		}

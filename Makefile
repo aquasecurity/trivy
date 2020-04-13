@@ -4,7 +4,7 @@ deps:
 
 .PHONY: test
 test:
-	go test -tags="containers_image_storage_stub" ./...
+	go test ./...
 
 .PHONY: lint
 lint: devel-deps
@@ -20,8 +20,8 @@ integration/testdata/fixtures/*.tar.gz:
 
 .PHONY: test-integration
 test-integration: integration/testdata/fixtures/*.tar.gz
-	go test -v -tags="integration containers_image_storage_stub" ./integration/...
+	go test -v -tags="integration" ./integration/...
 
 .PHONY: test-performance
 test-performance: integration/testdata/fixtures/*.tar.gz
-	go test -v -benchtime=10x -run=^$$ -tags="performance containers_image_storage_stub" -bench=. ./integration/...
+	go test -v -benchtime=10x -run=^$$ -tags="performance" -bench=. ./integration/...
