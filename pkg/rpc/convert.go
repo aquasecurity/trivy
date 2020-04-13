@@ -291,7 +291,7 @@ func ConvertToRpcScanResponse(results report.Results, os *ftypes.OS, eosl bool) 
 		rpcResults = append(rpcResults, &scanner.Result{
 			Target:          result.Target,
 			Vulnerabilities: ConvertToRpcVulns(result.Vulnerabilities),
-			Type:            os.Family,
+			Type:            result.Type,
 		})
 	}
 
