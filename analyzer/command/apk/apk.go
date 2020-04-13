@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	builtinos "os"
 	"sort"
 	"strings"
 	"time"
@@ -19,7 +20,13 @@ import (
 	"github.com/aquasecurity/fanal/types"
 )
 
+const envApkIndexArchiveURL = "FANAL_APK_INDEX_ARCHIVE_URL"
+var apkIndexArchiveURL = "https://raw.githubusercontent.com/knqyf263/apkIndex-archive/master/alpine/v%s/main/x86_64/history.json"
+
 func init() {
+	if builtinos.Getenv(envApkIndexArchiveURL) != "" {
+		apkIndexArchiveURL = builtinos.Getenv(envApkIndexArchiveURL)
+	}
 	analyzer.RegisterCommandAnalyzer(&alpineCmdAnalyzer{})
 }
 
@@ -48,10 +55,6 @@ type pkg struct {
 }
 
 type version map[string]int
-
-const (
-	apkIndexArchiveURL = "https://raw.githubusercontent.com/knqyf263/apkIndex-archive/master/alpine/v%s/main/x86_64/history.json"
-)
 
 func (a alpineCmdAnalyzer) Analyze(targetOS types.OS, fileMap extractor.FileMap) (pkgs []types.Package, err error) {
 	if targetOS.Family != os.Alpine {
