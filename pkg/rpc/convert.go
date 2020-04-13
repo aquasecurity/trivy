@@ -118,7 +118,7 @@ func ConvertToRpcVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 	return rpcVulns
 }
 
-func ConvertFromRpcResults(rpcResults []*scanner.Result, resultType string) []report.Result {
+func ConvertFromRpcResults(rpcResults []*scanner.Result) []report.Result {
 	var results []report.Result
 	for _, result := range rpcResults {
 		var vulns []types.DetectedVulnerability
@@ -141,7 +141,7 @@ func ConvertFromRpcResults(rpcResults []*scanner.Result, resultType string) []re
 		results = append(results, report.Result{
 			Target:          result.Target,
 			Vulnerabilities: vulns,
-			Type:            resultType,
+			Type:            result.Type,
 		})
 	}
 	return results
