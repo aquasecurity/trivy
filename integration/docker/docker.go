@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
+	"os/exec"
 
 	"github.com/docker/docker/client"
 
@@ -59,11 +60,14 @@ func New() (Docker, error) {
 	}, nil
 }
 
-func (d Docker) Login(ctx context.Context, conf RegistryConfig) error {
-	if _, err := d.cli.RegistryLogin(ctx, conf.GetAuthConfig()); err != nil {
-		return err
-	}
-	return nil
+func (d Docker) Login(conf RegistryConfig) error {
+	auth := conf.GetAuthConfig()
+	return exec.Command("docker", "login", "-u", auth.Username, "-p", auth.Password, auth.ServerAddress).Run()
+}
+
+func (d Docker) Logout(conf RegistryConfig) error {
+	auth := conf.GetAuthConfig()
+	return exec.Command("docker", "logout", auth.ServerAddress).Run()
 }
 
 // ReplicateImage tags the given imagePath and pushes it to the given dest registry.

@@ -16,10 +16,10 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Install dependencies
-      run: sudo apt-get install libdb-dev
+      run: sudo apt-get update && sudo apt-get install libdb-dev
 
     - name: Install cob
       run: curl -sfL https://raw.githubusercontent.com/knqyf263/cob/master/install.sh | sudo sh -s -- -b /usr/local/bin
 
     - name: Run Benchmark
-      run: cob --threshold 0.7 --base origin/master --bench-cmd make --bench-args test-performance || exit 0
+      run: cob --threshold 0.7 --base origin/master --bench-cmd make --bench-args test-performance

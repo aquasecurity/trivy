@@ -68,10 +68,11 @@ func TestFSCache_GetLayer(t *testing.T) {
 		layerID string
 	}
 	tests := []struct {
-		name   string
-		dbPath string
-		args   args
-		want   types.LayerInfo
+		name    string
+		dbPath  string
+		args    args
+		want    types.LayerInfo
+		wantErr bool
 	}{
 		{
 			name:   "happy path",
@@ -88,51 +89,12 @@ func TestFSCache_GetLayer(t *testing.T) {
 			},
 		},
 		{
-			name:   "happy path: different decompressed layer ID",
-			dbPath: "testdata/decompressed-layer-id.db",
+			name:   "sad path",
+			dbPath: "testdata/fanal.db",
 			args: args{
-				layerID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+				layerID: "sha256:unknown",
 			},
-			want: types.LayerInfo{
-				SchemaVersion: 1,
-				OS: &types.OS{
-					Family: "alpine",
-					Name:   "3.10",
-				},
-				PackageInfos: []types.PackageInfo{
-					{
-						FilePath: "lib/apk/db/installed",
-						Packages: []types.Package{
-							{
-								Name:    "musl",
-								Version: "1.1.22-r3",
-							},
-						},
-					},
-				},
-				Applications: []types.Application{
-					{
-						Type:     "composer",
-						FilePath: "php-app/composer.lock",
-						Libraries: []types.LibraryInfo{
-							{
-								Library: depTypes.Library{
-									Name:    "guzzlehttp/guzzle",
-									Version: "6.2.0",
-								},
-							},
-							{
-								Library: depTypes.Library{
-									Name:    "guzzlehttp/promises",
-									Version: "v1.3.1",
-								},
-							},
-						},
-					},
-				},
-				OpaqueDirs:    []string{"php-app/"},
-				WhiteoutFiles: []string{"etc/foobar"},
-			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
@@ -146,7 +108,7 @@ func TestFSCache_GetLayer(t *testing.T) {
 			defer fs.Clear()
 
 			got, err := fs.GetLayer(tt.args.layerID)
-			assert.NoError(t, err)
+			assert.Equal(t, tt.wantErr, err != nil, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -158,9 +120,8 @@ func TestFSCache_PutLayer(t *testing.T) {
 		directory string
 	}
 	type args struct {
-		layerID             string
-		decompressedLayerID string
-		layerInfo           types.LayerInfo
+		diffID    string
+		layerInfo types.LayerInfo
 	}
 	tests := []struct {
 		name        string
@@ -173,8 +134,7 @@ func TestFSCache_PutLayer(t *testing.T) {
 		{
 			name: "happy path",
 			args: args{
-				layerID:             "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-				decompressedLayerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+				diffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				layerInfo: types.LayerInfo{
 					SchemaVersion: 1,
 					OS: &types.OS{
@@ -196,8 +156,7 @@ func TestFSCache_PutLayer(t *testing.T) {
 		{
 			name: "happy path: different decompressed layer ID",
 			args: args{
-				layerID:             "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-				decompressedLayerID: "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
+				diffID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 				layerInfo: types.LayerInfo{
 					SchemaVersion: 1,
 					Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
@@ -294,18 +253,11 @@ func TestFSCache_PutLayer(t *testing.T) {
 			wantLayerID: "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
 		},
 		{
-			name: "sad path no layerID",
+			name: "sad path invalid diffID",
 			args: args{
-				decompressedLayerID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+				diffID: "sha256:invalid",
 			},
-			wantErr: "key required",
-		},
-		{
-			name: "sad path no decompressedLayerID",
-			args: args{
-				layerID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-			},
-			wantErr: "key required",
+			wantErr: "invalid diffID",
 		},
 	}
 	for _, tt := range tests {
@@ -318,7 +270,7 @@ func TestFSCache_PutLayer(t *testing.T) {
 			require.NoError(t, err)
 			defer fs.Clear()
 
-			err = fs.PutLayer(tt.args.layerID, tt.args.decompressedLayerID, tt.args.layerInfo)
+			err = fs.PutLayer(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -328,13 +280,8 @@ func TestFSCache_PutLayer(t *testing.T) {
 			}
 
 			fs.db.View(func(tx *bolt.Tx) error {
-				// check decompressedDigestBucket
-				decompressedBucket := tx.Bucket([]byte(decompressedDigestBucket))
-				res := decompressedBucket.Get([]byte(tt.args.layerID))
-				assert.Equal(t, tt.wantLayerID, string(res))
-
 				layerBucket := tx.Bucket([]byte(layerBucket))
-				b := layerBucket.Get([]byte(tt.args.decompressedLayerID))
+				b := layerBucket.Get([]byte(tt.args.diffID))
 				assert.JSONEq(t, tt.want, string(b))
 
 				return nil
@@ -450,22 +397,6 @@ func TestFSCache_MissingLayers(t *testing.T) {
 				"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 				"sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
-			},
-		},
-		{
-			name:   "happy path: different decompressed layer ID",
-			dbPath: "testdata/decompressed-layer-id.db",
-			args: args{
-				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
-				layerIDs: []string{
-					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-					"sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
-				},
-			},
-			wantMissingImage: true,
-			wantMissingLayerIDs: []string{
-				"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 			},
 		},
 		{

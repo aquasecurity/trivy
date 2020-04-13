@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"testing"
 	"time"
@@ -107,10 +106,9 @@ func TestTLSRegistry(t *testing.T) {
 				Timeout:               60 * time.Second,
 				InsecureSkipTLSVerify: true,
 			},
-			login: true,
-			// TODO: this should be false, but there is regression now.
-			// After replacing containers/image with google/go-containerregistry, it is supposed to pass.
-			wantErr: true,
+			login:      true,
+			expectedOS: types.OS{Name: "3.10.2", Family: "alpine"},
+			wantErr:    false,
 		},
 		{
 			name:      "sad path: tls verify",
@@ -145,10 +143,10 @@ func TestTLSRegistry(t *testing.T) {
 			require.NoError(t, err)
 
 			if tc.login {
-				err = d.Login(ctx, config)
+				err = d.Login(config)
 				require.NoError(t, err)
 
-				defer exec.Command("docker", "logout", registryURL.Host).Run()
+				defer d.Logout(config)
 			}
 
 			// 2. Analyze it

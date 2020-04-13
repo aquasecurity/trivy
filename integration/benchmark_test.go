@@ -12,6 +12,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/fanal/extractor/docker"
+
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
@@ -31,7 +33,6 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpm"
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/extractor/docker"
 	"github.com/aquasecurity/fanal/types"
 	dtypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -59,8 +60,8 @@ var testCases = []testCase{
 
 func run(b *testing.B, ctx context.Context, imageName string, c cache.Cache, opt types.DockerOption) {
 	ext, cleanup, err := docker.NewDockerExtractor(ctx, imageName, opt)
-	defer cleanup()
 	require.NoError(b, err)
+	defer cleanup()
 
 	ac := analyzer.New(ext, c)
 
@@ -141,7 +142,7 @@ func teardown(b *testing.B, ctx context.Context, originalImageName, imageName st
 func setup(b *testing.B, tc testCase) (context.Context, string, *client.Client) {
 	ctx := context.Background()
 
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	require.NoError(b, err, tc.name)
 
 	// ensure image doesnt already exists

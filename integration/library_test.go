@@ -123,7 +123,7 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 				SkipPing: true,
 			}
 
-			cli, err := client.NewClientWithOpts(client.FromEnv)
+			cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 			require.NoError(t, err, tc.name)
 
 			// remove existing Image if any
@@ -165,7 +165,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 				SkipPing: true,
 			}
 
-			cli, err := client.NewClientWithOpts(client.FromEnv)
+			cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 			require.NoError(t, err, tc.name)
 
 			testfile, err := os.Open(tc.imageFile)
@@ -232,9 +232,8 @@ func TestFanal_Library_TarMode(t *testing.T) {
 				SkipPing: true,
 			}
 
-			ext, cleanup, err := docker.NewDockerArchiveExtractor(ctx, tc.imageFile, opt)
+			ext, err := docker.NewDockerArchiveExtractor(ctx, tc.imageFile, opt)
 			require.NoError(t, err)
-			defer cleanup()
 
 			ac := analyzer.New(ext, c)
 			runChecks(t, ctx, ac, applier, tc)
