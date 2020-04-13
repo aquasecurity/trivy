@@ -30,8 +30,7 @@ func TestScanner_ScanImage(t *testing.T) {
 		analyzeExpectation AnalyzerAnalyzeExpectation
 		scanExpectation    ScanExpectation
 		wantResults        report.Results
-		//wantOSFound        *ftypes.OS
-		wantErr string
+		wantErr            string
 	}{
 		{
 			name: "happy path",
