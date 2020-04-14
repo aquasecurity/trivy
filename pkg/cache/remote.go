@@ -34,8 +34,8 @@ func (c RemoteCache) PutImage(imageID string, imageInfo types.ImageInfo) error {
 	return nil
 }
 
-func (c RemoteCache) PutLayer(layerID, decompressedLayerID string, layerInfo types.LayerInfo) error {
-	_, err := c.client.PutLayer(c.ctx, rpc.ConvertToRpcLayerInfo(layerID, decompressedLayerID, layerInfo))
+func (c RemoteCache) PutLayer(diffID string, layerInfo types.LayerInfo) error {
+	_, err := c.client.PutLayer(c.ctx, rpc.ConvertToRpcLayerInfo(diffID, layerInfo))
 	if err != nil {
 		return xerrors.Errorf("unable to store cache on the server: %w", err)
 	}

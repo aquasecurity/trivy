@@ -86,7 +86,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,
-				LayerID:          pkg.LayerID,
+				Layer:            pkg.Layer,
 			}
 
 			if adv.FixedVersion == "" {

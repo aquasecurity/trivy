@@ -6,7 +6,9 @@
         "VulnerabilityID": "CVE-2019-12900",
         "PkgName": "libbz2-1.0",
         "InstalledVersion": "1.0.6-8.1",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "bzip2: out-of-bounds write in function BZ2_decompress",
         "Description": "BZ2_decompress in decompress.c in bzip2 through 1.0.6 has an out-of-bounds write when there are many selectors.",
         "Severity": "HIGH",
@@ -22,7 +24,9 @@
         "VulnerabilityID": "CVE-2018-1000001",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: realpath() buffer underflow when getcwd() returns relative path allows privilege escalation",
         "Description": "In glibc 2.26 and earlier there is confusion in the usage of getcwd() by realpath() which can be used to write before the destination buffer leading to a buffer underflow and potential code execution.",
         "Severity": "HIGH",
@@ -44,7 +48,9 @@
         "VulnerabilityID": "CVE-2018-6485",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: Integer overflow in posix_memalign in memalign functions",
         "Description": "An integer overflow in the implementation of the posix_memalign in memalign functions in the GNU C Library (aka glibc or libc6) 2.26 and earlier could cause these functions to return a pointer to a heap area that is too small, potentially leading to heap corruption.",
         "Severity": "HIGH",
@@ -63,7 +69,9 @@
         "VulnerabilityID": "CVE-2018-6551",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: integer overflow in malloc functions",
         "Description": "The malloc implementation in the GNU C Library (aka glibc or libc6), from version 2.24 to 2.26 on powerpc, and only in version 2.26 on i386, did not properly handle malloc calls with arguments close to SIZE_MAX and could return a pointer to a heap region that is smaller than requested, eventually leading to heap corruption.",
         "Severity": "HIGH",
@@ -78,7 +86,9 @@
         "VulnerabilityID": "CVE-2019-1010022",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: stack guard protection bypass",
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard.",
         "Severity": "HIGH",
@@ -90,7 +100,9 @@
         "VulnerabilityID": "CVE-2019-9169",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: regular-expression match via proceed_next_node in posix/regexec.c leads to heap-based buffer over-read",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, proceed_next_node in posix/regexec.c has a heap-based buffer over-read via an attempted case-insensitive regular-expression match.",
         "Severity": "HIGH",
@@ -110,7 +122,9 @@
         "VulnerabilityID": "CVE-2009-5155",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: parse_reg_exp in posix/regcomp.c misparses alternatives leading to denial of service or trigger incorrect result",
         "Description": "In the GNU C Library (aka glibc or libc6) before 2.28, parse_reg_exp in posix/regcomp.c misparses alternatives, which allows attackers to cause a denial of service (assertion failure and application exit) or trigger an incorrect result by attempting a regular-expression match.",
         "Severity": "MEDIUM",
@@ -131,7 +145,9 @@
         "VulnerabilityID": "CVE-2010-4051",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "The regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (application crash) via a regular expression containing adjacent bounded repetitions that bypass the intended RE_DUP_MAX limitation, as demonstrated by a {10,}{10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD, related to a \"RE_DUP_MAX overflow.\"",
         "Severity": "MEDIUM",
@@ -153,7 +169,9 @@
         "VulnerabilityID": "CVE-2010-4052",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "CVE-2010-4051 CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "Stack consumption vulnerability in the regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (resource exhaustion) via a regular expression containing adjacent repetition operators, as demonstrated by a {10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD.",
         "Severity": "MEDIUM",
@@ -175,7 +193,9 @@
         "VulnerabilityID": "CVE-2010-4756",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: glob implementation can cause excessive CPU and memory consumption due to crafted glob expressions",
         "Description": "The glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632.",
         "Severity": "MEDIUM",
@@ -189,7 +209,9 @@
         "VulnerabilityID": "CVE-2015-8985",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: potential denial of service in pop_fail_stack()",
         "Description": "The pop_fail_stack function in the GNU C Library (aka glibc or libc6) allows context-dependent attackers to cause a denial of service (assertion failure and application crash) via vectors related to extended regular expression processing.",
         "Severity": "MEDIUM",
@@ -205,7 +227,9 @@
         "VulnerabilityID": "CVE-2016-10228",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: iconv program can hang when invoked with the -c option",
         "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
         "Severity": "MEDIUM",
@@ -219,7 +243,9 @@
         "VulnerabilityID": "CVE-2016-10739",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
@@ -236,7 +262,9 @@
         "VulnerabilityID": "CVE-2017-12132",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: Fragmentation attacks possible when EDNS0 is enabled",
         "Description": "The DNS stub resolver in the GNU C Library (aka glibc or libc6) before version 2.26, when EDNS support is enabled, will solicit large UDP responses from name servers, potentially simplifying off-path DNS spoofing attacks due to IP fragmentation.",
         "Severity": "MEDIUM",
@@ -252,7 +280,9 @@
         "VulnerabilityID": "CVE-2018-20796",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
         "Severity": "MEDIUM",
@@ -267,7 +297,9 @@
         "VulnerabilityID": "CVE-2019-1010023",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Description": "GNU Libc current is affected by: Re-mapping current loaded libray with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code.",
         "Severity": "MEDIUM",
         "References": [
@@ -280,7 +312,9 @@
         "VulnerabilityID": "CVE-2019-1010024",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc.",
         "Severity": "MEDIUM",
         "References": [
@@ -293,7 +327,9 @@
         "VulnerabilityID": "CVE-2019-1010025",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: information disclosure of heap addresses of pthread_created thread",
         "Description": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor's position is \"ASLR bypass itself is not a vulnerability.\"",
         "Severity": "MEDIUM",
@@ -305,7 +341,9 @@
         "VulnerabilityID": "CVE-2019-6488",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: Incorrect attempt to use a 64-bit register for size_t in assembly codes results in segmentation fault",
         "Description": "The string component in the GNU C Library (aka glibc or libc6) through 2.28, when running on the x32 architecture, incorrectly attempts to use a 64-bit register for size_t in assembly codes, which can lead to a segmentation fault or possibly unspecified other impact, as demonstrated by a crash in __memmove_avx_unaligned_erms in sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S during a memcpy.",
         "Severity": "MEDIUM",
@@ -319,7 +357,9 @@
         "VulnerabilityID": "CVE-2019-9192",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
         "Severity": "MEDIUM",
@@ -331,7 +371,9 @@
         "VulnerabilityID": "CVE-2019-7309",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "glibc: memcmp function incorrectly returns zero",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, the memcmp function for the x32 architecture can incorrectly return zero (indicating that the inputs are equal) because the RDX most significant bit is mishandled.",
         "Severity": "LOW",
@@ -346,7 +388,9 @@
         "VulnerabilityID": "CVE-2018-1000001",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: realpath() buffer underflow when getcwd() returns relative path allows privilege escalation",
         "Description": "In glibc 2.26 and earlier there is confusion in the usage of getcwd() by realpath() which can be used to write before the destination buffer leading to a buffer underflow and potential code execution.",
         "Severity": "HIGH",
@@ -368,7 +412,9 @@
         "VulnerabilityID": "CVE-2018-6485",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: Integer overflow in posix_memalign in memalign functions",
         "Description": "An integer overflow in the implementation of the posix_memalign in memalign functions in the GNU C Library (aka glibc or libc6) 2.26 and earlier could cause these functions to return a pointer to a heap area that is too small, potentially leading to heap corruption.",
         "Severity": "HIGH",
@@ -387,7 +433,9 @@
         "VulnerabilityID": "CVE-2018-6551",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: integer overflow in malloc functions",
         "Description": "The malloc implementation in the GNU C Library (aka glibc or libc6), from version 2.24 to 2.26 on powerpc, and only in version 2.26 on i386, did not properly handle malloc calls with arguments close to SIZE_MAX and could return a pointer to a heap region that is smaller than requested, eventually leading to heap corruption.",
         "Severity": "HIGH",
@@ -402,7 +450,9 @@
         "VulnerabilityID": "CVE-2019-1010022",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: stack guard protection bypass",
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard.",
         "Severity": "HIGH",
@@ -414,7 +464,9 @@
         "VulnerabilityID": "CVE-2019-9169",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: regular-expression match via proceed_next_node in posix/regexec.c leads to heap-based buffer over-read",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, proceed_next_node in posix/regexec.c has a heap-based buffer over-read via an attempted case-insensitive regular-expression match.",
         "Severity": "HIGH",
@@ -434,7 +486,9 @@
         "VulnerabilityID": "CVE-2009-5155",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: parse_reg_exp in posix/regcomp.c misparses alternatives leading to denial of service or trigger incorrect result",
         "Description": "In the GNU C Library (aka glibc or libc6) before 2.28, parse_reg_exp in posix/regcomp.c misparses alternatives, which allows attackers to cause a denial of service (assertion failure and application exit) or trigger an incorrect result by attempting a regular-expression match.",
         "Severity": "MEDIUM",
@@ -455,7 +509,9 @@
         "VulnerabilityID": "CVE-2010-4051",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "The regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (application crash) via a regular expression containing adjacent bounded repetitions that bypass the intended RE_DUP_MAX limitation, as demonstrated by a {10,}{10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD, related to a \"RE_DUP_MAX overflow.\"",
         "Severity": "MEDIUM",
@@ -477,7 +533,9 @@
         "VulnerabilityID": "CVE-2010-4052",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "CVE-2010-4051 CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "Stack consumption vulnerability in the regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (resource exhaustion) via a regular expression containing adjacent repetition operators, as demonstrated by a {10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD.",
         "Severity": "MEDIUM",
@@ -499,7 +557,9 @@
         "VulnerabilityID": "CVE-2010-4756",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: glob implementation can cause excessive CPU and memory consumption due to crafted glob expressions",
         "Description": "The glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632.",
         "Severity": "MEDIUM",
@@ -513,7 +573,9 @@
         "VulnerabilityID": "CVE-2015-8985",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: potential denial of service in pop_fail_stack()",
         "Description": "The pop_fail_stack function in the GNU C Library (aka glibc or libc6) allows context-dependent attackers to cause a denial of service (assertion failure and application crash) via vectors related to extended regular expression processing.",
         "Severity": "MEDIUM",
@@ -529,7 +591,9 @@
         "VulnerabilityID": "CVE-2016-10228",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: iconv program can hang when invoked with the -c option",
         "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
         "Severity": "MEDIUM",
@@ -543,7 +607,9 @@
         "VulnerabilityID": "CVE-2016-10739",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
@@ -560,7 +626,9 @@
         "VulnerabilityID": "CVE-2017-12132",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: Fragmentation attacks possible when EDNS0 is enabled",
         "Description": "The DNS stub resolver in the GNU C Library (aka glibc or libc6) before version 2.26, when EDNS support is enabled, will solicit large UDP responses from name servers, potentially simplifying off-path DNS spoofing attacks due to IP fragmentation.",
         "Severity": "MEDIUM",
@@ -576,7 +644,9 @@
         "VulnerabilityID": "CVE-2018-20796",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
         "Severity": "MEDIUM",
@@ -591,7 +661,9 @@
         "VulnerabilityID": "CVE-2019-1010023",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Description": "GNU Libc current is affected by: Re-mapping current loaded libray with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code.",
         "Severity": "MEDIUM",
         "References": [
@@ -604,7 +676,9 @@
         "VulnerabilityID": "CVE-2019-1010024",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc.",
         "Severity": "MEDIUM",
         "References": [
@@ -617,7 +691,9 @@
         "VulnerabilityID": "CVE-2019-1010025",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: information disclosure of heap addresses of pthread_created thread",
         "Description": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor's position is \"ASLR bypass itself is not a vulnerability.\"",
         "Severity": "MEDIUM",
@@ -629,7 +705,9 @@
         "VulnerabilityID": "CVE-2019-6488",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: Incorrect attempt to use a 64-bit register for size_t in assembly codes results in segmentation fault",
         "Description": "The string component in the GNU C Library (aka glibc or libc6) through 2.28, when running on the x32 architecture, incorrectly attempts to use a 64-bit register for size_t in assembly codes, which can lead to a segmentation fault or possibly unspecified other impact, as demonstrated by a crash in __memmove_avx_unaligned_erms in sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S during a memcpy.",
         "Severity": "MEDIUM",
@@ -643,7 +721,9 @@
         "VulnerabilityID": "CVE-2019-9192",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
         "Severity": "MEDIUM",
@@ -655,7 +735,9 @@
         "VulnerabilityID": "CVE-2019-7309",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: memcmp function incorrectly returns zero",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, the memcmp function for the x32 architecture can incorrectly return zero (indicating that the inputs are equal) because the RDX most significant bit is mishandled.",
         "Severity": "LOW",
@@ -670,7 +752,9 @@
         "VulnerabilityID": "CVE-2013-0340",
         "PkgName": "libexpat1",
         "InstalledVersion": "2.2.0-2+deb9u2",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "expat: internal entity expansion",
         "Description": "expat 2.1.0 and earlier does not properly handle entities expansion unless an application developer uses the XML_SetEntityDeclHandler function, which allows remote attackers to cause a denial of service (resource consumption), send HTTP requests to intranet servers, or read arbitrary files via a crafted XML document, aka an XML External Entity (XXE) issue.  NOTE: it could be argued that because expat already provides the ability to disable external entity expansion, the responsibility for resolving this issue lies with application developers; according to this argument, this entry should be REJECTed, and each affected application would need its own CVE.",
         "Severity": "MEDIUM",
@@ -688,7 +772,9 @@
         "PkgName": "libexpat1",
         "InstalledVersion": "2.2.0-2+deb9u2",
         "FixedVersion": "2.2.0-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "expat: heap-based buffer over-read via crafted XML input",
         "Description": "In libexpat before 2.2.8, crafted XML input could fool the parser into changing from DTD parsing to document parsing too early; a consecutive call to XML_GetCurrentLineNumber (or XML_GetCurrentColumnNumber) then resulted in a heap-based buffer over-read.",
         "Severity": "MEDIUM",
@@ -708,7 +794,9 @@
         "VulnerabilityID": "CVE-2018-12886",
         "PkgName": "libgcc1",
         "InstalledVersion": "6.3.0-18+deb9u1",
-        "LayerID": "sha256:6189abe095d53c1c9f2bfc8f50128ee876b9a5d10f9eda1564e5f5357d6ffe61",
+        "Layer": {
+          "DiffID": "sha256:6189abe095d53c1c9f2bfc8f50128ee876b9a5d10f9eda1564e5f5357d6ffe61"
+        },
         "Title": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
         "Description": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against.",
         "Severity": "MEDIUM",
@@ -721,7 +809,9 @@
         "VulnerabilityID": "CVE-2018-12886",
         "PkgName": "libgomp1",
         "InstalledVersion": "6.3.0-18+deb9u1",
-        "LayerID": "sha256:6189abe095d53c1c9f2bfc8f50128ee876b9a5d10f9eda1564e5f5357d6ffe61",
+        "Layer": {
+          "DiffID": "sha256:6189abe095d53c1c9f2bfc8f50128ee876b9a5d10f9eda1564e5f5357d6ffe61"
+        },
         "Title": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
         "Description": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against.",
         "Severity": "MEDIUM",
@@ -734,7 +824,9 @@
         "VulnerabilityID": "CVE-2018-19211",
         "PkgName": "libncursesw5",
         "InstalledVersion": "6.0+20161126-1+deb9u2",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "ncurses: Null pointer dereference at function _nc_parse_entry in parse_entry.c",
         "Description": "In ncurses 6.1, there is a NULL pointer dereference at function _nc_parse_entry in parse_entry.c that will lead to a denial of service attack. The product proceeds to the dereference code path even after a \"dubious character `*' in name or alias field\" detection.",
         "Severity": "MEDIUM",
@@ -747,7 +839,9 @@
         "VulnerabilityID": "CVE-2019-17594",
         "PkgName": "libncursesw5",
         "InstalledVersion": "6.0+20161126-1+deb9u2",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
         "References": [
@@ -759,7 +853,9 @@
         "VulnerabilityID": "CVE-2019-17595",
         "PkgName": "libncursesw5",
         "InstalledVersion": "6.0+20161126-1+deb9u2",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
         "References": [
@@ -771,7 +867,9 @@
         "VulnerabilityID": "CVE-2019-5010",
         "PkgName": "libpython2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
         "Description": "A null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
         "Severity": "HIGH",
@@ -784,7 +882,9 @@
         "VulnerabilityID": "CVE-2013-7040",
         "PkgName": "libpython2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: hash secret can be recovered remotely",
         "Description": "Python 2.7 before 3.4 only uses the last eight bits of the prefix to randomize hash values, which causes it to compute hash values without restricting the ability to trigger hash collisions predictably and makes it easier for context-dependent attackers to cause a denial of service (CPU consumption) via crafted input to an application that maintains a hash table.  NOTE: this vulnerability exists because of an incomplete fix for CVE-2012-1150.",
         "Severity": "MEDIUM",
@@ -801,7 +901,9 @@
         "VulnerabilityID": "CVE-2017-17522",
         "PkgName": "libpython2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: Command injection in Lib/webbrowser.py",
         "Description": "** DISPUTED ** Lib/webbrowser.py in Python through 3.6.3 does not validate strings before launching the program specified by the BROWSER environment variable, which might allow remote attackers to conduct argument-injection attacks via a crafted URL. NOTE: a software maintainer indicates that exploitation is impossible because the code relies on subprocess.Popen and the default shell=False setting.",
         "Severity": "MEDIUM",
@@ -815,7 +917,9 @@
         "VulnerabilityID": "CVE-2018-1000030",
         "PkgName": "libpython2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: Heap-Buffer-Overflow and Heap-Use-After-Free in Objects/fileobject.c",
         "Description": "Python 2.7.14 is vulnerable to a Heap-Buffer-Overflow as well as a Heap-Use-After-Free. Python versions prior to 2.7.14 may also be vulnerable and it appears that Python 2.7.17 and prior may also be vulnerable however this has not been confirmed. The vulnerability lies when multiply threads are handling large amounts of data. In both cases there is essentially a race condition that occurs. For the Heap-Buffer-Overflow, Thread 2 is creating the size for a buffer, but Thread1 is already writing to the buffer without knowing how much to write. So when a large amount of data is being processed, it is very easy to cause memory corruption using a Heap-Buffer-Overflow. As for the Use-After-Free, Thread3-\u003eMalloc-\u003eThread1-\u003eFree's-\u003eThread2-Re-uses-Free'd Memory. The PSRT has stated that this is not a security vulnerability due to the fact that the attacker must be able to run code, however in some situations, such as function as a service, this vulnerability can potentially be used by an attacker to violate a trust boundary, as such the DWF feels this issue deserves a CVE.",
         "Severity": "MEDIUM",
@@ -833,7 +937,9 @@
         "VulnerabilityID": "CVE-2018-20852",
         "PkgName": "libpython2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: Cookie domain check returns incorrect results",
         "Description": "http.cookiejar.DefaultPolicy.domain_return_ok in Lib/http/cookiejar.py in Python before 3.7.3 does not correctly validate the domain: it can be tricked into sending existing cookies to the wrong server. An attacker may abuse this flaw by using a server with a hostname that has another valid hostname as a suffix (e.g., pythonicexample.com to steal cookies for example.com). When a program uses http.cookiejar.DefaultPolicy and tries to do an HTTP connection to an attacker-controlled server, existing cookies can be leaked to the attacker. This affects 2.x through 2.7.16, 3.x before 3.4.10, 3.5.x before 3.5.7, 3.6.x before 3.6.9, and 3.7.x before 3.7.3.",
         "Severity": "MEDIUM",
@@ -850,7 +956,9 @@
         "VulnerabilityID": "CVE-2019-16056",
         "PkgName": "libpython2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: email.utils.parseaddr wrongly parses email addresses",
         "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
         "Severity": "MEDIUM",
@@ -870,7 +978,9 @@
         "VulnerabilityID": "CVE-2019-16935",
         "PkgName": "libpython2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: XSS vulnerability in the documentation XML-RPC server in server_title field",
         "Description": "The documentation XML-RPC server in Python through 2.7.16, 3.x through 3.6.9, and 3.7.x through 3.7.4 has XSS via the server_title field. This occurs in Lib/DocXMLRPCServer.py in Python 2.x, and in Lib/xmlrpc/server.py in Python 3.x. If set_server_title is called with untrusted input, arbitrary JavaScript can be delivered to clients that visit the http URL for this server.",
         "Severity": "MEDIUM",
@@ -888,7 +998,9 @@
         "VulnerabilityID": "CVE-2019-9636",
         "PkgName": "libpython2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: Information Disclosure due to urlsplit improper NFKC normalization",
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "MEDIUM",
@@ -928,7 +1040,9 @@
         "VulnerabilityID": "CVE-2019-9740",
         "PkgName": "libpython2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: CRLF injection via the query part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the query string after a ? character) followed by an HTTP header or a Redis command.",
         "Severity": "MEDIUM",
@@ -945,7 +1059,9 @@
         "VulnerabilityID": "CVE-2019-9947",
         "PkgName": "libpython2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: CRLF injection via the path part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the path component of a URL that lacks a ? character) followed by an HTTP header or a Redis command. This is similar to the CVE-2019-9740 query string issue.",
         "Severity": "MEDIUM",
@@ -962,7 +1078,9 @@
         "VulnerabilityID": "CVE-2019-9948",
         "PkgName": "libpython2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: Undocumented local_file protocol allows remote attackers to bypass protection mechanisms",
         "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
         "Severity": "MEDIUM",
@@ -981,7 +1099,9 @@
         "VulnerabilityID": "CVE-2019-8457",
         "PkgName": "libsqlite3-0",
         "InstalledVersion": "3.27.2-3~bpo9+1",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "sqlite3: heap out-of-bound read in function rtreenode()",
         "Description": "SQLite3 from 3.6.0 to and including 3.27.2 is vulnerable to heap out-of-bound read in the rtreenode() function when handling invalid rtree tables.",
         "Severity": "HIGH",
@@ -998,7 +1118,9 @@
         "VulnerabilityID": "CVE-2017-13685",
         "PkgName": "libsqlite3-0",
         "InstalledVersion": "3.27.2-3~bpo9+1",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "sqlite: Local DoS via dump_callback function",
         "Description": "The dump_callback function in SQLite 3.20.0 allows remote attackers to cause a denial of service (EXC_BAD_ACCESS and application crash) via a crafted file.",
         "Severity": "MEDIUM",
@@ -1012,7 +1134,9 @@
         "VulnerabilityID": "CVE-2018-20346",
         "PkgName": "libsqlite3-0",
         "InstalledVersion": "3.27.2-3~bpo9+1",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "CVE-2018-20505 CVE-2018-20506 sqlite: Multiple flaws in sqlite which can be triggered via corrupted internal databases (Magellan)",
         "Description": "SQLite before 3.25.3, when the FTS3 extension is enabled, encounters an integer overflow (and resultant buffer overflow) for FTS3 queries that occur after crafted changes to FTS3 shadow tables, allowing remote attackers to execute arbitrary code by leveraging the ability to run arbitrary SQL statements (such as in certain WebSQL use cases), aka Magellan.",
         "Severity": "MEDIUM",
@@ -1047,7 +1171,9 @@
         "VulnerabilityID": "CVE-2018-20505",
         "PkgName": "libsqlite3-0",
         "InstalledVersion": "3.27.2-3~bpo9+1",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "CVE-2018-20346 CVE-2018-20505 CVE-2018-20506 sqlite: Multiple flaws in sqlite which can be triggered via corrupted internal databases (Magellan)",
         "Description": "SQLite 3.25.2, when queries are run on a table with a malformed PRIMARY KEY, allows remote attackers to cause a denial of service (application crash) by leveraging the ability to run arbitrary SQL statements (such as in certain WebSQL use cases).",
         "Severity": "MEDIUM",
@@ -1084,7 +1210,9 @@
         "VulnerabilityID": "CVE-2018-20506",
         "PkgName": "libsqlite3-0",
         "InstalledVersion": "3.27.2-3~bpo9+1",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "CVE-2018-20346 CVE-2018-20505 CVE-2018-20506 sqlite: Multiple flaws in sqlite which can be triggered via corrupted internal databases (Magellan)",
         "Description": "SQLite before 3.25.3, when the FTS3 extension is enabled, encounters an integer overflow (and resultant buffer overflow) for FTS3 queries in a \"merge\" operation that occurs after crafted changes to FTS3 shadow tables, allowing remote attackers to execute arbitrary code by leveraging the ability to run arbitrary SQL statements (such as in certain WebSQL use cases). This is a different vulnerability than CVE-2018-20346.",
         "Severity": "MEDIUM",
@@ -1123,7 +1251,9 @@
         "VulnerabilityID": "CVE-2018-8740",
         "PkgName": "libsqlite3-0",
         "InstalledVersion": "3.27.2-3~bpo9+1",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "sqlite: NULL pointer dereference with databases with schema corrupted with CREATE TABLE AS allows for denial of service",
         "Description": "In SQLite through 3.22.0, databases whose schema is corrupted using a CREATE TABLE AS statement could cause a NULL pointer dereference, related to build.c and prepare.c.",
         "Severity": "MEDIUM",
@@ -1142,7 +1272,9 @@
         "VulnerabilityID": "CVE-2019-16168",
         "PkgName": "libsqlite3-0",
         "InstalledVersion": "3.27.2-3~bpo9+1",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Description": "In SQLite through 3.29.0, whereLoopAddBtreeIndex in sqlite3.c can crash a browser or other application because of missing validation of a sqlite_stat1 sz field, aka a \"severe division by zero in the query planner.\"",
         "Severity": "MEDIUM",
         "References": [
@@ -1156,7 +1288,9 @@
         "VulnerabilityID": "CVE-2019-5827",
         "PkgName": "libsqlite3-0",
         "InstalledVersion": "3.27.2-3~bpo9+1",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "chromium-browser: out-of-bounds access in SQLite",
         "Description": "Integer overflow in SQLite via WebSQL in Google Chrome prior to 74.0.3729.131 allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
         "Severity": "MEDIUM",
@@ -1173,7 +1307,9 @@
         "VulnerabilityID": "CVE-2019-9936",
         "PkgName": "libsqlite3-0",
         "InstalledVersion": "3.27.2-3~bpo9+1",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "sqlite: heap-based buffer over-read in function fts5HashEntrySort in sqlite3.c",
         "Description": "In SQLite 3.27.2, running fts5 prefix queries inside a transaction could trigger a heap-based buffer over-read in fts5HashEntrySort in sqlite3.c, which may lead to an information leak. This is related to ext/fts5/fts5_hash.c.",
         "Severity": "MEDIUM",
@@ -1193,7 +1329,9 @@
         "VulnerabilityID": "CVE-2019-9937",
         "PkgName": "libsqlite3-0",
         "InstalledVersion": "3.27.2-3~bpo9+1",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "sqlite: null-pointer dereference in function fts5ChunkIterate in sqlite3.c",
         "Description": "In SQLite 3.27.2, interleaving reads and writes in a single transaction with an fts5 virtual table will lead to a NULL Pointer Dereference in fts5ChunkIterate in sqlite3.c. This is related to ext/fts5/fts5_hash.c and ext/fts5/fts5_index.c.",
         "Severity": "MEDIUM",
@@ -1213,7 +1351,9 @@
         "VulnerabilityID": "CVE-2007-6755",
         "PkgName": "libssl1.1",
         "InstalledVersion": "1.1.0k-1~deb9u1",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "Dual_EC_DRBG: weak pseudo random number generator",
         "Description": "The NIST SP 800-90A default statement of the Dual Elliptic Curve Deterministic Random Bit Generation (Dual_EC_DRBG) algorithm contains point Q constants with a possible relationship to certain \"skeleton key\" values, which might allow context-dependent attackers to defeat cryptographic protection mechanisms by leveraging knowledge of those values.  NOTE: this is a preliminary CVE for Dual_EC_DRBG; future research may provide additional details about point Q and associated attacks, and could potentially lead to a RECAST or REJECT of this CVE.",
         "Severity": "MEDIUM",
@@ -1232,7 +1372,9 @@
         "VulnerabilityID": "CVE-2010-0928",
         "PkgName": "libssl1.1",
         "InstalledVersion": "1.1.0k-1~deb9u1",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "openssl: RSA authentication weakness",
         "Description": "OpenSSL 0.9.8i on the Gaisler Research LEON3 SoC on the Xilinx Virtex-II Pro FPGA uses a Fixed Width Exponentiation (FWE) algorithm for certain signature calculations, and does not verify the signature before providing it to a caller, which makes it easier for physically proximate attackers to determine the private key via a modified supply voltage for the microprocessor, related to a \"fault-based attack.\"",
         "Severity": "MEDIUM",
@@ -1250,7 +1392,9 @@
         "PkgName": "libssl1.1",
         "InstalledVersion": "1.1.0k-1~deb9u1",
         "FixedVersion": "1.1.0l-1~deb9u1",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "MEDIUM",
@@ -1269,7 +1413,9 @@
         "VulnerabilityID": "CVE-2018-12886",
         "PkgName": "libstdc++6",
         "InstalledVersion": "6.3.0-18+deb9u1",
-        "LayerID": "sha256:6189abe095d53c1c9f2bfc8f50128ee876b9a5d10f9eda1564e5f5357d6ffe61",
+        "Layer": {
+          "DiffID": "sha256:6189abe095d53c1c9f2bfc8f50128ee876b9a5d10f9eda1564e5f5357d6ffe61"
+        },
         "Title": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
         "Description": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against.",
         "Severity": "MEDIUM",
@@ -1282,7 +1428,9 @@
         "VulnerabilityID": "CVE-2018-19211",
         "PkgName": "libtinfo5",
         "InstalledVersion": "6.0+20161126-1+deb9u2",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "ncurses: Null pointer dereference at function _nc_parse_entry in parse_entry.c",
         "Description": "In ncurses 6.1, there is a NULL pointer dereference at function _nc_parse_entry in parse_entry.c that will lead to a denial of service attack. The product proceeds to the dereference code path even after a \"dubious character `*' in name or alias field\" detection.",
         "Severity": "MEDIUM",
@@ -1295,7 +1443,9 @@
         "VulnerabilityID": "CVE-2019-17594",
         "PkgName": "libtinfo5",
         "InstalledVersion": "6.0+20161126-1+deb9u2",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
         "References": [
@@ -1307,7 +1457,9 @@
         "VulnerabilityID": "CVE-2019-17595",
         "PkgName": "libtinfo5",
         "InstalledVersion": "6.0+20161126-1+deb9u2",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
         "References": [
@@ -1319,7 +1471,9 @@
         "VulnerabilityID": "CVE-2007-6755",
         "PkgName": "openssl",
         "InstalledVersion": "1.1.0k-1~deb9u1",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "Dual_EC_DRBG: weak pseudo random number generator",
         "Description": "The NIST SP 800-90A default statement of the Dual Elliptic Curve Deterministic Random Bit Generation (Dual_EC_DRBG) algorithm contains point Q constants with a possible relationship to certain \"skeleton key\" values, which might allow context-dependent attackers to defeat cryptographic protection mechanisms by leveraging knowledge of those values.  NOTE: this is a preliminary CVE for Dual_EC_DRBG; future research may provide additional details about point Q and associated attacks, and could potentially lead to a RECAST or REJECT of this CVE.",
         "Severity": "MEDIUM",
@@ -1338,7 +1492,9 @@
         "VulnerabilityID": "CVE-2010-0928",
         "PkgName": "openssl",
         "InstalledVersion": "1.1.0k-1~deb9u1",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "openssl: RSA authentication weakness",
         "Description": "OpenSSL 0.9.8i on the Gaisler Research LEON3 SoC on the Xilinx Virtex-II Pro FPGA uses a Fixed Width Exponentiation (FWE) algorithm for certain signature calculations, and does not verify the signature before providing it to a caller, which makes it easier for physically proximate attackers to determine the private key via a modified supply voltage for the microprocessor, related to a \"fault-based attack.\"",
         "Severity": "MEDIUM",
@@ -1356,7 +1512,9 @@
         "PkgName": "openssl",
         "InstalledVersion": "1.1.0k-1~deb9u1",
         "FixedVersion": "1.1.0l-1~deb9u1",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "MEDIUM",
@@ -1375,7 +1533,9 @@
         "VulnerabilityID": "CVE-2019-5010",
         "PkgName": "python2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
         "Description": "A null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
         "Severity": "HIGH",
@@ -1388,7 +1548,9 @@
         "VulnerabilityID": "CVE-2013-7040",
         "PkgName": "python2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: hash secret can be recovered remotely",
         "Description": "Python 2.7 before 3.4 only uses the last eight bits of the prefix to randomize hash values, which causes it to compute hash values without restricting the ability to trigger hash collisions predictably and makes it easier for context-dependent attackers to cause a denial of service (CPU consumption) via crafted input to an application that maintains a hash table.  NOTE: this vulnerability exists because of an incomplete fix for CVE-2012-1150.",
         "Severity": "MEDIUM",
@@ -1405,7 +1567,9 @@
         "VulnerabilityID": "CVE-2017-17522",
         "PkgName": "python2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: Command injection in Lib/webbrowser.py",
         "Description": "** DISPUTED ** Lib/webbrowser.py in Python through 3.6.3 does not validate strings before launching the program specified by the BROWSER environment variable, which might allow remote attackers to conduct argument-injection attacks via a crafted URL. NOTE: a software maintainer indicates that exploitation is impossible because the code relies on subprocess.Popen and the default shell=False setting.",
         "Severity": "MEDIUM",
@@ -1419,7 +1583,9 @@
         "VulnerabilityID": "CVE-2018-1000030",
         "PkgName": "python2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: Heap-Buffer-Overflow and Heap-Use-After-Free in Objects/fileobject.c",
         "Description": "Python 2.7.14 is vulnerable to a Heap-Buffer-Overflow as well as a Heap-Use-After-Free. Python versions prior to 2.7.14 may also be vulnerable and it appears that Python 2.7.17 and prior may also be vulnerable however this has not been confirmed. The vulnerability lies when multiply threads are handling large amounts of data. In both cases there is essentially a race condition that occurs. For the Heap-Buffer-Overflow, Thread 2 is creating the size for a buffer, but Thread1 is already writing to the buffer without knowing how much to write. So when a large amount of data is being processed, it is very easy to cause memory corruption using a Heap-Buffer-Overflow. As for the Use-After-Free, Thread3-\u003eMalloc-\u003eThread1-\u003eFree's-\u003eThread2-Re-uses-Free'd Memory. The PSRT has stated that this is not a security vulnerability due to the fact that the attacker must be able to run code, however in some situations, such as function as a service, this vulnerability can potentially be used by an attacker to violate a trust boundary, as such the DWF feels this issue deserves a CVE.",
         "Severity": "MEDIUM",
@@ -1437,7 +1603,9 @@
         "VulnerabilityID": "CVE-2018-20852",
         "PkgName": "python2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: Cookie domain check returns incorrect results",
         "Description": "http.cookiejar.DefaultPolicy.domain_return_ok in Lib/http/cookiejar.py in Python before 3.7.3 does not correctly validate the domain: it can be tricked into sending existing cookies to the wrong server. An attacker may abuse this flaw by using a server with a hostname that has another valid hostname as a suffix (e.g., pythonicexample.com to steal cookies for example.com). When a program uses http.cookiejar.DefaultPolicy and tries to do an HTTP connection to an attacker-controlled server, existing cookies can be leaked to the attacker. This affects 2.x through 2.7.16, 3.x before 3.4.10, 3.5.x before 3.5.7, 3.6.x before 3.6.9, and 3.7.x before 3.7.3.",
         "Severity": "MEDIUM",
@@ -1454,7 +1622,9 @@
         "VulnerabilityID": "CVE-2019-16056",
         "PkgName": "python2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: email.utils.parseaddr wrongly parses email addresses",
         "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
         "Severity": "MEDIUM",
@@ -1474,7 +1644,9 @@
         "VulnerabilityID": "CVE-2019-16935",
         "PkgName": "python2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: XSS vulnerability in the documentation XML-RPC server in server_title field",
         "Description": "The documentation XML-RPC server in Python through 2.7.16, 3.x through 3.6.9, and 3.7.x through 3.7.4 has XSS via the server_title field. This occurs in Lib/DocXMLRPCServer.py in Python 2.x, and in Lib/xmlrpc/server.py in Python 3.x. If set_server_title is called with untrusted input, arbitrary JavaScript can be delivered to clients that visit the http URL for this server.",
         "Severity": "MEDIUM",
@@ -1492,7 +1664,9 @@
         "VulnerabilityID": "CVE-2019-9636",
         "PkgName": "python2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: Information Disclosure due to urlsplit improper NFKC normalization",
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "MEDIUM",
@@ -1532,7 +1706,9 @@
         "VulnerabilityID": "CVE-2019-9740",
         "PkgName": "python2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: CRLF injection via the query part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the query string after a ? character) followed by an HTTP header or a Redis command.",
         "Severity": "MEDIUM",
@@ -1549,7 +1725,9 @@
         "VulnerabilityID": "CVE-2019-9947",
         "PkgName": "python2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: CRLF injection via the path part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the path component of a URL that lacks a ? character) followed by an HTTP header or a Redis command. This is similar to the CVE-2019-9740 query string issue.",
         "Severity": "MEDIUM",
@@ -1566,7 +1744,9 @@
         "VulnerabilityID": "CVE-2019-9948",
         "PkgName": "python2.7-minimal",
         "InstalledVersion": "2.7.13-2+deb9u3",
-        "LayerID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e",
+        "Layer": {
+          "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
+        },
         "Title": "python: Undocumented local_file protocol allows remote attackers to bypass protection mechanisms",
         "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
         "Severity": "MEDIUM",

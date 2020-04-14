@@ -66,7 +66,10 @@ func TestScanner_ScanImage(t *testing.T) {
 									PkgName:          "vim",
 									InstalledVersion: "1.2.3",
 									FixedVersion:     "1.2.4",
-									LayerID:          "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+									Layer: ftypes.Layer{
+										Digest: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+										DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+									},
 								},
 							},
 						},
@@ -87,7 +90,10 @@ func TestScanner_ScanImage(t *testing.T) {
 							PkgName:          "vim",
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "1.2.4",
-							LayerID:          "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+							Layer: ftypes.Layer{
+								Digest: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+								DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+							},
 						},
 					},
 				},
