@@ -100,6 +100,8 @@ Please see [LICENSE](https://github.com/aquasecurity/trivy/blob/master/LICENSE) 
 
 # Installation
 
+Replace `{TRIVY_VERSION}` with the latest released version of Trivy. You can find the latest releases on this page: https://github.com/aquasecurity/trivy/releases
+
 ## RHEL/CentOS
 
 Add repository setting to `/etc/yum.repos.d`.
@@ -118,7 +120,7 @@ $ sudo yum -y install trivy
 or
 
 ```
-$ rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.1.6/trivy_0.1.6_Linux-64bit.rpm
+$ rpm -ivh https://github.com/aquasecurity/trivy/releases/download/{TRIVY_VERSION}/trivy_{TRIVY_VERSION}_Linux-64bit.rpm
 ```
 
 ## Debian/Ubuntu
@@ -137,8 +139,8 @@ or
 
 ```
 $ sudo apt-get install rpm
-$ wget https://github.com/aquasecurity/trivy/releases/download/v0.1.6/trivy_0.1.6_Linux-64bit.deb
-$ sudo dpkg -i trivy_0.1.6_Linux-64bit.deb
+$ wget https://github.com/aquasecurity/trivy/releases/download/{TRIVY_VERSION}/trivy_{TRIVY_VERSION}_Linux-64bit.deb
+$ sudo dpkg -i trivy_{TRIVY_VERSION}_Linux-64bit.deb
 ```
 
 
