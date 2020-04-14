@@ -29,10 +29,10 @@ func NewCache(client cache.LocalImageCache) Cache {
 
 func (c Cache) Reset() (err error) {
 	if err := c.ClearDB(); err != nil {
-		return err
+		return xerrors.Errorf("failed to clear the database: %w", err)
 	}
 	if err := c.ClearImages(); err != nil {
-		return err
+		return xerrors.Errorf("failed to clear the image cache: %w", err)
 	}
 	return nil
 }
@@ -40,7 +40,7 @@ func (c Cache) Reset() (err error) {
 func (c Cache) ClearDB() (err error) {
 	log.Logger.Info("Removing DB file...")
 	if err = os.RemoveAll(utils.CacheDir()); err != nil {
-		return xerrors.New("failed to remove cache")
+		return xerrors.Errorf("failed to remove the directory (%s) : %w", utils.CacheDir(), err)
 	}
 	return nil
 }
@@ -48,7 +48,7 @@ func (c Cache) ClearDB() (err error) {
 func (c Cache) ClearImages() error {
 	log.Logger.Info("Removing image caches...")
 	if err := c.client.Clear(); err != nil {
-		return xerrors.New("failed to remove image layer cache")
+		return xerrors.Errorf("failed to remove the cache: %w", err)
 	}
 	return nil
 }
@@ -79,7 +79,7 @@ func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) erro
 
 	// for debug
 	if err := showDBInfo(); err != nil {
-		return xerrors.Errorf("failed to show database info")
+		return xerrors.Errorf("failed to show database info: %w", err)
 	}
 	return nil
 }
