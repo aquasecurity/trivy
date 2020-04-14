@@ -161,16 +161,6 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/centos-7-ignore-unfixed.json.golden",
 		},
 		{
-			name: "centos 7 integration with critical severity",
-			testArgs: args{
-				Version:       "dev",
-				IgnoreUnfixed: true,
-				Severity:      []string{"CRITICAL"},
-				Input:         "testdata/fixtures/centos-7.tar.gz",
-			},
-			golden: "testdata/centos-7-critical.json.golden",
-		},
-		{
 			name: "centos 7 integration with low and high severity",
 			testArgs: args{
 				Version:       "dev",
