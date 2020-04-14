@@ -50,6 +50,7 @@ message Vulnerability {
   Severity        severity          = 7;
   repeated string references        = 8;
   string          layer_id          = 9;
+  string          severity_source   = 10;
 }
 
 enum Severity {
