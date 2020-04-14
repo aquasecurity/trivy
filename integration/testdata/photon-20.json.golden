@@ -8,7 +8,9 @@
         "PkgName": "bash",
         "InstalledVersion": "4.4.12-3.ph2",
         "FixedVersion": "4.4.18-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "bash: when effective UID is not equal to its real UID the saved UID is not dropped",
         "Description": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support \"saved UID\" functionality, the saved UID is not dropped. An attacker with command execution in the shell can use \"enable -f\" for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected.",
@@ -24,7 +26,9 @@
         "PkgName": "curl",
         "InstalledVersion": "7.59.0-7.ph2",
         "FixedVersion": "7.59.0-9.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
@@ -43,7 +47,9 @@
         "PkgName": "curl",
         "InstalledVersion": "7.59.0-7.ph2",
         "FixedVersion": "7.59.0-9.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
@@ -64,7 +70,9 @@
         "PkgName": "curl",
         "InstalledVersion": "7.59.0-7.ph2",
         "FixedVersion": "7.59.0-8.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "curl: NTLM type-2 heap out-of-bounds buffer read",
         "Description": "libcurl versions from 7.36.0 to before 7.64.0 is vulnerable to a heap buffer out-of-bounds read. The function handling incoming NTLM type-2 messages (`lib/vauth/ntlm.c:ntlm_decode_type2_target`) does not validate incoming data correctly and is subject to an integer overflow vulnerability. Using that overflow, a malicious or broken NTLM server could trick libcurl to accept a bad length + offset combination that would lead to a buffer read out-of-bounds.",
@@ -90,7 +98,9 @@
         "PkgName": "curl-libs",
         "InstalledVersion": "7.59.0-7.ph2",
         "FixedVersion": "7.59.0-9.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
@@ -109,7 +119,9 @@
         "PkgName": "curl-libs",
         "InstalledVersion": "7.59.0-7.ph2",
         "FixedVersion": "7.59.0-9.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
@@ -130,7 +142,9 @@
         "PkgName": "curl-libs",
         "InstalledVersion": "7.59.0-7.ph2",
         "FixedVersion": "7.59.0-8.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "curl: NTLM type-2 heap out-of-bounds buffer read",
         "Description": "libcurl versions from 7.36.0 to before 7.64.0 is vulnerable to a heap buffer out-of-bounds read. The function handling incoming NTLM type-2 messages (`lib/vauth/ntlm.c:ntlm_decode_type2_target`) does not validate incoming data correctly and is subject to an integer overflow vulnerability. Using that overflow, a malicious or broken NTLM server could trick libcurl to accept a bad length + offset combination that would lead to a buffer read out-of-bounds.",
@@ -156,7 +170,9 @@
         "PkgName": "e2fsprogs-libs",
         "InstalledVersion": "1.43.4-2.ph2",
         "FixedVersion": "1.43.4-3.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
@@ -175,7 +191,9 @@
         "PkgName": "e2fsprogs-libs",
         "InstalledVersion": "1.43.4-2.ph2",
         "FixedVersion": "1.43.4-4.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
@@ -194,7 +212,9 @@
         "PkgName": "expat-libs",
         "InstalledVersion": "2.2.4-1.ph2",
         "FixedVersion": "2.2.4-2.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "expat: large number of colons in input makes parser consume high amount of resources, leading to DoS",
         "Description": "In libexpat in Expat before 2.2.7, XML input including XML names that contain a large number of colons could make the XML parser consume a high amount of RAM and CPU resources while processing (enough to be usable for denial-of-service attacks).",
@@ -220,7 +240,9 @@
         "PkgName": "libsolv",
         "InstalledVersion": "0.6.26-4.ph2",
         "FixedVersion": "0.6.26-5.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "libsolv: out-of-bounds read in repodata_schema2id in repodata.c",
         "Description": "repodata_schema2id in repodata.c in libsolv before 0.7.6 has a heap-based buffer over-read via a last schema whose length is less than the length of the input schema.",
@@ -237,7 +259,9 @@
         "PkgName": "libssh2",
         "InstalledVersion": "1.8.2-1.ph2",
         "FixedVersion": "1.9.0-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "libssh2: integer overflow in kex_method_diffie_hellman_group_exchange_sha256_key_exchange in kex.c leads to out-of-bounds write",
         "Description": "In libssh2 before 1.9.0, kex_method_diffie_hellman_group_exchange_sha256_key_exchange in kex.c has an integer overflow that could lead to an out-of-bounds read in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to disclose sensitive information or cause a denial of service condition on the client system when a user connects to the server. This is related to an _libssh2_check_length mistake, and is different from the various issues fixed in 1.8.1, such as CVE-2019-3855.",
@@ -256,7 +280,9 @@
         "PkgName": "libssh2",
         "InstalledVersion": "1.8.2-1.ph2",
         "FixedVersion": "1.9.0-2.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "libssh2: integer overflow in SSH_MSG_DISCONNECT logic in packet.c",
         "Description": "In libssh2 v1.9.0 and earlier versions, the SSH_MSG_DISCONNECT logic in packet.c has an integer overflow in a bounds check, enabling an attacker to specify an arbitrary (out-of-bounds) offset for a subsequent memory read. A crafted SSH server may be able to disclose sensitive information or cause a denial of service condition on the client system when a user connects to the server.",
@@ -277,7 +303,9 @@
         "PkgName": "ncurses-libs",
         "InstalledVersion": "6.0-14.ph2",
         "FixedVersion": "6.1-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
@@ -295,7 +323,9 @@
         "PkgName": "ncurses-libs",
         "InstalledVersion": "6.0-14.ph2",
         "FixedVersion": "6.1-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
@@ -313,7 +343,9 @@
         "PkgName": "openssl",
         "InstalledVersion": "1.0.2s-1.ph2",
         "FixedVersion": "1.0.2t-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "openssl: side-channel weak encryption vulnerability",
         "Description": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
@@ -335,7 +367,9 @@
         "PkgName": "openssl",
         "InstalledVersion": "1.0.2s-1.ph2",
         "FixedVersion": "1.0.2t-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
@@ -356,7 +390,9 @@
         "PkgName": "sqlite-libs",
         "InstalledVersion": "3.27.2-3.ph2",
         "FixedVersion": "3.27.2-7.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "sqlite: omits bits from the colUsed bitmask in the case of a generated column",
         "Description": "lookupName in resolve.c in SQLite 3.30.1 omits bits from the colUsed bitmask in the case of a generated column, which allows attackers to cause a denial of service or possibly have unspecified other impact.",
@@ -372,7 +408,9 @@
         "PkgName": "sqlite-libs",
         "InstalledVersion": "3.27.2-3.ph2",
         "FixedVersion": "3.27.2-7.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "sqlite: mishandles certain SELECT statements with a nonexistent VIEW, leading to DoS",
         "Description": "SQLite 3.30.1 mishandles certain SELECT statements with a nonexistent VIEW, leading to an application crash.",
@@ -388,7 +426,9 @@
         "PkgName": "sqlite-libs",
         "InstalledVersion": "3.27.2-3.ph2",
         "FixedVersion": "3.27.2-7.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "sqlite: pragma.c mishandles NOT NULL in an integrity_check PRAGMA command in certain cases of generated columns",
         "Description": "pragma.c in SQLite through 3.30.1 mishandles NOT NULL in an integrity_check PRAGMA command in certain cases of generated columns.",
@@ -405,7 +445,9 @@
         "PkgName": "sqlite-libs",
         "InstalledVersion": "3.27.2-3.ph2",
         "FixedVersion": "3.30.1-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "sqlite: selectExpander in select.c proceeds with WITH stack unwinding even after a parsing error",
         "Description": "selectExpander in select.c in SQLite 3.30.1 proceeds with WITH stack unwinding even after a parsing error.",
@@ -420,7 +462,9 @@
         "PkgName": "sqlite-libs",
         "InstalledVersion": "3.27.2-3.ph2",
         "FixedVersion": "3.27.2-5.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "sqlite: division by zero in whereLoopAddBtreeIndex in sqlite3.c",
         "Description": "In SQLite through 3.29.0, whereLoopAddBtreeIndex in sqlite3.c can crash a browser or other application because of missing validation of a sqlite_stat1 sz field, aka a \"severe division by zero in the query planner.\"",
@@ -443,7 +487,9 @@
         "PkgName": "sqlite-libs",
         "InstalledVersion": "3.27.2-3.ph2",
         "FixedVersion": "3.31.1-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "sqlite: allows a crash if a sub-select uses both DISTINCT and window functions and also has certain ORDER BY usage",
         "Description": "sqlite3Select in select.c in SQLite 3.30.1 allows a crash if a sub-select uses both DISTINCT and window functions, and also has certain ORDER BY usage.",
@@ -458,7 +504,9 @@
         "PkgName": "sqlite-libs",
         "InstalledVersion": "3.27.2-3.ph2",
         "FixedVersion": "3.30.1-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "sqlite: invalid pointer dereference in exprListAppendList in window.c",
         "Description": "exprListAppendList in window.c in SQLite 3.30.1 allows attackers to trigger an invalid pointer dereference because constant integer values in ORDER BY clauses of window definitions are mishandled.",
@@ -474,7 +522,9 @@
         "PkgName": "sqlite-libs",
         "InstalledVersion": "3.27.2-3.ph2",
         "FixedVersion": "3.31.1-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "sqlite: mishandling of certain uses of SELECT DISTINCT involving a LEFT JOIN in flattenSubquery in select.c leads to a NULL pointer dereference",
         "Description": "flattenSubquery in select.c in SQLite 3.30.1 mishandles certain uses of SELECT DISTINCT involving a LEFT JOIN in which the right-hand side is a view. This can cause a NULL pointer dereference (or incorrect results).",
@@ -490,7 +540,9 @@
         "PkgName": "sqlite-libs",
         "InstalledVersion": "3.27.2-3.ph2",
         "FixedVersion": "3.31.1-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "sqlite: zipfileUpdate in ext/misc/zipfile.c mishandles a NULL pathname during an update of a ZIP archive",
         "Description": "zipfileUpdate in ext/misc/zipfile.c in SQLite 3.30.1 mishandles a NULL pathname during an update of a ZIP archive.",
@@ -506,7 +558,9 @@
         "PkgName": "sqlite-libs",
         "InstalledVersion": "3.27.2-3.ph2",
         "FixedVersion": "3.31.1-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "sqlite: error mishandling because of incomplete fix of CVE-2019-19880",
         "Description": "multiSelect in select.c in SQLite 3.30.1 mishandles certain errors during parsing, as demonstrated by errors from sqlite3WindowRewrite() calls. NOTE: this vulnerability exists because of an incomplete fix for CVE-2019-19880.",
@@ -522,7 +576,9 @@
         "PkgName": "sqlite-libs",
         "InstalledVersion": "3.27.2-3.ph2",
         "FixedVersion": "3.31.1-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "sqlite: mishandles certain uses of INSERT INTO in situations involving embedded '\\0' characters in filenames",
         "Description": "ext/misc/zipfile.c in SQLite 3.30.1 mishandles certain uses of INSERT INTO in situations involving embedded '\\0' characters in filenames, leading to a memory-management error that can be detected by (for example) valgrind.",
@@ -538,7 +594,9 @@
         "PkgName": "sqlite-libs",
         "InstalledVersion": "3.27.2-3.ph2",
         "FixedVersion": "3.30.1-1.ph2",
-        "LayerID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
         "SeveritySource": "photon",
         "Title": "sqlite: infinite recursion via certain types of self-referential views in conjunction with ALTER TABLE statements",
         "Description": "alter.c in SQLite through 3.30.1 allows attackers to trigger infinite recursion via certain types of self-referential views in conjunction with ALTER TABLE statements.",

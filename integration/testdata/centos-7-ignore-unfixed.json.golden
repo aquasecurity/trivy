@@ -4,12 +4,35 @@
     "Type": "centos",
     "Vulnerabilities": [
       {
+        "VulnerabilityID": "CVE-2018-5743",
+        "PkgName": "bind-license",
+        "InstalledVersion": "32:9.9.4-73.el7_6",
+        "FixedVersion": "32:9.9.4-74.el7_6.1",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
+        "Title": "bind: Limiting simultaneous TCP clients is ineffective",
+        "Description": "By design, BIND is intended to limit the number of TCP clients that can be connected at any given time. The number of allowed connections is a tunable parameter which, if unset, defaults to a conservative value for most servers. Unfortunately, the code which was intended to limit the number of simultaneous connections contained an error which could be exploited to grow the number of simultaneous connections beyond this limit. Versions affected: BIND 9.9.0 -\u003e 9.10.8-P1, 9.11.0 -\u003e 9.11.6, 9.12.0 -\u003e 9.12.4, 9.14.0. BIND 9 Supported Preview Edition versions 9.9.3-S1 -\u003e 9.11.5-S3, and 9.11.5-S5. Versions 9.13.0 -\u003e 9.13.7 of the 9.13 development branch are also affected. Versions prior to BIND 9.9.0 have not been evaluated for vulnerability to CVE-2018-5743.",
+        "Severity": "HIGH",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-5743.html",
+          "http://linux.oracle.com/errata/ELSA-2019-1492.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5743",
+          "https://kb.isc.org/docs/cve-2018-5743",
+          "https://support.f5.com/csp/article/K74009656?utm_source=f5support\u0026amp;utm_medium=RSS",
+          "https://www.synology.com/security/advisory/Synology_SA_19_20"
+        ]
+      },
+      {
         "VulnerabilityID": "CVE-2018-5741",
         "PkgName": "bind-license",
         "InstalledVersion": "32:9.9.4-73.el7_6",
         "FixedVersion": "32:9.11.4-9.P2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "bind: Incorrect documentation of krb5-subdomain and ms-subdomain update policies",
         "Description": "To provide fine-grained controls over the ability to use Dynamic DNS (DDNS) to update records in a zone, BIND 9 provides a feature called update-policy. Various rules can be configured to limit the types of updates that can be performed by a client, depending on the key used when sending the update request. Unfortunately, some rule types were not initially documented, and when documentation for them was added to the Administrator Reference Manual (ARM) in change #3112, the language that was added to the ARM at that time incorrectly described the behavior of two rule types, krb5-subdomain and ms-subdomain. This incorrect documentation could mislead operators into believing that policies they had configured were more restrictive than they actually were. This affects BIND versions prior to BIND 9.11.5 and BIND 9.12.3.",
         "Severity": "MEDIUM",
@@ -25,31 +48,14 @@
         ]
       },
       {
-        "VulnerabilityID": "CVE-2018-5743",
-        "PkgName": "bind-license",
-        "InstalledVersion": "32:9.9.4-73.el7_6",
-        "FixedVersion": "32:9.9.4-74.el7_6.1",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
-        "Title": "bind: Limiting simultaneous TCP clients is ineffective",
-        "Description": "By design, BIND is intended to limit the number of TCP clients that can be connected at any given time. The number of allowed connections is a tunable parameter which, if unset, defaults to a conservative value for most servers. Unfortunately, the code which was intended to limit the number of simultaneous connections contained an error which could be exploited to grow the number of simultaneous connections beyond this limit. Versions affected: BIND 9.9.0 -\u003e 9.10.8-P1, 9.11.0 -\u003e 9.11.6, 9.12.0 -\u003e 9.12.4, 9.14.0. BIND 9 Supported Preview Edition versions 9.9.3-S1 -\u003e 9.11.5-S3, and 9.11.5-S5. Versions 9.13.0 -\u003e 9.13.7 of the 9.13 development branch are also affected. Versions prior to BIND 9.9.0 have not been evaluated for vulnerability to CVE-2018-5743.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2018-5743.html",
-          "http://linux.oracle.com/errata/ELSA-2019-1492.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5743",
-          "https://kb.isc.org/docs/cve-2018-5743",
-          "https://support.f5.com/csp/article/K74009656?utm_source=f5support\u0026amp;utm_medium=RSS",
-          "https://www.synology.com/security/advisory/Synology_SA_19_20"
-        ]
-      },
-      {
         "VulnerabilityID": "CVE-2018-1000876",
         "PkgName": "binutils",
         "InstalledVersion": "2.27-34.base.el7",
         "FixedVersion": "2.27-41.base.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "binutils: integer overflow leads to heap-based buffer overflow in objdump",
         "Description": "binutils version 2.32 and earlier contains a Integer Overflow vulnerability in objdump, bfd_get_dynamic_reloc_upper_bound,bfd_canonicalize_dynamic_reloc that can result in Integer overflow trigger heap overflow. Successful exploitation allows execution of arbitrary code.. This attack appear to be exploitable via Local. This vulnerability appears to have been fixed in after commit 3a551c7a1b80fca579461774860574eabfd7f18f.",
         "Severity": "MEDIUM",
@@ -67,11 +73,13 @@
         "PkgName": "binutils",
         "InstalledVersion": "2.27-34.base.el7",
         "FixedVersion": "2.27-41.base.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "binutils: Stack Exhaustion in the demangling functions provided by libiberty",
         "Description": "An issue was discovered in arm_pt in cplus-dem.c in GNU libiberty, as distributed in GNU Binutils 2.30. Stack Exhaustion occurs in the C++ demangling functions provided by libiberty, and there are recursive stack frames: demangle_arm_hp_template, demangle_class_name, demangle_fund_type, do_type, do_arg, demangle_args, and demangle_nested_args. This can occur during execution of nm-new.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-12641.html",
           "http://linux.oracle.com/errata/ELSA-2019-2075.html",
@@ -87,11 +95,13 @@
         "PkgName": "binutils",
         "InstalledVersion": "2.27-34.base.el7",
         "FixedVersion": "2.27-41.base.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "binutils: NULL pointer dereference in work_stuff_copy_to_from in cplus-dem.c.",
         "Description": "A NULL pointer dereference (aka SEGV on unknown address 0x000000000000) was discovered in work_stuff_copy_to_from in cplus-dem.c in GNU libiberty, as distributed in GNU Binutils 2.30. This can occur during execution of objdump.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-12697.html",
           "http://linux.oracle.com/errata/ELSA-2019-2075.html",
@@ -108,11 +118,13 @@
         "PkgName": "curl",
         "InstalledVersion": "7.29.0-51.el7",
         "FixedVersion": "7.29.0-51.el7_6.3",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "curl: NTLM password overflow via integer overflow",
         "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
-        "Severity": "HIGH",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-14618.html",
           "http://linux.oracle.com/errata/ELSA-2019-1880.html",
@@ -134,11 +146,13 @@
         "PkgName": "curl",
         "InstalledVersion": "7.29.0-51.el7",
         "FixedVersion": "7.29.0-54.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "curl: Heap-based buffer over-read in the curl tool warning formatting",
         "Description": "Curl versions 7.14.1 through 7.61.1 are vulnerable to a heap-based buffer over-read in the tool_msgs.c:voutf() function that may result in information exposure and denial of service.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-16842.html",
           "http://linux.oracle.com/errata/ELSA-2019-2181.html",
@@ -156,33 +170,17 @@
         ]
       },
       {
-        "VulnerabilityID": "CVE-2018-16402",
-        "PkgName": "elfutils-default-yama-scope",
-        "InstalledVersion": "0.172-2.el7",
-        "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
-        "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
-        "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
-        "Severity": "HIGH",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2018-16402.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
-          "https://usn.ubuntu.com/4012-1/"
-        ]
-      },
-      {
         "VulnerabilityID": "CVE-2018-16062",
         "PkgName": "elfutils-default-yama-scope",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getaranges.c:dwarf_getaranges() via crafted file",
         "Description": "dwarf_getaranges in dwarf_getaranges.c in libdw in elfutils before 2018-08-18 allows remote attackers to cause a denial of service (heap-based buffer over-read) via a crafted file.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-16062.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -196,15 +194,37 @@
         ]
       },
       {
+        "VulnerabilityID": "CVE-2018-16402",
+        "PkgName": "elfutils-default-yama-scope",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
+        "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
+        "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
+        "Severity": "LOW",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-16402.html",
+          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
         "VulnerabilityID": "CVE-2018-16403",
         "PkgName": "elfutils-default-yama-scope",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getabbrev.c and libwd/dwarf_hasattr.c causes crash",
         "Description": "libdw in elfutils 0.173 checks the end of the attributes list incorrectly in dwarf_getabbrev in dwarf_getabbrev.c and dwarf_hasattr in dwarf_hasattr.c, leading to a heap-based buffer over-read and an application crash.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-16403.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -221,11 +241,13 @@
         "PkgName": "elfutils-default-yama-scope",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl",
         "Description": "An invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl in elfutils through v0.174. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by consider_notes.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-18310.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -241,11 +263,13 @@
         "PkgName": "elfutils-default-yama-scope",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: eu-size cannot handle recursive ar files",
         "Description": "An Invalid Memory Address Dereference exists in the function elf_end in libelf in elfutils through v0.174. Although eu-size is intended to support ar files inside ar files, handle_ar in size.c closes the outer ar file before handling all inner entries. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-18520.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -261,11 +285,13 @@
         "PkgName": "elfutils-default-yama-scope",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: Divide-by-zero in arlib_add_symbols function in arlib.c",
         "Description": "Divide-by-zero vulnerabilities in the function arlib_add_symbols() in arlib.c in elfutils 0.174 allow remote attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by eu-ranlib, because a zero sh_entsize is mishandled.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-18521.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -281,11 +307,13 @@
         "PkgName": "elfutils-default-yama-scope",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: heap-based buffer over-read in read_srclines in dwarf_getsrclines.c in libdw",
         "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-7149.html",
           "http://linux.oracle.com/errata/ELSA-2019-3575.html",
@@ -301,11 +329,13 @@
         "PkgName": "elfutils-default-yama-scope",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: segmentation fault in elf64_xlatetom in libelf/elf32_xlatetom.c",
         "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-7150.html",
           "http://linux.oracle.com/errata/ELSA-2019-3575.html",
@@ -321,11 +351,13 @@
         "PkgName": "elfutils-default-yama-scope",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: out of bound write in elf_cvt_note in libelf/note_xlate.h",
         "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-7664.html",
           "http://linux.oracle.com/errata/ELSA-2019-3575.html",
@@ -339,11 +371,13 @@
         "PkgName": "elfutils-default-yama-scope",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: heap-based buffer over-read in function elf32_xlatetom in elf32_xlatetom.c",
         "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-7665.html",
           "http://linux.oracle.com/errata/ELSA-2019-3575.html",
@@ -355,33 +389,17 @@
         ]
       },
       {
-        "VulnerabilityID": "CVE-2018-16402",
-        "PkgName": "elfutils-libelf",
-        "InstalledVersion": "0.172-2.el7",
-        "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
-        "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
-        "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
-        "Severity": "HIGH",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2018-16402.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
-          "https://usn.ubuntu.com/4012-1/"
-        ]
-      },
-      {
         "VulnerabilityID": "CVE-2018-16062",
         "PkgName": "elfutils-libelf",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getaranges.c:dwarf_getaranges() via crafted file",
         "Description": "dwarf_getaranges in dwarf_getaranges.c in libdw in elfutils before 2018-08-18 allows remote attackers to cause a denial of service (heap-based buffer over-read) via a crafted file.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-16062.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -395,15 +413,37 @@
         ]
       },
       {
+        "VulnerabilityID": "CVE-2018-16402",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
+        "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
+        "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
+        "Severity": "LOW",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-16402.html",
+          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
         "VulnerabilityID": "CVE-2018-16403",
         "PkgName": "elfutils-libelf",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getabbrev.c and libwd/dwarf_hasattr.c causes crash",
         "Description": "libdw in elfutils 0.173 checks the end of the attributes list incorrectly in dwarf_getabbrev in dwarf_getabbrev.c and dwarf_hasattr in dwarf_hasattr.c, leading to a heap-based buffer over-read and an application crash.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-16403.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -420,11 +460,13 @@
         "PkgName": "elfutils-libelf",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl",
         "Description": "An invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl in elfutils through v0.174. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by consider_notes.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-18310.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -440,11 +482,13 @@
         "PkgName": "elfutils-libelf",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: eu-size cannot handle recursive ar files",
         "Description": "An Invalid Memory Address Dereference exists in the function elf_end in libelf in elfutils through v0.174. Although eu-size is intended to support ar files inside ar files, handle_ar in size.c closes the outer ar file before handling all inner entries. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-18520.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -460,11 +504,13 @@
         "PkgName": "elfutils-libelf",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: Divide-by-zero in arlib_add_symbols function in arlib.c",
         "Description": "Divide-by-zero vulnerabilities in the function arlib_add_symbols() in arlib.c in elfutils 0.174 allow remote attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by eu-ranlib, because a zero sh_entsize is mishandled.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-18521.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -480,11 +526,13 @@
         "PkgName": "elfutils-libelf",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: heap-based buffer over-read in read_srclines in dwarf_getsrclines.c in libdw",
         "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-7149.html",
           "http://linux.oracle.com/errata/ELSA-2019-3575.html",
@@ -500,11 +548,13 @@
         "PkgName": "elfutils-libelf",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: segmentation fault in elf64_xlatetom in libelf/elf32_xlatetom.c",
         "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-7150.html",
           "http://linux.oracle.com/errata/ELSA-2019-3575.html",
@@ -520,11 +570,13 @@
         "PkgName": "elfutils-libelf",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: out of bound write in elf_cvt_note in libelf/note_xlate.h",
         "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-7664.html",
           "http://linux.oracle.com/errata/ELSA-2019-3575.html",
@@ -538,11 +590,13 @@
         "PkgName": "elfutils-libelf",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: heap-based buffer over-read in function elf32_xlatetom in elf32_xlatetom.c",
         "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-7665.html",
           "http://linux.oracle.com/errata/ELSA-2019-3575.html",
@@ -554,33 +608,17 @@
         ]
       },
       {
-        "VulnerabilityID": "CVE-2018-16402",
-        "PkgName": "elfutils-libs",
-        "InstalledVersion": "0.172-2.el7",
-        "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
-        "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
-        "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
-        "Severity": "HIGH",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2018-16402.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
-          "https://usn.ubuntu.com/4012-1/"
-        ]
-      },
-      {
         "VulnerabilityID": "CVE-2018-16062",
         "PkgName": "elfutils-libs",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getaranges.c:dwarf_getaranges() via crafted file",
         "Description": "dwarf_getaranges in dwarf_getaranges.c in libdw in elfutils before 2018-08-18 allows remote attackers to cause a denial of service (heap-based buffer over-read) via a crafted file.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-16062.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -594,15 +632,37 @@
         ]
       },
       {
+        "VulnerabilityID": "CVE-2018-16402",
+        "PkgName": "elfutils-libs",
+        "InstalledVersion": "0.172-2.el7",
+        "FixedVersion": "0.176-2.el7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
+        "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
+        "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
+        "Severity": "LOW",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-16402.html",
+          "http://linux.oracle.com/errata/ELSA-2019-2197.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
         "VulnerabilityID": "CVE-2018-16403",
         "PkgName": "elfutils-libs",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getabbrev.c and libwd/dwarf_hasattr.c causes crash",
         "Description": "libdw in elfutils 0.173 checks the end of the attributes list incorrectly in dwarf_getabbrev in dwarf_getabbrev.c and dwarf_hasattr in dwarf_hasattr.c, leading to a heap-based buffer over-read and an application crash.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-16403.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -619,11 +679,13 @@
         "PkgName": "elfutils-libs",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl",
         "Description": "An invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl in elfutils through v0.174. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by consider_notes.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-18310.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -639,11 +701,13 @@
         "PkgName": "elfutils-libs",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: eu-size cannot handle recursive ar files",
         "Description": "An Invalid Memory Address Dereference exists in the function elf_end in libelf in elfutils through v0.174. Although eu-size is intended to support ar files inside ar files, handle_ar in size.c closes the outer ar file before handling all inner entries. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-18520.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -659,11 +723,13 @@
         "PkgName": "elfutils-libs",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: Divide-by-zero in arlib_add_symbols function in arlib.c",
         "Description": "Divide-by-zero vulnerabilities in the function arlib_add_symbols() in arlib.c in elfutils 0.174 allow remote attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by eu-ranlib, because a zero sh_entsize is mishandled.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-18521.html",
           "http://linux.oracle.com/errata/ELSA-2019-2197.html",
@@ -679,11 +745,13 @@
         "PkgName": "elfutils-libs",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: heap-based buffer over-read in read_srclines in dwarf_getsrclines.c in libdw",
         "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-7149.html",
           "http://linux.oracle.com/errata/ELSA-2019-3575.html",
@@ -699,11 +767,13 @@
         "PkgName": "elfutils-libs",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: segmentation fault in elf64_xlatetom in libelf/elf32_xlatetom.c",
         "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-7150.html",
           "http://linux.oracle.com/errata/ELSA-2019-3575.html",
@@ -719,11 +789,13 @@
         "PkgName": "elfutils-libs",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: out of bound write in elf_cvt_note in libelf/note_xlate.h",
         "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-7664.html",
           "http://linux.oracle.com/errata/ELSA-2019-3575.html",
@@ -737,11 +809,13 @@
         "PkgName": "elfutils-libs",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "elfutils: heap-based buffer over-read in function elf32_xlatetom in elf32_xlatetom.c",
         "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-7665.html",
           "http://linux.oracle.com/errata/ELSA-2019-3575.html",
@@ -757,8 +831,10 @@
         "PkgName": "glibc",
         "InstalledVersion": "2.17-260.el7_6.3",
         "FixedVersion": "2.17-292.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
@@ -778,8 +854,10 @@
         "PkgName": "glibc-common",
         "InstalledVersion": "2.17-260.el7_6.3",
         "FixedVersion": "2.17-292.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
@@ -799,11 +877,13 @@
         "PkgName": "libcurl",
         "InstalledVersion": "7.29.0-51.el7",
         "FixedVersion": "7.29.0-51.el7_6.3",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "curl: NTLM password overflow via integer overflow",
         "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
-        "Severity": "HIGH",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-14618.html",
           "http://linux.oracle.com/errata/ELSA-2019-1880.html",
@@ -825,11 +905,13 @@
         "PkgName": "libcurl",
         "InstalledVersion": "7.29.0-51.el7",
         "FixedVersion": "7.29.0-54.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "curl: Heap-based buffer over-read in the curl tool warning formatting",
         "Description": "Curl versions 7.14.1 through 7.61.1 are vulnerable to a heap-based buffer over-read in the tool_msgs.c:voutf() function that may result in information exposure and denial of service.",
-        "Severity": "MEDIUM",
+        "Severity": "LOW",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-16842.html",
           "http://linux.oracle.com/errata/ELSA-2019-2181.html",
@@ -851,8 +933,10 @@
         "PkgName": "libssh2",
         "InstalledVersion": "1.4.3-12.el7",
         "FixedVersion": "1.4.3-12.el7_6.2",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "libssh2: Integer overflow in transport read resulting in out of bounds write",
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "HIGH",
@@ -884,11 +968,13 @@
         "PkgName": "libssh2",
         "InstalledVersion": "1.4.3-12.el7",
         "FixedVersion": "1.4.3-12.el7_6.2",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "libssh2: Integer overflow in keyboard interactive handling resulting in out of bounds write",
         "Description": "An integer overflow flaw, which could lead to an out of bounds write, was discovered in libssh2 before 1.8.1 in the way keyboard prompt requests are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-3856.html",
           "http://linux.oracle.com/errata/ELSA-2019-1652.html",
@@ -911,11 +997,13 @@
         "PkgName": "libssh2",
         "InstalledVersion": "1.4.3-12.el7",
         "FixedVersion": "1.4.3-12.el7_6.2",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "libssh2: Integer overflow in SSH packet processing channel resulting in out of bounds write",
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit signal are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-3857.html",
           "http://linux.oracle.com/errata/ELSA-2019-1652.html",
@@ -934,12 +1022,43 @@
         ]
       },
       {
+        "VulnerabilityID": "CVE-2019-3863",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.3-12.el7",
+        "FixedVersion": "1.4.3-12.el7_6.2",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
+        "Title": "libssh2: Integer overflow in user authenticate keyboard interactive allows out-of-bounds writes",
+        "Description": "A flaw was found in libssh2 before 1.8.1. A server could send a multiple keyboard interactive response messages whose total length are greater than unsigned char max characters. This value is used as an index to copy memory causing in an out of bounds memory write error.",
+        "Severity": "HIGH",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3863.html",
+          "http://linux.oracle.com/errata/ELSA-2019-1652.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "https://access.redhat.com/errata/RHSA-2019:0679",
+          "https://access.redhat.com/errata/RHSA-2019:1175",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3863",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3863",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3863.html"
+        ]
+      },
+      {
         "VulnerabilityID": "CVE-2019-3858",
         "PkgName": "libssh2",
         "InstalledVersion": "1.4.3-12.el7",
         "FixedVersion": "1.8.0-3.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "libssh2: Zero-byte allocation with a specially crafted SFTP packed leading to an out-of-bounds read",
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 when a specially crafted SFTP packet is received from the server. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
@@ -969,8 +1088,10 @@
         "PkgName": "libssh2",
         "InstalledVersion": "1.4.3-12.el7",
         "FixedVersion": "1.8.0-3.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "libssh2: Out-of-bounds reads with specially crafted SSH packets",
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH packets with a padding length value greater than the packet length are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
@@ -994,8 +1115,10 @@
         "PkgName": "libssh2",
         "InstalledVersion": "1.4.3-12.el7",
         "FixedVersion": "1.4.3-12.el7_6.3",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "libssh2: Out-of-bounds memory comparison with specially crafted message channel request",
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit status message and no payload are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
@@ -1021,30 +1144,40 @@
         ]
       },
       {
-        "VulnerabilityID": "CVE-2019-3863",
-        "PkgName": "libssh2",
-        "InstalledVersion": "1.4.3-12.el7",
-        "FixedVersion": "1.4.3-12.el7_6.2",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
-        "Title": "libssh2: Integer overflow in user authenticate keyboard interactive allows out-of-bounds writes",
-        "Description": "A flaw was found in libssh2 before 1.8.1. A server could send a multiple keyboard interactive response messages whose total length are greater than unsigned char max characters. This value is used as an index to copy memory causing in an out of bounds memory write error.",
+        "VulnerabilityID": "CVE-2018-0495",
+        "PkgName": "nspr",
+        "InstalledVersion": "4.19.0-1.el7_5",
+        "FixedVersion": "4.21.0-1.el7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
+        "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
+        "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-3863.html",
-          "http://linux.oracle.com/errata/ELSA-2019-1652.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
-          "https://access.redhat.com/errata/RHSA-2019:0679",
-          "https://access.redhat.com/errata/RHSA-2019:1175",
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3863",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3863",
-          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
-          "https://seclists.org/bugtraq/2019/Apr/25",
-          "https://security.netapp.com/advisory/ntap-20190327-0005/",
-          "https://www.debian.org/security/2019/dsa-4431",
-          "https://www.libssh2.org/CVE-2019-3863.html"
+          "http://linux.oracle.com/cve/CVE-2018-0495.html",
+          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
+          "http://www.securitytracker.com/id/1041144",
+          "http://www.securitytracker.com/id/1041147",
+          "https://access.redhat.com/errata/RHSA-2018:3221",
+          "https://access.redhat.com/errata/RHSA-2018:3505",
+          "https://access.redhat.com/errata/RHSA-2019:1296",
+          "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
+          "https://dev.gnupg.org/T4011",
+          "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
+          "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
+          "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
+          "https://usn.ubuntu.com/3689-1/",
+          "https://usn.ubuntu.com/3689-2/",
+          "https://usn.ubuntu.com/3692-1/",
+          "https://usn.ubuntu.com/3692-2/",
+          "https://usn.ubuntu.com/3850-1/",
+          "https://usn.ubuntu.com/3850-2/",
+          "https://www.debian.org/security/2018/dsa-4231",
+          "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ]
       },
       {
@@ -1052,8 +1185,10 @@
         "PkgName": "nspr",
         "InstalledVersion": "4.19.0-1.el7_5",
         "FixedVersion": "4.21.0-1.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -1067,15 +1202,45 @@
         ]
       },
       {
+        "VulnerabilityID": "CVE-2019-11745",
+        "PkgName": "nss",
+        "InstalledVersion": "3.36.0-7.1.el7_6",
+        "FixedVersion": "3.44.0-7.el7_7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
+        "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
+        "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
+        "Severity": "HIGH",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-11745.html",
+          "http://linux.oracle.com/errata/ELSA-2019-4190.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
+          "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
+          "https://usn.ubuntu.com/4241-1/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-36/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-37/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-38/"
+        ]
+      },
+      {
         "VulnerabilityID": "CVE-2018-0495",
-        "PkgName": "nspr",
-        "InstalledVersion": "4.19.0-1.el7_5",
-        "FixedVersion": "4.21.0-1.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "PkgName": "nss",
+        "InstalledVersion": "3.36.0-7.1.el7_6",
+        "FixedVersion": "3.44.0-4.el7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
-        "Severity": "LOW",
+        "Severity": "MEDIUM",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-0495.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
@@ -1106,8 +1271,10 @@
         "PkgName": "nss",
         "InstalledVersion": "3.36.0-7.1.el7_6",
         "FixedVersion": "3.44.0-4.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -1125,8 +1292,10 @@
         "PkgName": "nss",
         "InstalledVersion": "3.36.0-7.1.el7_6",
         "FixedVersion": "3.44.0-7.el7_7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "MEDIUM",
@@ -1146,14 +1315,16 @@
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
-        "PkgName": "nss",
-        "InstalledVersion": "3.36.0-7.1.el7_6",
-        "FixedVersion": "3.44.0-7.el7_7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "PkgName": "nss-softokn",
+        "InstalledVersion": "3.36.0-5.el7_5",
+        "FixedVersion": "3.44.0-8.el7_7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11745.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
@@ -1172,14 +1343,16 @@
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
-        "PkgName": "nss",
-        "InstalledVersion": "3.36.0-7.1.el7_6",
-        "FixedVersion": "3.44.0-4.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "PkgName": "nss-softokn",
+        "InstalledVersion": "3.36.0-5.el7_5",
+        "FixedVersion": "3.44.0-5.el7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
-        "Severity": "LOW",
+        "Severity": "MEDIUM",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-0495.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
@@ -1210,8 +1383,10 @@
         "PkgName": "nss-softokn",
         "InstalledVersion": "3.36.0-5.el7_5",
         "FixedVersion": "3.44.0-5.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -1229,8 +1404,10 @@
         "PkgName": "nss-softokn",
         "InstalledVersion": "3.36.0-5.el7_5",
         "FixedVersion": "3.44.0-8.el7_7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "MEDIUM",
@@ -1250,14 +1427,16 @@
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
-        "PkgName": "nss-softokn",
+        "PkgName": "nss-softokn-freebl",
         "InstalledVersion": "3.36.0-5.el7_5",
         "FixedVersion": "3.44.0-8.el7_7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11745.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
@@ -1276,14 +1455,16 @@
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
-        "PkgName": "nss-softokn",
+        "PkgName": "nss-softokn-freebl",
         "InstalledVersion": "3.36.0-5.el7_5",
         "FixedVersion": "3.44.0-5.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
-        "Severity": "LOW",
+        "Severity": "MEDIUM",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-0495.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
@@ -1314,8 +1495,10 @@
         "PkgName": "nss-softokn-freebl",
         "InstalledVersion": "3.36.0-5.el7_5",
         "FixedVersion": "3.44.0-5.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -1333,8 +1516,10 @@
         "PkgName": "nss-softokn-freebl",
         "InstalledVersion": "3.36.0-5.el7_5",
         "FixedVersion": "3.44.0-8.el7_7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "MEDIUM",
@@ -1354,14 +1539,16 @@
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
-        "PkgName": "nss-softokn-freebl",
-        "InstalledVersion": "3.36.0-5.el7_5",
-        "FixedVersion": "3.44.0-8.el7_7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "PkgName": "nss-sysinit",
+        "InstalledVersion": "3.36.0-7.1.el7_6",
+        "FixedVersion": "3.44.0-7.el7_7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11745.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
@@ -1380,14 +1567,16 @@
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
-        "PkgName": "nss-softokn-freebl",
-        "InstalledVersion": "3.36.0-5.el7_5",
-        "FixedVersion": "3.44.0-5.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "PkgName": "nss-sysinit",
+        "InstalledVersion": "3.36.0-7.1.el7_6",
+        "FixedVersion": "3.44.0-4.el7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
-        "Severity": "LOW",
+        "Severity": "MEDIUM",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-0495.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
@@ -1418,8 +1607,10 @@
         "PkgName": "nss-sysinit",
         "InstalledVersion": "3.36.0-7.1.el7_6",
         "FixedVersion": "3.44.0-4.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -1437,8 +1628,10 @@
         "PkgName": "nss-sysinit",
         "InstalledVersion": "3.36.0-7.1.el7_6",
         "FixedVersion": "3.44.0-7.el7_7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "MEDIUM",
@@ -1458,14 +1651,16 @@
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
-        "PkgName": "nss-sysinit",
+        "PkgName": "nss-tools",
         "InstalledVersion": "3.36.0-7.1.el7_6",
         "FixedVersion": "3.44.0-7.el7_7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11745.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
@@ -1484,14 +1679,16 @@
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
-        "PkgName": "nss-sysinit",
+        "PkgName": "nss-tools",
         "InstalledVersion": "3.36.0-7.1.el7_6",
         "FixedVersion": "3.44.0-4.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
-        "Severity": "LOW",
+        "Severity": "MEDIUM",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-0495.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
@@ -1522,8 +1719,10 @@
         "PkgName": "nss-tools",
         "InstalledVersion": "3.36.0-7.1.el7_6",
         "FixedVersion": "3.44.0-4.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -1541,8 +1740,10 @@
         "PkgName": "nss-tools",
         "InstalledVersion": "3.36.0-7.1.el7_6",
         "FixedVersion": "3.44.0-7.el7_7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "MEDIUM",
@@ -1562,14 +1763,16 @@
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
-        "PkgName": "nss-tools",
-        "InstalledVersion": "3.36.0-7.1.el7_6",
-        "FixedVersion": "3.44.0-7.el7_7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "PkgName": "nss-util",
+        "InstalledVersion": "3.36.0-1.1.el7_6",
+        "FixedVersion": "3.44.0-4.el7_7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11745.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
@@ -1588,14 +1791,16 @@
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
-        "PkgName": "nss-tools",
-        "InstalledVersion": "3.36.0-7.1.el7_6",
-        "FixedVersion": "3.44.0-4.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "PkgName": "nss-util",
+        "InstalledVersion": "3.36.0-1.1.el7_6",
+        "FixedVersion": "3.44.0-3.el7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
-        "Severity": "LOW",
+        "Severity": "MEDIUM",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-0495.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
@@ -1626,8 +1831,10 @@
         "PkgName": "nss-util",
         "InstalledVersion": "3.36.0-1.1.el7_6",
         "FixedVersion": "3.44.0-3.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -1645,8 +1852,10 @@
         "PkgName": "nss-util",
         "InstalledVersion": "3.36.0-1.1.el7_6",
         "FixedVersion": "3.44.0-4.el7_7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "MEDIUM",
@@ -1665,95 +1874,39 @@
         ]
       },
       {
-        "VulnerabilityID": "CVE-2019-11745",
-        "PkgName": "nss-util",
-        "InstalledVersion": "3.36.0-1.1.el7_6",
-        "FixedVersion": "3.44.0-4.el7_7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
-        "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
-        "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2019-11745.html",
-          "http://linux.oracle.com/errata/ELSA-2019-4190.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
-          "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
-          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
-          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
-          "https://usn.ubuntu.com/4241-1/",
-          "https://www.mozilla.org/security/advisories/mfsa2019-36/",
-          "https://www.mozilla.org/security/advisories/mfsa2019-37/",
-          "https://www.mozilla.org/security/advisories/mfsa2019-38/"
-        ]
-      },
-      {
-        "VulnerabilityID": "CVE-2018-0495",
-        "PkgName": "nss-util",
-        "InstalledVersion": "3.36.0-1.1.el7_6",
-        "FixedVersion": "3.44.0-3.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
-        "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
-        "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
-        "Severity": "LOW",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2018-0495.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
-          "http://www.securitytracker.com/id/1041144",
-          "http://www.securitytracker.com/id/1041147",
-          "https://access.redhat.com/errata/RHSA-2018:3221",
-          "https://access.redhat.com/errata/RHSA-2018:3505",
-          "https://access.redhat.com/errata/RHSA-2019:1296",
-          "https://access.redhat.com/errata/RHSA-2019:1297",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
-          "https://dev.gnupg.org/T4011",
-          "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
-          "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
-          "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
-          "https://usn.ubuntu.com/3689-1/",
-          "https://usn.ubuntu.com/3689-2/",
-          "https://usn.ubuntu.com/3692-1/",
-          "https://usn.ubuntu.com/3692-2/",
-          "https://usn.ubuntu.com/3850-1/",
-          "https://usn.ubuntu.com/3850-2/",
-          "https://www.debian.org/security/2018/dsa-4231",
-          "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
-          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
-      },
-      {
-        "VulnerabilityID": "CVE-2018-0734",
+        "VulnerabilityID": "CVE-2018-5407",
         "PkgName": "openssl-libs",
         "InstalledVersion": "1:1.0.2k-16.el7",
-        "FixedVersion": "1:1.0.2k-19.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
-        "Title": "openssl: timing side channel attack in the DSA signature algorithm",
-        "Description": "The OpenSSL DSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.1a (Affected 1.1.1). Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.0.2q (Affected 1.0.2-1.0.2p).",
+        "FixedVersion": "1:1.0.2k-16.el7_6.1",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
+        "Title": "openssl: Side-channel vulnerability on SMT/Hyper-Threading architectures (PortSmash)",
+        "Description": "Simultaneous Multi-threading (SMT) in processors can enable local users to exploit software vulnerable to timing attacks via a side-channel timing attack on 'port contention'.",
         "Severity": "MEDIUM",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-0734.html",
-          "http://linux.oracle.com/errata/ELSA-2019-3700.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00030.html",
-          "http://www.securityfocus.com/bid/105758",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0734",
-          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=43e6a58d4991a451daf4891ff05a48735df871ac",
-          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=8abfe72e8c1de1b95f50aa0d9134803b4d00070f",
-          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=ef11e19d1365eea2b1851e6f540a0bf365d303e7",
+          "http://linux.oracle.com/cve/CVE-2018-5407.html",
+          "http://linux.oracle.com/errata/ELSA-2019-2125.html",
+          "http://www.securityfocus.com/bid/105897",
+          "https://access.redhat.com/errata/RHSA-2019:0483",
+          "https://access.redhat.com/errata/RHSA-2019:0651",
+          "https://access.redhat.com/errata/RHSA-2019:0652",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5407",
+          "https://eprint.iacr.org/2018/1060.pdf",
+          "https://github.com/bbbrumley/portsmash",
+          "https://lists.debian.org/debian-lts-announce/2018/11/msg00024.html",
           "https://nodejs.org/en/blog/vulnerability/november-2018-security-releases/",
-          "https://security.netapp.com/advisory/ntap-20181105-0002/",
-          "https://security.netapp.com/advisory/ntap-20190118-0002/",
-          "https://security.netapp.com/advisory/ntap-20190423-0002/",
+          "https://security.gentoo.org/glsa/201903-10",
+          "https://security.netapp.com/advisory/ntap-20181126-0001/",
           "https://usn.ubuntu.com/3840-1/",
           "https://www.debian.org/security/2018/dsa-4348",
           "https://www.debian.org/security/2018/dsa-4355",
-          "https://www.openssl.org/news/secadv/20181030.txt",
+          "https://www.exploit-db.com/exploits/45785/",
+          "https://www.openssl.org/news/secadv/20181112.txt",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
           "https://www.oracle.com/technetwork/security-advisory/cpujan2019-5072801.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html",
           "https://www.tenable.com/security/tns-2018-16",
           "https://www.tenable.com/security/tns-2018-17"
         ]
@@ -1763,8 +1916,10 @@
         "PkgName": "openssl-libs",
         "InstalledVersion": "1:1.0.2k-16.el7",
         "FixedVersion": "1:1.0.2k-19.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "openssl: 0-byte record padding oracle",
         "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
         "Severity": "MEDIUM",
@@ -1796,37 +1951,36 @@
         ]
       },
       {
-        "VulnerabilityID": "CVE-2018-5407",
+        "VulnerabilityID": "CVE-2018-0734",
         "PkgName": "openssl-libs",
         "InstalledVersion": "1:1.0.2k-16.el7",
-        "FixedVersion": "1:1.0.2k-16.el7_6.1",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
-        "Title": "openssl: Side-channel vulnerability on SMT/Hyper-Threading architectures (PortSmash)",
-        "Description": "Simultaneous Multi-threading (SMT) in processors can enable local users to exploit software vulnerable to timing attacks via a side-channel timing attack on 'port contention'.",
+        "FixedVersion": "1:1.0.2k-19.el7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
+        "Title": "openssl: timing side channel attack in the DSA signature algorithm",
+        "Description": "The OpenSSL DSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.1a (Affected 1.1.1). Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.0.2q (Affected 1.0.2-1.0.2p).",
         "Severity": "LOW",
         "References": [
-          "http://linux.oracle.com/cve/CVE-2018-5407.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2125.html",
-          "http://www.securityfocus.com/bid/105897",
-          "https://access.redhat.com/errata/RHSA-2019:0483",
-          "https://access.redhat.com/errata/RHSA-2019:0651",
-          "https://access.redhat.com/errata/RHSA-2019:0652",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-5407",
-          "https://eprint.iacr.org/2018/1060.pdf",
-          "https://github.com/bbbrumley/portsmash",
-          "https://lists.debian.org/debian-lts-announce/2018/11/msg00024.html",
+          "http://linux.oracle.com/cve/CVE-2018-0734.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3700.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00030.html",
+          "http://www.securityfocus.com/bid/105758",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0734",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=43e6a58d4991a451daf4891ff05a48735df871ac",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=8abfe72e8c1de1b95f50aa0d9134803b4d00070f",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=ef11e19d1365eea2b1851e6f540a0bf365d303e7",
           "https://nodejs.org/en/blog/vulnerability/november-2018-security-releases/",
-          "https://security.gentoo.org/glsa/201903-10",
-          "https://security.netapp.com/advisory/ntap-20181126-0001/",
+          "https://security.netapp.com/advisory/ntap-20181105-0002/",
+          "https://security.netapp.com/advisory/ntap-20190118-0002/",
+          "https://security.netapp.com/advisory/ntap-20190423-0002/",
           "https://usn.ubuntu.com/3840-1/",
           "https://www.debian.org/security/2018/dsa-4348",
           "https://www.debian.org/security/2018/dsa-4355",
-          "https://www.exploit-db.com/exploits/45785/",
-          "https://www.openssl.org/news/secadv/20181112.txt",
+          "https://www.openssl.org/news/secadv/20181030.txt",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
           "https://www.oracle.com/technetwork/security-advisory/cpujan2019-5072801.html",
-          "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html",
           "https://www.tenable.com/security/tns-2018-16",
           "https://www.tenable.com/security/tns-2018-17"
         ]
@@ -1836,8 +1990,10 @@
         "PkgName": "procps-ng",
         "InstalledVersion": "3.3.10-23.el7",
         "FixedVersion": "3.3.10-26.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "procps-ng, procps: Local privilege escalation in top",
         "Description": "procps-ng before version 3.3.15 is vulnerable to a local privilege escalation in top. If a user runs top with HOME unset in an attacker-controlled directory, the attacker could achieve privilege escalation by exploiting one of several vulnerabilities in the config_file() function.",
         "Severity": "MEDIUM",
@@ -1859,44 +2015,17 @@
         ]
       },
       {
-        "VulnerabilityID": "CVE-2018-14647",
-        "PkgName": "python",
-        "InstalledVersion": "2.7.5-76.el7",
-        "FixedVersion": "2.7.5-86.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
-        "Title": "python: Missing salt initialization in _elementtree.c module",
-        "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. Python 3.8, 3.7, 3.6, 3.5, 3.4, 2.7 are believed to be vulnerable.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2018-14647.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
-          "http://www.securityfocus.com/bid/105396",
-          "http://www.securitytracker.com/id/1041740",
-          "https://access.redhat.com/errata/RHSA-2019:1260",
-          "https://access.redhat.com/errata/RHSA-2019:2030",
-          "https://bugs.python.org/issue34623",
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14647",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14647",
-          "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
-          "https://lists.debian.org/debian-lts-announce/2019/06/msg00023.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RBJCB2HWOJLP3L7CUQHJHNBHLSVOXJE5/",
-          "https://usn.ubuntu.com/3817-1/",
-          "https://usn.ubuntu.com/3817-2/",
-          "https://www.debian.org/security/2018/dsa-4306",
-          "https://www.debian.org/security/2018/dsa-4307"
-        ]
-      },
-      {
         "VulnerabilityID": "CVE-2019-10160",
         "PkgName": "python",
         "InstalledVersion": "2.7.5-76.el7",
         "FixedVersion": "2.7.5-80.el7_6",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "python: regression of CVE-2019-9636 due to functional fix to allow port numbers in netloc",
         "Description": "A security regression of CVE-2019-9636 was discovered in python since commit d537ab0ff9767ef024f26246899728f0116b1ec3 affecting versions 2.7, 3.5, 3.6, 3.7 and from v3.8.0a4 through v3.8.0b1, which still allows an attacker to exploit CVE-2019-9636 by abusing the user and password parts of a URL. When an application parses user-supplied URLs to store cookies, authentication credentials, or other kind of information, it is possible for an attacker to provide specially crafted URLs to make the application locate host-related information (e.g. cookies, authentication data) and send them to a different host than where it should, unlike if the URLs had been correctly parsed. The result of an attack may vary based on the application.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-10160.html",
           "http://linux.oracle.com/errata/ELSA-2019-1587.html",
@@ -1925,35 +2054,17 @@
         ]
       },
       {
-        "VulnerabilityID": "CVE-2019-5010",
-        "PkgName": "python",
-        "InstalledVersion": "2.7.5-76.el7",
-        "FixedVersion": "2.7.5-86.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
-        "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
-        "Description": "An exploitable denial-of-service vulnerability exists in the X509 certificate parser of Python.org Python 2.7.11 / 3.6.6. A specially crafted X509 certificate can cause a NULL pointer dereference, resulting in a denial of service. An attacker can initiate or accept TLS connections using crafted certificates to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2019-5010.html",
-          "http://linux.oracle.com/errata/ELSA-2019-3520.html",
-          "https://access.redhat.com/errata/RHSA-2019:3520",
-          "https://access.redhat.com/errata/RHSA-2019:3725",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
-          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0758"
-        ]
-      },
-      {
         "VulnerabilityID": "CVE-2019-9636",
         "PkgName": "python",
         "InstalledVersion": "2.7.5-76.el7",
         "FixedVersion": "2.7.5-77.el7_6",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "python: Information Disclosure due to urlsplit improper NFKC normalization",
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-9636.html",
           "http://linux.oracle.com/errata/ELSA-2019-1467.html",
@@ -1989,12 +2100,67 @@
         ]
       },
       {
+        "VulnerabilityID": "CVE-2018-14647",
+        "PkgName": "python",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
+        "Title": "python: Missing salt initialization in _elementtree.c module",
+        "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. Python 3.8, 3.7, 3.6, 3.5, 3.4, 2.7 are believed to be vulnerable.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-14647.html",
+          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
+          "http://www.securityfocus.com/bid/105396",
+          "http://www.securitytracker.com/id/1041740",
+          "https://access.redhat.com/errata/RHSA-2019:1260",
+          "https://access.redhat.com/errata/RHSA-2019:2030",
+          "https://bugs.python.org/issue34623",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14647",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14647",
+          "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
+          "https://lists.debian.org/debian-lts-announce/2019/06/msg00023.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RBJCB2HWOJLP3L7CUQHJHNBHLSVOXJE5/",
+          "https://usn.ubuntu.com/3817-1/",
+          "https://usn.ubuntu.com/3817-2/",
+          "https://www.debian.org/security/2018/dsa-4306",
+          "https://www.debian.org/security/2018/dsa-4307"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5010",
+        "PkgName": "python",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
+        "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
+        "Description": "An exploitable denial-of-service vulnerability exists in the X509 certificate parser of Python.org Python 2.7.11 / 3.6.6. A specially crafted X509 certificate can cause a NULL pointer dereference, resulting in a denial of service. An attacker can initiate or accept TLS connections using crafted certificates to trigger this vulnerability.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-5010.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3520.html",
+          "https://access.redhat.com/errata/RHSA-2019:3520",
+          "https://access.redhat.com/errata/RHSA-2019:3725",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
+          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html",
+          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0758"
+        ]
+      },
+      {
         "VulnerabilityID": "CVE-2019-9740",
         "PkgName": "python",
         "InstalledVersion": "2.7.5-76.el7",
         "FixedVersion": "2.7.5-86.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "python: CRLF injection via the query part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the query string after a ? character) followed by an HTTP header or a Redis command.",
         "Severity": "MEDIUM",
@@ -2014,8 +2180,10 @@
         "PkgName": "python",
         "InstalledVersion": "2.7.5-76.el7",
         "FixedVersion": "2.7.5-86.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "python: CRLF injection via the path part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the path component of a URL that lacks a ? character) followed by an HTTP header or a Redis command. This is similar to the CVE-2019-9740 query string issue.",
         "Severity": "MEDIUM",
@@ -2035,8 +2203,10 @@
         "PkgName": "python",
         "InstalledVersion": "2.7.5-76.el7",
         "FixedVersion": "2.7.5-86.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "python: Undocumented local_file protocol allows remote attackers to bypass protection mechanisms",
         "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
         "Severity": "MEDIUM",
@@ -2054,44 +2224,17 @@
         ]
       },
       {
-        "VulnerabilityID": "CVE-2018-14647",
-        "PkgName": "python-libs",
-        "InstalledVersion": "2.7.5-76.el7",
-        "FixedVersion": "2.7.5-86.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
-        "Title": "python: Missing salt initialization in _elementtree.c module",
-        "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. Python 3.8, 3.7, 3.6, 3.5, 3.4, 2.7 are believed to be vulnerable.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2018-14647.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
-          "http://www.securityfocus.com/bid/105396",
-          "http://www.securitytracker.com/id/1041740",
-          "https://access.redhat.com/errata/RHSA-2019:1260",
-          "https://access.redhat.com/errata/RHSA-2019:2030",
-          "https://bugs.python.org/issue34623",
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14647",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14647",
-          "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
-          "https://lists.debian.org/debian-lts-announce/2019/06/msg00023.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RBJCB2HWOJLP3L7CUQHJHNBHLSVOXJE5/",
-          "https://usn.ubuntu.com/3817-1/",
-          "https://usn.ubuntu.com/3817-2/",
-          "https://www.debian.org/security/2018/dsa-4306",
-          "https://www.debian.org/security/2018/dsa-4307"
-        ]
-      },
-      {
         "VulnerabilityID": "CVE-2019-10160",
         "PkgName": "python-libs",
         "InstalledVersion": "2.7.5-76.el7",
         "FixedVersion": "2.7.5-80.el7_6",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "python: regression of CVE-2019-9636 due to functional fix to allow port numbers in netloc",
         "Description": "A security regression of CVE-2019-9636 was discovered in python since commit d537ab0ff9767ef024f26246899728f0116b1ec3 affecting versions 2.7, 3.5, 3.6, 3.7 and from v3.8.0a4 through v3.8.0b1, which still allows an attacker to exploit CVE-2019-9636 by abusing the user and password parts of a URL. When an application parses user-supplied URLs to store cookies, authentication credentials, or other kind of information, it is possible for an attacker to provide specially crafted URLs to make the application locate host-related information (e.g. cookies, authentication data) and send them to a different host than where it should, unlike if the URLs had been correctly parsed. The result of an attack may vary based on the application.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-10160.html",
           "http://linux.oracle.com/errata/ELSA-2019-1587.html",
@@ -2120,35 +2263,17 @@
         ]
       },
       {
-        "VulnerabilityID": "CVE-2019-5010",
-        "PkgName": "python-libs",
-        "InstalledVersion": "2.7.5-76.el7",
-        "FixedVersion": "2.7.5-86.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
-        "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
-        "Description": "An exploitable denial-of-service vulnerability exists in the X509 certificate parser of Python.org Python 2.7.11 / 3.6.6. A specially crafted X509 certificate can cause a NULL pointer dereference, resulting in a denial of service. An attacker can initiate or accept TLS connections using crafted certificates to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2019-5010.html",
-          "http://linux.oracle.com/errata/ELSA-2019-3520.html",
-          "https://access.redhat.com/errata/RHSA-2019:3520",
-          "https://access.redhat.com/errata/RHSA-2019:3725",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
-          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0758"
-        ]
-      },
-      {
         "VulnerabilityID": "CVE-2019-9636",
         "PkgName": "python-libs",
         "InstalledVersion": "2.7.5-76.el7",
         "FixedVersion": "2.7.5-77.el7_6",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "python: Information Disclosure due to urlsplit improper NFKC normalization",
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-9636.html",
           "http://linux.oracle.com/errata/ELSA-2019-1467.html",
@@ -2184,12 +2309,67 @@
         ]
       },
       {
+        "VulnerabilityID": "CVE-2018-14647",
+        "PkgName": "python-libs",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
+        "Title": "python: Missing salt initialization in _elementtree.c module",
+        "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. Python 3.8, 3.7, 3.6, 3.5, 3.4, 2.7 are believed to be vulnerable.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-14647.html",
+          "http://linux.oracle.com/errata/ELSA-2019-2030.html",
+          "http://www.securityfocus.com/bid/105396",
+          "http://www.securitytracker.com/id/1041740",
+          "https://access.redhat.com/errata/RHSA-2019:1260",
+          "https://access.redhat.com/errata/RHSA-2019:2030",
+          "https://bugs.python.org/issue34623",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-14647",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14647",
+          "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
+          "https://lists.debian.org/debian-lts-announce/2019/06/msg00023.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RBJCB2HWOJLP3L7CUQHJHNBHLSVOXJE5/",
+          "https://usn.ubuntu.com/3817-1/",
+          "https://usn.ubuntu.com/3817-2/",
+          "https://www.debian.org/security/2018/dsa-4306",
+          "https://www.debian.org/security/2018/dsa-4307"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5010",
+        "PkgName": "python-libs",
+        "InstalledVersion": "2.7.5-76.el7",
+        "FixedVersion": "2.7.5-86.el7",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
+        "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
+        "Description": "An exploitable denial-of-service vulnerability exists in the X509 certificate parser of Python.org Python 2.7.11 / 3.6.6. A specially crafted X509 certificate can cause a NULL pointer dereference, resulting in a denial of service. An attacker can initiate or accept TLS connections using crafted certificates to trigger this vulnerability.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-5010.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3520.html",
+          "https://access.redhat.com/errata/RHSA-2019:3520",
+          "https://access.redhat.com/errata/RHSA-2019:3725",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
+          "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html",
+          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0758"
+        ]
+      },
+      {
         "VulnerabilityID": "CVE-2019-9740",
         "PkgName": "python-libs",
         "InstalledVersion": "2.7.5-76.el7",
         "FixedVersion": "2.7.5-86.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "python: CRLF injection via the query part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the query string after a ? character) followed by an HTTP header or a Redis command.",
         "Severity": "MEDIUM",
@@ -2209,8 +2389,10 @@
         "PkgName": "python-libs",
         "InstalledVersion": "2.7.5-76.el7",
         "FixedVersion": "2.7.5-86.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "python: CRLF injection via the path part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the path component of a URL that lacks a ? character) followed by an HTTP header or a Redis command. This is similar to the CVE-2019-9740 query string issue.",
         "Severity": "MEDIUM",
@@ -2230,8 +2412,10 @@
         "PkgName": "python-libs",
         "InstalledVersion": "2.7.5-76.el7",
         "FixedVersion": "2.7.5-86.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "python: Undocumented local_file protocol allows remote attackers to bypass protection mechanisms",
         "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
         "Severity": "MEDIUM",
@@ -2253,11 +2437,13 @@
         "PkgName": "sqlite",
         "InstalledVersion": "3.7.17-8.el7",
         "FixedVersion": "3.7.17-8.el7_7.1",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "sqlite: fts3: improve shadow table corruption detection",
         "Description": "Out of bounds write in SQLite in Google Chrome prior to 79.0.3945.79 allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-13734.html",
           "http://linux.oracle.com/errata/ELSA-2020-0273.html",
@@ -2275,11 +2461,13 @@
         "PkgName": "systemd",
         "InstalledVersion": "219-62.el7_6.5",
         "FixedVersion": "219-67.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "systemd: line splitting via fgets() allows for state injection during daemon-reexec",
         "Description": "A vulnerability in unit_deserialize of systemd allows an attacker to supply arbitrary state across systemd re-execution via NotifyAccess. This can be used to improperly influence systemd execution and possibly lead to root privilege escalation. Affected releases are systemd versions up to and including 239.",
-        "Severity": "HIGH",
+        "Severity": "MEDIUM",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-15686.html",
           "http://linux.oracle.com/errata/ELSA-2019-2091.html",
@@ -2298,11 +2486,13 @@
         "PkgName": "systemd",
         "InstalledVersion": "219-62.el7_6.5",
         "FixedVersion": "219-67.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "systemd: out-of-bounds read when parsing a crafted syslog message",
         "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
-        "Severity": "LOW",
+        "Severity": "MEDIUM",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-16866.html",
           "http://linux.oracle.com/errata/ELSA-2019-2091.html",
@@ -2325,8 +2515,10 @@
         "PkgName": "systemd",
         "InstalledVersion": "219-62.el7_6.5",
         "FixedVersion": "219-67.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
         "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
         "Severity": "LOW",
@@ -2345,11 +2537,13 @@
         "PkgName": "systemd-libs",
         "InstalledVersion": "219-62.el7_6.5",
         "FixedVersion": "219-67.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "systemd: line splitting via fgets() allows for state injection during daemon-reexec",
         "Description": "A vulnerability in unit_deserialize of systemd allows an attacker to supply arbitrary state across systemd re-execution via NotifyAccess. This can be used to improperly influence systemd execution and possibly lead to root privilege escalation. Affected releases are systemd versions up to and including 239.",
-        "Severity": "HIGH",
+        "Severity": "MEDIUM",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-15686.html",
           "http://linux.oracle.com/errata/ELSA-2019-2091.html",
@@ -2368,11 +2562,13 @@
         "PkgName": "systemd-libs",
         "InstalledVersion": "219-62.el7_6.5",
         "FixedVersion": "219-67.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "systemd: out-of-bounds read when parsing a crafted syslog message",
         "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
-        "Severity": "LOW",
+        "Severity": "MEDIUM",
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-16866.html",
           "http://linux.oracle.com/errata/ELSA-2019-2091.html",
@@ -2395,8 +2591,10 @@
         "PkgName": "systemd-libs",
         "InstalledVersion": "219-62.el7_6.5",
         "FixedVersion": "219-67.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
         "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
         "Severity": "LOW",
@@ -2415,8 +2613,10 @@
         "PkgName": "vim-minimal",
         "InstalledVersion": "2:7.4.160-5.el7",
         "FixedVersion": "2:7.4.160-6.el7_6",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
-        "SeveritySource": "nvd",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
+        "SeveritySource": "redhat",
         "Title": "vim/neovim: ':source!' command allows arbitrary command execution via modelines",
         "Description": "getchar.c in Vim before 8.1.1365 and Neovim before 0.3.6 allows remote attackers to execute arbitrary OS commands via the :source! command in a modeline, as demonstrated by execute in Vim, and assert_fails or nvim_input in Neovim.",
         "Severity": "HIGH",

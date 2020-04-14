@@ -8,7 +8,9 @@
         "PkgName": "e2fsprogs",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "nvd",
         "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
@@ -27,7 +29,9 @@
         "PkgName": "e2fsprogs",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u3",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "nvd",
         "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
@@ -46,7 +50,9 @@
         "PkgName": "libcom-err2",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "nvd",
         "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
@@ -65,7 +71,9 @@
         "PkgName": "libcom-err2",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u3",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "nvd",
         "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
@@ -84,7 +92,9 @@
         "PkgName": "libext2fs2",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "nvd",
         "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
@@ -103,7 +113,9 @@
         "PkgName": "libext2fs2",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u3",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "nvd",
         "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
@@ -122,7 +134,9 @@
         "PkgName": "libidn2-0",
         "InstalledVersion": "2.0.5-1",
         "FixedVersion": "2.0.5-1+deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "nvd",
         "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
         "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
@@ -142,7 +156,9 @@
         "PkgName": "libncursesw6",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
         "FixedVersion": "6.1+20181013-2+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "debian",
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
@@ -160,7 +176,9 @@
         "PkgName": "libncursesw6",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
         "FixedVersion": "6.1+20181013-2+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "debian",
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
@@ -178,7 +196,9 @@
         "PkgName": "libss2",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "nvd",
         "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
@@ -197,7 +217,9 @@
         "PkgName": "libss2",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u3",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "nvd",
         "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
@@ -216,7 +238,9 @@
         "PkgName": "libsystemd0",
         "InstalledVersion": "241-7~deb10u1",
         "FixedVersion": "241-7~deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "nvd",
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
@@ -237,7 +261,9 @@
         "PkgName": "libtinfo6",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
         "FixedVersion": "6.1+20181013-2+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "debian",
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
@@ -255,7 +281,9 @@
         "PkgName": "libtinfo6",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
         "FixedVersion": "6.1+20181013-2+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "debian",
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
@@ -273,7 +301,9 @@
         "PkgName": "libudev1",
         "InstalledVersion": "241-7~deb10u1",
         "FixedVersion": "241-7~deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "nvd",
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
@@ -294,7 +324,9 @@
         "PkgName": "ncurses-base",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
         "FixedVersion": "6.1+20181013-2+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "debian",
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
@@ -312,7 +344,9 @@
         "PkgName": "ncurses-base",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
         "FixedVersion": "6.1+20181013-2+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "debian",
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
@@ -330,7 +364,9 @@
         "PkgName": "ncurses-bin",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
         "FixedVersion": "6.1+20181013-2+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "debian",
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
@@ -348,7 +384,9 @@
         "PkgName": "ncurses-bin",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
         "FixedVersion": "6.1+20181013-2+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "SeveritySource": "debian",
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",

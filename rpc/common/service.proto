@@ -49,8 +49,13 @@ message Vulnerability {
   string          description       = 6;
   Severity        severity          = 7;
   repeated string references        = 8;
-  string          layer_id          = 9;
-  string          severity_source   = 10;
+  Layer           layer             = 10;
+  string          severity_source   = 11;
+}
+
+message Layer {
+  string digest  = 1;
+  string diff_id = 2;
 }
 
 enum Severity {

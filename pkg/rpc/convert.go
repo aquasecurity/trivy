@@ -2,7 +2,6 @@ package rpc
 
 import (
 	"github.com/golang/protobuf/ptypes"
-	"github.com/opencontainers/go-digest"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
@@ -112,8 +111,11 @@ func ConvertToRpcVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			Description:      vuln.Description,
 			Severity:         common.Severity(severity),
 			References:       vuln.References,
-			LayerId:          string(vuln.LayerID),
-			SeveritySource:   vuln.SeveritySource,
+			Layer: &common.Layer{
+				Digest: vuln.Layer.Digest,
+				DiffId: vuln.Layer.DiffID,
+			},
+			SeveritySource: vuln.SeveritySource,
 		})
 	}
 	return rpcVulns
@@ -121,6 +123,7 @@ func ConvertToRpcVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 
 func ConvertFromRpcResults(rpcResults []*scanner.Result) []report.Result {
 	var results []report.Result
+
 	for _, result := range rpcResults {
 		var vulns []types.DetectedVulnerability
 		for _, vuln := range result.Vulnerabilities {
@@ -136,7 +139,10 @@ func ConvertFromRpcResults(rpcResults []*scanner.Result) []report.Result {
 					Severity:    severity.String(),
 					References:  vuln.References,
 				},
-				LayerID:        digest.Digest(vuln.LayerId),
+				Layer: ftypes.Layer{
+					Digest: vuln.Layer.Digest,
+					DiffID: vuln.Layer.DiffId,
+				},
 				SeveritySource: vuln.SeveritySource,
 			})
 		}
@@ -197,6 +203,8 @@ func ConvertFromRpcPutImageRequest(req *cache.PutImageRequest) ftypes.ImageInfo 
 func ConvertFromRpcPutLayerRequest(req *cache.PutLayerRequest) ftypes.LayerInfo {
 	return ftypes.LayerInfo{
 		SchemaVersion: int(req.LayerInfo.SchemaVersion),
+		Digest:        req.LayerInfo.Digest,
+		DiffID:        req.LayerInfo.DiffId,
 		OS:            ConvertFromRpcOS(req.LayerInfo.Os),
 		PackageInfos:  ConvertFromRpcPackageInfos(req.LayerInfo.PackageInfos),
 		Applications:  ConvertFromRpcApplications(req.LayerInfo.Applications),
@@ -234,7 +242,7 @@ func ConvertToRpcImageInfo(imageID string, imageInfo ftypes.ImageInfo) *cache.Pu
 	}
 }
 
-func ConvertToRpcLayerInfo(layerID, decompressedLayerID string, layerInfo ftypes.LayerInfo) *cache.PutLayerRequest {
+func ConvertToRpcLayerInfo(diffID string, layerInfo ftypes.LayerInfo) *cache.PutLayerRequest {
 	var packageInfos []*common.PackageInfo
 	for _, pkgInfo := range layerInfo.PackageInfos {
 		packageInfos = append(packageInfos, &common.PackageInfo{
@@ -261,10 +269,11 @@ func ConvertToRpcLayerInfo(layerID, decompressedLayerID string, layerInfo ftypes
 	}
 
 	return &cache.PutLayerRequest{
-		LayerId:             layerID,
-		DecompressedLayerId: decompressedLayerID,
+		DiffId: diffID,
 		LayerInfo: &cache.LayerInfo{
 			SchemaVersion: ftypes.LayerJSONSchemaVersion,
+			Digest:        layerInfo.Digest,
+			DiffId:        layerInfo.DiffID,
 			Os:            ConvertToRpcOS(layerInfo.OS),
 			PackageInfos:  packageInfos,
 			Applications:  applications,

@@ -5,7 +5,6 @@ import (
 
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/wire"
-	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
@@ -37,7 +36,7 @@ func NewScanServer(s scanner.Driver, vulnClient vulnerability.Operation) *ScanSe
 
 func (s *ScanServer) Scan(_ context.Context, in *rpcScanner.ScanRequest) (*rpcScanner.ScanResponse, error) {
 	options := types.ScanOptions{VulnType: in.Options.VulnType}
-	results, os, eosl, err := s.localScanner.Scan(in.Target, digest.Digest(in.ImageId), in.LayerIds, options)
+	results, os, eosl, err := s.localScanner.Scan(in.Target, in.ImageId, in.LayerIds, options)
 	if err != nil {
 		return nil, xerrors.Errorf("failed scan, %s: %w", in.Target, err)
 	}
@@ -72,7 +71,7 @@ func (s *CacheServer) PutLayer(_ context.Context, in *rpcCache.PutLayerRequest) 
 		return nil, xerrors.Errorf("empty layer info")
 	}
 	layerInfo := rpc.ConvertFromRpcPutLayerRequest(in)
-	if err := s.cache.PutLayer(in.LayerId, in.DecompressedLayerId, layerInfo); err != nil {
+	if err := s.cache.PutLayer(in.DiffId, layerInfo); err != nil {
 		return nil, xerrors.Errorf("unable to store layer info in cache: %w", err)
 	}
 	return &google_protobuf.Empty{}, nil

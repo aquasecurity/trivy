@@ -72,10 +72,10 @@ func run(c config.Config) (err error) {
 	var scanner scanner.Scanner
 	ctx := context.Background()
 
-	var cleanup func()
+	cleanup := func() {}
 	if c.Input != "" {
 		// scan tar file
-		scanner, cleanup, err = initializeArchiveScanner(ctx, c.Input, cacheClient, cacheClient, c.Timeout)
+		scanner, err = initializeArchiveScanner(ctx, c.Input, cacheClient, cacheClient, c.Timeout)
 		if err != nil {
 			return xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 		}

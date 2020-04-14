@@ -55,7 +55,9 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Name:    "musl",
 								Version: "1.2.3",
-								LayerID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
 							},
 						},
 						Applications: []ftypes.Application{
@@ -65,7 +67,9 @@ func TestScanner_Scan(t *testing.T) {
 								Libraries: []ftypes.LibraryInfo{
 									{
 										Library: dtypes.Library{Name: "rails", Version: "6.0"},
-										LayerID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+										Layer: ftypes.Layer{
+											DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+										},
 									},
 								},
 							},
@@ -82,7 +86,9 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Name:    "musl",
 								Version: "1.2.3",
-								LayerID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
 							},
 						},
 					},
@@ -93,7 +99,9 @@ func TestScanner_Scan(t *testing.T) {
 								PkgName:          "musl",
 								InstalledVersion: "1.2.3",
 								FixedVersion:     "1.2.4",
-								LayerID:          "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
 							},
 						},
 						Eosl: false,
@@ -107,7 +115,9 @@ func TestScanner_Scan(t *testing.T) {
 						Pkgs: []ftypes.LibraryInfo{
 							{
 								Library: dtypes.Library{Name: "rails", Version: "6.0"},
-								LayerID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+								},
 							},
 						},
 					},
@@ -118,7 +128,9 @@ func TestScanner_Scan(t *testing.T) {
 								PkgName:          "rails",
 								InstalledVersion: "6.0",
 								FixedVersion:     "6.1",
-								LayerID:          "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+								},
 							},
 						},
 					},
@@ -133,7 +145,9 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "musl",
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "1.2.4",
-							LayerID:          "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+							},
 						},
 					},
 					Type: vulnerability.Alpine,
@@ -146,7 +160,9 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "6.0",
 							FixedVersion:     "6.1",
-							LayerID:          "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+							},
 						},
 					},
 					Type: "bundler",
@@ -178,7 +194,9 @@ func TestScanner_Scan(t *testing.T) {
 								Libraries: []ftypes.LibraryInfo{
 									{
 										Library: dtypes.Library{Name: "rails", Version: "6.0"},
-										LayerID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+										Layer: ftypes.Layer{
+											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+										},
 									},
 								},
 							},
@@ -193,7 +211,9 @@ func TestScanner_Scan(t *testing.T) {
 						Pkgs: []ftypes.LibraryInfo{
 							{
 								Library: dtypes.Library{Name: "rails", Version: "6.0"},
-								LayerID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+								},
 							},
 						},
 					},
@@ -204,7 +224,9 @@ func TestScanner_Scan(t *testing.T) {
 								PkgName:          "rails",
 								InstalledVersion: "6.0",
 								FixedVersion:     "6.1",
-								LayerID:          "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+								},
 							},
 						},
 					},
@@ -219,7 +241,9 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "6.0",
 							FixedVersion:     "6.1",
-							LayerID:          "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+							},
 						},
 					},
 					Type: "bundler",
@@ -251,7 +275,9 @@ func TestScanner_Scan(t *testing.T) {
 								Libraries: []ftypes.LibraryInfo{
 									{
 										Library: dtypes.Library{Name: "rails", Version: "6.0"},
-										LayerID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+										Layer: ftypes.Layer{
+											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+										},
 									},
 								},
 							},
@@ -277,7 +303,9 @@ func TestScanner_Scan(t *testing.T) {
 						Pkgs: []ftypes.LibraryInfo{
 							{
 								Library: dtypes.Library{Name: "rails", Version: "6.0"},
-								LayerID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+								},
 							},
 						},
 					},
@@ -288,7 +316,9 @@ func TestScanner_Scan(t *testing.T) {
 								PkgName:          "rails",
 								InstalledVersion: "6.0",
 								FixedVersion:     "6.1",
-								LayerID:          "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+								},
 							},
 						},
 					},
@@ -303,7 +333,9 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "6.0",
 							FixedVersion:     "6.1",
-							LayerID:          "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+							},
 						},
 					},
 					Type: "bundler",
@@ -341,7 +373,9 @@ func TestScanner_Scan(t *testing.T) {
 								Libraries: []ftypes.LibraryInfo{
 									{
 										Library: dtypes.Library{Name: "rails", Version: "5.1"},
-										LayerID: "sha256:5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
+										Layer: ftypes.Layer{
+											DiffID: "sha256:5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
+										},
 									},
 								},
 							},
@@ -351,7 +385,9 @@ func TestScanner_Scan(t *testing.T) {
 								Libraries: []ftypes.LibraryInfo{
 									{
 										Library: dtypes.Library{Name: "laravel", Version: "6.0.0"},
-										LayerID: "sha256:9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6",
+										Layer: ftypes.Layer{
+											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+										},
 									},
 								},
 							},
@@ -366,7 +402,9 @@ func TestScanner_Scan(t *testing.T) {
 						Pkgs: []ftypes.LibraryInfo{
 							{
 								Library: dtypes.Library{Name: "rails", Version: "5.1"},
-								LayerID: "sha256:5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
+								},
 							},
 						},
 					},
@@ -377,7 +415,9 @@ func TestScanner_Scan(t *testing.T) {
 								PkgName:          "rails",
 								InstalledVersion: "5.1",
 								FixedVersion:     "5.2",
-								LayerID:          "sha256:5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
+								},
 							},
 						},
 					},
@@ -388,7 +428,9 @@ func TestScanner_Scan(t *testing.T) {
 						Pkgs: []ftypes.LibraryInfo{
 							{
 								Library: dtypes.Library{Name: "laravel", Version: "6.0.0"},
-								LayerID: "sha256:9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+								},
 							},
 						},
 					},
@@ -399,7 +441,9 @@ func TestScanner_Scan(t *testing.T) {
 								PkgName:          "laravel",
 								InstalledVersion: "6.0.0",
 								FixedVersion:     "6.1.0",
-								LayerID:          "sha256:9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+								},
 							},
 						},
 					},
@@ -414,7 +458,9 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "rails",
 							InstalledVersion: "5.1",
 							FixedVersion:     "5.2",
-							LayerID:          "sha256:5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
+							},
 						},
 					},
 					Type: "bundler",
@@ -427,7 +473,9 @@ func TestScanner_Scan(t *testing.T) {
 							PkgName:          "laravel",
 							InstalledVersion: "6.0.0",
 							FixedVersion:     "6.1.0",
-							LayerID:          "sha256:9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+							},
 						},
 					},
 					Type: "composer",
@@ -476,7 +524,9 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Name:    "musl",
 								Version: "1.2.3",
-								LayerID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
 							},
 						},
 					},
@@ -491,7 +541,9 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Name:    "musl",
 								Version: "1.2.3",
-								LayerID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
 							},
 						},
 					},
@@ -523,7 +575,9 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Name:    "musl",
 								Version: "1.2.3",
-								LayerID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
 							},
 						},
 						Applications: []ftypes.Application{
@@ -533,7 +587,9 @@ func TestScanner_Scan(t *testing.T) {
 								Libraries: []ftypes.LibraryInfo{
 									{
 										Library: dtypes.Library{Name: "rails", Version: "6.0"},
-										LayerID: "sha256:9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6",
+										Layer: ftypes.Layer{
+											DiffID: "sha256:9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6",
+										},
 									},
 								},
 							},
@@ -548,7 +604,9 @@ func TestScanner_Scan(t *testing.T) {
 						Pkgs: []ftypes.LibraryInfo{
 							{
 								Library: dtypes.Library{Name: "rails", Version: "6.0"},
-								LayerID: "sha256:9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6",
+								},
 							},
 						},
 					},

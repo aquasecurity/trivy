@@ -2,7 +2,6 @@
 
 package scanner
 
-import digest "github.com/opencontainers/go-digest"
 import fanaltypes "github.com/aquasecurity/fanal/types"
 import mock "github.com/stretchr/testify/mock"
 import report "github.com/aquasecurity/trivy/pkg/report"
@@ -16,7 +15,7 @@ type MockDriver struct {
 type ScanArgs struct {
 	Target           string
 	TargetAnything   bool
-	ImageID          digest.Digest
+	ImageID          string
 	ImageIDAnything  bool
 	LayerIDs         []string
 	LayerIDsAnything bool
@@ -68,11 +67,11 @@ func (_m *MockDriver) ApplyScanExpectations(expectations []ScanExpectation) {
 }
 
 // Scan provides a mock function with given fields: target, imageID, layerIDs, options
-func (_m *MockDriver) Scan(target string, imageID digest.Digest, layerIDs []string, options types.ScanOptions) (report.Results, *fanaltypes.OS, bool, error) {
+func (_m *MockDriver) Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (report.Results, *fanaltypes.OS, bool, error) {
 	ret := _m.Called(target, imageID, layerIDs, options)
 
 	var r0 report.Results
-	if rf, ok := ret.Get(0).(func(string, digest.Digest, []string, types.ScanOptions) report.Results); ok {
+	if rf, ok := ret.Get(0).(func(string, string, []string, types.ScanOptions) report.Results); ok {
 		r0 = rf(target, imageID, layerIDs, options)
 	} else {
 		if ret.Get(0) != nil {
@@ -81,7 +80,7 @@ func (_m *MockDriver) Scan(target string, imageID digest.Digest, layerIDs []stri
 	}
 
 	var r1 *fanaltypes.OS
-	if rf, ok := ret.Get(1).(func(string, digest.Digest, []string, types.ScanOptions) *fanaltypes.OS); ok {
+	if rf, ok := ret.Get(1).(func(string, string, []string, types.ScanOptions) *fanaltypes.OS); ok {
 		r1 = rf(target, imageID, layerIDs, options)
 	} else {
 		if ret.Get(1) != nil {
@@ -90,14 +89,14 @@ func (_m *MockDriver) Scan(target string, imageID digest.Digest, layerIDs []stri
 	}
 
 	var r2 bool
-	if rf, ok := ret.Get(2).(func(string, digest.Digest, []string, types.ScanOptions) bool); ok {
+	if rf, ok := ret.Get(2).(func(string, string, []string, types.ScanOptions) bool); ok {
 		r2 = rf(target, imageID, layerIDs, options)
 	} else {
 		r2 = ret.Get(2).(bool)
 	}
 
 	var r3 error
-	if rf, ok := ret.Get(3).(func(string, digest.Digest, []string, types.ScanOptions) error); ok {
+	if rf, ok := ret.Get(3).(func(string, string, []string, types.ScanOptions) error); ok {
 		r3 = rf(target, imageID, layerIDs, options)
 	} else {
 		r3 = ret.Error(3)

@@ -48,7 +48,9 @@ func TestScanner_Detect(t *testing.T) {
 						SrcVersion: "7.4.160",
 						SrcRelease: "5.el7",
 						SrcEpoch:   2,
-						LayerID:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
 					},
 				},
 			},
@@ -91,20 +93,26 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2017-5953",
 					PkgName:          "vim-minimal",
 					InstalledVersion: "2:7.4.160-5.el7",
-					LayerID:          "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
 				},
 				{
 					VulnerabilityID:  "CVE-2017-6350",
 					PkgName:          "vim-minimal",
 					InstalledVersion: "2:7.4.160-5.el7",
-					LayerID:          "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
 				},
 				{
 					VulnerabilityID:  "CVE-2019-12735",
 					PkgName:          "vim-minimal",
 					InstalledVersion: "2:7.4.160-5.el7",
 					FixedVersion:     "2:7.4.160-6.el7_6",
-					LayerID:          "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
 				},
 			},
 		},
