@@ -11,7 +11,6 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 
 	"github.com/google/wire"
-	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
 	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
@@ -48,7 +47,7 @@ var SuperSet = wire.NewSet(
 )
 
 type Applier interface {
-	ApplyLayers(imageID digest.Digest, layerIDs []string) (detail ftypes.ImageDetail, err error)
+	ApplyLayers(imageID string, layerIDs []string) (detail ftypes.ImageDetail, err error)
 }
 
 type OspkgDetector interface {
@@ -69,7 +68,7 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector, libDetector Librar
 	return Scanner{applier: applier, ospkgDetector: ospkgDetector, libDetector: libDetector}
 }
 
-func (s Scanner) Scan(target string, imageID digest.Digest, layerIDs []string, options types.ScanOptions) (report.Results, *ftypes.OS, bool, error) {
+func (s Scanner) Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (report.Results, *ftypes.OS, bool, error) {
 	imageDetail, err := s.applier.ApplyLayers(imageID, layerIDs)
 	if err != nil {
 		return nil, nil, false, xerrors.Errorf("failed to apply layers: %w", err)

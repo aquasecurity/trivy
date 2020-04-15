@@ -44,7 +44,7 @@ jobs:
           version: 18.06.0-ce
       - run:
           name: setup docker
-          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+          command: echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin
       - run:
           name: Release
           command: goreleaser --rm-dist

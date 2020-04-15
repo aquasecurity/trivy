@@ -6,21 +6,27 @@
         "VulnerabilityID": "CVE-2011-3374",
         "PkgName": "apt",
         "InstalledVersion": "1.8.2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Severity": "LOW"
       },
       {
         "VulnerabilityID": "TEMP-0841856-B18BAF",
         "PkgName": "bash",
         "InstalledVersion": "5.0-4",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Severity": "LOW"
       },
       {
         "VulnerabilityID": "CVE-2016-2781",
         "PkgName": "coreutils",
         "InstalledVersion": "8.30-3",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "coreutils: Non-privileged session can escape to the parent session in chroot",
         "Description": "chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
         "Severity": "LOW",
@@ -33,7 +39,9 @@
         "VulnerabilityID": "CVE-2017-18018",
         "PkgName": "coreutils",
         "InstalledVersion": "8.30-3",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "coreutils: race condition vulnerability in chown and chgrp",
         "Description": "In GNU Coreutils through 8.29, chown-core.c in chown and chgrp does not prevent replacement of a plain file with a symlink during use of the POSIX \"-R -L\" options, which allows local users to modify the ownership of arbitrary files by leveraging a race condition.",
         "Severity": "LOW",
@@ -46,7 +54,9 @@
         "PkgName": "e2fsprogs",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "References": [
@@ -62,7 +72,9 @@
         "VulnerabilityID": "CVE-2018-12886",
         "PkgName": "gcc-8-base",
         "InstalledVersion": "8.3.0-6",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
         "Description": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against.",
         "Severity": "MEDIUM",
@@ -75,7 +87,9 @@
         "VulnerabilityID": "CVE-2019-15847",
         "PkgName": "gcc-8-base",
         "InstalledVersion": "8.3.0-6",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "gcc: POWER9 \"DARN\" RNG intrinsic produces repeated output",
         "Description": "The POWER9 backend in GNU Compiler Collection (GCC) before version 10 could optimize multiple calls of the __builtin_darn intrinsic into a single call, thus reducing the entropy of the random number generator. This occurred because a volatile operation was not specified. For example, within a single execution of a program, the output of every __builtin_darn() call may be the same.",
         "Severity": "MEDIUM",
@@ -87,14 +101,18 @@
         "VulnerabilityID": "CVE-2011-3374",
         "PkgName": "libapt-pkg5.0",
         "InstalledVersion": "1.8.2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Severity": "LOW"
       },
       {
         "VulnerabilityID": "CVE-2019-1010022",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "glibc: stack guard protection bypass",
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard.",
         "Severity": "HIGH",
@@ -106,7 +124,9 @@
         "VulnerabilityID": "CVE-2010-4051",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "The regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (application crash) via a regular expression containing adjacent bounded repetitions that bypass the intended RE_DUP_MAX limitation, as demonstrated by a {10,}{10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD, related to a \"RE_DUP_MAX overflow.\"",
         "Severity": "MEDIUM",
@@ -128,7 +148,9 @@
         "VulnerabilityID": "CVE-2010-4052",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "CVE-2010-4051 CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "Stack consumption vulnerability in the regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (resource exhaustion) via a regular expression containing adjacent repetition operators, as demonstrated by a {10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD.",
         "Severity": "MEDIUM",
@@ -150,7 +172,9 @@
         "VulnerabilityID": "CVE-2010-4756",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "glibc: glob implementation can cause excessive CPU and memory consumption due to crafted glob expressions",
         "Description": "The glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632.",
         "Severity": "MEDIUM",
@@ -164,7 +188,9 @@
         "VulnerabilityID": "CVE-2016-10228",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "glibc: iconv program can hang when invoked with the -c option",
         "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
         "Severity": "MEDIUM",
@@ -178,7 +204,9 @@
         "VulnerabilityID": "CVE-2018-20796",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
         "Severity": "MEDIUM",
@@ -193,7 +221,9 @@
         "VulnerabilityID": "CVE-2019-1010023",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "GNU Libc current is affected by: Re-mapping current loaded libray with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code.",
         "Severity": "MEDIUM",
         "References": [
@@ -206,7 +236,9 @@
         "VulnerabilityID": "CVE-2019-1010024",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc.",
         "Severity": "MEDIUM",
         "References": [
@@ -219,7 +251,9 @@
         "VulnerabilityID": "CVE-2019-1010025",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "glibc: information disclosure of heap addresses of pthread_created thread",
         "Description": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor's position is \"ASLR bypass itself is not a vulnerability.\"",
         "Severity": "MEDIUM",
@@ -231,7 +265,9 @@
         "VulnerabilityID": "CVE-2019-9192",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
         "Severity": "MEDIUM",
@@ -243,7 +279,9 @@
         "VulnerabilityID": "CVE-2019-1010022",
         "PkgName": "libc6",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "glibc: stack guard protection bypass",
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard.",
         "Severity": "HIGH",
@@ -255,7 +293,9 @@
         "VulnerabilityID": "CVE-2010-4051",
         "PkgName": "libc6",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "The regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (application crash) via a regular expression containing adjacent bounded repetitions that bypass the intended RE_DUP_MAX limitation, as demonstrated by a {10,}{10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD, related to a \"RE_DUP_MAX overflow.\"",
         "Severity": "MEDIUM",
@@ -277,7 +317,9 @@
         "VulnerabilityID": "CVE-2010-4052",
         "PkgName": "libc6",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "CVE-2010-4051 CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "Stack consumption vulnerability in the regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (resource exhaustion) via a regular expression containing adjacent repetition operators, as demonstrated by a {10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD.",
         "Severity": "MEDIUM",
@@ -299,7 +341,9 @@
         "VulnerabilityID": "CVE-2010-4756",
         "PkgName": "libc6",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "glibc: glob implementation can cause excessive CPU and memory consumption due to crafted glob expressions",
         "Description": "The glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632.",
         "Severity": "MEDIUM",
@@ -313,7 +357,9 @@
         "VulnerabilityID": "CVE-2016-10228",
         "PkgName": "libc6",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "glibc: iconv program can hang when invoked with the -c option",
         "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
         "Severity": "MEDIUM",
@@ -327,7 +373,9 @@
         "VulnerabilityID": "CVE-2018-20796",
         "PkgName": "libc6",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
         "Severity": "MEDIUM",
@@ -342,7 +390,9 @@
         "VulnerabilityID": "CVE-2019-1010023",
         "PkgName": "libc6",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "GNU Libc current is affected by: Re-mapping current loaded libray with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code.",
         "Severity": "MEDIUM",
         "References": [
@@ -355,7 +405,9 @@
         "VulnerabilityID": "CVE-2019-1010024",
         "PkgName": "libc6",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc.",
         "Severity": "MEDIUM",
         "References": [
@@ -368,7 +420,9 @@
         "VulnerabilityID": "CVE-2019-1010025",
         "PkgName": "libc6",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "glibc: information disclosure of heap addresses of pthread_created thread",
         "Description": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor's position is \"ASLR bypass itself is not a vulnerability.\"",
         "Severity": "MEDIUM",
@@ -380,7 +434,9 @@
         "VulnerabilityID": "CVE-2019-9192",
         "PkgName": "libc6",
         "InstalledVersion": "2.28-10",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
         "Severity": "MEDIUM",
@@ -393,7 +449,9 @@
         "PkgName": "libcom-err2",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "References": [
@@ -410,7 +468,9 @@
         "PkgName": "libext2fs2",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "References": [
@@ -426,7 +486,9 @@
         "VulnerabilityID": "CVE-2018-12886",
         "PkgName": "libgcc1",
         "InstalledVersion": "8.3.0-6",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
         "Description": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against.",
         "Severity": "MEDIUM",
@@ -439,7 +501,9 @@
         "VulnerabilityID": "CVE-2019-15847",
         "PkgName": "libgcc1",
         "InstalledVersion": "8.3.0-6",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "gcc: POWER9 \"DARN\" RNG intrinsic produces repeated output",
         "Description": "The POWER9 backend in GNU Compiler Collection (GCC) before version 10 could optimize multiple calls of the __builtin_darn intrinsic into a single call, thus reducing the entropy of the random number generator. This occurred because a volatile operation was not specified. For example, within a single execution of a program, the output of every __builtin_darn() call may be the same.",
         "Severity": "MEDIUM",
@@ -451,7 +515,9 @@
         "VulnerabilityID": "CVE-2018-6829",
         "PkgName": "libgcrypt20",
         "InstalledVersion": "1.8.4-5",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "libgcrypt: ElGamal implementation doesn't have semantic security due to incorrectly encoded plaintexts possibly allowing to obtain sensitive information",
         "Description": "cipher/elgamal.c in Libgcrypt through 1.8.2, when used to encrypt messages directly, improperly encodes plaintexts, which allows attackers to obtain sensitive information by reading ciphertext data (i.e., it does not have semantic security in face of a ciphertext-only attack). The Decisional Diffie-Hellman (DDH) assumption does not hold for Libgcrypt's ElGamal implementation.",
         "Severity": "MEDIUM",
@@ -465,7 +531,9 @@
         "VulnerabilityID": "CVE-2019-12904",
         "PkgName": "libgcrypt20",
         "InstalledVersion": "1.8.4-5",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "Libgcrypt: physical addresses being available to other processes leads to a flush-and-reload side-channel attack",
         "Description": "In Libgcrypt 1.8.4, the C implementation of AES is vulnerable to a flush-and-reload side-channel attack because physical addresses are available to other processes. (The C implementation is used on platforms where an assembly-language implementation is unavailable.)",
         "Severity": "MEDIUM",
@@ -481,7 +549,9 @@
         "VulnerabilityID": "CVE-2019-13627",
         "PkgName": "libgcrypt20",
         "InstalledVersion": "1.8.4-5",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "It was discovered that there was a ECDSA timing attack in the libgcrypt20 cryptographic library. Version affected: 1.8.4-5, 1.7.6-2+deb9u3, and 1.6.3-2+deb8u4. Versions fixed: 1.8.5-2 and 1.6.3-2+deb8u7.",
         "Severity": "MEDIUM",
         "References": [
@@ -498,7 +568,9 @@
         "VulnerabilityID": "CVE-2011-3389",
         "PkgName": "libgnutls30",
         "InstalledVersion": "3.6.7-4",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "HTTPS: block-wise chosen-plaintext attack against SSL/TLS (BEAST)",
         "Description": "The SSL protocol, as used in certain configurations in Microsoft Windows and Microsoft Internet Explorer, Mozilla Firefox, Google Chrome, Opera, and other products, encrypts data by using CBC mode with chained initialization vectors, which allows man-in-the-middle attackers to obtain plaintext HTTP headers via a blockwise chosen-boundary attack (BCBA) on an HTTPS session, in conjunction with JavaScript code that uses (1) the HTML5 WebSocket API, (2) the Java URLConnection API, or (3) the Silverlight WebClient API, aka a \"BEAST\" attack.",
         "Severity": "MEDIUM",
@@ -597,7 +669,9 @@
         "VulnerabilityID": "CVE-2019-17543",
         "PkgName": "liblz4-1",
         "InstalledVersion": "1.8.3-1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "LZ4 before 1.9.2 has a heap-based buffer overflow in LZ4_write32 (related to LZ4_compress_destSize), affecting applications that call LZ4_compress_fast with a large input. (This issue can also lead to data corruption.) NOTE: the vendor states \"only a few specific / uncommon usages of the API are at risk.\"",
         "Severity": "MEDIUM",
         "References": [
@@ -612,7 +686,9 @@
         "VulnerabilityID": "CVE-2019-17594",
         "PkgName": "libncursesw6",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
         "References": [
@@ -624,7 +700,9 @@
         "VulnerabilityID": "CVE-2019-17595",
         "PkgName": "libncursesw6",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
         "References": [
@@ -636,7 +714,9 @@
         "VulnerabilityID": "CVE-2017-11164",
         "PkgName": "libpcre3",
         "InstalledVersion": "2:8.39-12",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "pcre: OP_KETRMAX feature in the match function in pcre_exec.c",
         "Description": "In PCRE 8.41, the OP_KETRMAX feature in the match function in pcre_exec.c allows stack exhaustion (uncontrolled recursion) when processing a crafted regular expression.",
         "Severity": "HIGH",
@@ -649,7 +729,9 @@
         "VulnerabilityID": "CVE-2017-7245",
         "PkgName": "libpcre3",
         "InstalledVersion": "2:8.39-12",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "pcre: stack-based buffer overflow write in pcre32_copy_substring",
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 4) or possibly have unspecified other impact via a crafted file.",
         "Severity": "MEDIUM",
@@ -664,7 +746,9 @@
         "VulnerabilityID": "CVE-2017-7246",
         "PkgName": "libpcre3",
         "InstalledVersion": "2:8.39-12",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "pcre: stack-based buffer overflow write in pcre32_copy_substring",
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 268) or possibly have unspecified other impact via a crafted file.",
         "Severity": "MEDIUM",
@@ -679,7 +763,9 @@
         "VulnerabilityID": "CVE-2017-16231",
         "PkgName": "libpcre3",
         "InstalledVersion": "2:8.39-12",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "pcre: self-recursive call in match() in pcre_exec.c leads to denial of service",
         "Description": "** DISPUTED ** In PCRE 8.41, after compiling, a pcretest load test PoC produces a crash overflow in the function match() in pcre_exec.c because of a self-recursive call. NOTE: third parties dispute the relevance of this report, noting that there are options that can be used to limit the amount of stack that is used.",
         "Severity": "LOW",
@@ -698,7 +784,9 @@
         "VulnerabilityID": "CVE-2019-9893",
         "PkgName": "libseccomp2",
         "InstalledVersion": "2.3.3-4",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "libseccomp: incorrect generation of syscall filters in libseccomp",
         "Description": "libseccomp before 2.4.0 did not correctly generate 64-bit syscall argument comparisons using the arithmetic operators (LT, GT, LE, GE), which might able to lead to bypassing seccomp filters and potential privilege escalations.",
         "Severity": "HIGH",
@@ -715,7 +803,9 @@
         "PkgName": "libss2",
         "InstalledVersion": "1.44.5-1+deb10u1",
         "FixedVersion": "1.44.5-1+deb10u2",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "References": [
@@ -731,7 +821,9 @@
         "VulnerabilityID": "CVE-2018-12886",
         "PkgName": "libstdc++6",
         "InstalledVersion": "8.3.0-6",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
         "Description": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against.",
         "Severity": "MEDIUM",
@@ -744,7 +836,9 @@
         "VulnerabilityID": "CVE-2019-15847",
         "PkgName": "libstdc++6",
         "InstalledVersion": "8.3.0-6",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "gcc: POWER9 \"DARN\" RNG intrinsic produces repeated output",
         "Description": "The POWER9 backend in GNU Compiler Collection (GCC) before version 10 could optimize multiple calls of the __builtin_darn intrinsic into a single call, thus reducing the entropy of the random number generator. This occurred because a volatile operation was not specified. For example, within a single execution of a program, the output of every __builtin_darn() call may be the same.",
         "Severity": "MEDIUM",
@@ -756,7 +850,9 @@
         "VulnerabilityID": "CVE-2018-20839",
         "PkgName": "libsystemd0",
         "InstalledVersion": "241-7~deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "systemd: mishandling of the current keyboard mode check leading to passwords being disclosed in cleartext to attacker",
         "Description": "systemd 242 changes the VT1 mode upon a logout, which allows attackers to read cleartext passwords in certain circumstances, such as watching a shutdown, or using Ctrl-Alt-F1 and Ctrl-Alt-F2. This occurs because the KDGKBMODE (aka current keyboard mode) check is mishandled.",
         "Severity": "MEDIUM",
@@ -772,7 +868,9 @@
         "VulnerabilityID": "CVE-2019-3843",
         "PkgName": "libsystemd0",
         "InstalledVersion": "241-7~deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "systemd: services with DynamicUser can create SUID/SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can create a SUID/SGID binary that would be allowed to run as the transient service UID/GID even after the service is terminated. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the UID/GID will be recycled.",
         "Severity": "MEDIUM",
@@ -787,7 +885,9 @@
         "VulnerabilityID": "CVE-2019-3844",
         "PkgName": "libsystemd0",
         "InstalledVersion": "241-7~deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "systemd: services with DynamicUser can get new privileges and create SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can get new privileges through the execution of SUID binaries, which would allow to create binaries owned by the service transient group with the setgid bit set. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the GID will be recycled.",
         "Severity": "MEDIUM",
@@ -801,7 +901,9 @@
         "VulnerabilityID": "CVE-2013-4392",
         "PkgName": "libsystemd0",
         "InstalledVersion": "241-7~deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "systemd: TOCTOU race condition when updating file permissions and SELinux security contexts",
         "Description": "systemd, when updating file permissions, allows local users to change the permissions and SELinux security contexts for arbitrary files via a symlink attack on unspecified files.",
         "Severity": "LOW",
@@ -815,7 +917,9 @@
         "VulnerabilityID": "CVE-2019-15718",
         "PkgName": "libsystemd0",
         "InstalledVersion": "241-7~deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
         "Severity": "LOW",
@@ -831,7 +935,9 @@
         "VulnerabilityID": "CVE-2018-1000654",
         "PkgName": "libtasn1-6",
         "InstalledVersion": "4.13-3",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "libtasn1: Infinite loop in _asn1_expand_object_id(ptree) leads to memory exhaustion",
         "Description": "GNU Libtasn1-4.13 libtasn1-4.13 version libtasn1-4.13, libtasn1-4.12 contains a DoS, specifically CPU usage will reach 100% when running asn1Paser against the POC due to an issue in _asn1_expand_object_id(p_tree), after a long time, the program will be killed. This attack appears to be exploitable via parsing a crafted file.",
         "Severity": "HIGH",
@@ -846,7 +952,9 @@
         "VulnerabilityID": "CVE-2019-17594",
         "PkgName": "libtinfo6",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
         "References": [
@@ -858,7 +966,9 @@
         "VulnerabilityID": "CVE-2019-17595",
         "PkgName": "libtinfo6",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
         "References": [
@@ -870,7 +980,9 @@
         "VulnerabilityID": "CVE-2018-20839",
         "PkgName": "libudev1",
         "InstalledVersion": "241-7~deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "systemd: mishandling of the current keyboard mode check leading to passwords being disclosed in cleartext to attacker",
         "Description": "systemd 242 changes the VT1 mode upon a logout, which allows attackers to read cleartext passwords in certain circumstances, such as watching a shutdown, or using Ctrl-Alt-F1 and Ctrl-Alt-F2. This occurs because the KDGKBMODE (aka current keyboard mode) check is mishandled.",
         "Severity": "MEDIUM",
@@ -886,7 +998,9 @@
         "VulnerabilityID": "CVE-2019-3843",
         "PkgName": "libudev1",
         "InstalledVersion": "241-7~deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "systemd: services with DynamicUser can create SUID/SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can create a SUID/SGID binary that would be allowed to run as the transient service UID/GID even after the service is terminated. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the UID/GID will be recycled.",
         "Severity": "MEDIUM",
@@ -901,7 +1015,9 @@
         "VulnerabilityID": "CVE-2019-3844",
         "PkgName": "libudev1",
         "InstalledVersion": "241-7~deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "systemd: services with DynamicUser can get new privileges and create SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can get new privileges through the execution of SUID binaries, which would allow to create binaries owned by the service transient group with the setgid bit set. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the GID will be recycled.",
         "Severity": "MEDIUM",
@@ -915,7 +1031,9 @@
         "VulnerabilityID": "CVE-2013-4392",
         "PkgName": "libudev1",
         "InstalledVersion": "241-7~deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "systemd: TOCTOU race condition when updating file permissions and SELinux security contexts",
         "Description": "systemd, when updating file permissions, allows local users to change the permissions and SELinux security contexts for arbitrary files via a symlink attack on unspecified files.",
         "Severity": "LOW",
@@ -929,7 +1047,9 @@
         "VulnerabilityID": "CVE-2019-15718",
         "PkgName": "libudev1",
         "InstalledVersion": "241-7~deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
         "Severity": "LOW",
@@ -945,7 +1065,9 @@
         "VulnerabilityID": "CVE-2012-2663",
         "PkgName": "libxtables12",
         "InstalledVersion": "1.8.2-4",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "iptables: --syn flag bypass",
         "Description": "extensions/libxt_tcp.c in iptables through 1.4.21 does not match TCP SYN+FIN packets in --syn rules, which might allow remote attackers to bypass intended firewall restrictions via crafted packets.  NOTE: the CVE-2012-6638 fix makes this issue less relevant.",
         "Severity": "HIGH",
@@ -958,7 +1080,9 @@
         "VulnerabilityID": "CVE-2019-11360",
         "PkgName": "libxtables12",
         "InstalledVersion": "1.8.2-4",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "A buffer overflow in iptables-restore in netfilter iptables 1.8.2 allows an attacker to (at least) crash the program or potentially gain code execution via a specially crafted iptables-save file. This is related to add_param_to_argv in xshared.c.",
         "Severity": "MEDIUM",
         "References": [
@@ -970,7 +1094,9 @@
         "VulnerabilityID": "CVE-2007-5686",
         "PkgName": "login",
         "InstalledVersion": "1:4.5-1.1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "initscripts in rPath Linux 1 sets insecure permissions for the /var/log/btmp file, which allows local users to obtain sensitive information regarding authentication attempts.  NOTE: because sshd detects the insecure permissions and does not log certain events, this also prevents sshd from logging failed authentication attempts by remote attackers.",
         "Severity": "MEDIUM",
         "References": [
@@ -986,7 +1112,9 @@
         "VulnerabilityID": "CVE-2018-7169",
         "PkgName": "login",
         "InstalledVersion": "1:4.5-1.1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "shadow-utils: newgidmap allows unprivileged user to drop supplementary groups potentially allowing privilege escalation",
         "Description": "An issue was discovered in shadow 4.5. newgidmap (in shadow-utils) is setuid and allows an unprivileged user to be placed in a user namespace where setgroups(2) is permitted. This allows an attacker to remove themselves from a supplementary group, which may allow access to certain filesystem paths if the administrator has used \"group blacklisting\" (e.g., chmod g-rwx) to restrict access to paths. This flaw effectively reverts a security feature in the kernel (in particular, the /proc/self/setgroups knob) to prevent this sort of privilege escalation.",
         "Severity": "MEDIUM",
@@ -999,7 +1127,9 @@
         "VulnerabilityID": "CVE-2013-4235",
         "PkgName": "login",
         "InstalledVersion": "1:4.5-1.1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "shadow-utils: TOCTOU race conditions by copying and removing directory trees",
         "Description": "A TOCTOU race condition was discovered in shadow-utils. A local attacker with write privileges in a directory removed or copied by usermod/userdel could potentially exploit this flaw, when the administrator invokes usermod/userdel, to delete or modify other files on the system.",
         "Severity": "LOW"
@@ -1008,14 +1138,18 @@
         "VulnerabilityID": "TEMP-0628843-DBAD28",
         "PkgName": "login",
         "InstalledVersion": "1:4.5-1.1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Severity": "LOW"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
         "PkgName": "ncurses-base",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
         "References": [
@@ -1027,7 +1161,9 @@
         "VulnerabilityID": "CVE-2019-17595",
         "PkgName": "ncurses-base",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
         "References": [
@@ -1039,7 +1175,9 @@
         "VulnerabilityID": "CVE-2019-17594",
         "PkgName": "ncurses-bin",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
         "References": [
@@ -1051,7 +1189,9 @@
         "VulnerabilityID": "CVE-2019-17595",
         "PkgName": "ncurses-bin",
         "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
         "References": [
@@ -1063,7 +1203,9 @@
         "VulnerabilityID": "CVE-2007-5686",
         "PkgName": "passwd",
         "InstalledVersion": "1:4.5-1.1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "initscripts in rPath Linux 1 sets insecure permissions for the /var/log/btmp file, which allows local users to obtain sensitive information regarding authentication attempts.  NOTE: because sshd detects the insecure permissions and does not log certain events, this also prevents sshd from logging failed authentication attempts by remote attackers.",
         "Severity": "MEDIUM",
         "References": [
@@ -1079,7 +1221,9 @@
         "VulnerabilityID": "CVE-2018-7169",
         "PkgName": "passwd",
         "InstalledVersion": "1:4.5-1.1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "shadow-utils: newgidmap allows unprivileged user to drop supplementary groups potentially allowing privilege escalation",
         "Description": "An issue was discovered in shadow 4.5. newgidmap (in shadow-utils) is setuid and allows an unprivileged user to be placed in a user namespace where setgroups(2) is permitted. This allows an attacker to remove themselves from a supplementary group, which may allow access to certain filesystem paths if the administrator has used \"group blacklisting\" (e.g., chmod g-rwx) to restrict access to paths. This flaw effectively reverts a security feature in the kernel (in particular, the /proc/self/setgroups knob) to prevent this sort of privilege escalation.",
         "Severity": "MEDIUM",
@@ -1092,7 +1236,9 @@
         "VulnerabilityID": "CVE-2013-4235",
         "PkgName": "passwd",
         "InstalledVersion": "1:4.5-1.1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "shadow-utils: TOCTOU race conditions by copying and removing directory trees",
         "Description": "A TOCTOU race condition was discovered in shadow-utils. A local attacker with write privileges in a directory removed or copied by usermod/userdel could potentially exploit this flaw, when the administrator invokes usermod/userdel, to delete or modify other files on the system.",
         "Severity": "LOW"
@@ -1101,14 +1247,18 @@
         "VulnerabilityID": "TEMP-0628843-DBAD28",
         "PkgName": "passwd",
         "InstalledVersion": "1:4.5-1.1",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Severity": "LOW"
       },
       {
         "VulnerabilityID": "CVE-2011-4116",
         "PkgName": "perl-base",
         "InstalledVersion": "5.28.1-6",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "perl: File::Temp insecure temporary file handling",
         "Description": "No description is available for this CVE.",
         "Severity": "LOW"
@@ -1117,14 +1267,18 @@
         "VulnerabilityID": "TEMP-0517018-A83CE6",
         "PkgName": "sysvinit-utils",
         "InstalledVersion": "2.93-8",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Severity": "LOW"
       },
       {
         "VulnerabilityID": "CVE-2005-2541",
         "PkgName": "tar",
         "InstalledVersion": "1.30+dfsg-6",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Description": "Tar 1.15.1 does not properly warn the user when extracting setuid or setgid files, which may allow local users or remote attackers to gain privileges.",
         "Severity": "CRITICAL",
         "References": [
@@ -1135,7 +1289,9 @@
         "VulnerabilityID": "CVE-2019-9923",
         "PkgName": "tar",
         "InstalledVersion": "1.30+dfsg-6",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Title": "tar: null-pointer dereference in pax_decode_header in sparse.c",
         "Description": "pax_decode_header in sparse.c in GNU Tar before 1.32 had a NULL pointer dereference when parsing certain archives that have malformed extended headers.",
         "Severity": "MEDIUM",
@@ -1150,7 +1306,9 @@
         "VulnerabilityID": "TEMP-0290435-0B57B5",
         "PkgName": "tar",
         "InstalledVersion": "1.30+dfsg-6",
-        "LayerID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
         "Severity": "LOW"
       }
     ]

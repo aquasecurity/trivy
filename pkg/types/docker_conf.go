@@ -10,10 +10,8 @@ import (
 type DockerConfig struct {
 	UserName string `env:"TRIVY_USERNAME"`
 	Password string `env:"TRIVY_PASSWORD"`
-	Insecure bool   `env:"TRIVY_INSECURE" envDefault:"true"`
-
-	DockerCertPath string `env:"DOCKER_CERT_PATH"`
-	DockerHost     string `env:"DOCKER_HOST"`
+	Insecure bool   `env:"TRIVY_INSECURE" envDefault:"false"`
+	NonSSL   bool   `env:"TRIVY_NONSSL" envDefault:"false"`
 }
 
 func GetDockerOption(timeout time.Duration) (types.DockerOption, error) {
@@ -27,7 +25,6 @@ func GetDockerOption(timeout time.Duration) (types.DockerOption, error) {
 		Password:              cfg.Password,
 		Timeout:               timeout,
 		InsecureSkipTLSVerify: cfg.Insecure,
-		DockerDaemonCertPath:  cfg.DockerCertPath,
-		DockerDaemonHost:      cfg.DockerHost,
+		NonSSL:                cfg.NonSSL,
 	}, nil
 }

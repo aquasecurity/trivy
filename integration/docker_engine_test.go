@@ -230,7 +230,7 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			name:          "sad path, invalid image",
 			invalidImage:  true,
 			testfile:      "badimage:latest",
-			expectedError: "unable to initialize a image struct: failed to initialize source: Error reading manifest latest in docker.io/library/badimage",
+			expectedError: "unable to access the remote image (index.docker.io/library/badimage:latest)",
 		},
 	}
 
@@ -243,7 +243,7 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			ctx := context.Background()
 			defer ctx.Done()
 
-			cli, err := client.NewClientWithOpts(client.FromEnv)
+			cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 			require.NoError(t, err, tc.name)
 
 			if !tc.invalidImage {

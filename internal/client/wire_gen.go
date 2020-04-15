@@ -38,22 +38,20 @@ func initializeDockerScanner(ctx context.Context, imageName string, layerCache c
 	}, nil
 }
 
-func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.ImageCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration) (scanner.Scanner, func(), error) {
+func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.ImageCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration) (scanner.Scanner, error) {
 	scannerScanner := client.NewProtobufClient(url)
 	clientScanner := client.NewScanner(customHeaders, scannerScanner)
 	dockerOption, err := types.GetDockerOption(timeout)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Scanner{}, err
 	}
-	extractor, cleanup, err := docker.NewDockerArchiveExtractor(ctx, filePath, dockerOption)
+	extractor, err := docker.NewDockerArchiveExtractor(ctx, filePath, dockerOption)
 	if err != nil {
-		return scanner.Scanner{}, nil, err
+		return scanner.Scanner{}, err
 	}
 	config := analyzer.New(extractor, layerCache)
 	scanner2 := scanner.NewScanner(clientScanner, config)
-	return scanner2, func() {
-		cleanup()
-	}, nil
+	return scanner2, nil
 }
 
 func initializeVulnerabilityClient() vulnerability.Client {

@@ -47,6 +47,7 @@ var (
 		"18.10": time.Date(2019, 7, 18, 23, 59, 59, 0, time.UTC),
 		"19.04": time.Date(2020, 1, 18, 23, 59, 59, 0, time.UTC),
 		"19.10": time.Date(2020, 7, 17, 23, 59, 59, 0, time.UTC),
+		"20.04": time.Date(2030, 4, 23, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -85,7 +86,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,
-				LayerID:          pkg.LayerID,
+				Layer:            pkg.Layer,
 			}
 
 			if adv.FixedVersion == "" {

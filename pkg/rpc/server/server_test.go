@@ -112,6 +112,7 @@ func TestScanServer_Scan(t *testing.T) {
 								PkgName:          "musl",
 								InstalledVersion: "1.2.3",
 								FixedVersion:     "1.2.4",
+								Layer:            &common.Layer{},
 							},
 						},
 					},
@@ -280,10 +281,11 @@ func TestCacheServer_PutLayer(t *testing.T) {
 			name: "happy path",
 			args: args{
 				in: &rpcCache.PutLayerRequest{
-					LayerId:             "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
-					DecompressedLayerId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+					DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 					LayerInfo: &rpcCache.LayerInfo{
 						SchemaVersion: 1,
+						Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+						DiffId:        "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 						Os: &common.OS{
 							Family: "alpine",
 							Name:   "3.11",
@@ -340,10 +342,11 @@ func TestCacheServer_PutLayer(t *testing.T) {
 			},
 			putLayer: cache.ImageCachePutLayerExpectation{
 				Args: cache.ImageCachePutLayerArgs{
-					LayerID:             "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
-					DecompressedLayerID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+					DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 					LayerInfo: ftypes.LayerInfo{
 						SchemaVersion: 1,
+						Digest:        "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+						DiffID:        "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 						OS: &ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
@@ -415,9 +418,8 @@ func TestCacheServer_PutLayer(t *testing.T) {
 			},
 			putLayer: cache.ImageCachePutLayerExpectation{
 				Args: cache.ImageCachePutLayerArgs{
-					LayerIDAnything:             true,
-					DecompressedLayerIDAnything: true,
-					LayerInfoAnything:           true,
+					DiffIDAnything:    true,
+					LayerInfoAnything: true,
 				},
 				Returns: cache.ImageCachePutLayerReturns{
 					Err: xerrors.New("error"),
@@ -432,9 +434,8 @@ func TestCacheServer_PutLayer(t *testing.T) {
 			},
 			putLayer: cache.ImageCachePutLayerExpectation{
 				Args: cache.ImageCachePutLayerArgs{
-					LayerIDAnything:             true,
-					DecompressedLayerIDAnything: true,
-					LayerInfoAnything:           true,
+					DiffIDAnything:    true,
+					LayerInfoAnything: true,
 				},
 				Returns: cache.ImageCachePutLayerReturns{
 					Err: xerrors.New("error"),

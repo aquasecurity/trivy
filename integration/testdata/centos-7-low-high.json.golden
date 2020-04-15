@@ -7,7 +7,9 @@
         "PkgName": "bind-license",
         "InstalledVersion": "32:9.9.4-73.el7_6",
         "FixedVersion": "32:9.9.4-74.el7_6.1",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "bind: Limiting simultaneous TCP clients is ineffective",
         "Description": "By design, BIND is intended to limit the number of TCP clients that can be connected at any given time. The number of allowed connections is a tunable parameter which, if unset, defaults to a conservative value for most servers. Unfortunately, the code which was intended to limit the number of simultaneous connections contained an error which could be exploited to grow the number of simultaneous connections beyond this limit. Versions affected: BIND 9.9.0 -\u003e 9.10.8-P1, 9.11.0 -\u003e 9.11.6, 9.12.0 -\u003e 9.12.4, 9.14.0. BIND 9 Supported Preview Edition versions 9.9.3-S1 -\u003e 9.11.5-S3, and 9.11.5-S5. Versions 9.13.0 -\u003e 9.13.7 of the 9.13 development branch are also affected. Versions prior to BIND 9.9.0 have not been evaluated for vulnerability to CVE-2018-5743.",
         "Severity": "HIGH",
@@ -21,7 +23,9 @@
         "PkgName": "elfutils-default-yama-scope",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
         "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
         "Severity": "HIGH",
@@ -36,7 +40,9 @@
         "PkgName": "elfutils-libelf",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
         "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
         "Severity": "HIGH",
@@ -51,7 +57,9 @@
         "PkgName": "elfutils-libs",
         "InstalledVersion": "0.172-2.el7",
         "FixedVersion": "0.176-2.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
         "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
         "Severity": "HIGH",
@@ -66,7 +74,9 @@
         "PkgName": "nspr",
         "InstalledVersion": "4.19.0-1.el7_5",
         "FixedVersion": "4.21.0-1.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
@@ -98,7 +108,9 @@
         "PkgName": "nss",
         "InstalledVersion": "3.36.0-7.1.el7_6",
         "FixedVersion": "3.44.0-4.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
@@ -130,7 +142,9 @@
         "PkgName": "nss-softokn",
         "InstalledVersion": "3.36.0-5.el7_5",
         "FixedVersion": "3.44.0-5.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
@@ -162,7 +176,9 @@
         "PkgName": "nss-softokn-freebl",
         "InstalledVersion": "3.36.0-5.el7_5",
         "FixedVersion": "3.44.0-5.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
@@ -194,7 +210,9 @@
         "PkgName": "nss-sysinit",
         "InstalledVersion": "3.36.0-7.1.el7_6",
         "FixedVersion": "3.44.0-4.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
@@ -226,7 +244,9 @@
         "PkgName": "nss-tools",
         "InstalledVersion": "3.36.0-7.1.el7_6",
         "FixedVersion": "3.44.0-4.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
@@ -258,7 +278,9 @@
         "PkgName": "nss-util",
         "InstalledVersion": "3.36.0-1.1.el7_6",
         "FixedVersion": "3.44.0-3.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "LOW",
@@ -290,7 +312,9 @@
         "PkgName": "openssl-libs",
         "InstalledVersion": "1:1.0.2k-16.el7",
         "FixedVersion": "1:1.0.2k-16.el7_6.1",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "openssl: Side-channel vulnerability on SMT/Hyper-Threading architectures (PortSmash)",
         "Description": "Simultaneous Multi-threading (SMT) in processors can enable local users to exploit software vulnerable to timing attacks via a side-channel timing attack on 'port contention'.",
         "Severity": "LOW",
@@ -323,7 +347,9 @@
         "PkgName": "python",
         "InstalledVersion": "2.7.5-76.el7",
         "FixedVersion": "2.7.5-86.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
         "Description": "A null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
         "Severity": "HIGH",
@@ -337,7 +363,9 @@
         "PkgName": "python-libs",
         "InstalledVersion": "2.7.5-76.el7",
         "FixedVersion": "2.7.5-86.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
         "Description": "A null pointer dereference vulnerability was found in the certificate parsing code in Python. This causes a denial of service to applications when parsing specially crafted certificates. This vulnerability is unlikely to be triggered if application enables SSL/TLS certificate validation and accepts certificates only from trusted root certificate authorities.",
         "Severity": "HIGH",
@@ -351,7 +379,9 @@
         "PkgName": "systemd",
         "InstalledVersion": "219-62.el7_6.5",
         "FixedVersion": "219-67.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "systemd: out-of-bounds read when parsing a crafted syslog message",
         "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
         "Severity": "LOW",
@@ -375,7 +405,9 @@
         "PkgName": "systemd",
         "InstalledVersion": "219-62.el7_6.5",
         "FixedVersion": "219-67.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
         "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
         "Severity": "LOW",
@@ -392,7 +424,9 @@
         "PkgName": "systemd-libs",
         "InstalledVersion": "219-62.el7_6.5",
         "FixedVersion": "219-67.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "systemd: out-of-bounds read when parsing a crafted syslog message",
         "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
         "Severity": "LOW",
@@ -416,7 +450,9 @@
         "PkgName": "systemd-libs",
         "InstalledVersion": "219-62.el7_6.5",
         "FixedVersion": "219-67.el7",
-        "LayerID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854",
+        "Layer": {
+          "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+        },
         "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
         "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
         "Severity": "LOW",

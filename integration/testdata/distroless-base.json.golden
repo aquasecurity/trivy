@@ -6,7 +6,9 @@
         "VulnerabilityID": "CVE-2018-1000001",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: realpath() buffer underflow when getcwd() returns relative path allows privilege escalation",
         "Description": "In glibc 2.26 and earlier there is confusion in the usage of getcwd() by realpath() which can be used to write before the destination buffer leading to a buffer underflow and potential code execution.",
         "Severity": "HIGH",
@@ -28,7 +30,9 @@
         "VulnerabilityID": "CVE-2018-6485",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: Integer overflow in posix_memalign in memalign functions",
         "Description": "An integer overflow in the implementation of the posix_memalign in memalign functions in the GNU C Library (aka glibc or libc6) 2.26 and earlier could cause these functions to return a pointer to a heap area that is too small, potentially leading to heap corruption.",
         "Severity": "HIGH",
@@ -47,7 +51,9 @@
         "VulnerabilityID": "CVE-2018-6551",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: integer overflow in malloc functions",
         "Description": "The malloc implementation in the GNU C Library (aka glibc or libc6), from version 2.24 to 2.26 on powerpc, and only in version 2.26 on i386, did not properly handle malloc calls with arguments close to SIZE_MAX and could return a pointer to a heap region that is smaller than requested, eventually leading to heap corruption.",
         "Severity": "HIGH",
@@ -62,7 +68,9 @@
         "VulnerabilityID": "CVE-2019-1010022",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: stack guard protection bypass",
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard.",
         "Severity": "HIGH",
@@ -74,7 +82,9 @@
         "VulnerabilityID": "CVE-2019-9169",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: regular-expression match via proceed_next_node in posix/regexec.c leads to heap-based buffer over-read",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, proceed_next_node in posix/regexec.c has a heap-based buffer over-read via an attempted case-insensitive regular-expression match.",
         "Severity": "HIGH",
@@ -94,7 +104,9 @@
         "VulnerabilityID": "CVE-2009-5155",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: parse_reg_exp in posix/regcomp.c misparses alternatives leading to denial of service or trigger incorrect result",
         "Description": "In the GNU C Library (aka glibc or libc6) before 2.28, parse_reg_exp in posix/regcomp.c misparses alternatives, which allows attackers to cause a denial of service (assertion failure and application exit) or trigger an incorrect result by attempting a regular-expression match.",
         "Severity": "MEDIUM",
@@ -115,7 +127,9 @@
         "VulnerabilityID": "CVE-2010-4051",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "The regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (application crash) via a regular expression containing adjacent bounded repetitions that bypass the intended RE_DUP_MAX limitation, as demonstrated by a {10,}{10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD, related to a \"RE_DUP_MAX overflow.\"",
         "Severity": "MEDIUM",
@@ -137,7 +151,9 @@
         "VulnerabilityID": "CVE-2010-4052",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "CVE-2010-4051 CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "Stack consumption vulnerability in the regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (resource exhaustion) via a regular expression containing adjacent repetition operators, as demonstrated by a {10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD.",
         "Severity": "MEDIUM",
@@ -159,7 +175,9 @@
         "VulnerabilityID": "CVE-2010-4756",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: glob implementation can cause excessive CPU and memory consumption due to crafted glob expressions",
         "Description": "The glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632.",
         "Severity": "MEDIUM",
@@ -173,7 +191,9 @@
         "VulnerabilityID": "CVE-2015-8985",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: potential denial of service in pop_fail_stack()",
         "Description": "The pop_fail_stack function in the GNU C Library (aka glibc or libc6) allows context-dependent attackers to cause a denial of service (assertion failure and application crash) via vectors related to extended regular expression processing.",
         "Severity": "MEDIUM",
@@ -189,7 +209,9 @@
         "VulnerabilityID": "CVE-2016-10228",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: iconv program can hang when invoked with the -c option",
         "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
         "Severity": "MEDIUM",
@@ -203,7 +225,9 @@
         "VulnerabilityID": "CVE-2016-10739",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
@@ -220,7 +244,9 @@
         "VulnerabilityID": "CVE-2017-12132",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: Fragmentation attacks possible when EDNS0 is enabled",
         "Description": "The DNS stub resolver in the GNU C Library (aka glibc or libc6) before version 2.26, when EDNS support is enabled, will solicit large UDP responses from name servers, potentially simplifying off-path DNS spoofing attacks due to IP fragmentation.",
         "Severity": "MEDIUM",
@@ -236,7 +262,9 @@
         "VulnerabilityID": "CVE-2018-20796",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
         "Severity": "MEDIUM",
@@ -251,7 +279,9 @@
         "VulnerabilityID": "CVE-2019-1010023",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Description": "GNU Libc current is affected by: Re-mapping current loaded libray with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code.",
         "Severity": "MEDIUM",
         "References": [
@@ -264,7 +294,9 @@
         "VulnerabilityID": "CVE-2019-1010024",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc.",
         "Severity": "MEDIUM",
         "References": [
@@ -277,7 +309,9 @@
         "VulnerabilityID": "CVE-2019-1010025",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: information disclosure of heap addresses of pthread_created thread",
         "Description": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor's position is \"ASLR bypass itself is not a vulnerability.\"",
         "Severity": "MEDIUM",
@@ -289,7 +323,9 @@
         "VulnerabilityID": "CVE-2019-6488",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: Incorrect attempt to use a 64-bit register for size_t in assembly codes results in segmentation fault",
         "Description": "The string component in the GNU C Library (aka glibc or libc6) through 2.28, when running on the x32 architecture, incorrectly attempts to use a 64-bit register for size_t in assembly codes, which can lead to a segmentation fault or possibly unspecified other impact, as demonstrated by a crash in __memmove_avx_unaligned_erms in sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S during a memcpy.",
         "Severity": "MEDIUM",
@@ -303,7 +339,9 @@
         "VulnerabilityID": "CVE-2019-9192",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
         "Severity": "MEDIUM",
@@ -315,7 +353,9 @@
         "VulnerabilityID": "CVE-2019-7309",
         "PkgName": "libc6",
         "InstalledVersion": "2.24-11+deb9u4",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "glibc: memcmp function incorrectly returns zero",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, the memcmp function for the x32 architecture can incorrectly return zero (indicating that the inputs are equal) because the RDX most significant bit is mishandled.",
         "Severity": "LOW",
@@ -330,7 +370,9 @@
         "VulnerabilityID": "CVE-2007-6755",
         "PkgName": "libssl1.1",
         "InstalledVersion": "1.1.0k-1~deb9u1",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "Dual_EC_DRBG: weak pseudo random number generator",
         "Description": "The NIST SP 800-90A default statement of the Dual Elliptic Curve Deterministic Random Bit Generation (Dual_EC_DRBG) algorithm contains point Q constants with a possible relationship to certain \"skeleton key\" values, which might allow context-dependent attackers to defeat cryptographic protection mechanisms by leveraging knowledge of those values.  NOTE: this is a preliminary CVE for Dual_EC_DRBG; future research may provide additional details about point Q and associated attacks, and could potentially lead to a RECAST or REJECT of this CVE.",
         "Severity": "MEDIUM",
@@ -349,7 +391,9 @@
         "VulnerabilityID": "CVE-2010-0928",
         "PkgName": "libssl1.1",
         "InstalledVersion": "1.1.0k-1~deb9u1",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "openssl: RSA authentication weakness",
         "Description": "OpenSSL 0.9.8i on the Gaisler Research LEON3 SoC on the Xilinx Virtex-II Pro FPGA uses a Fixed Width Exponentiation (FWE) algorithm for certain signature calculations, and does not verify the signature before providing it to a caller, which makes it easier for physically proximate attackers to determine the private key via a modified supply voltage for the microprocessor, related to a \"fault-based attack.\"",
         "Severity": "MEDIUM",
@@ -367,7 +411,9 @@
         "PkgName": "libssl1.1",
         "InstalledVersion": "1.1.0k-1~deb9u1",
         "FixedVersion": "1.1.0l-1~deb9u1",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "MEDIUM",
@@ -386,7 +432,9 @@
         "VulnerabilityID": "CVE-2007-6755",
         "PkgName": "openssl",
         "InstalledVersion": "1.1.0k-1~deb9u1",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "Dual_EC_DRBG: weak pseudo random number generator",
         "Description": "The NIST SP 800-90A default statement of the Dual Elliptic Curve Deterministic Random Bit Generation (Dual_EC_DRBG) algorithm contains point Q constants with a possible relationship to certain \"skeleton key\" values, which might allow context-dependent attackers to defeat cryptographic protection mechanisms by leveraging knowledge of those values.  NOTE: this is a preliminary CVE for Dual_EC_DRBG; future research may provide additional details about point Q and associated attacks, and could potentially lead to a RECAST or REJECT of this CVE.",
         "Severity": "MEDIUM",
@@ -405,7 +453,9 @@
         "VulnerabilityID": "CVE-2010-0928",
         "PkgName": "openssl",
         "InstalledVersion": "1.1.0k-1~deb9u1",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "openssl: RSA authentication weakness",
         "Description": "OpenSSL 0.9.8i on the Gaisler Research LEON3 SoC on the Xilinx Virtex-II Pro FPGA uses a Fixed Width Exponentiation (FWE) algorithm for certain signature calculations, and does not verify the signature before providing it to a caller, which makes it easier for physically proximate attackers to determine the private key via a modified supply voltage for the microprocessor, related to a \"fault-based attack.\"",
         "Severity": "MEDIUM",
@@ -423,7 +473,9 @@
         "PkgName": "openssl",
         "InstalledVersion": "1.1.0k-1~deb9u1",
         "FixedVersion": "1.1.0l-1~deb9u1",
-        "LayerID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+        "Layer": {
+          "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+        },
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "MEDIUM",

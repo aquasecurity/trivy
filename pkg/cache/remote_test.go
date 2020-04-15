@@ -33,7 +33,7 @@ func (s *mockCacheServer) PutImage(_ context.Context, in *rpcCache.PutImageReque
 }
 
 func (s *mockCacheServer) PutLayer(_ context.Context, in *rpcCache.PutLayerRequest) (*google_protobuf.Empty, error) {
-	if strings.Contains(in.LayerId, "invalid") {
+	if strings.Contains(in.DiffId, "invalid") {
 		return &google_protobuf.Empty{}, xerrors.New("invalid layer ID")
 	}
 	return &google_protobuf.Empty{}, nil
@@ -154,10 +154,9 @@ func TestRemoteCache_PutLayer(t *testing.T) {
 	ts := httptest.NewServer(mux)
 
 	type args struct {
-		layerID             string
-		decompressedLayerID string
-		layerInfo           types.LayerInfo
-		customHeaders       http.Header
+		diffID        string
+		layerInfo     types.LayerInfo
+		customHeaders http.Header
 	}
 	tests := []struct {
 		name    string
@@ -167,8 +166,7 @@ func TestRemoteCache_PutLayer(t *testing.T) {
 		{
 			name: "happy path",
 			args: args{
-				layerID:             "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-				decompressedLayerID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+				diffID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 				customHeaders: http.Header{
 					"Trivy-Token": []string{"valid-token"},
 				},
@@ -177,8 +175,7 @@ func TestRemoteCache_PutLayer(t *testing.T) {
 		{
 			name: "sad path",
 			args: args{
-				layerID:             "sha256:invalid",
-				decompressedLayerID: "sha256:invalid",
+				diffID: "sha256:invalid",
 				customHeaders: http.Header{
 					"Trivy-Token": []string{"valid-token"},
 				},
@@ -188,8 +185,7 @@ func TestRemoteCache_PutLayer(t *testing.T) {
 		{
 			name: "sad path: invalid token",
 			args: args{
-				layerID:             "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-				decompressedLayerID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+				diffID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 				customHeaders: http.Header{
 					"Trivy-Token": []string{"invalid-token"},
 				},
@@ -200,7 +196,7 @@ func TestRemoteCache_PutLayer(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), tt.args.customHeaders)
-			err := c.PutLayer(tt.args.layerID, tt.args.decompressedLayerID, tt.args.layerInfo)
+			err := c.PutLayer(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

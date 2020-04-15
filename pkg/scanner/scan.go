@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/google/wire"
-	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -70,7 +69,7 @@ type Scanner struct {
 }
 
 type Driver interface {
-	Scan(target string, imageID digest.Digest, layerIDs []string, options types.ScanOptions) (results report.Results, osFound *ftypes.OS, eols bool, err error)
+	Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (results report.Results, osFound *ftypes.OS, eols bool, err error)
 }
 
 type Analyzer interface {
