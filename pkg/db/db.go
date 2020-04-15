@@ -3,11 +3,13 @@ package db
 import (
 	"compress/gzip"
 	"context"
+	"encoding/json"
 	"io"
 	"os"
 	"path/filepath"
 
 	"github.com/google/wire"
+	"github.com/spf13/afero"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
@@ -20,6 +22,8 @@ import (
 const (
 	fullDB  = "trivy.db.gz"
 	lightDB = "trivy-light.db.gz"
+
+	metadataFile = "metadata.json"
 )
 
 var SuperSet = wire.NewSet(
@@ -32,10 +36,15 @@ var SuperSet = wire.NewSet(
 
 	// db.Config
 	wire.Struct(new(db.Config)),
+	wire.Bind(new(dbOperation), new(db.Config)),
 
 	// github.Client
 	github.NewClient,
 	wire.Bind(new(github.Operation), new(github.Client)),
+
+	// Metadata
+	afero.NewOsFs,
+	NewMetadata,
 
 	// db.Client
 	NewClient,
@@ -43,12 +52,13 @@ var SuperSet = wire.NewSet(
 )
 
 type Operation interface {
-	NeedsUpdate(ctx context.Context, cliVersion string, light, skip bool) (bool, error)
-	Download(ctx context.Context, cacheDir string, light bool) error
+	NeedsUpdate(cliVersion string, skip, light bool) (need bool, err error)
+	Download(ctx context.Context, cacheDir string, light bool) (err error)
+	UpdateMetadata(cacheDir string) (err error)
 }
 
 type dbOperation interface {
-	GetMetadata() (db.Metadata, error)
+	GetMetadata() (metadata db.Metadata, err error)
 }
 
 type Client struct {
@@ -56,26 +66,28 @@ type Client struct {
 	githubClient github.Operation
 	pb           indicator.ProgressBar
 	clock        clock.Clock
+	metadata     Metadata
 }
 
-func NewClient(dbc db.Config, githubClient github.Operation, pb indicator.ProgressBar, clock clock.Clock) Client {
+func NewClient(dbc dbOperation, githubClient github.Operation, pb indicator.ProgressBar, clock clock.Clock, metadata Metadata) Client {
 	return Client{
 		dbc:          dbc,
 		githubClient: githubClient,
 		pb:           pb,
 		clock:        clock,
+		metadata:     metadata,
 	}
 }
 
-func (c Client) NeedsUpdate(ctx context.Context, cliVersion string, light, skip bool) (bool, error) {
+func (c Client) NeedsUpdate(cliVersion string, light, skip bool) (bool, error) {
 	dbType := db.TypeFull
 	if light {
 		dbType = db.TypeLight
 	}
 
-	metadata, err := c.dbc.GetMetadata()
+	metadata, err := c.metadata.Get()
 	if err != nil {
-		log.Logger.Debug("This is the first run")
+		log.Logger.Debugf("There is no valid metadata file: %s", err)
 		if skip {
 			log.Logger.Error("The first run cannot skip downloading DB")
 			return false, xerrors.New("--skip-update cannot be specified on the first run")
@@ -113,6 +125,11 @@ func (c Client) NeedsUpdate(ctx context.Context, cliVersion string, light, skip 
 }
 
 func (c Client) Download(ctx context.Context, cacheDir string, light bool) error {
+	// Remove the metadata file before downloading DB
+	if err := c.metadata.Delete(); err != nil {
+		log.Logger.Debug("no metadata file")
+	}
+
 	dbFile := fullDB
 	if light {
 		dbFile = lightDB
@@ -135,6 +152,7 @@ func (c Client) Download(ctx context.Context, cacheDir string, light bool) error
 
 	dbPath := db.Path(cacheDir)
 	dbDir := filepath.Dir(dbPath)
+
 	if err = os.MkdirAll(dbDir, 0700); err != nil {
 		return xerrors.Errorf("failed to mkdir: %w", err)
 	}
@@ -145,9 +163,85 @@ func (c Client) Download(ctx context.Context, cacheDir string, light bool) error
 	}
 	defer file.Close()
 
-	_, err = io.Copy(file, gr)
-	if err != nil {
+	if _, err = io.Copy(file, gr); err != nil {
 		return xerrors.Errorf("failed to save DB file: %w", err)
 	}
+
 	return nil
+}
+
+func (c Client) UpdateMetadata(cacheDir string) error {
+	log.Logger.Debug("Updating database metadata...")
+
+	// make sure the DB has been successfully downloaded
+	if err := db.Init(cacheDir); err != nil {
+		return xerrors.Errorf("DB error: %w", err)
+	}
+	defer db.Close()
+
+	metadata, err := c.dbc.GetMetadata()
+	if err != nil {
+		return xerrors.Errorf("unable to get a metadata: %w", err)
+	}
+
+	if err = c.metadata.Store(metadata); err != nil {
+		return xerrors.Errorf("failed to store metadata: %w", err)
+	}
+
+	return nil
+}
+
+type Metadata struct {
+	fs       afero.Fs
+	filePath string
+}
+
+func NewMetadata(fs afero.Fs, cacheDir string) Metadata {
+	filePath := MetadataPath(cacheDir)
+	return Metadata{
+		fs:       fs,
+		filePath: filePath,
+	}
+}
+
+func MetadataPath(cacheDir string) string {
+	dbPath := db.Path(cacheDir)
+	dbDir := filepath.Dir(dbPath)
+	return filepath.Join(dbDir, metadataFile)
+}
+
+// StoreMetadata stores database metadata as a file
+func (m Metadata) Store(metadata db.Metadata) error {
+	f, err := m.fs.Create(m.filePath)
+	if err != nil {
+		return xerrors.Errorf("unable to create a metadata file: %w", err)
+	}
+	defer f.Close()
+
+	if err = json.NewEncoder(f).Encode(metadata); err != nil {
+		return xerrors.Errorf("unable to encode metadata: %w", err)
+	}
+	return nil
+}
+
+// DeleteMetadata deletes the file of database metadata
+func (m Metadata) Delete() error {
+	if err := m.fs.Remove(m.filePath); err != nil {
+		return xerrors.Errorf("unable to remove the metadata file: %w", err)
+	}
+	return nil
+}
+
+func (m Metadata) Get() (db.Metadata, error) {
+	f, err := m.fs.Open(m.filePath)
+	if err != nil {
+		return db.Metadata{}, xerrors.Errorf("unable to open a file: %w", err)
+	}
+	defer f.Close()
+
+	var metadata db.Metadata
+	if err = json.NewDecoder(f).Decode(&metadata); err != nil {
+		return db.Metadata{}, xerrors.Errorf("unable to decode metadata: %w", err)
+	}
+	return metadata, nil
 }

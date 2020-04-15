@@ -8,46 +8,62 @@ import (
 	"flag"
 	"io"
 	"io/ioutil"
-	"log"
 	"net"
 	"os"
 	"path/filepath"
 	"time"
+
+	dbFile "github.com/aquasecurity/trivy/pkg/db"
+
+	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/spf13/afero"
 )
 
 var update = flag.Bool("update", false, "update golden files")
 
-func gunzipDB() string {
+func gunzipDB() (string, error) {
 	gz, err := os.Open("testdata/trivy.db.gz")
 	if err != nil {
-		log.Panic(err)
+		return "", err
 	}
 	zr, err := gzip.NewReader(gz)
 	if err != nil {
-		log.Panic(err)
+		return "", err
 	}
 
 	tmpDir, err := ioutil.TempDir("", "integration")
 	if err != nil {
-		log.Panic(err)
-	}
-	dbDir := filepath.Join(tmpDir, "db")
-	err = os.MkdirAll(dbDir, 0700)
-	if err != nil {
-		log.Panic(err)
+		return "", err
 	}
 
-	file, err := os.Create(filepath.Join(dbDir, "trivy.db"))
+	dbPath := db.Path(tmpDir)
+	dbDir := filepath.Dir(dbPath)
+	err = os.MkdirAll(dbDir, 0700)
 	if err != nil {
-		log.Panic(err)
+		return "", err
+	}
+
+	file, err := os.Create(dbPath)
+	if err != nil {
+		return "", err
 	}
 	defer file.Close()
 
-	_, err = io.Copy(file, zr)
-	if err != nil {
-		log.Panic(err)
+	if _, err = io.Copy(file, zr); err != nil {
+		return "", err
 	}
-	return tmpDir
+
+	err = dbFile.NewMetadata(afero.NewOsFs(), tmpDir).Store(db.Metadata{
+		Version:    1,
+		Type:       1,
+		NextUpdate: time.Time{},
+		UpdatedAt:  time.Time{},
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return tmpDir, nil
 }
 
 func getFreePort() (int, error) {

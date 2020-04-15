@@ -11,7 +11,7 @@ type DockerConfig struct {
 	UserName string `env:"TRIVY_USERNAME"`
 	Password string `env:"TRIVY_PASSWORD"`
 	Insecure bool   `env:"TRIVY_INSECURE" envDefault:"false"`
-	NonSSL   bool   `env:"TRIVY_NONSSL" envDefault:"false"`
+	NonSSL   bool   `env:"TRIVY_NON_SSL" envDefault:"false"`
 }
 
 func GetDockerOption(timeout time.Duration) (types.DockerOption, error) {

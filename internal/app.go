@@ -7,14 +7,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
-
+	"github.com/spf13/afero"
 	"github.com/urfave/cli"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/client"
 	"github.com/aquasecurity/trivy/internal/server"
 	"github.com/aquasecurity/trivy/internal/standalone"
+	tdb "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
@@ -249,16 +250,13 @@ OPTIONS:
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
 	var dbMeta *db.Metadata
 
-	err := db.Init(cacheDir)
-	if err == nil {
-		metadata, _ := db.Config{}.GetMetadata()
-		if !metadata.UpdatedAt.IsZero() && !metadata.NextUpdate.IsZero() && metadata.Version != 0 {
-			dbMeta = &db.Metadata{
-				Version:    metadata.Version,
-				Type:       metadata.Type,
-				NextUpdate: metadata.NextUpdate.UTC(),
-				UpdatedAt:  metadata.UpdatedAt.UTC(),
-			}
+	metadata, _ := tdb.NewMetadata(afero.NewOsFs(), cacheDir).Get()
+	if !metadata.UpdatedAt.IsZero() && !metadata.NextUpdate.IsZero() && metadata.Version != 0 {
+		dbMeta = &db.Metadata{
+			Version:    metadata.Version,
+			Type:       metadata.Type,
+			NextUpdate: metadata.NextUpdate.UTC(),
+			UpdatedAt:  metadata.UpdatedAt.UTC(),
 		}
 	}
 

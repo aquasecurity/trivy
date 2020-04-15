@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/internal"
 
 	"github.com/stretchr/testify/assert"
@@ -346,7 +348,8 @@ func TestRun_WithTar(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			// Copy DB file
-			cacheDir := gunzipDB()
+			cacheDir, err := gunzipDB()
+			require.NoError(t, err)
 			defer os.RemoveAll(cacheDir)
 
 			// Setup CLI App
