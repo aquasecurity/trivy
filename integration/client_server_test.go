@@ -330,7 +330,8 @@ func TestClientServer(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			// Copy DB file
-			cacheDir := gunzipDB()
+			cacheDir, err := gunzipDB()
+			require.NoError(t, err)
 			defer os.RemoveAll(cacheDir)
 
 			port, err := getFreePort()
