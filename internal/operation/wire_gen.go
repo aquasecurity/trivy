@@ -10,16 +10,19 @@ import (
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/github"
 	"github.com/aquasecurity/trivy/pkg/indicator"
+	"github.com/spf13/afero"
 	"k8s.io/utils/clock"
 )
 
 // Injectors from inject.go:
 
-func initializeDBClient(quiet bool) db.Client {
+func initializeDBClient(cacheDir string, quiet bool) db.Client {
 	config := db2.Config{}
 	client := github.NewClient()
 	progressBar := indicator.NewProgressBar(quiet)
 	realClock := clock.RealClock{}
-	dbClient := db.NewClient(config, client, progressBar, realClock)
+	fs := afero.NewOsFs()
+	metadata := db.NewMetadata(fs, cacheDir)
+	dbClient := db.NewClient(config, client, progressBar, realClock, metadata)
 	return dbClient
 }

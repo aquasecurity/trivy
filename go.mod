@@ -20,6 +20,7 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/olekukonko/tablewriter v0.0.2-0.20190607075207-195002e6e56a
+	github.com/spf13/afero v1.2.2
 	github.com/stretchr/testify v1.4.0
 	github.com/twitchtv/twirp v5.10.1+incompatible
 	github.com/urfave/cli v1.22.1

@@ -237,7 +237,8 @@ func TestRun_WithDockerEngine(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// Copy DB file
-			cacheDir := gunzipDB()
+			cacheDir, err := gunzipDB()
+			require.NoError(t, err)
 			defer os.RemoveAll(cacheDir)
 
 			ctx := context.Background()

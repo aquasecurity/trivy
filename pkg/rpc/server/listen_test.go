@@ -112,10 +112,11 @@ func Test_dbWorker_update(t *testing.T) {
 
 			require.NoError(t, db.Init(cacheDir), tt.name)
 
-			mockDBClient := new(dbFile.MockClient)
-			mockDBClient.On("NeedsUpdate", mock.Anything,
+			mockDBClient := new(dbFile.MockOperation)
+			mockDBClient.On("NeedsUpdate",
 				tt.needsUpdate.input.appVersion, false, tt.needsUpdate.input.skip).Return(
 				tt.needsUpdate.output.needsUpdate, tt.needsUpdate.output.err)
+			mockDBClient.On("UpdateMetadata", mock.Anything).Return(nil)
 
 			if tt.download.call {
 				mockDBClient.On("Download", mock.Anything, mock.Anything, false).Run(
