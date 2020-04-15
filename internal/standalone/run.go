@@ -7,8 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy/internal/operation"
 	"github.com/aquasecurity/trivy/internal/standalone/config"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -55,10 +56,6 @@ func run(c config.Config) (err error) {
 		return cacheOperation.ClearImages()
 	}
 
-	if err = db.Init(c.CacheDir); err != nil {
-		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
-	}
-
 	// download the database file
 	noProgress := c.Quiet || c.NoProgress
 	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.Light, c.SkipUpdate); err != nil {
@@ -67,6 +64,10 @@ func run(c config.Config) (err error) {
 
 	if c.DownloadDBOnly {
 		return nil
+	}
+
+	if err = db.Init(c.CacheDir); err != nil {
+		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 
 	var scanner scanner.Scanner
