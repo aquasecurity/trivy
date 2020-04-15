@@ -48,7 +48,7 @@ func ListenAndServe(c config.Config, fsCache cache.FSCache) error {
 	}
 
 	go func() {
-		worker := initializeDBWorker(true)
+		worker := initializeDBWorker(c.CacheDir, true)
 		ctx := context.Background()
 		for {
 			time.Sleep(1 * time.Hour)
@@ -99,7 +99,8 @@ func newDBWorker(dbClient dbFile.Operation) dbWorker {
 
 func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 	dbUpdateWg, requestWg *sync.WaitGroup) error {
-	needsUpdate, err := w.dbClient.NeedsUpdate(ctx, appVersion, false, false)
+	log.Logger.Debug("Check for DB update...")
+	needsUpdate, err := w.dbClient.NeedsUpdate(appVersion, false, false)
 	if err != nil {
 		return xerrors.Errorf("failed to check if db needs an update")
 	} else if !needsUpdate {
@@ -137,6 +138,10 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 
 	if _, err = utils.CopyFile(db.Path(tmpDir), db.Path(cacheDir)); err != nil {
 		return xerrors.Errorf("failed to copy the database file: %w", err)
+	}
+
+	if err = w.dbClient.UpdateMetadata(cacheDir); err != nil {
+		return xerrors.Errorf("unable to update database metadata: %w", err)
 	}
 
 	log.Logger.Info("Reopening DB...")

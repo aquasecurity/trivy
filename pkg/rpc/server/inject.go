@@ -24,7 +24,7 @@ func initializeLibServer() *library.Server {
 	return &library.Server{}
 }
 
-func initializeDBWorker(quiet bool) dbWorker {
+func initializeDBWorker(cacheDir string, quiet bool) dbWorker {
 	wire.Build(DBWorkerSuperSet)
 	return dbWorker{}
 }
