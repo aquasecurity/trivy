@@ -1,6 +1,988 @@
 [
   {
     "Target": "testdata/fixtures/oraclelinux-8-slim.tar.gz (oracle 8.0)",
-    "Vulnerabilities": null
+    "Type": "oracle",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2019-3822",
+        "PkgName": "curl",
+        "InstalledVersion": "7.61.1-8.el8",
+        "FixedVersion": "7.61.1-11.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "curl: NTLMv2 type-3 header stack buffer overflow",
+        "Description": "libcurl versions from 7.36.0 to before 7.64.0 are vulnerable to a stack-based buffer overflow. The function creating an outgoing NTLM type-3 header (`lib/vauth/ntlm.c:Curl_auth_create_ntlm_type3_message()`), generates the request HTTP header contents based on previously received data. The check that exists to prevent the local buffer from getting overflowed is implemented wrongly (using unsigned math) and as such it does not prevent the overflow from happening. This output data can grow larger than the local buffer if very large 'nt response' data is extracted from a previous NTLMv2 header provided by the malicious or broken HTTP server. Such a 'large value' needs to be around 1000 bytes or more. The actual payload data copied to the target buffer comes from the NTLMv2 type-2 response header.",
+        "Severity": "HIGH",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3822.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3701.html",
+          "http://www.securityfocus.com/bid/106950",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3822",
+          "https://cert-portal.siemens.com/productcert/pdf/ssa-436177.pdf",
+          "https://curl.haxx.se/docs/CVE-2019-3822.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3822",
+          "https://lists.apache.org/thread.html/8338a0f605bdbb3a6098bb76f666a95fc2b2f53f37fa1ecc89f1146f@%3Cdevnull.infra.apache.org%3E",
+          "https://security.gentoo.org/glsa/201903-03",
+          "https://security.netapp.com/advisory/ntap-20190315-0001/",
+          "https://security.netapp.com/advisory/ntap-20190719-0004/",
+          "https://usn.ubuntu.com/3882-1/",
+          "https://www.debian.org/security/2019/dsa-4386",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16890",
+        "PkgName": "curl",
+        "InstalledVersion": "7.61.1-8.el8",
+        "FixedVersion": "7.61.1-11.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "curl: NTLM type-2 heap out-of-bounds buffer read",
+        "Description": "libcurl versions from 7.36.0 to before 7.64.0 is vulnerable to a heap buffer out-of-bounds read. The function handling incoming NTLM type-2 messages (`lib/vauth/ntlm.c:ntlm_decode_type2_target`) does not validate incoming data correctly and is subject to an integer overflow vulnerability. Using that overflow, a malicious or broken NTLM server could trick libcurl to accept a bad length + offset combination that would lead to a buffer read out-of-bounds.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-16890.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3701.html",
+          "http://www.securityfocus.com/bid/106947",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16890",
+          "https://cert-portal.siemens.com/productcert/pdf/ssa-436177.pdf",
+          "https://curl.haxx.se/docs/CVE-2018-16890.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16890",
+          "https://lists.apache.org/thread.html/8338a0f605bdbb3a6098bb76f666a95fc2b2f53f37fa1ecc89f1146f@%3Cdevnull.infra.apache.org%3E",
+          "https://security.netapp.com/advisory/ntap-20190315-0001/",
+          "https://usn.ubuntu.com/3882-1/",
+          "https://www.debian.org/security/2019/dsa-4386",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3823",
+        "PkgName": "curl",
+        "InstalledVersion": "7.61.1-8.el8",
+        "FixedVersion": "7.61.1-11.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "curl: SMTP end-of-response out-of-bounds read",
+        "Description": "libcurl versions from 7.34.0 to before 7.64.0 are vulnerable to a heap out-of-bounds read in the code handling the end-of-response for SMTP. If the buffer passed to `smtp_endofresp()` isn't NUL terminated and contains no character ending the parsed number, and `len` is set to 5, then the `strtol()` call reads beyond the allocated buffer. The read contents will not be returned to the caller.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3823.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3701.html",
+          "http://www.securityfocus.com/bid/106950",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3823",
+          "https://curl.haxx.se/docs/CVE-2019-3823.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3823",
+          "https://lists.apache.org/thread.html/8338a0f605bdbb3a6098bb76f666a95fc2b2f53f37fa1ecc89f1146f@%3Cdevnull.infra.apache.org%3E",
+          "https://security.gentoo.org/glsa/201903-03",
+          "https://security.netapp.com/advisory/ntap-20190315-0001/",
+          "https://usn.ubuntu.com/3882-1/",
+          "https://www.debian.org/security/2019/dsa-4386",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20483",
+        "PkgName": "curl",
+        "InstalledVersion": "7.61.1-8.el8",
+        "FixedVersion": "7.61.1-11.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "wget: Information exposure in set_file_metadata function in xattr.c",
+        "Description": "set_file_metadata in xattr.c in GNU Wget before 1.20.1 stores a file's origin URL in the user.xdg.origin.url metadata attribute of the extended attributes of the downloaded file, which allows local users to obtain sensitive information (e.g., credentials contained in the URL) by reading this attribute, as demonstrated by getfattr. This also applies to Referer information in the user.xdg.referrer.url metadata attribute. According to 2016-07-22 in the Wget ChangeLog, user.xdg.origin.url was partially based on the behavior of fwrite_xattr in tool_xattr.c in curl.",
+        "Severity": "LOW",
+        "References": [
+          "http://git.savannah.gnu.org/cgit/wget.git/tree/NEWS",
+          "http://linux.oracle.com/cve/CVE-2018-20483.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3701.html",
+          "http://www.securityfocus.com/bid/106358",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20483",
+          "https://security.gentoo.org/glsa/201903-08",
+          "https://security.netapp.com/advisory/ntap-20190321-0002/",
+          "https://twitter.com/marcan42/status/1077676739877232640",
+          "https://usn.ubuntu.com/3943-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7146",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.174-6.el8",
+        "FixedVersion": "0.176-5.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "elfutils: buffer over-read in the ebl_object_note function in eblobjnote.c in libebl",
+        "Description": "In elfutils 0.175, there is a buffer over-read in the ebl_object_note function in eblobjnote.c in libebl. Remote attackers could leverage this vulnerability to cause a denial-of-service via a crafted elf file, as demonstrated by eu-readelf.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-7146.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3575.html",
+          "https://access.redhat.com/errata/RHSA-2019:3575",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7146",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24075",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24081"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7149",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.174-6.el8",
+        "FixedVersion": "0.176-5.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "elfutils: heap-based buffer over-read in read_srclines in dwarf_getsrclines.c in libdw",
+        "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-7149.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3575.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7149",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24102",
+          "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00068.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7150",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.174-6.el8",
+        "FixedVersion": "0.176-5.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "elfutils: segmentation fault in elf64_xlatetom in libelf/elf32_xlatetom.c",
+        "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-7150.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3575.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7150",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24103",
+          "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00070.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7664",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.174-6.el8",
+        "FixedVersion": "0.176-5.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "elfutils: out of bound write in elf_cvt_note in libelf/note_xlate.h",
+        "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-7664.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3575.html",
+          "https://access.redhat.com/errata/RHSA-2019:2197",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7664",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24084"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7665",
+        "PkgName": "elfutils-libelf",
+        "InstalledVersion": "0.174-6.el8",
+        "FixedVersion": "0.176-5.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "elfutils: heap-based buffer over-read in function elf32_xlatetom in elf32_xlatetom.c",
+        "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-7665.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3575.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7665",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00036.html",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24089",
+          "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00049.html",
+          "https://usn.ubuntu.com/4012-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-12450",
+        "PkgName": "glib2",
+        "InstalledVersion": "2.56.4-1.el8",
+        "FixedVersion": "2.56.4-7.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "glib2: file_copy_fallback in gio/gfile.c in GNOME GLib does not properly restrict file permissions while a copy operation is in progress",
+        "Description": "file_copy_fallback in gio/gfile.c in GNOME GLib 2.15.0 through 2.61.1 does not properly restrict file permissions while a copy operation is in progress. Instead, default permissions are used.",
+        "Severity": "HIGH",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-12450.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3530.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12450",
+          "https://gitlab.gnome.org/GNOME/glib/commit/d8f8f4d637ce43f8699ba94c9b7648beda0ca174",
+          "https://lists.debian.org/debian-lts-announce/2019/06/msg00013.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2W4WIOAGO3M743M5KZLVQZM3NGHQDYLI/",
+          "https://security.netapp.com/advisory/ntap-20190606-0003/",
+          "https://usn.ubuntu.com/4014-1/",
+          "https://usn.ubuntu.com/4014-2/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2016-10739",
+        "PkgName": "glibc",
+        "InstalledVersion": "2.28-42.0.1.el8_0.1",
+        "FixedVersion": "2.28-72.0.1.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2016-10739.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3513.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
+          "http://www.securityfocus.com/bid/106672",
+          "https://access.redhat.com/errata/RHSA-2019:2118",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2016-10739",
+        "PkgName": "glibc-common",
+        "InstalledVersion": "2.28-42.0.1.el8_0.1",
+        "FixedVersion": "2.28-72.0.1.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2016-10739.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3513.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
+          "http://www.securityfocus.com/bid/106672",
+          "https://access.redhat.com/errata/RHSA-2019:2118",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2016-10739",
+        "PkgName": "glibc-minimal-langpack",
+        "InstalledVersion": "2.28-42.0.1.el8_0.1",
+        "FixedVersion": "2.28-72.0.1.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2016-10739.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3513.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
+          "http://www.securityfocus.com/bid/106672",
+          "https://access.redhat.com/errata/RHSA-2019:2118",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3829",
+        "PkgName": "gnutls",
+        "InstalledVersion": "3.6.5-2.el8",
+        "FixedVersion": "3.6.8-8.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "gnutls: use-after-free/double-free in certificate verification",
+        "Description": "A vulnerability was found in gnutls versions from 3.5.8 before 3.6.7. A memory corruption (double free) vulnerability in the certificate verification API. Any client or server application that verifies X.509 certificates with GnuTLS 3.5.8 or later is affected.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3829.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3600.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00017.html",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3829",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3829",
+          "https://gitlab.com/gnutls/gnutls/issues/694",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/A3ETBUFBB4G7AITAOUYPGXVMBGVXKUAN/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/L7TJIBRJWGWSH6XIO2MXIQ3W6ES4R6I4/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/WRSOL66LHP4SD3Y2ECJDOGT4K663ECDU/",
+          "https://security.gentoo.org/glsa/201904-14",
+          "https://usn.ubuntu.com/3999-1/",
+          "https://www.gnutls.org/security-new.html#GNUTLS-SA-2019-03-27"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3836",
+        "PkgName": "gnutls",
+        "InstalledVersion": "3.6.5-2.el8",
+        "FixedVersion": "3.6.8-8.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "gnutls: invalid pointer access upon receiving async handshake messages",
+        "Description": "It was discovered in gnutls before version 3.6.7 upstream that there is an uninitialized pointer access in gnutls versions 3.6.3 or later which can be triggered by certain post-handshake messages.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3836.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3600.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00017.html",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3836",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3836",
+          "https://gitlab.com/gnutls/gnutls/issues/704",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/A3ETBUFBB4G7AITAOUYPGXVMBGVXKUAN/",
+          "https://security.gentoo.org/glsa/201904-14",
+          "https://security.netapp.com/advisory/ntap-20190502-0005/",
+          "https://usn.ubuntu.com/3999-1/",
+          "https://www.gnutls.org/security-new.html#GNUTLS-SA-2019-03-27"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2017-14503",
+        "PkgName": "libarchive",
+        "InstalledVersion": "3.3.2-3.el8",
+        "FixedVersion": "3.3.2-7.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libarchive: Out-of-bounds read in lha_read_data_none",
+        "Description": "libarchive 3.3.2 suffers from an out-of-bounds read within lha_read_data_none() in archive_read_support_format_lha.c when extracting a specially crafted lha archive, related to lha_crc16.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2017-14503.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3698.html",
+          "https://bugs.debian.org/875960",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-14503",
+          "https://github.com/libarchive/libarchive/issues/948",
+          "https://lists.debian.org/debian-lts-announce/2018/11/msg00037.html",
+          "https://usn.ubuntu.com/3736-1/",
+          "https://www.debian.org/security/2018/dsa-4360"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-1000877",
+        "PkgName": "libarchive",
+        "InstalledVersion": "3.3.2-3.el8",
+        "FixedVersion": "3.3.2-7.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libarchive: Double free in RAR decoder resulting in a denial of service",
+        "Description": "libarchive version commit 416694915449219d505531b1096384f3237dd6cc onwards (release v3.1.0 onwards) contains a CWE-415: Double Free vulnerability in RAR decoder - libarchive/archive_read_support_format_rar.c, parse_codes(), realloc(rar-\u003elzss.window, new_size) with new_size = 0 that can result in Crash/DoS. This attack appear to be exploitable via the victim must open a specially crafted RAR archive.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-1000877.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3698.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00055.html",
+          "http://www.securityfocus.com/bid/106324",
+          "https://access.redhat.com/errata/RHSA-2019:2298",
+          "https://access.redhat.com/errata/RHSA-2019:3698",
+          "https://bugs.launchpad.net/ubuntu/+source/libarchive/+bug/1794909",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1000877",
+          "https://github.com/libarchive/libarchive/pull/1105",
+          "https://github.com/libarchive/libarchive/pull/1105/commits/021efa522ad729ff0f5806c4ce53e4a6cc1daa31",
+          "https://lists.debian.org/debian-lts-announce/2018/12/msg00011.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CBOCC2M6YGPZA6US43YK4INPSJZZHRTG/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/W645KCLWFDBDGFJHG57WOVXGE62QSIJI/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZVXA7PHINVT6DFF6PRLTDTVTXKDLVHNF/",
+          "https://usn.ubuntu.com/3859-1/",
+          "https://www.debian.org/security/2018/dsa-4360"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-1000878",
+        "PkgName": "libarchive",
+        "InstalledVersion": "3.3.2-3.el8",
+        "FixedVersion": "3.3.2-7.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libarchive: Use after free in RAR decoder resulting in a denial of service",
+        "Description": "libarchive version commit 416694915449219d505531b1096384f3237dd6cc onwards (release v3.1.0 onwards) contains a CWE-416: Use After Free vulnerability in RAR decoder - libarchive/archive_read_support_format_rar.c that can result in Crash/DoS - it is unknown if RCE is possible. This attack appear to be exploitable via the victim must open a specially crafted RAR archive.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-1000878.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3698.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00055.html",
+          "http://www.securityfocus.com/bid/106324",
+          "https://access.redhat.com/errata/RHSA-2019:2298",
+          "https://access.redhat.com/errata/RHSA-2019:3698",
+          "https://bugs.launchpad.net/ubuntu/+source/libarchive/+bug/1794909",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1000878",
+          "https://github.com/libarchive/libarchive/pull/1105",
+          "https://github.com/libarchive/libarchive/pull/1105/commits/bfcfe6f04ed20db2504db8a254d1f40a1d84eb28",
+          "https://lists.debian.org/debian-lts-announce/2018/12/msg00011.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CBOCC2M6YGPZA6US43YK4INPSJZZHRTG/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/W645KCLWFDBDGFJHG57WOVXGE62QSIJI/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZVXA7PHINVT6DFF6PRLTDTVTXKDLVHNF/",
+          "https://usn.ubuntu.com/3859-1/",
+          "https://www.debian.org/security/2018/dsa-4360"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1000019",
+        "PkgName": "libarchive",
+        "InstalledVersion": "3.3.2-3.el8",
+        "FixedVersion": "3.3.2-7.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libarchive: Out of bounds read in archive_read_support_format_7zip.c resulting in a denial of service",
+        "Description": "libarchive version commit bf9aec176c6748f0ee7a678c5f9f9555b9a757c1 onwards (release v3.0.2 onwards) contains a CWE-125: Out-of-bounds Read vulnerability in 7zip decompression, archive_read_support_format_7zip.c, header_bytes() that can result in a crash (denial of service). This attack appears to be exploitable via the victim opening a specially crafted 7zip file.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-1000019.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3698.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00055.html",
+          "https://access.redhat.com/errata/RHSA-2019:2298",
+          "https://access.redhat.com/errata/RHSA-2019:3698",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1000019",
+          "https://github.com/libarchive/libarchive/pull/1120",
+          "https://github.com/libarchive/libarchive/pull/1120/commits/65a23f5dbee4497064e9bb467f81138a62b0dae1",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00013.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CBOCC2M6YGPZA6US43YK4INPSJZZHRTG/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZVXA7PHINVT6DFF6PRLTDTVTXKDLVHNF/",
+          "https://usn.ubuntu.com/3884-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1000020",
+        "PkgName": "libarchive",
+        "InstalledVersion": "3.3.2-3.el8",
+        "FixedVersion": "3.3.2-7.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libarchive: Infinite recursion in archive_read_support_format_iso9660.c resulting in denial of service",
+        "Description": "libarchive version commit 5a98dcf8a86364b3c2c469c85b93647dfb139961 onwards (version v2.8.0 onwards) contains a CWE-835: Loop with Unreachable Exit Condition ('Infinite Loop') vulnerability in ISO9660 parser, archive_read_support_format_iso9660.c, read_CE()/parse_rockridge() that can result in DoS by infinite loop. This attack appears to be exploitable via the victim opening a specially crafted ISO9660 file.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-1000020.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3698.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00055.html",
+          "https://access.redhat.com/errata/RHSA-2019:2298",
+          "https://access.redhat.com/errata/RHSA-2019:3698",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1000020",
+          "https://github.com/libarchive/libarchive/pull/1120",
+          "https://github.com/libarchive/libarchive/pull/1120/commits/8312eaa576014cd9b965012af51bc1f967b12423",
+          "https://lists.debian.org/debian-lts-announce/2019/02/msg00013.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CBOCC2M6YGPZA6US43YK4INPSJZZHRTG/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZVXA7PHINVT6DFF6PRLTDTVTXKDLVHNF/",
+          "https://usn.ubuntu.com/3884-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-18408",
+        "PkgName": "libarchive",
+        "InstalledVersion": "3.3.2-3.el8",
+        "FixedVersion": "3.3.2-8.el8_1",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libarchive: use-after-free in archive_read_format_rar_read_data when there is an error in the decompression of an archive entry",
+        "Description": "archive_read_format_rar_read_data in archive_read_support_format_rar.c in libarchive before 3.4.0 has a use-after-free in a certain ARCHIVE_FAILED situation, related to Ppmd7_DecodeSymbol.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-18408.html",
+          "http://linux.oracle.com/errata/ELSA-2020-0271.html",
+          "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=14689",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18408",
+          "https://github.com/libarchive/libarchive/commit/b8592ecba2f9e451e1f5cb7ab6dcee8b8e7b3f60",
+          "https://github.com/libarchive/libarchive/compare/v3.3.3...v3.4.0",
+          "https://lists.debian.org/debian-lts-announce/2019/10/msg00034.html",
+          "https://seclists.org/bugtraq/2019/Nov/2",
+          "https://usn.ubuntu.com/4169-1/",
+          "https://www.debian.org/security/2019/dsa-4557"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3822",
+        "PkgName": "libcurl",
+        "InstalledVersion": "7.61.1-8.el8",
+        "FixedVersion": "7.61.1-11.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "curl: NTLMv2 type-3 header stack buffer overflow",
+        "Description": "libcurl versions from 7.36.0 to before 7.64.0 are vulnerable to a stack-based buffer overflow. The function creating an outgoing NTLM type-3 header (`lib/vauth/ntlm.c:Curl_auth_create_ntlm_type3_message()`), generates the request HTTP header contents based on previously received data. The check that exists to prevent the local buffer from getting overflowed is implemented wrongly (using unsigned math) and as such it does not prevent the overflow from happening. This output data can grow larger than the local buffer if very large 'nt response' data is extracted from a previous NTLMv2 header provided by the malicious or broken HTTP server. Such a 'large value' needs to be around 1000 bytes or more. The actual payload data copied to the target buffer comes from the NTLMv2 type-2 response header.",
+        "Severity": "HIGH",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3822.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3701.html",
+          "http://www.securityfocus.com/bid/106950",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3822",
+          "https://cert-portal.siemens.com/productcert/pdf/ssa-436177.pdf",
+          "https://curl.haxx.se/docs/CVE-2019-3822.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3822",
+          "https://lists.apache.org/thread.html/8338a0f605bdbb3a6098bb76f666a95fc2b2f53f37fa1ecc89f1146f@%3Cdevnull.infra.apache.org%3E",
+          "https://security.gentoo.org/glsa/201903-03",
+          "https://security.netapp.com/advisory/ntap-20190315-0001/",
+          "https://security.netapp.com/advisory/ntap-20190719-0004/",
+          "https://usn.ubuntu.com/3882-1/",
+          "https://www.debian.org/security/2019/dsa-4386",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-16890",
+        "PkgName": "libcurl",
+        "InstalledVersion": "7.61.1-8.el8",
+        "FixedVersion": "7.61.1-11.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "curl: NTLM type-2 heap out-of-bounds buffer read",
+        "Description": "libcurl versions from 7.36.0 to before 7.64.0 is vulnerable to a heap buffer out-of-bounds read. The function handling incoming NTLM type-2 messages (`lib/vauth/ntlm.c:ntlm_decode_type2_target`) does not validate incoming data correctly and is subject to an integer overflow vulnerability. Using that overflow, a malicious or broken NTLM server could trick libcurl to accept a bad length + offset combination that would lead to a buffer read out-of-bounds.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-16890.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3701.html",
+          "http://www.securityfocus.com/bid/106947",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16890",
+          "https://cert-portal.siemens.com/productcert/pdf/ssa-436177.pdf",
+          "https://curl.haxx.se/docs/CVE-2018-16890.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16890",
+          "https://lists.apache.org/thread.html/8338a0f605bdbb3a6098bb76f666a95fc2b2f53f37fa1ecc89f1146f@%3Cdevnull.infra.apache.org%3E",
+          "https://security.netapp.com/advisory/ntap-20190315-0001/",
+          "https://usn.ubuntu.com/3882-1/",
+          "https://www.debian.org/security/2019/dsa-4386",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3823",
+        "PkgName": "libcurl",
+        "InstalledVersion": "7.61.1-8.el8",
+        "FixedVersion": "7.61.1-11.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "curl: SMTP end-of-response out-of-bounds read",
+        "Description": "libcurl versions from 7.34.0 to before 7.64.0 are vulnerable to a heap out-of-bounds read in the code handling the end-of-response for SMTP. If the buffer passed to `smtp_endofresp()` isn't NUL terminated and contains no character ending the parsed number, and `len` is set to 5, then the `strtol()` call reads beyond the allocated buffer. The read contents will not be returned to the caller.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3823.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3701.html",
+          "http://www.securityfocus.com/bid/106950",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3823",
+          "https://curl.haxx.se/docs/CVE-2019-3823.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3823",
+          "https://lists.apache.org/thread.html/8338a0f605bdbb3a6098bb76f666a95fc2b2f53f37fa1ecc89f1146f@%3Cdevnull.infra.apache.org%3E",
+          "https://security.gentoo.org/glsa/201903-03",
+          "https://security.netapp.com/advisory/ntap-20190315-0001/",
+          "https://usn.ubuntu.com/3882-1/",
+          "https://www.debian.org/security/2019/dsa-4386",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20483",
+        "PkgName": "libcurl",
+        "InstalledVersion": "7.61.1-8.el8",
+        "FixedVersion": "7.61.1-11.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "wget: Information exposure in set_file_metadata function in xattr.c",
+        "Description": "set_file_metadata in xattr.c in GNU Wget before 1.20.1 stores a file's origin URL in the user.xdg.origin.url metadata attribute of the extended attributes of the downloaded file, which allows local users to obtain sensitive information (e.g., credentials contained in the URL) by reading this attribute, as demonstrated by getfattr. This also applies to Referer information in the user.xdg.referrer.url metadata attribute. According to 2016-07-22 in the Wget ChangeLog, user.xdg.origin.url was partially based on the behavior of fwrite_xattr in tool_xattr.c in curl.",
+        "Severity": "LOW",
+        "References": [
+          "http://git.savannah.gnu.org/cgit/wget.git/tree/NEWS",
+          "http://linux.oracle.com/cve/CVE-2018-20483.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3701.html",
+          "http://www.securityfocus.com/bid/106358",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20483",
+          "https://security.gentoo.org/glsa/201903-08",
+          "https://security.netapp.com/advisory/ntap-20190321-0002/",
+          "https://twitter.com/marcan42/status/1077676739877232640",
+          "https://usn.ubuntu.com/3943-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20534",
+        "PkgName": "libdnf",
+        "InstalledVersion": "0.22.5-5.0.2.el8",
+        "FixedVersion": "0.35.1-8.0.1.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libsolv: illegal address access in pool_whatprovides in src/pool.h",
+        "Description": "** DISPUTED ** There is an illegal address access at ext/testcase.c in libsolv.a in libsolv through 0.7.2 that will cause a denial of service. NOTE: third parties dispute this issue stating that the issue affects the test suite and not the underlying library. It cannot be exploited in any real-world application.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-20534.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3583.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00057.html",
+          "https://access.redhat.com/errata/RHSA-2019:2290",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1652604",
+          "https://bugzilla.suse.com/show_bug.cgi?id=1120631",
+          "https://github.com/openSUSE/libsolv/pull/291",
+          "https://usn.ubuntu.com/3916-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3817",
+        "PkgName": "libdnf",
+        "InstalledVersion": "0.22.5-5.0.2.el8",
+        "FixedVersion": "0.35.1-8.0.1.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libcomps: use after free when merging two objmrtrees",
+        "Description": "A use-after-free flaw has been discovered in libcomps before version 0.1.10 in the way ObjMRTrees are merged. An attacker, who is able to make an application read a crafted comps XML file, may be able to crash the application or execute malicious code.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3817.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3583.html",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3817",
+          "https://github.com/rpm-software-management/libcomps/commit/e3a5d056633677959ad924a51758876d415e7046",
+          "https://github.com/rpm-software-management/libcomps/issues/41"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20534",
+        "PkgName": "librepo",
+        "InstalledVersion": "1.9.2-1.el8",
+        "FixedVersion": "1.10.3-3.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libsolv: illegal address access in pool_whatprovides in src/pool.h",
+        "Description": "** DISPUTED ** There is an illegal address access at ext/testcase.c in libsolv.a in libsolv through 0.7.2 that will cause a denial of service. NOTE: third parties dispute this issue stating that the issue affects the test suite and not the underlying library. It cannot be exploited in any real-world application.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-20534.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3583.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00057.html",
+          "https://access.redhat.com/errata/RHSA-2019:2290",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1652604",
+          "https://bugzilla.suse.com/show_bug.cgi?id=1120631",
+          "https://github.com/openSUSE/libsolv/pull/291",
+          "https://usn.ubuntu.com/3916-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3817",
+        "PkgName": "librepo",
+        "InstalledVersion": "1.9.2-1.el8",
+        "FixedVersion": "1.10.3-3.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libcomps: use after free when merging two objmrtrees",
+        "Description": "A use-after-free flaw has been discovered in libcomps before version 0.1.10 in the way ObjMRTrees are merged. An attacker, who is able to make an application read a crafted comps XML file, may be able to crash the application or execute malicious code.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3817.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3583.html",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3817",
+          "https://github.com/rpm-software-management/libcomps/commit/e3a5d056633677959ad924a51758876d415e7046",
+          "https://github.com/rpm-software-management/libcomps/issues/41"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20534",
+        "PkgName": "libsolv",
+        "InstalledVersion": "0.6.35-6.el8",
+        "FixedVersion": "0.7.4-3.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libsolv: illegal address access in pool_whatprovides in src/pool.h",
+        "Description": "** DISPUTED ** There is an illegal address access at ext/testcase.c in libsolv.a in libsolv through 0.7.2 that will cause a denial of service. NOTE: third parties dispute this issue stating that the issue affects the test suite and not the underlying library. It cannot be exploited in any real-world application.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-20534.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3583.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00057.html",
+          "https://access.redhat.com/errata/RHSA-2019:2290",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1652604",
+          "https://bugzilla.suse.com/show_bug.cgi?id=1120631",
+          "https://github.com/openSUSE/libsolv/pull/291",
+          "https://usn.ubuntu.com/3916-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3817",
+        "PkgName": "libsolv",
+        "InstalledVersion": "0.6.35-6.el8",
+        "FixedVersion": "0.7.4-3.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libcomps: use after free when merging two objmrtrees",
+        "Description": "A use-after-free flaw has been discovered in libcomps before version 0.1.10 in the way ObjMRTrees are merged. An attacker, who is able to make an application read a crafted comps XML file, may be able to crash the application or execute malicious code.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3817.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3583.html",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3817",
+          "https://github.com/rpm-software-management/libcomps/commit/e3a5d056633677959ad924a51758876d415e7046",
+          "https://github.com/rpm-software-management/libcomps/issues/41"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-6706",
+        "PkgName": "lua-libs",
+        "InstalledVersion": "5.3.4-10.el8",
+        "FixedVersion": "5.3.4-11.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "lua: use-after-free in lua_upvaluejoin in lapi.c resulting in denial of service",
+        "Description": "Lua 5.3.5 has a use-after-free in lua_upvaluejoin in lapi.c. For example, a crash outcome might be achieved by an attacker who is able to trigger a debug.upvaluejoin call in which the arguments have certain relationships.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-6706.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3706.html",
+          "http://lua.2524044.n2.nabble.com/Bug-Report-Use-after-free-in-debug-upvaluejoin-tc7685506.html",
+          "https://access.redhat.com/errata/RHSA-2019:3706",
+          "https://usn.ubuntu.com/3941-1/",
+          "https://www.exploit-db.com/exploits/46246/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20534",
+        "PkgName": "microdnf",
+        "InstalledVersion": "3.0.1-1.el8",
+        "FixedVersion": "3.0.1-3.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libsolv: illegal address access in pool_whatprovides in src/pool.h",
+        "Description": "** DISPUTED ** There is an illegal address access at ext/testcase.c in libsolv.a in libsolv through 0.7.2 that will cause a denial of service. NOTE: third parties dispute this issue stating that the issue affects the test suite and not the underlying library. It cannot be exploited in any real-world application.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-20534.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3583.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00057.html",
+          "https://access.redhat.com/errata/RHSA-2019:2290",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1652604",
+          "https://bugzilla.suse.com/show_bug.cgi?id=1120631",
+          "https://github.com/openSUSE/libsolv/pull/291",
+          "https://usn.ubuntu.com/3916-1/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-3817",
+        "PkgName": "microdnf",
+        "InstalledVersion": "3.0.1-1.el8",
+        "FixedVersion": "3.0.1-3.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "libcomps: use after free when merging two objmrtrees",
+        "Description": "A use-after-free flaw has been discovered in libcomps before version 0.1.10 in the way ObjMRTrees are merged. An attacker, who is able to make an application read a crafted comps XML file, may be able to crash the application or execute malicious code.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3817.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3583.html",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3817",
+          "https://github.com/rpm-software-management/libcomps/commit/e3a5d056633677959ad924a51758876d415e7046",
+          "https://github.com/rpm-software-management/libcomps/issues/41"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-0734",
+        "PkgName": "openssl-libs",
+        "InstalledVersion": "1:1.1.1-8.0.1.el8",
+        "FixedVersion": "1:1.1.1c-2.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "openssl: timing side channel attack in the DSA signature algorithm",
+        "Description": "The OpenSSL DSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.1a (Affected 1.1.1). Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.0.2q (Affected 1.0.2-1.0.2p).",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-0734.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3700.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00030.html",
+          "http://www.securityfocus.com/bid/105758",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0734",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=43e6a58d4991a451daf4891ff05a48735df871ac",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=8abfe72e8c1de1b95f50aa0d9134803b4d00070f",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=ef11e19d1365eea2b1851e6f540a0bf365d303e7",
+          "https://nodejs.org/en/blog/vulnerability/november-2018-security-releases/",
+          "https://security.netapp.com/advisory/ntap-20181105-0002/",
+          "https://security.netapp.com/advisory/ntap-20190118-0002/",
+          "https://security.netapp.com/advisory/ntap-20190423-0002/",
+          "https://usn.ubuntu.com/3840-1/",
+          "https://www.debian.org/security/2018/dsa-4348",
+          "https://www.debian.org/security/2018/dsa-4355",
+          "https://www.openssl.org/news/secadv/20181030.txt",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujan2019-5072801.html",
+          "https://www.tenable.com/security/tns-2018-16",
+          "https://www.tenable.com/security/tns-2018-17"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-0735",
+        "PkgName": "openssl-libs",
+        "InstalledVersion": "1:1.1.1-8.0.1.el8",
+        "FixedVersion": "1:1.1.1c-2.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "openssl: timing side channel attack in the ECDSA signature generation",
+        "Description": "The OpenSSL ECDSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.1.1a (Affected 1.1.1).",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-0735.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3700.html",
+          "http://www.securityfocus.com/bid/105750",
+          "http://www.securitytracker.com/id/1041986",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0735",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=56fb454d281a023b3f950d969693553d3f3ceea1",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=b1d6d55ece1c26fa2829e2b819b038d7b6d692b4",
+          "https://lists.debian.org/debian-lts-announce/2018/11/msg00024.html",
+          "https://nodejs.org/en/blog/vulnerability/november-2018-security-releases/",
+          "https://security.netapp.com/advisory/ntap-20181105-0002/",
+          "https://usn.ubuntu.com/3840-1/",
+          "https://www.debian.org/security/2018/dsa-4348",
+          "https://www.openssl.org/news/secadv/20181029.txt",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujan2019-5072801.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-1543",
+        "PkgName": "openssl-libs",
+        "InstalledVersion": "1:1.1.1-8.0.1.el8",
+        "FixedVersion": "1:1.1.1c-2.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "openssl: ChaCha20-Poly1305 with long nonces",
+        "Description": "ChaCha20-Poly1305 is an AEAD cipher, and requires a unique nonce input for every encryption operation. RFC 7539 specifies that the nonce value (IV) should be 96 bits (12 bytes). OpenSSL allows a variable nonce length and front pads the nonce with 0 bytes if it is less than 12 bytes. However it also incorrectly allows a nonce to be set of up to 16 bytes. In this case only the last 12 bytes are significant and any additional leading bytes are ignored. It is a requirement of using this cipher that nonce values are unique. Messages encrypted using a reused nonce value are susceptible to serious confidentiality and integrity attacks. If an application changes the default nonce length to be longer than 12 bytes and then makes a change to the leading bytes of the nonce expecting the new value to be a new unique nonce then such an application could inadvertently encrypt messages with a reused nonce. Additionally the ignored bytes in a long nonce are not covered by the integrity guarantee of this cipher. Any application that relies on the integrity of these ignored leading bytes of a long nonce may be further affected. Any OpenSSL internal use of this cipher, including in SSL/TLS, is safe because no such use sets such a long nonce value. However user applications that use this cipher directly and set a non-default nonce length to be longer than 12 bytes may be vulnerable. OpenSSL versions 1.1.1 and 1.1.0 are affected by this issue. Due to the limited scope of affected deployments this has been assessed as low severity and therefore we are not creating new releases at this time. Fixed in OpenSSL 1.1.1c (Affected 1.1.1-1.1.1b). Fixed in OpenSSL 1.1.0k (Affected 1.1.0-1.1.0j).",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-1543.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3700.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1543",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=ee22257b1418438ebaf54df98af4e24f494d1809",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f426625b6ae9a7831010750490a5f0ad689c5ba3",
+          "https://www.openssl.org/news/secadv/20190306.txt"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-13734",
+        "PkgName": "sqlite-libs",
+        "InstalledVersion": "3.26.0-3.el8",
+        "FixedVersion": "3.26.0-4.el8_1",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "sqlite: fts3: improve shadow table corruption detection",
+        "Description": "Out of bounds write in SQLite in Google Chrome prior to 79.0.3945.79 allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-13734.html",
+          "http://linux.oracle.com/errata/ELSA-2020-0273.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00032.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00036.html",
+          "https://access.redhat.com/errata/RHSA-2019:4238",
+          "https://chromereleases.googleblog.com/2019/12/stable-channel-update-for-desktop.html",
+          "https://crbug.com/1025466",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-13734",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2Z5M4FPUMDNX2LDPHJKN5ZV5GIS2AKNU/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2020-1712",
+        "PkgName": "systemd-libs",
+        "InstalledVersion": "239-13.0.1.el8_0.5",
+        "FixedVersion": "239-18.0.2.el8_1.4",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
+        "Description": "A heap use-after-free vulnerability was found in systemd, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
+        "Severity": "HIGH",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2020-1712.html",
+          "http://linux.oracle.com/errata/ELSA-2020-0575.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-15718",
+        "PkgName": "systemd-libs",
+        "InstalledVersion": "239-13.0.1.el8_0.5",
+        "FixedVersion": "239-18.0.1.el8",
+        "Layer": {
+          "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+        },
+        "SeveritySource": "nvd",
+        "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
+        "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
+        "Severity": "LOW",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-15718.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3592.html",
+          "http://www.openwall.com/lists/oss-security/2019/09/03/1",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1746057",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15718",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/"
+        ]
+      }
+    ]
   }
 ]

@@ -56,8 +56,14 @@ github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b/go.mod 
 github.com/aquasecurity/testdocker v0.0.0-20200406162423-9b83286bd1ae h1:MNvPhakB1g45yckXFYqcXReJiPUFUdCrPDMwAH/ewDo=
 github.com/aquasecurity/testdocker v0.0.0-20200406162423-9b83286bd1ae/go.mod h1:vyPK00Qw+SJfLuGM/7wRo1i02eqhEBRvw0PBmaj41bI=
 github.com/aquasecurity/trivy v0.1.6/go.mod h1:5hobyhxLzDtxruHzPxpND2PUKOssvGUdE9BocpJUwo4=
-github.com/aquasecurity/trivy-db v0.0.0-20200331122722-2adcf16a2a26 h1:KGAZ0FoLGQNYdtSzy4tVPr+/4AxpBQHYdBf+C9joopE=
-github.com/aquasecurity/trivy-db v0.0.0-20200331122722-2adcf16a2a26/go.mod h1:Uf9bXd50zTHtWTP7+7u5+OFCPtUVrmsS4v0RXd7E5lw=
+github.com/aquasecurity/trivy-db v0.0.0-20200318223623-7d3e67b057d4 h1:DeVT3LzIgKc+5sGhSGusWL+JZ/kiWGjKjQYeshz/gOk=
+github.com/aquasecurity/trivy-db v0.0.0-20200318223623-7d3e67b057d4/go.mod h1:Uf9bXd50zTHtWTP7+7u5+OFCPtUVrmsS4v0RXd7E5lw=
+github.com/aquasecurity/trivy-db v0.0.0-20200320001732-d65430e7cb51 h1:UDbKEUn5J9SRotdUBI0sUYE8GB8Ctn8YiXhVhZWmrHI=
+github.com/aquasecurity/trivy-db v0.0.0-20200320001732-d65430e7cb51/go.mod h1:Uf9bXd50zTHtWTP7+7u5+OFCPtUVrmsS4v0RXd7E5lw=
+github.com/aquasecurity/trivy-db v0.0.0-20200327012036-a11aca42bc75 h1:ZErX9Coa8nvxKDR3cHNxY+QKM2YqN71ux2sfdFBp6mY=
+github.com/aquasecurity/trivy-db v0.0.0-20200327012036-a11aca42bc75/go.mod h1:Uf9bXd50zTHtWTP7+7u5+OFCPtUVrmsS4v0RXd7E5lw=
+github.com/aquasecurity/trivy-db v0.0.0-20200408191531-0a25a37ec16f h1:1A6fTVFWnz19rAWbqUczS7UPbSyjBsVqCRzhWCvB4vQ=
+github.com/aquasecurity/trivy-db v0.0.0-20200408191531-0a25a37ec16f/go.mod h1:Uf9bXd50zTHtWTP7+7u5+OFCPtUVrmsS4v0RXd7E5lw=
 github.com/aquasecurity/vuln-list-update v0.0.0-20191016075347-3d158c2bf9a2 h1:xbdUfr2KE4THsFx9CFWtWpU91lF+YhgP46moV94nYTA=
 github.com/aquasecurity/vuln-list-update v0.0.0-20191016075347-3d158c2bf9a2/go.mod h1:6NhOP0CjZJL27bZZcaHECtzWdwDDm2g6yCY0QgXEGQQ=
 github.com/araddon/dateparse v0.0.0-20190426192744-0d74ffceef83/go.mod h1:SLqhdZcd+dF3TEVL2RMoob5bBP5R1P1qkox+HtCBgGI=

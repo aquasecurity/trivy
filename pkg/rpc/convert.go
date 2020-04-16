@@ -115,6 +115,7 @@ func ConvertToRpcVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 				Digest: vuln.Layer.Digest,
 				DiffId: vuln.Layer.DiffID,
 			},
+			SeveritySource: vuln.SeveritySource,
 		})
 	}
 	return rpcVulns
@@ -142,11 +143,13 @@ func ConvertFromRpcResults(rpcResults []*scanner.Result) []report.Result {
 					Digest: vuln.Layer.Digest,
 					DiffID: vuln.Layer.DiffId,
 				},
+				SeveritySource: vuln.SeveritySource,
 			})
 		}
 		results = append(results, report.Result{
 			Target:          result.Target,
 			Vulnerabilities: vulns,
+			Type:            result.Type,
 		})
 	}
 	return results
@@ -299,6 +302,7 @@ func ConvertToRpcScanResponse(results report.Results, os *ftypes.OS, eosl bool) 
 		rpcResults = append(rpcResults, &scanner.Result{
 			Target:          result.Target,
 			Vulnerabilities: ConvertToRpcVulns(result.Vulnerabilities),
+			Type:            result.Type,
 		})
 	}
 

@@ -1,6 +1,7 @@
 [
   {
     "Target": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+    "Type": "alpine",
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-1549",
@@ -10,6 +11,7 @@
         "Layer": {
           "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
         },
+        "SeveritySource": "nvd",
         "Title": "openssl: information disclosure in fork()",
         "Description": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
         "Severity": "MEDIUM",
@@ -23,6 +25,33 @@
         ]
       },
       {
+        "VulnerabilityID": "CVE-2019-1551",
+        "PkgName": "openssl",
+        "InstalledVersion": "1.1.1c-r0",
+        "FixedVersion": "1.1.1d-r2",
+        "Layer": {
+          "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
+        },
+        "SeveritySource": "nvd",
+        "Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
+        "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
+          "http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f1c5eea8a817075d31e43f5876993c6710238c98",
+          "https://github.com/openssl/openssl/pull/10575",
+          "https://seclists.org/bugtraq/2019/Dec/39",
+          "https://seclists.org/bugtraq/2019/Dec/46",
+          "https://security.netapp.com/advisory/ntap-20191210-0001/",
+          "https://www.debian.org/security/2019/dsa-4594",
+          "https://www.openssl.org/news/secadv/20191206.txt",
+          "https://www.tenable.com/security/tns-2019-09"
+        ]
+      },
+      {
         "VulnerabilityID": "CVE-2019-1563",
         "PkgName": "openssl",
         "InstalledVersion": "1.1.1c-r0",
@@ -30,6 +59,7 @@
         "Layer": {
           "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
         },
+        "SeveritySource": "nvd",
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "MEDIUM",
@@ -52,6 +82,7 @@
         "Layer": {
           "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
         },
+        "SeveritySource": "nvd",
         "Title": "openssl: side-channel weak encryption vulnerability",
         "Description": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "LOW",

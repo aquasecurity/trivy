@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 
 	"github.com/stretchr/testify/require"
 
@@ -12,6 +12,7 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dtypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -149,6 +150,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
+					Type: vulnerability.Alpine,
 				},
 				{
 					Target: "/app/Gemfile.lock",
@@ -163,6 +165,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
+					Type: "bundler",
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -243,6 +246,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
+					Type: "bundler",
 				},
 			},
 			wantOS: &ftypes.OS{},
@@ -334,6 +338,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
+					Type: "bundler",
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -458,6 +463,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
+					Type: "bundler",
 				},
 				{
 					Target: "/app/composer-lock.json",
@@ -472,6 +478,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
+					Type: "composer",
 				},
 			},
 			wantOS: &ftypes.OS{

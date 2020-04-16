@@ -4,12 +4,13 @@ import (
 	"context"
 	"net/http"
 
+	ftypes "github.com/aquasecurity/fanal/types"
+
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"

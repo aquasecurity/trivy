@@ -50,6 +50,7 @@ message Vulnerability {
   Severity        severity          = 7;
   repeated string references        = 8;
   Layer           layer             = 10;
+  string          severity_source   = 11;
 }
 
 message Layer {

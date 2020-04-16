@@ -1,6 +1,7 @@
 [
   {
     "Target": "testdata/fixtures/opensuse-leap-423.tar.gz (opensuse.leap 42.3)",
+    "Type": "opensuse.leap",
     "Vulnerabilities": null
   }
 ]

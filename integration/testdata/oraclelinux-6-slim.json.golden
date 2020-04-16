@@ -1,7 +1,54 @@
 [
   {
     "Target": "testdata/fixtures/oraclelinux-6-slim.tar.gz (oracle 6.10)",
+    "Type": "oracle",
     "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2019-5482",
+        "PkgName": "curl",
+        "InstalledVersion": "7.19.7-53.0.2.el6_9",
+        "FixedVersion": "7.19.7-54.0.2.el6_10",
+        "Layer": {
+          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
+        },
+        "SeveritySource": "nvd",
+        "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
+        "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
+        "Severity": "HIGH",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-5482.html",
+          "http://linux.oracle.com/errata/ELSA-2020-5562.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
+          "https://curl.haxx.se/docs/CVE-2019-5482.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-5482",
+        "PkgName": "libcurl",
+        "InstalledVersion": "7.19.7-53.0.2.el6_9",
+        "FixedVersion": "7.19.7-54.0.2.el6_10",
+        "Layer": {
+          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
+        },
+        "SeveritySource": "nvd",
+        "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
+        "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
+        "Severity": "HIGH",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-5482.html",
+          "http://linux.oracle.com/errata/ELSA-2020-5562.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
+          "https://curl.haxx.se/docs/CVE-2019-5482.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
+        ]
+      },
       {
         "VulnerabilityID": "CVE-2019-3855",
         "PkgName": "libssh2",
@@ -10,10 +57,13 @@
         "Layer": {
           "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
         },
+        "SeveritySource": "nvd",
         "Title": "libssh2: Integer overflow in transport read resulting in out of bounds write",
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
-        "Severity": "CRITICAL",
+        "Severity": "HIGH",
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3855.html",
+          "http://linux.oracle.com/errata/ELSA-2019-1652.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
@@ -42,10 +92,13 @@
         "Layer": {
           "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
         },
+        "SeveritySource": "nvd",
         "Title": "libssh2: Integer overflow in keyboard interactive handling resulting in out of bounds write",
         "Description": "An integer overflow flaw, which could lead to an out of bounds write, was discovered in libssh2 before 1.8.1 in the way keyboard prompt requests are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "MEDIUM",
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3856.html",
+          "http://linux.oracle.com/errata/ELSA-2019-1652.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
@@ -68,10 +121,13 @@
         "Layer": {
           "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
         },
+        "SeveritySource": "nvd",
         "Title": "libssh2: Integer overflow in SSH packet processing channel resulting in out of bounds write",
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit signal are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "MEDIUM",
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3857.html",
+          "http://linux.oracle.com/errata/ELSA-2019-1652.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
@@ -94,10 +150,13 @@
         "Layer": {
           "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
         },
+        "SeveritySource": "nvd",
         "Title": "libssh2: Out-of-bounds memory comparison with specially crafted message channel request",
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit status message and no payload are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3862.html",
+          "http://linux.oracle.com/errata/ELSA-2019-4693.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
@@ -124,10 +183,13 @@
         "Layer": {
           "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
         },
+        "SeveritySource": "nvd",
         "Title": "libssh2: Integer overflow in user authenticate keyboard interactive allows out-of-bounds writes",
         "Description": "A flaw was found in libssh2 before 1.8.1. A server could send a multiple keyboard interactive response messages whose total length are greater than unsigned char max characters. This value is used as an index to copy memory causing in an out of bounds memory write error.",
         "Severity": "MEDIUM",
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-3863.html",
+          "http://linux.oracle.com/errata/ELSA-2019-1652.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
@@ -143,6 +205,62 @@
         ]
       },
       {
+        "VulnerabilityID": "CVE-2019-11745",
+        "PkgName": "nss-softokn",
+        "InstalledVersion": "3.14.3-23.3.0.1.el6_8",
+        "FixedVersion": "3.44.0-6.0.1.el6_10",
+        "Layer": {
+          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
+        },
+        "SeveritySource": "nvd",
+        "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
+        "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-11745.html",
+          "http://linux.oracle.com/errata/ELSA-2019-4190.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
+          "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
+          "https://usn.ubuntu.com/4241-1/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-36/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-37/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-38/"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2019-11745",
+        "PkgName": "nss-softokn-freebl",
+        "InstalledVersion": "3.14.3-23.3.0.1.el6_8",
+        "FixedVersion": "3.44.0-6.0.1.el6_10",
+        "Layer": {
+          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
+        },
+        "SeveritySource": "nvd",
+        "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
+        "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-11745.html",
+          "http://linux.oracle.com/errata/ELSA-2019-4190.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
+          "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
+          "https://usn.ubuntu.com/4241-1/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-36/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-37/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-38/"
+        ]
+      },
+      {
         "VulnerabilityID": "CVE-2019-1559",
         "PkgName": "openssl",
         "InstalledVersion": "1.0.1e-57.0.6.el6",
@@ -150,10 +268,13 @@
         "Layer": {
           "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
         },
+        "SeveritySource": "nvd",
         "Title": "openssl: 0-byte record padding oracle",
         "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
         "Severity": "MEDIUM",
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-1559.html",
+          "http://linux.oracle.com/errata/ELSA-2019-2471.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00041.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00019.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00046.html",
@@ -176,6 +297,52 @@
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
           "https://www.tenable.com/security/tns-2019-02",
           "https://www.tenable.com/security/tns-2019-03"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20852",
+        "PkgName": "python",
+        "InstalledVersion": "2.6.6-68.0.1.el6_10",
+        "FixedVersion": "2.6.6-68.0.2.el6_10",
+        "Layer": {
+          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
+        },
+        "SeveritySource": "nvd",
+        "Title": "python: Cookie domain check returns incorrect results",
+        "Description": "http.cookiejar.DefaultPolicy.domain_return_ok in Lib/http/cookiejar.py in Python before 3.7.3 does not correctly validate the domain: it can be tricked into sending existing cookies to the wrong server. An attacker may abuse this flaw by using a server with a hostname that has another valid hostname as a suffix (e.g., pythonicexample.com to steal cookies for example.com). When a program uses http.cookiejar.DefaultPolicy and tries to do an HTTP connection to an attacker-controlled server, existing cookies can be leaked to the attacker. This affects 2.x through 2.7.16, 3.x before 3.4.10, 3.5.x before 3.5.7, 3.6.x before 3.6.9, and 3.7.x before 3.7.3.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-20852.html",
+          "http://linux.oracle.com/errata/ELSA-2019-4884.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00071.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00074.html",
+          "https://bugs.python.org/issue35121",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20852",
+          "https://lists.debian.org/debian-lts-announce/2019/08/msg00022.html",
+          "https://python-security.readthedocs.io/vuln/cookie-domain-check.html"
+        ]
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20852",
+        "PkgName": "python-libs",
+        "InstalledVersion": "2.6.6-68.0.1.el6_10",
+        "FixedVersion": "2.6.6-68.0.2.el6_10",
+        "Layer": {
+          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
+        },
+        "SeveritySource": "nvd",
+        "Title": "python: Cookie domain check returns incorrect results",
+        "Description": "http.cookiejar.DefaultPolicy.domain_return_ok in Lib/http/cookiejar.py in Python before 3.7.3 does not correctly validate the domain: it can be tricked into sending existing cookies to the wrong server. An attacker may abuse this flaw by using a server with a hostname that has another valid hostname as a suffix (e.g., pythonicexample.com to steal cookies for example.com). When a program uses http.cookiejar.DefaultPolicy and tries to do an HTTP connection to an attacker-controlled server, existing cookies can be leaked to the attacker. This affects 2.x through 2.7.16, 3.x before 3.4.10, 3.5.x before 3.5.7, 3.6.x before 3.6.9, and 3.7.x before 3.7.3.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-20852.html",
+          "http://linux.oracle.com/errata/ELSA-2019-4884.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00071.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00074.html",
+          "https://bugs.python.org/issue35121",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20852",
+          "https://lists.debian.org/debian-lts-announce/2019/08/msg00022.html",
+          "https://python-security.readthedocs.io/vuln/cookie-domain-check.html"
         ]
       }
     ]

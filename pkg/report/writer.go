@@ -20,6 +20,7 @@ type Results []Result
 
 type Result struct {
 	Target          string                        `json:"Target"`
+	Type            string                        `json:"Type,omitempty"`
 	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities"`
 }
 

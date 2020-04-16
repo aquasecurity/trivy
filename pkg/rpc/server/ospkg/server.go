@@ -39,7 +39,7 @@ func (s *Server) Detect(_ context.Context, req *proto.OSDetectRequest) (res *pro
 		return nil, err
 	}
 
-	s.vulnClient.FillInfo(vulns, false)
+	s.vulnClient.FillInfo(vulns, "")
 
 	return &proto.DetectResponse{Vulnerabilities: rpc.ConvertToRpcVulns(vulns), Eosl: eosl}, nil
 }
