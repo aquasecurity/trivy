@@ -1,10 +1,10 @@
 package server
 
 import (
-	"github.com/aquasecurity/fanal/cache"
 	"github.com/urfave/cli"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/internal/operation"
 	"github.com/aquasecurity/trivy/internal/server/config"
@@ -42,10 +42,6 @@ func run(c config.Config) (err error) {
 		return cacheOperation.ClearDB()
 	}
 
-	if err = db.Init(c.CacheDir); err != nil {
-		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
-	}
-
 	// download the database file
 	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, true, false, c.SkipUpdate); err != nil {
 		return err
@@ -53,6 +49,10 @@ func run(c config.Config) (err error) {
 
 	if c.DownloadDBOnly {
 		return nil
+	}
+
+	if err = db.Init(c.CacheDir); err != nil {
+		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 
 	return server.ListenAndServe(c, fsCache)

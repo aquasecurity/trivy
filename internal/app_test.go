@@ -1,24 +1,22 @@
 package internal
 
 import (
+	"bytes"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
+
+	dbFile "github.com/aquasecurity/trivy/pkg/db"
+	"github.com/spf13/afero"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 
 	"github.com/stretchr/testify/assert"
 )
-
-type fakeIOWriter struct {
-	written []byte
-}
-
-func (f *fakeIOWriter) Write(p []byte) (n int, err error) {
-	f.written = append(f.written, p...)
-	return len(p), nil
-}
 
 func Test_showVersion(t *testing.T) {
 	type args struct {
@@ -85,27 +83,26 @@ Vulnerability DB:
 				cacheDir = tt.args.cacheDir
 			default:
 				cacheDir, _ = ioutil.TempDir("", "Test_showVersion-*")
-				defer func() {
-					os.RemoveAll(cacheDir)
-				}()
+				defer os.RemoveAll(cacheDir)
 			}
 
 			if tt.createDB {
-				db.Init(cacheDir)
-				db.Config{}.SetMetadata(db.Metadata{
+				m := dbFile.NewMetadata(afero.NewOsFs(), cacheDir)
+				err := os.MkdirAll(filepath.Join(cacheDir, "db"), os.ModePerm)
+				require.NoError(t, err)
+
+				err = m.Store(db.Metadata{
 					Version:    42,
 					Type:       1,
 					NextUpdate: time.Unix(1584403020, 0),
 					UpdatedAt:  time.Unix(1584402020, 0),
 				})
-				db.Close()
+				require.NoError(t, err)
 			}
 
-			var wb []byte
-			fw := fakeIOWriter{written: wb}
-
-			showVersion(cacheDir, tt.args.outputFormat, tt.args.version, &fw)
-			assert.Equal(t, tt.expectedOutput, string(fw.written), tt.name)
+			fw := new(bytes.Buffer)
+			showVersion(cacheDir, tt.args.outputFormat, tt.args.version, fw)
+			assert.Equal(t, tt.expectedOutput, fw.String(), tt.name)
 		})
 	}
 }

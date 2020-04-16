@@ -18,6 +18,7 @@ import (
 	ospkg2 "github.com/aquasecurity/trivy/pkg/rpc/server/ospkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
+	"github.com/spf13/afero"
 	"k8s.io/utils/clock"
 )
 
@@ -52,12 +53,14 @@ func initializeLibServer() *library2.Server {
 	return server
 }
 
-func initializeDBWorker(quiet bool) dbWorker {
+func initializeDBWorker(cacheDir string, quiet bool) dbWorker {
 	config := db.Config{}
 	client := github.NewClient()
 	progressBar := indicator.NewProgressBar(quiet)
 	realClock := clock.RealClock{}
-	dbClient := db2.NewClient(config, client, progressBar, realClock)
+	fs := afero.NewOsFs()
+	metadata := db2.NewMetadata(fs, cacheDir)
+	dbClient := db2.NewClient(config, client, progressBar, realClock, metadata)
 	serverDbWorker := newDBWorker(dbClient)
 	return serverDbWorker
 }
