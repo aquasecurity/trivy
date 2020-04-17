@@ -31,9 +31,17 @@ var (
 	)
 )
 
+type VulnSrc interface {
+	Get(pkgName string) ([]bundlerSrc.Advisory, error)
+}
+
+type GhsaVulnSrc interface {
+	Get(pkgName string) ([]ghsa.Advisory, error)
+}
+
 type Scanner struct {
-	ghsaVs ghsa.VulnSrc
-	vs     bundlerSrc.VulnSrc
+	ghsaVs GhsaVulnSrc
+	vs     VulnSrc
 }
 
 func massageLockFileVersion(version string) string {
