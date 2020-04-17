@@ -48,7 +48,7 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 	}
 
 	var vulns []types.DetectedVulnerability
-	var uniqVulnIdMap map[string]struct{}
+	uniqVulnIdMap := make(map[string]struct{})
 	for _, advisory := range ghsas {
 		var vulnerableVersions []string
 		for _, vulnerableVersion := range advisory.VulnerableVersions {
