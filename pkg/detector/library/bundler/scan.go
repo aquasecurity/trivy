@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/go-dep-parser/pkg/bundler"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	bundlerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/bundler"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -31,7 +32,8 @@ var (
 )
 
 type Scanner struct {
-	vs ghsa.VulnSrc
+	ghsaVs ghsa.VulnSrc
+	vs     bundlerSrc.VulnSrc
 }
 
 func massageLockFileVersion(version string) string {
@@ -43,23 +45,51 @@ func massageLockFileVersion(version string) string {
 
 func NewScanner() *Scanner {
 	return &Scanner{
-		vs: ghsa.NewVulnSrc(ghsa.Rubygems),
+		ghsaVs: ghsa.NewVulnSrc(ghsa.Rubygems),
+		vs:     bundlerSrc.NewVulnSrc(),
 	}
 }
 
 func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
-	var vulns []types.DetectedVulnerability
-	ghsas, err := s.vs.Get(pkgName)
+	ghsas, err := s.ghsaVs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
 	}
+
+	advisories, err := s.vs.Get(pkgName)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+	}
+
+	var vulns []types.DetectedVulnerability
+	var uniqVulnIdMap map[string]struct{}
 	for _, advisory := range ghsas {
 		if !utils.MatchVersions(pkgVer, advisory.VulnerableVersions) {
 			continue
 		}
+
+		uniqVulnIdMap[advisory.VulnerabilityID] = struct{}{}
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  advisory.VulnerabilityID,
 			PkgName:          pkgName,
+			InstalledVersion: pkgVer.String(),
+			FixedVersion:     strings.Join(advisory.PatchedVersions, ", "),
+		}
+		vulns = append(vulns, vuln)
+	}
+
+	for _, advisory := range advisories {
+		if _, ok := uniqVulnIdMap[advisory.VulnerabilityID]; ok {
+			continue
+		}
+
+		if utils.MatchVersions(pkgVer, advisory.PatchedVersions) {
+			continue
+		}
+
+		vuln := types.DetectedVulnerability{
+			VulnerabilityID:  advisory.VulnerabilityID,
+			PkgName:          strings.TrimSpace(pkgName),
 			InstalledVersion: pkgVer.String(),
 			FixedVersion:     strings.Join(advisory.PatchedVersions, ", "),
 		}

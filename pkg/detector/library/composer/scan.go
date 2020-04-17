@@ -35,13 +35,39 @@ func NewScanner() *Scanner {
 
 func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
 	ref := fmt.Sprintf("composer://%s", pkgName)
+
+	ghsas, err := s.ghsavs.Get(pkgName)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+	}
+
 	advisories, err := s.vs.Get(ref)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
 	}
 
 	var vulns []types.DetectedVulnerability
+	var uniqVulnIdMap map[string]struct{}
+	for _, advisory := range ghsas {
+		if !utils.MatchVersions(pkgVer, advisory.VulnerableVersions) {
+			continue
+		}
+
+		uniqVulnIdMap[advisory.VulnerabilityID] = struct{}{}
+		vuln := types.DetectedVulnerability{
+			VulnerabilityID:  advisory.VulnerabilityID,
+			PkgName:          pkgName,
+			InstalledVersion: pkgVer.String(),
+			FixedVersion:     strings.Join(advisory.PatchedVersions, ", "),
+		}
+		vulns = append(vulns, vuln)
+	}
+
 	for _, advisory := range advisories {
+		if _, ok := uniqVulnIdMap[advisory.VulnerabilityID]; ok {
+			continue
+		}
+
 		var affectedVersions []string
 		var patchedVersions []string
 		for _, branch := range advisory.Branches {
@@ -62,23 +88,6 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 			PkgName:          pkgName,
 			InstalledVersion: pkgVer.String(),
 			FixedVersion:     strings.Join(patchedVersions, ", "),
-		}
-		vulns = append(vulns, vuln)
-	}
-
-	ghsas, err := s.ghsavs.Get(pkgName)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
-	}
-	for _, advisory := range ghsas {
-		if !utils.MatchVersions(pkgVer, advisory.VulnerableVersions) {
-			continue
-		}
-		vuln := types.DetectedVulnerability{
-			VulnerabilityID:  advisory.VulnerabilityID,
-			PkgName:          pkgName,
-			InstalledVersion: pkgVer.String(),
-			FixedVersion:     strings.Join(advisory.PatchedVersions, ", "),
 		}
 		vulns = append(vulns, vuln)
 	}
