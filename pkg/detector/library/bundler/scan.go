@@ -95,6 +95,10 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 			continue
 		}
 
+		if utils.MatchVersions(pkgVer, advisory.UnaffectedVersions) {
+			continue
+		}
+
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  advisory.VulnerabilityID,
 			PkgName:          strings.TrimSpace(pkgName),
