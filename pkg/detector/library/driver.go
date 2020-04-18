@@ -7,7 +7,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
 	"github.com/aquasecurity/trivy/pkg/detector/library/cargo"
 	"github.com/aquasecurity/trivy/pkg/detector/library/composer"
-	"github.com/aquasecurity/trivy/pkg/detector/library/java"
 	"github.com/aquasecurity/trivy/pkg/detector/library/node"
 	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -44,10 +43,6 @@ func (d DriverFactory) NewDriver(filename string) Driver {
 		scanner = python.NewScanner(python.ScannerTypePipenv)
 	case "poetry.lock":
 		scanner = python.NewScanner(python.ScannerTypePoetry)
-	case "pom.xml":
-		scanner = java.NewScanner(java.ScannerTypeMaven)
-	case "build.gradle":
-		scanner = java.NewScanner(java.ScannerTypeGradle)
 	default:
 		return nil
 	}
