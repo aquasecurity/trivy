@@ -33,7 +33,7 @@ func TestScanner_ScanImage(t *testing.T) {
 		wantErr            string
 	}{
 		{
-			name: "happy path",
+			name: "happy path: with known OS",
 			args: args{
 				options: types.ScanOptions{VulnType: []string{"os"}},
 			},
@@ -124,6 +124,32 @@ func TestScanner_ScanImage(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path: Unknown OS and Scan returns an error",
+			args: args{
+				options: types.ScanOptions{VulnType: []string{"os"}},
+			},
+			analyzeExpectation: AnalyzerAnalyzeExpectation{
+				Args: AnalyzerAnalyzeArgs{
+					CtxAnything: true,
+				},
+				Returns: AnalyzerAnalyzeReturns{
+					Info: ftypes.ImageReference{
+						Name: "bogusos:123",
+					},
+				},
+			},
+			scanExpectation: ScanExpectation{
+				Args: ScanArgs{
+					Target:  "bogusos:123",
+					Options: types.ScanOptions{VulnType: []string{"os"}},
+				},
+				Returns: ScanReturns{
+					OsFound: nil,
+					Err:     errors.New("failed to apply layers: unknown OS"),
+				},
+			},
+		},
+		{
 			name: "sad path: AnalyzerAnalyze returns an error",
 			args: args{
 				options: types.ScanOptions{VulnType: []string{"os"}},
@@ -163,6 +189,10 @@ func TestScanner_ScanImage(t *testing.T) {
 					Options:  types.ScanOptions{VulnType: []string{"os"}},
 				},
 				Returns: ScanReturns{
+					OsFound: &ftypes.OS{
+						Family: "alpine",
+						Name:   "3.11",
+					},
 					Err: errors.New("error"),
 				},
 			},

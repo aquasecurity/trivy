@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"context"
+	"strings"
 
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
@@ -92,8 +93,15 @@ func (s Scanner) ScanImage(options types.ScanOptions) (report.Results, error) {
 
 	results, osFound, eosl, err := s.driver.Scan(imageInfo.Name, imageInfo.ID, imageInfo.LayerIDs, options)
 	if err != nil {
-		return nil, xerrors.Errorf("scan failed: %w", err)
+		switch {
+		case strings.Contains(err.Error(), "unknown OS"):
+			log.Logger.Warn("Unsupported OS")
+			return nil, nil
+		default:
+			return nil, xerrors.Errorf("scan failed: %w", err)
+		}
 	}
+
 	if eosl {
 		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
 		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
