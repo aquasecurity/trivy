@@ -18,18 +18,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type args struct {
+	Format            string
+	TemplatePath      string
+	Version           string
+	IgnoreUnfixed     bool
+	Severity          []string
+	IgnoreIDs         []string
+	Input             string
+	ClientToken       string
+	ClientTokenHeader string
+	ServerToken       string
+	ServerTokenHeader string
+}
+
 func TestClientServer(t *testing.T) {
-	type args struct {
-		Version           string
-		IgnoreUnfixed     bool
-		Severity          []string
-		IgnoreIDs         []string
-		Input             string
-		ClientToken       string
-		ClientTokenHeader string
-		ServerToken       string
-		ServerTokenHeader string
-	}
 	cases := []struct {
 		name     string
 		testArgs args
@@ -84,6 +87,16 @@ func TestClientServer(t *testing.T) {
 				Input:         "testdata/fixtures/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310-ignore-cveids.json.golden",
+		},
+		{
+			name: "alpine 3.10 integration with gitlab template",
+			testArgs: args{
+				Format:       "template",
+				TemplatePath: "@../contrib/gitlab.tpl",
+				Version:      "dev",
+				Input:        "testdata/fixtures/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.gitlab.golden",
 		},
 		{
 			name: "alpine 3.9 integration",
@@ -345,8 +358,7 @@ func TestClientServer(t *testing.T) {
 			app := internal.NewApp(c.testArgs.Version)
 			app.Writer = ioutil.Discard
 
-			osArgs, outputFile, cleanup := setupClient(t, c.testArgs.IgnoreUnfixed, c.testArgs.Severity,
-				c.testArgs.IgnoreIDs, addr, c.testArgs.ClientToken, c.testArgs.ClientTokenHeader, c.testArgs.Input, cacheDir, c.golden)
+			osArgs, outputFile, cleanup := setupClient(t, c.testArgs, addr, cacheDir, c.golden)
 			defer cleanup()
 
 			// Run Trivy client
@@ -379,35 +391,43 @@ func setupServer(addr, token, tokenHeader, cacheDir string) []string {
 	return osArgs
 }
 
-func setupClient(t *testing.T, ignoreUnfixed bool, severity, ignoreIDs []string,
-	addr, token, tokenHeader, input, cacheDir, golden string) ([]string, string, func()) {
+func setupClient(t *testing.T, c args, addr string, cacheDir string, golden string) ([]string, string, func()) {
 	t.Helper()
-	osArgs := []string{"trivy", "client", "--cache-dir", cacheDir,
-		"--format", "json", "--remote", "http://" + addr}
-	if ignoreUnfixed {
+	osArgs := []string{"trivy", "client", "--cache-dir", cacheDir, "--remote", "http://" + addr}
+
+	if c.Format != "" {
+		osArgs = append(osArgs, "--format", c.Format)
+		if c.TemplatePath != "" {
+			osArgs = append(osArgs, "--template", c.TemplatePath)
+		}
+	} else {
+		osArgs = append(osArgs, "--format", "json")
+	}
+
+	if c.IgnoreUnfixed {
 		osArgs = append(osArgs, "--ignore-unfixed")
 	}
-	if len(severity) != 0 {
+	if len(c.Severity) != 0 {
 		osArgs = append(osArgs,
-			[]string{"--severity", strings.Join(severity, ",")}...,
+			[]string{"--severity", strings.Join(c.Severity, ",")}...,
 		)
 	}
 
 	var err error
 	var ignoreTmpDir string
-	if len(ignoreIDs) != 0 {
+	if len(c.IgnoreIDs) != 0 {
 		ignoreTmpDir, err = ioutil.TempDir("", "ignore")
 		require.NoError(t, err, "failed to create a temp dir")
 		trivyIgnore := filepath.Join(ignoreTmpDir, ".trivyignore")
-		err = ioutil.WriteFile(trivyIgnore, []byte(strings.Join(ignoreIDs, "\n")), 0444)
+		err = ioutil.WriteFile(trivyIgnore, []byte(strings.Join(c.IgnoreIDs, "\n")), 0444)
 		require.NoError(t, err, "failed to write .trivyignore")
 		osArgs = append(osArgs, []string{"--ignorefile", trivyIgnore}...)
 	}
-	if token != "" {
-		osArgs = append(osArgs, []string{"--token", token, "--token-header", tokenHeader}...)
+	if c.ClientToken != "" {
+		osArgs = append(osArgs, []string{"--token", c.ClientToken, "--token-header", c.ClientTokenHeader}...)
 	}
-	if input != "" {
-		osArgs = append(osArgs, []string{"--input", input}...)
+	if c.Input != "" {
+		osArgs = append(osArgs, []string{"--input", c.Input}...)
 	}
 
 	// Setup the output file
