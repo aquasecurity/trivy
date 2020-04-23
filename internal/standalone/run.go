@@ -2,10 +2,8 @@ package standalone
 
 import (
 	"context"
-	"io/ioutil"
 	l "log"
 	"os"
-	"strings"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 
@@ -107,17 +105,7 @@ func run(c config.Config) (err error) {
 			c.Severities, c.IgnoreUnfixed, c.IgnoreFile)
 	}
 
-	template := c.Template
-
-	if strings.HasPrefix(c.Template, "@") {
-		buf, err := ioutil.ReadFile(strings.TrimPrefix(c.Template, "@"))
-		if err != nil {
-			return xerrors.Errorf("Error retrieving template from path: %w", err)
-		}
-		template = string(buf)
-	}
-
-	if err = report.WriteResults(c.Format, c.Output, results, template, c.Light); err != nil {
+	if err = report.WriteResults(c.Format, c.Output, results, c.Template, c.Light); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
