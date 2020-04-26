@@ -64,7 +64,7 @@ If the issue is specific to a driver for OS packages or libraries:
 
 
 ## Prioritization
-If the issue is not `triage/support`, it needs a [priority label](https://github.com/kubernetes/community/blob/master/contributors/guide/issue-triage.md#define-priority):
+If the issue is not `triage/support`, it needs a priority label.
 
 `priority/critical-urgent` - someones top priority ASAP, such as security issue, user-visible bug, or build breakage. Rarely used.
 
@@ -178,3 +178,18 @@ If an issue hasn't been active for more than four weeks, and the author has been
 >Thank you for sharing your experience!
 
 Then: Close the issue.
+
+## Help Wanted issues
+
+We use two labels [help wanted](https://github.com/aquasecurity/trivy/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
+and [good first issue](https://github.com/aquasecurity/trivy/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
+to identify issues that have been specially groomed for new contributors.
+
+We have specific [guidelines](/docs/help-wanted.md)
+for how to use these labels. If you see an issue that satisfies these
+guidelines, you can add the `help wanted` label and the `good first issue` label.
+Please note that adding the `good first issue` label must also 
+add the `help wanted` label.
+
+If an issue has these labels but does not satisfy the guidelines, please
+ask for more details to be added to the issue or remove the labels.
