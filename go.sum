@@ -51,6 +51,8 @@ github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb
 github.com/aquasecurity/fanal v0.0.0-20190819081512-f04452b627c6/go.mod h1:enEz4FFetw4XAbkffaYgyCVq1556R9Ry+noqT4rq9BE=
 github.com/aquasecurity/fanal v0.0.0-20200413182139-9213b79eba1a h1:FTdg4bJsy6wGY/spDxGHLsA/SKb2C4VluPBEb2ytSlo=
 github.com/aquasecurity/fanal v0.0.0-20200413182139-9213b79eba1a/go.mod h1:30hyjv+qxL7/Cv2mpsUKMHM4xaqn3Y4ehxHnebpu5aE=
+github.com/aquasecurity/fanal v0.0.0-20200426144511-9179872f5796 h1:+YkpRL4jZ1R9/VdTKaJ/mCnlTeVRnkFzgtxgDyRT9NY=
+github.com/aquasecurity/fanal v0.0.0-20200426144511-9179872f5796/go.mod h1:30hyjv+qxL7/Cv2mpsUKMHM4xaqn3Y4ehxHnebpu5aE=
 github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b h1:55Ulc/gvfWm4ylhVaR7MxOwujRjA6et7KhmUbSgUFf4=
 github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b/go.mod h1:BpNTD9vHfrejKsED9rx04ldM1WIbeyXGYxUrqTVwxVQ=
 github.com/aquasecurity/testdocker v0.0.0-20200406162423-9b83286bd1ae h1:MNvPhakB1g45yckXFYqcXReJiPUFUdCrPDMwAH/ewDo=
