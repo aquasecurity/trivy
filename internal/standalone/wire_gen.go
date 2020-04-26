@@ -49,11 +49,7 @@ func initializeArchiveScanner(ctx context.Context, filePath string, layerCache c
 	driverFactory := library.DriverFactory{}
 	libraryDetector := library.NewDetector(driverFactory)
 	localScanner := local.NewScanner(applier, detector, libraryDetector)
-	dockerOption, err := types.GetDockerOption(timeout)
-	if err != nil {
-		return scanner.Scanner{}, err
-	}
-	extractor, err := docker.NewDockerArchiveExtractor(ctx, filePath, dockerOption)
+	extractor, err := docker.NewArchiveImageExtractor(filePath)
 	if err != nil {
 		return scanner.Scanner{}, err
 	}

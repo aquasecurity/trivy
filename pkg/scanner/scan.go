@@ -34,8 +34,7 @@ var StandaloneDockerSet = wire.NewSet(
 )
 
 var StandaloneArchiveSet = wire.NewSet(
-	types.GetDockerOption,
-	docker.NewDockerArchiveExtractor,
+	docker.NewArchiveImageExtractor,
 	wire.Bind(new(extractor.Extractor), new(docker.Extractor)),
 	StandaloneSuperSet,
 )
@@ -57,8 +56,7 @@ var RemoteDockerSet = wire.NewSet(
 )
 
 var RemoteArchiveSet = wire.NewSet(
-	types.GetDockerOption,
-	docker.NewDockerArchiveExtractor,
+	docker.NewArchiveImageExtractor,
 	wire.Bind(new(extractor.Extractor), new(docker.Extractor)),
 	RemoteSuperSet,
 )
