@@ -230,7 +230,7 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			name:          "sad path, invalid image",
 			invalidImage:  true,
 			testfile:      "badimage:latest",
-			expectedError: "unable to access the remote image (index.docker.io/library/badimage:latest)",
+			expectedError: "unable to inspect the image",
 		},
 	}
 
