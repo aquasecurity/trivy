@@ -68,7 +68,7 @@ If the issue is not `triage/support`, it needs a [priority label](https://github
 
 `priority/critical-urgent` - someones top priority ASAP, such as security issue, user-visible bug, or build breakage. Rarely used.
 
-`priority/important-soon`: in time for the next two releases (8 weeks)
+`priority/important-soon`: in time for the next two releases. It should be attached to a milestone.
 
 `priority/important-longterm`: 2-4 releases from now
 
