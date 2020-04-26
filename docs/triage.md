@@ -74,7 +74,7 @@ If the issue is not `triage/support`, it needs a [priority label](https://github
 
 `priority/backlog`: agreed that this would be good to have, but no one is available at the moment. Consider tagging as `help wanted`
 
-`priority/awaiting-more-evidence`: may be more useful, but there is not yet enough support.
+`priority/awaiting-more-evidence`: may be useful, but there is not yet enough support.
 
 
 # Weekly Triage
