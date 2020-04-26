@@ -42,21 +42,21 @@ labels:
   description: Denotes an issue or PR has remained open with no activity and will be auto-closed.
 
 # priority
-- name: priority/awaiting-more-evidence
-  color: fef2c0
-  description: Lowest priority. Possibly useful, but not yet enough support to actually get it done.
-- name: priority/backlog
-  color: fbca04
-  description: Higher priority than priority/awaiting-more-evidence.
 - name: priority/critical-urgent
   color: e11d21
   description: Highest priority. Must be actively worked on as someone's top priority right now.
-- name: priority/important-longterm
-  color: eb6420
-  description: Important over the long term, but may not be staffed and/or may need multiple releases to complete.
 - name: priority/important-soon
   color: eb6420
   description: Must be staffed and worked on either currently, or very soon, ideally in time for the next release.
+- name: priority/important-longterm
+  color: eb6420
+  description: Important over the long term, but may not be staffed and/or may need multiple releases to complete.
+- name: priority/backlog
+  color: fbca04
+  description: Higher priority than priority/awaiting-more-evidence.
+- name: priority/awaiting-more-evidence
+  color: fef2c0
+  description: Lowest priority. Possibly useful, but not yet enough support to actually get it done.
 
 # triage
 - name: triage/discuss
