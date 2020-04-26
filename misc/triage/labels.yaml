@@ -34,9 +34,6 @@ labels:
   description: security issues
 
 # lifecycle
-- name: lifecycle/active
-  color: 8fc951
-  description: Indicates that an issue or PR is actively being worked on by a contributor.
 - name: lifecycle/frozen
   color: d3e2f0
   description: Indicates that an issue or PR should not be auto-closed due to staleness.
