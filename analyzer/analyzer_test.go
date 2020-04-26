@@ -244,7 +244,7 @@ func TestConfig_Analyze(t *testing.T) {
 			mockCache.ApplyPutLayerExpectations(tt.putLayerExpectations)
 			mockCache.ApplyPutImageExpectations(tt.putImageExpectations)
 
-			d, err := docker.NewDockerArchiveExtractor(context.Background(), tt.imagePath, types.DockerOption{})
+			d, err := docker.NewArchiveImageExtractor(tt.imagePath)
 			require.NoError(t, err, tt.name)
 
 			ac := analyzer.New(d, mockCache)

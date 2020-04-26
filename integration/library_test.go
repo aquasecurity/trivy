@@ -227,12 +227,7 @@ func TestFanal_Library_TarMode(t *testing.T) {
 
 			applier := analyzer.NewApplier(c)
 
-			opt := types.DockerOption{
-				Timeout:  600 * time.Second,
-				SkipPing: true,
-			}
-
-			ext, err := docker.NewDockerArchiveExtractor(ctx, tc.imageFile, opt)
+			ext, err := docker.NewArchiveImageExtractor(tc.imageFile)
 			require.NoError(t, err)
 
 			ac := analyzer.New(ext, c)

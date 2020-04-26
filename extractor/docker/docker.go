@@ -68,8 +68,8 @@ func NewDockerExtractor(ctx context.Context, imageName string, option types.Dock
 	}, cleanup, nil
 }
 
-func NewDockerArchiveExtractor(ctx context.Context, fileName string, option types.DockerOption) (Extractor, error) {
-	img, err := image.NewDockerArchiveImage(fileName)
+func NewArchiveImageExtractor(fileName string) (Extractor, error) {
+	img, err := image.NewArchiveImage(fileName)
 	if err != nil {
 		return Extractor{}, xerrors.Errorf("unable to initialize a image struct: %w", err)
 	}

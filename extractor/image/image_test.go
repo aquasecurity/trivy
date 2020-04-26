@@ -102,7 +102,7 @@ func TestNewDockerImage(t *testing.T) {
 	}
 }
 
-func TestNewDockerArchiveImage(t *testing.T) {
+func TestNewArchiveImage(t *testing.T) {
 	type args struct {
 		fileName string
 	}
@@ -110,7 +110,7 @@ func TestNewDockerArchiveImage(t *testing.T) {
 		name    string
 		args    args
 		want    v1.Image
-		wantErr bool
+		wantErr string
 	}{
 		{
 			name: "happy path",
@@ -119,17 +119,56 @@ func TestNewDockerArchiveImage(t *testing.T) {
 			},
 		},
 		{
-			name: "sad path",
+			name: "happy path with OCI Image Format",
+			args: args{
+				fileName: "../testdata/test.oci",
+			},
+		},
+		{
+			name: "sad path, oci image not found",
 			args: args{
 				fileName: "../testdata/invalid.tar.gz",
 			},
-			wantErr: true,
+			wantErr: "unable to open",
+		},
+		{
+			name: "sad path with OCI Image Format index.json directory",
+			args: args{
+				fileName: "../testdata/test_index_json_dir.oci",
+			},
+			wantErr: "unable to retrieve index.json",
+		},
+		{
+			name: "sad path with OCI Image Format invalid index.json",
+			args: args{
+				fileName: "../testdata/test_bad_index_json.oci",
+			},
+			wantErr: "invalid index.json",
+		},
+		{
+			name: "sad path with OCI Image Format no valid manifests",
+			args: args{
+				fileName: "../testdata/test_no_valid_manifests.oci",
+			},
+			wantErr: "no valid manifest",
+		},
+		{
+			name: "sad path with OCI Image Format with invalid oci image digest",
+			args: args{
+				fileName: "../testdata/test_invalid_oci_image.oci",
+			},
+			wantErr: "invalid OCI image",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := NewDockerArchiveImage(tt.args.fileName)
-			assert.Equal(t, tt.wantErr, err != nil, err)
+			_, err := NewArchiveImage(tt.args.fileName)
+			switch {
+			case tt.wantErr != "":
+				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+			default:
+				assert.NoError(t, err, tt.name)
+			}
 		})
 	}
 }

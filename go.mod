@@ -12,6 +12,7 @@ require (
 	github.com/docker/docker v1.4.2-0.20190924003213-a8608b5b67c7
 	github.com/docker/go-connections v0.4.0
 	github.com/google/go-containerregistry v0.0.0-20200331213917-3d03ed9b1ca2
+	github.com/hashicorp/go-multierror v1.1.0
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpmdb v0.0.0-20190501070121-10a1c42a10dc
 	github.com/knqyf263/nested v0.0.1
