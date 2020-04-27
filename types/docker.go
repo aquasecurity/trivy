@@ -7,6 +7,9 @@ type DockerOption struct {
 	UserName string
 	Password string
 
+	// RegistryToken is a bearer token to be sent to a registry
+	RegistryToken string
+
 	// ECR
 	AwsAccessKey    string
 	AwsSecretKey    string
@@ -15,10 +18,6 @@ type DockerOption struct {
 
 	// GCP
 	GcpCredPath string
-
-	// Docker daemon
-	DockerDaemonCertPath string
-	DockerDaemonHost     string
 
 	InsecureSkipTLSVerify bool
 	NonSSL                bool
