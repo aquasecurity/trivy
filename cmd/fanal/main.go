@@ -91,7 +91,12 @@ func run() (err error) {
 	a := analyzer.NewApplier(c)
 	mergedLayer, err := a.ApplyLayers(imageInfo.ID, imageInfo.LayerIDs)
 	if err != nil {
-		return err
+		switch err {
+		case analyzer.ErrUnknownOS, analyzer.ErrNoPkgsDetected:
+			fmt.Printf("WARN: %s\n", err)
+		default:
+			return err
+		}
 	}
 
 	fmt.Printf("%+v\n", mergedLayer.OS)
