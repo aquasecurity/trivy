@@ -533,6 +533,8 @@ func setupDockerEnvironment() (*httptest.Server, *httptest.Server) {
 	imagePaths = map[string]string{
 		"v2/library/image1:latest": "../testdata/image1.tar",
 	}
-	tr := registry.NewDockerRegistry(imagePaths)
+	tr := registry.NewDockerRegistry(registry.Option{
+		Images: imagePaths,
+	})
 	return te, tr
 }

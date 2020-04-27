@@ -58,6 +58,9 @@ func NewDockerImage(ctx context.Context, imageName string, option types.DockerOp
 
 	if auth.Username != "" && auth.Password != "" {
 		remoteOpts = append(remoteOpts, remote.WithAuth(&auth))
+	} else if option.RegistryToken != "" {
+		bearer := authn.Bearer{Token: option.RegistryToken}
+		remoteOpts = append(remoteOpts, remote.WithAuth(&bearer))
 	} else {
 		remoteOpts = append(remoteOpts, remote.WithAuthFromKeychain(authn.DefaultKeychain))
 	}
