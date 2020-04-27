@@ -590,10 +590,13 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			wantErr: "layer cache missing",
 		},
 		{
-			name: "sad path unknown OS",
+			name: "happy path with some packages but unknown OS",
 			args: args{
+				imageID: "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e",
 				layerIDs: []string{
 					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				},
 			},
 			getLayerExpectations: []cache.LocalImageCacheGetLayerExpectation{
@@ -604,6 +607,126 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					Returns: cache.LocalImageCacheGetLayerReturns{
 						LayerInfo: types.LayerInfo{
 							SchemaVersion: 1,
+							Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+							PackageInfos: []types.PackageInfo{
+								{
+									FilePath: "var/lib/dpkg/status.d/tzdata",
+									Packages: []types.Package{
+										{
+											Name:       "tzdata",
+											Version:    "2019a-0+deb9u1",
+											SrcName:    "tzdata",
+											SrcVersion: "2019a-0+deb9u1",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					Args: cache.LocalImageCacheGetLayerArgs{
+						LayerID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					},
+					Returns: cache.LocalImageCacheGetLayerReturns{
+						LayerInfo: types.LayerInfo{
+							SchemaVersion: 1,
+							Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+							DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+							PackageInfos: []types.PackageInfo{
+								{
+									FilePath: "var/lib/dpkg/status.d/libc6",
+									Packages: []types.Package{
+										{
+											Name:       "libc6",
+											Version:    "2.24-11+deb9u4",
+											SrcName:    "glibc",
+											SrcVersion: "2.24-11+deb9u4",
+										},
+									},
+								},
+							},
+							Applications:  nil,
+							OpaqueDirs:    nil,
+							WhiteoutFiles: nil,
+						},
+					},
+				},
+				{
+					Args: cache.LocalImageCacheGetLayerArgs{
+						LayerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					},
+					Returns: cache.LocalImageCacheGetLayerReturns{
+						LayerInfo: types.LayerInfo{
+							SchemaVersion: 1,
+							Digest:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+							DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+							Applications: []types.Application{
+								{
+									Type:     "composer",
+									FilePath: "php-app/composer.lock",
+									Libraries: []types.LibraryInfo{
+										{
+											Library: depTypes.Library{
+												Name:    "guzzlehttp/guzzle",
+												Version: "6.2.0",
+											},
+										},
+										{
+											Library: depTypes.Library{
+												Name:    "symfony/process",
+												Version: "v4.2.7",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: types.ImageDetail{
+				Packages: []types.Package{
+					{
+						Name: "libc6", Version: "2.24-11+deb9u4", SrcName: "glibc", SrcVersion: "2.24-11+deb9u4",
+						Layer: types.Layer{
+							Digest: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+						},
+					},
+					{
+						Name: "tzdata", Version: "2019a-0+deb9u1", SrcName: "tzdata", SrcVersion: "2019a-0+deb9u1",
+						Layer: types.Layer{
+							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+						},
+					},
+				},
+				Applications: []types.Application{
+					{
+						Type: "composer", FilePath: "php-app/composer.lock",
+						Libraries: []types.LibraryInfo{
+							{
+								Library: depTypes.Library{
+									Name:    "guzzlehttp/guzzle",
+									Version: "6.2.0",
+								},
+								Layer: types.Layer{
+									Digest: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+								},
+							},
+							{
+								Library: depTypes.Library{
+									Name:    "symfony/process",
+									Version: "v4.2.7",
+								},
+								Layer: types.Layer{
+									Digest: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+								},
+							},
 						},
 					},
 				},
@@ -631,6 +754,12 @@ func TestApplier_ApplyLayers(t *testing.T) {
 							},
 						},
 					},
+				},
+			},
+			want: types.ImageDetail{
+				OS: &types.OS{
+					Family: "debian",
+					Name:   "9.9",
 				},
 			},
 			wantErr: "no packages detected",
