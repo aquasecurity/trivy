@@ -1249,35 +1249,31 @@ $ cat .gitlab-ci.yml
 stages:
   - test
 
-trivy:
+variables:
+  TRIVY_VERSION: 0.6.0
+
+container_scanning:
   stage: test
-  image: docker:stable
-  services:
-    - name: docker:dind
-      entrypoint: ["env", "-u", "DOCKER_HOST"]
-      command: ["dockerd-entrypoint.sh"]
-  variables:
-    DOCKER_HOST: tcp://docker:2375/
-    DOCKER_DRIVER: overlay2
-    # See https://github.com/docker-library/docker/pull/166
-    DOCKER_TLS_CERTDIR: ""
-    IMAGE: trivy-ci-test:$CI_COMMIT_SHA
-  before_script:
-    - apk add --no-cache curl
-    - export VERSION=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-    - echo $VERSION
-    - wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
-    - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
+  image:
+    name: docker.io/aquasec/trivy:$TRIVY_VERSION
+    entrypoint: [""]
   allow_failure: true
+  interruptible: true
+  variables:
+    CI_APPLICATION_REPOSITORY: "$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG"
+    CI_APPLICATION_TAG: "$CI_COMMIT_SHA"
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_AUTH_URL: "$CI_REGISTRY"
+    TRIVY_SEVERITY: "HIGH,CRITICAL"
   script:
-    # Build image
-    - docker build -t $IMAGE .
     # Build report
-    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE
+    - trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $CI_APPLICATION_REPOSITORY:$CI_COMMIT_SHA
     # Print report
-    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE
+    - trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $CI_APPLICATION_REPOSITORY:$CI_COMMIT_SHA
     # Fail on high and critical vulnerabilities
-    - ./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE
+    - trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $CI_APPLICATION_REPOSITORY:$CI_COMMIT_SHA
+  dependencies: []
   cache:
     paths:
       - .trivycache/
@@ -1285,6 +1281,10 @@ trivy:
   artifacts:
     reports:
       container_scanning: gl-container-scanning-report.json
+  except:
+    variables:
+      - $CONTAINER_SCANNING_DISABLED
+      
 ```
 
 ## Authorization for Private Docker Registry
