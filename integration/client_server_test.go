@@ -305,6 +305,14 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/photon-30.json.golden",
 		},
 		{
+			name: "buxybox with Cargo.lock integration",
+			testArgs: args{
+				Version: "dev",
+				Input:   "testdata/fixtures/busybox-with-lockfile.tar.gz",
+			},
+			golden: "testdata/busybox-with-lockfile.json.golden",
+		},
+		{
 			name: "invalid token",
 			testArgs: args{
 				Version:           "dev",

@@ -227,6 +227,12 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			testfile:           "testdata/fixtures/photon-30.tar.gz",
 		},
 		{
+			name:               "buxybox with Cargo.lock integration",
+			imageTag:           "busy-cargo:latest",
+			expectedOutputFile: "testdata/busybox-with-lockfile.json.golden",
+			testfile:           "testdata/fixtures/busybox-with-lockfile.tar.gz",
+		},
+		{
 			name:          "sad path, invalid image",
 			invalidImage:  true,
 			testfile:      "badimage:latest",

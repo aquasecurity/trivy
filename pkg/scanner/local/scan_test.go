@@ -4,15 +4,15 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/stretchr/testify/assert"
-
+	"github.com/aquasecurity/fanal/analyzer"
 	ftypes "github.com/aquasecurity/fanal/types"
 	dtypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -252,9 +252,109 @@ func TestScanner_Scan(t *testing.T) {
 			wantOS: &ftypes.OS{},
 		},
 		{
-			name: "happy path with unknown os",
+			name: "happy path with no package",
 			args: args{
 				target:   "alpine:latest",
+				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
+			},
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
+					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				},
+				Returns: ApplierApplyLayersReturns{
+					Detail: ftypes.ImageDetail{
+						OS: &ftypes.OS{
+							Family: "alpine",
+							Name:   "3.11",
+						},
+						Applications: []ftypes.Application{
+							{
+								Type:     "bundler",
+								FilePath: "/app/Gemfile.lock",
+								Libraries: []ftypes.LibraryInfo{
+									{
+										Library: dtypes.Library{Name: "rails", Version: "6.0"},
+										Layer: ftypes.Layer{
+											DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+										},
+									},
+								},
+							},
+						},
+					},
+					Err: analyzer.ErrNoPkgsDetected,
+				},
+			},
+			ospkgDetectExpectations: []OspkgDetectorDetectExpectation{
+				{
+					Args: OspkgDetectorDetectArgs{
+						OsFamily: "alpine",
+						OsName:   "3.11",
+					},
+					Returns: OspkgDetectorDetectReturns{
+						Eosl: false,
+					},
+				},
+			},
+			libDetectExpectations: []LibraryDetectorDetectExpectation{
+				{
+					Args: LibraryDetectorDetectArgs{
+						FilePath: "/app/Gemfile.lock",
+						Pkgs: []ftypes.LibraryInfo{
+							{
+								Library: dtypes.Library{Name: "rails", Version: "6.0"},
+								Layer: ftypes.Layer{
+									DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+								},
+							},
+						},
+					},
+					Returns: LibraryDetectorDetectReturns{
+						DetectedVulns: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2020-10000",
+								PkgName:          "rails",
+								InstalledVersion: "6.0",
+								FixedVersion:     "6.1",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+								},
+							},
+						},
+					},
+				},
+			},
+			wantResults: report.Results{
+				{
+					Target: "alpine:latest (alpine 3.11)",
+					Type:   vulnerability.Alpine,
+				},
+				{
+					Target: "/app/Gemfile.lock",
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2020-10000",
+							PkgName:          "rails",
+							InstalledVersion: "6.0",
+							FixedVersion:     "6.1",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+							},
+						},
+					},
+					Type: "bundler",
+				},
+			},
+			wantOS: &ftypes.OS{
+				Family: "alpine",
+				Name:   "3.11",
+			},
+		},
+		{
+			name: "happy path with unsupported os",
+			args: args{
+				target:   "fedora:27",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
 			},
@@ -345,6 +445,27 @@ func TestScanner_Scan(t *testing.T) {
 				Family: "fedora",
 				Name:   "27",
 			},
+		},
+		{
+			name: "happy path with a scratch image",
+			args: args{
+				target:   "busybox:latest",
+				layerIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
+				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
+			},
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
+					LayerIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
+				},
+				Returns: ApplierApplyLayersReturns{
+					Detail: ftypes.ImageDetail{
+						OS: nil,
+					},
+					Err: analyzer.ErrUnknownOS,
+				},
+			},
+			wantResults: nil,
+			wantOS:      nil,
 		},
 		{
 			name: "happy path with only library detection",
@@ -618,6 +739,8 @@ func TestScanner_Scan(t *testing.T) {
 			wantErr: "failed to scan application libraries",
 		},
 	}
+
+	log.InitLogger(false, true)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			applier := new(MockApplier)
