@@ -41,11 +41,7 @@ func initializeDockerScanner(ctx context.Context, imageName string, layerCache c
 func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.ImageCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration) (scanner.Scanner, error) {
 	scannerScanner := client.NewProtobufClient(url)
 	clientScanner := client.NewScanner(customHeaders, scannerScanner)
-	dockerOption, err := types.GetDockerOption(timeout)
-	if err != nil {
-		return scanner.Scanner{}, err
-	}
-	extractor, err := docker.NewDockerArchiveExtractor(ctx, filePath, dockerOption)
+	extractor, err := docker.NewArchiveImageExtractor(filePath)
 	if err != nil {
 		return scanner.Scanner{}, err
 	}

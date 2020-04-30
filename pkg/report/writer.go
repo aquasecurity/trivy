@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
@@ -25,6 +26,14 @@ type Result struct {
 }
 
 func WriteResults(format string, output io.Writer, results Results, outputTemplate string, light bool) error {
+	if strings.HasPrefix(outputTemplate, "@") {
+		buf, err := ioutil.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
+		if err != nil {
+			return xerrors.Errorf("Error retrieving template from path: %w", err)
+		}
+		outputTemplate = string(buf)
+	}
+
 	var writer Writer
 	switch format {
 	case "table":
