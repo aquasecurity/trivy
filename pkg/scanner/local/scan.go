@@ -5,14 +5,10 @@ import (
 	"sort"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
-
-	"github.com/aquasecurity/fanal/analyzer"
-
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
 	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
@@ -33,7 +29,10 @@ import (
 	ftypes "github.com/aquasecurity/fanal/types"
 	libDetector "github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 var SuperSet = wire.NewSet(
@@ -71,13 +70,21 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector, libDetector Librar
 func (s Scanner) Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (report.Results, *ftypes.OS, bool, error) {
 	imageDetail, err := s.applier.ApplyLayers(imageID, layerIDs)
 	if err != nil {
-		return nil, nil, false, xerrors.Errorf("failed to apply layers: %w", err)
+		switch err {
+		case analyzer.ErrUnknownOS:
+			log.Logger.Warn("This OS is not supported and vulnerabilities in OS packages are not detected.")
+		case analyzer.ErrNoPkgsDetected:
+			log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
+			log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
+		default:
+			return nil, nil, false, xerrors.Errorf("failed to apply layers: %w", err)
+		}
 	}
 
 	var eosl bool
 	var results report.Results
 
-	if utils.StringInSlice("os", options.VulnType) {
+	if utils.StringInSlice("os", options.VulnType) && imageDetail.OS != nil {
 		pkgs := imageDetail.Packages
 		if options.ScanRemovedPackages {
 			pkgs = mergePkgs(pkgs, imageDetail.HistoryPackages)
