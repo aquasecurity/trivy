@@ -60,3 +60,10 @@ install:
 .PHONY: clean
 clean:
 	rm -rf integration/testdata/fixtures/
+
+$(GOBIN)/labeler:
+	GO111MODULE=off go get github.com/knqyf263/labeler
+
+.PHONY: label
+label: $(GOBIN)/labeler
+	labeler apply misc/triage/labels.yaml -r aquasecurity/trivy -l 5
