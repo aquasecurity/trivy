@@ -1,6 +1,6 @@
 ---
 name: Support Question
-labels: question
+labels: triage/support
 about: If you have a question about Trivy.
 ---
 
