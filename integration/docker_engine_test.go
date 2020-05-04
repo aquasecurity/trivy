@@ -83,12 +83,6 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			testfile:           "testdata/fixtures/centos-6.tar.gz",
 		},
 		{
-			name:               "happy path, valid image path, centos:6",
-			imageTag:           "centos:6",
-			expectedOutputFile: "testdata/centos-6.json.golden",
-			testfile:           "testdata/fixtures/centos-6.tar.gz",
-		},
-		{
 			name:               "happy path, valid image path, centos:7",
 			imageTag:           "centos:7",
 			expectedOutputFile: "testdata/centos-7.json.golden",
