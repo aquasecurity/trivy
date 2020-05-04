@@ -497,7 +497,7 @@ func TestCacheServer_MissingLayers(t *testing.T) {
 			getLayerExpectations: []cache.LocalImageCacheGetLayerExpectation{
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{
 						LayerInfo: ftypes.LayerInfo{},
@@ -505,7 +505,7 @@ func TestCacheServer_MissingLayers(t *testing.T) {
 				},
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						DiffID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{
 						LayerInfo: ftypes.LayerInfo{
@@ -545,7 +545,7 @@ func TestCacheServer_MissingLayers(t *testing.T) {
 			getLayerExpectations: []cache.LocalImageCacheGetLayerExpectation{
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{
 						LayerInfo: ftypes.LayerInfo{
@@ -555,7 +555,7 @@ func TestCacheServer_MissingLayers(t *testing.T) {
 				},
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						DiffID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{
 						LayerInfo: ftypes.LayerInfo{
