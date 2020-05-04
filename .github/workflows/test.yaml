@@ -1,6 +1,22 @@
 name: Test
 on: pull_request
 jobs:
+  integration:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go 1.14
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.14.x
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Run integration tests
+      run: make test-integration
+
   build-test:
     runs-on: ubuntu-latest
     steps:
