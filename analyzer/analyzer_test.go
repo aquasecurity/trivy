@@ -286,7 +286,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			getLayerExpectations: []cache.LocalImageCacheGetLayerExpectation{
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{
 						LayerInfo: types.LayerInfo{
@@ -315,7 +315,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				},
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						DiffID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{
 						LayerInfo: types.LayerInfo{
@@ -343,7 +343,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				},
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{
 						LayerInfo: types.LayerInfo{
@@ -447,7 +447,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			getLayerExpectations: []cache.LocalImageCacheGetLayerExpectation{
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
+						DiffID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{
 						LayerInfo: types.LayerInfo{
@@ -565,7 +565,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			getLayerExpectations: []cache.LocalImageCacheGetLayerExpectation{
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{LayerInfo: types.LayerInfo{}},
 				},
@@ -582,7 +582,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			getLayerExpectations: []cache.LocalImageCacheGetLayerExpectation{
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{LayerInfo: types.LayerInfo{}},
 				},
@@ -602,7 +602,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			getLayerExpectations: []cache.LocalImageCacheGetLayerExpectation{
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{
 						LayerInfo: types.LayerInfo{
@@ -627,7 +627,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				},
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						DiffID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{
 						LayerInfo: types.LayerInfo{
@@ -655,7 +655,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				},
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{
 						LayerInfo: types.LayerInfo{
@@ -743,7 +743,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			getLayerExpectations: []cache.LocalImageCacheGetLayerExpectation{
 				{
 					Args: cache.LocalImageCacheGetLayerArgs{
-						LayerID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					Returns: cache.LocalImageCacheGetLayerReturns{
 						LayerInfo: types.LayerInfo{
