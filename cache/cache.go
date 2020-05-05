@@ -37,6 +37,7 @@ type ImageCache interface {
 type LocalImageCache interface {
 	GetImage(imageID string) (imageInfo types.ImageInfo, err error)
 	GetLayer(diffID string) (layerInfo types.LayerInfo, err error)
+	Close() (err error)
 	Clear() (err error)
 }
 
@@ -196,9 +197,16 @@ func (fs FSCache) MissingLayers(imageID string, layerIDs []string) (bool, []stri
 	return missingImage, missingLayerIDs, nil
 }
 
-func (fs FSCache) Clear() error {
+func (fs FSCache) Close() error {
 	if err := fs.db.Close(); err != nil {
 		return xerrors.Errorf("unable to close DB: %w", err)
+	}
+	return nil
+}
+
+func (fs FSCache) Clear() error {
+	if err := fs.Close(); err != nil {
+		return err
 	}
 	if err := os.RemoveAll(fs.directory); err != nil {
 		return xerrors.Errorf("failed to remove cache: %w", err)
