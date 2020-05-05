@@ -8,11 +8,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestRun_WithTar(t *testing.T) {
@@ -343,16 +342,17 @@ func TestRun_WithTar(t *testing.T) {
 		},
 	}
 
+	// Copy DB file
+	cacheDir, err := gunzipDB()
+	require.NoError(t, err)
+	defer os.RemoveAll(cacheDir)
+
+	// Setup CLI App
+	app := internal.NewApp("dev")
+	app.Writer = ioutil.Discard
+
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			// Copy DB file
-			cacheDir, err := gunzipDB()
-			require.NoError(t, err)
-			defer os.RemoveAll(cacheDir)
-
-			// Setup CLI App
-			app := internal.NewApp(c.testArgs.Version)
-			app.Writer = ioutil.Discard
 
 			osArgs := []string{"trivy", "--cache-dir", cacheDir, "--format", c.testArgs.Format}
 			if c.testArgs.SkipUpdate {

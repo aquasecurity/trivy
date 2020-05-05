@@ -83,12 +83,6 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			testfile:           "testdata/fixtures/centos-6.tar.gz",
 		},
 		{
-			name:               "happy path, valid image path, centos:6",
-			imageTag:           "centos:6",
-			expectedOutputFile: "testdata/centos-6.json.golden",
-			testfile:           "testdata/fixtures/centos-6.tar.gz",
-		},
-		{
 			name:               "happy path, valid image path, centos:7",
 			imageTag:           "centos:7",
 			expectedOutputFile: "testdata/centos-7.json.golden",
@@ -240,19 +234,19 @@ func TestRun_WithDockerEngine(t *testing.T) {
 		},
 	}
 
+	// Copy DB file
+	cacheDir, err := gunzipDB()
+	require.NoError(t, err)
+	defer os.RemoveAll(cacheDir)
+
+	ctx := context.Background()
+	defer ctx.Done()
+
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	require.NoError(t, err)
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			// Copy DB file
-			cacheDir, err := gunzipDB()
-			require.NoError(t, err)
-			defer os.RemoveAll(cacheDir)
-
-			ctx := context.Background()
-			defer ctx.Done()
-
-			cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-			require.NoError(t, err, tc.name)
-
 			if !tc.invalidImage {
 				testfile, err := os.Open(tc.testfile)
 				require.NoError(t, err, tc.name)
@@ -279,7 +273,7 @@ func TestRun_WithDockerEngine(t *testing.T) {
 
 			// run trivy
 			app := internal.NewApp("dev")
-			trivyArgs := []string{"trivy", "--skip-update", "--cache-dir", cacheDir, "--format=json"}
+			trivyArgs := []string{"trivy", "--skip-update", "--cache-dir", cacheDir, "--format=json", "--output", of.Name()}
 			if tc.ignoreUnfixed {
 				trivyArgs = append(trivyArgs, "--ignore-unfixed")
 			}
@@ -294,9 +288,6 @@ func TestRun_WithDockerEngine(t *testing.T) {
 				assert.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
-			if !tc.invalidImage {
-				trivyArgs = append(trivyArgs, "--output", of.Name())
-			}
 			trivyArgs = append(trivyArgs, tc.testfile)
 
 			err = app.Run(trivyArgs)
@@ -304,29 +295,28 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			case tc.expectedError != "":
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tc.expectedError, tc.name)
+				return
 			default:
 				assert.NoError(t, err, tc.name)
 			}
 
-			if !tc.invalidImage {
-				// check for vulnerability output info
-				got, err := ioutil.ReadAll(of)
-				assert.NoError(t, err, tc.name)
-				want, err := ioutil.ReadFile(tc.expectedOutputFile)
-				assert.NoError(t, err, tc.name)
-				assert.JSONEq(t, string(want), string(got), tc.name)
+			// check for vulnerability output info
+			got, err := ioutil.ReadAll(of)
+			assert.NoError(t, err, tc.name)
+			want, err := ioutil.ReadFile(tc.expectedOutputFile)
+			assert.NoError(t, err, tc.name)
+			assert.JSONEq(t, string(want), string(got), tc.name)
 
-				// cleanup
-				_, err = cli.ImageRemove(ctx, tc.testfile, types.ImageRemoveOptions{
-					Force:         true,
-					PruneChildren: true,
-				})
-				_, err = cli.ImageRemove(ctx, tc.imageTag, types.ImageRemoveOptions{
-					Force:         true,
-					PruneChildren: true,
-				})
-				assert.NoError(t, err, tc.name)
-			}
+			// cleanup
+			_, err = cli.ImageRemove(ctx, tc.testfile, types.ImageRemoveOptions{
+				Force:         true,
+				PruneChildren: true,
+			})
+			_, err = cli.ImageRemove(ctx, tc.imageTag, types.ImageRemoveOptions{
+				Force:         true,
+				PruneChildren: true,
+			})
+			assert.NoError(t, err, tc.name)
 		})
 	}
 }

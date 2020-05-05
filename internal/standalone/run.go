@@ -43,6 +43,7 @@ func run(c config.Config) (err error) {
 	if err != nil {
 		return xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
+	defer cacheClient.Close()
 
 	cacheOperation := operation.NewCache(cacheClient)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
@@ -67,6 +68,7 @@ func run(c config.Config) (err error) {
 	if err = db.Init(c.CacheDir); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
+	defer db.Close()
 
 	var scanner scanner.Scanner
 	ctx := context.Background()

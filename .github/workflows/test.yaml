@@ -1,15 +1,34 @@
 name: Test
 on: pull_request
 jobs:
+  integration:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.14.x
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+
+    - name: Run integration tests
+      run: make test-integration
+
   build-test:
+    name: Build Test
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Set up go
+
+    - name: Set up Go
       uses: actions/setup-go@v1
       with:
-        go-version: 1.13.x
+        go-version: 1.14.x
+
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v1
       with:
