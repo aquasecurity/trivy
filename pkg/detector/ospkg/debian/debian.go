@@ -55,6 +55,13 @@ func NewScanner() *Scanner {
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Debian vulnerabilities...")
 
+	if strings.HasSuffix(osVer, "/sid"){
+		// Short-circuit support for sid.
+		// trivy-db writes all the sid entires as "unstable".
+		// They must be looked up by "unstable".
+		osVer = "unstable"
+	}
+
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
@@ -121,6 +128,12 @@ func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 }
 
 func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool {
+	if strings.HasSuffix(osVer, "/sid") {
+		// If this is Debian sid, short-circuit support it.
+		log.Logger.Debugf("Debian sid detected. Using short-circuit supported version approval.")
+		return true
+	}
+	
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
