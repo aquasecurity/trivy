@@ -133,7 +133,7 @@ func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool
 		log.Logger.Debugf("Debian sid detected. Using short-circuit supported version approval.")
 		return true
 	}
-	
+
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
