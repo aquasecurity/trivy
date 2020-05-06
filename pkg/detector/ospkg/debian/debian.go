@@ -55,7 +55,7 @@ func NewScanner() *Scanner {
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Debian vulnerabilities...")
 
-	if strings.HasSuffix(osVer, "/sid"){
+	if strings.HasSuffix(osVer, "/sid") {
 		// Short-circuit support for sid.
 		// trivy-db writes all the sid entires as "unstable".
 		// They must be looked up by "unstable".
