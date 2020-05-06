@@ -1364,18 +1364,18 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 
 | OS                           | Supported Versions                       | Target Packages               | Detection of unfixed vulnerabilities |
 | ---------------------------- | ---------------------------------------- | ----------------------------- | :----------------------------------: |
-| Alpine Linux                 | 2.2 - 2.7, 3.0 - 3.11                    | Installed by apk              |                  NO                  |
-| Red Hat Universal Base Image | 7, 8                                     | Installed by yum/rpm          |                 YES                  |
-| Red Hat Enterprise Linux     | 6, 7, 8                                  | Installed by yum/rpm          |                 YES                  |
-| CentOS                       | 6, 7                                     | Installed by yum/rpm          |                 YES                  |
-| Oracle Linux                 | 5, 6, 7, 8                               | Installed by yum/rpm          |                  NO                  |
-| Amazon Linux                 | 1, 2                                     | Installed by yum/rpm          |                  NO                  |
-| openSUSE Leap                | 42, 15                                   | Installed by zypper/rpm       |                  NO                  |
-| SUSE Enterprise Linux        | 11, 12, 15                               | Installed by zypper/rpm       |                  NO                  |
-| Photon OS                    | 1.0, 2.0, 3.0                            | Installed by tdnf/yum/rpm     |                  NO                  |
-| Debian GNU/Linux             | wheezy, jessie, stretch, buster          | Installed by apt/apt-get/dpkg |                 YES                  |
-| Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg |                 YES                  |
-| Distroless                   | Any                                      | Installed by apt/apt-get/dpkg |                 YES                  |
+| Alpine Linux                 | 2.2 - 2.7, 3.0 - 3.11                         | Installed by apk              |                  NO                  |
+| Red Hat Universal Base Image | 7, 8                                          | Installed by yum/rpm          |                 YES                  |
+| Red Hat Enterprise Linux     | 6, 7, 8                                       | Installed by yum/rpm          |                 YES                  |
+| CentOS                       | 6, 7                                          | Installed by yum/rpm          |                 YES                  |
+| Oracle Linux                 | 5, 6, 7, 8                                    | Installed by yum/rpm          |                  NO                  |
+| Amazon Linux                 | 1, 2                                          | Installed by yum/rpm          |                  NO                  |
+| openSUSE Leap                | 42, 15                                        | Installed by zypper/rpm       |                  NO                  |
+| SUSE Enterprise Linux        | 11, 12, 15                                    | Installed by zypper/rpm       |                  NO                  |
+| Photon OS                    | 1.0, 2.0, 3.0                                 | Installed by tdnf/yum/rpm     |                  NO                  |
+| Debian GNU/Linux             | wheezy, jessie, stretch, buster, sid          | Installed by apt/apt-get/dpkg |                 YES                  |
+| Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04      | Installed by apt/apt-get/dpkg |                 YES                  |
+| Distroless                   | Any                                           | Installed by apt/apt-get/dpkg |                 YES                  |
 
 RHEL, CentOS, Oracle Linux, SUSE, Amazon Linux and Photon OS package information is stored in a binary format, and Trivy uses the `rpm` executable to parse this information when scanning an image based on RHEL or CentOS. The Trivy container image includes `rpm`, and the installers include it as a dependency. If you installed the `trivy` binary using `wget` or `curl`, or if you build it from source, you will also need to ensure that `rpm` is available.
 
