@@ -31,6 +31,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
   - [Standalone](#standalone)
     - [Scan an image](#scan-an-image)
     - [Scan an image file](#scan-an-image-file)
+    - [Scan an OCI image](#scan-an-oci-image)
     - [Save the results as JSON](#save-the-results-as-json)
     - [Save the results using a template](#save-the-results-using-a-template)
     - [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
@@ -95,6 +96,11 @@ See [here](#continuous-integration-ci) for details.
 - DevSecOps
   - **Suitable for CI** such as Travis CI, CircleCI, Jenkins, etc.
   - See [CI Example](#continuous-integration-ci)
+- Support multiple formats
+  - A local image in Docker Engine which is running as a daemon
+  - A remote image in Docker Registry such as Docker Hub, ECR, GCR and ACR
+  - A tar archive stored in the `docker save` formatted file
+  - An image directory compliant with [OCI Image Format](https://github.com/opencontainers/image-spec)
 
 Please see [LICENSE](https://github.com/aquasecurity/trivy/blob/master/LICENSE) for Trivy licensing information. Note that Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only.
 
@@ -528,6 +534,23 @@ Total: 7447 (UNKNOWN: 5, LOW: 326, MEDIUM: 5695, HIGH: 1316, CRITICAL: 105)
 |                              | TEMP-0841856-B18BAF |          |                            |                                  |                                                     |
 +------------------------------+---------------------+----------+----------------------------+----------------------------------+-----------------------------------------------------
 ...
+```
+
+### Scan an OCI image
+An image directory compliant with "Open Container Image Layout Specification".
+
+Buildah:
+
+```
+$ buildah push docker.io/library/alpine:3.11 oci:/path/to/alpine
+$ trivy --input /path/to/alpine
+```
+
+Skopeo:
+
+```
+$ skopeo copy docker-daemon:alpine:3.11 oci:/path/to/alpine
+$ trivy --input /path/to/alpine
 ```
 
 </details>

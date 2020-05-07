@@ -12,10 +12,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/internal"
 	"github.com/stretchr/testify/assert"
-
 	"github.com/stretchr/testify/require"
+	"github.com/urfave/cli"
+
+	"github.com/aquasecurity/trivy/internal"
 )
 
 type args struct {
@@ -28,8 +29,6 @@ type args struct {
 	Input             string
 	ClientToken       string
 	ClientTokenHeader string
-	ServerToken       string
-	ServerTokenHeader string
 }
 
 func TestClientServer(t *testing.T) {
@@ -44,18 +43,6 @@ func TestClientServer(t *testing.T) {
 			testArgs: args{
 				Version: "dev",
 				Input:   "testdata/fixtures/alpine-310.tar.gz",
-			},
-			golden: "testdata/alpine-310.json.golden",
-		},
-		{
-			name: "alpine 3.10 integration with token",
-			testArgs: args{
-				Version:           "dev",
-				Input:             "testdata/fixtures/alpine-310.tar.gz",
-				ClientToken:       "token",
-				ClientTokenHeader: "Trivy-Token",
-				ServerToken:       "token",
-				ServerTokenHeader: "Trivy-Token",
 			},
 			golden: "testdata/alpine-310.json.golden",
 		},
@@ -312,6 +299,41 @@ func TestClientServer(t *testing.T) {
 			},
 			golden: "testdata/busybox-with-lockfile.json.golden",
 		},
+	}
+
+	app, addr, cacheDir := setup(t, "", "")
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			osArgs, outputFile, cleanup := setupClient(t, c.testArgs, addr, cacheDir, c.golden)
+			defer cleanup()
+
+			// Run Trivy client
+			err := app.Run(osArgs)
+			require.NoError(t, err)
+
+			compare(t, c.golden, outputFile)
+		})
+	}
+}
+
+func TestClientServerWithToken(t *testing.T) {
+	cases := []struct {
+		name     string
+		testArgs args
+		golden   string
+		wantErr  string
+	}{
+		{
+			name: "alpine 3.10 integration with token",
+			testArgs: args{
+				Version:           "dev",
+				Input:             "testdata/fixtures/alpine-310.tar.gz",
+				ClientToken:       "token",
+				ClientTokenHeader: "Trivy-Token",
+			},
+			golden: "testdata/alpine-310.json.golden",
+		},
 		{
 			name: "invalid token",
 			testArgs: args{
@@ -319,8 +341,6 @@ func TestClientServer(t *testing.T) {
 				Input:             "testdata/fixtures/distroless-base.tar.gz",
 				ClientToken:       "invalidtoken",
 				ClientTokenHeader: "Trivy-Token",
-				ServerToken:       "token",
-				ServerTokenHeader: "Trivy-Token",
 			},
 			wantErr: "twirp error unauthenticated: invalid token",
 		},
@@ -331,46 +351,23 @@ func TestClientServer(t *testing.T) {
 				Input:             "testdata/fixtures/distroless-base.tar.gz",
 				ClientToken:       "valid-token",
 				ClientTokenHeader: "Trivy-Token",
-				ServerToken:       "valid-token",
-				ServerTokenHeader: "Invalid",
 			},
 			wantErr: "twirp error unauthenticated: invalid token",
 		},
 	}
 
+	serverToken := "token"
+	serverTokenHeader := "Trivy-Token"
+	app, addr, cacheDir := setup(t, serverToken, serverTokenHeader)
+	defer os.RemoveAll(cacheDir)
+
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			// Copy DB file
-			cacheDir, err := gunzipDB()
-			require.NoError(t, err)
-			defer os.RemoveAll(cacheDir)
-
-			port, err := getFreePort()
-			require.NoError(t, err, c.name)
-			addr := fmt.Sprintf("localhost:%d", port)
-
-			go func() {
-				// Setup CLI App
-				app := internal.NewApp(c.testArgs.Version)
-				app.Writer = ioutil.Discard
-				osArgs := setupServer(addr, c.testArgs.ServerToken, c.testArgs.ServerTokenHeader, cacheDir)
-
-				// Run Trivy server
-				require.NoError(t, app.Run(osArgs), c.name)
-			}()
-
-			ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-			require.NoError(t, waitPort(ctx, addr), c.name)
-
-			// Setup CLI App
-			app := internal.NewApp(c.testArgs.Version)
-			app.Writer = ioutil.Discard
-
 			osArgs, outputFile, cleanup := setupClient(t, c.testArgs, addr, cacheDir, c.golden)
 			defer cleanup()
 
 			// Run Trivy client
-			err = app.Run(osArgs)
+			err := app.Run(osArgs)
 
 			if c.wantErr != "" {
 				require.NotNil(t, err, c.name)
@@ -380,15 +377,42 @@ func TestClientServer(t *testing.T) {
 				assert.NoError(t, err, c.name)
 			}
 
-			// Compare want and got
-			want, err := ioutil.ReadFile(c.golden)
-			assert.NoError(t, err)
-			got, err := ioutil.ReadFile(outputFile)
-			assert.NoError(t, err)
-
-			assert.JSONEq(t, string(want), string(got))
+			compare(t, c.golden, outputFile)
 		})
 	}
+}
+
+func setup(t *testing.T, token, tokenHeader string) (*cli.App, string, string) {
+	t.Helper()
+	version := "dev"
+
+	// Copy DB file
+	cacheDir, err := gunzipDB()
+	assert.NoError(t, err)
+
+	port, err := getFreePort()
+	assert.NoError(t, err)
+	addr := fmt.Sprintf("localhost:%d", port)
+
+	go func() {
+		// Setup CLI App
+		app := internal.NewApp(version)
+		app.Writer = ioutil.Discard
+		osArgs := setupServer(addr, token, tokenHeader, cacheDir)
+
+		// Run Trivy server
+		app.Run(osArgs)
+	}()
+
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	err = waitPort(ctx, addr)
+	assert.NoError(t, err)
+
+	// Setup CLI App
+	app := internal.NewApp(version)
+	app.Writer = ioutil.Discard
+
+	return app, addr, cacheDir
 }
 
 func setupServer(addr, token, tokenHeader, cacheDir string) []string {
@@ -457,4 +481,15 @@ func setupClient(t *testing.T, c args, addr string, cacheDir string, golden stri
 
 	osArgs = append(osArgs, []string{"--output", outputFile}...)
 	return osArgs, outputFile, cleanup
+}
+
+func compare(t *testing.T, wantFile, gotFile string) {
+	t.Helper()
+	// Compare want and got
+	want, err := ioutil.ReadFile(wantFile)
+	assert.NoError(t, err)
+	got, err := ioutil.ReadFile(gotFile)
+	assert.NoError(t, err)
+
+	assert.JSONEq(t, string(want), string(got))
 }
