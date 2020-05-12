@@ -241,6 +241,7 @@ OPTIONS:
 	app.Commands = []cli.Command{
 		NewClientCommand(),
 		NewServerCommand(),
+		NewImageCommand(),
 	}
 
 	app.Action = standalone.Run
@@ -352,6 +353,37 @@ func NewServerCommand() cli.Command {
 				Usage:  "listen address",
 				EnvVar: "TRIVY_LISTEN",
 			},
+		},
+	}
+}
+
+func NewImageCommand() cli.Command {
+	return cli.Command{
+		Name:    "image",
+		Aliases: []string{"i"},
+		Usage:   "scan an image with trivy",
+		Action:  standalone.Run,
+		Flags: []cli.Flag{
+			templateFlag,
+			formatFlag,
+			inputFlag,
+			severityFlag,
+			outputFlag,
+			exitCodeFlag,
+			skipUpdateFlag,
+			downloadDBOnlyFlag,
+			resetFlag,
+			clearCacheFlag,
+			quietFlag,
+			noProgressFlag,
+			ignoreUnfixedFlag,
+			debugFlag,
+			removedPkgsFlag,
+			vulnTypeFlag,
+			cacheDirFlag,
+			ignoreFileFlag,
+			timeoutFlag,
+			lightFlag,
 		},
 	}
 }
