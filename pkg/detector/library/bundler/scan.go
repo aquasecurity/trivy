@@ -10,7 +10,8 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/bundler"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	bundlerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/bundler"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
+	ghsaSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
+	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -35,13 +36,8 @@ type VulnSrc interface {
 	Get(pkgName string) ([]bundlerSrc.Advisory, error)
 }
 
-type GhsaVulnSrc interface {
-	Get(pkgName string) ([]ghsa.Advisory, error)
-}
-
 type Scanner struct {
-	ghsaVs GhsaVulnSrc
-	vs     VulnSrc
+	vs VulnSrc
 }
 
 func massageLockFileVersion(version string) string {
@@ -53,37 +49,27 @@ func massageLockFileVersion(version string) string {
 
 func NewScanner() *Scanner {
 	return &Scanner{
-		ghsaVs: ghsa.NewVulnSrc(ghsa.Rubygems),
-		vs:     bundlerSrc.NewVulnSrc(),
+		vs: bundlerSrc.NewVulnSrc(),
 	}
 }
 
 func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
-	ghsas, err := s.ghsaVs.Get(pkgName)
+	var vulns []types.DetectedVulnerability
+
+	ghsaScanner := ghsa.NewScanner(ghsaSrc.Rubygems)
+	vulns, err := ghsaScanner.Detect(pkgName, pkgVer)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+		return nil, xerrors.Errorf("failed to get ghsa advisories: %w", err)
+	}
+
+	uniqVulnIdMap := make(map[string]struct{})
+	for _, vuln := range vulns {
+		uniqVulnIdMap[vuln.VulnerabilityID] = struct{}{}
 	}
 
 	advisories, err := s.vs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
-	}
-
-	var vulns []types.DetectedVulnerability
-	uniqVulnIdMap := make(map[string]struct{})
-	for _, advisory := range ghsas {
-		if !utils.MatchVersions(pkgVer, advisory.VulnerableVersions) {
-			continue
-		}
-
-		uniqVulnIdMap[advisory.VulnerabilityID] = struct{}{}
-		vuln := types.DetectedVulnerability{
-			VulnerabilityID:  advisory.VulnerabilityID,
-			PkgName:          pkgName,
-			InstalledVersion: pkgVer.String(),
-			FixedVersion:     strings.Join(advisory.PatchedVersions, ", "),
-		}
-		vulns = append(vulns, vuln)
 	}
 
 	for _, advisory := range advisories {

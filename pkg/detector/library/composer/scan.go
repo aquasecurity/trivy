@@ -12,7 +12,8 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/composer"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	composerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/composer"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
+	ghsaSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
+	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/knqyf263/go-version"
 )
@@ -22,45 +23,33 @@ const (
 )
 
 type Scanner struct {
-	vs     composerSrc.VulnSrc
-	ghsavs ghsa.VulnSrc
+	vs composerSrc.VulnSrc
 }
 
 func NewScanner() *Scanner {
 	return &Scanner{
-		vs:     composerSrc.NewVulnSrc(),
-		ghsavs: ghsa.NewVulnSrc(ghsa.Composer),
+		vs: composerSrc.NewVulnSrc(),
 	}
 }
 
 func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
-	ref := fmt.Sprintf("composer://%s", pkgName)
+	var vulns []types.DetectedVulnerability
 
-	ghsas, err := s.ghsavs.Get(pkgName)
+	ghsaScanner := ghsa.NewScanner(ghsaSrc.Composer)
+	vulns, err := ghsaScanner.Detect(pkgName, pkgVer)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+		return nil, xerrors.Errorf("failed to get ghsa advisories: %w", err)
 	}
 
+	uniqVulnIdMap := make(map[string]struct{})
+	for _, vuln := range vulns {
+		uniqVulnIdMap[vuln.VulnerabilityID] = struct{}{}
+	}
+
+	ref := fmt.Sprintf("composer://%s", pkgName)
 	advisories, err := s.vs.Get(ref)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
-	}
-
-	var vulns []types.DetectedVulnerability
-	uniqVulnIdMap := make(map[string]struct{})
-	for _, advisory := range ghsas {
-		if !utils.MatchVersions(pkgVer, advisory.VulnerableVersions) {
-			continue
-		}
-
-		uniqVulnIdMap[advisory.VulnerabilityID] = struct{}{}
-		vuln := types.DetectedVulnerability{
-			VulnerabilityID:  advisory.VulnerabilityID,
-			PkgName:          pkgName,
-			InstalledVersion: pkgVer.String(),
-			FixedVersion:     strings.Join(advisory.PatchedVersions, ", "),
-		}
-		vulns = append(vulns, vuln)
 	}
 
 	for _, advisory := range advisories {
