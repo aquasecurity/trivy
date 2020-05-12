@@ -45,8 +45,14 @@ func TestNew(t *testing.T) {
 
 			tt.want.context = c
 
-			_, err := New(c)
+			config, err := New(c)
 			assert.NoError(t, err, tt.name)
+
+			assert.Equal(t, tt.want.Quiet, config.Quiet, tt.name)
+			assert.Equal(t, tt.want.NoProgress, config.NoProgress, tt.name)
+			assert.Equal(t, tt.want.Reset, config.Reset, tt.name)
+			assert.Equal(t, tt.want.SkipUpdate, config.SkipUpdate, tt.name)
+
 		})
 	}
 }
