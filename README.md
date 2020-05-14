@@ -536,6 +536,8 @@ Total: 7447 (UNKNOWN: 5, LOW: 326, MEDIUM: 5695, HIGH: 1316, CRITICAL: 105)
 ...
 ```
 
+</details>
+
 ### Scan an OCI image
 An image directory compliant with "Open Container Image Layout Specification".
 
@@ -553,7 +555,6 @@ $ skopeo copy docker-daemon:alpine:3.11 oci:/path/to/alpine
 $ trivy --input /path/to/alpine
 ```
 
-</details>
 
 ### Save the results as JSON
 
