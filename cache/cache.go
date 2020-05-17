@@ -2,14 +2,12 @@ package cache
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
-
-	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/aquasecurity/fanal/types"
+	"github.com/google/go-containerregistry/pkg/v1"
 	bolt "go.etcd.io/bbolt"
 	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/fanal/types"
+	"os"
+	"path/filepath"
 )
 
 const (
