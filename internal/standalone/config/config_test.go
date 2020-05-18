@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/urfave/cli"
 )
 
 func TestNew(t *testing.T) {
@@ -105,7 +105,6 @@ func TestConfig_Init(t *testing.T) {
 			},
 			args: []string{"alpine:3.10"},
 			want: Config{
-				AppVersion: "0.0.0",
 				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 				severities: "CRITICAL",
 				ImageName:  "alpine:3.10",
@@ -124,7 +123,6 @@ func TestConfig_Init(t *testing.T) {
 			},
 			args: []string{"alpine:3.10"},
 			want: Config{
-				AppVersion: "0.0.0",
 				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 				severities: "CRITICAL",
 				VulnType:   []string{"os"},
@@ -143,7 +141,6 @@ func TestConfig_Init(t *testing.T) {
 				"unknown severity option: unknown severity: INVALID",
 			},
 			want: Config{
-				AppVersion: "0.0.0",
 				Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
 				severities: "CRITICAL,INVALID",
 				ImageName:  "centos:7",
@@ -164,7 +161,6 @@ func TestConfig_Init(t *testing.T) {
 				"--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.",
 			},
 			want: Config{
-				AppVersion: "0.0.0",
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				severities: "LOW",
 				ImageName:  "debian:buster",
@@ -185,7 +181,6 @@ func TestConfig_Init(t *testing.T) {
 				"--template is ignored because --format template is not specified. Use --template option with --format template option.",
 			},
 			want: Config{
-				AppVersion: "0.0.0",
 				ImageName:  "gitlab/gitlab-ce:12.7.2-ce.0",
 				Output:     os.Stdout,
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
@@ -206,7 +201,6 @@ func TestConfig_Init(t *testing.T) {
 				"--template is ignored because --format json is specified. Use --template option with --format template option.",
 			},
 			want: Config{
-				AppVersion: "0.0.0",
 				Format:     "json",
 				ImageName:  "gitlab/gitlab-ce:12.7.2-ce.0",
 				Output:     os.Stdout,
@@ -227,7 +221,6 @@ func TestConfig_Init(t *testing.T) {
 				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
 			},
 			want: Config{
-				AppVersion: "0.0.0",
 				Format:     "template",
 				ImageName:  "gitlab/gitlab-ce:12.7.2-ce.0",
 				Output:     os.Stdout,
@@ -249,7 +242,6 @@ func TestConfig_Init(t *testing.T) {
 				"You should avoid using the :latest tag as it is cached. You need to specify '--clear-cache' option when :latest image is changed",
 			},
 			want: Config{
-				AppVersion: "0.0.0",
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				severities: "LOW",
 				ImageName:  "gcr.io/distroless/base",

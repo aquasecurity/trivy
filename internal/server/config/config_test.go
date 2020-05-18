@@ -6,10 +6,11 @@ import (
 	"testing"
 	"time"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
+
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 )
 
 func TestNew(t *testing.T) {
@@ -95,8 +96,7 @@ func TestConfig_Init(t *testing.T) {
 			},
 			args: []string{"alpine:3.10"},
 			want: Config{
-				AppVersion: "0.0.0",
-				Quiet:      true,
+				Quiet: true,
 			},
 		},
 		{
@@ -108,8 +108,7 @@ func TestConfig_Init(t *testing.T) {
 			},
 			args: []string{"alpine:3.10"},
 			want: Config{
-				AppVersion: "0.0.0",
-				Reset:      true,
+				Reset: true,
 			},
 		},
 		{

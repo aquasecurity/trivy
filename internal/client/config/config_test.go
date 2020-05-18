@@ -8,14 +8,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
+	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/urfave/cli"
 )
 
 func TestNew(t *testing.T) {
@@ -107,7 +106,6 @@ func TestConfig_Init(t *testing.T) {
 			},
 			args: []string{"alpine:3.10"},
 			want: Config{
-				AppVersion:  "0.0.0",
 				Severities:  []dbTypes.Severity{dbTypes.SeverityCritical},
 				severities:  "CRITICAL",
 				ImageName:   "alpine:3.10",
@@ -133,7 +131,6 @@ func TestConfig_Init(t *testing.T) {
 				"unknown severity option: unknown severity: INVALID",
 			},
 			want: Config{
-				AppVersion:    "0.0.0",
 				Severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
 				severities:    "CRITICAL,INVALID",
 				ImageName:     "centos:7",
@@ -155,7 +152,6 @@ func TestConfig_Init(t *testing.T) {
 				"You should avoid using the :latest tag as it is cached. You need to specify '--clear-cache' option when :latest image is changed",
 			},
 			want: Config{
-				AppVersion:    "0.0.0",
 				Severities:    []dbTypes.Severity{dbTypes.SeverityLow},
 				severities:    "LOW",
 				ImageName:     "gcr.io/distroless/base",
