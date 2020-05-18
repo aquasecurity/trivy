@@ -23,7 +23,7 @@ require (
 	github.com/spf13/afero v1.2.2
 	github.com/stretchr/testify v1.4.0
 	github.com/twitchtv/twirp v5.10.1+incompatible
-	github.com/urfave/cli v1.22.1
+	github.com/urfave/cli/v2 v2.2.0
 	go.uber.org/atomic v1.5.1 // indirect
 	go.uber.org/multierr v1.4.0 // indirect
 	go.uber.org/zap v1.13.0
