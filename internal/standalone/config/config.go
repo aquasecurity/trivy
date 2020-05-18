@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/genuinetools/reg/registry"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
@@ -125,12 +125,12 @@ func (c *Config) Init() (err error) {
 		return nil
 	}
 
-	args := c.context.Args()
-	if c.Input == "" && len(args) == 0 {
+	ctx := c.context
+	if c.Input == "" && ctx.NArg() == 0 {
 		c.logger.Error(`trivy requires at least 1 argument or --input option`)
 		cli.ShowAppHelp(c.context)
 		return xerrors.New("arguments error")
-	} else if len(args) > 1 {
+	} else if ctx.NArg() > 1 {
 		c.logger.Error(`multiple images cannot be specified`)
 		return xerrors.New("arguments error")
 	}
@@ -143,7 +143,7 @@ func (c *Config) Init() (err error) {
 	}
 
 	if c.Input == "" {
-		c.ImageName = args[0]
+		c.ImageName = ctx.Args().First()
 	}
 
 	// Check whether 'latest' tag is used

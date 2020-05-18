@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 )
 
