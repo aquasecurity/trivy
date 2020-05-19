@@ -367,10 +367,11 @@ func TestRun_WithTar(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 
 			osArgs := []string{"trivy"}
+			osArgs = append(osArgs, "--cache-dir", cacheDir)
 			if c.testArgs.WithImageSubcommand {
 				osArgs = append(osArgs, "image")
 			}
-			osArgs = append(osArgs, []string{"--cache-dir", cacheDir, "--format", c.testArgs.Format}...)
+			osArgs = append(osArgs, "--format", c.testArgs.Format)
 
 			if c.testArgs.SkipUpdate {
 				osArgs = append(osArgs, "--skip-update")

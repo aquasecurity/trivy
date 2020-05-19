@@ -285,11 +285,12 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			// run trivy
 			app := internal.NewApp("dev")
 			trivyArgs := []string{"trivy"}
+			trivyArgs = append(trivyArgs, "--cache-dir", cacheDir)
 			if tc.withImageSubcommand {
 				trivyArgs = append(trivyArgs, "image")
 			}
 
-			trivyArgs = append(trivyArgs, []string{"--skip-update", "--cache-dir", cacheDir, "--format=json", "--output", of.Name()}...)
+			trivyArgs = append(trivyArgs, []string{"--skip-update", "--format=json", "--output", of.Name()}...)
 
 			if tc.ignoreUnfixed {
 				trivyArgs = append(trivyArgs, "--ignore-unfixed")
