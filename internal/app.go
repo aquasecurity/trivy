@@ -240,9 +240,9 @@ func NewApp(version string) *cli.App {
 
 	app.Flags = imageFlags
 	app.Commands = []*cli.Command{
+		NewImageCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
-		NewImageCommand(),
 	}
 
 	app.Action = standalone.Run
