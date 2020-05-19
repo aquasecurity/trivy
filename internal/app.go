@@ -357,33 +357,33 @@ func NewServerCommand() *cli.Command {
 	}
 }
 
-func NewImageCommand() cli.Command {
-	return cli.Command{
+func NewImageCommand() *cli.Command {
+	return &cli.Command{
 		Name:    "image",
 		Aliases: []string{"i"},
 		Usage:   "scan an image with trivy",
 		Action:  standalone.Run,
 		Flags: []cli.Flag{
-			templateFlag,
-			formatFlag,
-			inputFlag,
-			severityFlag,
-			outputFlag,
-			exitCodeFlag,
-			skipUpdateFlag,
-			downloadDBOnlyFlag,
-			resetFlag,
-			clearCacheFlag,
-			quietFlag,
-			noProgressFlag,
-			ignoreUnfixedFlag,
-			debugFlag,
-			removedPkgsFlag,
-			vulnTypeFlag,
-			cacheDirFlag,
-			ignoreFileFlag,
-			timeoutFlag,
-			lightFlag,
+			&templateFlag,
+			&formatFlag,
+			&inputFlag,
+			&severityFlag,
+			&outputFlag,
+			&exitCodeFlag,
+			&skipUpdateFlag,
+			&downloadDBOnlyFlag,
+			&resetFlag,
+			&clearCacheFlag,
+			&quietFlag,
+			&noProgressFlag,
+			&ignoreUnfixedFlag,
+			&debugFlag,
+			&removedPkgsFlag,
+			&vulnTypeFlag,
+			&cacheDirFlag,
+			&ignoreFileFlag,
+			&timeoutFlag,
+			&lightFlag,
 		},
 	}
 }
