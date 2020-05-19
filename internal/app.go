@@ -168,6 +168,10 @@ var (
 		EnvVars: []string{"TRIVY_TOKEN_HEADER"},
 	}
 
+	globalFlags = []cli.Flag{
+		&quietFlag,
+		&debugFlag,
+		&cacheDirFlag,
 	}
 
 	imageFlags = []cli.Flag{
@@ -181,18 +185,17 @@ var (
 		&downloadDBOnlyFlag,
 		&resetFlag,
 		&clearCacheFlag,
-		&quietFlag,
 		&noProgressFlag,
 		&ignoreUnfixedFlag,
-		&debugFlag,
 		&removedPkgsFlag,
 		&vulnTypeFlag,
-		&cacheDirFlag,
 		&ignoreFileFlag,
 		&timeoutFlag,
 		&lightFlag,
+	}
 
-		// deprecated options
+	// deprecated options
+	deprecatedFlags = []cli.Flag{
 		&cli.StringFlag{
 			Name:    "only-update",
 			Usage:   "deprecated",
@@ -238,15 +241,44 @@ func NewApp(version string) *cli.App {
 	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
 	app.EnableBashCompletion = true
 
-	app.Flags = imageFlags
+	flags := append(globalFlags, setHidden(deprecatedFlags, true)...)
+	flags = append(flags, setHidden(imageFlags, true)...)
+
+	app.Flags = flags
 	app.Commands = []*cli.Command{
 		NewImageCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
 	}
-
 	app.Action = standalone.Run
 	return app
+}
+
+func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
+	var newFlags []cli.Flag
+	for _, flag := range flags {
+		var f cli.Flag
+		switch pf := flag.(type) {
+		case *cli.StringFlag:
+			stringFlag := *pf
+			stringFlag.Hidden = hidden
+			f = &stringFlag
+		case *cli.BoolFlag:
+			boolFlag := *pf
+			boolFlag.Hidden = hidden
+			f = &boolFlag
+		case *cli.IntFlag:
+			intFlag := *pf
+			intFlag.Hidden = hidden
+			f = &intFlag
+		case *cli.DurationFlag:
+			durationFlag := *pf
+			durationFlag.Hidden = hidden
+			f = &durationFlag
+		}
+		newFlags = append(newFlags, f)
+	}
+	return newFlags
 }
 
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
