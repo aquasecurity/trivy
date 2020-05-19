@@ -167,38 +167,10 @@ var (
 		Usage:   "specify a header name for token",
 		EnvVars: []string{"TRIVY_TOKEN_HEADER"},
 	}
-)
 
-func NewApp(version string) *cli.App {
-	cli.AppHelpTemplate = `NAME:
-  {{.Name}}{{if .Usage}} - {{.Usage}}{{end}}
-USAGE:
-  {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}} {{if .VisibleFlags}}[options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{else}}[arguments...]{{end}}{{end}}{{if .Version}}{{if not .HideVersion}}
-VERSION:
-  {{.Version}}{{end}}{{end}}{{if .Description}}
-DESCRIPTION:
-  {{.Description}}{{end}}{{if len .Authors}}
-AUTHOR{{with $length := len .Authors}}{{if ne 1 $length}}S{{end}}{{end}}:
-  {{range $index, $author := .Authors}}{{if $index}}
-  {{end}}{{$author}}{{end}}{{end}}{{if .VisibleCommands}}
-OPTIONS:
-  {{range $index, $option := .VisibleFlags}}{{if $index}}
-  {{end}}{{$option}}{{end}}{{end}}
-`
-	cli.VersionPrinter = func(c *cli.Context) {
-		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
 	}
 
-	app := cli.NewApp()
-	app.Name = "trivy"
-	app.Version = version
-	app.ArgsUsage = "image_name"
-
-	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
-
-	app.EnableBashCompletion = true
-
-	app.Flags = []cli.Flag{
+	imageFlags = []cli.Flag{
 		&templateFlag,
 		&formatFlag,
 		&inputFlag,
@@ -237,7 +209,36 @@ OPTIONS:
 			EnvVars: []string{"TRIVY_AUTO_REFRESH"},
 		},
 	}
+)
 
+func NewApp(version string) *cli.App {
+	cli.AppHelpTemplate = `NAME:
+	 {{.Name}}{{if .Usage}} - {{.Usage}}{{end}}
+	USAGE:
+	 {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}} {{if .VisibleFlags}}[options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{else}}[arguments...]{{end}}{{end}}{{if .Version}}{{if not .HideVersion}}
+	VERSION:
+	 {{.Version}}{{end}}{{end}}{{if .Description}}
+	DESCRIPTION:
+	 {{.Description}}{{end}}{{if len .Authors}}
+	AUTHOR{{with $length := len .Authors}}{{if ne 1 $length}}S{{end}}{{end}}:
+	 {{range $index, $author := .Authors}}{{if $index}}
+	 {{end}}{{$author}}{{end}}{{end}}{{if .VisibleCommands}}
+	OPTIONS:
+	 {{range $index, $option := .VisibleFlags}}{{if $index}}
+	 {{end}}{{$option}}{{end}}{{end}}
+	`
+	cli.VersionPrinter = func(c *cli.Context) {
+		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
+	}
+
+	app := cli.NewApp()
+	app.Name = "trivy"
+	app.Version = version
+	app.ArgsUsage = "image_name"
+	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
+	app.EnableBashCompletion = true
+
+	app.Flags = imageFlags
 	app.Commands = []*cli.Command{
 		NewClientCommand(),
 		NewServerCommand(),
@@ -286,6 +287,16 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 `, dbType, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC())
 		}
 		fmt.Fprintf(outputWriter, output)
+	}
+}
+
+func NewImageCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "image",
+		Aliases: []string{"i"},
+		Usage:   "scan an image",
+		Action:  standalone.Run,
+		Flags:   imageFlags,
 	}
 }
 
@@ -353,37 +364,6 @@ func NewServerCommand() *cli.Command {
 				Usage:   "listen address",
 				EnvVars: []string{"TRIVY_LISTEN"},
 			},
-		},
-	}
-}
-
-func NewImageCommand() *cli.Command {
-	return &cli.Command{
-		Name:    "image",
-		Aliases: []string{"i"},
-		Usage:   "scan an image with trivy",
-		Action:  standalone.Run,
-		Flags: []cli.Flag{
-			&templateFlag,
-			&formatFlag,
-			&inputFlag,
-			&severityFlag,
-			&outputFlag,
-			&exitCodeFlag,
-			&skipUpdateFlag,
-			&downloadDBOnlyFlag,
-			&resetFlag,
-			&clearCacheFlag,
-			&quietFlag,
-			&noProgressFlag,
-			&ignoreUnfixedFlag,
-			&debugFlag,
-			&removedPkgsFlag,
-			&vulnTypeFlag,
-			&cacheDirFlag,
-			&ignoreFileFlag,
-			&timeoutFlag,
-			&lightFlag,
 		},
 	}
 }
