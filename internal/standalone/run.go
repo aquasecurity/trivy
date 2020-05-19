@@ -5,9 +5,11 @@ import (
 	l "log"
 	"os"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/internal/operation"
 	"github.com/aquasecurity/trivy/internal/standalone/config"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -15,8 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/urfave/cli"
-	"golang.org/x/xerrors"
 )
 
 func Run(cliCtx *cli.Context) error {
