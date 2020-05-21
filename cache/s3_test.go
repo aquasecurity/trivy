@@ -33,7 +33,7 @@ func TestS3Cache_PutLayer(t *testing.T) {
 	}
 	type args struct {
 		diffID    string
-		layerInfo types.LayerInfo
+		layerInfo types.BlobInfo
 	}
 	tests := []struct {
 		name    string
@@ -45,7 +45,7 @@ func TestS3Cache_PutLayer(t *testing.T) {
 			name:   "PutLayer",
 			fields: fields{S3: mockSvc, BucketName: "test"},
 			args: args{diffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-				layerInfo: types.LayerInfo{
+				layerInfo: types.BlobInfo{
 					SchemaVersion: 1,
 					OS: &types.OS{
 						Family: "alpine",
@@ -78,7 +78,7 @@ func TestS3Cache_PutImage(t *testing.T) {
 	}
 	type args struct {
 		imageID     string
-		imageConfig types.ImageInfo
+		imageConfig types.ArtifactInfo
 	}
 	tests := []struct {
 		name    string
@@ -90,7 +90,7 @@ func TestS3Cache_PutImage(t *testing.T) {
 			name:   "Happy path",
 			fields: fields{S3: mockSvc, BucketName: "test"},
 			args: args{imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
-				imageConfig: types.ImageInfo{
+				imageConfig: types.ArtifactInfo{
 					SchemaVersion: 1,
 					Architecture:  "amd64",
 					Created:       time.Date(2020, 1, 2, 3, 4, 5, 0, time.UTC),

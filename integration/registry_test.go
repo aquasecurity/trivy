@@ -177,7 +177,7 @@ func getRegistryURL(ctx context.Context, registryC testcontainers.Container, exp
 	return url.Parse(urlStr)
 }
 
-func analyze(ctx context.Context, imageRef string, opt types.DockerOption) (*types.ImageDetail, error) {
+func analyze(ctx context.Context, imageRef string, opt types.DockerOption) (*types.ArtifactDetail, error) {
 	d, err := ioutil.TempDir("", "TestRegistry-*")
 	if err != nil {
 		return nil, err
@@ -209,7 +209,7 @@ func analyze(ctx context.Context, imageRef string, opt types.DockerOption) (*typ
 		return nil, err
 	}
 
-	imageDetail, err := applier.ApplyLayers(imageInfo.ID, imageInfo.LayerIDs)
+	imageDetail, err := applier.ApplyLayers(imageInfo.ID, imageInfo.BlobIDs)
 	if err != nil {
 		return nil, err
 	}

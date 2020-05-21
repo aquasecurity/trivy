@@ -13,29 +13,41 @@ import (
 const (
 	cacheDirName = "fanal"
 
-	// imageBucket stores image information with image ID
-	imageBucket = "image"
-	// layerBucket stores os, package and library information per layer ID
-	layerBucket = "layer"
+	// artifactBucket stores artifact information with artifact ID such as image ID
+	artifactBucket = "artifact"
+	// blobBucket stores os, package and library information per blob ID such as layer ID
+	blobBucket = "blob"
 )
 
 type Cache interface {
-	ImageCache
-	LocalImageCache
+	ArtifactCache
+	LocalArtifactCache
 }
 
-// ImageCache uses local or remote cache
-type ImageCache interface {
-	MissingLayers(imageID string, layerIDs []string) (missingImage bool, missingLayerIDs []string, err error)
-	PutImage(imageID string, imageInfo types.ImageInfo) (err error)
-	PutLayer(diffID string, layerInfo types.LayerInfo) (err error)
+// ArtifactCache uses local or remote cache
+type ArtifactCache interface {
+	// MissingBlobs returns missing blob IDs such as layer IDs in cache
+	MissingBlobs(artifactID string, blobIDs []string) (missingArtifact bool, missingBlobIDs []string, err error)
+
+	// PutArtifact stores artifact information such as image metadata in cache
+	PutArtifact(artifactID string, artifactInfo types.ArtifactInfo) (err error)
+
+	// PutBlob stores blob information such as layer information in local cache
+	PutBlob(blobID string, blobInfo types.BlobInfo) (err error)
 }
 
-// LocalImageCache always uses local cache
-type LocalImageCache interface {
-	GetImage(imageID string) (imageInfo types.ImageInfo, err error)
-	GetLayer(diffID string) (layerInfo types.LayerInfo, err error)
+// LocalArtifactCache always uses local cache
+type LocalArtifactCache interface {
+	// GetArtifact gets artifact information such as image metadata from local cache
+	GetArtifact(artifactID string) (artifactInfo types.ArtifactInfo, err error)
+
+	// GetBlob gets blob information such as layer data from local cache
+	GetBlob(blobID string) (blobInfo types.BlobInfo, err error)
+
+	// Close closes the local database
 	Close() (err error)
+
+	// Clear deletes the local database
 	Clear() (err error)
 }
 
@@ -56,7 +68,7 @@ func NewFSCache(cacheDir string) (FSCache, error) {
 	}
 
 	err = db.Update(func(tx *bolt.Tx) error {
-		for _, bucket := range []string{imageBucket, layerBucket} {
+		for _, bucket := range []string{artifactBucket, blobBucket} {
 			if _, err := tx.CreateBucketIfNotExists([]byte(bucket)); err != nil {
 				return xerrors.Errorf("unable to create %s bucket: %w", err)
 			}
@@ -73,47 +85,49 @@ func NewFSCache(cacheDir string) (FSCache, error) {
 	}, nil
 }
 
-func (fs FSCache) GetLayer(diffID string) (types.LayerInfo, error) {
-	var layerInfo types.LayerInfo
+// GetBlob gets blob information such as layer data from local cache
+func (fs FSCache) GetBlob(blobID string) (types.BlobInfo, error) {
+	var blobInfo types.BlobInfo
 	err := fs.db.View(func(tx *bolt.Tx) error {
 		var err error
-		layerBucket := tx.Bucket([]byte(layerBucket))
-		layerInfo, err = fs.getLayer(layerBucket, diffID)
+		blobBucket := tx.Bucket([]byte(blobBucket))
+		blobInfo, err = fs.getBlob(blobBucket, blobID)
 		if err != nil {
-			return xerrors.Errorf("failed to get layer from the cache: %w", err)
+			return xerrors.Errorf("failed to get blob from the cache: %w", err)
 		}
 		return nil
 	})
 	if err != nil {
-		return types.LayerInfo{}, xerrors.Errorf("DB error: %w", err)
+		return types.BlobInfo{}, xerrors.Errorf("DB error: %w", err)
 	}
-	return layerInfo, nil
+	return blobInfo, nil
 }
 
-func (fs FSCache) getLayer(layerBucket *bolt.Bucket, diffID string) (types.LayerInfo, error) {
-	b := layerBucket.Get([]byte(diffID))
+func (fs FSCache) getBlob(blobBucket *bolt.Bucket, diffID string) (types.BlobInfo, error) {
+	b := blobBucket.Get([]byte(diffID))
 
-	var l types.LayerInfo
+	var l types.BlobInfo
 	if err := json.Unmarshal(b, &l); err != nil {
-		return types.LayerInfo{}, xerrors.Errorf("JSON unmarshal error: %w", err)
+		return types.BlobInfo{}, xerrors.Errorf("JSON unmarshal error: %w", err)
 	}
 	return l, nil
 }
 
-func (fs FSCache) PutLayer(diffID string, layerInfo types.LayerInfo) error {
-	if _, err := v1.NewHash(diffID); err != nil {
-		return xerrors.Errorf("invalid diffID (%s): %w", diffID, err)
+// PutBlob stores blob information such as layer information in local cache
+func (fs FSCache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
+	if _, err := v1.NewHash(blobID); err != nil {
+		return xerrors.Errorf("invalid diffID (%s): %w", blobID, err)
 	}
 
-	b, err := json.Marshal(layerInfo)
+	b, err := json.Marshal(blobInfo)
 	if err != nil {
-		return xerrors.Errorf("unable to marshal layer JSON (%s): %w", diffID, err)
+		return xerrors.Errorf("unable to marshal blob JSON (%s): %w", blobID, err)
 	}
 	err = fs.db.Update(func(tx *bolt.Tx) error {
-		layerBucket := tx.Bucket([]byte(layerBucket))
-		err = layerBucket.Put([]byte(diffID), b)
+		blobBucket := tx.Bucket([]byte(blobBucket))
+		err = blobBucket.Put([]byte(blobID), b)
 		if err != nil {
-			return xerrors.Errorf("unable to store layer information in cache (%s): %w", diffID, err)
+			return xerrors.Errorf("unable to store blob information in cache (%s): %w", blobID, err)
 		}
 		return nil
 	})
@@ -123,35 +137,37 @@ func (fs FSCache) PutLayer(diffID string, layerInfo types.LayerInfo) error {
 	return nil
 }
 
-func (fs FSCache) GetImage(imageID string) (types.ImageInfo, error) {
+// GetArtifact gets artifact information such as image metadata from local cache
+func (fs FSCache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
 	var blob []byte
 	err := fs.db.View(func(tx *bolt.Tx) error {
-		imageBucket := tx.Bucket([]byte(imageBucket))
-		blob = imageBucket.Get([]byte(imageID))
+		artifactBucket := tx.Bucket([]byte(artifactBucket))
+		blob = artifactBucket.Get([]byte(artifactID))
 		return nil
 	})
 	if err != nil {
-		return types.ImageInfo{}, xerrors.Errorf("DB error: %w", err)
+		return types.ArtifactInfo{}, xerrors.Errorf("DB error: %w", err)
 	}
 
-	var info types.ImageInfo
+	var info types.ArtifactInfo
 	if err := json.Unmarshal(blob, &info); err != nil {
-		return types.ImageInfo{}, xerrors.Errorf("JSON unmarshal error: %w", err)
+		return types.ArtifactInfo{}, xerrors.Errorf("JSON unmarshal error: %w", err)
 	}
 	return info, nil
 }
 
-func (fs FSCache) PutImage(imageID string, imageConfig types.ImageInfo) (err error) {
-	b, err := json.Marshal(imageConfig)
+// PutArtifact stores artifact information such as image metadata in local cache
+func (fs FSCache) PutArtifact(artifactID string, artifactInfo types.ArtifactInfo) (err error) {
+	b, err := json.Marshal(artifactInfo)
 	if err != nil {
-		return xerrors.Errorf("unable to marshal image JSON (%s): %w", imageID, err)
+		return xerrors.Errorf("unable to marshal artifact JSON (%s): %w", artifactID, err)
 	}
 
 	err = fs.db.Update(func(tx *bolt.Tx) error {
-		imageBucket := tx.Bucket([]byte(imageBucket))
-		err = imageBucket.Put([]byte(imageID), b)
+		artifactBucket := tx.Bucket([]byte(artifactBucket))
+		err = artifactBucket.Put([]byte(artifactID), b)
 		if err != nil {
-			return xerrors.Errorf("unable to store image information in cache (%s): %w", imageID, err)
+			return xerrors.Errorf("unable to store artifact information in cache (%s): %w", artifactID, err)
 		}
 		return nil
 	})
@@ -161,20 +177,21 @@ func (fs FSCache) PutImage(imageID string, imageConfig types.ImageInfo) (err err
 	return nil
 }
 
-func (fs FSCache) MissingLayers(imageID string, layerIDs []string) (bool, []string, error) {
-	var missingImage bool
-	var missingLayerIDs []string
+// MissingBlobs returns missing blob IDs such as layer IDs
+func (fs FSCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []string, error) {
+	var missingArtifact bool
+	var missingBlobIDs []string
 	err := fs.db.View(func(tx *bolt.Tx) error {
-		layerBucket := tx.Bucket([]byte(layerBucket))
-		for _, layerID := range layerIDs {
-			layerInfo, err := fs.getLayer(layerBucket, layerID)
+		blobBucket := tx.Bucket([]byte(blobBucket))
+		for _, blobID := range blobIDs {
+			blobInfo, err := fs.getBlob(blobBucket, blobID)
 			if err != nil {
-				// error means cache missed layer info
-				missingLayerIDs = append(missingLayerIDs, layerID)
+				// error means cache missed blob info
+				missingBlobIDs = append(missingBlobIDs, blobID)
 				continue
 			}
-			if layerInfo.SchemaVersion != types.LayerJSONSchemaVersion {
-				missingLayerIDs = append(missingLayerIDs, layerID)
+			if blobInfo.SchemaVersion != types.BlobJSONSchemaVersion {
+				missingBlobIDs = append(missingBlobIDs, blobID)
 			}
 		}
 		return nil
@@ -183,18 +200,19 @@ func (fs FSCache) MissingLayers(imageID string, layerIDs []string) (bool, []stri
 		return false, nil, xerrors.Errorf("DB error: %w", err)
 	}
 
-	// get image info
-	imageInfo, err := fs.GetImage(imageID)
+	// get artifact info
+	artifactInfo, err := fs.GetArtifact(artifactID)
 	if err != nil {
-		// error means cache missed image info
-		return true, missingLayerIDs, nil
+		// error means cache missed artifact info
+		return true, missingBlobIDs, nil
 	}
-	if imageInfo.SchemaVersion != types.ImageJSONSchemaVersion {
-		missingImage = true
+	if artifactInfo.SchemaVersion != types.ArtifactJSONSchemaVersion {
+		missingArtifact = true
 	}
-	return missingImage, missingLayerIDs, nil
+	return missingArtifact, missingBlobIDs, nil
 }
 
+// Close closes the database
 func (fs FSCache) Close() error {
 	if err := fs.db.Close(); err != nil {
 		return xerrors.Errorf("unable to close DB: %w", err)
@@ -202,6 +220,7 @@ func (fs FSCache) Close() error {
 	return nil
 }
 
+// Clear removes the database
 func (fs FSCache) Clear() error {
 	if err := fs.Close(); err != nil {
 		return err
