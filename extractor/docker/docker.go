@@ -98,7 +98,7 @@ func containsLibrary(e godeptypes.Library, s []types.LibraryInfo) bool {
 	return false
 }
 
-func lookupOriginLayerForPkg(pkg types.Package, layers []types.LayerInfo) (string, string) {
+func lookupOriginLayerForPkg(pkg types.Package, layers []types.BlobInfo) (string, string) {
 	for _, layer := range layers {
 		for _, info := range layer.PackageInfos {
 			if containsPackage(pkg, info.Packages) {
@@ -109,7 +109,7 @@ func lookupOriginLayerForPkg(pkg types.Package, layers []types.LayerInfo) (strin
 	return "", ""
 }
 
-func lookupOriginLayerForLib(filePath string, lib godeptypes.Library, layers []types.LayerInfo) (string, string) {
+func lookupOriginLayerForLib(filePath string, lib godeptypes.Library, layers []types.BlobInfo) (string, string) {
 	for _, layer := range layers {
 		for _, layerApp := range layer.Applications {
 			if filePath != layerApp.FilePath {
@@ -123,10 +123,10 @@ func lookupOriginLayerForLib(filePath string, lib godeptypes.Library, layers []t
 	return "", ""
 }
 
-func ApplyLayers(layers []types.LayerInfo) types.ImageDetail {
+func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	sep := "/"
 	nestedMap := nested.Nested{}
-	var mergedLayer types.ImageDetail
+	var mergedLayer types.ArtifactDetail
 
 	for _, layer := range layers {
 		for _, opqDir := range layer.OpaqueDirs {

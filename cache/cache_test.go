@@ -71,7 +71,7 @@ func TestFSCache_GetLayer(t *testing.T) {
 		name    string
 		dbPath  string
 		args    args
-		want    types.LayerInfo
+		want    types.BlobInfo
 		wantErr bool
 	}{
 		{
@@ -80,7 +80,7 @@ func TestFSCache_GetLayer(t *testing.T) {
 			args: args{
 				layerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 			},
-			want: types.LayerInfo{
+			want: types.BlobInfo{
 				SchemaVersion: 2,
 				OS: &types.OS{
 					Family: "alpine",
@@ -107,7 +107,7 @@ func TestFSCache_GetLayer(t *testing.T) {
 			require.NoError(t, err)
 			defer fs.Clear()
 
-			got, err := fs.GetLayer(tt.args.layerID)
+			got, err := fs.GetBlob(tt.args.layerID)
 			assert.Equal(t, tt.wantErr, err != nil, err)
 			assert.Equal(t, tt.want, got)
 		})
@@ -121,7 +121,7 @@ func TestFSCache_PutLayer(t *testing.T) {
 	}
 	type args struct {
 		diffID    string
-		layerInfo types.LayerInfo
+		layerInfo types.BlobInfo
 	}
 	tests := []struct {
 		name        string
@@ -135,7 +135,7 @@ func TestFSCache_PutLayer(t *testing.T) {
 			name: "happy path",
 			args: args{
 				diffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-				layerInfo: types.LayerInfo{
+				layerInfo: types.BlobInfo{
 					SchemaVersion: 1,
 					OS: &types.OS{
 						Family: "alpine",
@@ -157,7 +157,7 @@ func TestFSCache_PutLayer(t *testing.T) {
 			name: "happy path: different decompressed layer ID",
 			args: args{
 				diffID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-				layerInfo: types.LayerInfo{
+				layerInfo: types.BlobInfo{
 					SchemaVersion: 1,
 					Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 					DiffID:        "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
@@ -270,7 +270,7 @@ func TestFSCache_PutLayer(t *testing.T) {
 			require.NoError(t, err)
 			defer fs.Clear()
 
-			err = fs.PutLayer(tt.args.diffID, tt.args.layerInfo)
+			err = fs.PutBlob(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -280,7 +280,7 @@ func TestFSCache_PutLayer(t *testing.T) {
 			}
 
 			fs.db.View(func(tx *bolt.Tx) error {
-				layerBucket := tx.Bucket([]byte(layerBucket))
+				layerBucket := tx.Bucket([]byte(blobBucket))
 				b := layerBucket.Get([]byte(tt.args.diffID))
 				assert.JSONEq(t, tt.want, string(b))
 
@@ -293,7 +293,7 @@ func TestFSCache_PutLayer(t *testing.T) {
 func TestFSCache_PutImage(t *testing.T) {
 	type args struct {
 		imageID     string
-		imageConfig types.ImageInfo
+		imageConfig types.ArtifactInfo
 	}
 	tests := []struct {
 		name    string
@@ -305,7 +305,7 @@ func TestFSCache_PutImage(t *testing.T) {
 			name: "happy path",
 			args: args{
 				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
-				imageConfig: types.ImageInfo{
+				imageConfig: types.ArtifactInfo{
 					SchemaVersion: 1,
 					Architecture:  "amd64",
 					Created:       time.Date(2020, 1, 2, 3, 4, 5, 0, time.UTC),
@@ -347,7 +347,7 @@ func TestFSCache_PutImage(t *testing.T) {
 			require.NoError(t, err)
 			//defer fs.Clear()
 
-			err = fs.PutImage(tt.args.imageID, tt.args.imageConfig)
+			err = fs.PutArtifact(tt.args.imageID, tt.args.imageConfig)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -358,7 +358,7 @@ func TestFSCache_PutImage(t *testing.T) {
 
 			fs.db.View(func(tx *bolt.Tx) error {
 				// check decompressedDigestBucket
-				imageBucket := tx.Bucket([]byte(imageBucket))
+				imageBucket := tx.Bucket([]byte(artifactBucket))
 				b := imageBucket.Get([]byte(tt.args.imageID))
 				assert.JSONEq(t, tt.want, string(b))
 
@@ -452,7 +452,7 @@ func TestFSCache_MissingLayers(t *testing.T) {
 			require.NoError(t, err)
 			defer fs.Clear()
 
-			gotMissingImage, gotMissingLayerIDs, err := fs.MissingLayers(tt.args.imageID, tt.args.layerIDs)
+			gotMissingImage, gotMissingLayerIDs, err := fs.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

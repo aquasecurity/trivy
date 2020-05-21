@@ -242,19 +242,19 @@ func TestFanal_Library_TarMode(t *testing.T) {
 func runChecks(t *testing.T, ctx context.Context, ac analyzer.Config, applier analyzer.Applier, tc testCase) {
 	imageInfo, err := ac.Analyze(ctx)
 	require.NoError(t, err, tc.name)
-	imageDetail, err := applier.ApplyLayers(imageInfo.ID, imageInfo.LayerIDs)
+	imageDetail, err := applier.ApplyLayers(imageInfo.ID, imageInfo.BlobIDs)
 	require.NoError(t, err, tc.name)
 	commonChecks(t, imageDetail, tc)
 }
 
-func commonChecks(t *testing.T, detail types.ImageDetail, tc testCase) {
+func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	assert.Equal(t, tc.expectedOS, *detail.OS, tc.name)
 	checkPackages(t, detail, tc)
 	checkPackageFromCommands(t, detail, tc)
 	checkLibraries(detail, t, tc)
 }
 
-func checkPackages(t *testing.T, detail types.ImageDetail, tc testCase) {
+func checkPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	r := strings.NewReplacer("/", "-", ":", "-")
 	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", r.Replace(tc.imageName))
 	data, err := ioutil.ReadFile(goldenFile)
@@ -274,7 +274,7 @@ func checkPackages(t *testing.T, detail types.ImageDetail, tc testCase) {
 	}
 }
 
-func checkLibraries(detail types.ImageDetail, t *testing.T, tc testCase) {
+func checkLibraries(detail types.ArtifactDetail, t *testing.T, tc testCase) {
 	if tc.expectedLibraries != "" {
 		data, _ := ioutil.ReadFile(tc.expectedLibraries)
 		var expectedLibraries map[types.FilePath][]godeptypes.Library
@@ -286,7 +286,7 @@ func checkLibraries(detail types.ImageDetail, t *testing.T, tc testCase) {
 	}
 }
 
-func checkPackageFromCommands(t *testing.T, detail types.ImageDetail, tc testCase) {
+func checkPackageFromCommands(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	if tc.expectedPkgsFromCmds != "" {
 		data, _ := ioutil.ReadFile(tc.expectedPkgsFromCmds)
 		var expectedPkgsFromCmds []types.Package

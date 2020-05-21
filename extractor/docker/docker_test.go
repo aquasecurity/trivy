@@ -21,13 +21,13 @@ import (
 
 func TestApplyLayers(t *testing.T) {
 	testCases := []struct {
-		name                string
-		inputLayers         []types.LayerInfo
-		expectedImageDetail types.ImageDetail
+		name                   string
+		inputLayers            []types.BlobInfo
+		expectedArtifactDetail types.ArtifactDetail
 	}{
 		{
 			name: "happy path",
-			inputLayers: []types.LayerInfo{
+			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -121,7 +121,7 @@ func TestApplyLayers(t *testing.T) {
 					},
 				},
 			},
-			expectedImageDetail: types.ImageDetail{
+			expectedArtifactDetail: types.ArtifactDetail{
 				OS: &types.OS{
 					Family: "alpine",
 					Name:   "3.10",
@@ -168,7 +168,7 @@ func TestApplyLayers(t *testing.T) {
 		},
 		{
 			name: "happy path with removed and updated lockfile",
-			inputLayers: []types.LayerInfo{
+			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -249,7 +249,7 @@ func TestApplyLayers(t *testing.T) {
 					WhiteoutFiles: []string{"app/composer.lock"},
 				},
 			},
-			expectedImageDetail: types.ImageDetail{
+			expectedArtifactDetail: types.ArtifactDetail{
 				OS: &types.OS{
 					Family: "alpine",
 					Name:   "3.10",
@@ -302,7 +302,7 @@ func TestApplyLayers(t *testing.T) {
 		},
 		{
 			name: "happy path with status.d",
-			inputLayers: []types.LayerInfo{
+			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
 					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
@@ -357,7 +357,7 @@ func TestApplyLayers(t *testing.T) {
 					OpaqueDirs: []string{"app"},
 				},
 			},
-			expectedImageDetail: types.ImageDetail{
+			expectedArtifactDetail: types.ArtifactDetail{
 				OS: &types.OS{
 					Family: "debian",
 					Name:   "8",
@@ -388,19 +388,19 @@ func TestApplyLayers(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			gotImageDetail := ApplyLayers(tc.inputLayers)
-			sort.Slice(gotImageDetail.Packages, func(i, j int) bool {
-				return gotImageDetail.Packages[i].Name < gotImageDetail.Packages[j].Name
+			gotArtifactDetail := ApplyLayers(tc.inputLayers)
+			sort.Slice(gotArtifactDetail.Packages, func(i, j int) bool {
+				return gotArtifactDetail.Packages[i].Name < gotArtifactDetail.Packages[j].Name
 			})
-			sort.Slice(gotImageDetail.Applications, func(i, j int) bool {
-				return gotImageDetail.Applications[i].FilePath < gotImageDetail.Applications[j].FilePath
+			sort.Slice(gotArtifactDetail.Applications, func(i, j int) bool {
+				return gotArtifactDetail.Applications[i].FilePath < gotArtifactDetail.Applications[j].FilePath
 			})
-			for _, app := range gotImageDetail.Applications {
+			for _, app := range gotArtifactDetail.Applications {
 				sort.Slice(app.Libraries, func(i, j int) bool {
 					return app.Libraries[i].Library.Name < app.Libraries[j].Library.Name
 				})
 			}
-			assert.Equal(t, tc.expectedImageDetail, gotImageDetail, tc.name)
+			assert.Equal(t, tc.expectedArtifactDetail, gotArtifactDetail, tc.name)
 		})
 	}
 }

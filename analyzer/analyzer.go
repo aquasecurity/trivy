@@ -88,37 +88,37 @@ func RequiredFilenames() []string {
 
 type Config struct {
 	Extractor extractor.Extractor
-	Cache     cache.ImageCache
+	Cache     cache.ArtifactCache
 }
 
-func New(ext extractor.Extractor, c cache.ImageCache) Config {
+func New(ext extractor.Extractor, c cache.ArtifactCache) Config {
 	return Config{Extractor: ext, Cache: c}
 }
 
-func (ac Config) Analyze(ctx context.Context) (types.ImageReference, error) {
+func (ac Config) Analyze(ctx context.Context) (types.ArtifactReference, error) {
 	imageID, err := ac.Extractor.ImageID()
 	if err != nil {
-		return types.ImageReference{}, xerrors.Errorf("unable to get the image ID: %w", err)
+		return types.ArtifactReference{}, xerrors.Errorf("unable to get the image ID: %w", err)
 	}
 
 	diffIDs, err := ac.Extractor.LayerIDs()
 	if err != nil {
-		return types.ImageReference{}, xerrors.Errorf("unable to get layer IDs: %w", err)
+		return types.ArtifactReference{}, xerrors.Errorf("unable to get layer IDs: %w", err)
 	}
 
-	missingImage, missingLayers, err := ac.Cache.MissingLayers(imageID, diffIDs)
+	missingImage, missingLayers, err := ac.Cache.MissingBlobs(imageID, diffIDs)
 	if err != nil {
-		return types.ImageReference{}, xerrors.Errorf("unable to get missing layers: %w", err)
+		return types.ArtifactReference{}, xerrors.Errorf("unable to get missing layers: %w", err)
 	}
 
 	if err := ac.analyze(ctx, imageID, missingImage, missingLayers); err != nil {
-		return types.ImageReference{}, xerrors.Errorf("analyze error: %w", err)
+		return types.ArtifactReference{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
-	return types.ImageReference{
-		Name:     ac.Extractor.ImageName(),
-		ID:       imageID,
-		LayerIDs: diffIDs,
+	return types.ArtifactReference{
+		Name:    ac.Extractor.ImageName(),
+		ID:      imageID,
+		BlobIDs: diffIDs,
 	}, nil
 }
 
@@ -134,7 +134,7 @@ func (ac Config) analyze(ctx context.Context, imageID string, missingImage bool,
 				errCh <- xerrors.Errorf("failed to analyze layer: %s : %w", diffID, err)
 				return
 			}
-			if err = ac.Cache.PutLayer(diffID, layerInfo); err != nil {
+			if err = ac.Cache.PutBlob(diffID, layerInfo); err != nil {
 				errCh <- xerrors.Errorf("failed to store layer: %s in cache: %w", diffID, err)
 				return
 			}
@@ -164,26 +164,26 @@ func (ac Config) analyze(ctx context.Context, imageID string, missingImage bool,
 	return nil
 }
 
-func (ac Config) analyzeLayer(diffID string) (types.LayerInfo, error) {
+func (ac Config) analyzeLayer(diffID string) (types.BlobInfo, error) {
 	layerDigest, files, opqDirs, whFiles, err := ac.Extractor.ExtractLayerFiles(diffID, RequiredFilenames())
 	if err != nil {
-		return types.LayerInfo{}, xerrors.Errorf("unable to extract files from layer %s: %w", diffID, err)
+		return types.BlobInfo{}, xerrors.Errorf("unable to extract files from layer %s: %w", diffID, err)
 	}
 
 	os := GetOS(files)
 	pkgs, err := GetPackages(files)
 	if err != nil {
-		return types.LayerInfo{}, xerrors.Errorf("failed to get packages: %w", err)
+		return types.BlobInfo{}, xerrors.Errorf("failed to get packages: %w", err)
 	}
 	apps, err := GetLibraries(files)
 	if err != nil {
-		return types.LayerInfo{}, xerrors.Errorf("failed to get libraries: %w", err)
+		return types.BlobInfo{}, xerrors.Errorf("failed to get libraries: %w", err)
 	}
 
-	layerInfo := types.LayerInfo{
+	layerInfo := types.BlobInfo{
 		Digest:        layerDigest,
 		DiffID:        diffID,
-		SchemaVersion: types.LayerJSONSchemaVersion,
+		SchemaVersion: types.BlobJSONSchemaVersion,
 		OS:            os,
 		PackageInfos:  pkgs,
 		Applications:  apps,
@@ -210,8 +210,8 @@ func (ac Config) analyzeConfig(imageID string, osFound types.OS) error {
 		return xerrors.Errorf("json marshal error: %w", err)
 	}
 
-	info := types.ImageInfo{
-		SchemaVersion:   types.ImageJSONSchemaVersion,
+	info := types.ArtifactInfo{
+		SchemaVersion:   types.ArtifactJSONSchemaVersion,
 		Architecture:    s1.Architecture,
 		Created:         s1.Created.Time,
 		DockerVersion:   s1.DockerVersion,
@@ -219,7 +219,7 @@ func (ac Config) analyzeConfig(imageID string, osFound types.OS) error {
 		HistoryPackages: pkgs,
 	}
 
-	if err := ac.Cache.PutImage(imageID, info); err != nil {
+	if err := ac.Cache.PutArtifact(imageID, info); err != nil {
 		return xerrors.Errorf("failed to put image info into the cache: %w", err)
 	}
 
@@ -227,19 +227,19 @@ func (ac Config) analyzeConfig(imageID string, osFound types.OS) error {
 }
 
 type Applier struct {
-	cache cache.LocalImageCache
+	cache cache.LocalArtifactCache
 }
 
-func NewApplier(c cache.LocalImageCache) Applier {
+func NewApplier(c cache.LocalArtifactCache) Applier {
 	return Applier{cache: c}
 }
 
-func (a Applier) ApplyLayers(imageID string, diffIDs []string) (types.ImageDetail, error) {
-	var layers []types.LayerInfo
+func (a Applier) ApplyLayers(imageID string, diffIDs []string) (types.ArtifactDetail, error) {
+	var layers []types.BlobInfo
 	for _, diffID := range diffIDs {
-		layer, _ := a.cache.GetLayer(diffID)
+		layer, _ := a.cache.GetBlob(diffID)
 		if layer.SchemaVersion == 0 {
-			return types.ImageDetail{}, xerrors.Errorf("layer cache missing: %s", diffID)
+			return types.ArtifactDetail{}, xerrors.Errorf("layer cache missing: %s", diffID)
 		}
 		layers = append(layers, layer)
 	}
@@ -251,7 +251,7 @@ func (a Applier) ApplyLayers(imageID string, diffIDs []string) (types.ImageDetai
 		return mergedLayer, ErrNoPkgsDetected // send back package and apps info regardless
 	}
 
-	imageInfo, _ := a.cache.GetImage(imageID)
+	imageInfo, _ := a.cache.GetArtifact(imageID)
 	mergedLayer.HistoryPackages = imageInfo.HistoryPackages
 
 	return mergedLayer, nil

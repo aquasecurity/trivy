@@ -89,7 +89,7 @@ func run() (err error) {
 	}
 
 	a := analyzer.NewApplier(c)
-	mergedLayer, err := a.ApplyLayers(imageInfo.ID, imageInfo.LayerIDs)
+	mergedLayer, err := a.ApplyLayers(imageInfo.ID, imageInfo.BlobIDs)
 	if err != nil {
 		switch err {
 		case analyzer.ErrUnknownOS, analyzer.ErrNoPkgsDetected:

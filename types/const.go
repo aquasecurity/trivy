@@ -1,6 +1,6 @@
 package types
 
 const (
-	ImageJSONSchemaVersion = 1
-	LayerJSONSchemaVersion = 1
+	ArtifactJSONSchemaVersion = 1
+	BlobJSONSchemaVersion     = 1
 )
