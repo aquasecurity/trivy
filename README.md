@@ -134,7 +134,7 @@ $ rpm -ivh https://github.com/aquasecurity/trivy/releases/download/{TRIVY_VERSIO
 Add repository to `/etc/apt/sources.list.d`.
 
 ```
- $ sudo apt-get install wget apt-transport-https gnupg lsb-release
+$ sudo apt-get install wget apt-transport-https gnupg lsb-release
 $ wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
 $ echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
 $ sudo apt-get update
@@ -931,11 +931,10 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 ### Only download vulnerability database
 
-You can also ask `Trivy` to simply retrieve the vulnerability database. This is useful to initialize workers in Continuous Integration systems. In the first run, the `--only-update` option is silently ignored.
+You can also ask `Trivy` to simply retrieve the vulnerability database. This is useful to initialize workers in Continuous Integration systems.
 
 ```
-$ trivy --download-db-only
-$ trivy --download-db-only --only-update alpine
+$ trivy image --download-db-only
 ```
 
 ### Ignore unfixed vulnerabilities
@@ -1035,7 +1034,7 @@ CVE-2018-14618
 # No impact in our settings
 CVE-2019-1543
 
-$ trivy python:3.4-alpine3.9
+$ trivy image python:3.4-alpine3.9
 ```
 
 <details>
@@ -1056,7 +1055,7 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 ### Specify cache directory
 
 ```
-$ trivy --cache-dir /tmp/trivy/ python:3.4-alpine3.9
+$ trivy --cache-dir /tmp/trivy/ image python:3.4-alpine3.9
 ```
 
 ### Clear image caches
@@ -1066,7 +1065,7 @@ The `--clear-cache` option removes image caches. This option is useful if the im
 **The scan is not performed.**
 
 ```
-$ trivy --clear-cache
+$ trivy image --clear-cache
 ```
 
 <details>
@@ -1084,7 +1083,7 @@ $ trivy --clear-cache
 The `--reset` option removes all caches and database. After this, it takes a long time as the vulnerability database needs to be rebuilt locally.
 
 ```
-$ trivy --reset
+$ trivy image --reset
 ```
 
 <details>
@@ -1676,7 +1675,7 @@ $ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
 Try again with `--reset` option:
 
 ```
-$ trivy --reset
+$ trivy image --reset
 ```
 
 # Related Projects
