@@ -170,21 +170,6 @@ var (
 )
 
 func NewApp(version string) *cli.App {
-	cli.AppHelpTemplate = `NAME:
-  {{.Name}}{{if .Usage}} - {{.Usage}}{{end}}
-USAGE:
-  {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}} {{if .VisibleFlags}}[options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{else}}[arguments...]{{end}}{{end}}{{if .Version}}{{if not .HideVersion}}
-VERSION:
-  {{.Version}}{{end}}{{end}}{{if .Description}}
-DESCRIPTION:
-  {{.Description}}{{end}}{{if len .Authors}}
-AUTHOR{{with $length := len .Authors}}{{if ne 1 $length}}S{{end}}{{end}}:
-  {{range $index, $author := .Authors}}{{if $index}}
-  {{end}}{{$author}}{{end}}{{end}}{{if .VisibleCommands}}
-OPTIONS:
-  {{range $index, $option := .VisibleFlags}}{{if $index}}
-  {{end}}{{$option}}{{end}}{{end}}
-`
 	cli.VersionPrinter = func(c *cli.Context) {
 		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
 	}
