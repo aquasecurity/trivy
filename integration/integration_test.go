@@ -1,4 +1,4 @@
-// +rbuild integration
+// +build integration
 
 package integration
 

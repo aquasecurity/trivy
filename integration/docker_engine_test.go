@@ -20,21 +20,32 @@ import (
 
 func TestRun_WithDockerEngine(t *testing.T) {
 	testCases := []struct {
-		name               string
-		imageTag           string
-		invalidImage       bool
-		ignoreUnfixed      bool
-		severity           []string
-		ignoreIDs          []string
-		testfile           string
-		expectedOutputFile string
-		expectedError      string
+		name                string
+		withImageSubcommand bool
+		imageTag            string
+		invalidImage        bool
+		ignoreUnfixed       bool
+		severity            []string
+		ignoreIDs           []string
+		testfile            string
+		expectedOutputFile  string
+		expectedError       string
 	}{
+		// All of these cases should pass for either
+		// $ trivy <args>
+		// $ trivy image <args>
 		{
 			name:               "happy path, valid image path, alpine:3.10",
 			imageTag:           "alpine:3.10",
 			expectedOutputFile: "testdata/alpine-310.json.golden",
 			testfile:           "testdata/fixtures/alpine-310.tar.gz",
+		},
+		{
+			name:                "happy path, valid image path, with image subcommand, alpine:3.10",
+			withImageSubcommand: true,
+			imageTag:            "alpine:3.10",
+			expectedOutputFile:  "testdata/alpine-310.json.golden",
+			testfile:            "testdata/fixtures/alpine-310.tar.gz",
 		},
 		{
 			name:               "happy path, valid image path, alpine:3.10, ignore unfixed",
@@ -273,7 +284,14 @@ func TestRun_WithDockerEngine(t *testing.T) {
 
 			// run trivy
 			app := internal.NewApp("dev")
-			trivyArgs := []string{"trivy", "--skip-update", "--cache-dir", cacheDir, "--format=json", "--output", of.Name()}
+			trivyArgs := []string{"trivy"}
+			trivyArgs = append(trivyArgs, "--cache-dir", cacheDir)
+			if tc.withImageSubcommand {
+				trivyArgs = append(trivyArgs, "image")
+			}
+
+			trivyArgs = append(trivyArgs, []string{"--skip-update", "--format=json", "--output", of.Name()}...)
+
 			if tc.ignoreUnfixed {
 				trivyArgs = append(trivyArgs, "--ignore-unfixed")
 			}

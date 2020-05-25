@@ -27,35 +27,40 @@ type VersionInfo struct {
 
 var (
 	templateFlag = cli.StringFlag{
-		Name:    "template, t",
+		Name:    "template",
+		Aliases: []string{"t"},
 		Value:   "",
 		Usage:   "output template",
 		EnvVars: []string{"TRIVY_TEMPLATE"},
 	}
 
 	formatFlag = cli.StringFlag{
-		Name:    "format, f",
+		Name:    "format",
+		Aliases: []string{"f"},
 		Value:   "table",
 		Usage:   "format (table, json, template)",
 		EnvVars: []string{"TRIVY_FORMAT"},
 	}
 
 	inputFlag = cli.StringFlag{
-		Name:    "input, i",
+		Name:    "input",
+		Aliases: []string{"i"},
 		Value:   "",
 		Usage:   "input file path instead of image name",
 		EnvVars: []string{"TRIVY_INPUT"},
 	}
 
 	severityFlag = cli.StringFlag{
-		Name:    "severity, s",
+		Name:    "severity",
+		Aliases: []string{"s"},
 		Value:   strings.Join(types.SeverityNames, ","),
 		Usage:   "severities of vulnerabilities to be displayed (comma separated)",
 		EnvVars: []string{"TRIVY_SEVERITY"},
 	}
 
 	outputFlag = cli.StringFlag{
-		Name:    "output, o",
+		Name:    "output",
+		Aliases: []string{"o"},
 		Usage:   "output file name",
 		EnvVars: []string{"TRIVY_OUTPUT"},
 	}
@@ -86,13 +91,15 @@ var (
 	}
 
 	clearCacheFlag = cli.BoolFlag{
-		Name:    "clear-cache, c",
+		Name:    "clear-cache",
+		Aliases: []string{"c"},
 		Usage:   "clear image caches without scanning",
 		EnvVars: []string{"TRIVY_CLEAR_CACHE"},
 	}
 
 	quietFlag = cli.BoolFlag{
-		Name:    "quiet, q",
+		Name:    "quiet",
+		Aliases: []string{"q"},
 		Usage:   "suppress progress bar and log output",
 		EnvVars: []string{"TRIVY_QUIET"},
 	}
@@ -110,7 +117,8 @@ var (
 	}
 
 	debugFlag = cli.BoolFlag{
-		Name:    "debug, d",
+		Name:    "debug",
+		Aliases: []string{"d"},
 		Usage:   "debug mode",
 		EnvVars: []string{"TRIVY_DEBUG"},
 	}
@@ -167,23 +175,14 @@ var (
 		Usage:   "specify a header name for token",
 		EnvVars: []string{"TRIVY_TOKEN_HEADER"},
 	}
-)
 
-func NewApp(version string) *cli.App {
-	cli.VersionPrinter = func(c *cli.Context) {
-		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
+	globalFlags = []cli.Flag{
+		&quietFlag,
+		&debugFlag,
+		&cacheDirFlag,
 	}
 
-	app := cli.NewApp()
-	app.Name = "trivy"
-	app.Version = version
-	app.ArgsUsage = "image_name"
-
-	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
-
-	app.EnableBashCompletion = true
-
-	app.Flags = []cli.Flag{
+	imageFlags = []cli.Flag{
 		&templateFlag,
 		&formatFlag,
 		&inputFlag,
@@ -194,18 +193,17 @@ func NewApp(version string) *cli.App {
 		&downloadDBOnlyFlag,
 		&resetFlag,
 		&clearCacheFlag,
-		&quietFlag,
 		&noProgressFlag,
 		&ignoreUnfixedFlag,
-		&debugFlag,
 		&removedPkgsFlag,
 		&vulnTypeFlag,
-		&cacheDirFlag,
 		&ignoreFileFlag,
 		&timeoutFlag,
 		&lightFlag,
+	}
 
-		// deprecated options
+	// deprecated options
+	deprecatedFlags = []cli.Flag{
 		&cli.StringFlag{
 			Name:    "only-update",
 			Usage:   "deprecated",
@@ -222,14 +220,58 @@ func NewApp(version string) *cli.App {
 			EnvVars: []string{"TRIVY_AUTO_REFRESH"},
 		},
 	}
+)
 
+func NewApp(version string) *cli.App {
+	cli.VersionPrinter = func(c *cli.Context) {
+		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
+	}
+
+	app := cli.NewApp()
+	app.Name = "trivy"
+	app.Version = version
+	app.ArgsUsage = "image_name"
+	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
+	app.EnableBashCompletion = true
+
+	flags := append(globalFlags, setHidden(deprecatedFlags, true)...)
+	flags = append(flags, setHidden(imageFlags, true)...)
+
+	app.Flags = flags
 	app.Commands = []*cli.Command{
+		NewImageCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
 	}
-
 	app.Action = standalone.Run
 	return app
+}
+
+func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
+	var newFlags []cli.Flag
+	for _, flag := range flags {
+		var f cli.Flag
+		switch pf := flag.(type) {
+		case *cli.StringFlag:
+			stringFlag := *pf
+			stringFlag.Hidden = hidden
+			f = &stringFlag
+		case *cli.BoolFlag:
+			boolFlag := *pf
+			boolFlag.Hidden = hidden
+			f = &boolFlag
+		case *cli.IntFlag:
+			intFlag := *pf
+			intFlag.Hidden = hidden
+			f = &intFlag
+		case *cli.DurationFlag:
+			durationFlag := *pf
+			durationFlag.Hidden = hidden
+			f = &durationFlag
+		}
+		newFlags = append(newFlags, f)
+	}
+	return newFlags
 }
 
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
@@ -270,6 +312,16 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 `, dbType, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC())
 		}
 		fmt.Fprintf(outputWriter, output)
+	}
+}
+
+func NewImageCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "image",
+		Aliases: []string{"i"},
+		Usage:   "scan an image",
+		Action:  standalone.Run,
+		Flags:   imageFlags,
 	}
 }
 

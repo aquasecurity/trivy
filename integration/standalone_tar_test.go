@@ -16,13 +16,14 @@ import (
 
 func TestRun_WithTar(t *testing.T) {
 	type args struct {
-		Version       string
-		SkipUpdate    bool
-		IgnoreUnfixed bool
-		Severity      []string
-		IgnoreIDs     []string
-		Format        string
-		Input         string
+		Version             string
+		WithImageSubcommand bool
+		SkipUpdate          bool
+		IgnoreUnfixed       bool
+		Severity            []string
+		IgnoreIDs           []string
+		Format              string
+		Input               string
 	}
 	cases := []struct {
 		name     string
@@ -36,6 +37,17 @@ func TestRun_WithTar(t *testing.T) {
 				SkipUpdate: true,
 				Format:     "json",
 				Input:      "testdata/fixtures/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.json.golden",
+		},
+		{
+			name: "alpine 3.10 integration with image subcommand",
+			testArgs: args{
+				Version:             "dev",
+				WithImageSubcommand: true,
+				SkipUpdate:          true,
+				Format:              "json",
+				Input:               "testdata/fixtures/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.json.golden",
 		},
@@ -354,7 +366,13 @@ func TestRun_WithTar(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 
-			osArgs := []string{"trivy", "--cache-dir", cacheDir, "--format", c.testArgs.Format}
+			osArgs := []string{"trivy"}
+			osArgs = append(osArgs, "--cache-dir", cacheDir)
+			if c.testArgs.WithImageSubcommand {
+				osArgs = append(osArgs, "image")
+			}
+			osArgs = append(osArgs, "--format", c.testArgs.Format)
+
 			if c.testArgs.SkipUpdate {
 				osArgs = append(osArgs, "--skip-update")
 			}

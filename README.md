@@ -134,7 +134,7 @@ $ rpm -ivh https://github.com/aquasecurity/trivy/releases/download/{TRIVY_VERSIO
 Add repository to `/etc/apt/sources.list.d`.
 
 ```
- $ sudo apt-get install wget apt-transport-https gnupg lsb-release
+$ sudo apt-get install wget apt-transport-https gnupg lsb-release
 $ wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
 $ echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
 $ sudo apt-get update
@@ -195,13 +195,13 @@ Simply specify an image name (and a tag). **The `latest` tag should be avoided a
 ## Basic
 
 ```
-$ trivy [YOUR_IMAGE_NAME]
+$ trivy image [YOUR_IMAGE_NAME]
 ```
 
 For example:
 
 ```
-$ trivy python:3.4-alpine
+$ trivy image python:3.4-alpine
 ```
 
 <details>
@@ -278,7 +278,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 Simply specify an image name (and a tag).
 
 ```
-$ trivy knqyf263/vuln-image:1.2.3
+$ trivy image knqyf263/vuln-image:1.2.3
 ```
 
 <details>
@@ -492,7 +492,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 ```
 $ docker save ruby:2.3.0-alpine3.9 -o ruby-2.3.0.tar
-$ trivy --input ruby-2.3.0.tar
+$ trivy image --input ruby-2.3.0.tar
 ```
 
 <details>
@@ -545,21 +545,21 @@ Buildah:
 
 ```
 $ buildah push docker.io/library/alpine:3.11 oci:/path/to/alpine
-$ trivy --input /path/to/alpine
+$ trivy image --input /path/to/alpine
 ```
 
 Skopeo:
 
 ```
 $ skopeo copy docker-daemon:alpine:3.11 oci:/path/to/alpine
-$ trivy --input /path/to/alpine
+$ trivy image --input /path/to/alpine
 ```
 
 
 ### Save the results as JSON
 
 ```
-$ trivy -f json -o results.json golang:1.12-alpine
+$ trivy image -f json -o results.json golang:1.12-alpine
 ```
 
 <details>
@@ -684,7 +684,7 @@ $ trivy -f json -o results.json golang:1.12-alpine
 ### Save the results using a template
 
 ```
-$ trivy --format template --template "{{ range . }} {{ .Target }} {{ end }}" golang:1.12-alpine
+$ trivy image --format template --template "{{ range . }} {{ .Target }} {{ end }}" golang:1.12-alpine
 ```
 <details>
 <summary>Result</summary>
@@ -697,13 +697,13 @@ $ trivy --format template --template "{{ range . }} {{ .Target }} {{ end }}" gol
 You can load templates from a file prefixing the template path with an @.
 
 ```
-$ trivy --format template --template "@/path/to/template" golang:1.12-alpine
+$ trivy image --format template --template "@/path/to/template" golang:1.12-alpine
 ```
 
 ### Filter the vulnerabilities by severities
 
 ```
-$ trivy --severity HIGH,CRITICAL ruby:2.3.0
+$ trivy image --severity HIGH,CRITICAL ruby:2.4.0
 ```
 
 <details>
@@ -713,7 +713,7 @@ $ trivy --severity HIGH,CRITICAL ruby:2.3.0
 2019-05-16T01:51:46.255+0900    INFO    Updating vulnerability database...
 2019-05-16T01:51:49.213+0900    INFO    Detecting Debian vulnerabilities...
 
-ruby:2.3.0 (debian 8.4)
+ruby:2.4.0 (debian 8.7)
 =======================
 Total: 1785 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1680, CRITICAL: 105)
 
@@ -767,7 +767,7 @@ Total: 1785 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1680, CRITICAL: 105)
 ### Filter the vulnerabilities by type
 
 ```
-$ trivy --vuln-type os ruby:2.3.0
+$ trivy image --vuln-type os ruby:2.4.0
 ```
 
 Available values:
@@ -785,7 +785,7 @@ Available values:
 2019-05-22T19:36:52.390+0200    [34mINFO[0m    Updating pipenv Security DB...
 2019-05-22T19:36:53.406+0200    [34mINFO[0m    Detecting pipenv vulnerabilities...
 
-ruby:2.3.0 (debian 8.4)
+ruby:2.4.0 (debian 8.7)
 Total: 4751 (UNKNOWN: 1, LOW: 150, MEDIUM: 3504, HIGH: 1013, CRITICAL: 83)
 
 +---------+------------------+----------+-------------------+---------------+----------------------------------+
@@ -905,7 +905,7 @@ Total: 4751 (UNKNOWN: 1, LOW: 150, MEDIUM: 3504, HIGH: 1013, CRITICAL: 83)
 `Trivy` always updates its vulnerability database when it starts operating. This is usually fast, as it is a difference update. But if you want to skip even that, use the `--skip-update` option.
 
 ```
-$ trivy --skip-update python:3.4-alpine3.9
+$ trivy image --skip-update python:3.4-alpine3.9
 ```
 
 <details>
@@ -931,11 +931,10 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 ### Only download vulnerability database
 
-You can also ask `Trivy` to simply retrieve the vulnerability database. This is useful to initialize workers in Continuous Integration systems. In the first run, the `--only-update` option is silently ignored.
+You can also ask `Trivy` to simply retrieve the vulnerability database. This is useful to initialize workers in Continuous Integration systems.
 
 ```
-$ trivy --download-db-only
-$ trivy --download-db-only --only-update alpine
+$ trivy image --download-db-only
 ```
 
 ### Ignore unfixed vulnerabilities
@@ -944,7 +943,7 @@ By default, `Trivy` also detects unpatched/unfixed vulnerabilities. This means y
 If you would like to ignore them, use the `--ignore-unfixed` option.
 
 ```
-$ trivy --ignore-unfixed ruby:2.3.0
+$ trivy image --ignore-unfixed ruby:2.4.0
 ```
 
 <details>
@@ -954,7 +953,7 @@ $ trivy --ignore-unfixed ruby:2.3.0
 2019-05-16T12:49:52.656+0900    INFO    Updating vulnerability database...
 2019-05-16T12:50:14.786+0900    INFO    Detecting Debian vulnerabilities...
 
-ruby:2.3.0 (debian 8.4)
+ruby:2.4.0 (debian 8.7)
 =======================
 Total: 4730 (UNKNOWN: 1, LOW: 145, MEDIUM: 3487, HIGH: 1014, CRITICAL: 83)
 
@@ -992,7 +991,7 @@ By default, `Trivy` exits with code 0 even when vulnerabilities are detected.
 Use the `--exit-code` option if you want to exit with a non-zero exit code.
 
 ```
-$ trivy --exit-code 1 python:3.4-alpine3.9
+$ trivy image --exit-code 1 python:3.4-alpine3.9
 ```
 
 <details>
@@ -1019,8 +1018,8 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 This option is useful for CI/CD. In the following example, the test will fail only when a critical vulnerability is found.
 
 ```
-$ trivy --exit-code 0 --severity MEDIUM,HIGH ruby:2.3.0
-$ trivy --exit-code 1 --severity CRITICAL ruby:2.3.0
+$ trivy image --exit-code 0 --severity MEDIUM,HIGH ruby:2.4.0
+$ trivy image --exit-code 1 --severity CRITICAL ruby:2.4.0
 ```
 
 ### Ignore the specified vulnerabilities
@@ -1035,7 +1034,7 @@ CVE-2018-14618
 # No impact in our settings
 CVE-2019-1543
 
-$ trivy python:3.4-alpine3.9
+$ trivy image python:3.4-alpine3.9
 ```
 
 <details>
@@ -1056,7 +1055,7 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 ### Specify cache directory
 
 ```
-$ trivy --cache-dir /tmp/trivy/ python:3.4-alpine3.9
+$ trivy --cache-dir /tmp/trivy/ image python:3.4-alpine3.9
 ```
 
 ### Clear image caches
@@ -1066,7 +1065,7 @@ The `--clear-cache` option removes image caches. This option is useful if the im
 **The scan is not performed.**
 
 ```
-$ trivy --clear-cache
+$ trivy image --clear-cache
 ```
 
 <details>
@@ -1084,7 +1083,7 @@ $ trivy --clear-cache
 The `--reset` option removes all caches and database. After this, it takes a long time as the vulnerability database needs to be rebuilt locally.
 
 ```
-$ trivy --reset
+$ trivy image --reset
 ```
 
 <details>
@@ -1106,7 +1105,7 @@ To find the additional information, you can search vulnerability details on the 
 https://nvd.nist.gov/vuln/search
 
 ```
-$ trivy --light alpine:3.10
+$ trivy image --light alpine:3.10
 ```
 
 `--light` option doesn't display titles like the following example.
@@ -1426,41 +1425,49 @@ Trivy scans a tar image with the following format.
 
 ```
 NAME:
-  trivy - A simple and comprehensive vulnerability scanner for containers
-USAGE:
-  main [options] image_name
-VERSION:
-  0.2.0
-OPTIONS:
-  --template value, -t value  output template [$TRIVY_TEMPLATE]
-  --format value, -f value    format (table, json, template) (default: "table") [$TRIVY_FORMAT]
-  --input value, -i value     input file path instead of image name [$TRIVY_INPUT]
-  --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
-  --output value, -o value    output file name [$TRIVY_OUTPUT]
-  --exit-code value           Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
-  --skip-update               skip db update [$TRIVY_SKIP_UPDATE]
-  --download-db-only          download/update vulnerability database but don't run a scan [$TRIVY_DOWNLOAD_DB_ONLY]
-  --reset                     remove all caches and database [$TRIVY_RESET]
-  --clear-cache, -c           clear image caches [$TRIVY_CLEAR_CACHE]
-  --quiet, -q                 suppress progress bar and log output [$TRIVY_QUIET]
-  --no-progress               suppress progress bar [$TRIVY_NO_PROGRESS]
-  --ignore-unfixed            display only fixed vulnerabilities [$TRIVY_IGNORE_UNFIXED]
-  --debug, -d                 debug mode [$TRIVY_DEBUG]
-  --vuln-type value           comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
-  --cache-dir value           use as cache directory, but image cache is stored in /path/to/cache/fanal (default: "/Users/teppei/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
-  --ignorefile value          specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
-  --timeout value             docker timeout (default: 1m0s) [$TRIVY_TIMEOUT]
-  --light                     light mode: it's faster, but vulnerability descriptions and references are not displayed
-  --only-update value         deprecated [$TRIVY_ONLY_UPDATE]
-  --refresh                   deprecated [$TRIVY_REFRESH]
-  --auto-refresh              deprecated [$TRIVY_AUTO_REFRESH]
-  --help, -h                  show help
-  --version, -v               print the version
-
+   trivy - A simple and comprehensive vulnerability scanner for containers
+  USAGE:
+   trivy image [options] image_name
+  VERSION:
+   v0.7.0
+  OPTIONS:
+   --quiet            suppress progress bar and log output (default: false) [$TRIVY_QUIET]
+   --debug            debug mode (default: false) [$TRIVY_DEBUG]
+   --cache-dir value  cache directory (default: "/Users/simar/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
+   --help, -h         show help (default: false)
+   --version, -v      print the version (default: false)
 ```
 
 ## Sub commands
-Trivy has two sub commands, client and server.
+Trivy has three sub commands, image, client and server.
+
+```
+NAME:
+   trivy image - scan an image
+
+USAGE:
+   trivy image [command options] [arguments...]
+
+OPTIONS:
+   --template value    output template [$TRIVY_TEMPLATE]
+   --format value      format (table, json, template) (default: "table") [$TRIVY_FORMAT]
+   --input value       input file path instead of image name [$TRIVY_INPUT]
+   --severity value    severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
+   --output value      output file name [$TRIVY_OUTPUT]
+   --exit-code value   Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
+   --skip-update       skip db update (default: false) [$TRIVY_SKIP_UPDATE]
+   --download-db-only  download/update vulnerability database but don't run a scan (default: false) [$TRIVY_DOWNLOAD_DB_ONLY]
+   --reset             remove all caches and database (default: false) [$TRIVY_RESET]
+   --clear-cache       clear image caches without scanning (default: false) [$TRIVY_CLEAR_CACHE]
+   --no-progress       suppress progress bar (default: false) [$TRIVY_NO_PROGRESS]
+   --ignore-unfixed    display only fixed vulnerabilities (default: false) [$TRIVY_IGNORE_UNFIXED]
+   --removed-pkgs      detect vulnerabilities of removed packages (only for Alpine) (default: false) [$TRIVY_REMOVED_PKGS]
+   --vuln-type value   comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
+   --ignorefile value  specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
+   --timeout value     docker timeout (default: 2m0s) [$TRIVY_TIMEOUT]
+   --light             light mode: it's faster, but vulnerability descriptions and references are not displayed (default: false) [$TRIVY_LIGHT]
+   --help, -h          show help (default: false)
+```
 
 ```
 NAME:
@@ -1668,7 +1675,7 @@ $ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
 Try again with `--reset` option:
 
 ```
-$ trivy --reset
+$ trivy image --reset
 ```
 
 # Related Projects
