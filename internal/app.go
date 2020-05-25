@@ -27,35 +27,40 @@ type VersionInfo struct {
 
 var (
 	templateFlag = cli.StringFlag{
-		Name:    "template, t",
+		Name:    "template",
+		Aliases: []string{"t"},
 		Value:   "",
 		Usage:   "output template",
 		EnvVars: []string{"TRIVY_TEMPLATE"},
 	}
 
 	formatFlag = cli.StringFlag{
-		Name:    "format, f",
+		Name:    "format",
+		Aliases: []string{"f"},
 		Value:   "table",
 		Usage:   "format (table, json, template)",
 		EnvVars: []string{"TRIVY_FORMAT"},
 	}
 
 	inputFlag = cli.StringFlag{
-		Name:    "input, i",
+		Name:    "input",
+		Aliases: []string{"i"},
 		Value:   "",
 		Usage:   "input file path instead of image name",
 		EnvVars: []string{"TRIVY_INPUT"},
 	}
 
 	severityFlag = cli.StringFlag{
-		Name:    "severity, s",
+		Name:    "severity",
+		Aliases: []string{"s"},
 		Value:   strings.Join(types.SeverityNames, ","),
 		Usage:   "severities of vulnerabilities to be displayed (comma separated)",
 		EnvVars: []string{"TRIVY_SEVERITY"},
 	}
 
 	outputFlag = cli.StringFlag{
-		Name:    "output, o",
+		Name:    "output",
+		Aliases: []string{"o"},
 		Usage:   "output file name",
 		EnvVars: []string{"TRIVY_OUTPUT"},
 	}
@@ -86,13 +91,15 @@ var (
 	}
 
 	clearCacheFlag = cli.BoolFlag{
-		Name:    "clear-cache, c",
+		Name:    "clear-cache",
+		Aliases: []string{"c"},
 		Usage:   "clear image caches without scanning",
 		EnvVars: []string{"TRIVY_CLEAR_CACHE"},
 	}
 
 	quietFlag = cli.BoolFlag{
-		Name:    "quiet, q",
+		Name:    "quiet",
+		Aliases: []string{"q"},
 		Usage:   "suppress progress bar and log output",
 		EnvVars: []string{"TRIVY_QUIET"},
 	}
@@ -110,7 +117,8 @@ var (
 	}
 
 	debugFlag = cli.BoolFlag{
-		Name:    "debug, d",
+		Name:    "debug",
+		Aliases: []string{"d"},
 		Usage:   "debug mode",
 		EnvVars: []string{"TRIVY_DEBUG"},
 	}
