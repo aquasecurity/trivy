@@ -1,6 +1,7 @@
 package scanner
 
 import (
+	"context"
 	"errors"
 	"os"
 	"testing"
@@ -8,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/fanal/artifact"
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -20,15 +22,15 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestScanner_ScanImage(t *testing.T) {
+func TestScanner_ScanArtifact(t *testing.T) {
 	type args struct {
 		options types.ScanOptions
 	}
 	tests := []struct {
 		name               string
 		args               args
-		analyzeExpectation AnalyzerAnalyzeExpectation
-		scanExpectation    ScanExpectation
+		inspectExpectation artifact.ArtifactInspectExpectation
+		scanExpectation    DriverScanExpectation
 		wantResults        report.Results
 		wantErr            string
 	}{
@@ -37,26 +39,26 @@ func TestScanner_ScanImage(t *testing.T) {
 			args: args{
 				options: types.ScanOptions{VulnType: []string{"os"}},
 			},
-			analyzeExpectation: AnalyzerAnalyzeExpectation{
-				Args: AnalyzerAnalyzeArgs{
+			inspectExpectation: artifact.ArtifactInspectExpectation{
+				Args: artifact.ArtifactInspectArgs{
 					CtxAnything: true,
 				},
-				Returns: AnalyzerAnalyzeReturns{
-					Info: ftypes.ImageReference{
-						Name:     "alpine:3.11",
-						ID:       "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-						LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				Returns: artifact.ArtifactInspectReturns{
+					Reference: ftypes.ArtifactReference{
+						Name:    "alpine:3.11",
+						ID:      "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
+						BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 					},
 				},
 			},
-			scanExpectation: ScanExpectation{
-				Args: ScanArgs{
+			scanExpectation: DriverScanExpectation{
+				Args: DriverScanArgs{
 					Target:   "alpine:3.11",
 					ImageID:  "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 					Options:  types.ScanOptions{VulnType: []string{"os"}},
 				},
-				Returns: ScanReturns{
+				Returns: DriverScanReturns{
 					Results: report.Results{
 						{
 							Target: "alpine:3.11",
@@ -128,11 +130,11 @@ func TestScanner_ScanImage(t *testing.T) {
 			args: args{
 				options: types.ScanOptions{VulnType: []string{"os"}},
 			},
-			analyzeExpectation: AnalyzerAnalyzeExpectation{
-				Args: AnalyzerAnalyzeArgs{
+			inspectExpectation: artifact.ArtifactInspectExpectation{
+				Args: artifact.ArtifactInspectArgs{
 					CtxAnything: true,
 				},
-				Returns: AnalyzerAnalyzeReturns{
+				Returns: artifact.ArtifactInspectReturns{
 					Err: errors.New("error"),
 				},
 			},
@@ -143,26 +145,26 @@ func TestScanner_ScanImage(t *testing.T) {
 			args: args{
 				options: types.ScanOptions{VulnType: []string{"os"}},
 			},
-			analyzeExpectation: AnalyzerAnalyzeExpectation{
-				Args: AnalyzerAnalyzeArgs{
+			inspectExpectation: artifact.ArtifactInspectExpectation{
+				Args: artifact.ArtifactInspectArgs{
 					CtxAnything: true,
 				},
-				Returns: AnalyzerAnalyzeReturns{
-					Info: ftypes.ImageReference{
-						Name:     "alpine:3.11",
-						ID:       "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-						LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				Returns: artifact.ArtifactInspectReturns{
+					Reference: ftypes.ArtifactReference{
+						Name:    "alpine:3.11",
+						ID:      "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
+						BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 					},
 				},
 			},
-			scanExpectation: ScanExpectation{
-				Args: ScanArgs{
+			scanExpectation: DriverScanExpectation{
+				Args: DriverScanArgs{
 					Target:   "alpine:3.11",
 					ImageID:  "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 					Options:  types.ScanOptions{VulnType: []string{"os"}},
 				},
-				Returns: ScanReturns{
+				Returns: DriverScanReturns{
 					Err: errors.New("error"),
 				},
 			},
@@ -174,11 +176,11 @@ func TestScanner_ScanImage(t *testing.T) {
 			d := new(MockDriver)
 			d.ApplyScanExpectation(tt.scanExpectation)
 
-			analyzer := new(MockAnalyzer)
-			analyzer.ApplyAnalyzeExpectation(tt.analyzeExpectation)
+			mockArtifact := new(artifact.MockArtifact)
+			mockArtifact.ApplyInspectExpectation(tt.inspectExpectation)
 
-			s := NewScanner(d, analyzer)
-			gotResults, err := s.ScanImage(tt.args.options)
+			s := NewScanner(d, mockArtifact)
+			gotResults, err := s.ScanArtifact(context.Background(), tt.args.options)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)

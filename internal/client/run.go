@@ -72,7 +72,7 @@ func run(c config.Config) (err error) {
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	results, err := scanner.ScanArtifact(scanOptions)
+	results, err := scanner.ScanArtifact(ctx, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
