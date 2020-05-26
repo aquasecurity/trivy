@@ -4,6 +4,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/python"
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	"golang.org/x/xerrors"
@@ -11,7 +12,6 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/pipenv"
 	"github.com/aquasecurity/go-dep-parser/pkg/poetry"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/python"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/knqyf263/go-version"
 )
