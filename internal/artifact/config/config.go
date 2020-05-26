@@ -9,11 +9,10 @@ import (
 
 type Config struct {
 	config.GlobalConfig
+	config.ArtifactConfig
 	config.DBConfig
 	config.ImageConfig
 	config.ReportConfig
-
-	NoProgress bool
 
 	// deprecated
 	onlyUpdate string
@@ -30,12 +29,11 @@ func New(c *cli.Context) (Config, error) {
 	}
 
 	return Config{
-		GlobalConfig: gc,
-		DBConfig:     config.NewDBConfig(c),
-		ImageConfig:  config.NewImageConfig(c),
-		ReportConfig: config.NewReportConfig(c),
-
-		NoProgress: c.Bool("no-progress"),
+		GlobalConfig:   gc,
+		ArtifactConfig: config.NewArtifactConfig(c),
+		DBConfig:       config.NewDBConfig(c),
+		ImageConfig:    config.NewImageConfig(c),
+		ReportConfig:   config.NewReportConfig(c),
 
 		onlyUpdate:  c.String("only-update"),
 		refresh:     c.Bool("refresh"),
@@ -43,7 +41,7 @@ func New(c *cli.Context) (Config, error) {
 	}, nil
 }
 
-func (c *Config) Init() error {
+func (c *Config) Init(image bool) error {
 	if err := c.ReportConfig.Init(c.Logger); err != nil {
 		return err
 	}
@@ -59,9 +57,15 @@ func (c *Config) Init() error {
 		return nil
 	}
 
-	if err := c.ImageConfig.Init(c.Context.Args(), c.Logger); err != nil {
+	if err := c.ArtifactConfig.Init(c.Context.Args(), c.Logger); err != nil {
 		cli.ShowAppHelp(c.Context)
 		return err
+	}
+
+	if image {
+		if err := c.ImageConfig.Init(c.Context.Args(), c.Logger); err != nil {
+			return err
+		}
 	}
 
 	return nil

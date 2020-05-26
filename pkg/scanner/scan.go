@@ -39,6 +39,16 @@ var StandaloneArchiveSet = wire.NewSet(
 	StandaloneSuperSet,
 )
 
+var StandaloneFilesystemSet = wire.NewSet(
+	flocal.NewArtifact,
+	StandaloneSuperSet,
+)
+
+var StandaloneRepositorySet = wire.NewSet(
+	remote.NewArtifact,
+	StandaloneSuperSet,
+)
+
 // RemoteSuperSet is used in the client mode
 var RemoteSuperSet = wire.NewSet(
 	aimage.NewArtifact,
