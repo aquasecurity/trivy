@@ -17,6 +17,7 @@ import fmt "fmt"
 import ioutil "io/ioutil"
 import http "net/http"
 import strconv "strconv"
+import gzip "compress/gzip"
 
 import jsonpb "github.com/golang/protobuf/jsonpb"
 import proto "github.com/golang/protobuf/proto"
@@ -27,6 +28,9 @@ import ctxsetters "github.com/twitchtv/twirp/ctxsetters"
 import io "io"
 import json "encoding/json"
 import url "net/url"
+
+// A response is compressed with gzip when the response size exceeds this threshold.
+const CompressThreshold = 10000
 
 // ====================
 // OSDetector Interface
@@ -318,6 +322,16 @@ func (s *oSDetectorServer) serveDetectProtobuf(ctx context.Context, resp http.Re
 	if err != nil {
 		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
 		return
+	}
+
+	// Compress the response if the size exceeds the threshold
+	if len(respBytes) > CompressThreshold && isGZipAcceptable(req) {
+		respBytes, err = compressWithGzip(respBytes)
+		if err != nil {
+			s.writeError(ctx, resp, wrapInternal(err, "failed to compress response"))
+			return
+		}
+		resp.Header().Set("Content-Encoding", "gzip")
 	}
 
 	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
@@ -636,6 +650,16 @@ func (s *libDetectorServer) serveDetectProtobuf(ctx context.Context, resp http.R
 		return
 	}
 
+	// Compress the response if the size exceeds the threshold
+	if len(respBytes) > CompressThreshold && isGZipAcceptable(req) {
+		respBytes, err = compressWithGzip(respBytes)
+		if err != nil {
+			s.writeError(ctx, resp, wrapInternal(err, "failed to compress response"))
+			return
+		}
+		resp.Header().Set("Content-Encoding", "gzip")
+	}
+
 	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	resp.Header().Set("Content-Type", "application/protobuf")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -794,6 +818,7 @@ func newRequest(ctx context.Context, url string, reqBody io.Reader, contentType 
 	}
 	req.Header.Set("Accept", contentType)
 	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Accept-Encoding", "gzip")
 	req.Header.Set("Twirp-Version", "v5.10.1")
 	return req, nil
 }
@@ -1046,7 +1071,15 @@ func doProtobufRequest(ctx context.Context, client HTTPClient, hooks *twirp.Clie
 		return errorFromResponse(resp)
 	}
 
-	respBodyBytes, err := ioutil.ReadAll(resp.Body)
+	r := resp.Body
+	if resp.Header.Get("Content-Encoding") == "gzip" {
+		r, err = gzip.NewReader(r)
+		if err != nil {
+			return wrapInternal(err, "invalid gzip")
+		}
+	}
+
+	respBodyBytes, err := ioutil.ReadAll(r)
 	if err != nil {
 		return wrapInternal(err, "failed to read response body")
 	}
@@ -1149,6 +1182,36 @@ func callError(ctx context.Context, h *twirp.ServerHooks, err twirp.Error) conte
 		return ctx
 	}
 	return h.Error(ctx, err)
+}
+
+// compressWithGzip compresses the data with gzip
+func compressWithGzip(data []byte) ([]byte, error) {
+	var b bytes.Buffer
+	gz := gzip.NewWriter(&b)
+	defer gz.Close()
+
+	if _, err := gz.Write(data); err != nil {
+		return nil, err
+	}
+
+	if err := gz.Flush(); err != nil {
+		return nil, err
+	}
+
+	if err := gz.Close(); err != nil {
+		return nil, err
+	}
+
+	return b.Bytes(), nil
+}
+
+func isGZipAcceptable(request *http.Request) bool {
+	for _, encoding := range request.Header["Accept-Encoding"] {
+		if encoding == "gzip" {
+			return true
+		}
+	}
+	return false
 }
 
 func callClientResponseReceived(ctx context.Context, h *twirp.ClientHooks) {

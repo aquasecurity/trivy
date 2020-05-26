@@ -36,7 +36,7 @@ func NewScanServer(s scanner.Driver, vulnClient vulnerability.Operation) *ScanSe
 
 func (s *ScanServer) Scan(_ context.Context, in *rpcScanner.ScanRequest) (*rpcScanner.ScanResponse, error) {
 	options := types.ScanOptions{VulnType: in.Options.VulnType}
-	results, os, eosl, err := s.localScanner.Scan(in.Target, in.ImageId, in.LayerIds, options)
+	results, os, eosl, err := s.localScanner.Scan(in.Target, in.ArtifactId, in.BlobIds, options)
 	if err != nil {
 		return nil, xerrors.Errorf("failed scan, %s: %w", in.Target, err)
 	}
@@ -55,40 +55,40 @@ func NewCacheServer(c cache.Cache) *CacheServer {
 	return &CacheServer{cache: c}
 }
 
-func (s *CacheServer) PutImage(_ context.Context, in *rpcCache.PutImageRequest) (*google_protobuf.Empty, error) {
-	if in.ImageInfo == nil {
+func (s *CacheServer) PutArtifact(_ context.Context, in *rpcCache.PutArtifactRequest) (*google_protobuf.Empty, error) {
+	if in.ArtifactInfo == nil {
 		return nil, xerrors.Errorf("empty image info")
 	}
-	imageInfo := rpc.ConvertFromRpcPutImageRequest(in)
-	if err := s.cache.PutImage(in.ImageId, imageInfo); err != nil {
+	imageInfo := rpc.ConvertFromRpcPutArtifactRequest(in)
+	if err := s.cache.PutArtifact(in.ArtifactId, imageInfo); err != nil {
 		return nil, xerrors.Errorf("unable to store image info in cache: %w", err)
 	}
 	return &google_protobuf.Empty{}, nil
 }
 
-func (s *CacheServer) PutLayer(_ context.Context, in *rpcCache.PutLayerRequest) (*google_protobuf.Empty, error) {
-	if in.LayerInfo == nil {
+func (s *CacheServer) PutBlob(_ context.Context, in *rpcCache.PutBlobRequest) (*google_protobuf.Empty, error) {
+	if in.BlobInfo == nil {
 		return nil, xerrors.Errorf("empty layer info")
 	}
-	layerInfo := rpc.ConvertFromRpcPutLayerRequest(in)
-	if err := s.cache.PutLayer(in.DiffId, layerInfo); err != nil {
+	layerInfo := rpc.ConvertFromRpcPutBlobRequest(in)
+	if err := s.cache.PutBlob(in.DiffId, layerInfo); err != nil {
 		return nil, xerrors.Errorf("unable to store layer info in cache: %w", err)
 	}
 	return &google_protobuf.Empty{}, nil
 }
 
-func (s *CacheServer) MissingLayers(_ context.Context, in *rpcCache.MissingLayersRequest) (*rpcCache.MissingLayersResponse, error) {
+func (s *CacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBlobsRequest) (*rpcCache.MissingBlobsResponse, error) {
 	var layerIDs []string
-	for _, layerID := range in.LayerIds {
-		l, err := s.cache.GetLayer(layerID)
-		if err != nil || l.SchemaVersion != ftypes.LayerJSONSchemaVersion {
-			layerIDs = append(layerIDs, layerID)
+	for _, blobID := range in.BlobIds {
+		l, err := s.cache.GetBlob(blobID)
+		if err != nil || l.SchemaVersion != ftypes.BlobJSONSchemaVersion {
+			layerIDs = append(layerIDs, blobID)
 		}
 	}
 	var missingImage bool
-	img, err := s.cache.GetImage(in.ImageId)
-	if err != nil || img.SchemaVersion != ftypes.ImageJSONSchemaVersion {
+	img, err := s.cache.GetArtifact(in.ArtifactId)
+	if err != nil || img.SchemaVersion != ftypes.ArtifactJSONSchemaVersion {
 		missingImage = true
 	}
-	return &rpcCache.MissingLayersResponse{MissingImage: missingImage, MissingLayerIds: layerIDs}, nil
+	return &rpcCache.MissingBlobsResponse{MissingArtifact: missingImage, MissingBlobIds: layerIDs}, nil
 }

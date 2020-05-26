@@ -25,29 +25,29 @@ type mockCacheServer struct {
 	cache fcache.Cache
 }
 
-func (s *mockCacheServer) PutImage(_ context.Context, in *rpcCache.PutImageRequest) (*google_protobuf.Empty, error) {
-	if strings.Contains(in.ImageId, "invalid") {
+func (s *mockCacheServer) PutArtifact(_ context.Context, in *rpcCache.PutArtifactRequest) (*google_protobuf.Empty, error) {
+	if strings.Contains(in.ArtifactId, "invalid") {
 		return &google_protobuf.Empty{}, xerrors.New("invalid image ID")
 	}
 	return &google_protobuf.Empty{}, nil
 }
 
-func (s *mockCacheServer) PutLayer(_ context.Context, in *rpcCache.PutLayerRequest) (*google_protobuf.Empty, error) {
+func (s *mockCacheServer) PutBlob(_ context.Context, in *rpcCache.PutBlobRequest) (*google_protobuf.Empty, error) {
 	if strings.Contains(in.DiffId, "invalid") {
 		return &google_protobuf.Empty{}, xerrors.New("invalid layer ID")
 	}
 	return &google_protobuf.Empty{}, nil
 }
 
-func (s *mockCacheServer) MissingLayers(_ context.Context, in *rpcCache.MissingLayersRequest) (*rpcCache.MissingLayersResponse, error) {
+func (s *mockCacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBlobsRequest) (*rpcCache.MissingBlobsResponse, error) {
 	var layerIDs []string
-	for _, layerID := range in.LayerIds[:len(in.LayerIds)-1] {
+	for _, layerID := range in.BlobIds[:len(in.BlobIds)-1] {
 		if strings.Contains(layerID, "invalid") {
 			return nil, xerrors.New("invalid layer ID")
 		}
 		layerIDs = append(layerIDs, layerID)
 	}
-	return &rpcCache.MissingLayersResponse{MissingImage: true, MissingLayerIds: layerIDs}, nil
+	return &rpcCache.MissingBlobsResponse{MissingArtifact: true, MissingBlobIds: layerIDs}, nil
 }
 
 func withToken(base http.Handler, token, tokenHeader string) http.Handler {
@@ -60,7 +60,7 @@ func withToken(base http.Handler, token, tokenHeader string) http.Handler {
 	})
 }
 
-func TestRemoteCache_PutImage(t *testing.T) {
+func TestRemoteCache_PutArtifact(t *testing.T) {
 	mux := http.NewServeMux()
 	layerHandler := rpcCache.NewCacheServer(new(mockCacheServer), nil)
 	mux.Handle(rpcCache.CachePathPrefix, withToken(layerHandler, "valid-token", "Trivy-Token"))
@@ -68,7 +68,7 @@ func TestRemoteCache_PutImage(t *testing.T) {
 
 	type args struct {
 		imageID       string
-		imageInfo     types.ImageInfo
+		imageInfo     types.ArtifactInfo
 		customHeaders http.Header
 	}
 	tests := []struct {
@@ -80,7 +80,7 @@ func TestRemoteCache_PutImage(t *testing.T) {
 			name: "happy path",
 			args: args{
 				imageID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-				imageInfo: types.ImageInfo{
+				imageInfo: types.ArtifactInfo{
 					SchemaVersion: 1,
 					Architecture:  "amd64",
 					Created:       time.Time{},
@@ -102,7 +102,7 @@ func TestRemoteCache_PutImage(t *testing.T) {
 			name: "sad path",
 			args: args{
 				imageID: "sha256:invalid",
-				imageInfo: types.ImageInfo{
+				imageInfo: types.ArtifactInfo{
 					SchemaVersion: 1,
 					Architecture:  "amd64",
 					Created:       time.Time{},
@@ -135,7 +135,7 @@ func TestRemoteCache_PutImage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), tt.args.customHeaders)
-			err := c.PutImage(tt.args.imageID, tt.args.imageInfo)
+			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -147,7 +147,7 @@ func TestRemoteCache_PutImage(t *testing.T) {
 	}
 }
 
-func TestRemoteCache_PutLayer(t *testing.T) {
+func TestRemoteCache_PutBlob(t *testing.T) {
 	mux := http.NewServeMux()
 	layerHandler := rpcCache.NewCacheServer(new(mockCacheServer), nil)
 	mux.Handle(rpcCache.CachePathPrefix, withToken(layerHandler, "valid-token", "Trivy-Token"))
@@ -155,7 +155,7 @@ func TestRemoteCache_PutLayer(t *testing.T) {
 
 	type args struct {
 		diffID        string
-		layerInfo     types.LayerInfo
+		layerInfo     types.BlobInfo
 		customHeaders http.Header
 	}
 	tests := []struct {
@@ -196,7 +196,7 @@ func TestRemoteCache_PutLayer(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), tt.args.customHeaders)
-			err := c.PutLayer(tt.args.diffID, tt.args.layerInfo)
+			err := c.PutBlob(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -208,7 +208,7 @@ func TestRemoteCache_PutLayer(t *testing.T) {
 	}
 }
 
-func TestRemoteCache_MissingLayers(t *testing.T) {
+func TestRemoteCache_MissingBlobs(t *testing.T) {
 	mux := http.NewServeMux()
 	layerHandler := rpcCache.NewCacheServer(new(mockCacheServer), nil)
 	mux.Handle(rpcCache.CachePathPrefix, withToken(layerHandler, "valid-token", "Trivy-Token"))
@@ -274,7 +274,7 @@ func TestRemoteCache_MissingLayers(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), tt.args.customHeaders)
-			gotMissingImage, gotMissingLayerIDs, err := c.MissingLayers(tt.args.imageID, tt.args.layerIDs)
+			gotMissingImage, gotMissingLayerIDs, err := c.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

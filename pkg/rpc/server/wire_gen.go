@@ -6,7 +6,7 @@
 package server
 
 import (
-	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/applier"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	db2 "github.com/aquasecurity/trivy/pkg/db"
@@ -24,12 +24,12 @@ import (
 
 // Injectors from inject.go:
 
-func initializeScanServer(localLayerCache cache.LocalImageCache) *ScanServer {
-	applier := analyzer.NewApplier(localLayerCache)
+func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServer {
+	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	driverFactory := library.DriverFactory{}
 	libraryDetector := library.NewDetector(driverFactory)
-	scanner := local.NewScanner(applier, detector, libraryDetector)
+	scanner := local.NewScanner(applierApplier, detector, libraryDetector)
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	scanServer := NewScanServer(scanner, client)

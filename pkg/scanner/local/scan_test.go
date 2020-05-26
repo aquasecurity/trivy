@@ -43,10 +43,10 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
-					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
 				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ImageDetail{
+					Detail: ftypes.ArtifactDetail{
 						OS: &ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
@@ -182,10 +182,10 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
-					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
 				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ImageDetail{
+					Detail: ftypes.ArtifactDetail{
 						OS: &ftypes.OS{},
 						Applications: []ftypes.Application{
 							{
@@ -260,10 +260,10 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
-					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
 				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ImageDetail{
+					Detail: ftypes.ArtifactDetail{
 						OS: &ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
@@ -360,10 +360,10 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
-					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
 				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ImageDetail{
+					Detail: ftypes.ArtifactDetail{
 						OS: &ftypes.OS{
 							Family: "fedora",
 							Name:   "27",
@@ -455,10 +455,10 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
-					LayerIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
+					BlobIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
 				},
 				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ImageDetail{
+					Detail: ftypes.ArtifactDetail{
 						OS: nil,
 					},
 					Err: analyzer.ErrUnknownOS,
@@ -476,10 +476,10 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
-					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
 				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ImageDetail{
+					Detail: ftypes.ArtifactDetail{
 						OS: &ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
@@ -616,7 +616,7 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
-					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
 				Returns: ApplierApplyLayersReturns{
 					Err: errors.New("error"),
@@ -633,10 +633,10 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
-					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
 				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ImageDetail{
+					Detail: ftypes.ArtifactDetail{
 						OS: &ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
@@ -684,10 +684,10 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
-					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
 				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ImageDetail{
+					Detail: ftypes.ArtifactDetail{
 						OS: &ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",

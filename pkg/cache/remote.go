@@ -20,32 +20,32 @@ type RemoteCache struct {
 
 type RemoteURL string
 
-func NewRemoteCache(url RemoteURL, customHeaders http.Header) cache.ImageCache {
+func NewRemoteCache(url RemoteURL, customHeaders http.Header) cache.ArtifactCache {
 	ctx := client.WithCustomHeaders(context.Background(), customHeaders)
 	c := rpcCache.NewCacheProtobufClient(string(url), &http.Client{})
 	return &RemoteCache{ctx: ctx, client: c}
 }
 
-func (c RemoteCache) PutImage(imageID string, imageInfo types.ImageInfo) error {
-	_, err := c.client.PutImage(c.ctx, rpc.ConvertToRpcImageInfo(imageID, imageInfo))
+func (c RemoteCache) PutArtifact(imageID string, imageInfo types.ArtifactInfo) error {
+	_, err := c.client.PutArtifact(c.ctx, rpc.ConvertToRpcArtifactInfo(imageID, imageInfo))
 	if err != nil {
 		return xerrors.Errorf("unable to store cache on the server: %w", err)
 	}
 	return nil
 }
 
-func (c RemoteCache) PutLayer(diffID string, layerInfo types.LayerInfo) error {
-	_, err := c.client.PutLayer(c.ctx, rpc.ConvertToRpcLayerInfo(diffID, layerInfo))
+func (c RemoteCache) PutBlob(diffID string, layerInfo types.BlobInfo) error {
+	_, err := c.client.PutBlob(c.ctx, rpc.ConvertToRpcBlobInfo(diffID, layerInfo))
 	if err != nil {
 		return xerrors.Errorf("unable to store cache on the server: %w", err)
 	}
 	return nil
 }
 
-func (c RemoteCache) MissingLayers(imageID string, layerIDs []string) (bool, []string, error) {
-	layers, err := c.client.MissingLayers(c.ctx, rpc.ConvertToMissingLayersRequest(imageID, layerIDs))
+func (c RemoteCache) MissingBlobs(imageID string, layerIDs []string) (bool, []string, error) {
+	layers, err := c.client.MissingBlobs(c.ctx, rpc.ConvertToMissingBlobsRequest(imageID, layerIDs))
 	if err != nil {
 		return false, nil, xerrors.Errorf("unable to fetch missing layers: %w", err)
 	}
-	return layers.MissingImage, layers.MissingLayerIds, nil
+	return layers.MissingArtifact, layers.MissingBlobIds, nil
 }
