@@ -6,17 +6,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 
 	bundlerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/bundler"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/knqyf263/go-version"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
 type MockVulnSrc struct {
-	mock.Mock
-}
-
-type MockGhsaVulnSrc struct {
 	mock.Mock
 }
 
@@ -27,19 +22,6 @@ func (_m *MockVulnSrc) Get(pkgName string) ([]bundlerSrc.Advisory, error) {
 		return nil, ret.Error(1)
 	}
 	advisories, ok := ret0.([]bundlerSrc.Advisory)
-	if !ok {
-		return nil, ret.Error(1)
-	}
-	return advisories, ret.Error(1)
-}
-
-func (_m *MockGhsaVulnSrc) Get(pkgName string) ([]ghsa.Advisory, error) {
-	ret := _m.Called(pkgName)
-	ret0 := ret.Get(0)
-	if ret0 == nil {
-		return nil, ret.Error(1)
-	}
-	advisories, ok := ret0.([]ghsa.Advisory)
 	if !ok {
 		return nil, ret.Error(1)
 	}
@@ -64,22 +46,8 @@ func TestScanner_Detect(t *testing.T) {
 					PatchedVersions: []string{">= 1.9.26"},
 				},
 			}, nil)
-
-		mockGhsaVulnSrc := new(MockGhsaVulnSrc)
-		mockGhsaVulnSrc.On("Get", "ffi").Return(
-			[]bundlerSrc.Advisory{
-				{
-					VulnerabilityID: "NotDetected",
-					PatchedVersions: []string{">= 1.9.24"},
-				},
-				{
-					VulnerabilityID: "Detected",
-					PatchedVersions: []string{">= 1.9.26"},
-				},
-			}, nil)
 		s := Scanner{
-			vs:     mockVulnSrc,
-			ghsaVs: mockGhsaVulnSrc,
+			vs: mockVulnSrc,
 		}
 
 		versionStr := "1.9.25-x64-mingw32"

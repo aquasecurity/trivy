@@ -12,8 +12,6 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/composer"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	composerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/composer"
-	ghsaSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
-	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/knqyf263/go-version"
 )
@@ -33,30 +31,14 @@ func NewScanner() *Scanner {
 }
 
 func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
-	var vulns []types.DetectedVulnerability
-
-	ghsaScanner := ghsa.NewScanner(ghsaSrc.Composer)
-	vulns, err := ghsaScanner.Detect(pkgName, pkgVer)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to get ghsa advisories: %w", err)
-	}
-
-	uniqVulnIdMap := make(map[string]struct{})
-	for _, vuln := range vulns {
-		uniqVulnIdMap[vuln.VulnerabilityID] = struct{}{}
-	}
-
 	ref := fmt.Sprintf("composer://%s", pkgName)
 	advisories, err := s.vs.Get(ref)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
 	}
 
+	var vulns []types.DetectedVulnerability
 	for _, advisory := range advisories {
-		if _, ok := uniqVulnIdMap[advisory.VulnerabilityID]; ok {
-			continue
-		}
-
 		var affectedVersions []string
 		var patchedVersions []string
 		for _, branch := range advisory.Branches {
@@ -80,7 +62,6 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 		}
 		vulns = append(vulns, vuln)
 	}
-
 	return vulns, nil
 }
 

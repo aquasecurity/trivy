@@ -10,9 +10,7 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/npm"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/go-dep-parser/pkg/yarn"
-	ghsaSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/node"
-	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -35,37 +33,20 @@ func NewScanner(scannerType string) *Scanner {
 }
 
 func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
-	var vulns []types.DetectedVulnerability
-
-	ghsaScanner := ghsa.NewScanner(ghsaSrc.Npm)
-	vulns, err := ghsaScanner.Detect(pkgName, pkgVer)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to get ghsa advisories: %w", err)
-	}
-
-	uniqVulnIdMap := make(map[string]struct{})
-	for _, vuln := range vulns {
-		uniqVulnIdMap[vuln.VulnerabilityID] = struct{}{}
-	}
-
 	replacer := strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc", " <", ", <", " >", ", >")
 	advisories, err := s.vs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
 	}
 
+	var vulns []types.DetectedVulnerability
 	for _, advisory := range advisories {
-		if _, ok := uniqVulnIdMap[advisory.VulnerabilityID]; ok {
-			continue
-		}
-
 		// e.g. <= 2.15.0 || >= 3.0.0 <= 3.8.2
 		//  => {"<=2.15.0", ">= 3.0.0, <= 3.8.2"}
 		var vulnerableVersions []string
 		for _, version := range strings.Split(advisory.VulnerableVersions, " || ") {
 			version = strings.TrimSpace(version)
 			vulnerableVersions = append(vulnerableVersions, replacer.Replace(version))
-
 		}
 
 		if !utils.MatchVersions(pkgVer, vulnerableVersions) {
@@ -81,6 +62,7 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 		if utils.MatchVersions(pkgVer, patchedVersions) {
 			continue
 		}
+
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  advisory.VulnerabilityID,
 			PkgName:          pkgName,
@@ -89,7 +71,6 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 		}
 		vulns = append(vulns, vuln)
 	}
-
 	return vulns, nil
 }
 
