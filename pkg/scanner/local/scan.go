@@ -74,7 +74,7 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 	if err != nil {
 		switch err {
 		case analyzer.ErrUnknownOS:
-			log.Logger.Warn("This OS is not supported and vulnerabilities in OS packages are not detected.")
+			log.Logger.Warn("OS is not detected and vulnerabilities in OS packages are not detected.")
 		case analyzer.ErrNoPkgsDetected:
 			log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 			log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
