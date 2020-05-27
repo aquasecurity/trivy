@@ -349,6 +349,7 @@ func NewFilesystemCommand() *cli.Command {
 			&ignoreFileFlag,
 			&cacheDirFlag,
 			&timeoutFlag,
+			&noProgressFlag,
 		},
 	}
 }
@@ -375,6 +376,7 @@ func NewRepositoryCommand() *cli.Command {
 			&ignoreFileFlag,
 			&cacheDirFlag,
 			&timeoutFlag,
+			&noProgressFlag,
 		},
 	}
 }
