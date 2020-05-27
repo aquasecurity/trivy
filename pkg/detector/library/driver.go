@@ -1,6 +1,9 @@
 package library
 
 import (
+	"os"
+
+	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
 	"github.com/aquasecurity/trivy/pkg/detector/library/cargo"
@@ -13,6 +16,7 @@ import (
 )
 
 type Driver interface {
+	ParseLockfile(*os.File) ([]ptypes.Library, error)
 	Detect(string, *version.Version) ([]types.DetectedVulnerability, error)
 	Type() string
 }
@@ -30,7 +34,7 @@ func (d DriverFactory) NewDriver(filename string) Driver {
 	case "Gemfile.lock":
 		scanner = NewScanner(ghsa.NewScanner(ecosystem.Rubygems), bundler.NewScanner())
 	case "Cargo.lock":
-		scanner = NewScanner(cargo.NewScanner())
+		scanner = cargo.NewScanner()
 	case "composer.lock":
 		scanner = NewScanner(ghsa.NewScanner(ecosystem.Composer), composer.NewScanner())
 	case "package-lock.json":
