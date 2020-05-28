@@ -12,22 +12,22 @@ const (
 
 type Scanner struct {
 	drivers []driver
-	pos     driver
+	name    string
 }
 
 func NewScanner(drivers ...driver) *Scanner {
-	var pos driver
+	var name string
 	if len(drivers) > 0 {
-		pos = drivers[0]
+		name = drivers[0].Type()
 	}
-	return &Scanner{drivers: drivers, pos: pos}
+	return &Scanner{drivers: drivers, name: name}
 }
 
 func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
 	var detectedVulnerabilities []types.DetectedVulnerability
 	uniqVulnIdMap := make(map[string]struct{})
 	for _, d := range s.drivers {
-		s.pos = d
+		s.name = d.Type()
 		vulns, err := d.Detect(pkgName, pkgVer)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to detect error: %w", err)
@@ -45,8 +45,8 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 }
 
 func (s *Scanner) Type() string {
-	if s.pos == nil {
+	if s.name == "" {
 		return scannerType
 	}
-	return s.pos.Type()
+	return s.name
 }
