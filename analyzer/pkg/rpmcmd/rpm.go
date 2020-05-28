@@ -12,38 +12,30 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/extractor"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/utils"
 )
 
 func init() {
-	analyzer.RegisterPkgAnalyzer(&rpmCmdPkgAnalyzer{})
+	analyzer.RegisterAnalyzer(&rpmCmdPkgAnalyzer{})
+}
+
+var requiredFiles = []string{
+	"usr/lib/sysimage/rpm/Packages",
+	"var/lib/rpm/Packages",
 }
 
 type rpmCmdPkgAnalyzer struct{}
 
-func (a rpmCmdPkgAnalyzer) Analyze(fileMap extractor.FileMap) (map[types.FilePath][]types.Package, error) {
-	pkgMap := map[types.FilePath][]types.Package{}
-	detected := false
-	for _, filename := range a.RequiredFiles() {
-		file, ok := fileMap[filename]
-		if !ok {
-			continue
-		}
-		parsedPkgs, err := a.parsePkgInfo(file)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to parse the pkg info: %w", err)
-		}
-
-		pkgMap[types.FilePath(filename)] = parsedPkgs
-		detected = true
-	}
-	if !detected {
-		return nil, analyzer.ErrNoPkgsDetected
+func (a rpmCmdPkgAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
+	parsedPkgs, err := a.parsePkgInfo(content)
+	if err != nil {
+		return analyzer.AnalyzeReturn{}, xerrors.Errorf("failed to parse the pkg info: %w", err)
 	}
 
-	return pkgMap, nil
+	return analyzer.AnalyzeReturn{
+		Packages: parsedPkgs,
+	}, nil
 }
 
 func (a rpmCmdPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []types.Package, err error) {
@@ -158,9 +150,10 @@ func splitFileName(filename string) (name, ver, rel string, epoch int, arch stri
 	return name, ver, rel, epoch, arch
 }
 
-func (a rpmCmdPkgAnalyzer) RequiredFiles() []string {
-	return []string{
-		"usr/lib/sysimage/rpm/Packages",
-		"var/lib/rpm/Packages",
-	}
+func (a rpmCmdPkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	return utils.StringInSlice(filePath, requiredFiles)
+}
+
+func (a rpmCmdPkgAnalyzer) Name() string {
+	return "rpm"
 }

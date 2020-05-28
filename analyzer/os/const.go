@@ -50,4 +50,4 @@ const (
 	Alpine = "alpine"
 )
 
-var AnalyzeOSError = xerrors.New("no target os")
+var AnalyzeOSError = xerrors.New("unable to analyze OS information")

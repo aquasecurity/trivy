@@ -6,8 +6,6 @@ import (
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
-type FilePath string
-
 type OS struct {
 	Family string
 	Name   string

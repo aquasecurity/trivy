@@ -3,112 +3,71 @@ package redhatbase
 import (
 	"bufio"
 	"bytes"
+	"os"
 	"regexp"
 	"strings"
+
+	"github.com/aquasecurity/fanal/utils"
 
 	"github.com/aquasecurity/fanal/types"
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer/os"
+	aos "github.com/aquasecurity/fanal/analyzer/os"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/extractor"
 )
 
 func init() {
-	analyzer.RegisterOSAnalyzer(&redhatOSAnalyzer{})
+	analyzer.RegisterAnalyzer(&redhatOSAnalyzer{})
 }
-
-type redhatOSAnalyzer struct{}
 
 var redhatRe = regexp.MustCompile(`(.*) release (\d[\d\.]*)`)
 
-func (a redhatOSAnalyzer) Analyze(fileMap extractor.FileMap) (types.OS, error) {
-	if file, ok := fileMap["etc/centos-release"]; ok {
-		scanner := bufio.NewScanner(bytes.NewBuffer(file))
-		for scanner.Scan() {
-			line := scanner.Text()
-			result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
-			if len(result) != 3 {
-				return types.OS{}, xerrors.New("cent: Invalid centos-release")
-			}
+type redhatOSAnalyzer struct{}
 
-			switch strings.ToLower(result[1]) {
-			case "centos", "centos linux":
-				return types.OS{Family: os.CentOS, Name: result[2]}, nil
-			}
-		}
+func (a redhatOSAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
+	foundOS, err := a.parseRelease(content)
+	if err != nil {
+		return analyzer.AnalyzeReturn{}, err
 	}
+	return analyzer.AnalyzeReturn{
+		OS: foundOS,
+	}, nil
 
-	if file, ok := fileMap["etc/oracle-release"]; ok {
-		scanner := bufio.NewScanner(bytes.NewBuffer(file))
-		for scanner.Scan() {
-			line := scanner.Text()
-			result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
-			if len(result) != 3 {
-				return types.OS{}, xerrors.New("oracle: Invalid oracle-release")
-			}
-			return types.OS{Family: os.Oracle, Name: result[2]}, nil
-		}
-	}
-
-	if file, ok := fileMap["usr/lib/fedora-release"]; ok {
-		return parseFedoraRelease(file)
-	}
-
-	if file, ok := fileMap["etc/fedora-release"]; ok {
-		return parseFedoraRelease(file)
-	}
-
-	if file, ok := fileMap["etc/redhat-release"]; ok {
-		scanner := bufio.NewScanner(bytes.NewBuffer(file))
-		for scanner.Scan() {
-			line := scanner.Text()
-			result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
-			if len(result) != 3 {
-				return types.OS{}, xerrors.New("redhat: Invalid redhat-release")
-			}
-
-			switch strings.ToLower(result[1]) {
-			case "centos", "centos linux":
-				return types.OS{Family: os.CentOS, Name: result[2]}, nil
-			case "oracle", "oracle linux", "oracle linux server":
-				return types.OS{Family: os.Oracle, Name: result[2]}, nil
-			case "fedora", "fedora linux":
-				return types.OS{Family: os.Fedora, Name: result[2]}, nil
-			default:
-				return types.OS{Family: os.RedHat, Name: result[2]}, nil
-			}
-		}
-	}
-
-	return types.OS{}, xerrors.Errorf("redhatbase: %w", os.AnalyzeOSError)
 }
 
-func parseFedoraRelease(file []byte) (types.OS, error) {
-	scanner := bufio.NewScanner(bytes.NewBuffer(file))
+func (a redhatOSAnalyzer) parseRelease(content []byte) (types.OS, error) {
+	scanner := bufio.NewScanner(bytes.NewBuffer(content))
 	for scanner.Scan() {
 		line := scanner.Text()
 		result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
 		if len(result) != 3 {
-			return types.OS{}, xerrors.New("cent: Invalid fedora-release")
+			return types.OS{}, xerrors.New("redhat: invalid redhat-release")
 		}
 
 		switch strings.ToLower(result[1]) {
+		case "centos", "centos linux":
+			return types.OS{Family: aos.CentOS, Name: result[2]}, nil
+		case "oracle", "oracle linux", "oracle linux server":
+			return types.OS{Family: aos.Oracle, Name: result[2]}, nil
 		case "fedora", "fedora linux":
-			return types.OS{Family: os.Fedora, Name: result[2]}, nil
+			return types.OS{Family: aos.Fedora, Name: result[2]}, nil
+		default:
+			return types.OS{Family: aos.RedHat, Name: result[2]}, nil
 		}
 	}
-	return types.OS{}, xerrors.Errorf("redhatbase: %w", os.AnalyzeOSError)
+	return types.OS{}, xerrors.Errorf("redhatbase: %w", aos.AnalyzeOSError)
 }
 
-func (a redhatOSAnalyzer) RequiredFiles() []string {
-	return []string{
-		"etc/redhat-release",
-		"etc/oracle-release",
-		"etc/fedora-release",
-		"usr/lib/fedora-release",
-		"etc/centos-release",
-	}
+func (a redhatOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	return utils.StringInSlice(filePath, a.requiredFiles())
+}
+
+func (a redhatOSAnalyzer) requiredFiles() []string {
+	return []string{"etc/redhat-release"}
+}
+
+func (a redhatOSAnalyzer) Name() string {
+	return aos.RedHat
 }

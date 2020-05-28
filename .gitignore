@@ -14,7 +14,7 @@
 main
 
 vendor
-integration/testdata/fixtures
+test/integration/testdata/fixtures
 cmd/fanal/fanal
 *.tar
 *.gz

@@ -15,13 +15,13 @@ lint: devel-deps
 cover: devel-deps
 	goveralls
 
-integration/testdata/fixtures/*.tar.gz:
-	git clone https://github.com/aquasecurity/trivy-test-images.git integration/testdata/fixtures
+test/integration/testdata/fixtures/*.tar.gz:
+	git clone https://github.com/aquasecurity/trivy-test-images.git test/integration/testdata/fixtures
 
 .PHONY: test-integration
-test-integration: integration/testdata/fixtures/*.tar.gz
-	go test -v -tags="integration" ./integration/...
+test-integration: test/integration/testdata/fixtures/*.tar.gz
+	go test -v -tags="integration" ./test/integration/...
 
 .PHONY: test-performance
-test-performance: integration/testdata/fixtures/*.tar.gz
-	go test -v -benchtime=10x -run=^$$ -tags="performance" -bench=. ./integration/...
+test-performance: test/integration/testdata/fixtures/*.tar.gz
+	go test -v -benchtime=10x -run=^$$ -tags="performance" -bench=. ./test/integration/...
