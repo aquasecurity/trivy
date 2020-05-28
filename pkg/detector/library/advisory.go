@@ -6,29 +6,23 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const (
-	scannerType = "unknown"
-)
-
-type Scanner struct {
-	drivers []driver
-	name    string
+type Driver struct {
+	advisories []advisory
 }
 
-func NewScanner(drivers ...driver) *Scanner {
-	var name string
-	if len(drivers) > 0 {
-		name = drivers[0].Type()
-	}
-	return &Scanner{drivers: drivers, name: name}
+type advisory interface {
+	DetectVulnerabilities(string, *version.Version) ([]types.DetectedVulnerability, error)
 }
 
-func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+func NewDriver(advisories ...advisory) *Driver {
+	return &Driver{advisories: advisories}
+}
+
+func (s *Driver) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
 	var detectedVulnerabilities []types.DetectedVulnerability
 	uniqVulnIdMap := make(map[string]struct{})
-	for _, d := range s.drivers {
-		s.name = d.Type()
-		vulns, err := d.Detect(pkgName, pkgVer)
+	for _, d := range s.advisories {
+		vulns, err := d.DetectVulnerabilities(pkgName, pkgVer)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to detect error: %w", err)
 		}
@@ -42,11 +36,4 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 	}
 
 	return detectedVulnerabilities, nil
-}
-
-func (s *Scanner) Type() string {
-	if s.name == "" {
-		return scannerType
-	}
-	return s.name
 }

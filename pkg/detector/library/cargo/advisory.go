@@ -11,24 +11,20 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const (
-	scannerType = "cargo"
-)
-
-type Scanner struct {
+type Advisory struct {
 	vs cargoSrc.VulnSrc
 }
 
-func NewScanner() *Scanner {
-	return &Scanner{
+func NewAdvisory() *Advisory {
+	return &Advisory{
 		vs: cargoSrc.NewVulnSrc(),
 	}
 }
 
-func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
 	advisories, err := s.vs.Get(pkgName)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+		return nil, xerrors.Errorf("failed to get cargo advisories: %w", err)
 	}
 
 	var vulns []types.DetectedVulnerability
@@ -46,8 +42,4 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 		vulns = append(vulns, vuln)
 	}
 	return vulns, nil
-}
-
-func (s *Scanner) Type() string {
-	return scannerType
 }

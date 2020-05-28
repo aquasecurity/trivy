@@ -11,28 +11,21 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-const (
-	ScannerTypeNpm  = "npm"
-	ScannerTypeYarn = "yarn"
-)
-
-type Scanner struct {
-	scannerType string
-	vs          node.VulnSrc
+type Advisory struct {
+	vs node.VulnSrc
 }
 
-func NewScanner(scannerType string) *Scanner {
-	return &Scanner{
-		scannerType: scannerType,
-		vs:          node.NewVulnSrc(),
+func NewAdvisory() *Advisory {
+	return &Advisory{
+		vs: node.NewVulnSrc(),
 	}
 }
 
-func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
 	replacer := strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc", " <", ", <", " >", ", >")
 	advisories, err := s.vs.Get(pkgName)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+		return nil, xerrors.Errorf("failed to get node advisories: %w", err)
 	}
 
 	var vulns []types.DetectedVulnerability
@@ -68,8 +61,4 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 		vulns = append(vulns, vuln)
 	}
 	return vulns, nil
-}
-
-func (s *Scanner) Type() string {
-	return s.scannerType
 }

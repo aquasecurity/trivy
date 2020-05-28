@@ -13,25 +13,21 @@ import (
 	"github.com/knqyf263/go-version"
 )
 
-const (
-	scannerType = "composer"
-)
-
-type Scanner struct {
+type Advisory struct {
 	vs composerSrc.VulnSrc
 }
 
-func NewScanner() *Scanner {
-	return &Scanner{
+func NewAdvisory() *Advisory {
+	return &Advisory{
 		vs: composerSrc.NewVulnSrc(),
 	}
 }
 
-func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
 	ref := fmt.Sprintf("composer://%s", pkgName)
 	advisories, err := s.vs.Get(ref)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+		return nil, xerrors.Errorf("failed to get composer advisories: %w", err)
 	}
 
 	var vulns []types.DetectedVulnerability
@@ -60,8 +56,4 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 		vulns = append(vulns, vuln)
 	}
 	return vulns, nil
-}
-
-func (s *Scanner) Type() string {
-	return scannerType
 }

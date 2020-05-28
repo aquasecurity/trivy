@@ -11,32 +11,28 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-const (
-	scannerType = "ghsa"
-)
-
 type VulnSrc interface {
 	Get(pkgName string) ([]ghsa.Advisory, error)
 }
 
-type Scanner struct {
+type Advisory struct {
 	vs VulnSrc
 }
 
-func NewScanner(ecosystem ghsa.Ecosystem) *Scanner {
-	return &Scanner{
+func NewAdvisory(ecosystem ghsa.Ecosystem) *Advisory {
+	return &Advisory{
 		vs: ghsa.NewVulnSrc(ecosystem),
 	}
 }
 
-func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
-	ghsas, err := s.vs.Get(pkgName)
+func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+	advisories, err := s.vs.Get(pkgName)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+		return nil, xerrors.Errorf("failed to get ghsa advisories: %w", err)
 	}
 
 	var vulns []types.DetectedVulnerability
-	for _, advisory := range ghsas {
+	for _, advisory := range advisories {
 		if !utils.MatchVersions(pkgVer, advisory.VulnerableVersions) {
 			continue
 		}
@@ -51,8 +47,4 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 	}
 
 	return vulns, nil
-}
-
-func (s *Scanner) Type() string {
-	return scannerType
 }
