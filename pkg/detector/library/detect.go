@@ -50,7 +50,7 @@ func (d Detector) Detect(_, filePath string, _ time.Time, pkgs []ftypes.LibraryI
 	return vulns, nil
 }
 
-func detect(driver Driver, libs []ftypes.LibraryInfo) ([]types.DetectedVulnerability, error) {
+func detect(driver driver, libs []ftypes.LibraryInfo) ([]types.DetectedVulnerability, error) {
 	log.Logger.Infof("Detecting %s vulnerabilities...", driver.Type())
 	var vulnerabilities []types.DetectedVulnerability
 	for _, lib := range libs {

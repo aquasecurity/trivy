@@ -2,15 +2,12 @@ package composer
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/composer"
-	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	composerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/composer"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/knqyf263/go-version"
@@ -65,13 +62,6 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 	return vulns, nil
 }
 
-func (s *Scanner) ParseLockfile(f *os.File) ([]ptypes.Library, error) {
-	libs, err := composer.Parse(f)
-	if err != nil {
-		return nil, xerrors.Errorf("invalid composer.lock format: %w", err)
-	}
-	return libs, nil
-}
 func (s *Scanner) Type() string {
 	return scannerType
 }

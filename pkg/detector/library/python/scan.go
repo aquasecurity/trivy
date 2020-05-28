@@ -1,7 +1,6 @@
 package python
 
 import (
-	"os"
 	"strings"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/python"
@@ -9,9 +8,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/pipenv"
-	"github.com/aquasecurity/go-dep-parser/pkg/poetry"
-	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/knqyf263/go-version"
 )
@@ -66,29 +62,6 @@ func createFixedVersions(specs []string) string {
 		}
 	}
 	return strings.Join(fixedVersions, ", ")
-}
-
-func (s *Scanner) ParseLockfile(f *os.File) ([]ptypes.Library, error) {
-	if s.Type() == ScannerTypePipenv {
-		return s.parsePipenv(f)
-	}
-	return s.parsePoetry(f)
-}
-
-func (s *Scanner) parsePipenv(f *os.File) ([]ptypes.Library, error) {
-	libs, err := pipenv.Parse(f)
-	if err != nil {
-		return nil, xerrors.Errorf("invalid Pipfile.lock format: %w", err)
-	}
-	return libs, nil
-}
-
-func (s *Scanner) parsePoetry(f *os.File) ([]ptypes.Library, error) {
-	libs, err := poetry.Parse(f)
-	if err != nil {
-		return nil, xerrors.Errorf("invalid poetry.lock format: %w", err)
-	}
-	return libs, nil
 }
 
 func (s *Scanner) Type() string {

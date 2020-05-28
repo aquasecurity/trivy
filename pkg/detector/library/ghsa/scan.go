@@ -1,13 +1,11 @@
 package ghsa
 
 import (
-	"os"
 	"strings"
 
 	"github.com/knqyf263/go-version"
 	"golang.org/x/xerrors"
 
-	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -57,8 +55,4 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 
 func (s *Scanner) Type() string {
 	return scannerType
-}
-
-func (s *Scanner) ParseLockfile(f *os.File) ([]ptypes.Library, error) {
-	return nil, xerrors.New("unsupport parse lockfile")
 }
