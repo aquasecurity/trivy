@@ -1,26 +1,21 @@
 package analyzer
 
 import (
-	"context"
-	"encoding/json"
-	"sort"
+	"os"
+	"strings"
+	"sync"
 
-	v1 "github.com/google/go-containerregistry/pkg/v1"
+	aos "github.com/aquasecurity/fanal/analyzer/os"
+
+	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/extractor"
-	"github.com/aquasecurity/fanal/extractor/docker"
 	"github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 var (
-	osAnalyzers      []OSAnalyzer
-	pkgAnalyzers     []PkgAnalyzer
-	libAnalyzers     []LibraryAnalyzer
-	commandAnalyzers []CommandAnalyzer
-	additionalFiles  []string
+	analyzers       []analyzer
+	configAnalyzers []configAnalyzer
 
 	// ErrUnknownOS occurs when unknown OS is analyzed.
 	ErrUnknownOS = xerrors.New("unknown OS")
@@ -30,308 +25,136 @@ var (
 	ErrNoPkgsDetected = xerrors.New("no packages detected")
 )
 
-type OSAnalyzer interface {
-	Analyze(extractor.FileMap) (types.OS, error)
-	RequiredFiles() []string
+type AnalyzeReturn struct {
+	OS        types.OS
+	Packages  []types.Package
+	Libraries []godeptypes.Library
 }
 
-type PkgAnalyzer interface {
-	Analyze(extractor.FileMap) (map[types.FilePath][]types.Package, error)
-	RequiredFiles() []string
-}
-
-type CommandAnalyzer interface {
-	Analyze(types.OS, extractor.FileMap) ([]types.Package, error)
-	RequiredFiles() []string
-}
-
-type LibraryAnalyzer interface {
-	Name() string
-	Analyze(extractor.FileMap) (map[types.FilePath][]godeptypes.Library, error)
-	RequiredFiles() []string
-}
-
-func RegisterOSAnalyzer(analyzer OSAnalyzer) {
-	osAnalyzers = append(osAnalyzers, analyzer)
-}
-
-func RegisterPkgAnalyzer(analyzer PkgAnalyzer) {
-	pkgAnalyzers = append(pkgAnalyzers, analyzer)
-}
-
-func RegisterCommandAnalyzer(analyzer CommandAnalyzer) {
-	commandAnalyzers = append(commandAnalyzers, analyzer)
-}
-
-func RegisterLibraryAnalyzer(analyzer LibraryAnalyzer) {
-	libAnalyzers = append(libAnalyzers, analyzer)
-}
-
-func AddRequiredFilenames(filenames []string) {
-	additionalFiles = append(additionalFiles, filenames...)
-}
-
-func RequiredFilenames() []string {
-	var filenames []string
-	filenames = append(filenames, additionalFiles...)
-	for _, analyzer := range osAnalyzers {
-		filenames = append(filenames, analyzer.RequiredFiles()...)
-	}
-	for _, analyzer := range pkgAnalyzers {
-		filenames = append(filenames, analyzer.RequiredFiles()...)
-	}
-	for _, analyzer := range libAnalyzers {
-		filenames = append(filenames, analyzer.RequiredFiles()...)
-	}
-	return filenames
-}
-
-type Config struct {
-	Extractor extractor.Extractor
-	Cache     cache.ArtifactCache
-}
-
-func New(ext extractor.Extractor, c cache.ArtifactCache) Config {
-	return Config{Extractor: ext, Cache: c}
-}
-
-func (ac Config) Analyze(ctx context.Context) (types.ArtifactReference, error) {
-	imageID, err := ac.Extractor.ImageID()
-	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("unable to get the image ID: %w", err)
+func (r AnalyzeReturn) ConvertToResult(analyzerType, filePath string) *AnalysisResult {
+	result := new(AnalysisResult)
+	if r.OS != (types.OS{}) {
+		result.OS = &r.OS
 	}
 
-	diffIDs, err := ac.Extractor.LayerIDs()
-	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("unable to get layer IDs: %w", err)
+	if len(r.Packages) > 0 {
+		result.PackageInfos = []types.PackageInfo{{
+			FilePath: filePath,
+			Packages: r.Packages,
+		}}
 	}
 
-	missingImage, missingLayers, err := ac.Cache.MissingBlobs(imageID, diffIDs)
-	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("unable to get missing layers: %w", err)
-	}
-
-	if err := ac.analyze(ctx, imageID, missingImage, missingLayers); err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("analyze error: %w", err)
-	}
-
-	return types.ArtifactReference{
-		Name:    ac.Extractor.ImageName(),
-		ID:      imageID,
-		BlobIDs: diffIDs,
-	}, nil
-}
-
-func (ac Config) analyze(ctx context.Context, imageID string, missingImage bool, diffIDs []string) error {
-	done := make(chan struct{})
-	errCh := make(chan error)
-
-	var osFound types.OS
-	for _, d := range diffIDs {
-		go func(diffID string) {
-			layerInfo, err := ac.analyzeLayer(diffID)
-			if err != nil {
-				errCh <- xerrors.Errorf("failed to analyze layer: %s : %w", diffID, err)
-				return
-			}
-			if err = ac.Cache.PutBlob(diffID, layerInfo); err != nil {
-				errCh <- xerrors.Errorf("failed to store layer: %s in cache: %w", diffID, err)
-				return
-			}
-			if layerInfo.OS != nil {
-				osFound = *layerInfo.OS
-			}
-			done <- struct{}{}
-		}(d)
-	}
-
-	for range diffIDs {
-		select {
-		case <-done:
-		case err := <-errCh:
-			return err
-		case <-ctx.Done():
-			return xerrors.Errorf("timeout: %w", ctx.Err())
-		}
-	}
-
-	if missingImage {
-		if err := ac.analyzeConfig(imageID, osFound); err != nil {
-			return xerrors.Errorf("unable to analyze config: %w", err)
-		}
-	}
-
-	return nil
-}
-
-func (ac Config) analyzeLayer(diffID string) (types.BlobInfo, error) {
-	layerDigest, files, opqDirs, whFiles, err := ac.Extractor.ExtractLayerFiles(diffID, RequiredFilenames())
-	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("unable to extract files from layer %s: %w", diffID, err)
-	}
-
-	os := GetOS(files)
-	pkgs, err := GetPackages(files)
-	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("failed to get packages: %w", err)
-	}
-	apps, err := GetLibraries(files)
-	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("failed to get libraries: %w", err)
-	}
-
-	layerInfo := types.BlobInfo{
-		Digest:        layerDigest,
-		DiffID:        diffID,
-		SchemaVersion: types.BlobJSONSchemaVersion,
-		OS:            os,
-		PackageInfos:  pkgs,
-		Applications:  apps,
-		OpaqueDirs:    opqDirs,
-		WhiteoutFiles: whFiles,
-	}
-	return layerInfo, nil
-}
-
-func (ac Config) analyzeConfig(imageID string, osFound types.OS) error {
-	configBlob, err := ac.Extractor.ConfigBlob()
-	if err != nil {
-		return xerrors.Errorf("unable to get config blob: %w", err)
-	}
-
-	// special file for config
-	files := extractor.FileMap{
-		"/config": configBlob,
-	}
-	pkgs, _ := GetPackagesFromCommands(osFound, files)
-
-	var s1 v1.ConfigFile
-	if err := json.Unmarshal(configBlob, &s1); err != nil {
-		return xerrors.Errorf("json marshal error: %w", err)
-	}
-
-	info := types.ArtifactInfo{
-		SchemaVersion:   types.ArtifactJSONSchemaVersion,
-		Architecture:    s1.Architecture,
-		Created:         s1.Created.Time,
-		DockerVersion:   s1.DockerVersion,
-		OS:              s1.OS,
-		HistoryPackages: pkgs,
-	}
-
-	if err := ac.Cache.PutArtifact(imageID, info); err != nil {
-		return xerrors.Errorf("failed to put image info into the cache: %w", err)
-	}
-
-	return nil
-}
-
-type Applier struct {
-	cache cache.LocalArtifactCache
-}
-
-func NewApplier(c cache.LocalArtifactCache) Applier {
-	return Applier{cache: c}
-}
-
-func (a Applier) ApplyLayers(imageID string, diffIDs []string) (types.ArtifactDetail, error) {
-	var layers []types.BlobInfo
-	for _, diffID := range diffIDs {
-		layer, _ := a.cache.GetBlob(diffID)
-		if layer.SchemaVersion == 0 {
-			return types.ArtifactDetail{}, xerrors.Errorf("layer cache missing: %s", diffID)
-		}
-		layers = append(layers, layer)
-	}
-
-	mergedLayer := docker.ApplyLayers(layers)
-	if mergedLayer.OS == nil {
-		return mergedLayer, ErrUnknownOS // send back package and apps info regardless
-	} else if mergedLayer.Packages == nil {
-		return mergedLayer, ErrNoPkgsDetected // send back package and apps info regardless
-	}
-
-	imageInfo, _ := a.cache.GetArtifact(imageID)
-	mergedLayer.HistoryPackages = imageInfo.HistoryPackages
-
-	return mergedLayer, nil
-}
-
-func GetOS(filesMap extractor.FileMap) *types.OS {
-	for _, analyzer := range osAnalyzers {
-		os, err := analyzer.Analyze(filesMap)
-		if err != nil {
-			continue
-		}
-		return &os
-	}
-	return nil
-}
-
-func GetPackages(filesMap extractor.FileMap) ([]types.PackageInfo, error) {
-	var results []types.PackageInfo
-	for _, analyzer := range pkgAnalyzers {
-		pkgMap, err := analyzer.Analyze(filesMap)
-
-		// Differentiate between a package manager not being found and another error
-		if err != nil && err == ErrNoPkgsDetected {
-			continue
-		} else if err != nil { // TODO: Create a broken package index tar.gz file
-			return nil, xerrors.Errorf("failed to get packages: %w", err)
-		}
-
-		for filePath, pkgs := range pkgMap {
-			results = append(results, types.PackageInfo{
-				FilePath: string(filePath),
-				Packages: pkgs,
+	if len(r.Libraries) > 0 {
+		var libs []types.LibraryInfo
+		for _, lib := range r.Libraries {
+			libs = append(libs, types.LibraryInfo{
+				Library: lib,
 			})
 		}
-		// for testability
-		sort.Slice(results, func(i, j int) bool {
-			return results[i].FilePath < results[j].FilePath
-		})
-		return results, nil
+		result.Applications = []types.Application{{
+			Type:      analyzerType,
+			FilePath:  filePath,
+			Libraries: libs,
+		}}
 	}
-	return nil, nil
+	return result
 }
 
-func GetPackagesFromCommands(targetOS types.OS, filesMap extractor.FileMap) ([]types.Package, error) {
-	for _, analyzer := range commandAnalyzers {
-		pkgs, err := analyzer.Analyze(targetOS, filesMap)
+type analyzer interface {
+	Name() string
+	Analyze(content []byte) (AnalyzeReturn, error)
+	Required(filePath string, info os.FileInfo) bool
+}
+
+func RegisterAnalyzer(analyzer analyzer) {
+	analyzers = append(analyzers, analyzer)
+}
+
+type configAnalyzer interface {
+	Analyze(targetOS types.OS, content []byte) ([]types.Package, error)
+	Required(osFound types.OS) bool
+}
+
+func RegisterConfigAnalyzer(analyzer configAnalyzer) {
+	configAnalyzers = append(configAnalyzers, analyzer)
+}
+
+type Opener func() ([]byte, error)
+
+type AnalysisResult struct {
+	m            sync.Mutex
+	OS           *types.OS
+	PackageInfos []types.PackageInfo
+	Applications []types.Application
+}
+
+func (r *AnalysisResult) isEmpty() bool {
+	return r.OS == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0
+}
+
+func (r *AnalysisResult) Merge(new *AnalysisResult) {
+	if new == nil || new.isEmpty() {
+		return
+	}
+
+	// this struct is accessed by multiple goroutines
+	r.m.Lock()
+	defer r.m.Unlock()
+
+	if new.OS != nil {
+		// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
+		// In that case, OS must be overwritten with the content of /etc/oracle-release.
+		// There is the same problem between Debian and Ubuntu.
+		if r.OS == nil || r.OS.Family == aos.RedHat || r.OS.Family == aos.Debian {
+			r.OS = new.OS
+		}
+	}
+
+	if len(new.PackageInfos) > 0 {
+		r.PackageInfos = append(r.PackageInfos, new.PackageInfos...)
+	}
+
+	if len(new.Applications) > 0 {
+		r.Applications = append(r.Applications, new.Applications...)
+	}
+}
+
+func AnalyzeFile(filePath string, info os.FileInfo, opener Opener) (*AnalysisResult, error) {
+	result := new(AnalysisResult)
+	for _, analyzer := range analyzers {
+		// filepath extracted from tar file doesn't have the prefix "/"
+		if !analyzer.Required(strings.TrimLeft(filePath, "/"), info) {
+			continue
+		}
+		b, err := opener()
+		if err != nil {
+			return nil, xerrors.Errorf("unable to open a file (%s): %w", filePath, err)
+		}
+
+		ret, err := analyzer.Analyze(b)
 		if err != nil {
 			continue
 		}
-		return pkgs, nil
+		result.Merge(ret.ConvertToResult(analyzer.Name(), filePath))
 	}
-	return nil, nil
+	return result, nil
+}
+
+func AnalyzeConfig(targetOS types.OS, configBlob []byte) []types.Package {
+	for _, analyzer := range configAnalyzers {
+		if !analyzer.Required(targetOS) {
+			continue
+		}
+
+		pkgs, err := analyzer.Analyze(targetOS, configBlob)
+		if err != nil {
+			continue
+		}
+		return pkgs
+	}
+	return nil
 }
 
 func CheckPackage(pkg *types.Package) bool {
 	return pkg.Name != "" && pkg.Version != ""
-}
-
-func GetLibraries(filesMap extractor.FileMap) ([]types.Application, error) {
-	var results []types.Application
-	for _, analyzer := range libAnalyzers {
-		libMap, err := analyzer.Analyze(filesMap)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get libraries: %w", err)
-		}
-
-		var lis []types.LibraryInfo
-		for filePath, libs := range libMap {
-			for _, lib := range libs {
-				lis = append(lis, types.LibraryInfo{
-					Library: lib,
-				})
-			}
-
-			results = append(results, types.Application{
-				Type:      analyzer.Name(),
-				FilePath:  string(filePath),
-				Libraries: lis,
-			})
-		}
-	}
-	return results, nil
 }

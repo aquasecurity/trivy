@@ -1,48 +1,39 @@
 package composer
 
 import (
-	"bytes"
+	"os"
 	"path/filepath"
+
+	"github.com/aquasecurity/go-dep-parser/pkg/composer"
 
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/library"
-	"github.com/aquasecurity/fanal/extractor"
-	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/utils"
-	"github.com/aquasecurity/go-dep-parser/pkg/composer"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 func init() {
-	analyzer.RegisterLibraryAnalyzer(&composerLibraryAnalyzer{})
+	analyzer.RegisterAnalyzer(&composerLibraryAnalyzer{})
 }
+
+var (
+	requiredFiles = []string{"composer.lock"}
+)
 
 type composerLibraryAnalyzer struct{}
 
-func (a composerLibraryAnalyzer) Analyze(fileMap extractor.FileMap) (map[types.FilePath][]godeptypes.Library, error) {
-	libMap := map[types.FilePath][]godeptypes.Library{}
-	requiredFiles := a.RequiredFiles()
-
-	for filename, content := range fileMap {
-		basename := filepath.Base(filename)
-		if !utils.StringInSlice(basename, requiredFiles) {
-			continue
-		}
-
-		r := bytes.NewBuffer(content)
-		libs, err := composer.Parse(r)
-		if err != nil {
-			return nil, xerrors.Errorf("error with %s: %w", filename, err)
-		}
-		libMap[types.FilePath(filename)] = libs
+func (a composerLibraryAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
+	ret, err := library.Analyze(content, composer.Parse)
+	if err != nil {
+		return analyzer.AnalyzeReturn{}, xerrors.Errorf("error with composer.lock: %w", err)
 	}
-	return libMap, nil
+	return ret, nil
 }
 
-func (a composerLibraryAnalyzer) RequiredFiles() []string {
-	return []string{"composer.lock"}
+func (a composerLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	fileName := filepath.Base(filePath)
+	return utils.StringInSlice(fileName, requiredFiles)
 }
 
 func (a composerLibraryAnalyzer) Name() string {

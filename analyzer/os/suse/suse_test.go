@@ -1,71 +1,66 @@
 package suse
 
 import (
-	"reflect"
+	"io/ioutil"
 	"testing"
 
-	"golang.org/x/xerrors"
+	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/fanal/types"
 )
 
-func TestAnalyze(t *testing.T) {
-	var tests = map[string]struct {
-		path    string
-		os      types.OS
-		wantErr error
+func Test_suseOSAnalyzer_Analyze(t *testing.T) {
+	tests := []struct {
+		name      string
+		inputFile string
+		want      analyzer.AnalyzeReturn
+		wantErr   string
 	}{
-		"OpenSUSELeap15.0": {
-			path: "./testdata/opensuse_leap_150",
-			os:   types.OS{Family: os.OpenSUSELeap, Name: "15.0"},
+		{
+			name:      "happy path with openSUSE Leap 15.0",
+			inputFile: "testdata/opensuse_leap_150/os-release",
+			want: analyzer.AnalyzeReturn{
+				OS: types.OS{Family: os.OpenSUSELeap, Name: "15.0"},
+			},
 		},
-		"OpenSUSELeap15.1": {
-			path: "./testdata/opensuse_leap_151",
-			os:   types.OS{Family: os.OpenSUSELeap, Name: "15.1"},
+		{
+			name:      "happy path with openSUSE Leap Tumbleweed",
+			inputFile: "testdata/opensuse_leap_tumbleweed/os-release",
+			want: analyzer.AnalyzeReturn{
+				OS: types.OS{Family: os.OpenSUSETumbleweed, Name: "20191204"},
+			},
 		},
-		"OpenSUSELeap42.3": {
-			path: "./testdata/opensuse_leap_423",
-			os:   types.OS{Family: os.OpenSUSELeap, Name: "42.3"},
+		{
+			name:      "happy path with SLES 15.1",
+			inputFile: "testdata/sles_151/os-release",
+			want: analyzer.AnalyzeReturn{
+				OS: types.OS{Family: os.SLES, Name: "15.1"},
+			},
 		},
-		"SLES12": {
-			path: "./testdata/sles_12",
-			os:   types.OS{Family: os.SLES, Name: "12"},
-		},
-		"SLES15": {
-			path: "./testdata/sles_15",
-			os:   types.OS{Family: os.SLES, Name: "15"},
-		},
-		"SLES15.1": {
-			path: "./testdata/sles_151",
-			os:   types.OS{Family: os.SLES, Name: "15.1"},
-		},
-		"openSUSE Tumbleweed": {
-			path: "./testdata/opensuse_leap_tumbleweed",
-			os:   types.OS{Family: os.OpenSUSETumbleweed, Name: "20191204"},
-		},
-		"Invalid": {
-			path:    "./testdata/not_suse",
-			wantErr: os.AnalyzeOSError,
+		{
+			name:      "sad path",
+			inputFile: "testdata/not_suse/os-release",
+			wantErr:   "suse: unable to analyze OS information",
 		},
 	}
-	a := suseOSAnalyzer{}
-	for testname, v := range tests {
-		fileMap, err := os.GetFileMap(v.path)
-		if err != nil {
-			t.Errorf("%s : catch the error : %v", testname, err)
-		}
-		osInfo, err := a.Analyze(fileMap)
-		if v.wantErr != nil {
-			if err == nil {
-				t.Errorf("%s : expected error but no error", testname)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := suseOSAnalyzer{}
+			b, err := ioutil.ReadFile(tt.inputFile)
+			require.NoError(t, err)
+
+			got, err := a.Analyze(b)
+			if tt.wantErr != "" {
+				require.NotNil(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
+			} else {
+				require.NoError(t, err)
 			}
-			if !xerrors.Is(err, v.wantErr) {
-				t.Errorf("[%s]\nexpected : %v\nactual : %v", testname, v.wantErr, err)
-			}
-		}
-		if !reflect.DeepEqual(v.os, osInfo) {
-			t.Errorf("[%s]\nexpected : %v\nactual : %v", testname, v.os, osInfo)
-		}
+			assert.Equal(t, tt.want, got)
+		})
 	}
 }

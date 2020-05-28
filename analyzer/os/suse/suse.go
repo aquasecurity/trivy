@@ -3,63 +3,64 @@ package suse
 import (
 	"bufio"
 	"bytes"
+	"os"
 	"strings"
-
-	"github.com/aquasecurity/fanal/types"
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer/os"
-
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/extractor"
+	aos "github.com/aquasecurity/fanal/analyzer/os"
+	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/fanal/utils"
 )
 
 func init() {
-	analyzer.RegisterOSAnalyzer(&suseOSAnalyzer{})
+	analyzer.RegisterAnalyzer(&suseOSAnalyzer{})
+}
+
+var requiredFiles = []string{
+	"usr/lib/os-release",
+	"etc/os-release",
 }
 
 type suseOSAnalyzer struct{}
 
-func (a suseOSAnalyzer) Analyze(fileMap extractor.FileMap) (types.OS, error) {
-	for _, filename := range a.RequiredFiles() {
-		file, ok := fileMap[filename]
-		if !ok {
+func (a suseOSAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
+	suseName := ""
+	scanner := bufio.NewScanner(bytes.NewBuffer(content))
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.HasPrefix(line, "NAME=\"openSUSE") {
+			if strings.Contains(line, "Leap") {
+				suseName = aos.OpenSUSELeap
+			} else if strings.Contains(line, "Tumbleweed") {
+				suseName = aos.OpenSUSETumbleweed
+			} else {
+				suseName = aos.OpenSUSE
+			}
 			continue
 		}
-		suseName := ""
-		scanner := bufio.NewScanner(bytes.NewBuffer(file))
-		for scanner.Scan() {
-			line := scanner.Text()
-			if strings.HasPrefix(line, "NAME=\"openSUSE") {
-				if strings.Contains(line, "Leap") {
-					suseName = os.OpenSUSELeap
-				} else if strings.Contains(line, "Tumbleweed") {
-					suseName = os.OpenSUSETumbleweed
-				} else {
-					suseName = os.OpenSUSE
-				}
-				continue
-			}
-			if strings.HasPrefix(line, "NAME=\"SLES") {
-				suseName = os.SLES
-				continue
-			}
+		if strings.HasPrefix(line, "NAME=\"SLES") {
+			suseName = aos.SLES
+			continue
+		}
 
-			if suseName != "" && strings.HasPrefix(line, "VERSION_ID=") {
-				return types.OS{
+		if suseName != "" && strings.HasPrefix(line, "VERSION_ID=") {
+			return analyzer.AnalyzeReturn{
+				OS: types.OS{
 					Family: suseName,
 					Name:   strings.TrimSpace(line[12 : len(line)-1]),
-				}, nil
-			}
+				},
+			}, nil
 		}
 	}
-	return types.OS{}, xerrors.Errorf("suse: %w", os.AnalyzeOSError)
+	return analyzer.AnalyzeReturn{}, xerrors.Errorf("suse: %w", aos.AnalyzeOSError)
 }
 
-func (a suseOSAnalyzer) RequiredFiles() []string {
-	return []string{
-		"usr/lib/os-release",
-		"etc/os-release",
-	}
+func (a suseOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	return utils.StringInSlice(filePath, requiredFiles)
+}
+
+func (a suseOSAnalyzer) Name() string {
+	return "suse"
 }

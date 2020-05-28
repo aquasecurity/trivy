@@ -4,37 +4,29 @@ import (
 	"bufio"
 	"bytes"
 	"log"
+	"os"
 
 	debVersion "github.com/knqyf263/go-deb-version"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/extractor"
+	fos "github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/fanal/utils"
 )
 
 func init() {
-	analyzer.RegisterPkgAnalyzer(&alpinePkgAnalyzer{})
+	analyzer.RegisterAnalyzer(&alpinePkgAnalyzer{})
 }
+
+var requiredFiles = []string{"lib/apk/db/installed"}
 
 type alpinePkgAnalyzer struct{}
 
-func (a alpinePkgAnalyzer) Analyze(fileMap extractor.FileMap) (map[types.FilePath][]types.Package, error) {
-	pkgMap := map[types.FilePath][]types.Package{}
-	detected := false
-	for _, filename := range a.RequiredFiles() {
-		file, ok := fileMap[filename]
-		if !ok {
-			continue
-		}
-		scanner := bufio.NewScanner(bytes.NewBuffer(file))
-		parsedPkgs := a.parseApkInfo(scanner)
-		pkgMap[types.FilePath(filename)] = parsedPkgs
-		detected = true
-	}
-	if !detected {
-		return nil, analyzer.ErrNoPkgsDetected
-	}
-	return pkgMap, nil
+func (a alpinePkgAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
+	scanner := bufio.NewScanner(bytes.NewBuffer(content))
+	parsedPkgs := a.parseApkInfo(scanner)
+
+	return analyzer.AnalyzeReturn{Packages: parsedPkgs}, nil
 }
 
 func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []types.Package) {
@@ -92,6 +84,10 @@ func (a alpinePkgAnalyzer) uniquePkgs(pkgs []types.Package) (uniqPkgs []types.Pa
 	return uniqPkgs
 }
 
-func (a alpinePkgAnalyzer) RequiredFiles() []string {
-	return []string{"lib/apk/db/installed"}
+func (a alpinePkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	return utils.StringInSlice(filePath, requiredFiles)
+}
+
+func (a alpinePkgAnalyzer) Name() string {
+	return fos.Alpine
 }

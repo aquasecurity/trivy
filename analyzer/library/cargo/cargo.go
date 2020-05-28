@@ -1,47 +1,35 @@
 package cargo
 
 import (
-	"bytes"
+	"os"
 	"path/filepath"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/library"
-	"github.com/aquasecurity/fanal/extractor"
-	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/utils"
 	"github.com/aquasecurity/go-dep-parser/pkg/cargo"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"golang.org/x/xerrors"
 )
 
 func init() {
-	analyzer.RegisterLibraryAnalyzer(&cargoLibraryAnalyzer{})
+	analyzer.RegisterAnalyzer(&cargoLibraryAnalyzer{})
 }
+
+var requiredFiles = []string{"Cargo.lock"}
 
 type cargoLibraryAnalyzer struct{}
 
-func (a cargoLibraryAnalyzer) Analyze(fileMap extractor.FileMap) (map[types.FilePath][]godeptypes.Library, error) {
-	libMap := map[types.FilePath][]godeptypes.Library{}
-	requiredFiles := a.RequiredFiles()
-
-	for filename, content := range fileMap {
-		basename := filepath.Base(filename)
-		if !utils.StringInSlice(basename, requiredFiles) {
-			continue
-		}
-
-		r := bytes.NewBuffer(content)
-		libs, err := cargo.Parse(r)
-		if err != nil {
-			return nil, xerrors.Errorf("error with %s: %w", filename, err)
-		}
-		libMap[types.FilePath(filename)] = libs
+func (a cargoLibraryAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
+	ret, err := library.Analyze(content, cargo.Parse)
+	if err != nil {
+		return analyzer.AnalyzeReturn{}, xerrors.Errorf("error with Cargo.lock: %w", err)
 	}
-	return libMap, nil
+	return ret, nil
 }
 
-func (a cargoLibraryAnalyzer) RequiredFiles() []string {
-	return []string{"Cargo.lock"}
+func (a cargoLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	fileName := filepath.Base(filePath)
+	return utils.StringInSlice(fileName, requiredFiles)
 }
 
 func (a cargoLibraryAnalyzer) Name() string {

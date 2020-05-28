@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"log"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -15,7 +16,6 @@ import (
 	mapset "github.com/deckarep/golang-set"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/extractor"
 
 	debVersion "github.com/knqyf263/go-deb-version"
 )
@@ -26,28 +26,22 @@ var (
 )
 
 func init() {
-	analyzer.RegisterPkgAnalyzer(&debianPkgAnalyzer{})
+	analyzer.RegisterAnalyzer(&debianPkgAnalyzer{})
 }
+
+var (
+	requiredFiles = []string{"var/lib/dpkg/status"}
+	requiredDirs  = []string{"var/lib/dpkg/status.d/"}
+)
 
 type debianPkgAnalyzer struct{}
 
-func (a debianPkgAnalyzer) Analyze(fileMap extractor.FileMap) (map[types.FilePath][]types.Package, error) {
-	pkgMap := map[types.FilePath][]types.Package{}
-	detected := false
-	for filename, targetBytes := range fileMap {
-		dir := filepath.Dir(filename) + "/"
-		if !utils.StringInSlice(filename, a.requiredFiles()) && !utils.StringInSlice(dir, a.requiredDirs()) {
-			continue
-		}
-		scanner := bufio.NewScanner(bytes.NewBuffer(targetBytes))
-		parsedPkgs := a.parseDpkginfo(scanner)
-		pkgMap[types.FilePath(filename)] = parsedPkgs
-		detected = true
-	}
-	if !detected {
-		return nil, analyzer.ErrNoPkgsDetected
-	}
-	return pkgMap, nil
+func (a debianPkgAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
+	scanner := bufio.NewScanner(bytes.NewBuffer(content))
+	parsedPkgs := a.parseDpkginfo(scanner)
+	return analyzer.AnalyzeReturn{
+		Packages: parsedPkgs,
+	}, nil
 }
 
 func (a debianPkgAnalyzer) parseDpkginfo(scanner *bufio.Scanner) (pkgs []types.Package) {
@@ -150,14 +144,18 @@ func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Pack
 	return pkg
 }
 
-func (a debianPkgAnalyzer) RequiredFiles() []string {
-	return append(a.requiredFiles(), a.requiredDirs()...)
+func (a debianPkgAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool {
+	if utils.StringInSlice(filePath, requiredFiles) {
+		return true
+	}
+
+	dir := filepath.Dir(filePath) + "/"
+	if utils.StringInSlice(dir, requiredDirs) {
+		return true
+	}
+	return false
 }
 
-func (a debianPkgAnalyzer) requiredFiles() []string {
-	return []string{"var/lib/dpkg/status"}
-}
-
-func (a debianPkgAnalyzer) requiredDirs() []string {
-	return []string{"var/lib/dpkg/status.d/"}
+func (a debianPkgAnalyzer) Name() string {
+	return "dpkg"
 }

@@ -1,8 +1,0 @@
-NAME="VMware Photon"
-VERSION="1.0"
-ID=photon
-VERSION_ID=1.0
-PRETTY_NAME="VMware Photon/Linux"
-ANSI_COLOR="1;34"
-HOME_URL="https://vmware.github.io/photon/"
-BUG_REPORT_URL="https://github.com/vmware/photon/issues"

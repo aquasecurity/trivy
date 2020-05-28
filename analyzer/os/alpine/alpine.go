@@ -3,38 +3,39 @@ package alpine
 import (
 	"bufio"
 	"bytes"
-
-	"github.com/aquasecurity/fanal/types"
+	"os"
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer/os"
-
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/extractor"
+	aos "github.com/aquasecurity/fanal/analyzer/os"
+	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/fanal/utils"
 )
 
 func init() {
-	analyzer.RegisterOSAnalyzer(&alpineOSAnalyzer{})
+	analyzer.RegisterAnalyzer(&alpineOSAnalyzer{})
 }
+
+var requiredFiles = []string{"etc/alpine-release"}
 
 type alpineOSAnalyzer struct{}
 
-func (a alpineOSAnalyzer) Analyze(fileMap extractor.FileMap) (types.OS, error) {
-	for _, filename := range a.RequiredFiles() {
-		file, ok := fileMap[filename]
-		if !ok {
-			continue
-		}
-		scanner := bufio.NewScanner(bytes.NewBuffer(file))
-		for scanner.Scan() {
-			line := scanner.Text()
-			return types.OS{Family: os.Alpine, Name: line}, nil
-		}
+func (a alpineOSAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
+	scanner := bufio.NewScanner(bytes.NewBuffer(content))
+	for scanner.Scan() {
+		line := scanner.Text()
+		return analyzer.AnalyzeReturn{
+			OS: types.OS{Family: aos.Alpine, Name: line},
+		}, nil
 	}
-	return types.OS{}, xerrors.Errorf("alpine: %w", os.AnalyzeOSError)
+	return analyzer.AnalyzeReturn{}, xerrors.Errorf("alpine: %w", aos.AnalyzeOSError)
 }
 
-func (a alpineOSAnalyzer) RequiredFiles() []string {
-	return []string{"etc/alpine-release"}
+func (a alpineOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	return utils.StringInSlice(filePath, requiredFiles)
+}
+
+func (a alpineOSAnalyzer) Name() string {
+	return aos.Alpine
 }

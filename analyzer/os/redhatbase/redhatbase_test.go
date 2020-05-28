@@ -1,63 +1,50 @@
 package redhatbase
 
 import (
-	"reflect"
+	"io/ioutil"
 	"testing"
 
-	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/fanal/analyzer/os"
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/types"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestAnalyze(t *testing.T) {
-	var tests = map[string]struct {
-		path    string
-		os      types.OS
-		wantErr error
+func Test_oracleOSAnalyzer_Analyze(t *testing.T) {
+	tests := []struct {
+		name      string
+		inputFile string
+		want      analyzer.AnalyzeReturn
+		wantErr   string
 	}{
-		"CentOS": {
-			path: "./testdata/centos",
-			os:   types.OS{Family: os.CentOS, Name: "7.6.1810"},
+		{
+			name:      "happy path",
+			inputFile: "testdata/oracle_7/oracle-release",
+			want: analyzer.AnalyzeReturn{
+				OS: types.OS{Family: "oracle", Name: "7.6"},
+			},
 		},
-		"Fedora29": {
-			path: "./testdata/fedora_29",
-			os:   types.OS{Family: os.Fedora, Name: "29"},
-		},
-		"Fedora31": {
-			path: "./testdata/fedora_31",
-			os:   types.OS{Family: os.Fedora, Name: "31"},
-		},
-		"Oracle7": {
-			path: "./testdata/oracle_7",
-			os:   types.OS{Family: os.Oracle, Name: "7.6"},
-		},
-		"Redhat6": {
-			path: "./testdata/redhat_6",
-			os:   types.OS{Family: os.RedHat, Name: "6.2"},
-		},
-		"Invalid": {
-			path:    "./testdata/not_redhatbase",
-			wantErr: os.AnalyzeOSError,
+		{
+			name:      "sad path",
+			inputFile: "testdata/not_redhatbase/empty",
+			wantErr:   "oracle: unable to analyze OS information",
 		},
 	}
-	a := redhatOSAnalyzer{}
-	for testname, v := range tests {
-		fileMap, err := os.GetFileMap(v.path)
-		if err != nil {
-			t.Errorf("%s : catch the error : %v", testname, err)
-		}
-		osInfo, err := a.Analyze(fileMap)
-		if v.wantErr != nil {
-			if err == nil {
-				t.Errorf("%s : expected error but no error", testname)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := oracleOSAnalyzer{}
+			b, err := ioutil.ReadFile(tt.inputFile)
+			require.NoError(t, err)
+
+			got, err := a.Analyze(b)
+			if tt.wantErr != "" {
+				require.NotNil(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
+			} else {
+				require.NoError(t, err)
 			}
-			if !xerrors.Is(err, v.wantErr) {
-				t.Errorf("[%s]\nexpected : %v\nactual : %v", testname, v.wantErr, err)
-			}
-		}
-		if !reflect.DeepEqual(v.os, osInfo) {
-			t.Errorf("[%s]\nexpected : %v\nactual : %v", testname, v.os, osInfo)
-		}
+			assert.Equal(t, tt.want, got)
+		})
 	}
 }
