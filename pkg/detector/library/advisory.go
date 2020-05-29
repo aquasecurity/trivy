@@ -14,7 +14,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-type driver struct {
+type Driver struct {
 	pkgManager string
 	advisories []advisory
 }
@@ -23,45 +23,45 @@ type advisory interface {
 	DetectVulnerabilities(string, *version.Version) ([]types.DetectedVulnerability, error)
 }
 
-func NewDriver(p string, advisories ...advisory) driver {
-	return driver{pkgManager: p, advisories: advisories}
+func NewDriver(p string, advisories ...advisory) Driver {
+	return Driver{pkgManager: p, advisories: advisories}
 }
 
-func NewBundlerDriver() driver {
+func NewBundlerDriver() Driver {
 	return NewDriver(library.Bundler, ghsa.NewAdvisory(ecosystem.Rubygems), bundler.NewAdvisory())
 }
 
-func NewComposerDriver() driver {
+func NewComposerDriver() Driver {
 	return NewDriver(library.Composer, ghsa.NewAdvisory(ecosystem.Composer), composer.NewAdvisory())
 }
 
-func NewCargoDriver() driver {
+func NewCargoDriver() Driver {
 	return NewDriver(library.Cargo, cargo.NewAdvisory())
 }
 
-func NewNpmDriver() driver {
+func NewNpmDriver() Driver {
 	return NewDriver(library.Npm, ghsa.NewAdvisory(ecosystem.Npm), node.NewAdvisory())
 }
 
-func NewYarnDriver() driver {
+func NewYarnDriver() Driver {
 	return NewDriver(library.Yarn, ghsa.NewAdvisory(ecosystem.Npm), node.NewAdvisory())
 }
 
-func NewPipenvDriver() driver {
+func NewPipenvDriver() Driver {
 	return NewDriver(library.Pipenv, ghsa.NewAdvisory(ecosystem.Pip), python.NewAdvisory())
 }
 
-func NewPoetryDriver() driver {
+func NewPoetryDriver() Driver {
 	return NewDriver(library.Poetry, ghsa.NewAdvisory(ecosystem.Pip), python.NewAdvisory())
 }
 
-func (d *driver) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+func (driver *Driver) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
 	var detectedVulnerabilities []types.DetectedVulnerability
 	uniqVulnIdMap := make(map[string]struct{})
-	for _, d := range d.advisories {
+	for _, d := range driver.advisories {
 		vulns, err := d.DetectVulnerabilities(pkgName, pkgVer)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to detect error: %w", err)
+			return nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 		}
 		for _, vuln := range vulns {
 			if _, ok := uniqVulnIdMap[vuln.VulnerabilityID]; ok {
@@ -75,6 +75,6 @@ func (d *driver) Detect(pkgName string, pkgVer *version.Version) ([]types.Detect
 	return detectedVulnerabilities, nil
 }
 
-func (d *driver) Type() string {
+func (d *Driver) Type() string {
 	return d.pkgManager
 }

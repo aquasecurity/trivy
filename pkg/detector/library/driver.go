@@ -1,14 +1,14 @@
 package library
 
 type Factory interface {
-	NewDriver(filename string) *driver
+	NewDriver(filename string) *Driver
 }
 
 type DriverFactory struct{}
 
-func (d DriverFactory) NewDriver(filename string) *driver {
+func (d DriverFactory) NewDriver(filename string) *Driver {
 	// TODO: use DI
-	var driver driver
+	var driver Driver
 	switch filename {
 	case "Gemfile.lock":
 		driver = NewBundlerDriver()
