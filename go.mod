@@ -3,15 +3,16 @@ module github.com/aquasecurity/trivy
 go 1.13
 
 require (
-	github.com/aquasecurity/fanal v0.0.0-20200413182139-9213b79eba1a
+	github.com/aquasecurity/fanal v0.0.0-20200505074551-9239a362deca
 	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
-	github.com/aquasecurity/trivy-db v0.0.0-20200408191531-0a25a37ec16f
+	github.com/aquasecurity/trivy-db v0.0.0-20200514134639-7e57e3e02470
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.3
 	github.com/docker/docker v1.4.2-0.20190924003213-a8608b5b67c7
-	github.com/genuinetools/reg v0.16.0
+	github.com/docker/go-connections v0.4.0
 	github.com/golang/protobuf v1.3.3
+	github.com/google/go-containerregistry v0.0.0-20200331213917-3d03ed9b1ca2
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/wire v0.3.0
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
@@ -22,8 +23,9 @@ require (
 	github.com/olekukonko/tablewriter v0.0.2-0.20190607075207-195002e6e56a
 	github.com/spf13/afero v1.2.2
 	github.com/stretchr/testify v1.4.0
+	github.com/testcontainers/testcontainers-go v0.3.1
 	github.com/twitchtv/twirp v5.10.1+incompatible
-	github.com/urfave/cli v1.22.1
+	github.com/urfave/cli/v2 v2.2.0
 	go.uber.org/atomic v1.5.1 // indirect
 	go.uber.org/multierr v1.4.0 // indirect
 	go.uber.org/zap v1.13.0

@@ -1,0 +1,136 @@
+---
+repo: aquasecurity/trivy
+labels:
+
+# kind
+- name: kind/api-change
+  color: e11d21
+  description: Categorizes issue or PR as related to adding, removing, or otherwise changing an API
+- name: kind/bug
+  color: e11d21
+  from: bug
+  description: Categorizes issue or PR as related to a bug.
+- name: kind/cleanup
+  color: c7def8
+  description: Categorizes issue or PR as related to cleaning up code, process, or technical debt.
+- name: kind/deprecation
+  color: e11d21
+  from: enhancement
+  description: Categorizes issue or PR as related to a feature/enhancement marked for deprecation.
+- name: kind/documentation
+  color: c7def8
+  description: Categorizes issue or PR as related to documentation.
+- name: kind/feature
+  color: c7def8
+  description: Categorizes issue or PR as related to a new feature.
+- name: kind/testing
+  color: c7def8
+  description: Categorizes issue or PR as related to a unit/integration test.
+- name: kind/regression
+  color: e11d21
+  description: Categorizes issue or PR as related to a regression from a prior release.
+- name: kind/security
+  color: f4dddc
+  description: security issues
+
+# lifecycle
+- name: lifecycle/frozen
+  color: d3e2f0
+  description: Indicates that an issue or PR should not be auto-closed due to staleness.
+- name: lifecycle/stale
+  color: "795548"
+  description: Denotes an issue or PR has remained open with no activity and will be auto-closed.
+
+# priority
+- name: priority/critical-urgent
+  color: e11d21
+  description: Highest priority. Must be actively worked on as someone's top priority right now.
+- name: priority/important-soon
+  color: eb6420
+  description: Must be staffed and worked on either currently, or very soon, ideally in time for the next release.
+- name: priority/important-longterm
+  color: eb6420
+  description: Important over the long term, but may not be staffed and/or may need multiple releases to complete.
+- name: priority/backlog
+  color: fbca04
+  description: Higher priority than priority/awaiting-more-evidence.
+- name: priority/awaiting-more-evidence
+  color: fef2c0
+  description: Lowest priority. Possibly useful, but not yet enough support to actually get it done.
+
+# triage
+- name: triage/discuss
+  color: faff84
+  description: Items for discussion
+- name: triage/duplicate
+  color: d455d0
+  from: duplicate
+  description: Indicates an issue is a duplicate of other open issue.
+- name: triage/needs-information
+  color: d455d0
+  description: Indicates an issue needs more information in order to work on it.
+- name: triage/not-reproducible
+  color: d455d0
+  description: Indicates an issue can not be reproduced as described.
+- name: triage/obsolete
+  color: faff84
+  description: Bugs that no longer occur in the latest stable release
+- name: triage/support
+  color: d455d0
+  from: question
+  description: Indicates an issue that is a support question.
+- name: triage/unresolved
+  color: d455d0
+  description: Indicates an issue that can not or will not be resolved.
+
+# component
+- name: co/alpine
+  color: d9ead3
+  description: Issues relating to Alpine image
+- name: co/amazon
+  color: d9ead3
+  description: Issues relating to Amazon Linux image
+- name: co/debian
+  color: d9ead3
+  description: Issues relating to Debian image
+- name: co/oracle
+  color: d9ead3
+  description: Issues relating to Oracle Linux image
+- name: co/photon
+  color: d9ead3
+  description: Issues relating to Photon OS image
+- name: co/redhat
+  color: d9ead3
+  description: Issues relating to RHEL/CentOS image
+- name: co/suse
+  color: d9ead3
+  description: Issues relating to openSUSE/SUSE Linux Enterprise image
+- name: co/ubuntu
+  color: d9ead3
+  description: Issues relating to Ubuntu image
+- name: co/bundler
+  color: d9ead3
+  description: Issues relating to Bundler
+- name: co/cargo
+  color: d9ead3
+  description: Issues relating to Cargo
+- name: co/npm
+  color: d9ead3
+  description: Issues relating to Npm
+- name: co/yarn
+  color: d9ead3
+  description: Issues relating to Yarn
+- name: co/pipenv
+  color: d9ead3
+  description: Issues relating to Pipenv
+- name: co/poetry
+  color: d9ead3
+  description: Issues relating to Poetry
+
+# others
+- name: good first issue
+  color: 7057ff
+  description: Denotes an issue ready for a new contributor, according to the "help wanted" guidelines.
+- name: help wanted
+  color: 006b75
+  description: Denotes an issue that needs help from a contributor. Must meet "help wanted" guidelines.

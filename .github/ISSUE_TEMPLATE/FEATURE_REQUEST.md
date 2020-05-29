@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-labels: enhancement
+labels: kind/feature
 about: I have a suggestion (and might want to implement myself)!
 ---
 
