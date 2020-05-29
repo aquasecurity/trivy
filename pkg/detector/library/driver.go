@@ -1,41 +1,31 @@
 package library
 
-import (
-	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
-	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
-	"github.com/aquasecurity/trivy/pkg/detector/library/cargo"
-	"github.com/aquasecurity/trivy/pkg/detector/library/composer"
-	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
-	"github.com/aquasecurity/trivy/pkg/detector/library/node"
-	"github.com/aquasecurity/trivy/pkg/detector/library/python"
-)
-
 type Factory interface {
-	NewDriver(filename string) driver
+	NewDriver(filename string) *driver
 }
 
 type DriverFactory struct{}
 
-func (d DriverFactory) NewDriver(filename string) driver {
+func (d DriverFactory) NewDriver(filename string) *driver {
 	// TODO: use DI
 	var driver driver
 	switch filename {
 	case "Gemfile.lock":
-		driver = NewDriver(Bundler, ghsa.NewAdvisory(ecosystem.Rubygems), bundler.NewAdvisory())
+		driver = NewBundlerDriver()
 	case "Cargo.lock":
-		driver = NewDriver(Cargo, cargo.NewAdvisory())
+		driver = NewCargoDriver()
 	case "composer.lock":
-		driver = NewDriver(Composer, ghsa.NewAdvisory(ecosystem.Composer), composer.NewAdvisory())
+		driver = NewComposerDriver()
 	case "package-lock.json":
-		driver = NewDriver(Npm, ghsa.NewAdvisory(ecosystem.Npm), node.NewAdvisory())
+		driver = NewNpmDriver()
 	case "yarn.lock":
-		driver = NewDriver(Yarn, ghsa.NewAdvisory(ecosystem.Npm), node.NewAdvisory())
+		driver = NewYarnDriver()
 	case "Pipfile.lock":
-		driver = NewDriver(Pipenv, ghsa.NewAdvisory(ecosystem.Pip), python.NewAdvisory())
+		driver = NewPipenvDriver()
 	case "poetry.lock":
-		driver = NewDriver(Poetry, ghsa.NewAdvisory(ecosystem.Pip), python.NewAdvisory())
+		driver = NewPoetryDriver()
 	default:
-		driver = NewDriver(Unknown)
+		return nil
 	}
-	return driver
+	return &driver
 }
