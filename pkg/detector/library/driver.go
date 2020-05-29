@@ -16,20 +16,24 @@ type Factory interface {
 
 type DriverFactory struct{}
 
-func (d DriverFactory) NewDriver(filename string) *Driver {
+func (d DriverFactory) NewDriver(filename string) Driver {
 	// TODO: use DI
-	var driver *Driver
+	var driver Driver
 	switch filename {
 	case "Gemfile.lock":
-		driver = NewDriver(ghsa.NewAdvisory(ecosystem.Rubygems), bundler.NewAdvisory())
+		driver = NewDriver(Bundler, ghsa.NewAdvisory(ecosystem.Rubygems), bundler.NewAdvisory())
 	case "Cargo.lock":
-		driver = NewDriver(cargo.NewAdvisory())
+		driver = NewDriver(Cargo, cargo.NewAdvisory())
 	case "composer.lock":
-		driver = NewDriver(ghsa.NewAdvisory(ecosystem.Composer), composer.NewAdvisory())
-	case "package-lock.json", "yarn.lock":
-		driver = NewDriver(ghsa.NewAdvisory(ecosystem.Npm), node.NewAdvisory())
-	case "Pipfile.lock", "poetry.lock":
-		driver = NewDriver(ghsa.NewAdvisory(ecosystem.Pip), python.NewAdvisory())
+		driver = NewDriver(Composer, ghsa.NewAdvisory(ecosystem.Composer), composer.NewAdvisory())
+	case "package-lock.json":
+		driver = NewDriver(Npm, ghsa.NewAdvisory(ecosystem.Npm), node.NewAdvisory())
+	case "yarn.lock":
+		driver = NewDriver(Yarn, ghsa.NewAdvisory(ecosystem.Npm), node.NewAdvisory())
+	case "Pipfile.lock":
+		driver = NewDriver(Pipenv, ghsa.NewAdvisory(ecosystem.Pip), python.NewAdvisory())
+	case "poetry.lock":
+		driver = NewDriver(Poetry, ghsa.NewAdvisory(ecosystem.Pip), python.NewAdvisory())
 	default:
 		return nil
 	}

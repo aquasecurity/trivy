@@ -6,7 +6,13 @@ import (
 	"golang.org/x/xerrors"
 )
 
-type Driver struct {
+type Driver interface {
+	Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error)
+	Type() string
+}
+
+type driver struct {
+	pkgManager PackageManager
 	advisories []advisory
 }
 
@@ -14,14 +20,14 @@ type advisory interface {
 	DetectVulnerabilities(string, *version.Version) ([]types.DetectedVulnerability, error)
 }
 
-func NewDriver(advisories ...advisory) *Driver {
-	return &Driver{advisories: advisories}
+func NewDriver(p PackageManager, advisories ...advisory) Driver {
+	return &driver{pkgManager: p, advisories: advisories}
 }
 
-func (s *Driver) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+func (d *driver) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
 	var detectedVulnerabilities []types.DetectedVulnerability
 	uniqVulnIdMap := make(map[string]struct{})
-	for _, d := range s.advisories {
+	for _, d := range d.advisories {
 		vulns, err := d.DetectVulnerabilities(pkgName, pkgVer)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to detect error: %w", err)
@@ -36,4 +42,8 @@ func (s *Driver) Detect(pkgName string, pkgVer *version.Version) ([]types.Detect
 	}
 
 	return detectedVulnerabilities, nil
+}
+
+func (d *driver) Type() string {
+	return d.pkgManager.String()
 }
