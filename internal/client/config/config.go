@@ -36,11 +36,10 @@ func New(c *cli.Context) (Config, error) {
 		ArtifactConfig: config.NewArtifactConfig(c),
 		ImageConfig:    config.NewImageConfig(c),
 		ReportConfig:   config.NewReportConfig(c),
-
-		RemoteAddr:    c.String("remote"),
-		token:         c.String("token"),
-		tokenHeader:   c.String("token-header"),
-		customHeaders: c.StringSlice("custom-headers"),
+		RemoteAddr:     c.String("remote"),
+		token:          c.String("token"),
+		tokenHeader:    c.String("token-header"),
+		customHeaders:  c.StringSlice("custom-headers"),
 	}, nil
 }
 

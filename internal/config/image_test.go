@@ -4,12 +4,13 @@ import (
 	"flag"
 	"testing"
 
-	"github.com/aquasecurity/trivy/internal/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
+
+	"github.com/aquasecurity/trivy/internal/config"
 )
 
 func TestImageConfig_Init(t *testing.T) {

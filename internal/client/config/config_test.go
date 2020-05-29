@@ -70,6 +70,40 @@ func TestConfig_Init(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with good custom headers",
+			args: []string{"--custom-headers", "foo:bar", "alpine:3.11"},
+			want: Config{
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:     os.Stdout,
+					VulnType:   []string{"os", "library"},
+				},
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "alpine:3.11",
+				},
+				customHeaders: []string{"foo:bar"},
+				CustomHeaders: http.Header{
+					"Foo": []string{"bar"},
+				},
+			},
+		},
+		{
+			name: "happy path with bad custom headers",
+			args: []string{"--custom-headers", "foobaz", "alpine:3.11"},
+			want: Config{
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:     os.Stdout,
+					VulnType:   []string{"os", "library"},
+				},
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "alpine:3.11",
+				},
+				customHeaders: []string{"foobaz"},
+				CustomHeaders: http.Header{},
+			},
+		},
+		{
 			name: "happy path with an unknown severity",
 			args: []string{"--severity", "CRITICAL,INVALID", "centos:7"},
 			logs: []string{
@@ -119,6 +153,25 @@ func TestConfig_Init(t *testing.T) {
 					VulnType:   []string{"os", "library"},
 					Template:   "@contrib/gitlab.tpl",
 					Format:     "json",
+				},
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
+				},
+				CustomHeaders: http.Header{},
+			},
+		},
+		{
+			name: "invalid option combination: --format template without --template",
+			args: []string{"--format", "template", "--severity", "MEDIUM", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			logs: []string{
+				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
+			},
+			want: Config{
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityMedium},
+					Output:     os.Stdout,
+					VulnType:   []string{"os", "library"},
+					Format:     "template",
 				},
 				ArtifactConfig: config.ArtifactConfig{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
@@ -200,6 +253,7 @@ func TestConfig_Init(t *testing.T) {
 			set.String("format", "", "")
 			set.String("token", "", "")
 			set.String("token-header", "", "")
+			set.Var(&cli.StringSlice{}, "custom-headers", "")
 
 			ctx := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
