@@ -11,14 +11,14 @@ import (
 )
 
 type Factory interface {
-	NewDriver(filename string) Driver
+	NewDriver(filename string) driver
 }
 
 type DriverFactory struct{}
 
-func (d DriverFactory) NewDriver(filename string) Driver {
+func (d DriverFactory) NewDriver(filename string) driver {
 	// TODO: use DI
-	var driver Driver
+	var driver driver
 	switch filename {
 	case "Gemfile.lock":
 		driver = NewDriver(Bundler, ghsa.NewAdvisory(ecosystem.Rubygems), bundler.NewAdvisory())
@@ -35,7 +35,7 @@ func (d DriverFactory) NewDriver(filename string) Driver {
 	case "poetry.lock":
 		driver = NewDriver(Poetry, ghsa.NewAdvisory(ecosystem.Pip), python.NewAdvisory())
 	default:
-		return nil
+		driver = NewDriver(Unknown)
 	}
 	return driver
 }

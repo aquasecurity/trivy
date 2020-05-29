@@ -6,11 +6,6 @@ import (
 	"golang.org/x/xerrors"
 )
 
-type Driver interface {
-	Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error)
-	Type() string
-}
-
 type driver struct {
 	pkgManager PackageManager
 	advisories []advisory
@@ -20,8 +15,8 @@ type advisory interface {
 	DetectVulnerabilities(string, *version.Version) ([]types.DetectedVulnerability, error)
 }
 
-func NewDriver(p PackageManager, advisories ...advisory) Driver {
-	return &driver{pkgManager: p, advisories: advisories}
+func NewDriver(p PackageManager, advisories ...advisory) driver {
+	return driver{pkgManager: p, advisories: advisories}
 }
 
 func (d *driver) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
@@ -44,6 +39,6 @@ func (d *driver) Detect(pkgName string, pkgVer *version.Version) ([]types.Detect
 	return detectedVulnerabilities, nil
 }
 
-func (d *driver) Type() string {
-	return d.pkgManager.String()
+func (d *driver) Type() PackageManager {
+	return d.pkgManager
 }
