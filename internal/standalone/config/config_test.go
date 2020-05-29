@@ -4,271 +4,180 @@ import (
 	"flag"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/internal/config"
 )
 
-func TestNew(t *testing.T) {
-	tests := []struct {
-		name string
-		args []string
-		want Config
-	}{
-		{
-			name: "happy path",
-			args: []string{"-quiet", "--no-progress", "--reset", "--skip-update"},
-			want: Config{
-				Quiet:      true,
-				NoProgress: true,
-				Reset:      true,
-				SkipUpdate: true,
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			app := &cli.App{}
-			set := flag.NewFlagSet("test", 0)
-			set.Bool("quiet", false, "")
-			set.Bool("no-progress", false, "")
-			set.Bool("reset", false, "")
-			set.Bool("skip-update", false, "")
-
-			c := cli.NewContext(app, set, nil)
-			_ = set.Parse(tt.args)
-
-			tt.want.context = c
-
-			config, err := New(c)
-			assert.NoError(t, err, tt.name)
-
-			assert.Equal(t, tt.want.Quiet, config.Quiet, tt.name)
-			assert.Equal(t, tt.want.NoProgress, config.NoProgress, tt.name)
-			assert.Equal(t, tt.want.Reset, config.Reset, tt.name)
-			assert.Equal(t, tt.want.SkipUpdate, config.SkipUpdate, tt.name)
-
-		})
-	}
-}
-
 func TestConfig_Init(t *testing.T) {
-	type fields struct {
-		context        *cli.Context
-		Quiet          bool
-		NoProgress     bool
-		Debug          bool
-		CacheDir       string
-		Reset          bool
-		DownloadDBOnly bool
-		SkipUpdate     bool
-		ClearCache     bool
-		Input          string
-		output         string
-		Format         string
-		Template       string
-		Timeout        time.Duration
-		vulnType       string
-		Light          bool
-		severities     string
-		IgnoreFile     string
-		IgnoreUnfixed  bool
-		ExitCode       int
-		ImageName      string
-		VulnType       []string
-		Output         *os.File
-		Severities     []dbTypes.Severity
-		AppVersion     string
-		onlyUpdate     string
-		refresh        bool
-		autoRefresh    bool
-	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    []string
-		logs    []string
-		want    Config
-		wantErr string
+		name         string
+		globalConfig config.GlobalConfig
+		dbConfig     config.DBConfig
+		imageConfig  config.ImageConfig
+		reportConfig config.ReportConfig
+		args         []string
+		logs         []string
+		want         Config
+		wantErr      string
 	}{
 		{
 			name: "happy path",
-			fields: fields{
-				severities: "CRITICAL",
-				vulnType:   "os",
-				Quiet:      true,
-			},
-			args: []string{"alpine:3.10"},
-			want: Config{
+			reportConfig: config.ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-				severities: "CRITICAL",
-				ImageName:  "alpine:3.10",
 				VulnType:   []string{"os"},
-				vulnType:   "os",
-				Output:     os.Stdout,
-				Quiet:      true,
+			},
+			args: []string{"--severity", "CRITICAL", "--vuln-type", "os", "--quiet", "alpine:3.10"},
+			want: Config{
+				GlobalConfig: config.GlobalConfig{
+					Quiet: true,
+				},
+				ImageConfig: config.ImageConfig{
+					ImageName: "alpine:3.10",
+				},
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+					VulnType:   []string{"os"},
+					Output:     os.Stdout,
+				},
 			},
 		},
 		{
 			name: "happy path: reset",
-			fields: fields{
-				severities: "CRITICAL",
-				vulnType:   "os",
-				Reset:      true,
-			},
-			args: []string{"alpine:3.10"},
+			args: []string{"--reset"},
 			want: Config{
-				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-				severities: "CRITICAL",
-				VulnType:   []string{"os"},
-				vulnType:   "os",
-				Reset:      true,
+				DBConfig: config.DBConfig{
+					Reset: true,
+				},
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:     os.Stdout,
+					VulnType:   []string{"os", "library"},
+				},
 			},
 		},
 		{
 			name: "happy path with an unknown severity",
-			fields: fields{
-				severities: "CRITICAL,INVALID",
-				vulnType:   "os,library",
-			},
-			args: []string{"centos:7"},
+			args: []string{"--severity", "CRITICAL,INVALID", "centos:7"},
 			logs: []string{
 				"unknown severity option: unknown severity: INVALID",
 			},
 			want: Config{
-				Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
-				severities: "CRITICAL,INVALID",
-				ImageName:  "centos:7",
-				VulnType:   []string{"os", "library"},
-				vulnType:   "os,library",
-				Output:     os.Stdout,
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
+					Output:     os.Stdout,
+					VulnType:   []string{"os", "library"},
+				},
+				ImageConfig: config.ImageConfig{
+					ImageName: "centos:7",
+				},
 			},
 		},
 		{
 			name: "deprecated options",
-			fields: fields{
-				onlyUpdate: "alpine",
-				severities: "LOW",
-				vulnType:   "os,library",
-			},
-			args: []string{"debian:buster"},
+			args: []string{"--only-update", "alpine", "--severity", "LOW", "debian:buster"},
 			logs: []string{
 				"--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.",
 			},
 			want: Config{
-				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-				severities: "LOW",
-				ImageName:  "debian:buster",
-				VulnType:   []string{"os", "library"},
-				vulnType:   "os,library",
-				Output:     os.Stdout,
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityLow},
+					Output:     os.Stdout,
+					VulnType:   []string{"os", "library"},
+				},
+				ImageConfig: config.ImageConfig{
+					ImageName: "debian:buster",
+				},
 				onlyUpdate: "alpine",
 			},
 		},
 		{
 			name: "invalid option combination: --template enabled without --format",
-			fields: fields{
-				Template:   "@contrib/gitlab.tpl",
-				severities: "LOW",
-			},
-			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
+			args: []string{"--template", "@contrib/gitlab.tpl", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
 				"--template is ignored because --format template is not specified. Use --template option with --format template option.",
 			},
 			want: Config{
-				ImageName:  "gitlab/gitlab-ce:12.7.2-ce.0",
-				Output:     os.Stdout,
-				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-				severities: "LOW",
-				Template:   "@contrib/gitlab.tpl",
-				VulnType:   []string{""},
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:     os.Stdout,
+					VulnType:   []string{"os", "library"},
+					Template:   "@contrib/gitlab.tpl",
+				},
+				ImageConfig: config.ImageConfig{
+					ImageName: "gitlab/gitlab-ce:12.7.2-ce.0",
+				},
 			},
 		},
 		{
 			name: "invalid option combination: --template and --format json",
-			fields: fields{
-				Format:     "json",
-				Template:   "@contrib/gitlab.tpl",
-				severities: "LOW",
-			},
-			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
+			args: []string{"--format", "json", "--template", "@contrib/gitlab.tpl", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
 				"--template is ignored because --format json is specified. Use --template option with --format template option.",
 			},
 			want: Config{
-				Format:     "json",
-				ImageName:  "gitlab/gitlab-ce:12.7.2-ce.0",
-				Output:     os.Stdout,
-				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-				severities: "LOW",
-				Template:   "@contrib/gitlab.tpl",
-				VulnType:   []string{""},
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:     os.Stdout,
+					VulnType:   []string{"os", "library"},
+					Template:   "@contrib/gitlab.tpl",
+					Format:     "json",
+				},
+				ImageConfig: config.ImageConfig{
+					ImageName: "gitlab/gitlab-ce:12.7.2-ce.0",
+				},
 			},
 		},
 		{
 			name: "invalid option combination: --format template without --template",
-			fields: fields{
-				Format:     "template",
-				severities: "LOW",
-			},
-			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
+			args: []string{"--format", "template", "--severity", "MEDIUM", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
 				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
 			},
 			want: Config{
-				Format:     "template",
-				ImageName:  "gitlab/gitlab-ce:12.7.2-ce.0",
-				Output:     os.Stdout,
-				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-				severities: "LOW",
-				VulnType:   []string{""},
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityMedium},
+					Output:     os.Stdout,
+					VulnType:   []string{"os", "library"},
+					Format:     "template",
+				},
+				ImageConfig: config.ImageConfig{
+					ImageName: "gitlab/gitlab-ce:12.7.2-ce.0",
+				},
 			},
 		},
 		{
 			name: "with latest tag",
-			fields: fields{
-				onlyUpdate: "alpine",
-				severities: "LOW",
-				vulnType:   "os,library",
-			},
-			args: []string{"gcr.io/distroless/base"},
+			args: []string{"--auto-refresh", "gcr.io/distroless/base"},
 			logs: []string{
 				"--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.",
 				"You should avoid using the :latest tag as it is cached. You need to specify '--clear-cache' option when :latest image is changed",
 			},
 			want: Config{
-				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-				severities: "LOW",
-				ImageName:  "gcr.io/distroless/base",
-				VulnType:   []string{"os", "library"},
-				vulnType:   "os,library",
-				Output:     os.Stdout,
-				onlyUpdate: "alpine",
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:     os.Stdout,
+					VulnType:   []string{"os", "library"},
+				},
+				ImageConfig: config.ImageConfig{
+					ImageName: "gcr.io/distroless/base",
+				},
+				autoRefresh: true,
 			},
 		},
 		{
-			name: "sad: skip and download db",
-			fields: fields{
-				refresh:        true,
-				SkipUpdate:     true,
-				DownloadDBOnly: true,
-			},
-			args: []string{"alpine:3.10"},
-			logs: []string{
-				"--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.",
-			},
-			wantErr: "The --skip-update and --download-db-only option can not be specified both",
+			name:    "sad: skip and download db",
+			args:    []string{"--skip-update", "--download-db-only", "alpine:3.10"},
+			wantErr: "--skip-update and --download-db-only options can not be specified both",
 		},
 		{
 			name: "sad: multiple image names",
-			fields: fields{
-				severities: "MEDIUM",
-			},
 			args: []string{"centos:7", "alpine:3.10"},
 			logs: []string{
 				"multiple images cannot be specified",
@@ -277,21 +186,15 @@ func TestConfig_Init(t *testing.T) {
 		},
 		{
 			name: "sad: no image name",
-			fields: fields{
-				severities: "MEDIUM",
-			},
 			logs: []string{
 				"trivy requires at least 1 argument or --input option",
 			},
 			wantErr: "arguments error",
 		},
 		{
-			name: "sad: invalid image name",
-			fields: fields{
-				severities: "HIGH",
-			},
+			name:    "sad: invalid image name",
 			args:    []string{`!"#$%&'()`},
-			wantErr: "invalid image: parsing image",
+			wantErr: "could not parse reference",
 		},
 	}
 	for _, tt := range tests {
@@ -301,39 +204,26 @@ func TestConfig_Init(t *testing.T) {
 
 			app := cli.NewApp()
 			set := flag.NewFlagSet("test", 0)
+			set.Bool("quiet", false, "")
+			set.Bool("no-progress", false, "")
+			set.Bool("reset", false, "")
+			set.Bool("skip-update", false, "")
+			set.Bool("download-db-only", false, "")
+			set.Bool("auto-refresh", false, "")
+			set.String("severity", "CRITICAL", "")
+			set.String("vuln-type", "os,library", "")
+			set.String("only-update", "", "")
+			set.String("template", "", "")
+			set.String("format", "", "")
+
 			ctx := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
 
-			c := &Config{
-				context:        ctx,
-				logger:         logger.Sugar(),
-				Quiet:          tt.fields.Quiet,
-				NoProgress:     tt.fields.NoProgress,
-				Debug:          tt.fields.Debug,
-				CacheDir:       tt.fields.CacheDir,
-				Reset:          tt.fields.Reset,
-				DownloadDBOnly: tt.fields.DownloadDBOnly,
-				SkipUpdate:     tt.fields.SkipUpdate,
-				ClearCache:     tt.fields.ClearCache,
-				Input:          tt.fields.Input,
-				output:         tt.fields.output,
-				Format:         tt.fields.Format,
-				Template:       tt.fields.Template,
-				Timeout:        tt.fields.Timeout,
-				vulnType:       tt.fields.vulnType,
-				Light:          tt.fields.Light,
-				severities:     tt.fields.severities,
-				IgnoreFile:     tt.fields.IgnoreFile,
-				IgnoreUnfixed:  tt.fields.IgnoreUnfixed,
-				ExitCode:       tt.fields.ExitCode,
-				ImageName:      tt.fields.ImageName,
-				Output:         tt.fields.Output,
-				onlyUpdate:     tt.fields.onlyUpdate,
-				refresh:        tt.fields.refresh,
-				autoRefresh:    tt.fields.autoRefresh,
-			}
+			c, err := New(ctx)
+			require.NoError(t, err, err)
 
-			err := c.Init()
+			c.GlobalConfig.Logger = logger.Sugar()
+			err = c.Init()
 
 			// tests log messages
 			var gotMessages []string
@@ -351,9 +241,9 @@ func TestConfig_Init(t *testing.T) {
 				assert.NoError(t, err, tt.name)
 			}
 
-			tt.want.context = ctx
-			tt.want.logger = logger.Sugar()
-			assert.Equal(t, &tt.want, c, tt.name)
+			tt.want.GlobalConfig.Context = ctx
+			tt.want.GlobalConfig.Logger = logger.Sugar()
+			assert.Equal(t, tt.want, c, tt.name)
 		})
 	}
 }

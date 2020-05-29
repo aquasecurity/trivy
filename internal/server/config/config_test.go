@@ -1,31 +1,35 @@
-package config
+package config_test
 
 import (
 	"flag"
-	"os"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/urfave/cli/v2"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/internal/config"
+	c "github.com/aquasecurity/trivy/internal/server/config"
 )
 
 func TestNew(t *testing.T) {
 	tests := []struct {
 		name string
 		args []string
-		want Config
+		want c.Config
 	}{
 		{
 			name: "happy path",
-			args: []string{"-quiet", "--no-progress", "--reset", "--skip-update"},
-			want: Config{
-				Quiet:      true,
-				Reset:      true,
-				SkipUpdate: true,
+			args: []string{"-quiet", "--no-progress", "--reset", "--skip-update", "--listen", "localhost:8080"},
+			want: c.Config{
+				GlobalConfig: config.GlobalConfig{
+					Quiet: true,
+				},
+				DBConfig: config.DBConfig{
+					Reset:      true,
+					SkipUpdate: true,
+				},
+				Listen: "localhost:8080",
 			},
 		},
 	}
@@ -37,106 +41,54 @@ func TestNew(t *testing.T) {
 			set.Bool("no-progress", false, "")
 			set.Bool("reset", false, "")
 			set.Bool("skip-update", false, "")
+			set.String("listen", "", "")
 
-			c := cli.NewContext(app, set, nil)
+			ctx := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
 
-			tt.want.context = c
+			tt.want.GlobalConfig.Context = ctx
 
-			got := New(c)
-			assert.Equal(t, tt.want, got, tt.name)
+			got := c.New(ctx)
+			assert.Equal(t, tt.want.GlobalConfig.Quiet, got.Quiet, tt.name)
+			assert.Equal(t, tt.want.DBConfig, got.DBConfig, tt.name)
+			assert.Equal(t, tt.want.Listen, got.Listen, tt.name)
 		})
 	}
 }
 
 func TestConfig_Init(t *testing.T) {
-	type fields struct {
-		context        *cli.Context
-		Quiet          bool
-		Debug          bool
-		CacheDir       string
-		Reset          bool
-		DownloadDBOnly bool
-		SkipUpdate     bool
-		ClearCache     bool
-		Input          string
-		output         string
-		Format         string
-		Template       string
-		Timeout        time.Duration
-		vulnType       string
-		Light          bool
-		severities     string
-		IgnoreFile     string
-		IgnoreUnfixed  bool
-		ExitCode       int
-		ImageName      string
-		VulnType       []string
-		Output         *os.File
-		Severities     []dbTypes.Severity
-		AppVersion     string
-		onlyUpdate     string
-		refresh        bool
-		autoRefresh    bool
-	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    []string
-		logs    []string
-		want    Config
-		wantErr string
+		name         string
+		globalConfig config.GlobalConfig
+		dbConfig     config.DBConfig
+		args         []string
+		wantErr      string
 	}{
 		{
 			name: "happy path",
-			fields: fields{
-				severities: "CRITICAL",
-				vulnType:   "os",
-				Quiet:      true,
-			},
 			args: []string{"alpine:3.10"},
-			want: Config{
-				Quiet: true,
-			},
 		},
 		{
 			name: "happy path: reset",
-			fields: fields{
-				severities: "CRITICAL",
-				vulnType:   "os",
-				Reset:      true,
-			},
-			args: []string{"alpine:3.10"},
-			want: Config{
+			dbConfig: config.DBConfig{
 				Reset: true,
 			},
+			args: []string{"alpine:3.10"},
 		},
 		{
 			name: "sad: skip and download db",
-			fields: fields{
-				refresh:        true,
+			dbConfig: config.DBConfig{
 				SkipUpdate:     true,
 				DownloadDBOnly: true,
 			},
 			args:    []string{"alpine:3.10"},
-			wantErr: "The --skip-update and --download-db-only option can not be specified both",
+			wantErr: "--skip-update and --download-db-only options can not be specified both",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			app := cli.NewApp()
-			set := flag.NewFlagSet("test", 0)
-			ctx := cli.NewContext(app, set, nil)
-			_ = set.Parse(tt.args)
-
-			c := &Config{
-				context:        ctx,
-				Quiet:          tt.fields.Quiet,
-				Debug:          tt.fields.Debug,
-				CacheDir:       tt.fields.CacheDir,
-				Reset:          tt.fields.Reset,
-				DownloadDBOnly: tt.fields.DownloadDBOnly,
-				SkipUpdate:     tt.fields.SkipUpdate,
+			c := &c.Config{
+				DBConfig: tt.dbConfig,
 			}
 
 			err := c.Init()
@@ -150,9 +102,6 @@ func TestConfig_Init(t *testing.T) {
 			default:
 				assert.NoError(t, err, tt.name)
 			}
-
-			tt.want.context = ctx
-			assert.Equal(t, &tt.want, c, tt.name)
 		})
 	}
 }
