@@ -70,6 +70,40 @@ func TestConfig_Init(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with good custom headers",
+			args: []string{"--custom-headers", "foo:bar", "alpine:3.11"},
+			want: Config{
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:     os.Stdout,
+					VulnType:   []string{"os", "library"},
+				},
+				ImageConfig: config.ImageConfig{
+					ImageName: "alpine:3.11",
+				},
+				customHeaders: []string{"foo:bar"},
+				CustomHeaders: http.Header{
+					"Foo": []string{"bar"},
+				},
+			},
+		},
+		{
+			name: "happy path with bad custom headers",
+			args: []string{"--custom-headers", "foobaz", "alpine:3.11"},
+			want: Config{
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:     os.Stdout,
+					VulnType:   []string{"os", "library"},
+				},
+				ImageConfig: config.ImageConfig{
+					ImageName: "alpine:3.11",
+				},
+				customHeaders: []string{"foobaz"},
+				CustomHeaders: http.Header{},
+			},
+		},
+		{
 			name: "happy path with an unknown severity",
 			args: []string{"--severity", "CRITICAL,INVALID", "centos:7"},
 			logs: []string{
@@ -200,6 +234,11 @@ func TestConfig_Init(t *testing.T) {
 			set.String("format", "", "")
 			set.String("token", "", "")
 			set.String("token-header", "", "")
+			//set.String("custom-headers", "", "")
+			set.Var(&cli.StringSlice{}, "custom-headers", "")
+			//cli.StringSliceFlag{
+			//	Name: "custom-headers",
+			//}
 
 			ctx := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
