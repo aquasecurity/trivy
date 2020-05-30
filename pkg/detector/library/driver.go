@@ -1,50 +1,112 @@
 package library
 
 import (
-	"os"
+	"fmt"
 
-	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/fanal/analyzer/library"
+	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
 	"github.com/aquasecurity/trivy/pkg/detector/library/cargo"
 	"github.com/aquasecurity/trivy/pkg/detector/library/composer"
+	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
 	"github.com/aquasecurity/trivy/pkg/detector/library/node"
 	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/knqyf263/go-version"
+	"golang.org/x/xerrors"
 )
 
-type Driver interface {
-	ParseLockfile(*os.File) ([]ptypes.Library, error)
-	Detect(string, *version.Version) ([]types.DetectedVulnerability, error)
-	Type() string
+type Factory interface {
+	NewDriver(filename string) (Driver, error)
 }
 
-type Factory interface {
-	NewDriver(filename string) Driver
+type advisory interface {
+	DetectVulnerabilities(string, *version.Version) ([]types.DetectedVulnerability, error)
 }
 
 type DriverFactory struct{}
 
-func (d DriverFactory) NewDriver(filename string) Driver {
+func (d DriverFactory) NewDriver(filename string) (Driver, error) {
 	// TODO: use DI
-	var scanner Driver
+	var driver Driver
 	switch filename {
 	case "Gemfile.lock":
-		scanner = bundler.NewScanner()
+		driver = NewBundlerDriver()
 	case "Cargo.lock":
-		scanner = cargo.NewScanner()
+		driver = NewCargoDriver()
 	case "composer.lock":
-		scanner = composer.NewScanner()
+		driver = NewComposerDriver()
 	case "package-lock.json":
-		scanner = node.NewScanner(node.ScannerTypeNpm)
+		driver = NewNpmDriver()
 	case "yarn.lock":
-		scanner = node.NewScanner(node.ScannerTypeYarn)
+		driver = NewYarnDriver()
 	case "Pipfile.lock":
-		scanner = python.NewScanner(python.ScannerTypePipenv)
+		driver = NewPipenvDriver()
 	case "poetry.lock":
-		scanner = python.NewScanner(python.ScannerTypePoetry)
+		driver = NewPoetryDriver()
 	default:
-		return nil
+		return Driver{}, xerrors.New(fmt.Sprintf("unsupport filename %s", filename))
 	}
-	return scanner
+	return driver, nil
+}
+
+type Driver struct {
+	pkgManager string
+	advisories []advisory
+}
+
+func NewDriver(p string, advisories ...advisory) Driver {
+	return Driver{pkgManager: p, advisories: advisories}
+}
+
+func (driver *Driver) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+	var detectedVulnerabilities []types.DetectedVulnerability
+	uniqVulnIdMap := make(map[string]struct{})
+	for _, d := range driver.advisories {
+		vulns, err := d.DetectVulnerabilities(pkgName, pkgVer)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
+		}
+		for _, vuln := range vulns {
+			if _, ok := uniqVulnIdMap[vuln.VulnerabilityID]; ok {
+				continue
+			}
+			uniqVulnIdMap[vuln.VulnerabilityID] = struct{}{}
+			detectedVulnerabilities = append(detectedVulnerabilities, vuln)
+		}
+	}
+
+	return detectedVulnerabilities, nil
+}
+
+func NewBundlerDriver() Driver {
+	return NewDriver(library.Bundler, ghsa.NewAdvisory(ecosystem.Rubygems), bundler.NewAdvisory())
+}
+
+func NewComposerDriver() Driver {
+	return NewDriver(library.Composer, ghsa.NewAdvisory(ecosystem.Composer), composer.NewAdvisory())
+}
+
+func NewCargoDriver() Driver {
+	return NewDriver(library.Cargo, cargo.NewAdvisory())
+}
+
+func NewNpmDriver() Driver {
+	return NewDriver(library.Npm, ghsa.NewAdvisory(ecosystem.Npm), node.NewAdvisory())
+}
+
+func NewYarnDriver() Driver {
+	return NewDriver(library.Yarn, ghsa.NewAdvisory(ecosystem.Npm), node.NewAdvisory())
+}
+
+func NewPipenvDriver() Driver {
+	return NewDriver(library.Pipenv, ghsa.NewAdvisory(ecosystem.Pip), python.NewAdvisory())
+}
+
+func NewPoetryDriver() Driver {
+	return NewDriver(library.Poetry, ghsa.NewAdvisory(ecosystem.Pip), python.NewAdvisory())
+}
+
+func (d *Driver) Type() string {
+	return d.pkgManager
 }

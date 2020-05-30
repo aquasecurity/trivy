@@ -46,7 +46,7 @@ func TestScanner_Detect(t *testing.T) {
 					PatchedVersions: []string{">= 1.9.26"},
 				},
 			}, nil)
-		s := Scanner{
+		s := Advisory{
 			vs: mockVulnSrc,
 		}
 
@@ -55,7 +55,7 @@ func TestScanner_Detect(t *testing.T) {
 
 		v, _ := version.NewVersion(versionStr)
 
-		vulns, err := s.Detect("ffi", v)
+		vulns, err := s.DetectVulnerabilities("ffi", v)
 
 		assert.Nil(t, err)
 		assert.Equal(t, 1, len(vulns))
