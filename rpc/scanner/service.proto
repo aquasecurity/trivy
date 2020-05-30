@@ -10,10 +10,10 @@ service Scanner {
 }
 
 message ScanRequest {
-  string          target    = 1;  // image name or tar file path
-  string          image_id  = 2;
-  repeated string layer_ids = 3;
-  ScanOptions     options   = 4;
+  string          target      = 1;  // image name or tar file path
+  string          artifact_id = 2;
+  repeated string blob_ids    = 3;
+  ScanOptions     options     = 4;
 }
 
 message ScanOptions {

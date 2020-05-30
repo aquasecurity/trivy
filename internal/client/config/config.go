@@ -12,6 +12,7 @@ import (
 
 type Config struct {
 	config.GlobalConfig
+	config.ArtifactConfig
 	config.ImageConfig
 	config.ReportConfig
 
@@ -31,14 +32,14 @@ func New(c *cli.Context) (Config, error) {
 	}
 
 	return Config{
-		GlobalConfig: gc,
-		ImageConfig:  config.NewImageConfig(c),
-		ReportConfig: config.NewReportConfig(c),
-
-		RemoteAddr:    c.String("remote"),
-		token:         c.String("token"),
-		tokenHeader:   c.String("token-header"),
-		customHeaders: c.StringSlice("custom-headers"),
+		GlobalConfig:   gc,
+		ArtifactConfig: config.NewArtifactConfig(c),
+		ImageConfig:    config.NewImageConfig(c),
+		ReportConfig:   config.NewReportConfig(c),
+		RemoteAddr:     c.String("remote"),
+		token:          c.String("token"),
+		tokenHeader:    c.String("token-header"),
+		customHeaders:  c.StringSlice("custom-headers"),
 	}, nil
 }
 
@@ -56,6 +57,10 @@ func (c *Config) Init() (err error) {
 	}
 
 	if err := c.ReportConfig.Init(c.Logger); err != nil {
+		return err
+	}
+
+	if err := c.ArtifactConfig.Init(c.Context.Args(), c.Logger); err != nil {
 		return err
 	}
 

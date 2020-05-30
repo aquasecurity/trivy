@@ -39,8 +39,8 @@ func TestConfig_Init(t *testing.T) {
 				GlobalConfig: config.GlobalConfig{
 					Quiet: true,
 				},
-				ImageConfig: config.ImageConfig{
-					ImageName: "alpine:3.10",
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "alpine:3.10",
 				},
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
@@ -59,8 +59,8 @@ func TestConfig_Init(t *testing.T) {
 					Output:     os.Stdout,
 					VulnType:   []string{"os", "library"},
 				},
-				ImageConfig: config.ImageConfig{
-					ImageName: "alpine:3.11",
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "alpine:3.11",
 				},
 				token:       "secret",
 				tokenHeader: "X-Trivy-Token",
@@ -78,8 +78,8 @@ func TestConfig_Init(t *testing.T) {
 					Output:     os.Stdout,
 					VulnType:   []string{"os", "library"},
 				},
-				ImageConfig: config.ImageConfig{
-					ImageName: "alpine:3.11",
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "alpine:3.11",
 				},
 				customHeaders: []string{"foo:bar"},
 				CustomHeaders: http.Header{
@@ -96,8 +96,8 @@ func TestConfig_Init(t *testing.T) {
 					Output:     os.Stdout,
 					VulnType:   []string{"os", "library"},
 				},
-				ImageConfig: config.ImageConfig{
-					ImageName: "alpine:3.11",
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "alpine:3.11",
 				},
 				customHeaders: []string{"foobaz"},
 				CustomHeaders: http.Header{},
@@ -115,8 +115,8 @@ func TestConfig_Init(t *testing.T) {
 					Output:     os.Stdout,
 					VulnType:   []string{"os", "library"},
 				},
-				ImageConfig: config.ImageConfig{
-					ImageName: "centos:7",
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "centos:7",
 				},
 				CustomHeaders: http.Header{},
 			},
@@ -134,8 +134,8 @@ func TestConfig_Init(t *testing.T) {
 					VulnType:   []string{"os", "library"},
 					Template:   "@contrib/gitlab.tpl",
 				},
-				ImageConfig: config.ImageConfig{
-					ImageName: "gitlab/gitlab-ce:12.7.2-ce.0",
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
 				CustomHeaders: http.Header{},
 			},
@@ -154,8 +154,8 @@ func TestConfig_Init(t *testing.T) {
 					Template:   "@contrib/gitlab.tpl",
 					Format:     "json",
 				},
-				ImageConfig: config.ImageConfig{
-					ImageName: "gitlab/gitlab-ce:12.7.2-ce.0",
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
 				CustomHeaders: http.Header{},
 			},
@@ -173,8 +173,27 @@ func TestConfig_Init(t *testing.T) {
 					VulnType:   []string{"os", "library"},
 					Format:     "template",
 				},
-				ImageConfig: config.ImageConfig{
-					ImageName: "gitlab/gitlab-ce:12.7.2-ce.0",
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
+				},
+				CustomHeaders: http.Header{},
+			},
+		},
+		{
+			name: "invalid option combination: --format template without --template",
+			args: []string{"--format", "template", "--severity", "MEDIUM", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			logs: []string{
+				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
+			},
+			want: Config{
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityMedium},
+					Output:     os.Stdout,
+					VulnType:   []string{"os", "library"},
+					Format:     "template",
+				},
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
 				CustomHeaders: http.Header{},
 			},
@@ -191,8 +210,8 @@ func TestConfig_Init(t *testing.T) {
 					Output:     os.Stdout,
 					VulnType:   []string{"os", "library"},
 				},
-				ImageConfig: config.ImageConfig{
-					ImageName: "gcr.io/distroless/base",
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "gcr.io/distroless/base",
 				},
 				CustomHeaders: http.Header{},
 			},
@@ -201,7 +220,7 @@ func TestConfig_Init(t *testing.T) {
 			name: "sad: multiple image names",
 			args: []string{"centos:7", "alpine:3.10"},
 			logs: []string{
-				"multiple images cannot be specified",
+				"multiple targets cannot be specified",
 			},
 			wantErr: "arguments error",
 		},
@@ -234,11 +253,7 @@ func TestConfig_Init(t *testing.T) {
 			set.String("format", "", "")
 			set.String("token", "", "")
 			set.String("token-header", "", "")
-			//set.String("custom-headers", "", "")
 			set.Var(&cli.StringSlice{}, "custom-headers", "")
-			//cli.StringSliceFlag{
-			//	Name: "custom-headers",
-			//}
 
 			ctx := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)

@@ -188,28 +188,28 @@ func ConvertFromRpcApplications(rpcApps []*common.Application) []ftypes.Applicat
 	return apps
 }
 
-func ConvertFromRpcPutImageRequest(req *cache.PutImageRequest) ftypes.ImageInfo {
-	created, _ := ptypes.Timestamp(req.ImageInfo.Created)
-	return ftypes.ImageInfo{
-		SchemaVersion:   int(req.ImageInfo.SchemaVersion),
-		Architecture:    req.ImageInfo.Architecture,
+func ConvertFromRpcPutArtifactRequest(req *cache.PutArtifactRequest) ftypes.ArtifactInfo {
+	created, _ := ptypes.Timestamp(req.ArtifactInfo.Created)
+	return ftypes.ArtifactInfo{
+		SchemaVersion:   int(req.ArtifactInfo.SchemaVersion),
+		Architecture:    req.ArtifactInfo.Architecture,
 		Created:         created,
-		DockerVersion:   req.ImageInfo.DockerVersion,
-		OS:              req.ImageInfo.Os,
-		HistoryPackages: ConvertFromRpcPkgs(req.ImageInfo.HistoryPackages),
+		DockerVersion:   req.ArtifactInfo.DockerVersion,
+		OS:              req.ArtifactInfo.Os,
+		HistoryPackages: ConvertFromRpcPkgs(req.ArtifactInfo.HistoryPackages),
 	}
 }
 
-func ConvertFromRpcPutLayerRequest(req *cache.PutLayerRequest) ftypes.LayerInfo {
-	return ftypes.LayerInfo{
-		SchemaVersion: int(req.LayerInfo.SchemaVersion),
-		Digest:        req.LayerInfo.Digest,
-		DiffID:        req.LayerInfo.DiffId,
-		OS:            ConvertFromRpcOS(req.LayerInfo.Os),
-		PackageInfos:  ConvertFromRpcPackageInfos(req.LayerInfo.PackageInfos),
-		Applications:  ConvertFromRpcApplications(req.LayerInfo.Applications),
-		OpaqueDirs:    req.LayerInfo.OpaqueDirs,
-		WhiteoutFiles: req.LayerInfo.WhiteoutFiles,
+func ConvertFromRpcPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
+	return ftypes.BlobInfo{
+		SchemaVersion: int(req.BlobInfo.SchemaVersion),
+		Digest:        req.BlobInfo.Digest,
+		DiffID:        req.BlobInfo.DiffId,
+		OS:            ConvertFromRpcOS(req.BlobInfo.Os),
+		PackageInfos:  ConvertFromRpcPackageInfos(req.BlobInfo.PackageInfos),
+		Applications:  ConvertFromRpcApplications(req.BlobInfo.Applications),
+		OpaqueDirs:    req.BlobInfo.OpaqueDirs,
+		WhiteoutFiles: req.BlobInfo.WhiteoutFiles,
 	}
 }
 
@@ -223,15 +223,15 @@ func ConvertToRpcOS(fos *ftypes.OS) *common.OS {
 	}
 }
 
-func ConvertToRpcImageInfo(imageID string, imageInfo ftypes.ImageInfo) *cache.PutImageRequest {
+func ConvertToRpcArtifactInfo(imageID string, imageInfo ftypes.ArtifactInfo) *cache.PutArtifactRequest {
 	t, err := ptypes.TimestampProto(imageInfo.Created)
 	if err != nil {
 		log.Logger.Warnf("invalid timestamp: %s", err)
 	}
 
-	return &cache.PutImageRequest{
-		ImageId: imageID,
-		ImageInfo: &cache.ImageInfo{
+	return &cache.PutArtifactRequest{
+		ArtifactId: imageID,
+		ArtifactInfo: &cache.ArtifactInfo{
 			SchemaVersion:   int32(imageInfo.SchemaVersion),
 			Architecture:    imageInfo.Architecture,
 			Created:         t,
@@ -242,7 +242,7 @@ func ConvertToRpcImageInfo(imageID string, imageInfo ftypes.ImageInfo) *cache.Pu
 	}
 }
 
-func ConvertToRpcLayerInfo(diffID string, layerInfo ftypes.LayerInfo) *cache.PutLayerRequest {
+func ConvertToRpcBlobInfo(diffID string, layerInfo ftypes.BlobInfo) *cache.PutBlobRequest {
 	var packageInfos []*common.PackageInfo
 	for _, pkgInfo := range layerInfo.PackageInfos {
 		packageInfos = append(packageInfos, &common.PackageInfo{
@@ -268,10 +268,10 @@ func ConvertToRpcLayerInfo(diffID string, layerInfo ftypes.LayerInfo) *cache.Put
 		})
 	}
 
-	return &cache.PutLayerRequest{
+	return &cache.PutBlobRequest{
 		DiffId: diffID,
-		LayerInfo: &cache.LayerInfo{
-			SchemaVersion: ftypes.LayerJSONSchemaVersion,
+		BlobInfo: &cache.BlobInfo{
+			SchemaVersion: ftypes.BlobJSONSchemaVersion,
 			Digest:        layerInfo.Digest,
 			DiffId:        layerInfo.DiffID,
 			Os:            ConvertToRpcOS(layerInfo.OS),
@@ -283,10 +283,10 @@ func ConvertToRpcLayerInfo(diffID string, layerInfo ftypes.LayerInfo) *cache.Put
 	}
 }
 
-func ConvertToMissingLayersRequest(imageID string, layerIDs []string) *cache.MissingLayersRequest {
-	return &cache.MissingLayersRequest{
-		ImageId:  imageID,
-		LayerIds: layerIDs,
+func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.MissingBlobsRequest {
+	return &cache.MissingBlobsRequest{
+		ArtifactId: imageID,
+		BlobIds:    layerIDs,
 	}
 }
 

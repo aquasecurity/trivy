@@ -28,6 +28,7 @@ func TestNew(t *testing.T) {
 				DBConfig: config.DBConfig{
 					Reset:      true,
 					SkipUpdate: true,
+					NoProgress: true,
 				},
 				Listen: "localhost:8080",
 			},

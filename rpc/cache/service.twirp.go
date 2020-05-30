@@ -17,6 +17,7 @@ import fmt "fmt"
 import ioutil "io/ioutil"
 import http "net/http"
 import strconv "strconv"
+import gzip "compress/gzip"
 
 import jsonpb "github.com/golang/protobuf/jsonpb"
 import proto "github.com/golang/protobuf/proto"
@@ -30,16 +31,19 @@ import io "io"
 import json "encoding/json"
 import url "net/url"
 
+// A response is compressed with gzip when the response size exceeds this threshold.
+const CompressThreshold = 10000
+
 // ===============
 // Cache Interface
 // ===============
 
 type Cache interface {
-	PutImage(context.Context, *PutImageRequest) (*google_protobuf1.Empty, error)
+	PutArtifact(context.Context, *PutArtifactRequest) (*google_protobuf1.Empty, error)
 
-	PutLayer(context.Context, *PutLayerRequest) (*google_protobuf1.Empty, error)
+	PutBlob(context.Context, *PutBlobRequest) (*google_protobuf1.Empty, error)
 
-	MissingLayers(context.Context, *MissingLayersRequest) (*MissingLayersResponse, error)
+	MissingBlobs(context.Context, *MissingBlobsRequest) (*MissingBlobsResponse, error)
 }
 
 // =====================
@@ -66,9 +70,9 @@ func NewCacheProtobufClient(addr string, client HTTPClient, opts ...twirp.Client
 
 	prefix := urlBase(addr) + CachePathPrefix
 	urls := [3]string{
-		prefix + "PutImage",
-		prefix + "PutLayer",
-		prefix + "MissingLayers",
+		prefix + "PutArtifact",
+		prefix + "PutBlob",
+		prefix + "MissingBlobs",
 	}
 
 	return &cacheProtobufClient{
@@ -78,10 +82,10 @@ func NewCacheProtobufClient(addr string, client HTTPClient, opts ...twirp.Client
 	}
 }
 
-func (c *cacheProtobufClient) PutImage(ctx context.Context, in *PutImageRequest) (*google_protobuf1.Empty, error) {
+func (c *cacheProtobufClient) PutArtifact(ctx context.Context, in *PutArtifactRequest) (*google_protobuf1.Empty, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "trivy.cache.v1")
 	ctx = ctxsetters.WithServiceName(ctx, "Cache")
-	ctx = ctxsetters.WithMethodName(ctx, "PutImage")
+	ctx = ctxsetters.WithMethodName(ctx, "PutArtifact")
 	out := new(google_protobuf1.Empty)
 	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[0], in, out)
 	if err != nil {
@@ -98,10 +102,10 @@ func (c *cacheProtobufClient) PutImage(ctx context.Context, in *PutImageRequest)
 	return out, nil
 }
 
-func (c *cacheProtobufClient) PutLayer(ctx context.Context, in *PutLayerRequest) (*google_protobuf1.Empty, error) {
+func (c *cacheProtobufClient) PutBlob(ctx context.Context, in *PutBlobRequest) (*google_protobuf1.Empty, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "trivy.cache.v1")
 	ctx = ctxsetters.WithServiceName(ctx, "Cache")
-	ctx = ctxsetters.WithMethodName(ctx, "PutLayer")
+	ctx = ctxsetters.WithMethodName(ctx, "PutBlob")
 	out := new(google_protobuf1.Empty)
 	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[1], in, out)
 	if err != nil {
@@ -118,11 +122,11 @@ func (c *cacheProtobufClient) PutLayer(ctx context.Context, in *PutLayerRequest)
 	return out, nil
 }
 
-func (c *cacheProtobufClient) MissingLayers(ctx context.Context, in *MissingLayersRequest) (*MissingLayersResponse, error) {
+func (c *cacheProtobufClient) MissingBlobs(ctx context.Context, in *MissingBlobsRequest) (*MissingBlobsResponse, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "trivy.cache.v1")
 	ctx = ctxsetters.WithServiceName(ctx, "Cache")
-	ctx = ctxsetters.WithMethodName(ctx, "MissingLayers")
-	out := new(MissingLayersResponse)
+	ctx = ctxsetters.WithMethodName(ctx, "MissingBlobs")
+	out := new(MissingBlobsResponse)
 	err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
@@ -162,9 +166,9 @@ func NewCacheJSONClient(addr string, client HTTPClient, opts ...twirp.ClientOpti
 
 	prefix := urlBase(addr) + CachePathPrefix
 	urls := [3]string{
-		prefix + "PutImage",
-		prefix + "PutLayer",
-		prefix + "MissingLayers",
+		prefix + "PutArtifact",
+		prefix + "PutBlob",
+		prefix + "MissingBlobs",
 	}
 
 	return &cacheJSONClient{
@@ -174,10 +178,10 @@ func NewCacheJSONClient(addr string, client HTTPClient, opts ...twirp.ClientOpti
 	}
 }
 
-func (c *cacheJSONClient) PutImage(ctx context.Context, in *PutImageRequest) (*google_protobuf1.Empty, error) {
+func (c *cacheJSONClient) PutArtifact(ctx context.Context, in *PutArtifactRequest) (*google_protobuf1.Empty, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "trivy.cache.v1")
 	ctx = ctxsetters.WithServiceName(ctx, "Cache")
-	ctx = ctxsetters.WithMethodName(ctx, "PutImage")
+	ctx = ctxsetters.WithMethodName(ctx, "PutArtifact")
 	out := new(google_protobuf1.Empty)
 	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[0], in, out)
 	if err != nil {
@@ -194,10 +198,10 @@ func (c *cacheJSONClient) PutImage(ctx context.Context, in *PutImageRequest) (*g
 	return out, nil
 }
 
-func (c *cacheJSONClient) PutLayer(ctx context.Context, in *PutLayerRequest) (*google_protobuf1.Empty, error) {
+func (c *cacheJSONClient) PutBlob(ctx context.Context, in *PutBlobRequest) (*google_protobuf1.Empty, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "trivy.cache.v1")
 	ctx = ctxsetters.WithServiceName(ctx, "Cache")
-	ctx = ctxsetters.WithMethodName(ctx, "PutLayer")
+	ctx = ctxsetters.WithMethodName(ctx, "PutBlob")
 	out := new(google_protobuf1.Empty)
 	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[1], in, out)
 	if err != nil {
@@ -214,11 +218,11 @@ func (c *cacheJSONClient) PutLayer(ctx context.Context, in *PutLayerRequest) (*g
 	return out, nil
 }
 
-func (c *cacheJSONClient) MissingLayers(ctx context.Context, in *MissingLayersRequest) (*MissingLayersResponse, error) {
+func (c *cacheJSONClient) MissingBlobs(ctx context.Context, in *MissingBlobsRequest) (*MissingBlobsResponse, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "trivy.cache.v1")
 	ctx = ctxsetters.WithServiceName(ctx, "Cache")
-	ctx = ctxsetters.WithMethodName(ctx, "MissingLayers")
-	out := new(MissingLayersResponse)
+	ctx = ctxsetters.WithMethodName(ctx, "MissingBlobs")
+	out := new(MissingBlobsResponse)
 	err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
@@ -282,14 +286,14 @@ func (s *cacheServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	switch req.URL.Path {
-	case "/twirp/trivy.cache.v1.Cache/PutImage":
-		s.servePutImage(ctx, resp, req)
+	case "/twirp/trivy.cache.v1.Cache/PutArtifact":
+		s.servePutArtifact(ctx, resp, req)
 		return
-	case "/twirp/trivy.cache.v1.Cache/PutLayer":
-		s.servePutLayer(ctx, resp, req)
+	case "/twirp/trivy.cache.v1.Cache/PutBlob":
+		s.servePutBlob(ctx, resp, req)
 		return
-	case "/twirp/trivy.cache.v1.Cache/MissingLayers":
-		s.serveMissingLayers(ctx, resp, req)
+	case "/twirp/trivy.cache.v1.Cache/MissingBlobs":
+		s.serveMissingBlobs(ctx, resp, req)
 		return
 	default:
 		msg := fmt.Sprintf("no handler for path %q", req.URL.Path)
@@ -299,7 +303,7 @@ func (s *cacheServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func (s *cacheServer) servePutImage(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+func (s *cacheServer) servePutArtifact(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
 	header := req.Header.Get("Content-Type")
 	i := strings.Index(header, ";")
 	if i == -1 {
@@ -307,9 +311,9 @@ func (s *cacheServer) servePutImage(ctx context.Context, resp http.ResponseWrite
 	}
 	switch strings.TrimSpace(strings.ToLower(header[:i])) {
 	case "application/json":
-		s.servePutImageJSON(ctx, resp, req)
+		s.servePutArtifactJSON(ctx, resp, req)
 	case "application/protobuf":
-		s.servePutImageProtobuf(ctx, resp, req)
+		s.servePutArtifactProtobuf(ctx, resp, req)
 	default:
 		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
 		twerr := badRouteError(msg, req.Method, req.URL.Path)
@@ -317,16 +321,16 @@ func (s *cacheServer) servePutImage(ctx context.Context, resp http.ResponseWrite
 	}
 }
 
-func (s *cacheServer) servePutImageJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+func (s *cacheServer) servePutArtifactJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
 	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "PutImage")
+	ctx = ctxsetters.WithMethodName(ctx, "PutArtifact")
 	ctx, err = callRequestRouted(ctx, s.hooks)
 	if err != nil {
 		s.writeError(ctx, resp, err)
 		return
 	}
 
-	reqContent := new(PutImageRequest)
+	reqContent := new(PutArtifactRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
 		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
@@ -337,7 +341,7 @@ func (s *cacheServer) servePutImageJSON(ctx context.Context, resp http.ResponseW
 	var respContent *google_protobuf1.Empty
 	func() {
 		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.Cache.PutImage(ctx, reqContent)
+		respContent, err = s.Cache.PutArtifact(ctx, reqContent)
 	}()
 
 	if err != nil {
@@ -345,7 +349,7 @@ func (s *cacheServer) servePutImageJSON(ctx context.Context, resp http.ResponseW
 		return
 	}
 	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf1.Empty and nil error while calling PutImage. nil responses are not supported"))
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf1.Empty and nil error while calling PutArtifact. nil responses are not supported"))
 		return
 	}
 
@@ -372,9 +376,9 @@ func (s *cacheServer) servePutImageJSON(ctx context.Context, resp http.ResponseW
 	callResponseSent(ctx, s.hooks)
 }
 
-func (s *cacheServer) servePutImageProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+func (s *cacheServer) servePutArtifactProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
 	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "PutImage")
+	ctx = ctxsetters.WithMethodName(ctx, "PutArtifact")
 	ctx, err = callRequestRouted(ctx, s.hooks)
 	if err != nil {
 		s.writeError(ctx, resp, err)
@@ -386,7 +390,7 @@ func (s *cacheServer) servePutImageProtobuf(ctx context.Context, resp http.Respo
 		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
 		return
 	}
-	reqContent := new(PutImageRequest)
+	reqContent := new(PutArtifactRequest)
 	if err = proto.Unmarshal(buf, reqContent); err != nil {
 		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
 		return
@@ -396,7 +400,7 @@ func (s *cacheServer) servePutImageProtobuf(ctx context.Context, resp http.Respo
 	var respContent *google_protobuf1.Empty
 	func() {
 		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.Cache.PutImage(ctx, reqContent)
+		respContent, err = s.Cache.PutArtifact(ctx, reqContent)
 	}()
 
 	if err != nil {
@@ -404,7 +408,7 @@ func (s *cacheServer) servePutImageProtobuf(ctx context.Context, resp http.Respo
 		return
 	}
 	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf1.Empty and nil error while calling PutImage. nil responses are not supported"))
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf1.Empty and nil error while calling PutArtifact. nil responses are not supported"))
 		return
 	}
 
@@ -414,6 +418,16 @@ func (s *cacheServer) servePutImageProtobuf(ctx context.Context, resp http.Respo
 	if err != nil {
 		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
 		return
+	}
+
+	// Compress the response if the size exceeds the threshold
+	if len(respBytes) > CompressThreshold && isGZipAcceptable(req) {
+		respBytes, err = compressWithGzip(respBytes)
+		if err != nil {
+			s.writeError(ctx, resp, wrapInternal(err, "failed to compress response"))
+			return
+		}
+		resp.Header().Set("Content-Encoding", "gzip")
 	}
 
 	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
@@ -428,7 +442,7 @@ func (s *cacheServer) servePutImageProtobuf(ctx context.Context, resp http.Respo
 	callResponseSent(ctx, s.hooks)
 }
 
-func (s *cacheServer) servePutLayer(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+func (s *cacheServer) servePutBlob(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
 	header := req.Header.Get("Content-Type")
 	i := strings.Index(header, ";")
 	if i == -1 {
@@ -436,9 +450,9 @@ func (s *cacheServer) servePutLayer(ctx context.Context, resp http.ResponseWrite
 	}
 	switch strings.TrimSpace(strings.ToLower(header[:i])) {
 	case "application/json":
-		s.servePutLayerJSON(ctx, resp, req)
+		s.servePutBlobJSON(ctx, resp, req)
 	case "application/protobuf":
-		s.servePutLayerProtobuf(ctx, resp, req)
+		s.servePutBlobProtobuf(ctx, resp, req)
 	default:
 		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
 		twerr := badRouteError(msg, req.Method, req.URL.Path)
@@ -446,16 +460,16 @@ func (s *cacheServer) servePutLayer(ctx context.Context, resp http.ResponseWrite
 	}
 }
 
-func (s *cacheServer) servePutLayerJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+func (s *cacheServer) servePutBlobJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
 	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "PutLayer")
+	ctx = ctxsetters.WithMethodName(ctx, "PutBlob")
 	ctx, err = callRequestRouted(ctx, s.hooks)
 	if err != nil {
 		s.writeError(ctx, resp, err)
 		return
 	}
 
-	reqContent := new(PutLayerRequest)
+	reqContent := new(PutBlobRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
 		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
@@ -466,7 +480,7 @@ func (s *cacheServer) servePutLayerJSON(ctx context.Context, resp http.ResponseW
 	var respContent *google_protobuf1.Empty
 	func() {
 		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.Cache.PutLayer(ctx, reqContent)
+		respContent, err = s.Cache.PutBlob(ctx, reqContent)
 	}()
 
 	if err != nil {
@@ -474,7 +488,7 @@ func (s *cacheServer) servePutLayerJSON(ctx context.Context, resp http.ResponseW
 		return
 	}
 	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf1.Empty and nil error while calling PutLayer. nil responses are not supported"))
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf1.Empty and nil error while calling PutBlob. nil responses are not supported"))
 		return
 	}
 
@@ -501,9 +515,9 @@ func (s *cacheServer) servePutLayerJSON(ctx context.Context, resp http.ResponseW
 	callResponseSent(ctx, s.hooks)
 }
 
-func (s *cacheServer) servePutLayerProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+func (s *cacheServer) servePutBlobProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
 	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "PutLayer")
+	ctx = ctxsetters.WithMethodName(ctx, "PutBlob")
 	ctx, err = callRequestRouted(ctx, s.hooks)
 	if err != nil {
 		s.writeError(ctx, resp, err)
@@ -515,7 +529,7 @@ func (s *cacheServer) servePutLayerProtobuf(ctx context.Context, resp http.Respo
 		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
 		return
 	}
-	reqContent := new(PutLayerRequest)
+	reqContent := new(PutBlobRequest)
 	if err = proto.Unmarshal(buf, reqContent); err != nil {
 		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
 		return
@@ -525,7 +539,7 @@ func (s *cacheServer) servePutLayerProtobuf(ctx context.Context, resp http.Respo
 	var respContent *google_protobuf1.Empty
 	func() {
 		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.Cache.PutLayer(ctx, reqContent)
+		respContent, err = s.Cache.PutBlob(ctx, reqContent)
 	}()
 
 	if err != nil {
@@ -533,7 +547,7 @@ func (s *cacheServer) servePutLayerProtobuf(ctx context.Context, resp http.Respo
 		return
 	}
 	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf1.Empty and nil error while calling PutLayer. nil responses are not supported"))
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf1.Empty and nil error while calling PutBlob. nil responses are not supported"))
 		return
 	}
 
@@ -543,6 +557,16 @@ func (s *cacheServer) servePutLayerProtobuf(ctx context.Context, resp http.Respo
 	if err != nil {
 		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
 		return
+	}
+
+	// Compress the response if the size exceeds the threshold
+	if len(respBytes) > CompressThreshold && isGZipAcceptable(req) {
+		respBytes, err = compressWithGzip(respBytes)
+		if err != nil {
+			s.writeError(ctx, resp, wrapInternal(err, "failed to compress response"))
+			return
+		}
+		resp.Header().Set("Content-Encoding", "gzip")
 	}
 
 	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
@@ -557,7 +581,7 @@ func (s *cacheServer) servePutLayerProtobuf(ctx context.Context, resp http.Respo
 	callResponseSent(ctx, s.hooks)
 }
 
-func (s *cacheServer) serveMissingLayers(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+func (s *cacheServer) serveMissingBlobs(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
 	header := req.Header.Get("Content-Type")
 	i := strings.Index(header, ";")
 	if i == -1 {
@@ -565,9 +589,9 @@ func (s *cacheServer) serveMissingLayers(ctx context.Context, resp http.Response
 	}
 	switch strings.TrimSpace(strings.ToLower(header[:i])) {
 	case "application/json":
-		s.serveMissingLayersJSON(ctx, resp, req)
+		s.serveMissingBlobsJSON(ctx, resp, req)
 	case "application/protobuf":
-		s.serveMissingLayersProtobuf(ctx, resp, req)
+		s.serveMissingBlobsProtobuf(ctx, resp, req)
 	default:
 		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
 		twerr := badRouteError(msg, req.Method, req.URL.Path)
@@ -575,16 +599,16 @@ func (s *cacheServer) serveMissingLayers(ctx context.Context, resp http.Response
 	}
 }
 
-func (s *cacheServer) serveMissingLayersJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+func (s *cacheServer) serveMissingBlobsJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
 	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "MissingLayers")
+	ctx = ctxsetters.WithMethodName(ctx, "MissingBlobs")
 	ctx, err = callRequestRouted(ctx, s.hooks)
 	if err != nil {
 		s.writeError(ctx, resp, err)
 		return
 	}
 
-	reqContent := new(MissingLayersRequest)
+	reqContent := new(MissingBlobsRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
 		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
@@ -592,10 +616,10 @@ func (s *cacheServer) serveMissingLayersJSON(ctx context.Context, resp http.Resp
 	}
 
 	// Call service method
-	var respContent *MissingLayersResponse
+	var respContent *MissingBlobsResponse
 	func() {
 		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.Cache.MissingLayers(ctx, reqContent)
+		respContent, err = s.Cache.MissingBlobs(ctx, reqContent)
 	}()
 
 	if err != nil {
@@ -603,7 +627,7 @@ func (s *cacheServer) serveMissingLayersJSON(ctx context.Context, resp http.Resp
 		return
 	}
 	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *MissingLayersResponse and nil error while calling MissingLayers. nil responses are not supported"))
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MissingBlobsResponse and nil error while calling MissingBlobs. nil responses are not supported"))
 		return
 	}
 
@@ -630,9 +654,9 @@ func (s *cacheServer) serveMissingLayersJSON(ctx context.Context, resp http.Resp
 	callResponseSent(ctx, s.hooks)
 }
 
-func (s *cacheServer) serveMissingLayersProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+func (s *cacheServer) serveMissingBlobsProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
 	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "MissingLayers")
+	ctx = ctxsetters.WithMethodName(ctx, "MissingBlobs")
 	ctx, err = callRequestRouted(ctx, s.hooks)
 	if err != nil {
 		s.writeError(ctx, resp, err)
@@ -644,17 +668,17 @@ func (s *cacheServer) serveMissingLayersProtobuf(ctx context.Context, resp http.
 		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
 		return
 	}
-	reqContent := new(MissingLayersRequest)
+	reqContent := new(MissingBlobsRequest)
 	if err = proto.Unmarshal(buf, reqContent); err != nil {
 		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
 		return
 	}
 
 	// Call service method
-	var respContent *MissingLayersResponse
+	var respContent *MissingBlobsResponse
 	func() {
 		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.Cache.MissingLayers(ctx, reqContent)
+		respContent, err = s.Cache.MissingBlobs(ctx, reqContent)
 	}()
 
 	if err != nil {
@@ -662,7 +686,7 @@ func (s *cacheServer) serveMissingLayersProtobuf(ctx context.Context, resp http.
 		return
 	}
 	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *MissingLayersResponse and nil error while calling MissingLayers. nil responses are not supported"))
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *MissingBlobsResponse and nil error while calling MissingBlobs. nil responses are not supported"))
 		return
 	}
 
@@ -672,6 +696,16 @@ func (s *cacheServer) serveMissingLayersProtobuf(ctx context.Context, resp http.
 	if err != nil {
 		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
 		return
+	}
+
+	// Compress the response if the size exceeds the threshold
+	if len(respBytes) > CompressThreshold && isGZipAcceptable(req) {
+		respBytes, err = compressWithGzip(respBytes)
+		if err != nil {
+			s.writeError(ctx, resp, wrapInternal(err, "failed to compress response"))
+			return
+		}
+		resp.Header().Set("Content-Encoding", "gzip")
 	}
 
 	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
@@ -832,6 +866,7 @@ func newRequest(ctx context.Context, url string, reqBody io.Reader, contentType 
 	}
 	req.Header.Set("Accept", contentType)
 	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Accept-Encoding", "gzip")
 	req.Header.Set("Twirp-Version", "v5.10.1")
 	return req, nil
 }
@@ -1084,7 +1119,15 @@ func doProtobufRequest(ctx context.Context, client HTTPClient, hooks *twirp.Clie
 		return errorFromResponse(resp)
 	}
 
-	respBodyBytes, err := ioutil.ReadAll(resp.Body)
+	r := resp.Body
+	if resp.Header.Get("Content-Encoding") == "gzip" {
+		r, err = gzip.NewReader(r)
+		if err != nil {
+			return wrapInternal(err, "invalid gzip")
+		}
+	}
+
+	respBodyBytes, err := ioutil.ReadAll(r)
 	if err != nil {
 		return wrapInternal(err, "failed to read response body")
 	}
@@ -1189,6 +1232,36 @@ func callError(ctx context.Context, h *twirp.ServerHooks, err twirp.Error) conte
 	return h.Error(ctx, err)
 }
 
+// compressWithGzip compresses the data with gzip
+func compressWithGzip(data []byte) ([]byte, error) {
+	var b bytes.Buffer
+	gz := gzip.NewWriter(&b)
+	defer gz.Close()
+
+	if _, err := gz.Write(data); err != nil {
+		return nil, err
+	}
+
+	if err := gz.Flush(); err != nil {
+		return nil, err
+	}
+
+	if err := gz.Close(); err != nil {
+		return nil, err
+	}
+
+	return b.Bytes(), nil
+}
+
+func isGZipAcceptable(request *http.Request) bool {
+	for _, encoding := range request.Header["Accept-Encoding"] {
+		if encoding == "gzip" {
+			return true
+		}
+	}
+	return false
+}
+
 func callClientResponseReceived(ctx context.Context, h *twirp.ClientHooks) {
 	if h == nil || h.ResponseReceived == nil {
 		return
@@ -1211,48 +1284,48 @@ func callClientError(ctx context.Context, h *twirp.ClientHooks, err twirp.Error)
 }
 
 var twirpFileDescriptor0 = []byte{
-	// 674 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0xdd, 0x6e, 0xd3, 0x30,
-	0x14, 0x56, 0xdb, 0x75, 0x6d, 0x4e, 0xdb, 0x6d, 0x58, 0x6c, 0xcb, 0xba, 0x8b, 0x55, 0x81, 0x49,
-	0x15, 0x17, 0x89, 0x28, 0x08, 0x71, 0x03, 0x02, 0x06, 0x48, 0x95, 0xf8, 0x99, 0x0c, 0xe2, 0x02,
-	0x21, 0x55, 0x5e, 0xe2, 0xa4, 0xd6, 0x9a, 0x38, 0xb3, 0x9d, 0xa2, 0x3e, 0x00, 0x6f, 0xc7, 0xbb,
-	0xf0, 0x0a, 0x28, 0x27, 0xc9, 0xd6, 0x96, 0xf2, 0x77, 0xe7, 0xf3, 0x93, 0xef, 0x7c, 0xe7, 0xfb,
-	0xec, 0xc0, 0xa1, 0x4a, 0x7d, 0xcf, 0x67, 0xfe, 0x94, 0x7b, 0x9a, 0xab, 0xb9, 0xf0, 0xb9, 0x9b,
-	0x2a, 0x69, 0x24, 0xd9, 0x31, 0x4a, 0xcc, 0x17, 0x2e, 0x96, 0xdc, 0xf9, 0xfd, 0xfe, 0x49, 0x24,
-	0x65, 0x34, 0xe3, 0x1e, 0x56, 0x2f, 0xb2, 0xd0, 0x33, 0x22, 0xe6, 0xda, 0xb0, 0x38, 0x2d, 0x3e,
-	0xe8, 0x3f, 0x8a, 0x84, 0x99, 0x66, 0x17, 0xae, 0x2f, 0x63, 0x8f, 0x5d, 0x65, 0x4c, 0x73, 0x3f,
-	0x53, 0xc2, 0x2c, 0x3c, 0x04, 0xf2, 0x70, 0x8e, 0x8c, 0x63, 0x99, 0xac, 0x0e, 0xea, 0x1f, 0xaf,
-	0x03, 0xf3, 0x38, 0x35, 0x8b, 0xa2, 0xe8, 0x7c, 0xab, 0x83, 0x35, 0x8e, 0x59, 0xc4, 0xc7, 0x49,
-	0x28, 0xc9, 0x29, 0xec, 0x68, 0x7f, 0xca, 0x63, 0x36, 0x99, 0x73, 0xa5, 0x85, 0x4c, 0xec, 0xda,
-	0xa0, 0x36, 0x6c, 0xd2, 0x5e, 0x91, 0xfd, 0x54, 0x24, 0x89, 0x03, 0x5d, 0xa6, 0xfc, 0xa9, 0x30,
-	0xdc, 0x37, 0x99, 0xe2, 0x76, 0x7d, 0x50, 0x1b, 0x5a, 0x74, 0x25, 0x47, 0x1e, 0x42, 0xcb, 0x57,
-	0x9c, 0x19, 0x1e, 0xd8, 0x8d, 0x41, 0x6d, 0xd8, 0x19, 0xf5, 0xdd, 0x82, 0x87, 0x5b, 0xf1, 0x70,
-	0x3f, 0x56, 0x0b, 0xd2, 0xaa, 0x35, 0x27, 0x10, 0x48, 0xff, 0x92, 0xab, 0x6b, 0x02, 0x5b, 0x88,
-	0xdd, 0x2b, 0xb2, 0x15, 0x81, 0x1d, 0xa8, 0x4b, 0x6d, 0x37, 0xb1, 0x54, 0x97, 0x9a, 0x3c, 0x83,
-	0xbd, 0xa9, 0xd0, 0x46, 0xaa, 0xc5, 0x24, 0x65, 0xfe, 0x25, 0x8b, 0xb8, 0xb6, 0xb7, 0x07, 0x8d,
-	0x61, 0x67, 0xb4, 0xef, 0x96, 0x32, 0xa3, 0x32, 0xee, 0x79, 0x51, 0xa5, 0xbb, 0x65, 0x7b, 0x19,
-	0x6b, 0x27, 0x84, 0xdd, 0xf3, 0xcc, 0xa0, 0x12, 0x94, 0x5f, 0x65, 0x5c, 0x1b, 0x72, 0x04, 0x6d,
-	0x91, 0xc7, 0x13, 0x11, 0xa0, 0x0c, 0x16, 0x6d, 0x61, 0x3c, 0x0e, 0xc8, 0x63, 0x80, 0xb2, 0x94,
-	0x84, 0x12, 0xd7, 0xef, 0x8c, 0x8e, 0xdc, 0x55, 0x43, 0xdd, 0x6b, 0x59, 0xa9, 0x25, 0xaa, 0xa3,
-	0xf3, 0xbd, 0x0e, 0xd6, 0x1b, 0xb6, 0xe0, 0xea, 0x7f, 0xf4, 0x1e, 0xe0, 0xba, 0xc5, 0x98, 0xbd,
-	0xd5, 0x85, 0xde, 0x7f, 0x40, 0x01, 0x9e, 0x42, 0xaf, 0x5c, 0x1c, 0x29, 0x69, 0xbb, 0x81, 0xdb,
-	0x1f, 0x6d, 0xdc, 0x1e, 0x39, 0x75, 0xd3, 0x9b, 0x40, 0x93, 0x27, 0xd0, 0x65, 0x69, 0x3a, 0x13,
-	0x3e, 0x33, 0x42, 0x26, 0xda, 0xde, 0xda, 0xf4, 0xf9, 0xf3, 0x9b, 0x0e, 0xba, 0xd2, 0x4e, 0x4e,
-	0xa0, 0x23, 0x53, 0x76, 0x95, 0xf1, 0x49, 0x20, 0x54, 0x6e, 0x4c, 0x63, 0x68, 0x51, 0x28, 0x52,
-	0x2f, 0x85, 0xd2, 0xf9, 0xa2, 0x5f, 0xf3, 0xbb, 0x21, 0x33, 0x33, 0x09, 0xc5, 0xac, 0xb4, 0xc7,
-	0xa2, 0xbd, 0x2a, 0xfb, 0x3a, 0x4f, 0x92, 0x03, 0xd8, 0x0e, 0x44, 0xc4, 0xb5, 0xb1, 0x5b, 0x28,
-	0x78, 0x19, 0x91, 0x43, 0x68, 0x05, 0x22, 0x0c, 0x73, 0x27, 0xda, 0x55, 0x21, 0x0c, 0xc7, 0x81,
-	0x13, 0xa0, 0x6d, 0x28, 0x68, 0x65, 0xdb, 0x52, 0x6f, 0x6d, 0xb9, 0x37, 0x37, 0x6d, 0x96, 0x37,
-	0x16, 0xa6, 0x35, 0x36, 0x9b, 0x76, 0xed, 0x0d, 0xb5, 0x66, 0xd5, 0xd1, 0x39, 0x83, 0xce, 0x79,
-	0x66, 0x28, 0xd7, 0xa9, 0x4c, 0x34, 0x2f, 0xed, 0xa8, 0xfd, 0xc1, 0x0e, 0x02, 0x5b, 0x5c, 0xea,
-	0x19, 0x5a, 0xd6, 0xa6, 0x78, 0x76, 0xde, 0xc1, 0xed, 0xb7, 0x42, 0x6b, 0x91, 0x44, 0x38, 0x43,
-	0xff, 0xc3, 0x35, 0x3b, 0x06, 0xab, 0x64, 0x1c, 0xe4, 0xf6, 0xe7, 0x82, 0xb5, 0x0b, 0x56, 0x81,
-	0x76, 0xa6, 0xb0, 0xbf, 0x86, 0x57, 0xd2, 0xbb, 0x03, 0xbd, 0xb8, 0x28, 0x4c, 0x10, 0x08, 0x51,
-	0xdb, 0xb4, 0x5b, 0x26, 0xf1, 0x5a, 0x92, 0x7b, 0x70, 0xab, 0x6a, 0x5a, 0x1f, 0xb1, 0x1b, 0x2f,
-	0xc1, 0x8e, 0x03, 0x3d, 0xfa, 0x51, 0x83, 0xe6, 0x59, 0x2e, 0x10, 0x39, 0x83, 0x76, 0xf5, 0x4a,
-	0xc8, 0xc9, 0xba, 0x74, 0x6b, 0xef, 0xa7, 0x7f, 0xf0, 0xcb, 0x83, 0x7f, 0x95, 0xff, 0x78, 0x4a,
-	0x10, 0x44, 0xdf, 0x08, 0xb2, 0xec, 0xe6, 0x6f, 0x41, 0xbe, 0x40, 0x6f, 0x65, 0x7b, 0x72, 0x77,
-	0x1d, 0x69, 0x93, 0xd8, 0xfd, 0xd3, 0xbf, 0x74, 0x15, 0x12, 0xbe, 0x68, 0x7d, 0x6e, 0x62, 0xc7,
-	0xc5, 0x36, 0x8e, 0x7d, 0xf0, 0x33, 0x00, 0x00, 0xff, 0xff, 0x08, 0x8d, 0x6f, 0x9e, 0xc6, 0x05,
-	0x00, 0x00,
+	// 682 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x94, 0xdd, 0x6e, 0xd3, 0x3e,
+	0x18, 0xc6, 0xd5, 0x76, 0x5d, 0xdb, 0xb7, 0x1f, 0x9b, 0xfc, 0xff, 0xb3, 0x65, 0x05, 0xb1, 0x2a,
+	0x80, 0x54, 0x4e, 0x52, 0x51, 0x3e, 0xce, 0x40, 0x74, 0x03, 0xa4, 0x1e, 0x20, 0x4a, 0x40, 0x48,
+	0x70, 0x52, 0x5c, 0xc7, 0x69, 0xad, 0x35, 0x71, 0x66, 0x3b, 0x85, 0xde, 0x01, 0xf7, 0xc6, 0xcd,
+	0x70, 0x09, 0xc8, 0x76, 0xb2, 0x7e, 0xac, 0x4c, 0x70, 0x16, 0x3f, 0x7e, 0xf3, 0xbc, 0xaf, 0x7f,
+	0x8f, 0x13, 0x38, 0x16, 0x09, 0xe9, 0x11, 0x4c, 0x66, 0xb4, 0x27, 0xa9, 0x58, 0x30, 0x42, 0xbd,
+	0x44, 0x70, 0xc5, 0x51, 0x4b, 0x09, 0xb6, 0x58, 0x7a, 0x66, 0xcb, 0x5b, 0x3c, 0x6a, 0x9f, 0x4e,
+	0x39, 0x9f, 0xce, 0x69, 0xcf, 0xec, 0x4e, 0xd2, 0xb0, 0xa7, 0x58, 0x44, 0xa5, 0xc2, 0x51, 0x62,
+	0x5f, 0x68, 0x3f, 0x9b, 0x32, 0x35, 0x4b, 0x27, 0x1e, 0xe1, 0x51, 0x0f, 0x5f, 0xa6, 0x58, 0x52,
+	0x92, 0x0a, 0xa6, 0x96, 0x3d, 0x63, 0xd4, 0x33, 0x7d, 0x78, 0x14, 0xf1, 0x78, 0xb3, 0x51, 0xfb,
+	0xf6, 0xb6, 0x31, 0x8d, 0x12, 0xb5, 0xb4, 0x9b, 0xee, 0x8f, 0x22, 0x34, 0x06, 0x42, 0xb1, 0x10,
+	0x13, 0x35, 0x8c, 0x43, 0x8e, 0x1e, 0x40, 0x4b, 0x92, 0x19, 0x8d, 0xf0, 0x78, 0x41, 0x85, 0x64,
+	0x3c, 0x76, 0x0a, 0x9d, 0x42, 0xb7, 0xec, 0x37, 0xad, 0xfa, 0xc9, 0x8a, 0xc8, 0x85, 0x06, 0x16,
+	0x64, 0xc6, 0x14, 0x25, 0x2a, 0x15, 0xd4, 0x29, 0x76, 0x0a, 0xdd, 0x9a, 0xbf, 0xa1, 0xa1, 0x27,
+	0x50, 0x21, 0x82, 0x62, 0x45, 0x03, 0xa7, 0xd4, 0x29, 0x74, 0xeb, 0xfd, 0xb6, 0x67, 0x47, 0xf1,
+	0xf2, 0x51, 0xbc, 0x8f, 0xf9, 0x19, 0xfd, 0xbc, 0x54, 0x0f, 0x10, 0x70, 0x72, 0x41, 0xc5, 0xd5,
+	0x00, 0x7b, 0xc6, 0xbb, 0x69, 0xd5, 0x7c, 0x80, 0x16, 0x14, 0xb9, 0x74, 0xca, 0x66, 0xab, 0xc8,
+	0x25, 0x7a, 0x09, 0x87, 0x33, 0x26, 0x15, 0x17, 0xcb, 0x71, 0x82, 0xc9, 0x05, 0x9e, 0x52, 0xe9,
+	0xec, 0x77, 0x4a, 0xdd, 0x7a, 0xff, 0x96, 0x97, 0x91, 0x36, 0x70, 0xbc, 0x91, 0xdd, 0xf5, 0x0f,
+	0xb2, 0xf2, 0x6c, 0x2d, 0xdd, 0xef, 0x80, 0x46, 0xa9, 0xca, 0x61, 0xf8, 0xf4, 0x32, 0xa5, 0x52,
+	0xa1, 0x53, 0xa8, 0xe3, 0x4c, 0x1a, 0xb3, 0xc0, 0xc0, 0xa8, 0xf9, 0x90, 0x4b, 0xc3, 0x00, 0x0d,
+	0xa0, 0xb9, 0x2a, 0x88, 0x43, 0x6e, 0x50, 0xd4, 0xfb, 0x77, 0xbc, 0xcd, 0x7c, 0xbd, 0x75, 0xca,
+	0x1a, 0xd4, 0x6a, 0xe5, 0xfe, 0x2c, 0x42, 0xf5, 0x6c, 0xce, 0x27, 0xff, 0x12, 0x40, 0xc7, 0x9c,
+	0xdf, 0xf6, 0x3a, 0xdc, 0x3c, 0xe1, 0xbb, 0x0f, 0x86, 0xc8, 0x0b, 0x68, 0x66, 0x24, 0xcc, 0x5c,
+	0xd2, 0x29, 0x19, 0x1c, 0x27, 0x3b, 0x71, 0xd8, 0xa9, 0x92, 0xd5, 0x42, 0xa2, 0xe7, 0xd0, 0xc0,
+	0x49, 0x32, 0x67, 0x04, 0x2b, 0xc6, 0x63, 0xe9, 0xec, 0xed, 0x7a, 0x7d, 0xb0, 0xaa, 0xf0, 0x37,
+	0xca, 0x35, 0x38, 0x9e, 0xe0, 0xcb, 0x94, 0x8e, 0x03, 0x26, 0x74, 0x52, 0x25, 0x0d, 0xce, 0x4a,
+	0xaf, 0x98, 0x90, 0xfa, 0xa0, 0xdf, 0xf4, 0x65, 0xe1, 0xa9, 0x1a, 0x87, 0x6c, 0x9e, 0xe5, 0x55,
+	0xf3, 0x9b, 0xb9, 0xfa, 0x46, 0x8b, 0xe8, 0x08, 0xf6, 0x03, 0x36, 0xa5, 0x52, 0x39, 0x15, 0xc3,
+	0x3e, 0x5b, 0xa1, 0x63, 0xa8, 0x04, 0x2c, 0x0c, 0x75, 0x28, 0xd5, 0x7c, 0x23, 0x0c, 0x87, 0x81,
+	0xfb, 0x15, 0x5a, 0xa3, 0x54, 0x69, 0x9e, 0x79, 0x86, 0x6b, 0xa5, 0x85, 0xf5, 0x52, 0xf4, 0x14,
+	0x6a, 0x93, 0x39, 0x9f, 0xd8, 0xdc, 0xec, 0x1d, 0x75, 0xb6, 0x73, 0xcb, 0x83, 0xf1, 0xab, 0x93,
+	0xec, 0xc9, 0x3d, 0x87, 0xfa, 0x28, 0x55, 0x3e, 0x95, 0x09, 0x8f, 0x25, 0xcd, 0xa2, 0x28, 0xdc,
+	0x10, 0x05, 0x82, 0x3d, 0xca, 0xe5, 0xdc, 0xc4, 0x55, 0xf5, 0xcd, 0xb3, 0xfb, 0x1e, 0xfe, 0x7b,
+	0xcb, 0xa4, 0x64, 0xf1, 0x54, 0x77, 0x90, 0x7f, 0x7d, 0xdf, 0x4e, 0xa0, 0x6a, 0x67, 0x0e, 0x74,
+	0xfc, 0x1a, 0x58, 0xc5, 0x0c, 0x16, 0x48, 0xf7, 0x02, 0xfe, 0xdf, 0xb4, 0xcc, 0x06, 0x7c, 0x08,
+	0x87, 0x91, 0xd5, 0xc7, 0xb9, 0x91, 0x31, 0xae, 0xfa, 0x07, 0x99, 0x9e, 0x5f, 0x4e, 0xd4, 0x5d,
+	0x95, 0x6e, 0x75, 0x69, 0x45, 0x2b, 0xeb, 0x61, 0x20, 0xfb, 0xbf, 0x0a, 0x50, 0x3e, 0xd7, 0x90,
+	0xd0, 0xd0, 0xe0, 0xb8, 0xb2, 0x70, 0xb7, 0x09, 0x5e, 0xff, 0xaa, 0xda, 0x47, 0xd7, 0xfe, 0x04,
+	0xaf, 0xf5, 0x4f, 0x09, 0x0d, 0xa0, 0x92, 0x65, 0x87, 0xee, 0xee, 0xb0, 0x59, 0x0b, 0xf5, 0x8f,
+	0x16, 0x9f, 0xa1, 0xb1, 0x0e, 0x01, 0xdd, 0xdb, 0xf6, 0xd9, 0x41, 0xbd, 0x7d, 0xff, 0xe6, 0x22,
+	0xcb, 0xf1, 0xac, 0xf2, 0xa5, 0x6c, 0x0a, 0x26, 0xfb, 0xa6, 0xe7, 0xe3, 0xdf, 0x01, 0x00, 0x00,
+	0xff, 0xff, 0xf9, 0x1a, 0xc0, 0xa0, 0xdd, 0x05, 0x00, 0x00,
 }

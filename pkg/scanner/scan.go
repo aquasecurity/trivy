@@ -6,9 +6,11 @@ import (
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/extractor"
-	"github.com/aquasecurity/fanal/extractor/docker"
+	"github.com/aquasecurity/fanal/artifact"
+	aimage "github.com/aquasecurity/fanal/artifact/image"
+	flocal "github.com/aquasecurity/fanal/artifact/local"
+	"github.com/aquasecurity/fanal/artifact/remote"
+	"github.com/aquasecurity/fanal/image"
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -19,8 +21,6 @@ import (
 
 // StandaloneSuperSet is used in the standalone mode
 var StandaloneSuperSet = wire.NewSet(
-	analyzer.New,
-	wire.Bind(new(Analyzer), new(analyzer.Config)),
 	local.SuperSet,
 	wire.Bind(new(Driver), new(local.Scanner)),
 	NewScanner,
@@ -28,21 +28,30 @@ var StandaloneSuperSet = wire.NewSet(
 
 var StandaloneDockerSet = wire.NewSet(
 	types.GetDockerOption,
-	docker.NewDockerExtractor,
-	wire.Bind(new(extractor.Extractor), new(docker.Extractor)),
+	image.NewDockerImage,
+	aimage.NewArtifact,
 	StandaloneSuperSet,
 )
 
 var StandaloneArchiveSet = wire.NewSet(
-	docker.NewArchiveImageExtractor,
-	wire.Bind(new(extractor.Extractor), new(docker.Extractor)),
+	image.NewArchiveImage,
+	aimage.NewArtifact,
+	StandaloneSuperSet,
+)
+
+var StandaloneFilesystemSet = wire.NewSet(
+	flocal.NewArtifact,
+	StandaloneSuperSet,
+)
+
+var StandaloneRepositorySet = wire.NewSet(
+	remote.NewArtifact,
 	StandaloneSuperSet,
 )
 
 // RemoteSuperSet is used in the client mode
 var RemoteSuperSet = wire.NewSet(
-	analyzer.New,
-	wire.Bind(new(Analyzer), new(analyzer.Config)),
+	aimage.NewArtifact,
 	client.SuperSet,
 	wire.Bind(new(Driver), new(client.Scanner)),
 	NewScanner,
@@ -50,45 +59,38 @@ var RemoteSuperSet = wire.NewSet(
 
 var RemoteDockerSet = wire.NewSet(
 	types.GetDockerOption,
-	docker.NewDockerExtractor,
-	wire.Bind(new(extractor.Extractor), new(docker.Extractor)),
+	image.NewDockerImage,
 	RemoteSuperSet,
 )
 
 var RemoteArchiveSet = wire.NewSet(
-	docker.NewArchiveImageExtractor,
-	wire.Bind(new(extractor.Extractor), new(docker.Extractor)),
+	image.NewArchiveImage,
 	RemoteSuperSet,
 )
 
 type Scanner struct {
 	driver   Driver
-	analyzer Analyzer
+	artifact artifact.Artifact
 }
 
 type Driver interface {
 	Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (results report.Results, osFound *ftypes.OS, eols bool, err error)
 }
 
-type Analyzer interface {
-	Analyze(ctx context.Context) (info ftypes.ImageReference, err error)
+func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
+	return Scanner{driver: driver, artifact: ar}
 }
 
-func NewScanner(driver Driver, ac Analyzer) Scanner {
-	return Scanner{driver: driver, analyzer: ac}
-}
-
-func (s Scanner) ScanImage(options types.ScanOptions) (report.Results, error) {
-	ctx := context.Background()
-	imageInfo, err := s.analyzer.Analyze(ctx)
+func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (report.Results, error) {
+	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {
 		return nil, xerrors.Errorf("failed analysis: %w", err)
 	}
 
-	log.Logger.Debugf("Image ID: %s", imageInfo.ID)
-	log.Logger.Debugf("Layer IDs: %v", imageInfo.LayerIDs)
+	log.Logger.Debugf("Artifact ID: %s", artifactInfo.ID)
+	log.Logger.Debugf("Blob IDs: %v", artifactInfo.BlobIDs)
 
-	results, osFound, eosl, err := s.driver.Scan(imageInfo.Name, imageInfo.ID, imageInfo.LayerIDs, options)
+	results, osFound, eosl, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
 		return nil, xerrors.Errorf("scan failed: %w", err)
 	}

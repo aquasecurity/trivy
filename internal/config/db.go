@@ -10,6 +10,7 @@ type DBConfig struct {
 	DownloadDBOnly bool
 	SkipUpdate     bool
 	Light          bool
+	NoProgress     bool
 }
 
 func NewDBConfig(c *cli.Context) DBConfig {
@@ -18,6 +19,7 @@ func NewDBConfig(c *cli.Context) DBConfig {
 		DownloadDBOnly: c.Bool("download-db-only"),
 		SkipUpdate:     c.Bool("skip-update"),
 		Light:          c.Bool("light"),
+		NoProgress:     c.Bool("no-progress"),
 	}
 }
 

@@ -19,13 +19,15 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/library/yarn"
 	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/fanal/analyzer/os/amazonlinux"
-	_ "github.com/aquasecurity/fanal/analyzer/os/debianbase"
+	_ "github.com/aquasecurity/fanal/analyzer/os/debian"
 	_ "github.com/aquasecurity/fanal/analyzer/os/photon"
 	_ "github.com/aquasecurity/fanal/analyzer/os/redhatbase"
 	_ "github.com/aquasecurity/fanal/analyzer/os/suse"
+	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpmcmd"
+	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
 	libDetector "github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
@@ -36,8 +38,8 @@ import (
 )
 
 var SuperSet = wire.NewSet(
-	analyzer.NewApplier,
-	wire.Bind(new(Applier), new(analyzer.Applier)),
+	applier.NewApplier,
+	wire.Bind(new(Applier), new(applier.Applier)),
 	ospkgDetector.SuperSet,
 	wire.Bind(new(OspkgDetector), new(ospkgDetector.Detector)),
 	libDetector.SuperSet,
@@ -46,7 +48,7 @@ var SuperSet = wire.NewSet(
 )
 
 type Applier interface {
-	ApplyLayers(imageID string, layerIDs []string) (detail ftypes.ImageDetail, err error)
+	ApplyLayers(artifactID string, blobIDs []string) (detail ftypes.ArtifactDetail, err error)
 }
 
 type OspkgDetector interface {
@@ -72,7 +74,7 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 	if err != nil {
 		switch err {
 		case analyzer.ErrUnknownOS:
-			log.Logger.Warn("This OS is not supported and vulnerabilities in OS packages are not detected.")
+			log.Logger.Warn("OS is not detected and vulnerabilities in OS packages are not detected.")
 		case analyzer.ErrNoPkgsDetected:
 			log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 			log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)

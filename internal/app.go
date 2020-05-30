@@ -12,9 +12,9 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/internal/artifact"
 	"github.com/aquasecurity/trivy/internal/client"
 	"github.com/aquasecurity/trivy/internal/server"
-	"github.com/aquasecurity/trivy/internal/standalone"
 	tdb "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
@@ -240,10 +240,12 @@ func NewApp(version string) *cli.App {
 	app.Flags = flags
 	app.Commands = []*cli.Command{
 		NewImageCommand(),
+		NewFilesystemCommand(),
+		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
 	}
-	app.Action = standalone.Run
+	app.Action = artifact.ImageRun
 	return app
 }
 
@@ -320,8 +322,62 @@ func NewImageCommand() *cli.Command {
 		Name:    "image",
 		Aliases: []string{"i"},
 		Usage:   "scan an image",
-		Action:  standalone.Run,
+		Action:  artifact.ImageRun,
 		Flags:   imageFlags,
+	}
+}
+
+func NewFilesystemCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "filesystem",
+		Aliases: []string{"fs"},
+		Usage:   "scan local filesystem",
+		Action:  artifact.FilesystemRun,
+		Flags: []cli.Flag{
+			&templateFlag,
+			&formatFlag,
+			&inputFlag,
+			&severityFlag,
+			&outputFlag,
+			&exitCodeFlag,
+			&clearCacheFlag,
+			&quietFlag,
+			&ignoreUnfixedFlag,
+			&debugFlag,
+			&removedPkgsFlag,
+			&vulnTypeFlag,
+			&ignoreFileFlag,
+			&cacheDirFlag,
+			&timeoutFlag,
+			&noProgressFlag,
+		},
+	}
+}
+
+func NewRepositoryCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "repository",
+		Aliases: []string{"repo"},
+		Usage:   "scan remote repository",
+		Action:  artifact.RepositoryRun,
+		Flags: []cli.Flag{
+			&templateFlag,
+			&formatFlag,
+			&inputFlag,
+			&severityFlag,
+			&outputFlag,
+			&exitCodeFlag,
+			&clearCacheFlag,
+			&quietFlag,
+			&ignoreUnfixedFlag,
+			&debugFlag,
+			&removedPkgsFlag,
+			&vulnTypeFlag,
+			&ignoreFileFlag,
+			&cacheDirFlag,
+			&timeoutFlag,
+			&noProgressFlag,
+		},
 	}
 }
 

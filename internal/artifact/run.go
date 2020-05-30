@@ -1,17 +1,17 @@
-package standalone
+package artifact
 
 import (
 	"context"
 	l "log"
 	"os"
+	"time"
 
-	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/internal/artifact/config"
 	"github.com/aquasecurity/trivy/internal/operation"
-	"github.com/aquasecurity/trivy/internal/standalone/config"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/scanner"
@@ -19,22 +19,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-func Run(cliCtx *cli.Context) error {
-	c, err := config.New(cliCtx)
-	if err != nil {
-		return err
-	}
-	return run(c)
-}
+type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration) (
+	scanner.Scanner, func(), error)
 
-func run(c config.Config) (err error) {
-	if err = log.InitLogger(c.Debug, c.Quiet); err != nil {
+func run(c config.Config, initializeScanner InitializeScanner) error {
+	if err := log.InitLogger(c.Debug, c.Quiet); err != nil {
 		l.Fatal(err)
-	}
-
-	// initialize config
-	if err = c.Init(); err != nil {
-		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
 
 	// configure cache dir
@@ -70,32 +60,25 @@ func run(c config.Config) (err error) {
 	}
 	defer db.Close()
 
-	var scanner scanner.Scanner
-	ctx := context.Background()
-
-	cleanup := func() {}
+	target := c.Target
 	if c.Input != "" {
-		// scan tar file
-		scanner, err = initializeArchiveScanner(ctx, c.Input, cacheClient, cacheClient, c.Timeout)
-		if err != nil {
-			return xerrors.Errorf("unable to initialize the archive scanner: %w", err)
-		}
-	} else {
-		// scan an image in Docker Engine or Docker Registry
-		scanner, cleanup, err = initializeDockerScanner(ctx, c.ImageName, cacheClient, cacheClient, c.Timeout)
-		if err != nil {
-			return xerrors.Errorf("unable to initialize the docker scanner: %w", err)
-		}
+		target = c.Input
+	}
+
+	ctx := context.Background()
+	scanner, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, c.Timeout)
+	if err != nil {
+		return xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
 	defer cleanup()
 
 	scanOptions := types.ScanOptions{
 		VulnType:            c.VulnType,
-		ScanRemovedPackages: c.ScanRemovedPkgs,
+		ScanRemovedPackages: c.ScanRemovedPkgs, // this is valid only for image subcommand
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	results, err := scanner.ScanImage(scanOptions)
+	results, err := scanner.ScanArtifact(ctx, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}

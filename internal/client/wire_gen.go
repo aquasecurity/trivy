@@ -7,9 +7,9 @@ package client
 
 import (
 	"context"
-	"github.com/aquasecurity/fanal/analyzer"
+	image2 "github.com/aquasecurity/fanal/artifact/image"
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/extractor/docker"
+	"github.com/aquasecurity/fanal/image"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
@@ -20,33 +20,33 @@ import (
 
 // Injectors from inject.go:
 
-func initializeDockerScanner(ctx context.Context, imageName string, layerCache cache.ImageCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration) (scanner.Scanner, func(), error) {
+func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration) (scanner.Scanner, func(), error) {
 	scannerScanner := client.NewProtobufClient(url)
 	clientScanner := client.NewScanner(customHeaders, scannerScanner)
 	dockerOption, err := types.GetDockerOption(timeout)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
-	extractor, cleanup, err := docker.NewDockerExtractor(ctx, imageName, dockerOption)
+	imageImage, cleanup, err := image.NewDockerImage(ctx, imageName, dockerOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
-	config := analyzer.New(extractor, layerCache)
-	scanner2 := scanner.NewScanner(clientScanner, config)
+	artifact := image2.NewArtifact(imageImage, artifactCache)
+	scanner2 := scanner.NewScanner(clientScanner, artifact)
 	return scanner2, func() {
 		cleanup()
 	}, nil
 }
 
-func initializeArchiveScanner(ctx context.Context, filePath string, layerCache cache.ImageCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration) (scanner.Scanner, error) {
+func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration) (scanner.Scanner, error) {
 	scannerScanner := client.NewProtobufClient(url)
 	clientScanner := client.NewScanner(customHeaders, scannerScanner)
-	extractor, err := docker.NewArchiveImageExtractor(filePath)
+	imageImage, err := image.NewArchiveImage(filePath)
 	if err != nil {
 		return scanner.Scanner{}, err
 	}
-	config := analyzer.New(extractor, layerCache)
-	scanner2 := scanner.NewScanner(clientScanner, config)
+	artifact := image2.NewArtifact(imageImage, artifactCache)
+	scanner2 := scanner.NewScanner(clientScanner, artifact)
 	return scanner2, nil
 }
 

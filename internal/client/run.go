@@ -58,7 +58,7 @@ func run(c config.Config) (err error) {
 		}
 	} else {
 		// scan an image in Docker Engine or Docker Registry
-		scanner, cleanup, err = initializeDockerScanner(ctx, c.ImageName, remoteCache,
+		scanner, cleanup, err = initializeDockerScanner(ctx, c.Target, remoteCache,
 			client.CustomHeaders(c.CustomHeaders), client.RemoteURL(c.RemoteAddr), c.Timeout)
 		if err != nil {
 			return xerrors.Errorf("unable to initialize the docker scanner: %w", err)
@@ -72,7 +72,7 @@ func run(c config.Config) (err error) {
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	results, err := scanner.ScanImage(scanOptions)
+	results, err := scanner.ScanArtifact(ctx, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}

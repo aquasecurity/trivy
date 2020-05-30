@@ -45,9 +45,9 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 	err := r.Retry(func() error {
 		var err error
 		res, err = s.client.Scan(ctx, &rpc.ScanRequest{
-			Target:   target,
-			ImageId:  imageID,
-			LayerIds: layerIDs,
+			Target:     target,
+			ArtifactId: imageID,
+			BlobIds:    layerIDs,
 			Options: &rpc.ScanOptions{
 				VulnType: options.VulnType,
 			},
