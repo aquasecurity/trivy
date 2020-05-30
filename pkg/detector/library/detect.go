@@ -37,12 +37,12 @@ func NewDetector(factory Factory) Detector {
 
 func (d Detector) Detect(_, filePath string, _ time.Time, pkgs []ftypes.LibraryInfo) ([]types.DetectedVulnerability, error) {
 	log.Logger.Debugf("Detecting library vulnerabilities, path: %s", filePath)
-	driver := d.driverFactory.NewDriver(filepath.Base(filePath))
-	if driver == nil {
-		return nil, xerrors.New("unknown file type")
+	driver, err := d.driverFactory.NewDriver(filepath.Base(filePath))
+	if err != nil {
+		return nil, xerrors.Errorf("failed to new driver: %w", err)
 	}
 
-	vulns, err := detect(*driver, pkgs)
+	vulns, err := detect(driver, pkgs)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to scan %s vulnerabilities: %w", driver.Type(), err)
 	}

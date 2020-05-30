@@ -1,6 +1,8 @@
 package library
 
 import (
+	"fmt"
+
 	"github.com/aquasecurity/fanal/analyzer/library"
 	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
@@ -15,7 +17,7 @@ import (
 )
 
 type Factory interface {
-	NewDriver(filename string) *Driver
+	NewDriver(filename string) (Driver, error)
 }
 
 type advisory interface {
@@ -24,7 +26,7 @@ type advisory interface {
 
 type DriverFactory struct{}
 
-func (d DriverFactory) NewDriver(filename string) *Driver {
+func (d DriverFactory) NewDriver(filename string) (Driver, error) {
 	// TODO: use DI
 	var driver Driver
 	switch filename {
@@ -43,9 +45,9 @@ func (d DriverFactory) NewDriver(filename string) *Driver {
 	case "poetry.lock":
 		driver = NewPoetryDriver()
 	default:
-		return nil
+		return Driver{}, xerrors.New(fmt.Sprintf("unsupport filename %s", filename))
 	}
-	return &driver
+	return driver, nil
 }
 
 type Driver struct {
