@@ -1,21 +1,14 @@
 package bundler
 
 import (
-	"os"
 	"strings"
 
 	"github.com/knqyf263/go-version"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/bundler"
-	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	bundlerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/bundler"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
-)
-
-const (
-	scannerType = "bundler"
 )
 
 var (
@@ -34,7 +27,7 @@ type VulnSrc interface {
 	Get(pkgName string) ([]bundlerSrc.Advisory, error)
 }
 
-type Scanner struct {
+type Advisory struct {
 	vs VulnSrc
 }
 
@@ -45,16 +38,16 @@ func massageLockFileVersion(version string) string {
 	return platformReplacer.Replace(version)
 }
 
-func NewScanner() *Scanner {
-	return &Scanner{
+func NewAdvisory() *Advisory {
+	return &Advisory{
 		vs: bundlerSrc.NewVulnSrc(),
 	}
 }
 
-func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
-	advisories, err := s.vs.Get(pkgName)
+func (a *Advisory) DetectVulnerabilities(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+	advisories, err := a.vs.Get(pkgName)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.Type(), err)
+		return nil, xerrors.Errorf("failed to get bundler advisories: %w", err)
 	}
 
 	var vulns []types.DetectedVulnerability
@@ -75,21 +68,4 @@ func (s *Scanner) Detect(pkgName string, pkgVer *version.Version) ([]types.Detec
 		vulns = append(vulns, vuln)
 	}
 	return vulns, nil
-}
-
-func (s *Scanner) ParseLockfile(f *os.File) ([]ptypes.Library, error) {
-	libs, err := bundler.Parse(f)
-	if err != nil {
-		return nil, xerrors.Errorf("invalid Gemfile.lock format: %w", err)
-	}
-
-	for _, lib := range libs {
-		lib.Version = massageLockFileVersion(lib.Version)
-	}
-
-	return libs, nil
-}
-
-func (s *Scanner) Type() string {
-	return scannerType
 }
