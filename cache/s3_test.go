@@ -23,7 +23,7 @@ func (m *mockS3Client) WaitUntilObjectExists(*s3.HeadObjectInput) error {
 
 }
 
-func TestS3Cache_PutLayer(t *testing.T) {
+func TestS3Cache_PutBlob(t *testing.T) {
 	mockSvc := &mockS3Client{}
 
 	type fields struct {
@@ -32,8 +32,8 @@ func TestS3Cache_PutLayer(t *testing.T) {
 		BucketName string
 	}
 	type args struct {
-		diffID    string
-		layerInfo types.BlobInfo
+		blobID   string
+		blobInfo types.BlobInfo
 	}
 	tests := []struct {
 		name    string
@@ -42,10 +42,11 @@ func TestS3Cache_PutLayer(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:   "PutLayer",
+			name:   "happy path",
 			fields: fields{S3: mockSvc, BucketName: "test"},
-			args: args{diffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-				layerInfo: types.BlobInfo{
+			args: args{
+				blobID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+				blobInfo: types.BlobInfo{
 					SchemaVersion: 1,
 					OS: &types.OS{
 						Family: "alpine",
@@ -61,14 +62,14 @@ func TestS3Cache_PutLayer(t *testing.T) {
 				downloader: tt.fields.Downloader,
 				bucketName: tt.fields.BucketName,
 			}
-			if err := cache.PutLayer(tt.args.diffID, tt.args.layerInfo); (err != nil) != tt.wantErr {
-				t.Errorf("S3Cache.PutLayer() error = %v, wantErr %v", err, tt.wantErr)
+			if err := cache.PutBlob(tt.args.blobID, tt.args.blobInfo); (err != nil) != tt.wantErr {
+				t.Errorf("S3Cache.PutBlob() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
 }
 
-func TestS3Cache_PutImage(t *testing.T) {
+func TestS3Cache_PutArtifact(t *testing.T) {
 	mockSvc := &mockS3Client{}
 
 	type fields struct {
@@ -77,8 +78,8 @@ func TestS3Cache_PutImage(t *testing.T) {
 		BucketName string
 	}
 	type args struct {
-		imageID     string
-		imageConfig types.ArtifactInfo
+		artifactID     string
+		artifactConfig types.ArtifactInfo
 	}
 	tests := []struct {
 		name    string
@@ -87,10 +88,11 @@ func TestS3Cache_PutImage(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:   "Happy path",
+			name:   "happy path",
 			fields: fields{S3: mockSvc, BucketName: "test"},
-			args: args{imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
-				imageConfig: types.ArtifactInfo{
+			args: args{
+				artifactID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
+				artifactConfig: types.ArtifactInfo{
 					SchemaVersion: 1,
 					Architecture:  "amd64",
 					Created:       time.Date(2020, 1, 2, 3, 4, 5, 0, time.UTC),
@@ -112,8 +114,8 @@ func TestS3Cache_PutImage(t *testing.T) {
 				downloader: tt.fields.Downloader,
 				bucketName: tt.fields.BucketName,
 			}
-			if err := cache.PutImage(tt.args.imageID, tt.args.imageConfig); (err != nil) != tt.wantErr {
-				t.Errorf("S3Cache.PutImage() error = %v, wantErr %v", err, tt.wantErr)
+			if err := cache.PutArtifact(tt.args.artifactID, tt.args.artifactConfig); (err != nil) != tt.wantErr {
+				t.Errorf("S3Cache.PutArtifact() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
