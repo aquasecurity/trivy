@@ -81,6 +81,8 @@ func (_m *MockLocalArtifactCache) Close() error {
 type LocalArtifactCacheGetArtifactArgs struct {
 	ArtifactID         string
 	ArtifactIDAnything bool
+	Opts               []Option
+	OptsAnything       bool
 }
 
 type LocalArtifactCacheGetArtifactReturns struct {
@@ -100,6 +102,11 @@ func (_m *MockLocalArtifactCache) ApplyGetArtifactExpectation(e LocalArtifactCac
 	} else {
 		args = append(args, e.Args.ArtifactID)
 	}
+	if e.Args.OptsAnything {
+		args = append(args, mock.Anything)
+	} else if e.Args.Opts != nil {
+		args = append(args, e.Args.Opts)
+	}
 	_m.On("GetArtifact", args...).Return(e.Returns.ArtifactInfo, e.Returns.Err)
 }
 
@@ -109,20 +116,27 @@ func (_m *MockLocalArtifactCache) ApplyGetArtifactExpectations(expectations []Lo
 	}
 }
 
-// GetArtifact provides a mock function with given fields: artifactID
-func (_m *MockLocalArtifactCache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
-	ret := _m.Called(artifactID)
+// GetArtifact provides a mock function with given fields: artifactID, opts
+func (_m *MockLocalArtifactCache) GetArtifact(artifactID string, opts ...Option) (types.ArtifactInfo, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, artifactID)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
 
 	var r0 types.ArtifactInfo
-	if rf, ok := ret.Get(0).(func(string) types.ArtifactInfo); ok {
-		r0 = rf(artifactID)
+	if rf, ok := ret.Get(0).(func(string, ...Option) types.ArtifactInfo); ok {
+		r0 = rf(artifactID, opts...)
 	} else {
 		r0 = ret.Get(0).(types.ArtifactInfo)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(artifactID)
+	if rf, ok := ret.Get(1).(func(string, ...Option) error); ok {
+		r1 = rf(artifactID, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -133,6 +147,8 @@ func (_m *MockLocalArtifactCache) GetArtifact(artifactID string) (types.Artifact
 type LocalArtifactCacheGetBlobArgs struct {
 	BlobID         string
 	BlobIDAnything bool
+	Opts           []Option
+	OptsAnything   bool
 }
 
 type LocalArtifactCacheGetBlobReturns struct {
@@ -152,6 +168,11 @@ func (_m *MockLocalArtifactCache) ApplyGetBlobExpectation(e LocalArtifactCacheGe
 	} else {
 		args = append(args, e.Args.BlobID)
 	}
+	if e.Args.OptsAnything {
+		args = append(args, mock.Anything)
+	} else if e.Args.Opts != nil {
+		args = append(args, e.Args.Opts)
+	}
 	_m.On("GetBlob", args...).Return(e.Returns.BlobInfo, e.Returns.Err)
 }
 
@@ -161,20 +182,27 @@ func (_m *MockLocalArtifactCache) ApplyGetBlobExpectations(expectations []LocalA
 	}
 }
 
-// GetBlob provides a mock function with given fields: blobID
-func (_m *MockLocalArtifactCache) GetBlob(blobID string) (types.BlobInfo, error) {
-	ret := _m.Called(blobID)
+// GetBlob provides a mock function with given fields: blobID, opts
+func (_m *MockLocalArtifactCache) GetBlob(blobID string, opts ...Option) (types.BlobInfo, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, blobID)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
 
 	var r0 types.BlobInfo
-	if rf, ok := ret.Get(0).(func(string) types.BlobInfo); ok {
-		r0 = rf(blobID)
+	if rf, ok := ret.Get(0).(func(string, ...Option) types.BlobInfo); ok {
+		r0 = rf(blobID, opts...)
 	} else {
 		r0 = ret.Get(0).(types.BlobInfo)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(blobID)
+	if rf, ok := ret.Get(1).(func(string, ...Option) error); ok {
+		r1 = rf(blobID, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
