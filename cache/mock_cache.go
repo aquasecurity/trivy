@@ -81,8 +81,6 @@ func (_m *MockCache) Close() error {
 type CacheGetArtifactArgs struct {
 	ArtifactID         string
 	ArtifactIDAnything bool
-	Opts               []Option
-	OptsAnything       bool
 }
 
 type CacheGetArtifactReturns struct {
@@ -102,11 +100,6 @@ func (_m *MockCache) ApplyGetArtifactExpectation(e CacheGetArtifactExpectation) 
 	} else {
 		args = append(args, e.Args.ArtifactID)
 	}
-	if e.Args.OptsAnything {
-		args = append(args, mock.Anything)
-	} else if e.Args.Opts != nil {
-		args = append(args, e.Args.Opts)
-	}
 	_m.On("GetArtifact", args...).Return(e.Returns.ArtifactInfo, e.Returns.Err)
 }
 
@@ -116,27 +109,20 @@ func (_m *MockCache) ApplyGetArtifactExpectations(expectations []CacheGetArtifac
 	}
 }
 
-// GetArtifact provides a mock function with given fields: artifactID, opts
-func (_m *MockCache) GetArtifact(artifactID string, opts ...Option) (types.ArtifactInfo, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, artifactID)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// GetArtifact provides a mock function with given fields: artifactID
+func (_m *MockCache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
+	ret := _m.Called(artifactID)
 
 	var r0 types.ArtifactInfo
-	if rf, ok := ret.Get(0).(func(string, ...Option) types.ArtifactInfo); ok {
-		r0 = rf(artifactID, opts...)
+	if rf, ok := ret.Get(0).(func(string) types.ArtifactInfo); ok {
+		r0 = rf(artifactID)
 	} else {
 		r0 = ret.Get(0).(types.ArtifactInfo)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, ...Option) error); ok {
-		r1 = rf(artifactID, opts...)
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(artifactID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -147,8 +133,6 @@ func (_m *MockCache) GetArtifact(artifactID string, opts ...Option) (types.Artif
 type CacheGetBlobArgs struct {
 	BlobID         string
 	BlobIDAnything bool
-	Opts           []Option
-	OptsAnything   bool
 }
 
 type CacheGetBlobReturns struct {
@@ -168,11 +152,6 @@ func (_m *MockCache) ApplyGetBlobExpectation(e CacheGetBlobExpectation) {
 	} else {
 		args = append(args, e.Args.BlobID)
 	}
-	if e.Args.OptsAnything {
-		args = append(args, mock.Anything)
-	} else if e.Args.Opts != nil {
-		args = append(args, e.Args.Opts)
-	}
 	_m.On("GetBlob", args...).Return(e.Returns.BlobInfo, e.Returns.Err)
 }
 
@@ -182,27 +161,20 @@ func (_m *MockCache) ApplyGetBlobExpectations(expectations []CacheGetBlobExpecta
 	}
 }
 
-// GetBlob provides a mock function with given fields: blobID, opts
-func (_m *MockCache) GetBlob(blobID string, opts ...Option) (types.BlobInfo, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, blobID)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// GetBlob provides a mock function with given fields: blobID
+func (_m *MockCache) GetBlob(blobID string) (types.BlobInfo, error) {
+	ret := _m.Called(blobID)
 
 	var r0 types.BlobInfo
-	if rf, ok := ret.Get(0).(func(string, ...Option) types.BlobInfo); ok {
-		r0 = rf(blobID, opts...)
+	if rf, ok := ret.Get(0).(func(string) types.BlobInfo); ok {
+		r0 = rf(blobID)
 	} else {
 		r0 = ret.Get(0).(types.BlobInfo)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, ...Option) error); ok {
-		r1 = rf(blobID, opts...)
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(blobID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -215,8 +187,6 @@ type CacheMissingBlobsArgs struct {
 	ArtifactIDAnything bool
 	BlobIDs            []string
 	BlobIDsAnything    bool
-	Opts               []Option
-	OptsAnything       bool
 }
 
 type CacheMissingBlobsReturns struct {
@@ -242,11 +212,6 @@ func (_m *MockCache) ApplyMissingBlobsExpectation(e CacheMissingBlobsExpectation
 	} else {
 		args = append(args, e.Args.BlobIDs)
 	}
-	if e.Args.OptsAnything {
-		args = append(args, mock.Anything)
-	} else if e.Args.Opts != nil {
-		args = append(args, e.Args.Opts)
-	}
 	_m.On("MissingBlobs", args...).Return(e.Returns.MissingArtifact, e.Returns.MissingBlobIDs, e.Returns.Err)
 }
 
@@ -256,27 +221,20 @@ func (_m *MockCache) ApplyMissingBlobsExpectations(expectations []CacheMissingBl
 	}
 }
 
-// MissingBlobs provides a mock function with given fields: artifactID, blobIDs, opts
-func (_m *MockCache) MissingBlobs(artifactID string, blobIDs []string, opts ...Option) (bool, []string, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, artifactID, blobIDs)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// MissingBlobs provides a mock function with given fields: artifactID, blobIDs
+func (_m *MockCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []string, error) {
+	ret := _m.Called(artifactID, blobIDs)
 
 	var r0 bool
-	if rf, ok := ret.Get(0).(func(string, []string, ...Option) bool); ok {
-		r0 = rf(artifactID, blobIDs, opts...)
+	if rf, ok := ret.Get(0).(func(string, []string) bool); ok {
+		r0 = rf(artifactID, blobIDs)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}
 
 	var r1 []string
-	if rf, ok := ret.Get(1).(func(string, []string, ...Option) []string); ok {
-		r1 = rf(artifactID, blobIDs, opts...)
+	if rf, ok := ret.Get(1).(func(string, []string) []string); ok {
+		r1 = rf(artifactID, blobIDs)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).([]string)
@@ -284,8 +242,8 @@ func (_m *MockCache) MissingBlobs(artifactID string, blobIDs []string, opts ...O
 	}
 
 	var r2 error
-	if rf, ok := ret.Get(2).(func(string, []string, ...Option) error); ok {
-		r2 = rf(artifactID, blobIDs, opts...)
+	if rf, ok := ret.Get(2).(func(string, []string) error); ok {
+		r2 = rf(artifactID, blobIDs)
 	} else {
 		r2 = ret.Error(2)
 	}
@@ -298,8 +256,6 @@ type CachePutArtifactArgs struct {
 	ArtifactIDAnything   bool
 	ArtifactInfo         types.ArtifactInfo
 	ArtifactInfoAnything bool
-	Opts                 []Option
-	OptsAnything         bool
 }
 
 type CachePutArtifactReturns struct {
@@ -323,11 +279,6 @@ func (_m *MockCache) ApplyPutArtifactExpectation(e CachePutArtifactExpectation) 
 	} else {
 		args = append(args, e.Args.ArtifactInfo)
 	}
-	if e.Args.OptsAnything {
-		args = append(args, mock.Anything)
-	} else if e.Args.Opts != nil {
-		args = append(args, e.Args.Opts)
-	}
 	_m.On("PutArtifact", args...).Return(e.Returns.Err)
 }
 
@@ -337,20 +288,13 @@ func (_m *MockCache) ApplyPutArtifactExpectations(expectations []CachePutArtifac
 	}
 }
 
-// PutArtifact provides a mock function with given fields: artifactID, artifactInfo, opts
-func (_m *MockCache) PutArtifact(artifactID string, artifactInfo types.ArtifactInfo, opts ...Option) error {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, artifactID, artifactInfo)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// PutArtifact provides a mock function with given fields: artifactID, artifactInfo
+func (_m *MockCache) PutArtifact(artifactID string, artifactInfo types.ArtifactInfo) error {
+	ret := _m.Called(artifactID, artifactInfo)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, types.ArtifactInfo, ...Option) error); ok {
-		r0 = rf(artifactID, artifactInfo, opts...)
+	if rf, ok := ret.Get(0).(func(string, types.ArtifactInfo) error); ok {
+		r0 = rf(artifactID, artifactInfo)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -363,8 +307,6 @@ type CachePutBlobArgs struct {
 	BlobIDAnything   bool
 	BlobInfo         types.BlobInfo
 	BlobInfoAnything bool
-	Opts             []Option
-	OptsAnything     bool
 }
 
 type CachePutBlobReturns struct {
@@ -388,11 +330,6 @@ func (_m *MockCache) ApplyPutBlobExpectation(e CachePutBlobExpectation) {
 	} else {
 		args = append(args, e.Args.BlobInfo)
 	}
-	if e.Args.OptsAnything {
-		args = append(args, mock.Anything)
-	} else if e.Args.Opts != nil {
-		args = append(args, e.Args.Opts)
-	}
 	_m.On("PutBlob", args...).Return(e.Returns.Err)
 }
 
@@ -402,20 +339,13 @@ func (_m *MockCache) ApplyPutBlobExpectations(expectations []CachePutBlobExpecta
 	}
 }
 
-// PutBlob provides a mock function with given fields: blobID, blobInfo, opts
-func (_m *MockCache) PutBlob(blobID string, blobInfo types.BlobInfo, opts ...Option) error {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, blobID, blobInfo)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// PutBlob provides a mock function with given fields: blobID, blobInfo
+func (_m *MockCache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
+	ret := _m.Called(blobID, blobInfo)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, types.BlobInfo, ...Option) error); ok {
-		r0 = rf(blobID, blobInfo, opts...)
+	if rf, ok := ret.Get(0).(func(string, types.BlobInfo) error); ok {
+		r0 = rf(blobID, blobInfo)
 	} else {
 		r0 = ret.Error(0)
 	}

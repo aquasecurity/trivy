@@ -1,9 +1,10 @@
-package cache
+package cache_test
 
 import (
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
@@ -30,6 +31,7 @@ func TestS3Cache_PutBlob(t *testing.T) {
 		S3         s3iface.S3API
 		Downloader *s3manager.Downloader
 		BucketName string
+		Prefix     string
 	}
 	type args struct {
 		blobID   string
@@ -42,8 +44,12 @@ func TestS3Cache_PutBlob(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:   "happy path",
-			fields: fields{S3: mockSvc, BucketName: "test"},
+			name: "happy path",
+			fields: fields{
+				S3:         mockSvc,
+				BucketName: "test",
+				Prefix:     "prefix",
+			},
 			args: args{
 				blobID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				blobInfo: types.BlobInfo{
@@ -57,12 +63,8 @@ func TestS3Cache_PutBlob(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cache := S3Cache{
-				s3:         tt.fields.S3,
-				downloader: tt.fields.Downloader,
-				bucketName: tt.fields.BucketName,
-			}
-			if err := cache.PutBlob(tt.args.blobID, tt.args.blobInfo); (err != nil) != tt.wantErr {
+			c := cache.NewS3Cache(tt.fields.BucketName, tt.fields.Prefix, tt.fields.S3, tt.fields.Downloader)
+			if err := c.PutBlob(tt.args.blobID, tt.args.blobInfo); (err != nil) != tt.wantErr {
 				t.Errorf("S3Cache.PutBlob() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -76,6 +78,7 @@ func TestS3Cache_PutArtifact(t *testing.T) {
 		S3         s3iface.S3API
 		Downloader *s3manager.Downloader
 		BucketName string
+		Prefix     string
 	}
 	type args struct {
 		artifactID     string
@@ -88,8 +91,12 @@ func TestS3Cache_PutArtifact(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:   "happy path",
-			fields: fields{S3: mockSvc, BucketName: "test"},
+			name: "happy path",
+			fields: fields{
+				S3:         mockSvc,
+				BucketName: "test",
+				Prefix:     "prefix",
+			},
 			args: args{
 				artifactID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
 				artifactConfig: types.ArtifactInfo{
@@ -109,51 +116,9 @@ func TestS3Cache_PutArtifact(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cache := S3Cache{
-				s3:         tt.fields.S3,
-				downloader: tt.fields.Downloader,
-				bucketName: tt.fields.BucketName,
-			}
-			if err := cache.PutArtifact(tt.args.artifactID, tt.args.artifactConfig); (err != nil) != tt.wantErr {
+			c := cache.NewS3Cache(tt.fields.BucketName, tt.fields.Prefix, tt.fields.S3, tt.fields.Downloader)
+			if err := c.PutArtifact(tt.args.artifactID, tt.args.artifactConfig); (err != nil) != tt.wantErr {
 				t.Errorf("S3Cache.PutArtifact() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
-
-func TestS3Cache_put(t *testing.T) {
-	mockSvc := &mockS3Client{}
-
-	type fields struct {
-		S3         s3iface.S3API
-		Downloader *s3manager.Downloader
-		BucketName string
-	}
-	type args struct {
-		key  string
-		body interface{}
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		{
-			name:   "put",
-			fields: fields{S3: mockSvc, BucketName: "test"},
-			args:   args{key: "key", body: map[string]interface{}{"key": "val"}},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cache := S3Cache{
-				s3:         tt.fields.S3,
-				downloader: tt.fields.Downloader,
-				bucketName: tt.fields.BucketName,
-			}
-			if err := cache.put(tt.args.key, tt.args.body); (err != nil) != tt.wantErr {
-				t.Errorf("S3Cache.put() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

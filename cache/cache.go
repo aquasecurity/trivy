@@ -13,52 +13,30 @@ const (
 	blobBucket = "blob"
 )
 
-type options struct {
-	S3Prefix string
-}
-
-type Option interface {
-	Apply(opts *options)
-}
-
-type S3Prefix string
-
-func (o S3Prefix) Apply(g *options) {
-	g.S3Prefix = string(o)
-}
-
 type Cache interface {
 	ArtifactCache
 	LocalArtifactCache
 }
 
-func initOpts(opts []Option) *options {
-	options := new(options)
-	for _, opt := range opts {
-		opt.Apply(options)
-	}
-	return options
-}
-
 // ArtifactCache uses local or remote cache
 type ArtifactCache interface {
 	// MissingBlobs returns missing blob IDs such as layer IDs in cache
-	MissingBlobs(artifactID string, blobIDs []string, opts ...Option) (missingArtifact bool, missingBlobIDs []string, err error)
+	MissingBlobs(artifactID string, blobIDs []string) (missingArtifact bool, missingBlobIDs []string, err error)
 
 	// PutArtifact stores artifact information such as image metadata in cache
-	PutArtifact(artifactID string, artifactInfo types.ArtifactInfo, opts ...Option) (err error)
+	PutArtifact(artifactID string, artifactInfo types.ArtifactInfo) (err error)
 
 	// PutBlob stores blob information such as layer information in local cache
-	PutBlob(blobID string, blobInfo types.BlobInfo, opts ...Option) (err error)
+	PutBlob(blobID string, blobInfo types.BlobInfo) (err error)
 }
 
 // LocalArtifactCache always uses local cache
 type LocalArtifactCache interface {
 	// GetArtifact gets artifact information such as image metadata from local cache
-	GetArtifact(artifactID string, opts ...Option) (artifactInfo types.ArtifactInfo, err error)
+	GetArtifact(artifactID string) (artifactInfo types.ArtifactInfo, err error)
 
 	// GetBlob gets blob information such as layer data from local cache
-	GetBlob(blobID string, opts ...Option) (blobInfo types.BlobInfo, err error)
+	GetBlob(blobID string) (blobInfo types.BlobInfo, err error)
 
 	// Close closes the local database
 	Close() (err error)

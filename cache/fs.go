@@ -48,7 +48,7 @@ func NewFSCache(cacheDir string) (FSCache, error) {
 }
 
 // GetBlob gets blob information such as layer data from local cache
-func (fs FSCache) GetBlob(blobID string, _ ...Option) (types.BlobInfo, error) {
+func (fs FSCache) GetBlob(blobID string) (types.BlobInfo, error) {
 	var blobInfo types.BlobInfo
 	err := fs.db.View(func(tx *bolt.Tx) error {
 		var err error
@@ -76,7 +76,7 @@ func (fs FSCache) getBlob(blobBucket *bolt.Bucket, diffID string) (types.BlobInf
 }
 
 // PutBlob stores blob information such as layer information in local cache
-func (fs FSCache) PutBlob(blobID string, blobInfo types.BlobInfo, _ ...Option) error {
+func (fs FSCache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
 	if _, err := v1.NewHash(blobID); err != nil {
 		return xerrors.Errorf("invalid diffID (%s): %w", blobID, err)
 	}
@@ -100,7 +100,7 @@ func (fs FSCache) PutBlob(blobID string, blobInfo types.BlobInfo, _ ...Option) e
 }
 
 // GetArtifact gets artifact information such as image metadata from local cache
-func (fs FSCache) GetArtifact(artifactID string, _ ...Option) (types.ArtifactInfo, error) {
+func (fs FSCache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
 	var blob []byte
 	err := fs.db.View(func(tx *bolt.Tx) error {
 		artifactBucket := tx.Bucket([]byte(artifactBucket))
@@ -119,7 +119,7 @@ func (fs FSCache) GetArtifact(artifactID string, _ ...Option) (types.ArtifactInf
 }
 
 // PutArtifact stores artifact information such as image metadata in local cache
-func (fs FSCache) PutArtifact(artifactID string, artifactInfo types.ArtifactInfo, _ ...Option) (err error) {
+func (fs FSCache) PutArtifact(artifactID string, artifactInfo types.ArtifactInfo) (err error) {
 	b, err := json.Marshal(artifactInfo)
 	if err != nil {
 		return xerrors.Errorf("unable to marshal artifact JSON (%s): %w", artifactID, err)
@@ -140,7 +140,7 @@ func (fs FSCache) PutArtifact(artifactID string, artifactInfo types.ArtifactInfo
 }
 
 // MissingBlobs returns missing blob IDs such as layer IDs
-func (fs FSCache) MissingBlobs(artifactID string, blobIDs []string, _ ...Option) (bool, []string, error) {
+func (fs FSCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []string, error) {
 	var missingArtifact bool
 	var missingBlobIDs []string
 	err := fs.db.View(func(tx *bolt.Tx) error {
