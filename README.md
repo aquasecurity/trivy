@@ -7,7 +7,7 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
 [![Docker image](https://images.microbadger.com/badges/version/aquasec/trivy.svg)](https://microbadger.com/images/aquasec/trivy "Get your own version badge on microbadger.com")
 
-A Simple and Comprehensive Vulnerability Scanner for Artifacts, Suitable for CI.
+A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifacts, Suitable for CI.
 
 <img src="imgs/usage.gif" width="700">
 <img src="imgs/usage1.png" width="600">
@@ -79,12 +79,12 @@ A Simple and Comprehensive Vulnerability Scanner for Artifacts, Suitable for CI.
 
 # Abstract
 
-`Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive vulnerability scanner for artifacts.
+`Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive vulnerability scanner for containers and other artifacts.
 A software vulnerability is a glitch, flaw, or weakness present in the software or in an Operating System.
 `Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, yarn, etc.).
 `Trivy` is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify a target such as an image name of the container.
 
-It is considered to be used in CI. Before pushing to a container registry or deploying your application, you can scan your local artifact such as container image easily.
+It is considered to be used in CI. Before pushing to a container registry or deploying your application, you can scan your local container image and other artifacts easily.
 See [here](#continuous-integration-ci) for details.
 
 # Features
@@ -93,7 +93,7 @@ See [here](#continuous-integration-ci) for details.
   - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
   - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn and Cargo)
 - Simple
-  - Specify only an artifact name such as an image name
+  - Specify only an image name or artifact name
   - See [Quick Start](#quick-start) and [Examples](#examples)
 - Fast
   - The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish in single seconds.
