@@ -309,7 +309,7 @@ $ docker run --rm -it alpine:3.11
 ```
 
 ## Embed in Dockerfile
-Scan your image in Dockerfile.
+Scan your image as part of the build process by embedding Trivy in the Dockerfile. This approach can be used to update Dockerfiles currently using Aqua’s [Microscanner][microscanner].
 
 ```
 $ cat Dockerfile
