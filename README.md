@@ -1590,7 +1590,7 @@ Trivy scans a tar image with the following format.
   - Kaniko (https://github.com/GoogleContainerTools/kaniko)
 
 
-## Data source
+## Data sources
 - PHP
   - https://github.com/FriendsOfPHP/security-advisories
   - https://github.com/advisories?query=ecosystem%3Acomposer
