@@ -167,16 +167,10 @@ func TestClient_NeedsUpdate(t *testing.T) {
 }
 
 func TestClient_Download(t *testing.T) {
-	type getMetadataOutput struct {
-		metadata db.Metadata
-		err      error
-	}
-
 	testCases := []struct {
 		name            string
 		light           bool
 		downloadDB      []github.DownloadDBExpectation
-		getMetadata     dbOperationGetMetadataExpectation
 		expectedContent []byte
 		expectedError   error
 	}{
@@ -188,15 +182,6 @@ func TestClient_Download(t *testing.T) {
 					Args: github.DownloadDBInput{FileName: fullDB},
 					ReturnArgs: github.DownloadDBOutput{
 						FileName: "testdata/test.db.gz",
-					},
-				},
-			},
-			getMetadata: dbOperationGetMetadataExpectation{
-				Returns: dbOperationGetMetadataReturns{
-					Metadata: db.Metadata{
-						Version:    1,
-						Type:       db.TypeFull,
-						NextUpdate: time.Date(2019, 9, 1, 0, 0, 0, 0, time.UTC),
 					},
 				},
 			},
@@ -235,7 +220,6 @@ func TestClient_Download(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			mockConfig := new(mockDbOperation)
-			mockConfig.ApplyGetMetadataExpectation(tc.getMetadata)
 
 			mockGitHubClient, err := github.NewMockClient(tc.downloadDB)
 			require.NoError(t, err, tc.name)
