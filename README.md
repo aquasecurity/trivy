@@ -293,7 +293,9 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 </details>
 
 ## Filesystem
-Scan a filesystem (such as a host machine, a virtual machine image, or an unpacked container image filesystem). Trivy will look for vulnerabilities based on lock files such as Gemfile.lock and package-lock.json.
+Scan a filesystem (such as a host machine, a virtual machine image, or an unpacked container image filesystem).
+
+Trivy will look for vulnerabilities based on lock files such as Gemfile.lock and package-lock.json.
 
 ```
 $ trivy fs /path/to/project
