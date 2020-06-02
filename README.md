@@ -1637,7 +1637,7 @@ GLOBAL OPTIONS:
 ```
 
 ## Image
-`fs` and `repo` has the same options as `image`.
+`fs` and `repo` have the same options as `image`.
 
 ```
 NAME:
