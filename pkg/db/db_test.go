@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -244,6 +245,102 @@ func TestClient_Download(t *testing.T) {
 			}
 
 			mockGitHubClient.AssertExpectations(t)
+		})
+	}
+}
+
+func TestClient_UpdateMetadata(t *testing.T) {
+	testCases := []struct {
+		name                     string
+		getMetadataExpectation   dbOperationGetMetadataExpectation
+		storeMetadataExpectation dbOperationStoreMetadataExpectation
+		expectedError            error
+	}{
+		{
+			name: "happy path",
+			getMetadataExpectation: dbOperationGetMetadataExpectation{
+				Returns: dbOperationGetMetadataReturns{
+					Metadata: db.Metadata{
+						Version:    1,
+						Type:       1,
+						NextUpdate: time.Date(2020, 4, 30, 23, 59, 59, 0, time.UTC),
+						UpdatedAt:  time.Date(2006, 4, 30, 23, 59, 59, 0, time.UTC),
+					},
+					Err: nil,
+				},
+			},
+			storeMetadataExpectation: dbOperationStoreMetadataExpectation{
+				Metadata: db.Metadata{
+					Version:    1,
+					Type:       1,
+					NextUpdate: time.Date(2020, 4, 30, 23, 59, 59, 0, time.UTC),
+					UpdatedAt:  time.Date(2006, 4, 30, 23, 59, 59, 0, time.UTC),
+				},
+			},
+		},
+		{
+			name: "sad path, get metadata fails",
+			getMetadataExpectation: dbOperationGetMetadataExpectation{
+				Returns: dbOperationGetMetadataReturns{
+					Err: errors.New("get metadata failed"),
+				},
+			},
+			expectedError: errors.New("unable to get metadata: get metadata failed"),
+		},
+		{
+			name: "sad path, store metadata fails",
+			getMetadataExpectation: dbOperationGetMetadataExpectation{
+				Returns: dbOperationGetMetadataReturns{
+					Metadata: db.Metadata{
+						Version:    1,
+						Type:       1,
+						NextUpdate: time.Date(2020, 4, 30, 23, 59, 59, 0, time.UTC),
+						UpdatedAt:  time.Date(2006, 4, 30, 23, 59, 59, 0, time.UTC),
+					},
+					Err: nil,
+				},
+			},
+			storeMetadataExpectation: dbOperationStoreMetadataExpectation{
+				Metadata: db.Metadata{
+					Version:    1,
+					Type:       1,
+					NextUpdate: time.Date(2020, 4, 30, 23, 59, 59, 0, time.UTC),
+					UpdatedAt:  time.Date(2006, 4, 30, 23, 59, 59, 0, time.UTC),
+				},
+				Returns: dbOperationStoreMetadataReturns{
+					Err: errors.New("store metadata failed"),
+				},
+			},
+			expectedError: errors.New("failed to store metadata: store metadata failed"),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			mockConfig := new(mockDbOperation)
+			err := log.InitLogger(false, true)
+			require.NoError(t, err, "failed to init logger")
+
+			mockConfig.ApplyGetMetadataExpectation(tc.getMetadataExpectation)
+			mockConfig.ApplyStoreMetadataExpectation(tc.storeMetadataExpectation)
+
+			fs := afero.NewMemMapFs()
+			metadata := NewMetadata(fs, "/cache")
+
+			dir, err := ioutil.TempDir("", "db")
+			require.NoError(t, err, tc.name)
+			defer os.RemoveAll(dir)
+
+			pb := indicator.NewProgressBar(true)
+			client := NewClient(mockConfig, nil, pb, nil, metadata)
+
+			err = client.UpdateMetadata(dir)
+			switch {
+			case tc.expectedError != nil:
+				assert.EqualError(t, err, tc.expectedError.Error(), tc.name)
+			default:
+				assert.NoError(t, err, tc.name)
+			}
 		})
 	}
 }

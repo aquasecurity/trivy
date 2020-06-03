@@ -59,6 +59,7 @@ type Operation interface {
 
 type dbOperation interface {
 	GetMetadata() (metadata db.Metadata, err error)
+	StoreMetadata(metadata db.Metadata, dir string) (err error)
 }
 
 type Client struct {
@@ -181,10 +182,10 @@ func (c Client) UpdateMetadata(cacheDir string) error {
 
 	metadata, err := c.dbc.GetMetadata()
 	if err != nil {
-		return xerrors.Errorf("unable to get a metadata: %w", err)
+		return xerrors.Errorf("unable to get metadata: %w", err)
 	}
 
-	if err = c.metadata.Store(metadata); err != nil {
+	if err = c.dbc.StoreMetadata(metadata, filepath.Join(cacheDir, "db")); err != nil {
 		return xerrors.Errorf("failed to store metadata: %w", err)
 	}
 
