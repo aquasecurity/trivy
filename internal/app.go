@@ -230,7 +230,7 @@ func NewApp(version string) *cli.App {
 	app := cli.NewApp()
 	app.Name = "trivy"
 	app.Version = version
-	app.ArgsUsage = "image_name"
+	app.ArgsUsage = "target"
 	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
 	app.EnableBashCompletion = true
 
@@ -319,20 +319,22 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 
 func NewImageCommand() *cli.Command {
 	return &cli.Command{
-		Name:    "image",
-		Aliases: []string{"i"},
-		Usage:   "scan an image",
-		Action:  artifact.ImageRun,
-		Flags:   imageFlags,
+		Name:      "image",
+		Aliases:   []string{"i"},
+		ArgsUsage: "image_name",
+		Usage:     "scan an image",
+		Action:    artifact.ImageRun,
+		Flags:     imageFlags,
 	}
 }
 
 func NewFilesystemCommand() *cli.Command {
 	return &cli.Command{
-		Name:    "filesystem",
-		Aliases: []string{"fs"},
-		Usage:   "scan local filesystem",
-		Action:  artifact.FilesystemRun,
+		Name:      "filesystem",
+		Aliases:   []string{"fs"},
+		ArgsUsage: "dir",
+		Usage:     "scan local filesystem",
+		Action:    artifact.FilesystemRun,
 		Flags: []cli.Flag{
 			&templateFlag,
 			&formatFlag,
@@ -356,10 +358,11 @@ func NewFilesystemCommand() *cli.Command {
 
 func NewRepositoryCommand() *cli.Command {
 	return &cli.Command{
-		Name:    "repository",
-		Aliases: []string{"repo"},
-		Usage:   "scan remote repository",
-		Action:  artifact.RepositoryRun,
+		Name:      "repository",
+		Aliases:   []string{"repo"},
+		ArgsUsage: "repo_url",
+		Usage:     "scan remote repository",
+		Action:    artifact.RepositoryRun,
 		Flags: []cli.Flag{
 			&templateFlag,
 			&formatFlag,
@@ -383,10 +386,11 @@ func NewRepositoryCommand() *cli.Command {
 
 func NewClientCommand() *cli.Command {
 	return &cli.Command{
-		Name:    "client",
-		Aliases: []string{"c"},
-		Usage:   "client mode",
-		Action:  client.Run,
+		Name:      "client",
+		Aliases:   []string{"c"},
+		ArgsUsage: "image_name",
+		Usage:     "client mode",
+		Action:    client.Run,
 		Flags: []cli.Flag{
 			&templateFlag,
 			&formatFlag,
