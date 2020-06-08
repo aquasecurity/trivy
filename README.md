@@ -68,6 +68,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
   * [Application Dependencies](#application-dependencies)
   * [Image Tar format](#image-tar-format)
   * [Data source](#data-source)
+- [Comparison with other scanners](#comparison-with-other-scanners)
 - [Usage](#usage)
   * [Image](#image-1)
   * [Client](#client-1)
@@ -1730,6 +1731,10 @@ OPTIONS:
 | MicroScanner   |       ◯        |              ×              |      ◯      |    ◯     |           ◯           |
 | Docker Hub     |       ◯        |              ×              |      ◯      |    ×     |           ×           |
 | GCR            |       ◯        |              ×              |      ◯      |    ◯     |           ×           |
+
+## Blogs
+- [Open Source CVE Scanner Round-Up: Clair vs Anchore vs Trivy](https://boxboat.com/2020/04/24/image-scanning-tech-compared/)
+- [Docker Image Security: Static Analysis Tool Comparison – Anchore Engine vs Clair vs Trivy](https://www.a10o.net/devsecops/docker-image-security-static-analysis-tool-comparison-anchore-engine-vs-clair-vs-trivy/)
 
 ## vs Clair
 
