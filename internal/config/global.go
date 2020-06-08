@@ -21,7 +21,7 @@ type GlobalConfig struct {
 func NewGlobalConfig(c *cli.Context) (GlobalConfig, error) {
 	quiet := c.Bool("quiet")
 	debug := c.Bool("debug")
-	logger, err := log.NewLogger(quiet, debug)
+	logger, err := log.NewLogger(debug, quiet)
 	if err != nil {
 		return GlobalConfig{}, xerrors.New("failed to create a logger")
 	}
