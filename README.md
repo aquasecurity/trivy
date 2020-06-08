@@ -7,7 +7,7 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
 [![Docker image](https://images.microbadger.com/badges/version/aquasec/trivy.svg)](https://microbadger.com/images/aquasec/trivy "Get your own version badge on microbadger.com")
 
-A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI.
+A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifacts, Suitable for CI.
 
 <img src="imgs/usage.gif" width="700">
 <img src="imgs/usage1.png" width="600">
@@ -18,62 +18,74 @@ A Simple and Comprehensive Vulnerability Scanner for Containers, Suitable for CI
 - [Abstract](#abstract)
 - [Features](#features)
 - [Installation](#installation)
-  - [RHEL/CentOS](#rhelcentos)
-  - [Debian/Ubuntu](#debianubuntu)
-  - [Arch Linux](#arch-linux)
-  - [Mac OS X / Homebrew](#homebrew)
-  - [Binary](#binary)
-  - [From source](#from-source)
+  * [RHEL/CentOS](#rhelcentos)
+  * [Debian/Ubuntu](#debianubuntu)
+  * [Arch Linux](#arch-linux)
+  * [Homebrew](#homebrew)
+  * [Install Script](#install-script)
+  * [Binary](#binary)
+  * [From source](#from-source)
 - [Quick Start](#quick-start)
-  - [Basic](#basic)
-  - [Docker](#docker)
+  * [Image](#image)
+    + [Basic](#basic)
+    + [Docker](#docker)
+  * [Filesystem](#filesystem)
+  * [Embed in Dockerfile](#embed-in-dockerfile)
+  * [Git Repository](#git-repository)
 - [Examples](#examples)
-  - [Standalone](#standalone)
-    - [Scan an image](#scan-an-image)
-    - [Scan an image file](#scan-an-image-file)
-    - [Scan an OCI image](#scan-an-oci-image)
-    - [Save the results as JSON](#save-the-results-as-json)
-    - [Save the results using a template](#save-the-results-using-a-template)
-    - [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
-    - [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
-    - [Skip an update of vulnerability DB](#skip-update-of-vulnerability-db)
-    - [Ignore unfixed vulnerabilities](#ignore-unfixed-vulnerabilities)
-    - [Specify exit code](#specify-exit-code)
-    - [Ignore the specified vulnerabilities](#ignore-the-specified-vulnerabilities)
-    - [Clear image caches](#clear-image-caches)
-    - [Reset](#reset)
-    - [Lightweight DB](#use-lightweight-db)
-  - [Client/Server](#client--server)
-    - [Server](#server)
-    - [Client](#client)
-    - [Authentication](#authentication)
+  * [Standalone](#standalone)
+    + [Scan an image](#scan-an-image)
+    + [Scan an image file](#scan-an-image-file)
+    + [Scan an OCI image](#scan-an-oci-image)
+    + [Scan a container from inside the container](#scan-a-container-from-inside-the-container)
+    + [Scan a project including a lock file](#scan-a-project-including-a-lock-file)
+    + [Embed in Dockerfile](#embed-in-dockerfile)
+    + [Save the results as JSON](#save-the-results-as-json)
+    + [Save the results using a template](#save-the-results-using-a-template)
+    + [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
+    + [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
+    + [Skip update of vulnerability DB](#skip-update-of-vulnerability-db)
+    + [Only download vulnerability database](#only-download-vulnerability-database)
+    + [Ignore unfixed vulnerabilities](#ignore-unfixed-vulnerabilities)
+    + [Specify exit code](#specify-exit-code)
+    + [Ignore the specified vulnerabilities](#ignore-the-specified-vulnerabilities)
+    + [Specify cache directory](#specify-cache-directory)
+    + [Clear caches](#clear-caches)
+    + [Reset](#reset)
+    + [Use lightweight DB](#use-lightweight-db)
+  * [Client / Server](#client--server)
+    + [Server](#server)
+    + [Client](#client)
+    + [Authentication](#authentication)
+    + [Deprecated options](#deprecated-options)
 - [Continuous Integration (CI)](#continuous-integration-ci)
-  - [Travis CI](#travis-ci)
-  - [CircleCI](#circleci)
-  - [GitLab CI](#gitlab-ci)
-  - [Authorization for Private Docker Registry](#authorization-for-private-docker-registry)
+  * [Travis CI](#travis-ci)
+  * [CircleCI](#circleci)
+  * [GitLab CI](#gitlab-ci)
+  * [Authorization for Private Docker Registry](#authorization-for-private-docker-registry)
 - [Vulnerability Detection](#vulnerability-detection)
-  - [OS Packages](#os-packages)
-  - [Application Dependencies](#application-dependencies)
-- [Usage](#usage)
+  * [OS Packages](#os-packages)
+  * [Application Dependencies](#application-dependencies)
+  * [Image Tar format](#image-tar-format)
+  * [Data source](#data-source)
 - [Comparison with other scanners](#comparison-with-other-scanners)
-  - [Overview](#overview)
-  - [vs Clair](#vs-clair)
-  - [vs Anchore Engine](#vs-anchore-engine)
-  - [vs Quay, Docker Hub, GCR](#vs-quay-docker-hub-gcr)
-- [Migration](#migration)
+- [Usage](#usage)
+  * [Image](#image-1)
+  * [Client](#client-1)
+  * [Server](#server-1)
 - [Q&A](#qa)
-  - [Homebrew](#homebrew)
-  - [Others](#others)
+  * [Homebrew](#homebrew-2)
+  * [Others](#others)
+
 
 # Abstract
 
-`Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive vulnerability scanner for containers.
+`Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive vulnerability scanner for containers and other artifacts.
 A software vulnerability is a glitch, flaw, or weakness present in the software or in an Operating System.
-`Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, yarn etc.).
-`Trivy` is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify an image name of the container.
+`Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, yarn, etc.).
+`Trivy` is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify a target such as an image name of the container.
 
-It is considered to be used in CI. Before pushing to a container registry, you can scan your local container image easily.
+It is considered to be used in CI. Before pushing to a container registry or deploying your application, you can scan your local container image and other artifacts easily.
 See [here](#continuous-integration-ci) for details.
 
 # Features
@@ -82,7 +94,7 @@ See [here](#continuous-integration-ci) for details.
   - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
   - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn and Cargo)
 - Simple
-  - Specify only an image name
+  - Specify only an image name or artifact name
   - See [Quick Start](#quick-start) and [Examples](#examples)
 - Fast
   - The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish in single seconds.
@@ -94,13 +106,16 @@ See [here](#continuous-integration-ci) for details.
   - **Especially Alpine Linux and RHEL/CentOS**
   - Other OSes are also high
 - DevSecOps
-  - **Suitable for CI** such as Travis CI, CircleCI, Jenkins, etc.
+  - **Suitable for CI** such as Travis CI, CircleCI, Jenkins, GitLab CI, etc.
   - See [CI Example](#continuous-integration-ci)
 - Support multiple formats
-  - A local image in Docker Engine which is running as a daemon
-  - A remote image in Docker Registry such as Docker Hub, ECR, GCR and ACR
-  - A tar archive stored in the `docker save` formatted file
-  - An image directory compliant with [OCI Image Format](https://github.com/opencontainers/image-spec)
+  - container image
+    - A local image in Docker Engine which is running as a daemon
+    - A remote image in Docker Registry such as Docker Hub, ECR, GCR and ACR
+    - A tar archive stored in the `docker save` formatted file
+    - An image directory compliant with [OCI Image Format](https://github.com/opencontainers/image-spec)
+  - local filesystem
+  - remote git repository
 
 Please see [LICENSE](https://github.com/aquasecurity/trivy/blob/master/LICENSE) for Trivy licensing information. Note that Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only.
 
@@ -169,6 +184,13 @@ You can use homebrew on macOS.
 $ brew install aquasecurity/trivy/trivy
 ```
 
+## Install Script
+This script downloads Trivy binary based on your OS and architecture.
+
+```
+$ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
+```
+
 ## Binary
 
 Get the latest version from [this page](https://github.com/aquasecurity/trivy/releases/latest), and download the archive file for your operating system/architecture. Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
@@ -190,9 +212,11 @@ You also need to install `rpm` command for scanning images based on RHEL/CentOS.
 
 # Quick Start
 
+## Image
+
 Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with the image cache.** See [Clear image caches](#clear-image-caches).
 
-## Basic
+### Basic
 
 ```
 $ trivy image [YOUR_IMAGE_NAME]
@@ -225,7 +249,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 </details>
 
-## Docker
+### Docker
 
 Replace [YOUR_CACHE_DIR] with the cache directory on your machine.
 
@@ -269,6 +293,47 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 </details>
 
+## Filesystem
+Scan a filesystem (such as a host machine, a virtual machine image, or an unpacked container image filesystem).
+
+Trivy will look for vulnerabilities based on lock files such as Gemfile.lock and package-lock.json.
+
+```
+$ trivy fs /path/to/project
+```
+
+
+Scan your container from inside the container.
+
+```
+$ docker run --rm -it alpine:3.11
+/ # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
+/ # trivy fs /
+```
+
+## Embed in Dockerfile
+Scan your image as part of the build process by embedding Trivy in the Dockerfile. This approach can be used to update Dockerfiles currently using Aqua’s [Microscanner][https://github.com/aquasecurity/microscanner].
+
+```
+$ cat Dockerfile
+FROM alpine:3.7
+
+RUN apk add curl \
+    && curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin \
+    && trivy filesystem --exit-code 1 --no-progress /
+
+$ docker build -t vulnerable-image .
+```
+
+## Git Repository
+Scan your remote git repository
+
+```
+$ trivy repo https://github.com/knqyf263/trivy-ci-test
+```
+
+Only public repositories are supported.
+
 # Examples
 
 ## Standalone
@@ -285,17 +350,11 @@ $ trivy image knqyf263/vuln-image:1.2.3
 <summary>Result</summary>
 
 ```
-2019-05-16T12:58:55.967+0900    INFO    Updating vulnerability database...
 2019-05-16T12:59:03.150+0900    INFO    Detecting Alpine vulnerabilities...
-2019-05-16T12:59:03.156+0900    INFO    Updating bundler Security DB...
 2019-05-16T12:59:04.941+0900    INFO    Detecting bundler vulnerabilities...
-2019-05-16T12:59:04.942+0900    INFO    Updating cargo Security DB...
 2019-05-16T12:59:05.967+0900    INFO    Detecting cargo vulnerabilities...
-2019-05-16T12:59:05.967+0900    INFO    Updating composer Security DB...
 2019-05-16T12:59:07.834+0900    INFO    Detecting composer vulnerabilities...
-2019-05-16T12:59:07.834+0900    INFO    Updating npm Security DB...
 2019-05-16T12:59:10.285+0900    INFO    Detecting npm vulnerabilities...
-2019-05-16T12:59:10.285+0900    INFO    Updating pipenv Security DB...
 2019-05-16T12:59:11.487+0900    INFO    Detecting pipenv vulnerabilities...
 
 knqyf263/vuln-image:1.2.3 (alpine 3.7.1)
@@ -555,6 +614,132 @@ $ skopeo copy docker-daemon:alpine:3.11 oci:/path/to/alpine
 $ trivy image --input /path/to/alpine
 ```
 
+### Scan a container from inside the container
+
+```
+$ docker run --rm -it alpine:3.10.2
+/ # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
+/ # trivy fs /
+```
+
+<details>
+<summary>Result</summary>
+
+```
+adb3b9abab80 (alpine 3.10.2)
+============================
+Total: 5 (UNKNOWN: 0, LOW: 1, MEDIUM: 4, HIGH: 0, CRITICAL: 0)
+
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| openssl | CVE-2019-1549    | MEDIUM   | 1.1.1c-r0         | 1.1.1d-r0     | openssl: information           |
+|         |                  |          |                   |               | disclosure in fork()           |
++         +------------------+          +                   +---------------+--------------------------------+
+|         | CVE-2019-1551    |          |                   | 1.1.1d-r2     | openssl: Integer overflow in   |
+|         |                  |          |                   |               | RSAZ modular exponentiation on |
+|         |                  |          |                   |               | x86_64                         |
++         +------------------+          +                   +---------------+--------------------------------+
+|         | CVE-2019-1563    |          |                   | 1.1.1d-r0     | openssl: information           |
+|         |                  |          |                   |               | disclosure in PKCS7_dataDecode |
+|         |                  |          |                   |               | and CMS_decrypt_set1_pkey      |
++         +------------------+          +                   +---------------+--------------------------------+
+|         | CVE-2020-1967    |          |                   | 1.1.1g-r0     | openssl: Segmentation fault in |
+|         |                  |          |                   |               | SSL_check_chain causes denial  |
+|         |                  |          |                   |               | of service                     |
++         +------------------+----------+                   +---------------+--------------------------------+
+|         | CVE-2019-1547    | LOW      |                   | 1.1.1d-r0     | openssl: side-channel weak     |
+|         |                  |          |                   |               | encryption vulnerability       |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+```
+
+</details>
+
+### Scan a project including a lock file
+
+```
+$ trivy fs ~/src/github.com/aquasecurity/trivy-ci-test
+```
+
+<details>
+<summary>Result</summary>
+
+```
+2020-06-01T17:06:58.652+0300    WARN    OS is not detected and vulnerabilities in OS packages are not detected.
+2020-06-01T17:06:58.652+0300    INFO    Detecting pipenv vulnerabilities...
+2020-06-01T17:06:58.691+0300    INFO    Detecting cargo vulnerabilities...
+
+Pipfile.lock
+============
+Total: 10 (UNKNOWN: 2, LOW: 0, MEDIUM: 6, HIGH: 2, CRITICAL: 0)
+
++---------------------+------------------+----------+-------------------+------------------------+------------------------------------+
+|       LIBRARY       | VULNERABILITY ID | SEVERITY | INSTALLED VERSION |     FIXED VERSION      |               TITLE                |
++---------------------+------------------+----------+-------------------+------------------------+------------------------------------+
+| django              | CVE-2020-7471    | HIGH     | 2.0.9             | 3.0.3, 2.2.10, 1.11.28 | django: potential                  |
+|                     |                  |          |                   |                        | SQL injection via                  |
+|                     |                  |          |                   |                        | StringAgg(delimiter)               |
++                     +------------------+----------+                   +------------------------+------------------------------------+
+|                     | CVE-2019-19844   | MEDIUM   |                   | 3.0.1, 2.2.9, 1.11.27  | Django: crafted email address      |
+|                     |                  |          |                   |                        | allows account takeover            |
++                     +------------------+          +                   +------------------------+------------------------------------+
+|                     | CVE-2019-3498    |          |                   | 2.1.5, 2.0.10, 1.11.18 | python-django: Content             |
+|                     |                  |          |                   |                        | spoofing via URL path in           |
+|                     |                  |          |                   |                        | default 404 page                   |
++                     +------------------+          +                   +------------------------+------------------------------------+
+|                     | CVE-2019-6975    |          |                   | 2.1.6, 2.0.11, 1.11.19 | python-django:                     |
+|                     |                  |          |                   |                        | memory exhaustion in               |
+|                     |                  |          |                   |                        | django.utils.numberformat.format() |
++---------------------+------------------+----------+-------------------+------------------------+------------------------------------+
+...
+```
+
+</details>
+
+### Embed in Dockerfile
+
+```
+$ cat Dockerfile
+FROM alpine:3.7
+
+RUN apk add curl \
+    && curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin \
+    && trivy filesystem --exit-code 1 --no-progress /
+
+$ docker build -t vulnerable-image .
+```
+
+<details>
+<summary>Result</summary>
+
+```
+Sending build context to Docker daemon  31.14MB
+Step 1/2 : FROM alpine:3.7
+ ---> 6d1ef012b567
+Step 2/2 : RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin && trivy filesystem --exit-code 1 --no-progress /
+ ---> Running in 27b004205da0
+2020-06-01T14:10:41.261Z        INFO    Need to update DB
+2020-06-01T14:10:41.262Z        INFO    Downloading DB...
+2020-06-01T14:10:56.188Z        INFO    Detecting Alpine vulnerabilities...
+2020-06-01T14:10:56.188Z        WARN    This OS version is no longer supported by the distribution: alpine 3.7.3
+2020-06-01T14:10:56.188Z        WARN    The vulnerability detection may be insufficient because security updates are not provided
+
+27b004205da0 (alpine 3.7.3)
+===========================
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| musl    | CVE-2019-14697   | HIGH     | 1.1.18-r3         | 1.1.18-r4     | musl libc through 1.1.23       |
+|         |                  |          |                   |               | has an x87 floating-point      |
+|         |                  |          |                   |               | stack adjustment imbalance,    |
+|         |                  |          |                   |               | related...                     |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+The command '/bin/sh -c trivy filesystem --exit-code 1 --no-progress /' returned a non-zero code: 1
+```
+
+</details>
 
 ### Save the results as JSON
 
@@ -1058,9 +1243,9 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 $ trivy --cache-dir /tmp/trivy/ image python:3.4-alpine3.9
 ```
 
-### Clear image caches
+### Clear caches
 
-The `--clear-cache` option removes image caches. This option is useful if the image which has the same tag is updated (such as when using `latest` tag).
+The `--clear-cache` option removes caches. This option is useful if the image which has the same tag is updated (such as when using `latest` tag).
 
 **The scan is not performed.**
 
@@ -1408,7 +1593,7 @@ Trivy scans a tar image with the following format.
   - Kaniko (https://github.com/GoogleContainerTools/kaniko)
 
 
-### Data source
+## Data sources
 - PHP
   - https://github.com/FriendsOfPHP/security-advisories
   - https://github.com/advisories?query=ecosystem%3Acomposer
@@ -1425,25 +1610,37 @@ Trivy scans a tar image with the following format.
   - https://github.com/RustSec/advisory-db
 
 # Usage
-## Standalone
+Trivy has several sub commands, image, fs, repo, client and server.
 
 ```
 NAME:
    trivy - A simple and comprehensive vulnerability scanner for containers
-  USAGE:
-   trivy image [options] image_name
-  VERSION:
-   v0.7.0
-  OPTIONS:
-   --quiet            suppress progress bar and log output (default: false) [$TRIVY_QUIET]
-   --debug            debug mode (default: false) [$TRIVY_DEBUG]
-   --cache-dir value  cache directory (default: "/Users/simar/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
+
+USAGE:
+   trivy [global options] command [command options] image_name
+
+VERSION:
+   v0.9.0
+
+COMMANDS:
+   image, i          scan an image
+   filesystem, fs    scan local filesystem
+   repository, repo  scan remote repository
+   client, c         client mode
+   server, s         server mode
+   help, h           Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --quiet, -q        suppress progress bar and log output (default: false) [$TRIVY_QUIET]
+   --debug, -d        debug mode (default: false) [$TRIVY_DEBUG]
+   --cache-dir value  cache directory (default: "/Users/teppei/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
    --help, -h         show help (default: false)
    --version, -v      print the version (default: false)
+
 ```
 
-## Sub commands
-Trivy has three sub commands, image, client and server.
+## Image
+`fs` and `repo` have the same options as `image`.
 
 ```
 NAME:
@@ -1473,6 +1670,8 @@ OPTIONS:
    --help, -h          show help (default: false)
 ```
 
+## Client
+
 ```
 NAME:
    trivy client - client mode
@@ -1498,6 +1697,8 @@ OPTIONS:
    --token value               for authentication [$TRIVY_TOKEN]
    --remote value              server address (default: "http://localhost:4954") [$TRIVY_REMOTE]
 ```
+
+## Server
 
 ```
 NAME:
@@ -1530,6 +1731,10 @@ OPTIONS:
 | MicroScanner   |       ◯        |              ×              |      ◯      |    ◯     |           ◯           |
 | Docker Hub     |       ◯        |              ×              |      ◯      |    ×     |           ×           |
 | GCR            |       ◯        |              ×              |      ◯      |    ◯     |           ×           |
+
+## Blogs
+- [Open Source CVE Scanner Round-Up: Clair vs Anchore vs Trivy](https://boxboat.com/2020/04/24/image-scanning-tech-compared/)
+- [Docker Image Security: Static Analysis Tool Comparison – Anchore Engine vs Clair vs Trivy](https://www.a10o.net/devsecops/docker-image-security-static-analysis-tool-comparison-anchore-engine-vs-clair-vs-trivy/)
 
 ## vs Clair
 
@@ -1681,11 +1886,6 @@ Try again with `--reset` option:
 ```
 $ trivy image --reset
 ```
-
-# Related Projects
-
-- [Remic](https://github.com/knqyf263/remic)
-  - Vulnerability Scanner for Detecting Publicly Disclosed Vulnerabilities in Application Dependencies
 ---
 
 # Credits
