@@ -154,6 +154,54 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "contain pre",
+			args: args{
+				osVer: "3.12",
+				pkgs: []ftypes.Package{
+					{
+						Name:    "test",
+						Version: "0.1.0_alpha",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+					},
+				},
+			},
+			mocks: mocks{
+				get: []get{
+					{
+						input: getInput{
+							osVer:   "3.12",
+							pkgName: "test",
+						},
+						output: getOutput{
+							advisories: []dbTypes.Advisory{
+								{
+									VulnerabilityID: "CVE-2030-0001",
+									FixedVersion:    "0.1.0_alpha_pre2",
+								},
+								{
+									VulnerabilityID: "CVE-2030-0002",
+									FixedVersion:    "0.1.0_alpha2",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2030-0002",
+					PkgName:          "test",
+					InstalledVersion: "0.1.0_alpha",
+					FixedVersion:     "0.1.0_alpha2",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
+			},
+		},
+		{
 			name: "Get returns an error",
 			args: args{
 				osVer: "3.8.1",
