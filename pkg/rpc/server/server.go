@@ -8,7 +8,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
@@ -78,17 +77,9 @@ func (s *CacheServer) PutBlob(_ context.Context, in *rpcCache.PutBlobRequest) (*
 }
 
 func (s *CacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBlobsRequest) (*rpcCache.MissingBlobsResponse, error) {
-	var layerIDs []string
-	for _, blobID := range in.BlobIds {
-		l, err := s.cache.GetBlob(blobID)
-		if err != nil || l.SchemaVersion != ftypes.BlobJSONSchemaVersion {
-			layerIDs = append(layerIDs, blobID)
-		}
+	missingArtifact, blobIDs, err := s.cache.MissingBlobs(in.ArtifactId, in.BlobIds)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get missing blobs: %w", err)
 	}
-	var missingImage bool
-	img, err := s.cache.GetArtifact(in.ArtifactId)
-	if err != nil || img.SchemaVersion != ftypes.ArtifactJSONSchemaVersion {
-		missingImage = true
-	}
-	return &rpcCache.MissingBlobsResponse{MissingArtifact: missingImage, MissingBlobIds: layerIDs}, nil
+	return &rpcCache.MissingBlobsResponse{MissingArtifact: missingArtifact, MissingBlobIds: blobIDs}, nil
 }

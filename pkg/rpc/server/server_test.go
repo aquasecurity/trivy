@@ -473,12 +473,11 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 		in  *rpcCache.MissingBlobsRequest
 	}
 	tests := []struct {
-		name                 string
-		args                 args
-		getLayerExpectations []cache.LocalArtifactCacheGetBlobExpectation
-		getImageExpectations []cache.LocalArtifactCacheGetArtifactExpectation
-		want                 *rpcCache.MissingBlobsResponse
-		wantErr              string
+		name                                     string
+		args                                     args
+		getArtifactCacheMissingBlobsExpectations []cache.ArtifactCacheMissingBlobsExpectation
+		want                                     *rpcCache.MissingBlobsResponse
+		wantErr                                  string
 	}{
 		{
 			name: "happy path",
@@ -491,100 +490,24 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 					},
 				},
 			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
+			getArtifactCacheMissingBlobsExpectations: []cache.ArtifactCacheMissingBlobsExpectation{
 				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: ftypes.BlobInfo{},
-					},
-				},
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: ftypes.BlobInfo{
-							SchemaVersion: 1,
-						},
-					},
-				},
-			},
-			getImageExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetArtifactArgs{
-						ArtifactID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-					},
-					Returns: cache.LocalArtifactCacheGetArtifactReturns{
-						ArtifactInfo: ftypes.ArtifactInfo{
-							SchemaVersion: 1,
-						},
-					},
+					Args: cache.ArtifactCacheMissingBlobsArgs{ArtifactID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
+						BlobIDs: []string{"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"}},
+					Returns: cache.ArtifactCacheMissingBlobsReturns{
+						MissingArtifact: false, MissingBlobIDs: []string{"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"}, Err: nil},
 				},
 			},
 			want: &rpcCache.MissingBlobsResponse{
 				MissingArtifact: false,
-				MissingBlobIds:  []string{"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"},
-			},
-		},
-		{
-			name: "schema version doesn't match",
-			args: args{
-				in: &rpcCache.MissingBlobsRequest{
-					ArtifactId: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-					BlobIds: []string{
-						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-					},
-				},
-			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: ftypes.BlobInfo{
-							SchemaVersion: 0,
-						},
-					},
-				},
-				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
-						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
-						BlobInfo: ftypes.BlobInfo{
-							SchemaVersion: -1,
-						},
-					},
-				},
-			},
-			getImageExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
-				{
-					Args: cache.LocalArtifactCacheGetArtifactArgs{
-						ArtifactID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-					},
-					Returns: cache.LocalArtifactCacheGetArtifactReturns{
-						ArtifactInfo: ftypes.ArtifactInfo{},
-					},
-				},
-			},
-			want: &rpcCache.MissingBlobsResponse{
-				MissingArtifact: true,
-				MissingBlobIds: []string{
-					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-				},
+				MissingBlobIds:  []string{"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockCache := new(mockCache)
-			mockCache.ApplyGetBlobExpectations(tt.getLayerExpectations)
-			mockCache.ApplyGetArtifactExpectations(tt.getImageExpectations)
+			mockCache.ApplyMissingBlobsExpectations(tt.getArtifactCacheMissingBlobsExpectations)
 
 			s := NewCacheServer(mockCache)
 			got, err := s.MissingBlobs(tt.args.ctx, tt.args.in)
@@ -597,7 +520,7 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 			}
 
 			assert.Equal(t, tt.want, got)
-			mockCache.MockLocalArtifactCache.AssertExpectations(t)
+			mockCache.MockArtifactCache.AssertExpectations(t)
 		})
 	}
 }
