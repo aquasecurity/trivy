@@ -77,9 +77,9 @@ func (s *CacheServer) PutBlob(_ context.Context, in *rpcCache.PutBlobRequest) (*
 }
 
 func (s *CacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBlobsRequest) (*rpcCache.MissingBlobsResponse, error) {
-	missingImage, layerIDs, err := s.cache.MissingBlobs(in.ArtifactId, in.BlobIds)
+	missingArtifact, blobIDs, err := s.cache.MissingBlobs(in.ArtifactId, in.BlobIds)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get missing blobs: %w", err)
 	}
-	return &rpcCache.MissingBlobsResponse{MissingArtifact: missingImage, MissingBlobIds: layerIDs}, nil
+	return &rpcCache.MissingBlobsResponse{MissingArtifact: missingArtifact, MissingBlobIds: blobIDs}, nil
 }
