@@ -110,7 +110,9 @@ func (c S3Cache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
 }
 
 func (c S3Cache) getIndex(key string, keyType string) error {
-	_, err := c.s3Client.HeadObject(&s3.HeadObjectInput{Key: aws.String(fmt.Sprintf("%s/%s/%s.index", keyType, c.prefix, key))})
+	_, err := c.s3Client.HeadObject(&s3.HeadObjectInput{
+		Key:    aws.String(fmt.Sprintf("%s/%s/%s.index", keyType, c.prefix, key)),
+		Bucket: &c.bucketName})
 	if err != nil {
 		return xerrors.Errorf("failed to get index from the cache: %w", err)
 	}
