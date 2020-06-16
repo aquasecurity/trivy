@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"os"
@@ -143,11 +144,13 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			fs := afero.NewMemMapFs()
 			metadata := NewMetadata(fs, "/cache")
 			if tc.metadata != (db.Metadata{}) {
-				metadata.Store(tc.metadata)
+				b, err := json.Marshal(tc.metadata)
+				require.NoError(t, err)
+				err = afero.WriteFile(fs, metadata.filePath, b, 0600)
+				require.NoError(t, err)
 			}
 
 			client := Client{
-				//dbc:      mockConfig,
 				clock:    tc.clock,
 				metadata: metadata,
 			}
@@ -162,7 +165,6 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			}
 
 			assert.Equal(t, tc.expected, needsUpdate)
-			//mockConfig.AssertExpectations(t)
 		})
 	}
 }

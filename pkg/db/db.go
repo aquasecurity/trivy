@@ -211,20 +211,6 @@ func MetadataPath(cacheDir string) string {
 	return filepath.Join(dbDir, metadataFile)
 }
 
-// StoreMetadata stores database metadata as a file
-func (m Metadata) Store(metadata db.Metadata) error {
-	f, err := m.fs.Create(m.filePath)
-	if err != nil {
-		return xerrors.Errorf("unable to create a metadata file: %w", err)
-	}
-	defer f.Close()
-
-	if err = json.NewEncoder(f).Encode(metadata); err != nil {
-		return xerrors.Errorf("unable to encode metadata: %w", err)
-	}
-	return nil
-}
-
 // DeleteMetadata deletes the file of database metadata
 func (m Metadata) Delete() error {
 	if err := m.fs.Remove(m.filePath); err != nil {
