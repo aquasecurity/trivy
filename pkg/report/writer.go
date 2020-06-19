@@ -25,7 +25,7 @@ type Result struct {
 	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities"`
 }
 
-func WriteResults(format string, output io.Writer, results Results, outputTemplate string, light bool) error {
+func WriteResults(format string, output io.Writer, severities []dbTypes.Severity, results Results, outputTemplate string, light bool) error {
 	if strings.HasPrefix(outputTemplate, "@") {
 		buf, err := ioutil.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
 		if err != nil {
@@ -50,14 +50,14 @@ func WriteResults(format string, output io.Writer, results Results, outputTempla
 		return xerrors.Errorf("unknown format: %v", format)
 	}
 
-	if err := writer.Write(results); err != nil {
+	if err := writer.Write(results, severities); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
 	return nil
 }
 
 type Writer interface {
-	Write(Results) error
+	Write(Results, []dbTypes.Severity) error
 }
 
 type TableWriter struct {
@@ -65,13 +65,13 @@ type TableWriter struct {
 	Light  bool
 }
 
-func (tw TableWriter) Write(results Results) error {
+func (tw TableWriter) Write(results Results, severities []dbTypes.Severity) error {
 	for _, result := range results {
-		tw.write(result)
+		tw.write(result, severities)
 	}
 	return nil
 }
-func (tw TableWriter) write(result Result) {
+func (tw TableWriter) write(result Result, severities []dbTypes.Severity) {
 	table := tablewriter.NewWriter(tw.Output)
 	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version"}
 	if !tw.Light {
@@ -106,8 +106,8 @@ func (tw TableWriter) write(result Result) {
 	}
 
 	var results []string
-	for _, severity := range dbTypes.SeverityNames {
-		r := fmt.Sprintf("%s: %d", severity, severityCount[severity])
+	for _, severity := range severities {
+		r := fmt.Sprintf("%s: %d", severity, severityCount[severity.String()])
 		results = append(results, r)
 	}
 
@@ -129,7 +129,7 @@ type JsonWriter struct {
 	Output io.Writer
 }
 
-func (jw JsonWriter) Write(results Results) error {
+func (jw JsonWriter) Write(results Results, severities []dbTypes.Severity) error {
 	output, err := json.MarshalIndent(results, "", "  ")
 	if err != nil {
 		return xerrors.Errorf("failed to marshal json: %w", err)
@@ -146,7 +146,7 @@ type TemplateWriter struct {
 	Template *template.Template
 }
 
-func (tw TemplateWriter) Write(results Results) error {
+func (tw TemplateWriter) Write(results Results, severities []dbTypes.Severity) error {
 	err := tw.Template.Execute(tw.Output, results)
 	if err != nil {
 		return xerrors.Errorf("failed to write with template: %w", err)
