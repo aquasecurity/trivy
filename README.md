@@ -59,15 +59,17 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
     + [Authentication](#authentication)
     + [Deprecated options](#deprecated-options)
 - [Continuous Integration (CI)](#continuous-integration-ci)
+  * [GitHub Actions](#github-actions)
   * [Travis CI](#travis-ci)
   * [CircleCI](#circleci)
   * [GitLab CI](#gitlab-ci)
+  * [AWS CodePipeline](#aws-codepipeline)
   * [Authorization for Private Docker Registry](#authorization-for-private-docker-registry)
 - [Vulnerability Detection](#vulnerability-detection)
   * [OS Packages](#os-packages)
   * [Application Dependencies](#application-dependencies)
   * [Image Tar format](#image-tar-format)
-  * [Data source](#data-source)
+  * [Data sources](#data-sources)
 - [Comparison with other scanners](#comparison-with-other-scanners)
 - [Usage](#usage)
   * [Image](#image-1)
@@ -1379,9 +1381,15 @@ $ trivy client --remote http://localhost:8080 --token dummy alpine:3.10
 
 # Continuous Integration (CI)
 
-Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0` .
+Scan your image automatically as part of your CI workflow, failing the workflow if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0`.
 
-Since in automated scenarios such as CI/CD you only interested in the end result, and not the full report, use the `--light` flag to optimize for this scenario and get fast results.
+Since in automated scenarios such as CI/CD you are only interested in the end result, and not the full report, use the `--light` flag to optimize for this scenario and get fast results.
+
+## GitHub Actions
+
+- Here is the [Trivy Github Action](https://github.com/aquasecurity/trivy-action) (currently Experimental)
+- The Microsoft Azure team have written a [container-scan action](https://github.com/Azure/container-scan) that uses Trivy and Dockle
+- For full control over the options specified to Trivy, this [blog post](https://blog.aquasec.com/devsecops-with-trivy-github-actions) describes adding Trivy into your own GitHub action workflows 
 
 ## Travis CI
 
@@ -1494,6 +1502,10 @@ trivy:
     reports:
       container_scanning: gl-container-scanning-report.json
 ```
+
+## AWS CodePipeline
+
+See [this blog post](https://aws.amazon.com/blogs/containers/scanning-images-with-trivy-in-an-aws-codepipeline/) for an example of using Trivy within AWS CodePipeline.
 
 ## Authorization for Private Docker Registry
 
