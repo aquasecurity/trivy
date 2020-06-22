@@ -59,6 +59,7 @@ type Operation interface {
 
 type dbOperation interface {
 	GetMetadata() (metadata db.Metadata, err error)
+	StoreMetadata(metadata db.Metadata, dir string) (err error)
 }
 
 type Client struct {
@@ -181,17 +182,17 @@ func (c Client) UpdateMetadata(cacheDir string) error {
 
 	metadata, err := c.dbc.GetMetadata()
 	if err != nil {
-		return xerrors.Errorf("unable to get a metadata: %w", err)
+		return xerrors.Errorf("unable to get metadata: %w", err)
 	}
 
-	if err = c.metadata.Store(metadata); err != nil {
+	if err = c.dbc.StoreMetadata(metadata, filepath.Join(cacheDir, "db")); err != nil {
 		return xerrors.Errorf("failed to store metadata: %w", err)
 	}
 
 	return nil
 }
 
-type Metadata struct {
+type Metadata struct { // TODO: Move all Metadata things to trivy-db repo
 	fs       afero.Fs
 	filePath string
 }
@@ -208,20 +209,6 @@ func MetadataPath(cacheDir string) string {
 	dbPath := db.Path(cacheDir)
 	dbDir := filepath.Dir(dbPath)
 	return filepath.Join(dbDir, metadataFile)
-}
-
-// StoreMetadata stores database metadata as a file
-func (m Metadata) Store(metadata db.Metadata) error {
-	f, err := m.fs.Create(m.filePath)
-	if err != nil {
-		return xerrors.Errorf("unable to create a metadata file: %w", err)
-	}
-	defer f.Close()
-
-	if err = json.NewEncoder(f).Encode(metadata); err != nil {
-		return xerrors.Errorf("unable to encode metadata: %w", err)
-	}
-	return nil
 }
 
 // DeleteMetadata deletes the file of database metadata

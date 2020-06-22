@@ -5,6 +5,7 @@ package integration
 import (
 	"compress/gzip"
 	"context"
+	"encoding/json"
 	"flag"
 	"io"
 	"io/ioutil"
@@ -12,8 +13,6 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-
-	dbFile "github.com/aquasecurity/trivy/pkg/db"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/spf13/afero"
@@ -53,12 +52,18 @@ func gunzipDB() (string, error) {
 		return "", err
 	}
 
-	err = dbFile.NewMetadata(afero.NewOsFs(), tmpDir).Store(db.Metadata{
+	fs := afero.NewOsFs()
+	metadataFile := filepath.Join(dbDir, "metadata.json")
+	b, err := json.Marshal(db.Metadata{
 		Version:    1,
 		Type:       1,
 		NextUpdate: time.Time{},
 		UpdatedAt:  time.Time{},
 	})
+	if err != nil {
+		return "", err
+	}
+	err = afero.WriteFile(fs, metadataFile, b, 0600)
 	if err != nil {
 		return "", err
 	}
