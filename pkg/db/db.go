@@ -192,7 +192,7 @@ func (c Client) UpdateMetadata(cacheDir string) error {
 	return nil
 }
 
-type Metadata struct {
+type Metadata struct { // TODO: Move all Metadata things to trivy-db repo
 	fs       afero.Fs
 	filePath string
 }
