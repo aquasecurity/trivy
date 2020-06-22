@@ -24,43 +24,56 @@ func InitLogger(debug, disable bool) (err error) {
 }
 
 func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
-	level := zap.NewAtomicLevel()
-	if debug {
-		level.SetLevel(zapcore.DebugLevel)
-	} else {
-		level.SetLevel(zapcore.InfoLevel)
+	// First, define our level-handling logic.
+	errorPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl >= zapcore.ErrorLevel
+	})
+	logPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		if debug {
+			return lvl < zapcore.ErrorLevel
+		}
+		// Not enable debug level
+		return zapcore.DebugLevel < lvl && lvl < zapcore.ErrorLevel
+	})
+
+	encoderConfig := zapcore.EncoderConfig{
+		TimeKey:        "Time",
+		LevelKey:       "Level",
+		NameKey:        "Name",
+		CallerKey:      "Caller",
+		MessageKey:     "Msg",
+		StacktraceKey:  "St",
+		EncodeLevel:    zapcore.CapitalColorLevelEncoder,
+		EncodeTime:     zapcore.ISO8601TimeEncoder,
+		EncodeDuration: zapcore.StringDurationEncoder,
+		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
 
-	myConfig := zap.Config{
-		Level:             level,
-		Encoding:          "console",
-		Development:       debug,
-		DisableStacktrace: true,
-		DisableCaller:     true,
-		EncoderConfig: zapcore.EncoderConfig{
-			TimeKey:        "Time",
-			LevelKey:       "Level",
-			NameKey:        "Name",
-			CallerKey:      "Caller",
-			MessageKey:     "Msg",
-			StacktraceKey:  "St",
-			EncodeLevel:    zapcore.CapitalColorLevelEncoder,
-			EncodeTime:     zapcore.ISO8601TimeEncoder,
-			EncodeDuration: zapcore.StringDurationEncoder,
-			EncodeCaller:   zapcore.ShortCallerEncoder,
-		},
-		OutputPaths:      []string{"stdout"},
-		ErrorOutputPaths: []string{"stderr"},
-	}
+	consoleEncoder := zapcore.NewConsoleEncoder(encoderConfig)
+
+	// High-priority output should also go to standard error, and low-priority
+	// output should also go to standard out.
+	consoleLogs := zapcore.Lock(os.Stdout)
+	consoleErrors := zapcore.Lock(os.Stderr)
 	if disable {
-		myConfig.OutputPaths = []string{os.DevNull}
-		myConfig.ErrorOutputPaths = []string{os.DevNull}
+		devNull, err := os.Create(os.DevNull)
+		if err != nil {
+			return nil, err
+		}
+		// Discard low-priority output
+		consoleLogs = zapcore.Lock(devNull)
 	}
 
-	logger, err := myConfig.Build()
-	if err != nil {
-		return nil, xerrors.Errorf("failed to build zap config: %w", err)
+	core := zapcore.NewTee(
+		zapcore.NewCore(consoleEncoder, consoleErrors, errorPriority),
+		zapcore.NewCore(consoleEncoder, consoleLogs, logPriority),
+	)
+
+	opts := []zap.Option{zap.ErrorOutput(zapcore.Lock(os.Stderr))}
+	if debug {
+		opts = append(opts, zap.Development())
 	}
+	logger := zap.New(core, opts...)
 
 	return logger.Sugar(), nil
 }
