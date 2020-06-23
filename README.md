@@ -1582,13 +1582,18 @@ Distroless: https://github.com/GoogleContainerTools/distroless
 
 `Trivy` automatically detects the following files in the container and scans vulnerabilities in the application dependencies.
 
-- Gemfile.lock
-- Pipfile.lock
-- poetry.lock
-- composer.lock
-- package-lock.json
-- yarn.lock
-- Cargo.lock
+- Ruby
+  - Gemfile.lock
+- Python
+  - Pipfile.lock
+  - poetry.lock
+- PHP
+  - composer.lock
+- Node.js
+  - package-lock.json
+  - yarn.lock
+- Rust
+  - Cargo.lock
 
 The path of these files does not matter.
 
