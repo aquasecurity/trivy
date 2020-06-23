@@ -8,6 +8,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/spf13/afero"
+
 	"github.com/google/wire"
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
@@ -73,6 +75,11 @@ func ListenAndServe(c config.Config, fsCache cache.FSCache) error {
 	// libHandler is for backward compatibility
 	libHandler := rpcDetector.NewLibDetectorServer(initializeLibServer(), nil)
 	mux.Handle(rpcDetector.LibDetectorPathPrefix, withToken(withWaitGroup(libHandler), c.Token, c.TokenHeader))
+
+	if err := showLastDbUpdate(c.CacheDir); err != nil {
+		log.Logger.Errorf("%+v\n", err)
+	}
+
 
 	log.Logger.Infof("Listening %s...", c.Listen)
 
@@ -148,6 +155,18 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 	if err = db.Init(cacheDir); err != nil {
 		return xerrors.Errorf("failed to open DB: %w", err)
 	}
+
+	return nil
+}
+
+func showLastDbUpdate(cacheDir string) error {
+	m := dbFile.NewMetadata(afero.NewOsFs(), cacheDir)
+	metadata, err := m.Get()
+	if err != nil {
+		return xerrors.Errorf("something wrong with DB: %w", err)
+	}
+	log.Logger.Infof("Last DB Update at: %s",
+	metadata.UpdatedAt)
 
 	return nil
 }
