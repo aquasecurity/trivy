@@ -80,7 +80,6 @@ func ListenAndServe(c config.Config, fsCache cache.FSCache) error {
 		log.Logger.Errorf("%+v\n", err)
 	}
 
-
 	log.Logger.Infof("Listening %s...", c.Listen)
 
 	return http.ListenAndServe(c.Listen, mux)
@@ -166,7 +165,7 @@ func showLastDbUpdate(cacheDir string) error {
 		return xerrors.Errorf("something wrong with DB: %w", err)
 	}
 	log.Logger.Infof("Last DB Update at: %s",
-	metadata.UpdatedAt)
+		metadata.UpdatedAt)
 
 	return nil
 }
