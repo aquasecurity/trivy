@@ -185,13 +185,6 @@ func TestConfig_Init(t *testing.T) {
 			wantErr: "arguments error",
 		},
 		{
-			name: "sad: no image name",
-			logs: []string{
-				"trivy requires at least 1 argument or --input option",
-			},
-			wantErr: "arguments error",
-		},
-		{
 			name:    "sad: invalid image name",
 			args:    []string{`!"#$%&'()`},
 			wantErr: "could not parse reference",
