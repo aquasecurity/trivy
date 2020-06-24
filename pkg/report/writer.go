@@ -41,7 +41,11 @@ func WriteResults(format string, output io.Writer, results Results, outputTempla
 	case "json":
 		writer = &JsonWriter{Output: output}
 	case "template":
-		tmpl, err := template.New("output template").Parse(outputTemplate)
+		tmpl, err := template.New("output template").Funcs(template.FuncMap{
+			"sum": func(x int, y int) int {
+				return x + y
+			},
+		}).Parse(outputTemplate)
 		if err != nil {
 			return xerrors.Errorf("error parsing template: %w", err)
 		}
