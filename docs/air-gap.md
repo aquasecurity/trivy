@@ -1,5 +1,5 @@
 # Air-gapped environment
-Trivy can be used under air-gapped environment.
+Trivy can be used in air-gapped environments.
 
 ## Download the vulnerability database
 At first, you need to download the vulnerability database for air-gapped environment.
