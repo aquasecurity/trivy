@@ -45,6 +45,8 @@ x metadata.json
 $ rm trivy-offline.db.tgz
 ```
 
+In an air-gapped environment it is your responsibility to update the Trivy database on a regular basis, so that the scanner can detect recently-identified vulnerabilities. 
+
 ## Run Trivy with --skip-update option
 In an air-gapped environment, specify `--skip-update` so that Trivy doesn't attempt to download the latest database file.
 
