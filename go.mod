@@ -15,6 +15,7 @@ require (
 	github.com/go-git/go-git/v5 v5.0.0
 	github.com/google/go-containerregistry v0.0.0-20200331213917-3d03ed9b1ca2
 	github.com/hashicorp/go-multierror v1.1.0
+	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpmdb v0.0.0-20190501070121-10a1c42a10dc
 	github.com/knqyf263/nested v0.0.1
@@ -23,7 +24,7 @@ require (
 	github.com/opencontainers/image-spec v1.0.2-0.20190823105129-775207bd45b6 // indirect
 	github.com/saracen/walker v0.0.0-20191201085201-324a081bae7e
 	github.com/sosedoff/gitkit v0.2.0
-	github.com/stretchr/testify v1.4.0
+	github.com/stretchr/testify v1.5.1
 	github.com/testcontainers/testcontainers-go v0.3.1
 	github.com/urfave/cli/v2 v2.2.0
 	go.etcd.io/bbolt v1.3.3
