@@ -70,6 +70,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
   * [Application Dependencies](#application-dependencies)
   * [Image Tar format](#image-tar-format)
   * [Data sources](#data-sources)
+- [Air-gapped environment](#air-gapped-environment)
 - [Comparison with other scanners](#comparison-with-other-scanners)
 - [Usage](#usage)
   * [Image](#image-1)
@@ -1734,6 +1735,9 @@ OPTIONS:
    --token value       for authentication [$TRIVY_TOKEN]
    --listen value      listen address (default: "localhost:4954") [$TRIVY_LISTEN]
 ```
+
+# Air-gapped environment
+See [here](docs/air-gap.md)
 
 # Comparison with other scanners
 
