@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	debVersion "github.com/knqyf263/go-deb-version"
+	apkVersion "github.com/knqyf263/go-apk-version"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	fos "github.com/aquasecurity/fanal/analyzer/os"
@@ -49,7 +49,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []types.Pa
 			pkg.Name = line[2:]
 		case "V:":
 			version = string(line[2:])
-			if !debVersion.Valid(version) {
+			if !apkVersion.Valid(version) {
 				log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "alpine", pkg.Name, version)
 				continue
 			}

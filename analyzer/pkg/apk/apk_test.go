@@ -35,7 +35,7 @@ func TestParseApkInfo(t *testing.T) {
 				{Name: "pkgconf", Version: "1.6.0-r0"},
 				{Name: "sqlite", Version: "3.26.0-r3"},
 				{Name: "sqlite-libs", Version: "3.26.0-r3"},
-				{Name: "sqlite-dev", Version: "3.26.0-r3"},
+				{Name: "test", Version: "2.9.11_pre20061021-r2"},
 			},
 		},
 	}

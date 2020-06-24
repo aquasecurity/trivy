@@ -511,8 +511,8 @@ a:0:0:755
 Z:Q1BOGonxBB2SdxbKENvJNl9ifknaE=
 
 C:Q18L8xXsVIKBiJEOSmZcALxIvb3X0=
-P:sqlite-dev
-V:3.26.0-r3
+P:test
+V:2.9.11_pre20061021-r2
 A:x86_64
 S:151185
 I:618496
