@@ -18,7 +18,7 @@ The way of transfer depends on the environment.
 $ rsync -av -e ssh /path/to/trivy-offline.db.tgz [user]@[host]:dst
 ```
 
-## Put the DB file to Trivy's cache directory
+## Put the DB file in Trivy's cache directory
 You have to know where to put the DB file. The following command shows the default cache directory.
 
 ```
