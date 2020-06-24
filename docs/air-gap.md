@@ -46,7 +46,7 @@ $ rm trivy-offline.db.tgz
 ```
 
 ## Run Trivy with --skip-update option
-Trivy automatically downloads the latest database file if you don't specify `--skip-update`.
+In an air-gapped environment, specify `--skip-update` so that Trivy doesn't attempt to download the latest database file.
 
 ```
 $ trivy image --skip-update alpine:3.12
