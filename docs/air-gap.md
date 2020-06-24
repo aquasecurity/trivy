@@ -27,7 +27,7 @@ $ trivy -h | grep cache
    --cache-dir value  cache directory (default: "/home/myuser/.cache/trivy") [$TRIVY_CACHE_DIR]
 ```
 
-Put the DB file to the cache directory + `/db`.
+Put the DB file in the cache directory + `/db`.
 
 ```
 $ mkdir -p /home/myuser/.cache/trivy/db
