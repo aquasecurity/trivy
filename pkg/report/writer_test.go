@@ -247,36 +247,33 @@ func TestReportWriter_Template(t *testing.T) {
 			},
 
 			template: `<testsuites>
-{{ range . }}
-	{{- $failures := 0 }}
-    {{- range .Vulnerabilities -}}
-		{{- $failures = sum $failures 2 -}}
-	{{- end -}}
-	<testsuite tests="1" failures="{{ $failures }}" time="" name="{{  .Target }}">
-		{{- if not (eq .Type "") }}
-			<properties>
-                <property name="type" value="{{ .Type }}"></property>
-            </properties>
+{{- range . -}}
+{{- $failures := len .Vulnerabilities }}
+    <testsuite tests="1" failures="{{ $failures }}" time="" name="{{  .Target }}">
+	{{- if not (eq .Type "") }}
+        <properties>
+            <property name="type" value="{{ .Type }}"></property>
+        </properties>
         {{- end -}}
         {{ range .Vulnerabilities }}
-            <testcase classname="{{ .PkgName }}-{{ .InstalledVersion }}" name="{{ .VulnerabilityID }}" time="">
-                <failure message={{ .Title | printf "%q" }} type="description">{{ .Description | printf "%q" }}</failure>
-                <failure message="" type="severity">{{ .Vulnerability.Severity }}</failure>
-            </testcase>
-        {{- end }}
+        <testcase classname="{{ .PkgName }}-{{ .InstalledVersion }}" name="{{ .VulnerabilityID }}" time="">
+            <failure message={{ .Title | printf "%q" }} type="description">{{ .Description | printf "%q" }}</failure>
+            <failure message="" type="severity">{{ .Vulnerability.Severity }}</failure>
+        </testcase>
+    {{- end }}
 	</testsuite>
 {{- end }}
 </testsuites>`,
 
 			expected: `<testsuites>
-<testsuite tests="1" failures="2" time="" name="foojunit">
-			<properties>
-                <property name="type" value="test"></property>
-            </properties>
-            <testcase classname="foo-1.2.3" name="123" time="">
-                <failure message="foobar" type="description">"baz"</failure>
-                <failure message="" type="severity">HIGH</failure>
-            </testcase>
+    <testsuite tests="1" failures="1" time="" name="foojunit">
+        <properties>
+            <property name="type" value="test"></property>
+        </properties>
+        <testcase classname="foo-1.2.3" name="123" time="">
+            <failure message="foobar" type="description">"baz"</failure>
+            <failure message="" type="severity">HIGH</failure>
+        </testcase>
 	</testsuite>
 </testsuites>`,
 		},
