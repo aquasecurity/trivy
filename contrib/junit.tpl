@@ -9,9 +9,8 @@
         </properties>
         {{- end -}}
         {{ range .Vulnerabilities }}
-        <testcase classname="{{ .PkgName }}-{{ .InstalledVersion }}" name="{{ .VulnerabilityID }}" time="">
+        <testcase classname="{{ .PkgName }}-{{ .InstalledVersion }}" name="[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}" time="">
             <failure message={{ .Title | printf "%q" }} type="description">{{ .Description | printf "%q" }}</failure>
-            <failure message="" type="severity">{{ .Vulnerability.Severity }}</failure>
         </testcase>
     {{- end }}
     </testsuite>

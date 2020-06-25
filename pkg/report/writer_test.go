@@ -256,9 +256,8 @@ func TestReportWriter_Template(t *testing.T) {
         </properties>
         {{- end -}}
         {{ range .Vulnerabilities }}
-        <testcase classname="{{ .PkgName }}-{{ .InstalledVersion }}" name="{{ .VulnerabilityID }}" time="">
+        <testcase classname="{{ .PkgName }}-{{ .InstalledVersion }}" name="[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}" time="">
             <failure message={{ .Title | printf "%q" }} type="description">{{ .Description | printf "%q" }}</failure>
-            <failure message="" type="severity">{{ .Vulnerability.Severity }}</failure>
         </testcase>
     {{- end }}
 	</testsuite>
@@ -270,9 +269,8 @@ func TestReportWriter_Template(t *testing.T) {
         <properties>
             <property name="type" value="test"></property>
         </properties>
-        <testcase classname="foo-1.2.3" name="123" time="">
+        <testcase classname="foo-1.2.3" name="[HIGH] 123" time="">
             <failure message="foobar" type="description">"baz"</failure>
-            <failure message="" type="severity">HIGH</failure>
         </testcase>
 	</testsuite>
 </testsuites>`,
