@@ -230,13 +230,59 @@ func TestReportWriter_Template(t *testing.T) {
 			template: "{{ range . }}{{ range .Vulnerabilities}}{{ println .VulnerabilityID .Severity }}{{ end }}{{ end }}",
 			expected: "CVE-2019-0000 HIGH\nCVE-2019-0000 HIGH\nCVE-2019-0001 CRITICAL\n",
 		},
+		{
+			name: "happy path",
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "123",
+					PkgName:          "foo",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "3.4.5",
+					Vulnerability: dbTypes.Vulnerability{
+						Title:       "foobar",
+						Description: "baz",
+						Severity:    "HIGH",
+					},
+				},
+			},
+
+			template: `<testsuites>
+{{- range . -}}
+{{- $failures := len .Vulnerabilities }}
+    <testsuite tests="1" failures="{{ $failures }}" time="" name="{{  .Target }}">
+	{{- if not (eq .Type "") }}
+        <properties>
+            <property name="type" value="{{ .Type }}"></property>
+        </properties>
+        {{- end -}}
+        {{ range .Vulnerabilities }}
+        <testcase classname="{{ .PkgName }}-{{ .InstalledVersion }}" name="[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}" time="">
+            <failure message={{ .Title | printf "%q" }} type="description">{{ .Description | printf "%q" }}</failure>
+        </testcase>
+    {{- end }}
+	</testsuite>
+{{- end }}
+</testsuites>`,
+
+			expected: `<testsuites>
+    <testsuite tests="1" failures="1" time="" name="foojunit">
+        <properties>
+            <property name="type" value="test"></property>
+        </properties>
+        <testcase classname="foo-1.2.3" name="[HIGH] 123" time="">
+            <failure message="foobar" type="description">"baz"</failure>
+        </testcase>
+	</testsuite>
+</testsuites>`,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tmplWritten := bytes.Buffer{}
 			inputResults := report.Results{
 				{
-					Target:          "foojson",
+					Target:          "foojunit",
+					Type:            "test",
 					Vulnerabilities: tc.detectedVulns,
 				},
 			}

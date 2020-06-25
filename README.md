@@ -888,6 +888,11 @@ You can load templates from a file prefixing the template path with an @.
 $ trivy image --format template --template "@/path/to/template" golang:1.12-alpine
 ```
 
+In the following example using the template `junit.tpl` XML can be generated.
+```
+$ trivy image --format template --template "@contrib/junit.tpl" -o junit-report.xml  golang:1.12-alpine
+```
+
 ### Filter the vulnerabilities by severities
 
 ```
