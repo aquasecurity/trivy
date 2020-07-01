@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/urfave/cli/v2"
@@ -25,10 +26,18 @@ func NewArtifactConfig(c *cli.Context) ArtifactConfig {
 	}
 }
 
+type ErrNoTarget struct {
+	err error
+}
+
+func (e *ErrNoTarget) Error() string {
+	return fmt.Sprintf("arguments error")
+}
+
 func (c *ArtifactConfig) Init(args cli.Args, logger *zap.SugaredLogger) (err error) {
 	if c.Input == "" && args.Len() == 0 {
 		logger.Debug(`trivy requires at least 1 argument or --input option`)
-		return xerrors.New("arguments error")
+		return &ErrNoTarget{}
 	} else if args.Len() > 1 {
 		logger.Error(`multiple targets cannot be specified`)
 		return xerrors.New("arguments error")

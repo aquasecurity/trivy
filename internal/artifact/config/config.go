@@ -64,8 +64,7 @@ func (c *Config) Init(image bool) error {
 
 	if image {
 		if err := c.ImageConfig.Init(c.Context.Args(), c.Logger); err != nil {
-			cli.ShowAppHelp(c.Context)
-			return err
+			cli.ShowAppHelpAndExit(c.Context, 0)
 		}
 	}
 
