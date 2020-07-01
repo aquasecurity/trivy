@@ -38,7 +38,7 @@ func ImageRun(cliCtx *cli.Context) error {
 
 	// initialize config
 	if err = c.Init(true); err != nil {
-		return nil
+		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
 
 	if c.Input != "" {
