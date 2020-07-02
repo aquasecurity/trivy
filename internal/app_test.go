@@ -2,6 +2,7 @@ package internal
 
 import (
 	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/spf13/afero"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -87,16 +87,19 @@ Vulnerability DB:
 			}
 
 			if tt.createDB {
-				m := dbFile.NewMetadata(afero.NewOsFs(), cacheDir)
+				fs := afero.NewOsFs()
 				err := os.MkdirAll(filepath.Join(cacheDir, "db"), os.ModePerm)
 				require.NoError(t, err)
+				metadataFile := filepath.Join(cacheDir, "db", "metadata.json")
 
-				err = m.Store(db.Metadata{
+				b, err := json.Marshal(db.Metadata{
 					Version:    42,
 					Type:       1,
 					NextUpdate: time.Unix(1584403020, 0),
 					UpdatedAt:  time.Unix(1584402020, 0),
 				})
+				require.NoError(t, err)
+				err = afero.WriteFile(fs, metadataFile, b, 0600)
 				require.NoError(t, err)
 			}
 

@@ -59,15 +59,18 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
     + [Authentication](#authentication)
     + [Deprecated options](#deprecated-options)
 - [Continuous Integration (CI)](#continuous-integration-ci)
+  * [GitHub Actions](#github-actions)
   * [Travis CI](#travis-ci)
   * [CircleCI](#circleci)
   * [GitLab CI](#gitlab-ci)
+  * [AWS CodePipeline](#aws-codepipeline)
   * [Authorization for Private Docker Registry](#authorization-for-private-docker-registry)
 - [Vulnerability Detection](#vulnerability-detection)
   * [OS Packages](#os-packages)
   * [Application Dependencies](#application-dependencies)
   * [Image Tar format](#image-tar-format)
-  * [Data source](#data-source)
+  * [Data sources](#data-sources)
+- [Air-gapped environment](#air-gapped-environment)
 - [Comparison with other scanners](#comparison-with-other-scanners)
 - [Usage](#usage)
   * [Image](#image-1)
@@ -885,6 +888,11 @@ You can load templates from a file prefixing the template path with an @.
 $ trivy image --format template --template "@/path/to/template" golang:1.12-alpine
 ```
 
+In the following example using the template `junit.tpl` XML can be generated.
+```
+$ trivy image --format template --template "@contrib/junit.tpl" -o junit-report.xml  golang:1.12-alpine
+```
+
 ### Filter the vulnerabilities by severities
 
 ```
@@ -1379,9 +1387,15 @@ $ trivy client --remote http://localhost:8080 --token dummy alpine:3.10
 
 # Continuous Integration (CI)
 
-Scan your image built in Travis CI/CircleCI. The test will fail if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0` .
+Scan your image automatically as part of your CI workflow, failing the workflow if a vulnerability is found. When you don't want to fail the test, specify `--exit-code 0`.
 
-Since in automated scenarios such as CI/CD you only interested in the end result, and not the full report, use the `--light` flag to optimize for this scenario and get fast results.
+Since in automated scenarios such as CI/CD you are only interested in the end result, and not the full report, use the `--light` flag to optimize for this scenario and get fast results.
+
+## GitHub Actions
+
+- Here is the [Trivy Github Action](https://github.com/aquasecurity/trivy-action) (currently Experimental)
+- The Microsoft Azure team have written a [container-scan action](https://github.com/Azure/container-scan) that uses Trivy and Dockle
+- For full control over the options specified to Trivy, this [blog post](https://blog.aquasec.com/devsecops-with-trivy-github-actions) describes adding Trivy into your own GitHub action workflows 
 
 ## Travis CI
 
@@ -1495,6 +1509,10 @@ trivy:
       container_scanning: gl-container-scanning-report.json
 ```
 
+## AWS CodePipeline
+
+See [this blog post](https://aws.amazon.com/blogs/containers/scanning-images-with-trivy-in-an-aws-codepipeline/) for an example of using Trivy within AWS CodePipeline.
+
 ## Authorization for Private Docker Registry
 
 Trivy can download images from a private registry, without installing `Docker` or any other 3rd party tools.
@@ -1570,13 +1588,18 @@ Distroless: https://github.com/GoogleContainerTools/distroless
 
 `Trivy` automatically detects the following files in the container and scans vulnerabilities in the application dependencies.
 
-- Gemfile.lock
-- Pipfile.lock
-- poetry.lock
-- composer.lock
-- package-lock.json
-- yarn.lock
-- Cargo.lock
+- Ruby
+  - Gemfile.lock
+- Python
+  - Pipfile.lock
+  - poetry.lock
+- PHP
+  - composer.lock
+- Node.js
+  - package-lock.json
+  - yarn.lock
+- Rust
+  - Cargo.lock
 
 The path of these files does not matter.
 
@@ -1717,6 +1740,9 @@ OPTIONS:
    --token value       for authentication [$TRIVY_TOKEN]
    --listen value      listen address (default: "localhost:4954") [$TRIVY_LISTEN]
 ```
+
+# Air-gapped environment
+See [here](docs/air-gap.md)
 
 # Comparison with other scanners
 
