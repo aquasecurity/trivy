@@ -3,6 +3,7 @@ package report
 import (
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"io/ioutil"
 	"os"
@@ -41,7 +42,11 @@ func WriteResults(format string, output io.Writer, results Results, outputTempla
 	case "json":
 		writer = &JsonWriter{Output: output}
 	case "template":
-		tmpl, err := template.New("output template").Parse(outputTemplate)
+		tmpl, err := template.New("output template").Funcs(template.FuncMap{
+			"escapeString": func(input string) string {
+				return html.EscapeString(input)
+			},
+		}).Parse(outputTemplate)
 		if err != nil {
 			return xerrors.Errorf("error parsing template: %w", err)
 		}
