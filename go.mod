@@ -21,6 +21,7 @@ require (
 	github.com/knqyf263/go-version v1.1.1
 	github.com/kylelemons/godebug v1.1.0
 	github.com/mattn/go-colorable v0.1.4 // indirect
+	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/olekukonko/tablewriter v0.0.2-0.20190607075207-195002e6e56a
 	github.com/spf13/afero v1.2.2
 	github.com/stretchr/testify v1.6.1

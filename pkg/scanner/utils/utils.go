@@ -7,6 +7,7 @@ import (
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/knqyf263/go-version"
+	version2 "github.com/mcuadros/go-version"
 )
 
 var (
@@ -14,13 +15,18 @@ var (
 )
 
 func MatchVersions(currentVersion *version.Version, rangeVersions []string) bool {
-	for _, p := range rangeVersions {
-		c, err := version.NewConstraint(replacer.Replace(p))
+	for i := range rangeVersions {
+		rangeVersions[i] = replacer.Replace(rangeVersions[i])
+		c, err := version.NewConstraint(replacer.Replace(rangeVersions[i]))
 		if err != nil {
 			log.Logger.Debug("NewConstraint", "error", err)
 			return false
 		}
 		if c.Check(currentVersion) {
+			return true
+		}
+		c2 := version2.NewConstrainGroupFromString(rangeVersions[i])
+		if c2.Match(currentVersion.String()) {
 			return true
 		}
 	}
