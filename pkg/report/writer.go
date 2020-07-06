@@ -44,10 +44,10 @@ func WriteResults(format string, output io.Writer, results Results, outputTempla
 		writer = &JsonWriter{Output: output}
 	case "template":
 		tmpl, err := template.New("output template").Funcs(template.FuncMap{
-			"escapeString": func(input string) string {
+			"escapeXML": func(input string) string {
 				escaped := &bytes.Buffer{}
 				if err := xml.EscapeText(escaped, []byte(input)); err != nil {
-					fmt.Println("error while escapeString to XML: %v", err.Error())
+					fmt.Printf("error while escapeString to XML: %v", err.Error())
 					return input
 				}
 				return escaped.String()

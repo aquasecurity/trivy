@@ -257,7 +257,7 @@ func TestReportWriter_Template(t *testing.T) {
         {{- end -}}
         {{ range .Vulnerabilities }}
         <testcase classname="{{ .PkgName }}-{{ .InstalledVersion }}" name="[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}" time="">
-            <failure message={{escapeString .Title | printf "%q" }} type="description">{{escapeString .Description | printf "%q" }}</failure>
+            <failure message={{escapeXML .Title | printf "%q" }} type="description">{{escapeXML .Description | printf "%q" }}</failure>
         </testcase>
     {{- end }}
 	</testsuite>
