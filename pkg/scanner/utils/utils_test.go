@@ -46,6 +46,27 @@ func TestMatchVersions2(t *testing.T) {
 			rangeVersion:   []string{`^1.2.3`},
 			expectedCheck:  false,
 		},
+		{
+			// passes if (>= 2.0.18, < 3.0.0) || (>= 3.1.16, < 4.0.0) || (>= 4.0.8, < 5.0.0) || ( >=5.0.0,<6.0.0)
+			name:           "expect false",
+			currentVersion: "3.1.16",
+			rangeVersion:   []string{`^2.0.18 || ^3.1.6 || ^4.0.8 || ^5.0.0-beta.5`},
+			expectedCheck:  true,
+		},
+		{
+			// passes if (>= 2.0.18, < 3.0.0) || (>= 3.1.16, < 4.0.0) || (>= 4.0.8, < 5.0.0) || ( >=5.0.0,<6.0.0)
+			name:           "expect false",
+			currentVersion: "6.0.0",
+			rangeVersion:   []string{`^2.0.18 || ^3.1.6 || ^4.0.8 || ^5.0.0-beta.5`},
+			expectedCheck:  false,
+		},
+		{
+			// passes if (>= 2.0.18, < 3.0.0) || (>= 3.1.16, < 4.0.0) || (>= 4.0.8, < 5.0.0) || ( >=5.0.0,<6.0.0)
+			name:           "expect false",
+			currentVersion: "5.0.0-beta.5",
+			rangeVersion:   []string{`^2.0.18 || ^3.1.6 || ^4.0.8 || ^5.0.0-beta.5`},
+			expectedCheck:  true,
+		},
 	}
 
 	for _, tc := range testCases {
