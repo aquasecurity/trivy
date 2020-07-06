@@ -1,9 +1,10 @@
 package report
 
 import (
+	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
-	"html"
 	"io"
 	"io/ioutil"
 	"os"
@@ -44,7 +45,12 @@ func WriteResults(format string, output io.Writer, results Results, outputTempla
 	case "template":
 		tmpl, err := template.New("output template").Funcs(template.FuncMap{
 			"escapeString": func(input string) string {
-				return html.EscapeString(input)
+				escaped := &bytes.Buffer{}
+				if err := xml.EscapeText(escaped, []byte(input)); err != nil {
+					fmt.Println("error while escapeString to XML: %v", err.Error())
+					return input
+				}
+				return escaped.String()
 			},
 		}).Parse(outputTemplate)
 		if err != nil {
