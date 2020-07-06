@@ -1,7 +1,9 @@
 package report
 
 import (
+	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -41,7 +43,16 @@ func WriteResults(format string, output io.Writer, results Results, outputTempla
 	case "json":
 		writer = &JsonWriter{Output: output}
 	case "template":
-		tmpl, err := template.New("output template").Parse(outputTemplate)
+		tmpl, err := template.New("output template").Funcs(template.FuncMap{
+			"escapeXML": func(input string) string {
+				escaped := &bytes.Buffer{}
+				if err := xml.EscapeText(escaped, []byte(input)); err != nil {
+					fmt.Printf("error while escapeString to XML: %v", err.Error())
+					return input
+				}
+				return escaped.String()
+			},
+		}).Parse(outputTemplate)
 		if err != nil {
 			return xerrors.Errorf("error parsing template: %w", err)
 		}
