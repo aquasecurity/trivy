@@ -32,6 +32,20 @@ func TestMatchVersions2(t *testing.T) {
 			rangeVersion:   []string{`>= 1.9.24`},
 			expectedCheck:  false,
 		},
+		{
+			// passes if (>= 1.2.3, < 2.0.0)
+			name:           "expect false",
+			currentVersion: "1.2.4",
+			rangeVersion:   []string{`^1.2.3`},
+			expectedCheck:  true,
+		},
+		{
+			// passes if (>= 1.2.3, < 2.0.0)
+			name:           "expect false",
+			currentVersion: "2.0.0",
+			rangeVersion:   []string{`^1.2.3`},
+			expectedCheck:  false,
+		},
 	}
 
 	for _, tc := range testCases {
