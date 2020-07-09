@@ -94,3 +94,4 @@ dockers:
       - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
     extra_files:
     - contrib/gitlab.tpl
+    - contrib/junit.tpl
