@@ -4,22 +4,16 @@ import (
 	"fmt"
 	"strings"
 
-	semver "github.com/Masterminds/semver"
+	"github.com/Masterminds/semver"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/knqyf263/go-version"
 )
 
 var (
 	replacer = strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc")
 )
 
-func MatchVersions(currentVersion *version.Version, rangeVersions []string) bool {
-	v, err := semver.NewVersion(currentVersion.String())
-	if err != nil {
-		log.Logger.Error("NewVersion", "error", err)
-		return false
-	}
+func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool {
 	for i := range rangeVersions {
 		rangeVersions[i] = replacer.Replace(rangeVersions[i])
 		c, err := semver.NewConstraint(rangeVersions[i])
@@ -28,16 +22,16 @@ func MatchVersions(currentVersion *version.Version, rangeVersions []string) bool
 			continue
 		}
 		// Validate a version against a constraint.
-		a, msgs := c.Validate(v)
-		if a {
+		valid, msgs := c.Validate(currentVersion)
+		if valid {
 			return true
 		}
 		for _, m := range msgs {
 			// re-validate after removing the patch version
 			if strings.HasSuffix(m.Error(), "is a prerelease version and the constraint is only looking for release versions") {
-				if v2, err := semver.NewVersion(fmt.Sprintf("%v.%v.%v", v.Major(), v.Minor(), v.Patch())); err == nil {
-					a, msgs = c.Validate(v2)
-					if a {
+				if v2, err := semver.NewVersion(fmt.Sprintf("%v.%v.%v", currentVersion.Major(), currentVersion.Minor(), currentVersion.Patch())); err == nil {
+					valid, msgs = c.Validate(v2)
+					if valid {
 						return true
 					}
 				}

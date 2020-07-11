@@ -8,8 +8,8 @@ import (
 
 	"github.com/google/wire"
 
+	"github.com/Masterminds/semver"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/knqyf263/go-version"
 
 	"golang.org/x/xerrors"
 
@@ -54,7 +54,7 @@ func detect(driver Driver, libs []ftypes.LibraryInfo) ([]types.DetectedVulnerabi
 	log.Logger.Infof("Detecting %s vulnerabilities...", driver.Type())
 	var vulnerabilities []types.DetectedVulnerability
 	for _, lib := range libs {
-		v, err := version.NewVersion(lib.Library.Version)
+		v, err := semver.NewVersion(lib.Library.Version)
 		if err != nil {
 			log.Logger.Debugf("invalid version, library: %s, version: %s, error: %s\n",
 				lib.Library.Name, lib.Library.Version, err)

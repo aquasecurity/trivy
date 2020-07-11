@@ -3,11 +3,12 @@ package utils
 import (
 	"testing"
 
-	"github.com/knqyf263/go-version"
+	"github.com/Masterminds/semver"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestMatchVersions2(t *testing.T) {
+func TestMatchVersions(t *testing.T) {
 	testCases := []struct {
 		name           string
 		currentVersion string
@@ -15,13 +16,13 @@ func TestMatchVersions2(t *testing.T) {
 		expectedCheck  bool
 	}{
 		{
-			name:           "pass: expect true when os/machine is in pre-release",
+			name:           "pass: expect true when os/machine is in version string",
 			currentVersion: "1.9.25-x86-mingw32",
 			rangeVersion:   []string{`>= 1.9.24`},
 			expectedCheck:  true,
 		},
 		{
-			name:           "pass: expect true when language is in pre-release",
+			name:           "pass: expect true when language is in version string",
 			currentVersion: "1.8.6-java",
 			rangeVersion:   []string{`~> 1.5.5`, `~> 1.6.8`, `>= 1.7.7`},
 			expectedCheck:  true,
@@ -71,8 +72,8 @@ func TestMatchVersions2(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			v, err := version.NewVersion(tc.currentVersion)
-			assert.Nil(t, err)
+			v, err := semver.NewVersion(tc.currentVersion)
+			require.NoError(t, err)
 			match := MatchVersions(v, tc.rangeVersion)
 			assert.Equal(t, tc.expectedCheck, match)
 		})
