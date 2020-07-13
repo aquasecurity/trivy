@@ -28,14 +28,6 @@ type Result struct {
 }
 
 func WriteResults(format string, output io.Writer, results Results, outputTemplate string, light bool) error {
-	if strings.HasPrefix(outputTemplate, "@") {
-		buf, err := ioutil.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
-		if err != nil {
-			return xerrors.Errorf("Error retrieving template from path: %w", err)
-		}
-		outputTemplate = string(buf)
-	}
-
 	var writer Writer
 	switch format {
 	case "table":
@@ -43,6 +35,13 @@ func WriteResults(format string, output io.Writer, results Results, outputTempla
 	case "json":
 		writer = &JsonWriter{Output: output}
 	case "template":
+		if strings.HasPrefix(outputTemplate, "@") {
+			buf, err := ioutil.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
+			if err != nil {
+				return xerrors.Errorf("Error retrieving template from path: %w", err)
+			}
+			outputTemplate = string(buf)
+		}
 		tmpl, err := template.New("output template").Funcs(template.FuncMap{
 			"escapeXML": func(input string) string {
 				escaped := &bytes.Buffer{}
