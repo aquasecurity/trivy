@@ -117,16 +117,11 @@ func (tw TableWriter) write(result Result) {
 	}
 
 	var results []string
-	var severitiesName bytes.Buffer
-	for _, s := range tw.Severities {
-		severitiesName.WriteString(s.String() + ",")
-	}
 
-	for _, severity := range dbTypes.SeverityNames {
-		if strings.Contains(severitiesName.String(), severity) {
-			r := fmt.Sprintf("%s: %d", severity, severityCount[severity])
-			results = append(results, r)
-		}
+	for _, severity := range tw.Severities {
+		severityName := severity.String()
+		r := fmt.Sprintf("%s: %d", severityName, severityCount[severityName])
+		results = append(results, r)
 	}
 
 	fmt.Printf("\n%s\n", result.Target)
