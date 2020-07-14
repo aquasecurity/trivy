@@ -27,11 +27,11 @@ type Result struct {
 	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities"`
 }
 
-func WriteResults(format string, output io.Writer, results Results, outputTemplate string, light bool) error {
+func WriteResults(format string, output io.Writer, severities []dbTypes.Severity, results Results, outputTemplate string, light bool) error {
 	var writer Writer
 	switch format {
 	case "table":
-		writer = &TableWriter{Output: output, Light: light}
+		writer = &TableWriter{Output: output, Light: light, Severities: severities}
 	case "json":
 		writer = &JsonWriter{Output: output}
 	case "template":
@@ -71,8 +71,9 @@ type Writer interface {
 }
 
 type TableWriter struct {
-	Output io.Writer
-	Light  bool
+	Severities []dbTypes.Severity
+	Output     io.Writer
+	Light      bool
 }
 
 func (tw TableWriter) Write(results Results) error {
@@ -116,9 +117,16 @@ func (tw TableWriter) write(result Result) {
 	}
 
 	var results []string
+	var severitiesName bytes.Buffer
+	for _, s := range tw.Severities {
+		severitiesName.WriteString(s.String() + ",")
+	}
+
 	for _, severity := range dbTypes.SeverityNames {
-		r := fmt.Sprintf("%s: %d", severity, severityCount[severity])
-		results = append(results, r)
+		if strings.Contains(severitiesName.String(), severity) {
+			r := fmt.Sprintf("%s: %d", severity, severityCount[severity])
+			results = append(results, r)
+		}
 	}
 
 	fmt.Printf("\n%s\n", result.Target)
