@@ -2130,4 +2130,16 @@ Description: Micro string library: shared library
  This package contains the shared library for ustr.
 Homepage: http://www.and.org/ustr/
 
+Package: git
+Status: deinstall ok config-files
+Priority: optional
+Section: vcs
+Installed-Size: 35396
+Maintainer: Gerrit Pape <pape@smarden.org>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 1:2.20.1-2+deb10u3
+Config-Version: 1:2.20.1-2+deb10u3
+Replaces: git-core (<< 1:1.7.0.4-1.), gitweb (<< 1:1.7.4~rc1)
+
 
