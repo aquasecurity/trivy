@@ -68,6 +68,13 @@ func TestMatchVersions(t *testing.T) {
 			rangeVersion:   []string{`^2.0.18 || ^3.1.6 || ^4.0.8 || ^5.0.0-beta.5`},
 			expectedCheck:  true,
 		},
+		{
+			// Ruby GEM with more dots
+			name:           "expect false",
+			currentVersion: "1.10.9-java",
+			rangeVersion:   []string{`>= 1.6.7.1`},
+			expectedCheck:  true,
+		},
 	}
 
 	for _, tc := range testCases {

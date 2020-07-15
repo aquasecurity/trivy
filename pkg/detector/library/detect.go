@@ -2,6 +2,7 @@ package library
 
 import (
 	"path/filepath"
+	"strings"
 	"time"
 
 	ftypes "github.com/aquasecurity/fanal/types"
@@ -54,6 +55,10 @@ func detect(driver Driver, libs []ftypes.LibraryInfo) ([]types.DetectedVulnerabi
 	log.Logger.Infof("Detecting %s vulnerabilities...", driver.Type())
 	var vulnerabilities []types.DetectedVulnerability
 	for _, lib := range libs {
+		versionParts := strings.Split(lib.Library.Version, ".")
+		if len(lib.Library.Version) > 3 {
+			lib.Library.Version = strings.Join(versionParts[:2], ".") + "." + strings.Join(versionParts[2:], "-")
+		}
 		v, err := semver.NewVersion(lib.Library.Version)
 		if err != nil {
 			log.Logger.Debugf("invalid version, library: %s, version: %s, error: %s\n",

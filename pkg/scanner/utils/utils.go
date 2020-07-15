@@ -16,6 +16,14 @@ var (
 func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool {
 	for i := range rangeVersions {
 		rangeVersions[i] = replacer.Replace(rangeVersions[i])
+		constraintParts := strings.Split(rangeVersions[i], ",")
+		for j := range constraintParts {
+			part := strings.Split(constraintParts[j], ".")
+			if len(part) > 3 {
+				constraintParts[j] = strings.Join(part[:2], ".") + "." + strings.Join(part[2:], "-")
+			}
+		}
+		rangeVersions[i] = strings.Join(constraintParts, ",")
 		c, err := semver.NewConstraint(rangeVersions[i])
 		if err != nil {
 			log.Logger.Error("NewConstraint", "error", err)
