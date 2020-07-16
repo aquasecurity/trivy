@@ -6,7 +6,6 @@
       "tool": {
         "driver": {
           "name": "Trivy: Vulnerability Scanner for Containers",
-          "semanticVersion": "0.9.1",
           "rules": [
         {{- $t_first := true }}
         {{- range . }}
@@ -17,15 +16,15 @@
                 ,
               {{- end }}
             {
-              "id": "{{ .VulnerabilityID }}",
+              "id": "[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}",
               "name": "container_scanning",
               "shortDescription": {
-                "text": {{ .Title | printf "%q" }}
+                "text": {{ printf "error found in package %s." (print .PkgName .Title ) | printf "%q" }}
               },
               "fullDescription": {
-                "text": {{ .Description | printf "%q" }}
+                "text": {{ endWithPeriod .Description | printf "%q" }}
               },
-              "defaultConfiguration": null
+              "defaultConfiguration": null,
               "properties": {
                 "tags": [
                   "{{ .PkgName }}"
@@ -48,22 +47,13 @@
             ,
           {{- end }}
         {
-          "ruleId": "{{ $vulnerability.VulnerabilityID }}",
+          "ruleId": "[{{ $vulnerability.Vulnerability.Severity }}] {{ $vulnerability.VulnerabilityID }}",
           "ruleIndex": {{ $index }},
-          "level": {{ $vulnerability.Severity | printf "%q" }},
+          "level": "error",
           "message": {
-            "text": {{ $vulnerability.Description | printf "%q" }}
+            "text": {{ endWithPeriod $vulnerability.Description | printf "%q" }}
           },
-          "locations": [],
-          "partialFingerprints": {
-             "primaryLocationLineHash": "{{ $vulnerability.VulnerabilityID }}"
-          }
-        }
-        ],
-          "codeFlows": [],
-          "partialFingerprints": {
-             "primaryLocationLineHash": "39fa2ee980eb94b0:1",
-          }
+          "locations": []
         }
         {{- end -}}
       {{- end -}}
