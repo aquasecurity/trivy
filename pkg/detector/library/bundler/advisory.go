@@ -3,7 +3,7 @@ package bundler
 import (
 	"strings"
 
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
 	"golang.org/x/xerrors"
 
 	bundlerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/bundler"

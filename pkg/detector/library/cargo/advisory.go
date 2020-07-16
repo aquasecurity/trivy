@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/types"
 
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
 	cargoSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/cargo"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"golang.org/x/xerrors"

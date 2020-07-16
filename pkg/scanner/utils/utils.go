@@ -2,10 +2,13 @@ package utils
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
+
 	"github.com/aquasecurity/fanal/types"
+
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -14,17 +17,14 @@ var (
 )
 
 func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool {
-	for i := range rangeVersions {
-		rangeVersions[i] = replacer.Replace(rangeVersions[i])
-		constraintParts := strings.Split(rangeVersions[i], ",")
+	for _, v := range rangeVersions {
+		v = replacer.Replace(v)
+		constraintParts := strings.Split(v, ",")
 		for j := range constraintParts {
-			part := strings.Split(constraintParts[j], ".")
-			if len(part) > 3 {
-				constraintParts[j] = strings.Join(part[:2], ".") + "." + strings.Join(part[2:], "-")
-			}
+			constraintParts[j] = FormatPatchVersion(constraintParts[j])
 		}
-		rangeVersions[i] = strings.Join(constraintParts, ",")
-		c, err := semver.NewConstraint(rangeVersions[i])
+		v = strings.Join(constraintParts, ",")
+		c, err := semver.NewConstraint(v)
 		if err != nil {
 			log.Logger.Error("NewConstraint", "error", err)
 			continue
@@ -55,6 +55,16 @@ func FormatVersion(pkg types.Package) string {
 
 func FormatSrcVersion(pkg types.Package) string {
 	return formatVersion(pkg.SrcEpoch, pkg.SrcVersion, pkg.SrcRelease)
+}
+
+func FormatPatchVersion(version string) string {
+	part := strings.Split(version, ".")
+	if len(part) > 3 {
+		if _, err := strconv.Atoi(part[2]); err == nil {
+			version = strings.Join(part[:3], ".") + "-" + strings.Join(part[3:], ".")
+		}
+	}
+	return version
 }
 
 func formatVersion(epoch int, version, release string) string {

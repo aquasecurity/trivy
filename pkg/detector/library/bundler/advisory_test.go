@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/log"
 
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
 
 	bundlerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/bundler"
 	"github.com/stretchr/testify/assert"

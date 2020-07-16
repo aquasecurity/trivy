@@ -3,7 +3,7 @@ package utils
 import (
 	"testing"
 
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -83,6 +83,47 @@ func TestMatchVersions(t *testing.T) {
 			require.NoError(t, err)
 			match := MatchVersions(v, tc.rangeVersion)
 			assert.Equal(t, tc.expectedCheck, match)
+		})
+	}
+}
+
+func TestFormatPatchVersio(t *testing.T) {
+	testCases := []struct {
+		name            string
+		currentVersion  string
+		expectedVersion string
+	}{
+		{
+			name:            "patch with no dots should return version should be unchanged",
+			currentVersion:  "1.2.3-beta",
+			expectedVersion: "1.2.3-beta",
+		},
+		{
+			name:            "patch with dots after non-integer patch version should be unchanged",
+			currentVersion:  "1.2.3-beta.1",
+			expectedVersion: "1.2.3-beta.1",
+		},
+		{
+			name:            "patch with dots after integer patch version should append dash and join rest versions parts",
+			currentVersion:  "1.2.3.4",
+			expectedVersion: "1.2.3-4",
+		},
+		{
+			name:            "patch with dots after integer patch version should append dash and join extra versions parts",
+			currentVersion:  "1.2.3.4.5",
+			expectedVersion: "1.2.3-4.5",
+		},
+		{
+			name:            "unchanged case",
+			currentVersion:  "1.2.3.4-5",
+			expectedVersion: "1.2.3-4-5",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := FormatPatchVersion(tc.currentVersion)
+			assert.Equal(t, tc.expectedVersion, got)
 		})
 	}
 }
