@@ -33,11 +33,10 @@ type args struct {
 
 func TestClientServer(t *testing.T) {
 	cases := []struct {
-		name          string
-		testArgs      args
-		golden        string
-		wantErr       string
-		createNewFile bool
+		name     string
+		testArgs args
+		golden   string
+		wantErr  string
 	}{
 		{
 			name: "alpine 3.10 integration",
@@ -94,8 +93,7 @@ func TestClientServer(t *testing.T) {
 				Version:      "dev",
 				Input:        "testdata/fixtures/alpine-310.tar.gz",
 			},
-			golden:        "testdata/alpine-310.sarif.golden",
-			createNewFile: true,
+			golden: "testdata/alpine-310.sarif.golden",
 		},
 		{
 			name: "alpine 3.9 integration",
@@ -317,7 +315,7 @@ func TestClientServer(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			osArgs, outputFile, cleanup := setupClient(t, c.testArgs, addr, cacheDir, c.golden, c.createNewFile)
+			osArgs, outputFile, cleanup := setupClient(t, c.testArgs, addr, cacheDir, c.golden)
 			defer cleanup()
 
 			// Run Trivy client
@@ -375,7 +373,7 @@ func TestClientServerWithToken(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			osArgs, outputFile, cleanup := setupClient(t, c.testArgs, addr, cacheDir, c.golden, false)
+			osArgs, outputFile, cleanup := setupClient(t, c.testArgs, addr, cacheDir, c.golden)
 			defer cleanup()
 
 			// Run Trivy client
@@ -435,7 +433,7 @@ func setupServer(addr, token, tokenHeader, cacheDir string) []string {
 	return osArgs
 }
 
-func setupClient(t *testing.T, c args, addr string, cacheDir string, golden string, createNewFile bool) ([]string, string, func()) {
+func setupClient(t *testing.T, c args, addr string, cacheDir string, golden string) ([]string, string, func()) {
 	t.Helper()
 	osArgs := []string{"trivy", "client", "--cache-dir", cacheDir, "--remote", "http://" + addr}
 
@@ -476,7 +474,7 @@ func setupClient(t *testing.T, c args, addr string, cacheDir string, golden stri
 
 	// Setup the output file
 	var outputFile string
-	if *update || createNewFile {
+	if *update {
 		outputFile = golden
 	} else {
 		output, _ := ioutil.TempFile("", "integration")
