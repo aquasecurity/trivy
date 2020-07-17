@@ -58,12 +58,6 @@
         {{- end -}}
       {{- end -}}
       ],
-      "newlineSequences": [
-        "\r\n",
-        "\n",
-        "",
-        " "
-      ],
       "columnKind": "utf16CodeUnits"
     }
   ]
