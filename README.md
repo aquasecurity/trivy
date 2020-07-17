@@ -893,6 +893,11 @@ In the following example using the template `junit.tpl` XML can be generated.
 $ trivy image --format template --template "@contrib/junit.tpl" -o junit-report.xml  golang:1.12-alpine
 ```
 
+In the following example using the template `sarif.tpl` [Sarif](https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/managing-results-from-code-scanning) can be generated.
+```
+$ trivy image --format template --template "@contrib/sarif.tpl" -o report.sarif  golang:1.12-alpine
+```
+
 ### Filter the vulnerabilities by severities
 
 ```

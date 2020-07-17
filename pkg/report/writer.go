@@ -51,6 +51,12 @@ func WriteResults(format string, output io.Writer, results Results, outputTempla
 				}
 				return escaped.String()
 			},
+			"endWithPeriod": func(input string) string {
+				if !strings.HasSuffix(input, ".") {
+					input += "."
+				}
+				return input
+			},
 		}).Parse(outputTemplate)
 		if err != nil {
 			return xerrors.Errorf("error parsing template: %w", err)
