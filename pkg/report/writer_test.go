@@ -275,6 +275,27 @@ func TestReportWriter_Template(t *testing.T) {
 	</testsuite>
 </testsuites>`,
 		},
+		{
+			name: "happy path with/without period description should return with period",
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2019-0000",
+					PkgName:         "foo",
+					Vulnerability: dbTypes.Vulnerability{
+						Description: "without period",
+					},
+				},
+				{
+					VulnerabilityID: "CVE-2019-0000",
+					PkgName:         "bar",
+					Vulnerability: dbTypes.Vulnerability{
+						Description: "with period.",
+					},
+				},
+			},
+			template: `{{ range . }}{{ range .Vulnerabilities}}{{.VulnerabilityID}} {{ endWithPeriod .Description | printf "%q" }}{{ end }}{{ end }}`,
+			expected: `CVE-2019-0000 "without period."CVE-2019-0000 "with period."`,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
