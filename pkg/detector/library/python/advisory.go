@@ -8,8 +8,8 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
-	"github.com/knqyf263/go-version"
 )
 
 type Advisory struct {
@@ -22,7 +22,7 @@ func NewAdvisory() *Advisory {
 	}
 }
 
-func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	advisories, err := s.vs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get python advisories: %w", err)

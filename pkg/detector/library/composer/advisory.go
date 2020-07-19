@@ -8,9 +8,10 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/Masterminds/semver/v3"
+
 	composerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/composer"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
-	"github.com/knqyf263/go-version"
 )
 
 type Advisory struct {
@@ -23,7 +24,7 @@ func NewAdvisory() *Advisory {
 	}
 }
 
-func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	ref := fmt.Sprintf("composer://%s", pkgName)
 	advisories, err := s.vs.Get(ref)
 	if err != nil {

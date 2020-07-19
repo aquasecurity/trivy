@@ -3,7 +3,7 @@ package bundler
 import (
 	"strings"
 
-	"github.com/knqyf263/go-version"
+	"github.com/Masterminds/semver/v3"
 	"golang.org/x/xerrors"
 
 	bundlerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/bundler"
@@ -44,7 +44,7 @@ func NewAdvisory() *Advisory {
 	}
 }
 
-func (a *Advisory) DetectVulnerabilities(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+func (a *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	advisories, err := a.vs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get bundler advisories: %w", err)

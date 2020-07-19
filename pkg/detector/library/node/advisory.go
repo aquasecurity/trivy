@@ -3,8 +3,9 @@ package node
 import (
 	"strings"
 
-	version "github.com/knqyf263/go-version"
 	"golang.org/x/xerrors"
+
+	"github.com/Masterminds/semver/v3"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/node"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -21,7 +22,7 @@ func NewAdvisory() *Advisory {
 	}
 }
 
-func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	replacer := strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc", " <", ", <", " >", ", >")
 	advisories, err := s.vs.Get(pkgName)
 	if err != nil {

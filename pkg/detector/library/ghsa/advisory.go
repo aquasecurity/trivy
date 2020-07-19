@@ -3,7 +3,7 @@ package ghsa
 import (
 	"strings"
 
-	"github.com/knqyf263/go-version"
+	"github.com/Masterminds/semver/v3"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
@@ -25,7 +25,7 @@ func NewAdvisory(ecosystem ghsa.Ecosystem) *Advisory {
 	}
 }
 
-func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	advisories, err := s.vs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get ghsa advisories: %w", err)

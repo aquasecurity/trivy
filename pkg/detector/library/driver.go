@@ -3,6 +3,7 @@ package library
 import (
 	"fmt"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/aquasecurity/fanal/analyzer/library"
 	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
@@ -12,7 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/node"
 	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/knqyf263/go-version"
 	"golang.org/x/xerrors"
 )
 
@@ -21,7 +21,7 @@ type Factory interface {
 }
 
 type advisory interface {
-	DetectVulnerabilities(string, *version.Version) ([]types.DetectedVulnerability, error)
+	DetectVulnerabilities(string, *semver.Version) ([]types.DetectedVulnerability, error)
 }
 
 type DriverFactory struct{}
@@ -59,7 +59,7 @@ func NewDriver(p string, advisories ...advisory) Driver {
 	return Driver{pkgManager: p, advisories: advisories}
 }
 
-func (driver *Driver) Detect(pkgName string, pkgVer *version.Version) ([]types.DetectedVulnerability, error) {
+func (driver *Driver) Detect(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	var detectedVulnerabilities []types.DetectedVulnerability
 	uniqVulnIdMap := make(map[string]struct{})
 	for _, d := range driver.advisories {
