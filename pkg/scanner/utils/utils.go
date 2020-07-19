@@ -37,8 +37,9 @@ func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool 
 		for _, m := range msgs {
 			// re-validate after removing the patch version
 			if strings.HasSuffix(m.Error(), "is a prerelease version and the constraint is only looking for release versions") {
-				if v2, err := semver.NewVersion(fmt.Sprintf("%v.%v.%v", currentVersion.Major(), currentVersion.Minor(), currentVersion.Patch())); err == nil {
-					valid, msgs = c.Validate(v2)
+				v2, err := semver.NewVersion(fmt.Sprintf("%v.%v.%v", currentVersion.Major(), currentVersion.Minor(), currentVersion.Patch()))
+				if err == nil {
+					valid, _ = c.Validate(v2)
 					if valid {
 						return true
 					}
