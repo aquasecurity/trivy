@@ -35,7 +35,7 @@ func TestServer_Detect(t *testing.T) {
 		name                string
 		args                args
 		detectExpectation   library.OperationDetectExpectation
-		fillInfoExpectation vulnerability.FillInfoExpectation
+		fillInfoExpectation vulnerability.OperationFillInfoExpectation
 		wantRes             *proto.DetectResponse
 		wantErr             string
 	}{
@@ -80,8 +80,8 @@ func TestServer_Detect(t *testing.T) {
 					},
 				},
 			},
-			fillInfoExpectation: vulnerability.FillInfoExpectation{
-				Args: vulnerability.FillInfoArgs{
+			fillInfoExpectation: vulnerability.OperationFillInfoExpectation{
+				Args: vulnerability.OperationFillInfoArgs{
 					Vulns: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2019-0001",
