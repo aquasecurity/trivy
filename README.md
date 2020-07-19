@@ -44,6 +44,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
     + [Save the results using a template](#save-the-results-using-a-template)
     + [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
     + [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
+    + [Filter the vulnerabilities by Open Policy Agent](#filter-the-vulnerabilities-by-open-policy-agent)
     + [Skip update of vulnerability DB](#skip-update-of-vulnerability-db)
     + [Only download vulnerability database](#only-download-vulnerability-database)
     + [Ignore unfixed vulnerabilities](#ignore-unfixed-vulnerabilities)
@@ -1097,6 +1098,36 @@ Total: 4751 (UNKNOWN: 1, LOW: 150, MEDIUM: 3504, HIGH: 1013, CRITICAL: 83)
 ```
 
 </details>
+
+### Filter the vulnerabilities by Open Policy Agent
+Trivy supports Open Policy Agent (OPA) to filter vulnerabilities. You can specify a Rego file with `--filter` option.
+
+You need to define `filter[vulnerability] {}` as a rule in your Rego file. See [examples](./contrib/example_filter) for the detail.
+
+```
+$ trivy image --filter contrib/example_filter/basic.rego centos:7
+```
+
+<details>
+<summary>Result</summary>
+
+```
+centos:7 (centos 7.8.2003)
+==========================
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+| glib2   | CVE-2016-3191    | HIGH     | 2.56.1-5.el7      |               | pcre: workspace overflow       |
+|         |                  |          |                   |               | for (*ACCEPT) with deeply      |
+|         |                  |          |                   |               | nested parentheses (8.39/13,   |
+|         |                  |          |                   |               | 10.22/12)                      |
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+```
+
+</details>
+
 
 ### Skip update of vulnerability DB
 
