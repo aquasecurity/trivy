@@ -176,6 +176,12 @@ var (
 		EnvVars: []string{"TRIVY_TOKEN_HEADER"},
 	}
 
+	filter = cli.StringFlag{
+		Name:    "filter",
+		Usage:   "specify the Rego file to filter vulnerabilities",
+		EnvVars: []string{"TRIVY_FILTER"},
+	}
+
 	globalFlags = []cli.Flag{
 		&quietFlag,
 		&debugFlag,
@@ -200,6 +206,7 @@ var (
 		&ignoreFileFlag,
 		&timeoutFlag,
 		&lightFlag,
+		&filter,
 	}
 
 	// deprecated options
@@ -352,6 +359,7 @@ func NewFilesystemCommand() *cli.Command {
 			&cacheDirFlag,
 			&timeoutFlag,
 			&noProgressFlag,
+			&filter,
 		},
 	}
 }
@@ -380,6 +388,7 @@ func NewRepositoryCommand() *cli.Command {
 			&cacheDirFlag,
 			&timeoutFlag,
 			&noProgressFlag,
+			&filter,
 		},
 	}
 }
@@ -407,6 +416,7 @@ func NewClientCommand() *cli.Command {
 			&ignoreFileFlag,
 			&cacheDirFlag,
 			&timeoutFlag,
+			&filter,
 
 			// original flags
 			&token,

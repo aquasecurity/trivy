@@ -19,6 +19,8 @@ type ReportConfig struct {
 	IgnoreUnfixed bool
 	ExitCode      int
 
+	Filter string
+
 	// these variables are not exported
 	vulnType   string
 	output     string
@@ -35,6 +37,7 @@ func NewReportConfig(c *cli.Context) ReportConfig {
 		output:   c.String("output"),
 		Format:   c.String("format"),
 		Template: c.String("template"),
+		Filter:   c.String("filter"),
 
 		vulnType:      c.String("vuln-type"),
 		severities:    c.String("severity"),
