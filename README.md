@@ -1100,12 +1100,12 @@ Total: 4751 (UNKNOWN: 1, LOW: 150, MEDIUM: 3504, HIGH: 1013, CRITICAL: 83)
 </details>
 
 ### Filter the vulnerabilities by Open Policy Agent
-Trivy supports Open Policy Agent (OPA) to filter vulnerabilities. You can specify a Rego file with `--filter` option.
+Trivy supports Open Policy Agent (OPA) to filter vulnerabilities. You can specify a Rego file with `--policy` option.
 
-You need to define `filter[vulnerability] {}` as a rule in your Rego file. See [examples](./contrib/example_filter) for the detail.
+You need to define `allow {}` as a rule in your Rego file. See [examples](./contrib/example_policy) for the detail.
 
 ```
-$ trivy image --filter contrib/example_filter/basic.rego centos:7
+$ trivy image --policy contrib/example_filter/basic.rego centos:7
 ```
 
 <details>
