@@ -1,46 +1,45 @@
 package trivy
 
-severities := {"HIGH", "CRITICAL"}
+import data.lib.trivy
+
+default allow = false
 
 ignore_pkgs := {"bash", "bind-license", "rpm", "vim", "vim-minimal"}
 
-filter[vuln] {
-	vuln := input_vulnerabilities[_]
+allow_severities := {"LOW", "MEDIUM"}
 
-	# Evaluate CVSS vector
-	not high_privilege_required[vuln]
-	not require_user_interaction[vuln]
-	attack_vector_is_network[vuln]
-
-	# Evaluate severity
-	severities[vuln.Severity]
-
-	# Evaluate package name
-	not ignore_pkgs[vuln.PkgName]
+nvd_v3_vector = v {
+	v := input.CVSS.nvd.v3
 }
 
-input_vulnerabilities[v] {
-	v := input[_]
+allow {
+	input.PkgName == ignore_pkgs[_]
 }
 
-attack_vector_is_network[v] {
-	v := input_vulnerabilities[_]
-	vector := split_cvss_vector(v.CVSS[_])
-	vector[1] == "AV:N"
+allow {
+	input.Severity == allow_severities[_]
 }
 
-high_privilege_required[v] {
-	v := input_vulnerabilities[_]
-	vector := split_cvss_vector(v.CVSS[_])
-	vector[3] == "PR:H"
+# Accept a vulnerability which is not remotely exploitable
+allow {
+	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
+	cvss_vector.AttackVector != "Network"
 }
 
-require_user_interaction[v] {
-	v := input_vulnerabilities[_]
-	vector := split_cvss_vector(v.CVSS[_])
-	vector[4] == "UI:R"
+# Accept a vulnerability which requires high privilege
+allow {
+	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
+	cvss_vector.PrivilegesRequired == "High"
 }
 
-split_cvss_vector(cvss) = vector {
-	vector := split(cvss.V3Vector, "/")
+# Accept a vulnerability which requires user interaction
+allow {
+	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
+	cvss_vector.UserInteraction == "Required"
+}
+
+# Accept CSRF
+allow {
+	# https://cwe.mitre.org/data/definitions/352.html
+	input.CweIDs[_] == "CWE-352"
 }
