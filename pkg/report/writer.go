@@ -15,7 +15,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-
+	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/olekukonko/tablewriter"
 )
 
@@ -118,7 +118,7 @@ func (tw TableWriter) write(result Result) {
 
 	var results []string
 
-	for _, severity := range tw.Severities {
+	for _, severity := range utils.UniqueSeverities(tw.Severities) {
 		severityName := severity.String()
 		r := fmt.Sprintf("%s: %d", severityName, severityCount[severityName])
 		results = append(results, r)

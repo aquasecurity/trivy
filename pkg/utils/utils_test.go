@@ -9,11 +9,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/google/go-cmp/cmp"
+	"github.com/kylelemons/godebug/pretty"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/kylelemons/godebug/pretty"
 )
 
 func touch(t *testing.T, name string) {
@@ -189,6 +190,39 @@ func TestCopyFile(t *testing.T) {
 				assert.Equal(t, err.Error(), tt.wantErr, tt.name)
 			} else {
 				assert.NoError(t, err, tt.name)
+			}
+		})
+	}
+}
+
+func TestUniqueStrings(t *testing.T) {
+	type args struct {
+		elements []types.Severity
+	}
+
+	tests := map[string]struct {
+		args args
+		want []types.Severity
+	}{
+		"no duplicates": {
+			args: args{elements: []types.Severity{types.SeverityLow, types.SeverityCritical}},
+			want: []types.Severity{types.SeverityLow, types.SeverityCritical},
+		},
+		"3 duplicates": {
+			args: args{elements: []types.Severity{types.SeverityLow, types.SeverityCritical, types.SeverityLow, types.SeverityLow, types.SeverityHigh}},
+			want: []types.Severity{types.SeverityLow, types.SeverityCritical, types.SeverityHigh},
+		},
+		"many duplicates": {
+			args: args{[]types.Severity{types.SeverityLow, types.SeverityCritical, types.SeverityLow, types.SeverityLow, types.SeverityHigh, types.SeverityHigh}},
+			want: []types.Severity{types.SeverityLow, types.SeverityCritical, types.SeverityHigh},
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			got := UniqueSeverities(tt.args.elements)
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("UniqueSeverities() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}

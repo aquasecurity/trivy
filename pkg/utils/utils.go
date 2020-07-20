@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"golang.org/x/xerrors"
 )
@@ -118,4 +119,21 @@ func CopyFile(src, dst string) (int64, error) {
 	defer destination.Close()
 	n, err := io.Copy(destination, source)
 	return n, err
+}
+
+func UniqueSeverities(elements []types.Severity) []types.Severity {
+	encountered := map[types.Severity]bool{}
+	result := []types.Severity{}
+
+	for v := range elements {
+		if encountered[elements[v]] {
+			continue
+		}
+
+		// append non unique
+		encountered[elements[v]] = true
+		result = append(result, elements[v])
+	}
+	// Return the new slice.
+	return result
 }
