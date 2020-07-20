@@ -130,10 +130,8 @@ func UniqueSeverities(elements []types.Severity) []types.Severity {
 			continue
 		}
 
-		// append non unique
 		encountered[elements[v]] = true
 		result = append(result, elements[v])
 	}
-	// Return the new slice.
 	return result
 }
