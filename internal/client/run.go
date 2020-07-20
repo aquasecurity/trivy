@@ -80,7 +80,7 @@ func run(c config.Config) (err error) {
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
 		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
-			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.Filter)
+			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.Policy)
 		if err != nil {
 			return err
 		}

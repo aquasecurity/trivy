@@ -46,7 +46,7 @@ deny_policy := {
 }
 
 filter[vuln] {
-	vuln := input_vulnerabilities[_]
+	vuln := input_vulnerabilitiea[_]
 
 	# Even if the severity is CRITICAL, a vulnerability that requires privileges should be ignored.
 	not high_privilege_required[vuln]
