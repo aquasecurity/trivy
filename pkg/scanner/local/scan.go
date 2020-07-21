@@ -125,12 +125,12 @@ func (s Scanner) scanOSPkg(target, osFamily, osName string, pkgs []ftypes.Packag
 		return nil, false, xerrors.Errorf("failed vulnerability detection of OS packages: %w", err)
 	}
 
+	// appending OS packages to the results
 	var ps []types.OsPackage
 	for _, pkg := range pkgs {
 		p := &types.OsPackage{
 			PkgName:          pkg.Name,
 			InstalledVersion: pkg.Version,
-			Package:          types.Package{},
 		}
 		ps = append(ps, *p)
 	}
@@ -152,7 +152,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application) (report.Results, error) 
 		if err != nil {
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		}
-
+		// appending App packages to the results
 		results = append(results, report.Result{
 			Target:          app.FilePath,
 			Vulnerabilities: vulns,
