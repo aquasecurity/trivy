@@ -28,7 +28,7 @@ func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool 
 		v = strings.Join(constraintParts, ",")
 		c, err := semver.NewConstraint(v)
 		if err != nil {
-			log.Logger.Error("NewConstraint", "error", err)
+			log.Logger.Debug("NewConstraint", "error", err)
 			continue
 		}
 		// Validate a version against a constraint.
