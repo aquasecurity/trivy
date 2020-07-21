@@ -14,7 +14,8 @@ import (
 )
 
 var (
-	replacer = strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc", "==", "=")
+	replacer           = strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc", "==", "=")
+	preReleaseSplitter = regexp.MustCompile(`(?P<Number>^[0-9]+)(?P<PreRelease>[a-z]*.*)`)
 )
 
 func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool {
@@ -66,13 +67,12 @@ func FormatPatchVersion(version string) string {
 			version = strings.Join(part[:3], ".") + "-" + strings.Join(part[3:], ".")
 		}
 	} else {
-		r := regexp.MustCompile(`(?P<Number>^[0-9]+)(?P<PreRelease>[a-z]*.*)`)
 		for i := range part {
-			res := r.FindStringSubmatch(part[i])
+			res := preReleaseSplitter.FindStringSubmatch(part[i])
 			if res == nil {
 				continue
 			}
-			names := r.SubexpNames()
+			names := preReleaseSplitter.SubexpNames()
 			regexGroup := map[string]string{}
 			for j := range names {
 				if names[j] != "" {
