@@ -44,7 +44,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
     + [Save the results using a template](#save-the-results-using-a-template)
     + [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
     + [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
-    + [Filter the vulnerabilities by Open Policy Agent](#filter-the-vulnerabilities-by-open-policy-agent)
+    + [Filter the vulnerabilities by Open Policy Agent](#filter-the-vulnerabilities-by-open-policy-agent-policy)
     + [Skip update of vulnerability DB](#skip-update-of-vulnerability-db)
     + [Only download vulnerability database](#only-download-vulnerability-database)
     + [Ignore unfixed vulnerabilities](#ignore-unfixed-vulnerabilities)
