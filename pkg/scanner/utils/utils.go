@@ -26,6 +26,9 @@ func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool 
 			constraintParts[j] = FormatPatchVersion(constraintParts[j])
 		}
 		v = strings.Join(constraintParts, ",")
+		if v == "" {
+			continue
+		}
 		c, err := semver.NewConstraint(v)
 		if err != nil {
 			log.Logger.Debug("NewConstraint", "error", err)
