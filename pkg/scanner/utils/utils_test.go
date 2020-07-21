@@ -75,11 +75,35 @@ func TestMatchVersions(t *testing.T) {
 			rangeVersion:   []string{`>= 1.6.7.1`},
 			expectedCheck:  true,
 		},
+		{
+			name:           "expect prerelease suffixed in minor version to work",
+			currentVersion: "4.1a",
+			rangeVersion:   []string{`< 4.2b1`},
+			expectedCheck:  true,
+		},
+		{
+			name:           "expect prerelease suffixed in patch version to work",
+			currentVersion: "4.1.2a",
+			rangeVersion:   []string{`< 4.2b1`},
+			expectedCheck:  true,
+		},
+		{
+			name:           "expect prerelease suffixed in patch version to work in failing case",
+			currentVersion: "4.1.2c",
+			rangeVersion:   []string{`<= 4.1.2b`},
+			expectedCheck:  false,
+		},
+		{
+			name:           "expect double equal to work",
+			currentVersion: "1.7",
+			rangeVersion:   []string{`==1.7`},
+			expectedCheck:  true,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			v, err := semver.NewVersion(tc.currentVersion)
+			v, err := semver.NewVersion(FormatPatchVersion(tc.currentVersion))
 			require.NoError(t, err)
 			match := MatchVersions(v, tc.rangeVersion)
 			assert.Equal(t, tc.expectedCheck, match)
@@ -117,6 +141,16 @@ func TestFormatPatchVersio(t *testing.T) {
 			name:            "unchanged case",
 			currentVersion:  "1.2.3.4-5",
 			expectedVersion: "1.2.3-4-5",
+		},
+		{
+			name:            "prerelease suffixed in minor",
+			currentVersion:  "1.11a",
+			expectedVersion: "1.11-a",
+		},
+		{
+			name:            "prerelease suffixed in patch",
+			currentVersion:  "1.11.5rc",
+			expectedVersion: "1.11.5-rc",
 		},
 	}
 

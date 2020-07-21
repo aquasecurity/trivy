@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -13,7 +14,7 @@ import (
 )
 
 var (
-	replacer = strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc")
+	replacer = strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc", "==", "=")
 )
 
 func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool {
@@ -64,6 +65,29 @@ func FormatPatchVersion(version string) string {
 		if _, err := strconv.Atoi(part[2]); err == nil {
 			version = strings.Join(part[:3], ".") + "-" + strings.Join(part[3:], ".")
 		}
+	} else {
+		r := regexp.MustCompile(`(?P<Number>^[0-9]+)(?P<PreRelease>[a-z]*.*)`)
+		for i := range part {
+			res := r.FindStringSubmatch(part[i])
+			if res == nil {
+				continue
+			}
+			names := r.SubexpNames()
+			regexGroup := map[string]string{}
+			for j := range names {
+				if names[j] != "" {
+					regexGroup[names[j]] = res[j]
+				}
+			}
+			if regexGroup["PreRelease"] != "" {
+				if !strings.HasPrefix(regexGroup["PreRelease"], "-") {
+					regexGroup["PreRelease"] = "-" + regexGroup["PreRelease"]
+				}
+				part[i] = regexGroup["Number"] + regexGroup["PreRelease"]
+				break
+			}
+		}
+		version = strings.Join(part, ".")
 	}
 	return version
 }
