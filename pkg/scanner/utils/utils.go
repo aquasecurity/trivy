@@ -72,18 +72,13 @@ func FormatPatchVersion(version string) string {
 			if res == nil {
 				continue
 			}
-			names := preReleaseSplitter.SubexpNames()
-			regexGroup := map[string]string{}
-			for j := range names {
-				if names[j] != "" {
-					regexGroup[names[j]] = res[j]
+			number := res[1]
+			preRelease := res[2]
+			if preRelease != "" {
+				if !strings.HasPrefix(preRelease, "-") {
+					preRelease = "-" + preRelease
 				}
-			}
-			if regexGroup["PreRelease"] != "" {
-				if !strings.HasPrefix(regexGroup["PreRelease"], "-") {
-					regexGroup["PreRelease"] = "-" + regexGroup["PreRelease"]
-				}
-				part[i] = regexGroup["Number"] + regexGroup["PreRelease"]
+				part[i] = number + preRelease
 				break
 			}
 		}
