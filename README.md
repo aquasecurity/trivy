@@ -1099,7 +1099,7 @@ Total: 4751 (UNKNOWN: 1, LOW: 150, MEDIUM: 3504, HIGH: 1013, CRITICAL: 83)
 
 </details>
 
-### Filter the vulnerabilities by Open Policy Agent
+### Filter the vulnerabilities by Open Policy Agent policy
 Trivy supports Open Policy Agent (OPA) to filter vulnerabilities. You can specify a Rego file with `--policy` option.
 
 You need to define `allow {}` as a rule in your Rego file. See [examples](./contrib/example_policy) for the detail.
