@@ -93,6 +93,7 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 		}
 
 		var result *report.Result
+
 		result, eosl, err = s.scanOSPkg(target, imageDetail.OS.Family, imageDetail.OS.Name, pkgs)
 		if err != nil {
 			return nil, nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
@@ -124,11 +125,22 @@ func (s Scanner) scanOSPkg(target, osFamily, osName string, pkgs []ftypes.Packag
 		return nil, false, xerrors.Errorf("failed vulnerability detection of OS packages: %w", err)
 	}
 
+	var ps []types.OsPackage
+	for _, pkg := range pkgs {
+		p := &types.OsPackage{
+			PkgName:          pkg.Name,
+			InstalledVersion: pkg.Version,
+			Package:          types.Package{},
+		}
+		ps = append(ps, *p)
+	}
+
 	imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osName)
 	result := &report.Result{
 		Target:          imageDetail,
 		Vulnerabilities: vulns,
 		Type:            osFamily,
+		OsPackages: 	 ps,
 	}
 	return result, eosl, nil
 }
@@ -145,6 +157,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application) (report.Results, error) 
 			Target:          app.FilePath,
 			Vulnerabilities: vulns,
 			Type:            app.Type,
+			AppPackages: 	 app.Libraries,
 		})
 	}
 	sort.Slice(results, func(i, j int) bool {

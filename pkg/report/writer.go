@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	types2 "github.com/aquasecurity/fanal/types"
 	"io"
 	"io/ioutil"
 	"os"
@@ -25,6 +26,8 @@ type Result struct {
 	Target          string                        `json:"Target"`
 	Type            string                        `json:"Type,omitempty"`
 	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities"`
+	OsPackages		[]types.OsPackage			  `json:"OsPackages"`
+	AppPackages		[]types2.LibraryInfo			  `json:"AppPackages"`
 }
 
 func WriteResults(format string, output io.Writer, results Results, outputTemplate string, light bool) error {
