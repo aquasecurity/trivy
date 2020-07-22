@@ -86,8 +86,12 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
 		vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
-		results[i].Vulnerabilities = vulnClient.Filter(results[i].Vulnerabilities,
-			c.Severities, c.IgnoreUnfixed, c.IgnoreFile)
+		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
+			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.IgnorePolicy)
+		if err != nil {
+			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
+		}
+		results[i].Vulnerabilities = vulns
 	}
 
 	if err = report.WriteResults(c.Format, c.Output, results, c.Template, c.Light); err != nil {

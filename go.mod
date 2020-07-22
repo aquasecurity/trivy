@@ -22,6 +22,7 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/olekukonko/tablewriter v0.0.2-0.20190607075207-195002e6e56a
+	github.com/open-policy-agent/opa v0.21.1
 	github.com/spf13/afero v1.2.2
 	github.com/stretchr/testify v1.6.1
 	github.com/testcontainers/testcontainers-go v0.3.1
