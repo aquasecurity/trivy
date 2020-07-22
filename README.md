@@ -1100,9 +1100,11 @@ Total: 4751 (UNKNOWN: 1, LOW: 150, MEDIUM: 3504, HIGH: 1013, CRITICAL: 83)
 </details>
 
 ### Filter the vulnerabilities by Open Policy Agent policy
-Trivy supports Open Policy Agent (OPA) to filter vulnerabilities. You can specify a Rego file with `--policy` option.
+[EXPERIMENTAL] This feature might change without preserving backwards compatibility.
 
-The Rego package name must be `trivy` and it must include a rule called `allow` which determines if each individual vulnerability should be included (allow=true) or not (allow=false). In the policy, each vulnerability will be available for inspection as the `input` variable. The structure of each vulnerability input is the same as for the Trivy JSON output.  
+Trivy supports Open Policy Agent (OPA) to filter vulnerabilities. You can specify a Rego file with `--ignore-policy` option.
+
+The Rego package name must be `trivy` and it must include a rule called `ignore` which determines if each individual vulnerability should be excluded (ignore=true) or not (ignore=false). In the policy, each vulnerability will be available for inspection as the `input` variable. The structure of each vulnerability input is the same as for the Trivy JSON output.  
 There is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`. For more info about the helper functions, look at the library [here](pkg/vulnerability/module.go)
 
 To get started, see the [example policy](./contrib/example_policy).
