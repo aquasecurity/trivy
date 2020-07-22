@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -13,7 +14,8 @@ import (
 )
 
 var (
-	replacer = strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc")
+	replacer           = strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc", "==", "=")
+	preReleaseSplitter = regexp.MustCompile(`(?P<Number>^[0-9]+)(?P<PreRelease>[a-z]*.*)`)
 )
 
 func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool {
@@ -24,9 +26,12 @@ func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool 
 			constraintParts[j] = FormatPatchVersion(constraintParts[j])
 		}
 		v = strings.Join(constraintParts, ",")
+		if v == "" {
+			continue
+		}
 		c, err := semver.NewConstraint(v)
 		if err != nil {
-			log.Logger.Error("NewConstraint", "error", err)
+			log.Logger.Debug("NewConstraint", "error", err)
 			continue
 		}
 		// Validate a version against a constraint.
@@ -64,6 +69,23 @@ func FormatPatchVersion(version string) string {
 		if _, err := strconv.Atoi(part[2]); err == nil {
 			version = strings.Join(part[:3], ".") + "-" + strings.Join(part[3:], ".")
 		}
+	} else {
+		for i := range part {
+			res := preReleaseSplitter.FindStringSubmatch(part[i])
+			if res == nil {
+				continue
+			}
+			number := res[1]
+			preRelease := res[2]
+			if preRelease != "" {
+				if !strings.HasPrefix(preRelease, "-") {
+					preRelease = "-" + preRelease
+				}
+				part[i] = number + preRelease
+				break
+			}
+		}
+		version = strings.Join(part, ".")
 	}
 	return version
 }
