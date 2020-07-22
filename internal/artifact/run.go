@@ -65,12 +65,8 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 		target = c.Input
 	}
 
-	ctx := context.Background()
-	if c.Timeout > 0 {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, c.Timeout)
-		defer cancel()
-	}
+	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
+	defer cancel()
 	scanner, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, c.Timeout)
 	if err != nil {
 		return xerrors.Errorf("unable to initialize a scanner: %w", err)
