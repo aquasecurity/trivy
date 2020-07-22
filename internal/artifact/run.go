@@ -87,7 +87,7 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 	for i := range results {
 		vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
 		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
-			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.Policy)
+			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.IgnorePolicy)
 		if err != nil {
 			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}

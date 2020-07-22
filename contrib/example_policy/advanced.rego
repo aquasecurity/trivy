@@ -2,36 +2,36 @@ package trivy
 
 import data.lib.trivy
 
-default allow = false
+default ignore = false
 
 nvd_v3_vector = v {
 	v := input.CVSS.nvd.v3
 }
 
-# Accept a vulnerability which requires high privilege
-allow {
+# Ignore a vulnerability which requires high privilege
+ignore {
 	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
 	cvss_vector.PrivilegesRequired == "High"
 }
 
-# Accept a vulnerability which requires user interaction
-allow {
+# Ignore a vulnerability which requires user interaction
+ignore {
 	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
 	cvss_vector.UserInteraction == "Required"
 }
 
-allow {
+ignore {
 	input.PkgName == "openssl"
 
 	# Split CVSSv3 vector
 	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
 
 	# Evaluate Attack Vector
-	allow_attack_vectors := {"Physical", "Local"}
-	cvss_vector.AttackVector == allow_attack_vectors[_]
+	ignore_attack_vectors := {"Physical", "Local"}
+	cvss_vector.AttackVector == ignore_attack_vectors[_]
 }
 
-allow {
+ignore {
 	input.PkgName == "openssl"
 
 	# Evaluate severity
@@ -46,29 +46,29 @@ allow {
 	count({x | x := input.CweIDs[_]; x == deny_cwe_ids[_]}) == 0
 }
 
-allow {
+ignore {
 	input.PkgName == "bash"
 
 	# Split CVSSv3 vector
 	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
 
 	# Evaluate Attack Vector
-	allow_attack_vectors := {"Physical", "Local", "Adjacent"}
-	cvss_vector.AttackVector == allow_attack_vectors[_]
+	ignore_attack_vectors := {"Physical", "Local", "Adjacent"}
+	cvss_vector.AttackVector == ignore_attack_vectors[_]
 
 	# Evaluate severity
 	input.Severity == {"LOW", "MEDIUM", "HIGH"}[_]
 }
 
-allow {
+ignore {
 	input.PkgName == "django"
 
 	# Split CVSSv3 vector
 	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
 
 	# Evaluate Attack Vector
-	allow_attack_vectors := {"Physical", "Local"}
-	cvss_vector.AttackVector == allow_attack_vectors[_]
+	ignore_attack_vectors := {"Physical", "Local"}
+	cvss_vector.AttackVector == ignore_attack_vectors[_]
 
 	# Evaluate severity
 	input.Severity == {"LOW", "MEDIUM"}[_]
@@ -82,7 +82,7 @@ allow {
 	count({x | x := input.CweIDs[_]; x == deny_cwe_ids[_]}) == 0
 }
 
-allow {
+ignore {
 	input.PkgName == "jquery"
 
 	# Split CVSSv3 vector

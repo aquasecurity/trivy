@@ -18,7 +18,7 @@ type ReportConfig struct {
 	IgnoreFile    string
 	IgnoreUnfixed bool
 	ExitCode      int
-	Policy        string
+	IgnorePolicy  string
 
 	// these variables are not exported
 	vulnType   string
@@ -33,10 +33,10 @@ type ReportConfig struct {
 
 func NewReportConfig(c *cli.Context) ReportConfig {
 	return ReportConfig{
-		output:   c.String("output"),
-		Format:   c.String("format"),
-		Template: c.String("template"),
-		Policy:   c.String("policy"),
+		output:       c.String("output"),
+		Format:       c.String("format"),
+		Template:     c.String("template"),
+		IgnorePolicy: c.String("ignore-policy"),
 
 		vulnType:      c.String("vuln-type"),
 		severities:    c.String("severity"),
