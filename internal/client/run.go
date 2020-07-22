@@ -45,7 +45,8 @@ func run(c config.Config) (err error) {
 	}
 
 	var scanner scanner.Scanner
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
+	defer cancel()
 	remoteCache := cache.NewRemoteCache(cache.RemoteURL(c.RemoteAddr), c.CustomHeaders)
 
 	cleanup := func() {}
