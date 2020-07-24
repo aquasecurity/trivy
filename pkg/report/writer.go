@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"strings"
 	"text/template"
@@ -17,6 +19,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/olekukonko/tablewriter"
+)
+
+var (
+	DefaultSarifTemplateURL = "https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/sarif.tpl"
 )
 
 type Results []Result
@@ -65,6 +71,12 @@ func WriteResults(format string, output io.Writer, results Results, outputTempla
 			return xerrors.Errorf("error parsing template: %w", err)
 		}
 		writer = &TemplateWriter{Output: output, Template: tmpl}
+	case "sarif":
+		template, err := getSarifTemplate(DefaultSarifTemplateURL)
+		if err != nil {
+			return err
+		}
+		return WriteResults("template", output, results, template, light)
 	default:
 		return xerrors.Errorf("unknown format: %v", format)
 	}
@@ -73,6 +85,15 @@ func WriteResults(format string, output io.Writer, results Results, outputTempla
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
 	return nil
+}
+
+func getSarifTemplate(url string) (string, error) {
+	r, err := http.Get(url)
+	if err != nil {
+		return "", errors.New(fmt.Sprintf("error fetching template: %s", err))
+	}
+	b, _ := ioutil.ReadAll(r.Body)
+	return string(b), nil
 }
 
 type Writer interface {
