@@ -57,6 +57,9 @@ func WriteResults(format string, output io.Writer, results Results, outputTempla
 				}
 				return input
 			},
+			"toLower": func(input string) string {
+				return strings.ToLower(input)
+			},
 		}).Parse(outputTemplate)
 		if err != nil {
 			return xerrors.Errorf("error parsing template: %w", err)
