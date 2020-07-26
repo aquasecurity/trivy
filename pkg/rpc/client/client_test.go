@@ -153,6 +153,20 @@ func TestScanner_Scan(t *testing.T) {
 										Severity:         common.Severity_CRITICAL,
 										References:       []string{"http://exammple.com"},
 										SeveritySource:   "nvd",
+										Cvss: map[string]*common.CVSS{
+											"nvd": {
+												V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+												V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+												V2Score:  7.2,
+												V3Score:  7.8,
+											},
+											"redhat": {
+												V2Vector: "AV:H/AC:L/Au:N/C:C/I:C/A:C",
+												V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+												V2Score:  4.2,
+												V3Score:  2.8,
+											},
+										},
 										Layer: &common.Layer{
 											DiffId: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 										},
@@ -177,6 +191,20 @@ func TestScanner_Scan(t *testing.T) {
 								Description: "Denial os Service",
 								Severity:    "CRITICAL",
 								References:  []string{"http://exammple.com"},
+								CVSS: dbTypes.VendorCVSS{
+									"nvd": {
+										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+										V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+										V2Score:  7.2,
+										V3Score:  7.8,
+									},
+									"redhat": {
+										V2Vector: "AV:H/AC:L/Au:N/C:C/I:C/A:C",
+										V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+										V2Score:  4.2,
+										V3Score:  2.8,
+									},
+								},
 							},
 							SeveritySource: "nvd",
 							Layer: ftypes.Layer{

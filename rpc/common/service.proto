@@ -41,16 +41,17 @@ message Library {
 }
 
 message Vulnerability {
-  string          vulnerability_id  = 1;
-  string          pkg_name          = 2;
-  string          installed_version = 3;
-  string          fixed_version     = 4;
-  string          title             = 5;
-  string          description       = 6;
-  Severity        severity          = 7;
-  repeated string references        = 8;
-  Layer           layer             = 10;
-  string          severity_source   = 11;
+  string            vulnerability_id  = 1;
+  string            pkg_name          = 2;
+  string            installed_version = 3;
+  string            fixed_version     = 4;
+  string            title             = 5;
+  string            description       = 6;
+  Severity          severity          = 7;
+  repeated string   references        = 8;
+  Layer             layer             = 10;
+  string            severity_source   = 11;
+  map<string, CVSS> cvss              = 12;
 }
 
 message Layer {
@@ -64,4 +65,11 @@ enum Severity {
   MEDIUM   = 2;
   HIGH     = 3;
   CRITICAL = 4;
+}
+
+message CVSS {
+  string v2_vector = 1;
+  string v3_vector = 2;
+  double v2_score  = 3;
+  double v3_score  = 4;
 }

@@ -114,6 +114,7 @@ func TestScanServer_Scan(t *testing.T) {
 								FixedVersion:     "1.2.4",
 								SeveritySource:   "nvd",
 								Layer:            &common.Layer{},
+								Cvss:             make(map[string]*common.CVSS),
 							},
 						},
 						Type: "alpine",
