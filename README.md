@@ -899,11 +899,6 @@ In the following example using the template `sarif.tpl` [Sarif](https://docs.git
 $ trivy image --format template --template "@contrib/sarif.tpl" -o report.sarif  golang:1.12-alpine
 ```
 
-You can also use the default SARIF format that's included with Trivy as follows
-```
-$ trivy image --format=sarif golang:1.12-alpine
-```
-
 ### Filter the vulnerabilities by severities
 
 ```
