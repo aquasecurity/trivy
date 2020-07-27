@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  codecov: codecov/codecov@1.1.0
 
 defaults: &defaults
   docker :
@@ -24,6 +26,9 @@ jobs:
       - run:
           name: Test
           command: make test
+      - codecov/upload:
+          file: ./coverage.txt
+
   release:
     <<: *defaults
     steps:
