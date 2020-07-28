@@ -252,7 +252,15 @@ func TestConvertToRpcVulns(t *testing.T) {
 							Title:       "DoS",
 							Description: "Denial of Service",
 							Severity:    "MEDIUM",
-							References:  []string{"http://example.com"},
+							CVSS: dbTypes.VendorCVSS{
+								"redhat": {
+									V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+									V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+									V2Score:  7.2,
+									V3Score:  7.8,
+								},
+							},
+							References: []string{"http://example.com"},
 						},
 						Layer: ftypes.Layer{
 							Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
@@ -270,7 +278,15 @@ func TestConvertToRpcVulns(t *testing.T) {
 					Title:            "DoS",
 					Description:      "Denial of Service",
 					Severity:         common.Severity_MEDIUM,
-					References:       []string{"http://example.com"},
+					Cvss: map[string]*common.CVSS{
+						"redhat": {
+							V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+							V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+							V2Score:  7.2,
+							V3Score:  7.8,
+						},
+					},
+					References: []string{"http://example.com"},
 					Layer: &common.Layer{
 						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
@@ -309,6 +325,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 					Title:            "DoS",
 					Description:      "Denial of Service",
 					Severity:         common.Severity_UNKNOWN,
+					Cvss:             make(map[string]*common.CVSS),
 					References:       []string{"http://example.com"},
 					Layer: &common.Layer{
 						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
