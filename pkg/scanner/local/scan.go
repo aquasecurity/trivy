@@ -98,6 +98,9 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 			return nil, nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
 		}
 		if result != nil {
+			if options.ListAllPackages {
+				result.Packages = pkgs
+			}
 			results = append(results, *result)
 		}
 	}

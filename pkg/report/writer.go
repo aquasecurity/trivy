@@ -13,6 +13,7 @@ import (
 
 	"golang.org/x/xerrors"
 
+	fanalTypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 
@@ -24,6 +25,7 @@ type Results []Result
 type Result struct {
 	Target          string                        `json:"Target"`
 	Type            string                        `json:"Type,omitempty"`
+	Packages        []fanalTypes.Package          `json:"Packages,omitempty"`
 	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities"`
 }
 

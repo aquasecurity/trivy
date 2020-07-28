@@ -76,6 +76,7 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 	scanOptions := types.ScanOptions{
 		VulnType:            c.VulnType,
 		ScanRemovedPackages: c.ScanRemovedPkgs, // this is valid only for image subcommand
+		ListAllPackages:     c.ListAllPkgs,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
