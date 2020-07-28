@@ -301,8 +301,16 @@ func TestScanner_Scan(t *testing.T) {
 					Type: vulnerability.Alpine,
 				},
 				{
-					Target:   "/app/Gemfile.lock",
-					Packages: nil,
+					Target: "/app/Gemfile.lock",
+					Packages: []ftypes.Package{
+						{
+							Name:    "rails",
+							Version: "6.0",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+							},
+						},
+					},
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-10000",

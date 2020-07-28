@@ -106,7 +106,7 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 	}
 
 	if utils.StringInSlice("library", options.VulnType) {
-		libResults, err := s.scanLibrary(imageDetail.Applications)
+		libResults, err := s.scanLibrary(imageDetail.Applications, options.ListAllPackages)
 		if err != nil {
 			return nil, nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
 		}
@@ -136,19 +136,30 @@ func (s Scanner) scanOSPkg(target, osFamily, osName string, pkgs []ftypes.Packag
 	return result, eosl, nil
 }
 
-func (s Scanner) scanLibrary(apps []ftypes.Application) (report.Results, error) {
+func (s Scanner) scanLibrary(apps []ftypes.Application, listAllPackages bool) (report.Results, error) {
 	var results report.Results
 	for _, app := range apps {
 		vulns, err := s.libDetector.Detect("", app.FilePath, time.Time{}, app.Libraries)
 		if err != nil {
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		}
-
-		results = append(results, report.Result{
+		libReport := report.Result{
 			Target:          app.FilePath,
 			Vulnerabilities: vulns,
 			Type:            app.Type,
-		})
+		}
+		if listAllPackages {
+			var pkgs []ftypes.Package
+			for _, lib := range app.Libraries {
+				pkgs = append(pkgs, ftypes.Package{
+					Name:    lib.Library.Name,
+					Version: lib.Library.Version,
+					Layer:   lib.Layer,
+				})
+			}
+			libReport.Packages = pkgs
+		}
+		results = append(results, libReport)
 	}
 	sort.Slice(results, func(i, j int) bool {
 		return results[i].Target < results[j].Target
