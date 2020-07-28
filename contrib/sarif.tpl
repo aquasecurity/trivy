@@ -1,11 +1,12 @@
 {
-  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.4.json",
   "version": "2.1.0",
   "runs": [
     {
       "tool": {
         "driver": {
-          "name": "Trivy: Vulnerability Scanner for Containers",
+          "name": "Trivy",
+          "fullName": "Trivy Vulnerability Scanner",
           "rules": [
         {{- $t_first := true }}
         {{- range . }}
@@ -17,16 +18,21 @@
               {{- end }}
             {
               "id": "[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}",
-              "name": "container_scanning",
+              "name": "dockerfile_scan",
               "shortDescription": {
-                "text": {{ printf "error found in package %s." (print .PkgName .Title ) | printf "%q" }}
+                "text": "{{ .VulnerabilityID }} Package: {{ .PkgName }}"
               },
               "fullDescription": {
-                "text": {{ endWithPeriod .Description | printf "%q" }}
+                "text": "{{ endWithPeriod .Title }}"
               },
-              "defaultConfiguration": null,
+              "help": {
+                "text": "Vulnerability {{ .VulnerabilityID }}\nSeverity: {{ .Vulnerability.Severity }}\nPackage: {{ .PkgName }}\nInstalled Version: {{ .InstalledVersion }}\nFixed Version: {{ .FixedVersion }}\nLink: [{{ .VulnerabilityID }}](https://nvd.nist.gov/vuln/detail/{{ .VulnerabilityID | toLower }})",
+                "markdown": "**Vulnerability {{ .VulnerabilityID }}**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|{{ .Vulnerability.Severity }}|{{ .PkgName }}|{{ .InstalledVersion }}|{{ .FixedVersion }}|[{{ .VulnerabilityID }}](https://nvd.nist.gov/vuln/detail/{{ .VulnerabilityID | toLower }})|\n"
+              },
               "properties": {
                 "tags": [
+                  "vulnerability",
+                  "{{ .Vulnerability.Severity }}",
                   "{{ .PkgName }}"
                 ],
                 "precision": "very-high"
@@ -53,7 +59,18 @@
           "message": {
             "text": {{ endWithPeriod $vulnerability.Description | printf "%q" }}
           },
-          "locations": []
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
         }
         {{- end -}}
       {{- end -}}
