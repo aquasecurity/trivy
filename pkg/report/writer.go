@@ -118,9 +118,16 @@ func (tw TableWriter) write(result Result) {
 
 	var results []string
 
-	for _, severity := range utils.UniqueSeverities(tw.Severities) {
-		severityName := severity.String()
-		r := fmt.Sprintf("%s: %d", severityName, severityCount[severityName])
+	var severities []string
+	for _, sev := range tw.Severities {
+		severities = append(severities, sev.String())
+	}
+
+	for _, severity := range dbTypes.SeverityNames {
+		if !utils.StringInSlice(severity, severities) {
+			continue
+		}
+		r := fmt.Sprintf("%s: %d", severity, severityCount[severity])
 		results = append(results, r)
 	}
 
