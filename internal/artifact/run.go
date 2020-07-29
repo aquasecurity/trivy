@@ -95,7 +95,7 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 		results[i].Vulnerabilities = vulns
 	}
 
-	if err = report.WriteResults(c.Format, c.Output, results, c.Template, c.Light); err != nil {
+	if err = report.WriteResults(c.Format, c.Output, c.Severities, results, c.Template, c.Light); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 

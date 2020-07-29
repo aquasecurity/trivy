@@ -9,11 +9,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/kylelemons/godebug/pretty"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func touch(t *testing.T, name string) {
