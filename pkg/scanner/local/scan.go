@@ -3,6 +3,7 @@ package local
 import (
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/google/wire"
@@ -99,6 +100,9 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 		}
 		if result != nil {
 			if options.ListAllPackages {
+				sort.Slice(pkgs, func(i, j int) bool {
+					return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
+				})
 				result.Packages = pkgs
 			}
 			results = append(results, *result)
@@ -157,6 +161,9 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, listAllPackages bool) (r
 					Layer:   lib.Layer,
 				})
 			}
+			sort.Slice(pkgs, func(i, j int) bool {
+				return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
+			})
 			libReport.Packages = pkgs
 		}
 		results = append(results, libReport)

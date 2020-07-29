@@ -198,6 +198,13 @@ func TestScanner_Scan(t *testing.T) {
 									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
 								},
 							},
+							{
+								Name:    "ausl",
+								Version: "1.2.3",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:bbf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
+							},
 						},
 						Applications: []ftypes.Application{
 							{
@@ -227,6 +234,13 @@ func TestScanner_Scan(t *testing.T) {
 								Version: "1.2.3",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
+							},
+							{
+								Name:    "ausl",
+								Version: "1.2.3",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:bbf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
 								},
 							},
 						},
@@ -279,6 +293,13 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Packages: []ftypes.Package{
+						{
+							Name:    "ausl",
+							Version: "1.2.3",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:bbf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+							},
+						},
 						{
 							Name:    "musl",
 							Version: "1.2.3",
