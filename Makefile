@@ -28,7 +28,7 @@ $(GOBIN)/golangci-lint:
 
 .PHONY: test
 test:
-	go test -v -short ./...
+	go test -v -short -coverprofile=coverage.txt -covermode=atomic ./...
 
 integration/testdata/fixtures/*.tar.gz:
 	git clone https://github.com/aquasecurity/trivy-test-images.git integration/testdata/fixtures

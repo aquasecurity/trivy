@@ -18,4 +18,5 @@
 thumbs.db
 
 # test fixtures
+coverage.txt
 integration/testdata/fixtures/
