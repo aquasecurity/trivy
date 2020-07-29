@@ -9,11 +9,13 @@ import (
 
 type ImageConfig struct {
 	ScanRemovedPkgs bool
+	ListAllPkgs     bool
 }
 
 func NewImageConfig(c *cli.Context) ImageConfig {
 	return ImageConfig{
 		ScanRemovedPkgs: c.Bool("removed-pkgs"),
+		ListAllPkgs:     c.Bool("list-all-pkgs"),
 	}
 }
 
