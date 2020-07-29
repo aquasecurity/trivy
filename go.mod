@@ -12,7 +12,6 @@ require (
 	github.com/docker/docker v1.4.2-0.20190924003213-a8608b5b67c7
 	github.com/docker/go-connections v0.4.0
 	github.com/golang/protobuf v1.3.3
-	github.com/google/go-cmp v0.4.0
 	github.com/google/go-containerregistry v0.0.0-20200331213917-3d03ed9b1ca2
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/wire v0.3.0
