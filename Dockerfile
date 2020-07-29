@@ -5,5 +5,8 @@ COPY trivy /usr/local/bin/trivy
 COPY contrib/gitlab.tpl contrib/gitlab.tpl
 COPY contrib/junit.tpl contrib/junit.tpl
 COPY contrib/sarif.tpl contrib/sarif.tpl
+RUN mkdir -p /newfolder
+RUN chown appuser /newfolder
 USER appuser
+WORKDIR /newfolder
 ENTRYPOINT ["trivy"]
