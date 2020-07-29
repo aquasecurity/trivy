@@ -1945,7 +1945,7 @@ $ docker run --rm -v $PWD:/root/.cache/  aquasec/trivy:0.9.2 --cache-dir /root/.
 Try:
 
 ```
-$ docker run --rm -v $PWD:/root/.cache/  aquasec/trivy:0.9.2 --cache-dir root/.cache image centos:7
+$ docker run --rm -v $PWD:/tmp/.cache/  aquasec/trivy:0.9.2 --cache-dir /tmp/.cache image centos:7
 ```
 
 ## Others
