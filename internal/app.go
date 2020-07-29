@@ -185,7 +185,7 @@ var (
 	listAllPackages = cli.BoolFlag{
 		Name:    "list-all-pkgs",
 		Usage:   "enabling the option will output all packages regardless of vulnerability",
-		EnvVars: []string{"TRIVY_LIST_ALL_PACKAGES"},
+		EnvVars: []string{"TRIVY_LIST_ALL_PKGS"},
 	}
 
 	globalFlags = []cli.Flag{
