@@ -1935,19 +1935,6 @@ $ brew unlink trivy && brew uninstall trivy
 $ brew install aquasecurity/trivy/trivy
 ```
 
-### Error: FATAL	unable to initialize the cache: failed to create cache dir: mkdir /root/.cache: permission denied
-
-```
-$ docker run --rm -v $PWD:/root/.cache/  aquasec/trivy:latest --cache-dir /root/.cache image centos:7
-2020-07-29T15:02:54.435Z	FATAL	unable to initialize the cache: failed to create cache dir: mkdir /root/.cache: permission denied
-```
-
-Try:
-
-```
-$ docker run --rm -v $PWD:/tmp/.cache/  aquasec/trivy:latest --cache-dir /tmp/.cache image centos:7
-```
-
 ## Others
 
 ### GitHub Rate limiting
@@ -1965,6 +1952,19 @@ Try again with `--reset` option:
 
 ```
 $ trivy image --reset
+```
+
+### Error: FATAL	unable to initialize the cache: failed to create cache dir: mkdir /root/.cache: permission denied
+
+```
+$ docker run --rm -v $PWD:/root/.cache/  aquasec/trivy:latest --cache-dir /root/.cache image centos:7
+2020-07-29T15:02:54.435Z	FATAL	unable to initialize the cache: failed to create cache dir: mkdir /root/.cache: permission denied
+```
+
+Try:
+
+```
+$ docker run --rm -v $PWD:/tmp/.cache/  aquasec/trivy:latest --cache-dir /tmp/.cache image centos:7
 ```
 ---
 
