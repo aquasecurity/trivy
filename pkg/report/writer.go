@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"html"
 	"io"
 	"io/ioutil"
 	"os"
@@ -61,6 +62,9 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 			},
 			"toLower": func(input string) string {
 				return strings.ToLower(input)
+			},
+			"escapeString": func(input string) string {
+				return html.EscapeString(input)
 			},
 		}).Parse(outputTemplate)
 		if err != nil {

@@ -292,9 +292,16 @@ func TestReportWriter_Template(t *testing.T) {
 						Description: "with period.",
 					},
 				},
+				{
+					VulnerabilityID: "CVE-2019-0000",
+					PkgName:         "bar",
+					Vulnerability: dbTypes.Vulnerability{
+						Description: `with period and unescaped string curl: Use-after-free when closing 'easy' handle in Curl_close().`,
+					},
+				},
 			},
-			template: `{{ range . }}{{ range .Vulnerabilities}}{{.VulnerabilityID}} {{ endWithPeriod .Description | printf "%q" }}{{ end }}{{ end }}`,
-			expected: `CVE-2019-0000 "without period."CVE-2019-0000 "with period."`,
+			template: `{{ range . }}{{ range .Vulnerabilities}}{{.VulnerabilityID}} {{ endWithPeriod (escapeString .Description) | printf "%q" }}{{ end }}{{ end }}`,
+			expected: `CVE-2019-0000 "without period."CVE-2019-0000 "with period."CVE-2019-0000 "with period and unescaped string curl: Use-after-free when closing &#39;easy&#39; handle in Curl_close()."`,
 		},
 	}
 	for _, tc := range testCases {
