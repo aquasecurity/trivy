@@ -20,10 +20,10 @@
               "id": "[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}",
               "name": "dockerfile_scan",
               "shortDescription": {
-                "text": "{{ .VulnerabilityID }} Package: {{ .PkgName }}"
+                "text": "{{ .VulnerabilityID }} Package: {{ .PkgName }}."
               },
               "fullDescription": {
-                "text": "{{ endWithPeriod .Title }}"
+                "text": "{{ endWithPeriod (escapeString .Title) }}"
               },
               "help": {
                 "text": "Vulnerability {{ .VulnerabilityID }}\nSeverity: {{ .Vulnerability.Severity }}\nPackage: {{ .PkgName }}\nInstalled Version: {{ .InstalledVersion }}\nFixed Version: {{ .FixedVersion }}\nLink: [{{ .VulnerabilityID }}](https://nvd.nist.gov/vuln/detail/{{ .VulnerabilityID | toLower }})",
@@ -57,7 +57,7 @@
           "ruleIndex": {{ $index }},
           "level": "error",
           "message": {
-            "text": {{ endWithPeriod $vulnerability.Description | printf "%q" }}
+            "text": {{ endWithPeriod (escapeString $vulnerability.Description) | printf "%q" }}
           },
           "locations": [{
             "physicalLocation": {
