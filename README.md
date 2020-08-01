@@ -111,7 +111,7 @@ See [here](#continuous-integration-ci) for details.
   - **Especially Alpine Linux and RHEL/CentOS**
   - Other OSes are also high
 - DevSecOps
-  - **Suitable for CI** such as Travis CI, CircleCI, Jenkins, GitLab CI, etc.
+  - **Suitable for CI** such as Travis CI, CircleCI, Jenkins, GitLab CI, Bitbucket CI, etc.
   - See [CI Example](#continuous-integration-ci)
 - Support multiple formats
   - container image
@@ -1105,7 +1105,7 @@ Total: 4751 (UNKNOWN: 1, LOW: 150, MEDIUM: 3504, HIGH: 1013, CRITICAL: 83)
 
 Trivy supports Open Policy Agent (OPA) to filter vulnerabilities. You can specify a Rego file with `--ignore-policy` option.
 
-The Rego package name must be `trivy` and it must include a rule called `ignore` which determines if each individual vulnerability should be excluded (ignore=true) or not (ignore=false). In the policy, each vulnerability will be available for inspection as the `input` variable. The structure of each vulnerability input is the same as for the Trivy JSON output.  
+The Rego package name must be `trivy` and it must include a rule called `ignore` which determines if each individual vulnerability should be excluded (ignore=true) or not (ignore=false). In the policy, each vulnerability will be available for inspection as the `input` variable. The structure of each vulnerability input is the same as for the Trivy JSON output.
 There is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`. For more info about the helper functions, look at the library [here](pkg/vulnerability/module.go)
 
 To get started, see the [example policy](./contrib/example_policy).
@@ -1437,7 +1437,7 @@ Since in automated scenarios such as CI/CD you are only interested in the end re
 
 - Here is the [Trivy Github Action](https://github.com/aquasecurity/trivy-action) (currently Experimental)
 - The Microsoft Azure team have written a [container-scan action](https://github.com/Azure/container-scan) that uses Trivy and Dockle
-- For full control over the options specified to Trivy, this [blog post](https://blog.aquasec.com/devsecops-with-trivy-github-actions) describes adding Trivy into your own GitHub action workflows 
+- For full control over the options specified to Trivy, this [blog post](https://blog.aquasec.com/devsecops-with-trivy-github-actions) describes adding Trivy into your own GitHub action workflows
 
 ## Travis CI
 
@@ -1549,6 +1549,64 @@ trivy:
   artifacts:
     reports:
       container_scanning: gl-container-scanning-report.json
+```
+
+## Bitbucket CI
+
+```
+$ cat bitbucket-pipelines.yml
+definitions:
+  services:
+    docker-dind:
+      image: docker:stable-git
+      environment:
+        DOCKER_HOST:        "tcp://docker:2375/"
+        DOCKER_DRIVER:      "overlay2"
+        DOCKER_TLS_CERTDIR: ""
+        IMAGE:              "trivy-ci-test:$BITBUCKET_COMMIT"
+      entrypoint:           ["env", "-u", "DOCKER_HOST"]
+      command:              ["dockerd-entrypoint.sh"]
+  caches:
+    trivycache: .trivycache/
+
+  steps:
+    - step: &test
+        name: Test
+        image: docker:stable-git
+        caches:
+          - trivycache
+        services:
+          - docker-dind
+        script:
+          - apk add --no-cache curl
+          - export VERSION=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+          - echo $VERSION
+          - wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
+          - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
+        after-script:
+          # Build image
+          - docker build -t $IMAGE .
+          # Build report
+          - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE
+          # Print report
+          - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE
+          # Fail on high and critical vulnerabilities
+          - ./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE
+        artifacts:
+          - gl-container-scanning-report.json
+
+trivy_test: &trivy_test
+  step:
+    <<: *test
+
+pipelines:
+  default:
+    # Test
+    - <<: *trivy_test
+  branches:
+    master:
+      # Test
+      - <<: *trivy_test
 ```
 
 ## AWS CodePipeline
