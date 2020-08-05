@@ -20,7 +20,7 @@
               "id": "[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}",
               "name": "dockerfile_scan",
               "shortDescription": {
-                "text": "{{ .VulnerabilityID }} Package: {{ .PkgName }}."
+                "text": "{{ .VulnerabilityID }} Package: {{ .PkgName }}"
               },
               "fullDescription": {
                 "text": "{{ endWithPeriod (escapeString .Title) }}"
