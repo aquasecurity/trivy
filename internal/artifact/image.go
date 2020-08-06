@@ -39,8 +39,7 @@ func ImageRun(cliCtx *cli.Context) error {
 
 	// initialize config
 	err = c.Init(true)
-	var errNoTarget *artifact.ErrNoTarget
-	if xerrors.As(err, &errNoTarget) {
+	if xerrors.Is(err, ErrNoTarget) {
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("failed to initialize options: %w", err)
