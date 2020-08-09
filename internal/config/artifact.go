@@ -25,10 +25,12 @@ func NewArtifactConfig(c *cli.Context) ArtifactConfig {
 	}
 }
 
+var ErrNoTarget = xerrors.New("no target is specified")
+
 func (c *ArtifactConfig) Init(args cli.Args, logger *zap.SugaredLogger) (err error) {
 	if c.Input == "" && args.Len() == 0 {
-		logger.Error(`trivy requires at least 1 argument or --input option`)
-		return xerrors.New("arguments error")
+		logger.Debug(`trivy requires at least 1 argument or --input option`)
+		return ErrNoTarget
 	} else if args.Len() > 1 {
 		logger.Error(`multiple targets cannot be specified`)
 		return xerrors.New("arguments error")
