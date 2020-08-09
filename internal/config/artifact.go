@@ -25,7 +25,7 @@ func NewArtifactConfig(c *cli.Context) ArtifactConfig {
 	}
 }
 
-var ErrNoTarget = xerrors.New("no tagert is specified")
+var ErrNoTarget = xerrors.New("no target is specified")
 
 func (c *ArtifactConfig) Init(args cli.Args, logger *zap.SugaredLogger) (err error) {
 	if c.Input == "" && args.Len() == 0 {
