@@ -60,7 +60,7 @@
                         "Patched Package": "{{ .PkgName }}  {{ .FixedVersion }}"
                     }
                 }
-            },
+            }
         ],
         "RecordState": "ACTIVE"
     }

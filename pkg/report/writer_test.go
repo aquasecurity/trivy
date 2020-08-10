@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -307,12 +308,15 @@ func TestReportWriter_Template(t *testing.T) {
 		{
 			name:          "happy path: env var parsing and getCurrentTime",
 			detectedVulns: []types.DetectedVulnerability{},
-			template:      `{{ toLower (getEnv "AWS_ACCOUNT_ID") }}`,
-			expected:      `test`,
+			template:      `{{ toLower (getEnv "AWS_ACCOUNT_ID") }} {{ getCurrentTime }}`,
+			expected:      `test 2020-08-10T07:28:17.000958601Z`,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			report.Now = func() time.Time {
+				return time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
+			}
 			os.Setenv("AWS_ACCOUNT_ID", "TEST")
 			tmplWritten := bytes.Buffer{}
 			inputResults := report.Results{

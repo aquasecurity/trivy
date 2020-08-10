@@ -6,8 +6,8 @@
         "GeneratorId": "Trivy",
         "AwsAccountId": "test-account",
         "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-        "CreatedAt": "2020-08-10T07:28:17.957074Z",
-        "UpdatedAt": "2020-08-10T07:28:17.957103Z",
+        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
+        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
         "Severity": {
             "Product": 4,
             "Normalized": 40
@@ -36,7 +36,7 @@
                         "Patched Package": "openssl  1.1.1d-r0"
                     }
                 }
-            },
+            }
         ],
         "RecordState": "ACTIVE"
     },
@@ -47,8 +47,8 @@
         "GeneratorId": "Trivy",
         "AwsAccountId": "test-account",
         "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-        "CreatedAt": "2020-08-10T07:28:17.957864Z",
-        "UpdatedAt": "2020-08-10T07:28:17.957887Z",
+        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
+        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
         "Severity": {
             "Product": 4,
             "Normalized": 40
@@ -77,7 +77,7 @@
                         "Patched Package": "openssl  1.1.1d-r2"
                     }
                 }
-            },
+            }
         ],
         "RecordState": "ACTIVE"
     },
@@ -88,8 +88,8 @@
         "GeneratorId": "Trivy",
         "AwsAccountId": "test-account",
         "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-        "CreatedAt": "2020-08-10T07:28:17.958301Z",
-        "UpdatedAt": "2020-08-10T07:28:17.958315Z",
+        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
+        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
         "Severity": {
             "Product": 4,
             "Normalized": 40
@@ -118,7 +118,7 @@
                         "Patched Package": "openssl  1.1.1d-r0"
                     }
                 }
-            },
+            }
         ],
         "RecordState": "ACTIVE"
     },
@@ -129,8 +129,8 @@
         "GeneratorId": "Trivy",
         "AwsAccountId": "test-account",
         "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-        "CreatedAt": "2020-08-10T07:28:17.958601Z",
-        "UpdatedAt": "2020-08-10T07:28:17.958616Z",
+        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
+        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
         "Severity": {
             "Product": 1,
             "Normalized": 10
@@ -159,7 +159,7 @@
                         "Patched Package": "openssl  1.1.1d-r0"
                     }
                 }
-            },
+            }
         ],
         "RecordState": "ACTIVE"
     }

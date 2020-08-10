@@ -17,6 +17,7 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"github.com/aquasecurity/trivy/internal"
+	"github.com/aquasecurity/trivy/pkg/report"
 )
 
 type args struct {
@@ -325,6 +326,11 @@ func TestClientServer(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
+			report.Now = func() time.Time {
+				return time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
+			}
+			os.Setenv("AWS_REGION", "test-region")
+			os.Setenv("AWS_ACCOUNT_ID", "test-account")
 			osArgs, outputFile, cleanup := setupClient(t, c.testArgs, addr, cacheDir, c.golden)
 			defer cleanup()
 

@@ -22,6 +22,10 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
+var (
+	Now = time.Now
+)
+
 type Results []Result
 
 type Result struct {
@@ -71,7 +75,7 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 				return os.Getenv(key)
 			},
 			"getCurrentTime": func() string {
-				return time.Now().UTC().Format(time.RFC3339Nano)
+				return Now().UTC().Format(time.RFC3339Nano)
 			},
 		}).Parse(outputTemplate)
 		if err != nil {
