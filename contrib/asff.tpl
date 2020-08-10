@@ -57,7 +57,7 @@
                         "CVE ID": "{{ .VulnerabilityID }}",
                         "CVE Title": {{ .Title | printf "%q" }},
                         "Installed Package": "{{ .PkgName }} {{ .InstalledVersion }}",
-                        "Patched Package": "{{ .PkgName }}  {{ .FixedVersion }}"
+                        "Patched Package": "{{ .PkgName }} {{ .FixedVersion }}"
                     }
                 }
             }

@@ -33,7 +33,7 @@
                         "CVE ID": "CVE-2019-1549",
                         "CVE Title": "openssl: information disclosure in fork()",
                         "Installed Package": "openssl 1.1.1c-r0",
-                        "Patched Package": "openssl  1.1.1d-r0"
+                        "Patched Package": "openssl 1.1.1d-r0"
                     }
                 }
             }
@@ -74,7 +74,7 @@
                         "CVE ID": "CVE-2019-1551",
                         "CVE Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
                         "Installed Package": "openssl 1.1.1c-r0",
-                        "Patched Package": "openssl  1.1.1d-r2"
+                        "Patched Package": "openssl 1.1.1d-r2"
                     }
                 }
             }
@@ -115,7 +115,7 @@
                         "CVE ID": "CVE-2019-1563",
                         "CVE Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
                         "Installed Package": "openssl 1.1.1c-r0",
-                        "Patched Package": "openssl  1.1.1d-r0"
+                        "Patched Package": "openssl 1.1.1d-r0"
                     }
                 }
             }
@@ -156,7 +156,7 @@
                         "CVE ID": "CVE-2019-1547",
                         "CVE Title": "openssl: side-channel weak encryption vulnerability",
                         "Installed Package": "openssl 1.1.1c-r0",
-                        "Patched Package": "openssl  1.1.1d-r0"
+                        "Patched Package": "openssl 1.1.1d-r0"
                     }
                 }
             }
