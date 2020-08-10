@@ -3,6 +3,7 @@ package report_test
 import (
 	"bytes"
 	"encoding/json"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -303,9 +304,16 @@ func TestReportWriter_Template(t *testing.T) {
 			template: `{{ range . }}{{ range .Vulnerabilities}}{{.VulnerabilityID}} {{ endWithPeriod (escapeString .Description) | printf "%q" }}{{ end }}{{ end }}`,
 			expected: `CVE-2019-0000 "without period."CVE-2019-0000 "with period."CVE-2019-0000 "with period and unescaped string curl: Use-after-free when closing &#39;easy&#39; handle in Curl_close()."`,
 		},
+		{
+			name:          "happy path: env var parsing and getCurrentTime",
+			detectedVulns: []types.DetectedVulnerability{},
+			template:      `{{ toLower (getEnv "AWS_ACCOUNT_ID") }}`,
+			expected:      `test`,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			os.Setenv("AWS_ACCOUNT_ID", "TEST")
 			tmplWritten := bytes.Buffer{}
 			inputResults := report.Results{
 				{
