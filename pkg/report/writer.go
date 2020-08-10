@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"text/template"
+	"time"
 
 	"golang.org/x/xerrors"
 
@@ -65,6 +66,12 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 			},
 			"escapeString": func(input string) string {
 				return html.EscapeString(input)
+			},
+			"getEnv": func(key string) string {
+				return os.Getenv(key)
+			},
+			"getCurrentTime": func() string {
+				return time.Now().UTC().Format(time.RFC3339Nano)
 			},
 		}).Parse(outputTemplate)
 		if err != nil {

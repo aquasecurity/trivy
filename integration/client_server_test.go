@@ -309,6 +309,16 @@ func TestClientServer(t *testing.T) {
 			},
 			golden: "testdata/busybox-with-lockfile.json.golden",
 		},
+		{
+			name: "alpine 3.10 integration with ASFF template",
+			testArgs: args{
+				Format:       "template",
+				TemplatePath: "@../contrib/asff.tpl",
+				Version:      "dev",
+				Input:        "testdata/fixtures/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.asff.golden",
+		},
 	}
 
 	app, addr, cacheDir := setup(t, "", "")
