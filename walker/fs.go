@@ -13,10 +13,10 @@ import (
 
 // WalkDir walks the file tree rooted at root, calling WalkFunc for each file or
 // directory in the tree, including root, but a directory to be ignored will be skipped.
-func WalkDir(root string, f WalkFunc) error {
+func WalkDir(root string, skipDirectories []string, f WalkFunc) error {
 	// walk function called for every path found
 	walkFn := func(pathname string, fi os.FileInfo) error {
-		if isIgnored(pathname) {
+		if isIgnored(pathname, skipDirectories) {
 			return filepath.SkipDir
 		}
 		pathname = filepath.Clean(pathname)

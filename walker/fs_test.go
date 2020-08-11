@@ -15,7 +15,7 @@ import (
 
 func TestWalkDir(t *testing.T) {
 	// happy path
-	err := walker.WalkDir("testdata/fs", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err := walker.WalkDir("testdata/fs", []string{"./testdata/fs/skipdir"}, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		if info.IsDir() {
 			return nil
 		}
@@ -32,7 +32,7 @@ func TestWalkDir(t *testing.T) {
 	require.NoError(t, err, "happy path")
 
 	// sad path
-	err = walker.WalkDir("testdata/fs", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err = walker.WalkDir("testdata/fs", nil, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		return errors.New("error")
 	})
 	require.EqualError(t, err, "failed to analyze file: error", "sad path")

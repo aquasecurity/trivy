@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/urfave/cli/v2"
@@ -84,13 +85,14 @@ func run() (err error) {
 		},
 		Flags: []cli.Flag{
 			&cli.BoolFlag{Name: "clear", Aliases: []string{"s"}},
+			&cli.StringFlag{Name: "skip-directories"},
 		},
 	}
 
 	return app.Run(os.Args)
 }
 
-func globalOption(ctx context.Context, fsCache cache.Cache, f func(context.Context, *cli.Context, cache.Cache) error) func(c *cli.Context) error {
+func globalOption(ctx context.Context, fsCache cache.Cache, f func(context.Context, *cli.Context, cache.Cache, artifact.InspectOption) error) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
 		clearCache := c.Bool("clear")
 		if clearCache {
@@ -99,43 +101,46 @@ func globalOption(ctx context.Context, fsCache cache.Cache, f func(context.Conte
 			}
 			return nil
 		}
-		return f(ctx, c, fsCache)
+		option := artifact.InspectOption{
+			SkipDirectories: strings.Split(c.String("skip-directories"), ","),
+		}
+		return f(ctx, c, fsCache, option)
 	}
 }
 
-func imageAction(ctx context.Context, c *cli.Context, fsCache cache.Cache) error {
+func imageAction(ctx context.Context, c *cli.Context, fsCache cache.Cache, option artifact.InspectOption) error {
 	art, cleanup, err := imageArtifact(ctx, c.Args().First(), fsCache)
 	if err != nil {
 		return err
 	}
 	defer cleanup()
-	return inspect(ctx, art, fsCache)
+	return inspect(ctx, art, fsCache, option)
 }
 
-func archiveAction(ctx context.Context, c *cli.Context, fsCache cache.Cache) error {
+func archiveAction(ctx context.Context, c *cli.Context, fsCache cache.Cache, option artifact.InspectOption) error {
 	art, err := archiveImageArtifact(c.Args().First(), fsCache)
 	if err != nil {
 		return err
 	}
-	return inspect(ctx, art, fsCache)
+	return inspect(ctx, art, fsCache, option)
 }
 
-func fsAction(ctx context.Context, c *cli.Context, fsCache cache.Cache) error {
+func fsAction(ctx context.Context, c *cli.Context, fsCache cache.Cache, option artifact.InspectOption) error {
 	art := localArtifact(c.Args().First(), fsCache)
-	return inspect(ctx, art, fsCache)
+	return inspect(ctx, art, fsCache, option)
 }
 
-func repoAction(ctx context.Context, c *cli.Context, fsCache cache.Cache) error {
+func repoAction(ctx context.Context, c *cli.Context, fsCache cache.Cache, option artifact.InspectOption) error {
 	art, cleanup, err := remoteArtifact(c.Args().First(), fsCache)
 	if err != nil {
 		return err
 	}
 	defer cleanup()
-	return inspect(ctx, art, fsCache)
+	return inspect(ctx, art, fsCache, option)
 }
 
-func inspect(ctx context.Context, artifact artifact.Artifact, c cache.LocalArtifactCache) error {
-	imageInfo, err := artifact.Inspect(ctx)
+func inspect(ctx context.Context, art artifact.Artifact, c cache.LocalArtifactCache, option artifact.InspectOption) error {
+	imageInfo, err := art.Inspect(ctx, option)
 	if err != nil {
 		return err
 	}

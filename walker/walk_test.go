@@ -10,18 +10,30 @@ import (
 
 func Test_isIgnore(t *testing.T) {
 	for _, fp := range ignoreDirs {
-		assert.True(t, isIgnored(fp))
+		assert.True(t, isIgnored(fp, nil))
 	}
 
 	for _, fp := range ignoreSystemDirs {
-		assert.True(t, isIgnored(fp))
+		assert.True(t, isIgnored(fp, nil))
 	}
 
 	for _, fp := range library.IgnoreDirs {
-		assert.True(t, isIgnored(fp))
+		assert.True(t, isIgnored(fp, nil))
 	}
 
 	for _, fp := range []string{"foo", "foo/bar"} {
-		assert.False(t, isIgnored(fp))
+		assert.False(t, isIgnored(fp, nil))
+	}
+
+	for _, fp := range []string{"foo", "foo/bar"} {
+		assert.True(t, isIgnored(fp, []string{"foo", "foo/bar"}))
+	}
+
+	for _, fp := range []string{"foo", "foo/bar"} {
+		assert.True(t, isIgnored(fp, []string{"./foo", "/foo/bar"}))
+	}
+
+	for _, fp := range []string{"foo", "foo/bar"} {
+		assert.False(t, isIgnored(fp, []string{"/bar"}))
 	}
 }
