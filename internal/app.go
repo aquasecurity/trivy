@@ -189,9 +189,9 @@ var (
 	}
 
 	skipDirectories = cli.StringFlag{
-		Name:    "skip-directories",
+		Name:    "skip-dirs",
 		Usage:   "specify the directory where the traverse is skipped",
-		EnvVars: []string{"TRIVY_SKIP_DIRECTORIES"},
+		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
 	globalFlags = []cli.Flag{

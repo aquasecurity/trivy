@@ -26,7 +26,7 @@ func NewArtifactConfig(c *cli.Context) ArtifactConfig {
 		Input:           c.String("input"),
 		Timeout:         c.Duration("timeout"),
 		ClearCache:      c.Bool("clear-cache"),
-		skipDirectories: c.String("skip-directories"),
+		skipDirectories: c.String("skip-dirs"),
 	}
 }
 

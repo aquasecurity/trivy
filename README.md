@@ -1139,7 +1139,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 Trivy traversals directories and look for all lock files by default. If your image contains lock files which are not maintained by you, you can skip traversal in the specific directory.
 
 ```
-$ trivy image --skip-directories "/usr/lib/ruby/gems,/etc" fluent/fluentd:edge
+$ trivy image --skip-dirs "/usr/lib/ruby/gems,/etc" fluent/fluentd:edge
 ```
 
 
@@ -1741,7 +1741,7 @@ OPTIONS:
    --timeout value     docker timeout (default: 2m0s) [$TRIVY_TIMEOUT]
    --light             light mode: it's faster, but vulnerability descriptions and references are not displayed (default: false) [$TRIVY_LIGHT]
    --list-all-pkgs     enabling the option will output all packages regardless of vulnerability [$TRIVY_LIST_ALL_PKGS]
-   --skip-directories value    specify the directory where the traverse is skipped [$TRIVY_SKIP_DIRECTORIES]
+   --skip-dirs value           specify the directory where the traverse is skipped [$TRIVY_SKIP_DIRS]
    --help, -h          show help (default: false)
 ```
 
