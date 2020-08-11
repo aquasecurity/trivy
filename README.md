@@ -46,6 +46,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
     + [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
     + [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
     + [Filter the vulnerabilities by Open Policy Agent](#filter-the-vulnerabilities-by-open-policy-agent-policy)
+    + [Skip traversal in the specific directory](#skip-traversal-in-the-specific-directory)
     + [Skip update of vulnerability DB](#skip-update-of-vulnerability-db)
     + [Only download vulnerability database](#only-download-vulnerability-database)
     + [Ignore unfixed vulnerabilities](#ignore-unfixed-vulnerabilities)
@@ -1134,6 +1135,13 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
 </details>
 
+### Skip traversal in the specific directory
+Trivy traversals directories and look for all lock files by default. If your image contains lock files which are not maintained by you, you can skip traversal in the specific directory.
+
+```
+$ trivy image --skip-directories "/usr/lib/ruby/gems,/etc" fluent/fluentd:edge
+```
+
 
 ### Skip update of vulnerability DB
 
@@ -1733,6 +1741,7 @@ OPTIONS:
    --timeout value     docker timeout (default: 2m0s) [$TRIVY_TIMEOUT]
    --light             light mode: it's faster, but vulnerability descriptions and references are not displayed (default: false) [$TRIVY_LIGHT]
    --list-all-pkgs     enabling the option will output all packages regardless of vulnerability [$TRIVY_LIST_ALL_PKGS]
+   --skip-directories value    specify the directory where the traverse is skipped [$TRIVY_SKIP_DIRECTORIES]
    --help, -h          show help (default: false)
 ```
 
