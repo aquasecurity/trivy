@@ -5,6 +5,7 @@ package integration
 import (
 	"context"
 	"fmt"
+	"github.com/aquasecurity/fanal/artifact"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -205,7 +206,7 @@ func analyze(ctx context.Context, imageRef string, opt types.DockerOption) (*typ
 	ar := aimage.NewArtifact(img, c)
 	ap := applier.NewApplier(c)
 
-	imageInfo, err := ar.Inspect(ctx)
+	imageInfo, err := ar.Inspect(ctx, artifact.InspectOption{})
 	if err != nil {
 		return nil, err
 	}

@@ -13,8 +13,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/types"
@@ -33,9 +31,9 @@ func NewArtifact(dir string, c cache.ArtifactCache) artifact.Artifact {
 	}
 }
 
-func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
+func (a Artifact) Inspect(_ context.Context, option artifact.InspectOption) (types.ArtifactReference, error) {
 	var result analyzer.AnalysisResult
-	err := walker.WalkDir(a.dir, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err := walker.WalkDir(a.dir, option.SkipDirectories, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		filePath, err := filepath.Rel(a.dir, filePath)
 		if err != nil {
 			return err
