@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"text/template"
+	"time"
 
 	"golang.org/x/xerrors"
 
@@ -20,6 +21,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/olekukonko/tablewriter"
 )
+
+var Now = time.Now
 
 type Results []Result
 
@@ -65,6 +68,12 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 			},
 			"escapeString": func(input string) string {
 				return html.EscapeString(input)
+			},
+			"getEnv": func(key string) string {
+				return os.Getenv(key)
+			},
+			"getCurrentTime": func() string {
+				return Now().UTC().Format(time.RFC3339Nano)
 			},
 		}).Parse(outputTemplate)
 		if err != nil {

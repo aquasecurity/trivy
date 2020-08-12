@@ -900,6 +900,12 @@ In the following example using the template `sarif.tpl` [Sarif](https://docs.git
 $ trivy image --format template --template "@contrib/sarif.tpl" -o report.sarif  golang:1.12-alpine
 ```
 
+In the following example using the template `asff.tpl` [ASFF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) can be generated.
+```
+$ AWS_REGION=us-west AWS_ACCOUNT_ID=123456789012 trivy image --format template --template "@contrib/asff.tpl" -o report.asff  golang:1.12-alpine
+```
+ASFF template needs AWS_REGION and AWS_ACCOUNT_ID from environment variables.
+
 ### Filter the vulnerabilities by severities
 
 ```
