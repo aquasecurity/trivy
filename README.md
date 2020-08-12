@@ -67,6 +67,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
   * [CircleCI](#circleci)
   * [GitLab CI](#gitlab-ci)
   * [AWS CodePipeline](#aws-codepipeline)
+  * [AWS Security Hub](#aws-security-hub)
   * [Authorization for Private Docker Registry](#authorization-for-private-docker-registry)
 - [Vulnerability Detection](#vulnerability-detection)
   * [OS Packages](#os-packages)
@@ -901,12 +902,6 @@ In the following example using the template `sarif.tpl` [Sarif](https://docs.git
 $ trivy image --format template --template "@contrib/sarif.tpl" -o report.sarif  golang:1.12-alpine
 ```
 
-In the following example using the template `asff.tpl` [ASFF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) can be generated.
-```
-$ AWS_REGION=us-west AWS_ACCOUNT_ID=123456789012 trivy image --format template --template "@contrib/asff.tpl" -o report.asff  golang:1.12-alpine
-```
-ASFF template needs AWS_REGION and AWS_ACCOUNT_ID from environment variables.
-
 ### Filter the vulnerabilities by severities
 
 ```
@@ -1568,6 +1563,10 @@ trivy:
 ## AWS CodePipeline
 
 See [this blog post](https://aws.amazon.com/blogs/containers/scanning-images-with-trivy-in-an-aws-codepipeline/) for an example of using Trivy within AWS CodePipeline.
+
+## AWS Security Hub
+
+See [here](docs/integration/security-hub.md)
 
 ## Authorization for Private Docker Registry
 
