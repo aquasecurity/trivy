@@ -32,7 +32,7 @@
         "Id": "{{ $target }}/{{ .VulnerabilityID }}",
         "ProductArn": "arn:aws:securityhub:{{ getEnv "AWS_REGION" }}::product/aquasecurity/aquasecurity",
         "GeneratorId": "Trivy",
-        "AwsAccountId": {{ getEnv "AWS_ACCOUNT_ID" }},
+        "AwsAccountId": "{{ getEnv "AWS_ACCOUNT_ID" }}",
         "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
         "CreatedAt": "{{ getCurrentTime }}",
         "UpdatedAt": "{{ getCurrentTime }}",
@@ -63,9 +63,9 @@
                         "PkgName": "{{ .PkgName }}",
                         "Installed Package": "{{ .InstalledVersion }}",
                         "Patched Package": "{{ .FixedVersion }}",
-                        "NvdCvssScoreV3": {{ (index .CVSS "nvd").V3Score }},
+                        "NvdCvssScoreV3": "{{ (index .CVSS "nvd").V3Score }}",
                         "NvdCvssVectorV3": "{{ (index .CVSS "nvd").V3Vector }}",
-                        "NvdCvssScoreV2": {{ (index .CVSS "nvd").V2Score }},
+                        "NvdCvssScoreV2": "{{ (index .CVSS "nvd").V2Score }}",
                         "NvdCvssVectorV2": "{{ (index .CVSS "nvd").V2Vector }}"
                     }
                 }
