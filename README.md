@@ -1741,7 +1741,7 @@ OPTIONS:
    --timeout value     docker timeout (default: 2m0s) [$TRIVY_TIMEOUT]
    --light             light mode: it's faster, but vulnerability descriptions and references are not displayed (default: false) [$TRIVY_LIGHT]
    --list-all-pkgs     enabling the option will output all packages regardless of vulnerability [$TRIVY_LIST_ALL_PKGS]
-   --skip-dirs value           specify the directory where the traverse is skipped [$TRIVY_SKIP_DIRS]
+   --skip-dirs value   specify the directory where the traversal is skipped [$TRIVY_SKIP_DIRS]
    --help, -h          show help (default: false)
 ```
 
