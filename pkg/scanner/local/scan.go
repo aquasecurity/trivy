@@ -186,7 +186,7 @@ func skipped(filePath string, skipDirectories []string) bool {
 		skipDir = strings.TrimLeft(filepath.Clean(skipDir), string(os.PathSeparator))
 		rel, err := filepath.Rel(skipDir, filePath)
 		if err != nil {
-			log.Logger.Warn(err)
+			log.Logger.Warnf("Unexpected error while skipping directories: %s", err)
 			return false
 		}
 		if !strings.HasPrefix(rel, "..") {
