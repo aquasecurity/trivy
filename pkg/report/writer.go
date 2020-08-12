@@ -22,9 +22,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-var (
-	Now = time.Now
-)
+var Now = time.Now
 
 type Results []Result
 

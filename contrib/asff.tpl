@@ -23,12 +23,16 @@
     {{- $trivyProductSev = 9 -}}
     {{- $trivyNormalizedSev = 90 -}}
 {{- end }}
+{{- $description := .Description -}}
+{{- if gt (len $description ) 1021 -}}
+    {{- $description = (slice $description 0 1021) | printf "%v .." -}}
+{{- end}}
     {
         "SchemaVersion": "2018-10-08",
         "Id": "{{ $target }}/{{ .VulnerabilityID }}",
         "ProductArn": "arn:aws:securityhub:{{ getEnv "AWS_REGION" }}::product/aquasecurity/aquasecurity",
         "GeneratorId": "Trivy",
-        "AwsAccountId": "{{ getEnv "AWS_ACCOUNT_ID" }}",
+        "AwsAccountId": {{ getEnv "AWS_ACCOUNT_ID" }},
         "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
         "CreatedAt": "{{ getCurrentTime }}",
         "UpdatedAt": "{{ getCurrentTime }}",
@@ -37,7 +41,7 @@
             "Normalized": {{ $trivyNormalizedSev }}
         },
         "Title": "Trivy found a vulnerability to {{ .VulnerabilityID }} in container {{ $target }}",
-        "Description": {{ escapeString .Description | printf "%q" }},
+        "Description": {{ escapeString $description | printf "%q" }},
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
@@ -56,8 +60,13 @@
                     "Other": {
                         "CVE ID": "{{ .VulnerabilityID }}",
                         "CVE Title": {{ .Title | printf "%q" }},
-                        "Installed Package": "{{ .PkgName }} {{ .InstalledVersion }}",
-                        "Patched Package": "{{ .PkgName }} {{ .FixedVersion }}"
+                        "PkgName": "{{ .PkgName }}",
+                        "Installed Package": "{{ .InstalledVersion }}",
+                        "Patched Package": "{{ .FixedVersion }}",
+                        "NvdCvssScoreV3": {{ (index .CVSS "nvd").V3Score }},
+                        "NvdCvssVectorV3": "{{ (index .CVSS "nvd").V3Vector }}",
+                        "NvdCvssScoreV2": {{ (index .CVSS "nvd").V2Score }},
+                        "NvdCvssVectorV2": "{{ (index .CVSS "nvd").V2Vector }}"
                     }
                 }
             }

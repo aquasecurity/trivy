@@ -330,7 +330,7 @@ func TestClientServer(t *testing.T) {
 				return time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
 			}
 			os.Setenv("AWS_REGION", "test-region")
-			os.Setenv("AWS_ACCOUNT_ID", "test-account")
+			os.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			osArgs, outputFile, cleanup := setupClient(t, c.testArgs, addr, cacheDir, c.golden)
 			defer cleanup()
 

@@ -309,7 +309,7 @@ func TestReportWriter_Template(t *testing.T) {
 			name:          "happy path: env var parsing and getCurrentTime",
 			detectedVulns: []types.DetectedVulnerability{},
 			template:      `{{ toLower (getEnv "AWS_ACCOUNT_ID") }} {{ getCurrentTime }}`,
-			expected:      `test 2020-08-10T07:28:17.000958601Z`,
+			expected:      `123456789012 2020-08-10T07:28:17.000958601Z`,
 		},
 	}
 	for _, tc := range testCases {
@@ -317,7 +317,7 @@ func TestReportWriter_Template(t *testing.T) {
 			report.Now = func() time.Time {
 				return time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
 			}
-			os.Setenv("AWS_ACCOUNT_ID", "TEST")
+			os.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			tmplWritten := bytes.Buffer{}
 			inputResults := report.Results{
 				{

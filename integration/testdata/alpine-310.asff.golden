@@ -4,7 +4,7 @@
         "Id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1549",
         "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
         "GeneratorId": "Trivy",
-        "AwsAccountId": "test-account",
+        "AwsAccountId": 123456789012,
         "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
         "CreatedAt": "2020-08-10T07:28:17.000958601Z",
         "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
@@ -32,8 +32,13 @@
                     "Other": {
                         "CVE ID": "CVE-2019-1549",
                         "CVE Title": "openssl: information disclosure in fork()",
-                        "Installed Package": "openssl 1.1.1c-r0",
-                        "Patched Package": "openssl 1.1.1d-r0"
+                        "PkgName": "openssl",
+                        "Installed Package": "1.1.1c-r0",
+                        "Patched Package": "1.1.1d-r0",
+                        "NvdCvssScoreV3": 0,
+                        "NvdCvssVectorV3": "",
+                        "NvdCvssScoreV2": 0,
+                        "NvdCvssVectorV2": ""
                     }
                 }
             }
@@ -45,7 +50,7 @@
         "Id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1551",
         "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
         "GeneratorId": "Trivy",
-        "AwsAccountId": "test-account",
+        "AwsAccountId": 123456789012,
         "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
         "CreatedAt": "2020-08-10T07:28:17.000958601Z",
         "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
@@ -73,8 +78,13 @@
                     "Other": {
                         "CVE ID": "CVE-2019-1551",
                         "CVE Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
-                        "Installed Package": "openssl 1.1.1c-r0",
-                        "Patched Package": "openssl 1.1.1d-r2"
+                        "PkgName": "openssl",
+                        "Installed Package": "1.1.1c-r0",
+                        "Patched Package": "1.1.1d-r2",
+                        "NvdCvssScoreV3": 0,
+                        "NvdCvssVectorV3": "",
+                        "NvdCvssScoreV2": 0,
+                        "NvdCvssVectorV2": ""
                     }
                 }
             }
@@ -86,7 +96,7 @@
         "Id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1563",
         "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
         "GeneratorId": "Trivy",
-        "AwsAccountId": "test-account",
+        "AwsAccountId": 123456789012,
         "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
         "CreatedAt": "2020-08-10T07:28:17.000958601Z",
         "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
@@ -114,8 +124,13 @@
                     "Other": {
                         "CVE ID": "CVE-2019-1563",
                         "CVE Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
-                        "Installed Package": "openssl 1.1.1c-r0",
-                        "Patched Package": "openssl 1.1.1d-r0"
+                        "PkgName": "openssl",
+                        "Installed Package": "1.1.1c-r0",
+                        "Patched Package": "1.1.1d-r0",
+                        "NvdCvssScoreV3": 0,
+                        "NvdCvssVectorV3": "",
+                        "NvdCvssScoreV2": 0,
+                        "NvdCvssVectorV2": ""
                     }
                 }
             }
@@ -127,7 +142,7 @@
         "Id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1547",
         "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
         "GeneratorId": "Trivy",
-        "AwsAccountId": "test-account",
+        "AwsAccountId": 123456789012,
         "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
         "CreatedAt": "2020-08-10T07:28:17.000958601Z",
         "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
@@ -155,8 +170,13 @@
                     "Other": {
                         "CVE ID": "CVE-2019-1547",
                         "CVE Title": "openssl: side-channel weak encryption vulnerability",
-                        "Installed Package": "openssl 1.1.1c-r0",
-                        "Patched Package": "openssl 1.1.1d-r0"
+                        "PkgName": "openssl",
+                        "Installed Package": "1.1.1c-r0",
+                        "Patched Package": "1.1.1d-r0",
+                        "NvdCvssScoreV3": 0,
+                        "NvdCvssVectorV3": "",
+                        "NvdCvssScoreV2": 0,
+                        "NvdCvssVectorV2": ""
                     }
                 }
             }
