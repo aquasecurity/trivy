@@ -2,6 +2,8 @@ package local
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -110,7 +112,7 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 	}
 
 	if utils.StringInSlice("library", options.VulnType) {
-		libResults, err := s.scanLibrary(imageDetail.Applications, options.ListAllPackages)
+		libResults, err := s.scanLibrary(imageDetail.Applications, options)
 		if err != nil {
 			return nil, nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
 		}
@@ -140,19 +142,24 @@ func (s Scanner) scanOSPkg(target, osFamily, osName string, pkgs []ftypes.Packag
 	return result, eosl, nil
 }
 
-func (s Scanner) scanLibrary(apps []ftypes.Application, listAllPackages bool) (report.Results, error) {
+func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOptions) (report.Results, error) {
 	var results report.Results
 	for _, app := range apps {
 		vulns, err := s.libDetector.Detect("", app.FilePath, time.Time{}, app.Libraries)
 		if err != nil {
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		}
+
+		if skipped(app.FilePath, options.SkipDirectories) {
+			continue
+		}
+
 		libReport := report.Result{
 			Target:          app.FilePath,
 			Vulnerabilities: vulns,
 			Type:            app.Type,
 		}
-		if listAllPackages {
+		if options.ListAllPackages {
 			var pkgs []ftypes.Package
 			for _, lib := range app.Libraries {
 				pkgs = append(pkgs, ftypes.Package{
@@ -172,6 +179,21 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, listAllPackages bool) (r
 		return results[i].Target < results[j].Target
 	})
 	return results, nil
+}
+
+func skipped(filePath string, skipDirectories []string) bool {
+	for _, skipDir := range skipDirectories {
+		skipDir = strings.TrimLeft(filepath.Clean(skipDir), string(os.PathSeparator))
+		rel, err := filepath.Rel(skipDir, filePath)
+		if err != nil {
+			log.Logger.Warnf("Unexpected error while skipping directories: %s", err)
+			return false
+		}
+		if !strings.HasPrefix(rel, "..") {
+			return true
+		}
+	}
+	return false
 }
 
 func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {

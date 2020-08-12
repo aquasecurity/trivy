@@ -1,6 +1,7 @@
 package config
 
 import (
+	"strings"
 	"time"
 
 	"github.com/urfave/cli/v2"
@@ -13,15 +14,19 @@ type ArtifactConfig struct {
 	Timeout    time.Duration
 	ClearCache bool
 
+	skipDirectories string
+	SkipDirectories []string
+
 	// this field is populated in Init()
 	Target string
 }
 
 func NewArtifactConfig(c *cli.Context) ArtifactConfig {
 	return ArtifactConfig{
-		Input:      c.String("input"),
-		Timeout:    c.Duration("timeout"),
-		ClearCache: c.Bool("clear-cache"),
+		Input:           c.String("input"),
+		Timeout:         c.Duration("timeout"),
+		ClearCache:      c.Bool("clear-cache"),
+		skipDirectories: c.String("skip-dirs"),
 	}
 }
 
@@ -38,6 +43,10 @@ func (c *ArtifactConfig) Init(args cli.Args, logger *zap.SugaredLogger) (err err
 
 	if c.Input == "" {
 		c.Target = args.First()
+	}
+
+	if c.skipDirectories != "" {
+		c.SkipDirectories = strings.Split(c.skipDirectories, ",")
 	}
 
 	return nil

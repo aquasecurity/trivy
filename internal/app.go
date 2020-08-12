@@ -188,6 +188,12 @@ var (
 		EnvVars: []string{"TRIVY_LIST_ALL_PKGS"},
 	}
 
+	skipDirectories = cli.StringFlag{
+		Name:    "skip-dirs",
+		Usage:   "specify the directory where the traversal is skipped",
+		EnvVars: []string{"TRIVY_SKIP_DIRS"},
+	}
+
 	globalFlags = []cli.Flag{
 		&quietFlag,
 		&debugFlag,
@@ -214,6 +220,7 @@ var (
 		&lightFlag,
 		&ignorePolicy,
 		&listAllPackages,
+		&skipDirectories,
 	}
 
 	// deprecated options
@@ -368,6 +375,7 @@ func NewFilesystemCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
+			&skipDirectories,
 		},
 	}
 }
@@ -398,6 +406,7 @@ func NewRepositoryCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
+			&skipDirectories,
 		},
 	}
 }
