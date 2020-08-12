@@ -190,7 +190,7 @@ var (
 
 	skipDirectories = cli.StringFlag{
 		Name:    "skip-dirs",
-		Usage:   "specify the directory where the traverse is skipped",
+		Usage:   "specify the directory where the traversal is skipped",
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
