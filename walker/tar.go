@@ -16,7 +16,7 @@ const (
 	wh  string = ".wh."
 )
 
-func WalkLayerTar(layer io.Reader, skipDirectories []string, analyzeFn WalkFunc) ([]string, []string, error) {
+func WalkLayerTar(layer io.Reader, analyzeFn WalkFunc) ([]string, []string, error) {
 	var opqDirs, whFiles []string
 
 	tr := tar.NewReader(layer)
@@ -46,7 +46,7 @@ func WalkLayerTar(layer io.Reader, skipDirectories []string, analyzeFn WalkFunc)
 			continue
 		}
 
-		if isIgnored(filePath, skipDirectories) {
+		if isIgnored(filePath) {
 			continue
 		}
 

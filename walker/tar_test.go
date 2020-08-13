@@ -18,7 +18,7 @@ func TestWalkLayerTar(t *testing.T) {
 	f, err := os.Open("testdata/test.tar")
 	require.NoError(t, err)
 
-	opqDirs, whFiles, err := walker.WalkLayerTar(f, nil, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	opqDirs, whFiles, err := walker.WalkLayerTar(f, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		if filePath == "baz" {
 			b, err := opener()
 			require.NoError(t, err)
@@ -37,7 +37,7 @@ func TestWalkLayerTar(t *testing.T) {
 	f, err = os.Open("testdata/test.tar")
 	require.NoError(t, err)
 
-	_, _, err = walker.WalkLayerTar(f, nil, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	_, _, err = walker.WalkLayerTar(f, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		return errors.New("error")
 	})
 	require.EqualError(t, err, "failed to analyze file: error")
