@@ -6,8 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/fanal/artifact"
-
 	depTypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"golang.org/x/xerrors"
 
@@ -17,7 +15,6 @@ import (
 
 	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/library/composer"
-	_ "github.com/aquasecurity/fanal/analyzer/library/pipenv"
 	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/fanal/analyzer/os/debian"
 	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
@@ -32,7 +29,7 @@ import (
 
 func TestArtifact_Inspect(t *testing.T) {
 	type args struct {
-		inspectOption artifact.InspectOption
+		ctx context.Context
 	}
 	tests := []struct {
 		name                    string
@@ -207,132 +204,6 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			name:      "happy path: include a fake lock file",
-			imagePath: "../../test/testdata/fake-lockfile.tar.gz",
-			args: args{
-				inspectOption: artifact.InspectOption{
-					SkipDirectories: []string{"/dep/"},
-				},
-			},
-			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
-				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:c4a9737d9fb3671d19691e767bd4ff04f1185e45c6256462af82127703a05904",
-					BlobIDs: []string{
-						"sha256:de1602ca36c9aa319d4bff5df192859c300d0c66975a1762d4564c145d0c5bd1",
-						"sha256:1d3b68b6972f1721420b414849e7a08ed732fe05a89427296ffa3b89d885f372",
-						"sha256:5f4707793820b85c490763fc4e0b344015825f86e3500357b0422e218db4f6a7",
-						"sha256:f93dc29b4a9e546654f3d3c3e874fe21009a0862be3e1bea1ebd7dcc955e137a",
-					},
-				},
-				Returns: cache.ArtifactCacheMissingBlobsReturns{
-					MissingBlobIDs: []string{
-						"sha256:de1602ca36c9aa319d4bff5df192859c300d0c66975a1762d4564c145d0c5bd1",
-						"sha256:1d3b68b6972f1721420b414849e7a08ed732fe05a89427296ffa3b89d885f372",
-						"sha256:5f4707793820b85c490763fc4e0b344015825f86e3500357b0422e218db4f6a7",
-						"sha256:f93dc29b4a9e546654f3d3c3e874fe21009a0862be3e1bea1ebd7dcc955e137a",
-					},
-				},
-			},
-			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
-				{
-					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:de1602ca36c9aa319d4bff5df192859c300d0c66975a1762d4564c145d0c5bd1",
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							Digest:        "",
-							DiffID:        "sha256:de1602ca36c9aa319d4bff5df192859c300d0c66975a1762d4564c145d0c5bd1",
-							OS:            &types.OS{Family: "debian", Name: "10.1"},
-							PackageInfos: []types.PackageInfo{
-								{
-									FilePath: "var/lib/dpkg/status.d/base",
-									Packages: []types.Package{
-										{Name: "base-files", Version: "10.3+deb10u1", SrcName: "base-files", SrcVersion: "10.3+deb10u1"},
-									},
-								},
-								{
-									FilePath: "var/lib/dpkg/status.d/netbase",
-									Packages: []types.Package{
-										{Name: "netbase", Version: "5.6", SrcName: "netbase", SrcVersion: "5.6"},
-									},
-								},
-								{
-									FilePath: "var/lib/dpkg/status.d/tzdata",
-									Packages: []types.Package{
-										{Name: "tzdata", Version: "2019b-0+deb10u1", SrcName: "tzdata", SrcVersion: "2019b-0+deb10u1"},
-									},
-								},
-							},
-						},
-					},
-				},
-				{
-					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:1d3b68b6972f1721420b414849e7a08ed732fe05a89427296ffa3b89d885f372",
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							Digest:        "",
-							DiffID:        "sha256:1d3b68b6972f1721420b414849e7a08ed732fe05a89427296ffa3b89d885f372",
-							PackageInfos: []types.PackageInfo{
-								{
-									FilePath: "var/lib/dpkg/status.d/libc6",
-									Packages: []types.Package{{Name: "libc6", Version: "2.28-10", SrcName: "glibc", SrcVersion: "2.28-10"}},
-								},
-								{
-									FilePath: "var/lib/dpkg/status.d/libssl1",
-									Packages: []types.Package{
-										{Name: "libssl1.1", Version: "1.1.1d-0+deb10u1", SrcName: "openssl", SrcVersion: "1.1.1d-0+deb10u1"},
-									},
-								},
-								{
-									FilePath: "var/lib/dpkg/status.d/openssl",
-									Packages: []types.Package{
-										{Name: "openssl", Version: "1.1.1d-0+deb10u1", SrcName: "openssl", SrcVersion: "1.1.1d-0+deb10u1"},
-									},
-								},
-							},
-						},
-					},
-				},
-				{
-					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:5f4707793820b85c490763fc4e0b344015825f86e3500357b0422e218db4f6a7",
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							Digest:        "",
-							DiffID:        "sha256:5f4707793820b85c490763fc4e0b344015825f86e3500357b0422e218db4f6a7",
-							Applications: []types.Application{{Type: "pipenv", FilePath: "app/Pipfile.lock",
-								Libraries: []types.LibraryInfo{
-									{Library: depTypes.Library{Name: "pyyaml", Version: "5.3.1"}},
-								},
-							}},
-							OpaqueDirs: []string{"app/"},
-						},
-					},
-				},
-				{
-					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:f93dc29b4a9e546654f3d3c3e874fe21009a0862be3e1bea1ebd7dcc955e137a",
-						BlobInfo: types.BlobInfo{
-							SchemaVersion: 1,
-							Digest:        "",
-							DiffID:        "sha256:f93dc29b4a9e546654f3d3c3e874fe21009a0862be3e1bea1ebd7dcc955e137a",
-							OpaqueDirs:    []string{"dep/"},
-						},
-					},
-				},
-			},
-			want: types.ArtifactReference{
-				Name: "../../test/testdata/fake-lockfile.tar.gz",
-				ID:   "sha256:c4a9737d9fb3671d19691e767bd4ff04f1185e45c6256462af82127703a05904",
-				BlobIDs: []string{
-					"sha256:de1602ca36c9aa319d4bff5df192859c300d0c66975a1762d4564c145d0c5bd1",
-					"sha256:1d3b68b6972f1721420b414849e7a08ed732fe05a89427296ffa3b89d885f372",
-					"sha256:5f4707793820b85c490763fc4e0b344015825f86e3500357b0422e218db4f6a7",
-					"sha256:f93dc29b4a9e546654f3d3c3e874fe21009a0862be3e1bea1ebd7dcc955e137a",
-				},
-			},
-		},
-		{
 			name:      "sad path, MissingBlobs returns an error",
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
@@ -492,7 +363,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			require.NoError(t, err)
 
 			a := image2.NewArtifact(img, mockCache)
-			got, err := a.Inspect(context.Background(), tt.args.inspectOption)
+			got, err := a.Inspect(context.Background())
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

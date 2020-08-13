@@ -243,7 +243,7 @@ func TestFanal_Library_TarMode(t *testing.T) {
 }
 
 func runChecks(t *testing.T, ctx context.Context, ar artifact.Artifact, applier applier.Applier, tc testCase) {
-	imageInfo, err := ar.Inspect(ctx, artifact.InspectOption{})
+	imageInfo, err := ar.Inspect(ctx)
 	require.NoError(t, err, tc.name)
 	imageDetail, err := applier.ApplyLayers(imageInfo.ID, imageInfo.BlobIDs)
 	require.NoError(t, err, tc.name)

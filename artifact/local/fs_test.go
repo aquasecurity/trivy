@@ -4,17 +4,12 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/fanal/analyzer/library"
-	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
-	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
-	"github.com/aquasecurity/fanal/artifact"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 func TestArtifact_Inspect(t *testing.T) {
@@ -35,10 +30,10 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:5d883ef50a8d41f799cf1cf7d2a59cf65afd56e73909cc52ddd8893598ed2cb8",
+					BlobID: "sha256:d2e3f5cd0886b85366bd784fbebed88cece36902f4c70722c42e5080e0d5ba17",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
-						DiffID:        "sha256:5d883ef50a8d41f799cf1cf7d2a59cf65afd56e73909cc52ddd8893598ed2cb8",
+						DiffID:        "sha256:d2e3f5cd0886b85366bd784fbebed88cece36902f4c70722c42e5080e0d5ba17",
 						OS: &types.OS{
 							Family: "alpine",
 							Name:   "3.11.6",
@@ -51,25 +46,15 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 							},
 						},
-						Applications: []types.Application{
-							{
-								Type:     library.Bundler,
-								FilePath: "Gemfile.lock",
-								Libraries: []types.LibraryInfo{
-									{Library: godeptypes.Library{Name: "dotenv", Version: "2.7.2"}},
-									{Library: godeptypes.Library{Name: "rack", Version: "2.0.7"}},
-								},
-							},
-						},
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
 				Name: "host",
-				ID:   "sha256:5d883ef50a8d41f799cf1cf7d2a59cf65afd56e73909cc52ddd8893598ed2cb8",
+				ID:   "sha256:d2e3f5cd0886b85366bd784fbebed88cece36902f4c70722c42e5080e0d5ba17",
 				BlobIDs: []string{
-					"sha256:5d883ef50a8d41f799cf1cf7d2a59cf65afd56e73909cc52ddd8893598ed2cb8",
+					"sha256:d2e3f5cd0886b85366bd784fbebed88cece36902f4c70722c42e5080e0d5ba17",
 				},
 			},
 		},
@@ -80,10 +65,10 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:5d883ef50a8d41f799cf1cf7d2a59cf65afd56e73909cc52ddd8893598ed2cb8",
+					BlobID: "sha256:d2e3f5cd0886b85366bd784fbebed88cece36902f4c70722c42e5080e0d5ba17",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
-						DiffID:        "sha256:5d883ef50a8d41f799cf1cf7d2a59cf65afd56e73909cc52ddd8893598ed2cb8",
+						DiffID:        "sha256:d2e3f5cd0886b85366bd784fbebed88cece36902f4c70722c42e5080e0d5ba17",
 						OS: &types.OS{
 							Family: "alpine",
 							Name:   "3.11.6",
@@ -93,16 +78,6 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "lib/apk/db/installed",
 								Packages: []types.Package{
 									{Name: "musl", Version: "1.1.24-r2"},
-								},
-							},
-						},
-						Applications: []types.Application{
-							{
-								Type:     library.Bundler,
-								FilePath: "Gemfile.lock",
-								Libraries: []types.LibraryInfo{
-									{Library: godeptypes.Library{Name: "dotenv", Version: "2.7.2"}},
-									{Library: godeptypes.Library{Name: "rack", Version: "2.0.7"}},
 								},
 							},
 						},
@@ -128,7 +103,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 
 			a := NewArtifact(tt.fields.dir, c)
-			got, err := a.Inspect(nil, artifact.InspectOption{SkipDirectories: []string{"testdata/skipdir"}})
+			got, err := a.Inspect(nil)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
