@@ -26,4 +26,4 @@ $ trivy image --format template --template "@your-asff.tpl" -o report.asff golan
 ```
 
 ## Reference
-https://aws.amazon.com/jp/blogs/security/how-to-build-ci-cd-pipeline-container-vulnerability-scanning-trivy-and-aws-security-hub/
+https://aws.amazon.com/blogs/security/how-to-build-ci-cd-pipeline-container-vulnerability-scanning-trivy-and-aws-security-hub/
