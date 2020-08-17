@@ -41,45 +41,10 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 	case "json":
 		writer = &JsonWriter{Output: output}
 	case "template":
-		if strings.HasPrefix(outputTemplate, "@") {
-			buf, err := ioutil.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
-			if err != nil {
-				return xerrors.Errorf("Error retrieving template from path: %w", err)
-			}
-			outputTemplate = string(buf)
+		var err error
+		if writer, err = NewTemplateWriter(output, outputTemplate); err != nil {
+			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
-		tmpl, err := template.New("output template").Funcs(template.FuncMap{
-			"escapeXML": func(input string) string {
-				escaped := &bytes.Buffer{}
-				if err := xml.EscapeText(escaped, []byte(input)); err != nil {
-					fmt.Printf("error while escapeString to XML: %v", err.Error())
-					return input
-				}
-				return escaped.String()
-			},
-			"endWithPeriod": func(input string) string {
-				if !strings.HasSuffix(input, ".") {
-					input += "."
-				}
-				return input
-			},
-			"toLower": func(input string) string {
-				return strings.ToLower(input)
-			},
-			"escapeString": func(input string) string {
-				return html.EscapeString(input)
-			},
-			"getEnv": func(key string) string {
-				return os.Getenv(key)
-			},
-			"getCurrentTime": func() string {
-				return Now().UTC().Format(time.RFC3339Nano)
-			},
-		}).Parse(outputTemplate)
-		if err != nil {
-			return xerrors.Errorf("error parsing template: %w", err)
-		}
-		writer = &TemplateWriter{Output: output, Template: tmpl}
 	default:
 		return xerrors.Errorf("unknown format: %v", format)
 	}
@@ -188,6 +153,48 @@ func (jw JsonWriter) Write(results Results) error {
 type TemplateWriter struct {
 	Output   io.Writer
 	Template *template.Template
+}
+
+func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter, error) {
+	if strings.HasPrefix(outputTemplate, "@") {
+		buf, err := ioutil.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
+		if err != nil {
+			return nil, xerrors.Errorf("error retrieving template from path: %w", err)
+		}
+		outputTemplate = string(buf)
+	}
+	tmpl, err := template.New("output template").Funcs(template.FuncMap{
+		"escapeXML": func(input string) string {
+			escaped := &bytes.Buffer{}
+			if err := xml.EscapeText(escaped, []byte(input)); err != nil {
+				fmt.Printf("error while escapeString to XML: %v", err.Error())
+				return input
+			}
+			return escaped.String()
+		},
+		"endWithPeriod": func(input string) string {
+			if !strings.HasSuffix(input, ".") {
+				input += "."
+			}
+			return input
+		},
+		"toLower": func(input string) string {
+			return strings.ToLower(input)
+		},
+		"escapeString": func(input string) string {
+			return html.EscapeString(input)
+		},
+		"getEnv": func(key string) string {
+			return os.Getenv(key)
+		},
+		"getCurrentTime": func() string {
+			return Now().UTC().Format(time.RFC3339Nano)
+		},
+	}).Parse(outputTemplate)
+	if err != nil {
+		return nil, xerrors.Errorf("error parsing template: %w", err)
+	}
+	return &TemplateWriter{Output: output, Template: tmpl}, nil
 }
 
 func (tw TemplateWriter) Write(results Results) error {
