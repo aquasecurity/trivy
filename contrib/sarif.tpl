@@ -23,7 +23,7 @@
                 "text": "{{ .VulnerabilityID }} Package: {{ .PkgName }}"
               },
               "fullDescription": {
-                "text": "{{ endWithPeriod (escapeString .Title) }}"
+                "text": {{ endWithPeriod (escapeString .Title) | printf "%q" }}
               },
               "help": {
                 "text": "Vulnerability {{ .VulnerabilityID }}\nSeverity: {{ .Vulnerability.Severity }}\nPackage: {{ .PkgName }}\nInstalled Version: {{ .InstalledVersion }}\nFixed Version: {{ .FixedVersion }}\nLink: [{{ .VulnerabilityID }}](https://nvd.nist.gov/vuln/detail/{{ .VulnerabilityID | toLower }})",

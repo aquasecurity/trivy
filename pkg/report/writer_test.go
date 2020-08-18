@@ -242,7 +242,7 @@ func TestReportWriter_Template(t *testing.T) {
 					FixedVersion:     "3.4.5",
 					Vulnerability: dbTypes.Vulnerability{
 						Title:       `gcc: POWER9 "DARN" RNG intrinsic produces repeated output`,
-						Description: `curl version curl 7.20.0 to and including curl 7.59.0 contains a CWE-126: Buffer Over-read vulnerability in denial of service that can result in curl can be tricked into reading data beyond the end of a heap based buffer used to store downloaded RTSP content.. This vulnerability appears to have been fixed in curl < 7.20.0 and curl >= 7.60.0.`,
+						Description: `curl version curl \X 7.20.0 to and including curl 7.59.0 contains a CWE-126: Buffer Over-read vulnerability in denial of service that can result in curl can be tricked into reading data beyond the end of a heap based buffer used to store downloaded RTSP content.. This vulnerability appears to have been fixed in curl < 7.20.0 and curl >= 7.60.0.`,
 						Severity:    "HIGH",
 					},
 				},
@@ -259,7 +259,7 @@ func TestReportWriter_Template(t *testing.T) {
         {{- end -}}
         {{ range .Vulnerabilities }}
         <testcase classname="{{ .PkgName }}-{{ .InstalledVersion }}" name="[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}" time="">
-            <failure message={{escapeXML .Title | printf "%q" }} type="description">{{escapeXML .Description | printf "%q" }}</failure>
+            <failure message={{escapeXML .Title | printf "%q" }} type="description">{{ endWithPeriod (escapeString .Description) | printf "%q" }}</failure>
         </testcase>
     {{- end }}
 	</testsuite>
@@ -272,7 +272,7 @@ func TestReportWriter_Template(t *testing.T) {
             <property name="type" value="test"></property>
         </properties>
         <testcase classname="foo-1.2.3" name="[HIGH] 123" time="">
-            <failure message="gcc: POWER9 &#34;DARN&#34; RNG intrinsic produces repeated output" type="description">"curl version curl 7.20.0 to and including curl 7.59.0 contains a CWE-126: Buffer Over-read vulnerability in denial of service that can result in curl can be tricked into reading data beyond the end of a heap based buffer used to store downloaded RTSP content.. This vulnerability appears to have been fixed in curl &lt; 7.20.0 and curl &gt;= 7.60.0."</failure>
+            <failure message="gcc: POWER9 &#34;DARN&#34; RNG intrinsic produces repeated output" type="description">"curl version curl \\X 7.20.0 to and including curl 7.59.0 contains a CWE-126: Buffer Over-read vulnerability in denial of service that can result in curl can be tricked into reading data beyond the end of a heap based buffer used to store downloaded RTSP content.. This vulnerability appears to have been fixed in curl &lt; 7.20.0 and curl &gt;= 7.60.0."</failure>
         </testcase>
 	</testsuite>
 </testsuites>`,
