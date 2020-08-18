@@ -22,7 +22,9 @@
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
           "https://usn.ubuntu.com/4142-2/",
           "https://www.debian.org/security/2019/dsa-4535"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -43,7 +45,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
           "https://usn.ubuntu.com/4249-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -64,7 +68,9 @@
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
           "https://usn.ubuntu.com/4142-2/",
           "https://www.debian.org/security/2019/dsa-4535"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -85,7 +91,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
           "https://usn.ubuntu.com/4249-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -106,7 +114,9 @@
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
           "https://usn.ubuntu.com/4142-2/",
           "https://www.debian.org/security/2019/dsa-4535"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -127,7 +137,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
           "https://usn.ubuntu.com/4249-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-18224",
@@ -149,7 +161,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
           "https://usn.ubuntu.com/4168-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
@@ -169,7 +183,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17595",
@@ -189,7 +205,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -210,7 +228,9 @@
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
           "https://usn.ubuntu.com/4142-2/",
           "https://www.debian.org/security/2019/dsa-4535"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -231,7 +251,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
           "https://usn.ubuntu.com/4249-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-15718",
@@ -254,7 +276,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
@@ -274,7 +298,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17595",
@@ -294,7 +320,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-15718",
@@ -317,7 +345,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
@@ -337,7 +367,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17595",
@@ -357,7 +389,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
@@ -377,7 +411,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17595",
@@ -397,7 +433,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       }
     ]
   }

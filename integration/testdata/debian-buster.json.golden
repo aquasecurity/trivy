@@ -19,7 +19,9 @@
           "https://people.canonical.com/~ubuntu-security/cve/2011/CVE-2011-3374.html",
           "https://security-tracker.debian.org/tracker/CVE-2011-3374",
           "https://snyk.io/vuln/SNYK-LINUX-APT-116518"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-18276",
@@ -36,7 +38,9 @@
           "http://packetstormsecurity.com/files/155498/Bash-5.0-Patch-11-Privilege-Escalation.html",
           "https://github.com/bminor/bash/commit/951bdaad7a18cc0dc1036bba86b18b90874d39ff",
           "https://www.youtube.com/watch?v=-wGtxJ8opa8"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "TEMP-0841856-B18BAF",
@@ -46,7 +50,9 @@
           "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
         },
         "SeveritySource": "debian",
-        "Severity": "LOW"
+        "Severity": "LOW",
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-2781",
@@ -62,7 +68,9 @@
         "References": [
           "http://www.openwall.com/lists/oss-security/2016/02/28/2",
           "http://www.openwall.com/lists/oss-security/2016/02/28/3"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2017-18018",
@@ -77,7 +85,9 @@
         "Severity": "LOW",
         "References": [
           "http://lists.gnu.org/archive/html/coreutils/2017-12/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -98,7 +108,9 @@
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
           "https://usn.ubuntu.com/4142-2/",
           "https://www.debian.org/security/2019/dsa-4535"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -119,7 +131,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
           "https://usn.ubuntu.com/4249-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12886",
@@ -135,7 +149,9 @@
         "References": [
           "https://gcc.gnu.org/viewcvs/gcc/trunk/gcc/config/arm/arm-protos.h?revision=266379\u0026view=markup",
           "https://www.gnu.org/software/gcc/gcc-8/changes.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-15847",
@@ -152,7 +168,9 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00056.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00057.html",
           "https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91481"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-14855",
@@ -170,7 +188,9 @@
           "https://dev.gnupg.org/T4755",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2019q4/000442.html",
           "https://rwc.iacr.org/2020/slides/Leurent.pdf"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2011-3374",
@@ -188,7 +208,9 @@
           "https://people.canonical.com/~ubuntu-security/cve/2011/CVE-2011-3374.html",
           "https://security-tracker.debian.org/tracker/CVE-2011-3374",
           "https://snyk.io/vuln/SNYK-LINUX-APT-116518"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2020-1752",
@@ -199,7 +221,9 @@
         },
         "Title": "glibc: use-after-free in glob() function when expanding ~user",
         "Description": "A use-after-free vulnerability was found in glibc in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution.",
-        "Severity": "HIGH"
+        "Severity": "HIGH",
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2020-1751",
@@ -210,7 +234,9 @@
         },
         "Title": "glibc: array overflow in backtrace on powerpc",
         "Description": "No description is available for this CVE.",
-        "Severity": "MEDIUM"
+        "Severity": "MEDIUM",
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2010-4051",
@@ -235,7 +261,9 @@
           "http://www.securityfocus.com/archive/1/515589/100/0/threaded",
           "http://www.securityfocus.com/bid/45233",
           "https://bugzilla.redhat.com/show_bug.cgi?id=645859"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2010-4052",
@@ -260,7 +288,9 @@
           "http://www.securityfocus.com/archive/1/515589/100/0/threaded",
           "http://www.securityfocus.com/bid/45233",
           "https://bugzilla.redhat.com/show_bug.cgi?id=645859"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2010-4756",
@@ -277,7 +307,9 @@
           "http://cxib.net/stuff/glob-0day.c",
           "http://securityreason.com/achievement_securityalert/89",
           "http://securityreason.com/exploitalert/9223"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-10228",
@@ -294,7 +326,9 @@
           "http://openwall.com/lists/oss-security/2017/03/01/10",
           "http://www.securityfocus.com/bid/96525",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=19519"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-20796",
@@ -313,7 +347,9 @@
           "https://lists.gnu.org/archive/html/bug-gnulib/2019-01/msg00108.html",
           "https://security.netapp.com/advisory/ntap-20190315-0002/",
           "https://support.f5.com/csp/article/K26346590?utm_source=f5support\u0026amp;utm_medium=RSS"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1010022",
@@ -328,7 +364,9 @@
         "Severity": "LOW",
         "References": [
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22850"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1010023",
@@ -345,7 +383,9 @@
           "http://www.securityfocus.com/bid/109167",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22851",
           "https://support.f5.com/csp/article/K11932200?utm_source=f5support\u0026amp;utm_medium=RSS"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1010024",
@@ -362,7 +402,9 @@
           "http://www.securityfocus.com/bid/109162",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22852",
           "https://support.f5.com/csp/article/K06046097"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1010025",
@@ -377,7 +419,9 @@
         "Severity": "LOW",
         "References": [
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22853"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19126",
@@ -393,7 +437,9 @@
         "References": [
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZFJ5E7NWOL6ROE5QVICHKIOUGCPFJVUH/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=25204"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9192",
@@ -409,7 +455,9 @@
         "References": [
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24269",
           "https://support.f5.com/csp/article/K26346590?utm_source=f5support\u0026amp;utm_medium=RSS"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2020-10029",
@@ -426,7 +474,9 @@
           "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00033.html",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=25487",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;a=commit;h=9333498794cde1d5cca518badf79533a24114b6f"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2020-1752",
@@ -437,7 +487,9 @@
         },
         "Title": "glibc: use-after-free in glob() function when expanding ~user",
         "Description": "A use-after-free vulnerability was found in glibc in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution.",
-        "Severity": "HIGH"
+        "Severity": "HIGH",
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2020-1751",
@@ -448,7 +500,9 @@
         },
         "Title": "glibc: array overflow in backtrace on powerpc",
         "Description": "No description is available for this CVE.",
-        "Severity": "MEDIUM"
+        "Severity": "MEDIUM",
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2010-4051",
@@ -473,7 +527,9 @@
           "http://www.securityfocus.com/archive/1/515589/100/0/threaded",
           "http://www.securityfocus.com/bid/45233",
           "https://bugzilla.redhat.com/show_bug.cgi?id=645859"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2010-4052",
@@ -498,7 +554,9 @@
           "http://www.securityfocus.com/archive/1/515589/100/0/threaded",
           "http://www.securityfocus.com/bid/45233",
           "https://bugzilla.redhat.com/show_bug.cgi?id=645859"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2010-4756",
@@ -515,7 +573,9 @@
           "http://cxib.net/stuff/glob-0day.c",
           "http://securityreason.com/achievement_securityalert/89",
           "http://securityreason.com/exploitalert/9223"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-10228",
@@ -532,7 +592,9 @@
           "http://openwall.com/lists/oss-security/2017/03/01/10",
           "http://www.securityfocus.com/bid/96525",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=19519"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-20796",
@@ -551,7 +613,9 @@
           "https://lists.gnu.org/archive/html/bug-gnulib/2019-01/msg00108.html",
           "https://security.netapp.com/advisory/ntap-20190315-0002/",
           "https://support.f5.com/csp/article/K26346590?utm_source=f5support\u0026amp;utm_medium=RSS"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1010022",
@@ -566,7 +630,9 @@
         "Severity": "LOW",
         "References": [
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22850"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1010023",
@@ -583,7 +649,9 @@
           "http://www.securityfocus.com/bid/109167",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22851",
           "https://support.f5.com/csp/article/K11932200?utm_source=f5support\u0026amp;utm_medium=RSS"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1010024",
@@ -600,7 +668,9 @@
           "http://www.securityfocus.com/bid/109162",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22852",
           "https://support.f5.com/csp/article/K06046097"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1010025",
@@ -615,7 +685,9 @@
         "Severity": "LOW",
         "References": [
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22853"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19126",
@@ -631,7 +703,9 @@
         "References": [
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZFJ5E7NWOL6ROE5QVICHKIOUGCPFJVUH/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=25204"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9192",
@@ -647,7 +721,9 @@
         "References": [
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24269",
           "https://support.f5.com/csp/article/K26346590?utm_source=f5support\u0026amp;utm_medium=RSS"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2020-10029",
@@ -664,7 +740,9 @@
           "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00033.html",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=25487",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;a=commit;h=9333498794cde1d5cca518badf79533a24114b6f"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -685,7 +763,9 @@
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
           "https://usn.ubuntu.com/4142-2/",
           "https://www.debian.org/security/2019/dsa-4535"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -706,7 +786,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
           "https://usn.ubuntu.com/4249-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -727,7 +809,9 @@
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
           "https://usn.ubuntu.com/4142-2/",
           "https://www.debian.org/security/2019/dsa-4535"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -748,7 +832,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
           "https://usn.ubuntu.com/4249-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12886",
@@ -764,7 +850,9 @@
         "References": [
           "https://gcc.gnu.org/viewcvs/gcc/trunk/gcc/config/arm/arm-protos.h?revision=266379\u0026view=markup",
           "https://www.gnu.org/software/gcc/gcc-8/changes.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-15847",
@@ -781,7 +869,9 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00056.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00057.html",
           "https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91481"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-12904",
@@ -800,7 +890,9 @@
           "https://github.com/gpg/libgcrypt/commit/a4c561aab1014c3630bc88faf6f5246fee16b020",
           "https://github.com/gpg/libgcrypt/commit/daedbbb5541cd8ecda1459d3b843ea4d92788762",
           "https://people.canonical.com/~ubuntu-security/cve/2019/CVE-2019-12904.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-13627",
@@ -822,7 +914,9 @@
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00024.html",
           "https://minerva.crocs.fi.muni.cz/",
           "https://security-tracker.debian.org/tracker/CVE-2019-13627"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-6829",
@@ -840,7 +934,9 @@
           "https://github.com/weikengchen/attack-on-libgcrypt-elgamal/wiki",
           "https://lists.gnupg.org/pipermail/gcrypt-devel/2018-February/004394.html",
           "https://www.oracle.com/security-alerts/cpujan2020.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2011-3389",
@@ -944,7 +1040,9 @@
           "https://hermes.opensuse.org/messages/13155432",
           "https://ics-cert.us-cert.gov/advisories/ICSMA-18-058-02",
           "https://oval.cisecurity.org/repository/search/definition/oval%3Aorg.mitre.oval%3Adef%3A14752"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-18224",
@@ -966,7 +1064,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
           "https://usn.ubuntu.com/4168-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-12290",
@@ -983,7 +1083,9 @@
           "https://gitlab.com/libidn/libidn2/commit/614117ef6e4c60e1950d742e3edf0a0ef8d389de",
           "https://gitlab.com/libidn/libidn2/merge_requests/71",
           "https://usn.ubuntu.com/4168-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17543",
@@ -1009,7 +1111,9 @@
           "https://lists.apache.org/thread.html/9ff0606d16be2ab6a81619e1c9e23c3e251756638e36272c8c8b7fa3@%3Cissues.arrow.apache.org%3E",
           "https://lists.apache.org/thread.html/f0038c4fab2ee25aee849ebeff6b33b3aa89e07ccfb06b5c87b36316@%3Cissues.arrow.apache.org%3E",
           "https://lists.apache.org/thread.html/f506bc371d4a068d5d84d7361293568f61167d3a1c3e91f0def2d7d3@%3Cdev.arrow.apache.org%3E"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
@@ -1029,7 +1133,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17595",
@@ -1049,7 +1155,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2017-11164",
@@ -1065,7 +1173,9 @@
         "References": [
           "http://openwall.com/lists/oss-security/2017/07/11/3",
           "http://www.securityfocus.com/bid/99575"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2017-16231",
@@ -1087,7 +1197,9 @@
           "http://www.openwall.com/lists/oss-security/2017/11/01/8",
           "http://www.securityfocus.com/bid/101688",
           "https://bugs.exim.org/show_bug.cgi?id=2047"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2017-7245",
@@ -1105,7 +1217,9 @@
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
           "https://security.gentoo.org/glsa/201710-25"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2017-7246",
@@ -1123,7 +1237,9 @@
           "https://access.redhat.com/errata/RHSA-2018:2486",
           "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
           "https://security.gentoo.org/glsa/201710-25"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9893",
@@ -1144,7 +1260,9 @@
           "https://security.gentoo.org/glsa/201904-18",
           "https://usn.ubuntu.com/4001-1/",
           "https://usn.ubuntu.com/4001-2/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -1165,7 +1283,9 @@
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
           "https://usn.ubuntu.com/4142-2/",
           "https://www.debian.org/security/2019/dsa-4535"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -1186,7 +1306,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
           "https://usn.ubuntu.com/4249-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12886",
@@ -1202,7 +1324,9 @@
         "References": [
           "https://gcc.gnu.org/viewcvs/gcc/trunk/gcc/config/arm/arm-protos.h?revision=266379\u0026view=markup",
           "https://www.gnu.org/software/gcc/gcc-8/changes.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-15847",
@@ -1219,7 +1343,9 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00056.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00057.html",
           "https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91481"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2020-1712",
@@ -1234,7 +1360,9 @@
         "References": [
           "http://linux.oracle.com/cve/CVE-2020-1712.html",
           "http://linux.oracle.com/errata/ELSA-2020-0575.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3843",
@@ -1252,7 +1380,9 @@
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3843",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5JXQAKSTMABZ46EVCRMW62DHWYHTTFES/",
           "https://security.netapp.com/advisory/ntap-20190619-0002/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3844",
@@ -1269,7 +1399,9 @@
           "http://www.securityfocus.com/bid/108096",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3844",
           "https://security.netapp.com/advisory/ntap-20190619-0002/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2013-4392",
@@ -1286,7 +1418,9 @@
           "http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=725357",
           "http://www.openwall.com/lists/oss-security/2013/10/01/9",
           "https://bugzilla.redhat.com/show_bug.cgi?id=859060"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-15718",
@@ -1309,7 +1443,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-20386",
@@ -1327,7 +1463,9 @@
           "https://github.com/systemd/systemd/commit/b2774a3ae692113e1f47a336a6c09bac9cfb49ad",
           "https://security.netapp.com/advisory/ntap-20200210-0002/",
           "https://usn.ubuntu.com/4269-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-1000654",
@@ -1345,7 +1483,9 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00018.html",
           "http://www.securityfocus.com/bid/105151",
           "https://gitlab.com/gnutls/libtasn1/issues/4"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
@@ -1365,7 +1505,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17595",
@@ -1385,7 +1527,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2020-1712",
@@ -1400,7 +1544,9 @@
         "References": [
           "http://linux.oracle.com/cve/CVE-2020-1712.html",
           "http://linux.oracle.com/errata/ELSA-2020-0575.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3843",
@@ -1418,7 +1564,9 @@
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3843",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5JXQAKSTMABZ46EVCRMW62DHWYHTTFES/",
           "https://security.netapp.com/advisory/ntap-20190619-0002/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3844",
@@ -1435,7 +1583,9 @@
           "http://www.securityfocus.com/bid/108096",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3844",
           "https://security.netapp.com/advisory/ntap-20190619-0002/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2013-4392",
@@ -1452,7 +1602,9 @@
           "http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=725357",
           "http://www.openwall.com/lists/oss-security/2013/10/01/9",
           "https://bugzilla.redhat.com/show_bug.cgi?id=859060"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-15718",
@@ -1475,7 +1627,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-20386",
@@ -1493,7 +1647,9 @@
           "https://github.com/systemd/systemd/commit/b2774a3ae692113e1f47a336a6c09bac9cfb49ad",
           "https://security.netapp.com/advisory/ntap-20200210-0002/",
           "https://usn.ubuntu.com/4269-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2012-2663",
@@ -1509,7 +1665,9 @@
         "References": [
           "http://www.spinics.net/lists/netfilter-devel/msg21248.html",
           "https://bugzilla.redhat.com/show_bug.cgi?id=826702"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11360",
@@ -1524,7 +1682,9 @@
         "References": [
           "https://0day.work/cve-2019-11360-bufferoverflow-in-iptables-restore-v1-8-2/",
           "https://git.netfilter.org/iptables/commit/iptables/xshared.c?id=2ae1099a42e6a0f06de305ca13a842ac83d4683e"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2007-5686",
@@ -1543,7 +1703,9 @@
           "http://www.securityfocus.com/bid/26048",
           "http://www.vupen.com/english/advisories/2007/3474",
           "https://issues.rpath.com/browse/RPL-1825"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2013-4235",
@@ -1560,7 +1722,9 @@
           "https://access.redhat.com/security/cve/cve-2013-4235",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2013-4235",
           "https://security-tracker.debian.org/tracker/CVE-2013-4235"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-7169",
@@ -1576,7 +1740,9 @@
         "References": [
           "https://bugs.launchpad.net/ubuntu/+source/shadow/+bug/1729357",
           "https://security.gentoo.org/glsa/201805-09"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19882",
@@ -1595,7 +1761,9 @@
           "https://github.com/shadow-maint/shadow/commit/edf7547ad5aa650be868cf2dac58944773c12d75",
           "https://github.com/shadow-maint/shadow/pull/199",
           "https://github.com/void-linux/void-packages/pull/17580"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "TEMP-0628843-DBAD28",
@@ -1605,7 +1773,9 @@
           "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
         },
         "SeveritySource": "debian",
-        "Severity": "LOW"
+        "Severity": "LOW",
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
@@ -1625,7 +1795,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17595",
@@ -1645,7 +1817,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
@@ -1665,7 +1839,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17595",
@@ -1685,7 +1861,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2007-5686",
@@ -1704,7 +1882,9 @@
           "http://www.securityfocus.com/bid/26048",
           "http://www.vupen.com/english/advisories/2007/3474",
           "https://issues.rpath.com/browse/RPL-1825"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2013-4235",
@@ -1721,7 +1901,9 @@
           "https://access.redhat.com/security/cve/cve-2013-4235",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2013-4235",
           "https://security-tracker.debian.org/tracker/CVE-2013-4235"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-7169",
@@ -1737,7 +1919,9 @@
         "References": [
           "https://bugs.launchpad.net/ubuntu/+source/shadow/+bug/1729357",
           "https://security.gentoo.org/glsa/201805-09"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19882",
@@ -1756,7 +1940,9 @@
           "https://github.com/shadow-maint/shadow/commit/edf7547ad5aa650be868cf2dac58944773c12d75",
           "https://github.com/shadow-maint/shadow/pull/199",
           "https://github.com/void-linux/void-packages/pull/17580"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "TEMP-0628843-DBAD28",
@@ -1766,7 +1952,9 @@
           "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
         },
         "SeveritySource": "debian",
-        "Severity": "LOW"
+        "Severity": "LOW",
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2011-4116",
@@ -1785,7 +1973,9 @@
           "https://github.com/Perl-Toolchain-Gang/File-Temp/issues/14",
           "https://rt.cpan.org/Public/Bug/Display.html?id=69106",
           "https://seclists.org/oss-sec/2011/q4/238"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "TEMP-0517018-A83CE6",
@@ -1795,7 +1985,9 @@
           "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
         },
         "SeveritySource": "debian",
-        "Severity": "LOW"
+        "Severity": "LOW",
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2005-2541",
@@ -1809,7 +2001,9 @@
         "Severity": "LOW",
         "References": [
           "http://marc.info/?l=bugtraq\u0026m=112327628230258\u0026w=2"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9923",
@@ -1827,7 +2021,9 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00077.html",
           "http://savannah.gnu.org/bugs/?55369",
           "https://bugs.launchpad.net/ubuntu/+source/tar/+bug/1810241"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "TEMP-0290435-0B57B5",
@@ -1837,7 +2033,9 @@
           "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
         },
         "SeveritySource": "debian",
-        "Severity": "LOW"
+        "Severity": "LOW",
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       }
     ]
   }

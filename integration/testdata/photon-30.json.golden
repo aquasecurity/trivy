@@ -19,7 +19,9 @@
           "http://packetstormsecurity.com/files/155498/Bash-5.0-Patch-11-Privilege-Escalation.html",
           "https://github.com/bminor/bash/commit/951bdaad7a18cc0dc1036bba86b18b90874d39ff",
           "https://www.youtube.com/watch?v=-wGtxJ8opa8"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5481",
@@ -40,7 +42,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5482",
@@ -63,7 +67,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5481",
@@ -84,7 +90,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5482",
@@ -107,7 +115,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -128,7 +138,9 @@
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
           "https://usn.ubuntu.com/4142-2/",
           "https://www.debian.org/security/2019/dsa-4535"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -149,7 +161,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
           "https://usn.ubuntu.com/4249-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-20387",
@@ -168,7 +182,9 @@
           "https://github.com/openSUSE/libsolv/commit/fdb9c9c03508990e4583046b590c30d958f272da",
           "https://github.com/openSUSE/libsolv/compare/0.7.5...0.7.6",
           "https://lists.debian.org/debian-lts-announce/2020/01/msg00034.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17498",
@@ -191,7 +207,9 @@
           "https://github.com/libssh2/libssh2/pull/402/commits/1c6fa92b77e34d089493fe6d3e2c6c8775858b94",
           "https://lists.debian.org/debian-lts-announce/2019/11/msg00010.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TY7EEE34RFKCTXTMBQQWWSLXZWSCXNDB/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1547",
@@ -215,7 +233,9 @@
           "https://seclists.org/bugtraq/2019/Sep/25",
           "https://security.netapp.com/advisory/ntap-20190919-0002/",
           "https://www.openssl.org/news/secadv/20190910.txt"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1551",
@@ -242,7 +262,9 @@
           "https://www.debian.org/security/2019/dsa-4594",
           "https://www.openssl.org/news/secadv/20191206.txt",
           "https://www.tenable.com/security/tns-2019-09"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1563",
@@ -265,7 +287,9 @@
           "https://seclists.org/bugtraq/2019/Sep/25",
           "https://security.netapp.com/advisory/ntap-20190919-0002/",
           "https://www.openssl.org/news/secadv/20190910.txt"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-16168",
@@ -290,7 +314,9 @@
           "https://www.oracle.com/security-alerts/cpujan2020.html",
           "https://www.sqlite.org/src/info/e4598ecbdd18bd82945f6029013296690e719a62",
           "https://www.sqlite.org/src/timeline?c=98357d8c1263920b"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19244",
@@ -307,7 +333,9 @@
         "References": [
           "https://github.com/sqlite/sqlite/commit/e59c562b3f6894f84c715772c4b116d7b5c01348",
           "https://usn.ubuntu.com/4205-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19923",
@@ -325,7 +353,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19923",
           "https://github.com/sqlite/sqlite/commit/396afe6f6aa90a31303c183e11b2b2d4b7956b35",
           "https://security.netapp.com/advisory/ntap-20200114-0003/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19926",
@@ -343,7 +373,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19926",
           "https://github.com/sqlite/sqlite/commit/8428b3b437569338a9d1e10c4cd8154acbe33089",
           "https://security.netapp.com/advisory/ntap-20200114-0003/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19959",
@@ -361,7 +393,9 @@
           "https://github.com/sqlite/sqlite/commit/1e490c4ca6b43a9cf8637d695907888349f69bec",
           "https://github.com/sqlite/sqlite/commit/d8f2d46cbc9925e034a68aaaf60aad788d9373c1",
           "https://security.netapp.com/advisory/ntap-20200204-0001/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       }
     ]
   }

@@ -17,7 +17,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00076.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2020:0381-1",
@@ -33,7 +35,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00033.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2020:0166-1",
@@ -49,7 +53,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2020:0022-1",
@@ -65,7 +71,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00018.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2019:2611-1",
@@ -81,7 +89,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00009.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2019:2551-1",
@@ -97,7 +107,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2020:0379-1",
@@ -113,7 +125,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00034.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2020:0062-1",
@@ -129,7 +143,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2020:0255-1",
@@ -145,7 +161,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00036.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2019:2689-1",
@@ -161,7 +179,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00033.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2020:0102-1",
@@ -177,7 +197,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00047.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2020:0208-1",
@@ -193,7 +215,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00014.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2020:0208-1",
@@ -209,7 +233,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00014.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2019:2612-1",
@@ -225,7 +251,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00010.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2020:0255-1",
@@ -241,7 +269,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00036.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2019:2551-1",
@@ -257,7 +287,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2020:0062-1",
@@ -273,7 +305,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2019:2672-1",
@@ -289,7 +323,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00024.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2020:0302-1",
@@ -305,7 +341,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00010.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2019:2551-1",
@@ -321,7 +359,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "openSUSE-SU-2020:0255-1",
@@ -337,7 +377,9 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00036.html",
           "https://www.suse.com/support/security/rating/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       }
     ]
   }

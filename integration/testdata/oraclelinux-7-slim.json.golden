@@ -24,7 +24,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16842",
@@ -52,7 +54,9 @@
           "https://usn.ubuntu.com/3805-1/",
           "https://usn.ubuntu.com/3805-2/",
           "https://www.debian.org/security/2018/dsa-4331"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16402",
@@ -72,7 +76,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16062",
@@ -96,7 +102,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23541",
           "https://sourceware.org/git/?p=elfutils.git;a=commit;h=29e31978ba51c1051743a503ee325b5ebc03d7e9",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16403",
@@ -119,7 +127,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23529",
           "https://sourceware.org/git/?p=elfutils.git;a=commit;h=6983e59b727458a6c64d9659c85f08218bc4fcda",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-18310",
@@ -141,7 +151,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23752",
           "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00022.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-18520",
@@ -163,7 +175,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23787",
           "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00057.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-18521",
@@ -185,7 +199,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23786",
           "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00055.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7149",
@@ -207,7 +223,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24102",
           "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00068.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7150",
@@ -229,7 +247,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24103",
           "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00070.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7664",
@@ -249,7 +269,9 @@
           "https://access.redhat.com/errata/RHSA-2019:2197",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7664",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24084"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7665",
@@ -271,7 +293,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24089",
           "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00049.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-10739",
@@ -294,7 +318,9 @@
           "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-10739",
@@ -317,7 +343,9 @@
           "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5482",
@@ -340,7 +368,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16842",
@@ -368,7 +398,9 @@
           "https://usn.ubuntu.com/3805-1/",
           "https://usn.ubuntu.com/3805-2/",
           "https://www.debian.org/security/2018/dsa-4331"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3858",
@@ -401,7 +433,9 @@
           "https://www.broadcom.com/support/fibre-channel-networking/security-advisories/brocade-security-advisory-2019-767",
           "https://www.debian.org/security/2019/dsa-4431",
           "https://www.libssh2.org/CVE-2019-3858.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3861",
@@ -428,7 +462,9 @@
           "https://security.netapp.com/advisory/ntap-20190327-0005/",
           "https://www.debian.org/security/2019/dsa-4431",
           "https://www.libssh2.org/CVE-2019-3861.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -449,7 +485,9 @@
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -486,7 +524,9 @@
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -507,7 +547,9 @@
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -533,7 +575,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -561,7 +605,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -598,7 +644,9 @@
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -619,7 +667,9 @@
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -645,123 +695,13 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
         "PkgName": "nss-softokn",
-        "InstalledVersion": "3.36.0-5.0.1.el7_5",
-        "FixedVersion": "3.44.0-8.0.1.el7_7",
-        "Layer": {
-          "DiffID": "sha256:4fee40bcfecff11f540de853f7f0dc71efbab8c14ea599452b617e215562e3e2"
-        },
-        "SeveritySource": "nvd",
-        "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
-        "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2019-11745.html",
-          "http://linux.oracle.com/errata/ELSA-2019-4190.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
-          "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
-          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
-          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
-          "https://usn.ubuntu.com/4241-1/",
-          "https://www.mozilla.org/security/advisories/mfsa2019-36/",
-          "https://www.mozilla.org/security/advisories/mfsa2019-37/",
-          "https://www.mozilla.org/security/advisories/mfsa2019-38/"
-        ]
-      },
-      {
-        "VulnerabilityID": "CVE-2018-0495",
-        "PkgName": "nss-softokn",
-        "InstalledVersion": "3.36.0-5.0.1.el7_5",
-        "FixedVersion": "3.44.0-5.0.1.el7",
-        "Layer": {
-          "DiffID": "sha256:4fee40bcfecff11f540de853f7f0dc71efbab8c14ea599452b617e215562e3e2"
-        },
-        "SeveritySource": "nvd",
-        "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
-        "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
-        "Severity": "LOW",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2018-0495.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
-          "http://www.securitytracker.com/id/1041144",
-          "http://www.securitytracker.com/id/1041147",
-          "https://access.redhat.com/errata/RHSA-2018:3221",
-          "https://access.redhat.com/errata/RHSA-2018:3505",
-          "https://access.redhat.com/errata/RHSA-2019:1296",
-          "https://access.redhat.com/errata/RHSA-2019:1297",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
-          "https://dev.gnupg.org/T4011",
-          "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
-          "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
-          "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
-          "https://usn.ubuntu.com/3689-1/",
-          "https://usn.ubuntu.com/3689-2/",
-          "https://usn.ubuntu.com/3692-1/",
-          "https://usn.ubuntu.com/3692-2/",
-          "https://usn.ubuntu.com/3850-1/",
-          "https://usn.ubuntu.com/3850-2/",
-          "https://www.debian.org/security/2018/dsa-4231",
-          "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
-          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
-      },
-      {
-        "VulnerabilityID": "CVE-2018-12404",
-        "PkgName": "nss-softokn-freebl",
-        "InstalledVersion": "3.36.0-5.0.1.el7_5",
-        "FixedVersion": "3.44.0-5.0.1.el7",
-        "Layer": {
-          "DiffID": "sha256:4fee40bcfecff11f540de853f7f0dc71efbab8c14ea599452b617e215562e3e2"
-        },
-        "SeveritySource": "nvd",
-        "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
-        "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2018-12404.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
-          "http://www.securityfocus.com/bid/107260",
-          "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
-      },
-      {
-        "VulnerabilityID": "CVE-2019-11729",
-        "PkgName": "nss-softokn-freebl",
-        "InstalledVersion": "3.36.0-5.0.1.el7_5",
-        "FixedVersion": "3.44.0-8.0.1.el7_7",
-        "Layer": {
-          "DiffID": "sha256:4fee40bcfecff11f540de853f7f0dc71efbab8c14ea599452b617e215562e3e2"
-        },
-        "SeveritySource": "nvd",
-        "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
-        "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2019-11729.html",
-          "http://linux.oracle.com/errata/ELSA-2019-4190.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00055.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00058.html",
-          "https://access.redhat.com/errata/RHSA-2019:1951",
-          "https://bugzilla.mozilla.org/show_bug.cgi?id=1515342",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11729",
-          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-22/#CVE-2019-11729",
-          "https://www.mozilla.org/security/advisories/mfsa2019-21/",
-          "https://www.mozilla.org/security/advisories/mfsa2019-22/",
-          "https://www.mozilla.org/security/advisories/mfsa2019-23/"
-        ]
-      },
-      {
-        "VulnerabilityID": "CVE-2019-11745",
-        "PkgName": "nss-softokn-freebl",
         "InstalledVersion": "3.36.0-5.0.1.el7_5",
         "FixedVersion": "3.44.0-8.0.1.el7_7",
         "Layer": {
@@ -785,7 +725,129 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2018-0495",
+        "PkgName": "nss-softokn",
+        "InstalledVersion": "3.36.0-5.0.1.el7_5",
+        "FixedVersion": "3.44.0-5.0.1.el7",
+        "Layer": {
+          "DiffID": "sha256:4fee40bcfecff11f540de853f7f0dc71efbab8c14ea599452b617e215562e3e2"
+        },
+        "SeveritySource": "nvd",
+        "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
+        "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
+        "Severity": "LOW",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-0495.html",
+          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
+          "http://www.securitytracker.com/id/1041144",
+          "http://www.securitytracker.com/id/1041147",
+          "https://access.redhat.com/errata/RHSA-2018:3221",
+          "https://access.redhat.com/errata/RHSA-2018:3505",
+          "https://access.redhat.com/errata/RHSA-2019:1296",
+          "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
+          "https://dev.gnupg.org/T4011",
+          "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
+          "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
+          "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
+          "https://usn.ubuntu.com/3689-1/",
+          "https://usn.ubuntu.com/3689-2/",
+          "https://usn.ubuntu.com/3692-1/",
+          "https://usn.ubuntu.com/3692-2/",
+          "https://usn.ubuntu.com/3850-1/",
+          "https://usn.ubuntu.com/3850-2/",
+          "https://www.debian.org/security/2018/dsa-4231",
+          "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
+          "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2018-12404",
+        "PkgName": "nss-softokn-freebl",
+        "InstalledVersion": "3.36.0-5.0.1.el7_5",
+        "FixedVersion": "3.44.0-5.0.1.el7",
+        "Layer": {
+          "DiffID": "sha256:4fee40bcfecff11f540de853f7f0dc71efbab8c14ea599452b617e215562e3e2"
+        },
+        "SeveritySource": "nvd",
+        "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
+        "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-12404.html",
+          "http://linux.oracle.com/errata/ELSA-2019-2237.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
+          "http://www.securityfocus.com/bid/107260",
+          "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-11729",
+        "PkgName": "nss-softokn-freebl",
+        "InstalledVersion": "3.36.0-5.0.1.el7_5",
+        "FixedVersion": "3.44.0-8.0.1.el7_7",
+        "Layer": {
+          "DiffID": "sha256:4fee40bcfecff11f540de853f7f0dc71efbab8c14ea599452b617e215562e3e2"
+        },
+        "SeveritySource": "nvd",
+        "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
+        "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-11729.html",
+          "http://linux.oracle.com/errata/ELSA-2019-4190.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00055.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00058.html",
+          "https://access.redhat.com/errata/RHSA-2019:1951",
+          "https://bugzilla.mozilla.org/show_bug.cgi?id=1515342",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11729",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-22/#CVE-2019-11729",
+          "https://www.mozilla.org/security/advisories/mfsa2019-21/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-22/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-23/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-11745",
+        "PkgName": "nss-softokn-freebl",
+        "InstalledVersion": "3.36.0-5.0.1.el7_5",
+        "FixedVersion": "3.44.0-8.0.1.el7_7",
+        "Layer": {
+          "DiffID": "sha256:4fee40bcfecff11f540de853f7f0dc71efbab8c14ea599452b617e215562e3e2"
+        },
+        "SeveritySource": "nvd",
+        "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
+        "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-11745.html",
+          "http://linux.oracle.com/errata/ELSA-2019-4190.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
+          "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
+          "https://usn.ubuntu.com/4241-1/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-36/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-37/",
+          "https://www.mozilla.org/security/advisories/mfsa2019-38/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -822,7 +884,9 @@
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -843,7 +907,9 @@
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -869,7 +935,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -897,7 +965,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -934,7 +1004,9 @@
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -955,7 +1027,9 @@
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -981,7 +1055,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -1009,7 +1085,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -1046,7 +1124,9 @@
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -1067,7 +1147,9 @@
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -1093,7 +1175,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -1121,7 +1205,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -1158,7 +1244,9 @@
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0734",
@@ -1193,7 +1281,9 @@
           "https://www.oracle.com/technetwork/security-advisory/cpujan2019-5072801.html",
           "https://www.tenable.com/security/tns-2018-16",
           "https://www.tenable.com/security/tns-2018-17"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1559",
@@ -1232,7 +1322,9 @@
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
           "https://www.tenable.com/security/tns-2019-02",
           "https://www.tenable.com/security/tns-2019-03"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-14647",
@@ -1263,7 +1355,9 @@
           "https://usn.ubuntu.com/3817-2/",
           "https://www.debian.org/security/2018/dsa-4306",
           "https://www.debian.org/security/2018/dsa-4307"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-20852",
@@ -1286,7 +1380,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20852",
           "https://lists.debian.org/debian-lts-announce/2019/08/msg00022.html",
           "https://python-security.readthedocs.io/vuln/cookie-domain-check.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5010",
@@ -1308,7 +1404,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
           "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0758"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9740",
@@ -1331,7 +1429,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9740",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9947",
@@ -1354,7 +1454,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/",
           "https://security.netapp.com/advisory/ntap-20190404-0004/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9948",
@@ -1379,7 +1481,9 @@
           "https://github.com/python/cpython/pull/11842",
           "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
           "https://security.netapp.com/advisory/ntap-20190404-0004/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-14647",
@@ -1410,7 +1514,9 @@
           "https://usn.ubuntu.com/3817-2/",
           "https://www.debian.org/security/2018/dsa-4306",
           "https://www.debian.org/security/2018/dsa-4307"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-20852",
@@ -1433,7 +1539,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20852",
           "https://lists.debian.org/debian-lts-announce/2019/08/msg00022.html",
           "https://python-security.readthedocs.io/vuln/cookie-domain-check.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5010",
@@ -1455,7 +1563,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
           "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0758"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9740",
@@ -1478,7 +1588,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9740",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9947",
@@ -1501,7 +1613,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/",
           "https://security.netapp.com/advisory/ntap-20190404-0004/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9948",
@@ -1526,7 +1640,9 @@
           "https://github.com/python/cpython/pull/11842",
           "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
           "https://security.netapp.com/advisory/ntap-20190404-0004/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-13734",
@@ -1550,7 +1666,9 @@
           "https://crbug.com/1025466",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-13734",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2Z5M4FPUMDNX2LDPHJKN5ZV5GIS2AKNU/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       }
     ]
   }

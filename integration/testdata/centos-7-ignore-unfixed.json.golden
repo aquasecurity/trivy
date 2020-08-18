@@ -22,7 +22,9 @@
           "https://kb.isc.org/docs/cve-2018-5743",
           "https://support.f5.com/csp/article/K74009656?utm_source=f5support\u0026amp;utm_medium=RSS",
           "https://www.synology.com/security/advisory/Synology_SA_19_20"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-5741",
@@ -45,7 +47,9 @@
           "https://kb.isc.org/docs/cve-2018-5741",
           "https://security.gentoo.org/glsa/201903-13",
           "https://support.hpe.com/hpsc/doc/public/display?docLocale=en_US\u0026docId=emr_na-hpesbux03927en_us"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-1000876",
@@ -66,7 +70,9 @@
           "https://access.redhat.com/errata/RHSA-2019:2075",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23994",
           "https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;h=3a551c7a1b80fca579461774860574eabfd7f18f"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12641",
@@ -88,7 +94,9 @@
           "https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85452",
           "https://security.gentoo.org/glsa/201908-01",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23058"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12697",
@@ -111,7 +119,9 @@
           "https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85454",
           "https://security.gentoo.org/glsa/201908-01",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23057"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-14618",
@@ -139,7 +149,9 @@
           "https://usn.ubuntu.com/3765-1/",
           "https://usn.ubuntu.com/3765-2/",
           "https://www.debian.org/security/2018/dsa-4286"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16842",
@@ -167,7 +179,9 @@
           "https://usn.ubuntu.com/3805-1/",
           "https://usn.ubuntu.com/3805-2/",
           "https://www.debian.org/security/2018/dsa-4331"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16062",
@@ -191,7 +205,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23541",
           "https://sourceware.org/git/?p=elfutils.git;a=commit;h=29e31978ba51c1051743a503ee325b5ebc03d7e9",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16402",
@@ -211,7 +227,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16403",
@@ -234,7 +252,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23529",
           "https://sourceware.org/git/?p=elfutils.git;a=commit;h=6983e59b727458a6c64d9659c85f08218bc4fcda",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-18310",
@@ -256,7 +276,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23752",
           "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00022.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-18520",
@@ -278,7 +300,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23787",
           "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00057.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-18521",
@@ -300,7 +324,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23786",
           "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00055.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7149",
@@ -322,7 +348,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24102",
           "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00068.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7150",
@@ -344,7 +372,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24103",
           "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00070.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7664",
@@ -364,7 +394,9 @@
           "https://access.redhat.com/errata/RHSA-2019:2197",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7664",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24084"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7665",
@@ -386,7 +418,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24089",
           "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00049.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16062",
@@ -410,7 +444,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23541",
           "https://sourceware.org/git/?p=elfutils.git;a=commit;h=29e31978ba51c1051743a503ee325b5ebc03d7e9",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16402",
@@ -430,7 +466,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16403",
@@ -453,7 +491,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23529",
           "https://sourceware.org/git/?p=elfutils.git;a=commit;h=6983e59b727458a6c64d9659c85f08218bc4fcda",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-18310",
@@ -475,7 +515,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23752",
           "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00022.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-18520",
@@ -497,7 +539,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23787",
           "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00057.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-18521",
@@ -519,7 +563,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23786",
           "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00055.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7149",
@@ -541,7 +587,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24102",
           "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00068.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7150",
@@ -563,7 +611,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24103",
           "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00070.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7664",
@@ -583,7 +633,9 @@
           "https://access.redhat.com/errata/RHSA-2019:2197",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7664",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24084"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7665",
@@ -605,7 +657,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24089",
           "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00049.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16062",
@@ -629,7 +683,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23541",
           "https://sourceware.org/git/?p=elfutils.git;a=commit;h=29e31978ba51c1051743a503ee325b5ebc03d7e9",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16402",
@@ -649,7 +705,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16402",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23528",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16403",
@@ -672,7 +730,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23529",
           "https://sourceware.org/git/?p=elfutils.git;a=commit;h=6983e59b727458a6c64d9659c85f08218bc4fcda",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-18310",
@@ -694,7 +754,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23752",
           "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00022.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-18520",
@@ -716,7 +778,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23787",
           "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00057.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-18521",
@@ -738,7 +802,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23786",
           "https://sourceware.org/ml/elfutils-devel/2018-q4/msg00055.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7149",
@@ -760,7 +826,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24102",
           "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00068.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7150",
@@ -782,7 +850,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24103",
           "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00070.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7664",
@@ -802,7 +872,9 @@
           "https://access.redhat.com/errata/RHSA-2019:2197",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7664",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24084"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-7665",
@@ -824,7 +896,9 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24089",
           "https://sourceware.org/ml/elfutils-devel/2019-q1/msg00049.html",
           "https://usn.ubuntu.com/4012-1/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-10739",
@@ -847,7 +921,9 @@
           "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-10739",
@@ -870,7 +946,9 @@
           "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-14618",
@@ -898,7 +976,9 @@
           "https://usn.ubuntu.com/3765-1/",
           "https://usn.ubuntu.com/3765-2/",
           "https://www.debian.org/security/2018/dsa-4286"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16842",
@@ -926,7 +1006,9 @@
           "https://usn.ubuntu.com/3805-1/",
           "https://usn.ubuntu.com/3805-2/",
           "https://www.debian.org/security/2018/dsa-4331"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3855",
@@ -961,7 +1043,9 @@
           "https://www.broadcom.com/support/fibre-channel-networking/security-advisories/brocade-security-advisory-2019-767",
           "https://www.debian.org/security/2019/dsa-4431",
           "https://www.libssh2.org/CVE-2019-3855.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3856",
@@ -990,7 +1074,9 @@
           "https://security.netapp.com/advisory/ntap-20190327-0005/",
           "https://www.debian.org/security/2019/dsa-4431",
           "https://www.libssh2.org/CVE-2019-3856.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3857",
@@ -1019,7 +1105,9 @@
           "https://security.netapp.com/advisory/ntap-20190327-0005/",
           "https://www.debian.org/security/2019/dsa-4431",
           "https://www.libssh2.org/CVE-2019-3857.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3863",
@@ -1048,7 +1136,9 @@
           "https://security.netapp.com/advisory/ntap-20190327-0005/",
           "https://www.debian.org/security/2019/dsa-4431",
           "https://www.libssh2.org/CVE-2019-3863.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3858",
@@ -1081,7 +1171,9 @@
           "https://www.broadcom.com/support/fibre-channel-networking/security-advisories/brocade-security-advisory-2019-767",
           "https://www.debian.org/security/2019/dsa-4431",
           "https://www.libssh2.org/CVE-2019-3858.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3861",
@@ -1108,7 +1200,9 @@
           "https://security.netapp.com/advisory/ntap-20190327-0005/",
           "https://www.debian.org/security/2019/dsa-4431",
           "https://www.libssh2.org/CVE-2019-3861.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3862",
@@ -1141,7 +1235,9 @@
           "https://www.broadcom.com/support/fibre-channel-networking/security-advisories/brocade-security-advisory-2019-767",
           "https://www.debian.org/security/2019/dsa-4431",
           "https://www.libssh2.org/CVE-2019-3862.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -1178,7 +1274,9 @@
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -1199,7 +1297,9 @@
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -1227,7 +1327,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -1264,7 +1366,9 @@
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -1285,7 +1389,9 @@
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -1311,7 +1417,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -1339,7 +1447,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -1376,7 +1486,9 @@
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -1397,7 +1509,9 @@
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -1423,7 +1537,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -1451,7 +1567,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -1488,7 +1606,9 @@
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -1509,7 +1629,9 @@
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -1535,7 +1657,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -1563,7 +1687,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -1600,7 +1726,9 @@
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -1621,7 +1749,9 @@
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -1647,7 +1777,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -1675,7 +1807,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -1712,7 +1846,9 @@
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -1733,7 +1869,9 @@
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -1759,7 +1897,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -1787,7 +1927,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -1824,7 +1966,9 @@
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -1845,7 +1989,9 @@
           "http://www.securityfocus.com/bid/107260",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -1871,7 +2017,9 @@
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-5407",
@@ -1909,7 +2057,9 @@
           "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html",
           "https://www.tenable.com/security/tns-2018-16",
           "https://www.tenable.com/security/tns-2018-17"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1559",
@@ -1948,7 +2098,9 @@
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
           "https://www.tenable.com/security/tns-2019-02",
           "https://www.tenable.com/security/tns-2019-03"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0734",
@@ -1983,7 +2135,9 @@
           "https://www.oracle.com/technetwork/security-advisory/cpujan2019-5072801.html",
           "https://www.tenable.com/security/tns-2018-16",
           "https://www.tenable.com/security/tns-2018-17"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-1122",
@@ -2012,7 +2166,9 @@
           "https://www.debian.org/security/2018/dsa-4208",
           "https://www.exploit-db.com/exploits/44806/",
           "https://www.qualys.com/2018/05/17/procps-ng-audit-report-advisory.txt"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-10160",
@@ -2051,7 +2207,9 @@
           "https://security.netapp.com/advisory/ntap-20190617-0003/",
           "https://usn.ubuntu.com/4127-1/",
           "https://usn.ubuntu.com/4127-2/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9636",
@@ -2097,7 +2255,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TR6GCO3WTV4D5L23WTCBF275VE6BVNI3/",
           "https://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization.html",
           "https://security.netapp.com/advisory/ntap-20190517-0001/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-14647",
@@ -2128,7 +2288,9 @@
           "https://usn.ubuntu.com/3817-2/",
           "https://www.debian.org/security/2018/dsa-4306",
           "https://www.debian.org/security/2018/dsa-4307"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5010",
@@ -2150,7 +2312,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
           "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0758"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9740",
@@ -2173,7 +2337,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9740",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9947",
@@ -2196,7 +2362,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/",
           "https://security.netapp.com/advisory/ntap-20190404-0004/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9948",
@@ -2221,7 +2389,9 @@
           "https://github.com/python/cpython/pull/11842",
           "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
           "https://security.netapp.com/advisory/ntap-20190404-0004/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-10160",
@@ -2260,7 +2430,9 @@
           "https://security.netapp.com/advisory/ntap-20190617-0003/",
           "https://usn.ubuntu.com/4127-1/",
           "https://usn.ubuntu.com/4127-2/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9636",
@@ -2306,7 +2478,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TR6GCO3WTV4D5L23WTCBF275VE6BVNI3/",
           "https://python-security.readthedocs.io/vuln/urlsplit-nfkc-normalization.html",
           "https://security.netapp.com/advisory/ntap-20190517-0001/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-14647",
@@ -2337,7 +2511,9 @@
           "https://usn.ubuntu.com/3817-2/",
           "https://www.debian.org/security/2018/dsa-4306",
           "https://www.debian.org/security/2018/dsa-4307"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5010",
@@ -2359,7 +2535,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5010",
           "https://python-security.readthedocs.io/vuln/ssl-crl-dps-dos.html",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0758"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9740",
@@ -2382,7 +2560,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9740",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9947",
@@ -2405,7 +2585,9 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JMWSKTNOHSUOT3L25QFJAVCFYZX46FYK/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JXASHCDD4PQFKTMKQN4YOP5ZH366ABN4/",
           "https://security.netapp.com/advisory/ntap-20190404-0004/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9948",
@@ -2430,7 +2612,9 @@
           "https://github.com/python/cpython/pull/11842",
           "https://lists.debian.org/debian-lts-announce/2019/06/msg00022.html",
           "https://security.netapp.com/advisory/ntap-20190404-0004/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-13734",
@@ -2454,7 +2638,9 @@
           "https://crbug.com/1025466",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-13734",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2Z5M4FPUMDNX2LDPHJKN5ZV5GIS2AKNU/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-15686",
@@ -2479,7 +2665,9 @@
           "https://security.gentoo.org/glsa/201810-10",
           "https://usn.ubuntu.com/3816-1/",
           "https://www.exploit-db.com/exploits/45714/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16866",
@@ -2508,7 +2696,9 @@
           "https://usn.ubuntu.com/3855-1/",
           "https://www.debian.org/security/2019/dsa-4367",
           "https://www.qualys.com/2019/01/09/system-down/system-down.txt"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16888",
@@ -2530,7 +2720,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16888",
           "https://lists.apache.org/thread.html/5960a34a524848cd722fd7ab7e2227eac10107b0f90d9d1e9c3caa74@%3Cuser.cassandra.apache.org%3E",
           "https://security.netapp.com/advisory/ntap-20190307-0007/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-15686",
@@ -2555,7 +2747,9 @@
           "https://security.gentoo.org/glsa/201810-10",
           "https://usn.ubuntu.com/3816-1/",
           "https://www.exploit-db.com/exploits/45714/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16866",
@@ -2584,7 +2778,9 @@
           "https://usn.ubuntu.com/3855-1/",
           "https://www.debian.org/security/2019/dsa-4367",
           "https://www.qualys.com/2019/01/09/system-down/system-down.txt"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16888",
@@ -2606,7 +2802,9 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16888",
           "https://lists.apache.org/thread.html/5960a34a524848cd722fd7ab7e2227eac10107b0f90d9d1e9c3caa74@%3Cuser.cassandra.apache.org%3E",
           "https://security.netapp.com/advisory/ntap-20190307-0007/"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-12735",
@@ -2638,7 +2836,9 @@
           "https://usn.ubuntu.com/4016-1/",
           "https://usn.ubuntu.com/4016-2/",
           "https://www.debian.org/security/2019/dsa-4467"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       }
     ]
   }

@@ -15,7 +15,9 @@
         "Severity": "UNKNOWN",
         "References": [
           "https://github.com/rust-ammonia/ammonia/blob/master/CHANGELOG.md#210"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "RUSTSEC-2016-0001",
@@ -29,7 +31,9 @@
         "Severity": "UNKNOWN",
         "References": [
           "https://github.com/sfackler/rust-openssl/releases/tag/v0.9.0"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "RUSTSEC-2018-0010",
@@ -43,7 +47,9 @@
         "Severity": "UNKNOWN",
         "References": [
           "https://github.com/sfackler/rust-openssl/pull/942"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "RUSTSEC-2018-0003",
@@ -57,7 +63,9 @@
         "Severity": "UNKNOWN",
         "References": [
           "https://github.com/servo/rust-smallvec/issues/96"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "RUSTSEC-2019-0009",
@@ -71,7 +79,9 @@
         "Severity": "UNKNOWN",
         "References": [
           "https://github.com/servo/rust-smallvec/issues/148"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
         "VulnerabilityID": "RUSTSEC-2019-0012",
@@ -85,7 +95,9 @@
         "Severity": "UNKNOWN",
         "References": [
           "https://github.com/servo/rust-smallvec/issues/149"
-        ]
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
       }
     ]
   }
