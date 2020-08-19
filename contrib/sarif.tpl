@@ -20,20 +20,20 @@
               "id": "[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}",
               "name": "dockerfile_scan",
               "shortDescription": {
-                "text": "{{ .VulnerabilityID }} Package: {{ .PkgName }}"
+                "text": "{{ .VulnerabilityID }} Package: {{ .PkgName | printf "%v" }}"
               },
               "fullDescription": {
                 "text": {{ endWithPeriod (escapeString .Title) | printf "%q" }}
               },
               "help": {
-                "text": "Vulnerability {{ .VulnerabilityID }}\nSeverity: {{ .Vulnerability.Severity }}\nPackage: {{ .PkgName }}\nInstalled Version: {{ .InstalledVersion }}\nFixed Version: {{ .FixedVersion }}\nLink: [{{ .VulnerabilityID }}](https://nvd.nist.gov/vuln/detail/{{ .VulnerabilityID | toLower }})",
-                "markdown": "**Vulnerability {{ .VulnerabilityID }}**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|{{ .Vulnerability.Severity }}|{{ .PkgName }}|{{ .InstalledVersion }}|{{ .FixedVersion }}|[{{ .VulnerabilityID }}](https://nvd.nist.gov/vuln/detail/{{ .VulnerabilityID | toLower }})|\n"
+                "text": "Vulnerability {{ .VulnerabilityID }}\nSeverity: {{ .Vulnerability.Severity }}\nPackage: {{ .PkgName | printf "%v" }}\nInstalled Version: {{ .InstalledVersion }}\nFixed Version: {{ .FixedVersion }}\nLink: [{{ .VulnerabilityID }}](https://nvd.nist.gov/vuln/detail/{{ .VulnerabilityID | toLower }})",
+                "markdown": "**Vulnerability {{ .VulnerabilityID }}**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|{{ .Vulnerability.Severity }}|{{ .PkgName | printf "%v" }}|{{ .InstalledVersion }}|{{ .FixedVersion }}|[{{ .VulnerabilityID }}](https://nvd.nist.gov/vuln/detail/{{ .VulnerabilityID | toLower }})|\n"
               },
               "properties": {
                 "tags": [
                   "vulnerability",
                   "{{ .Vulnerability.Severity }}",
-                  "{{ .PkgName }}"
+                  "{{ .PkgName | printf "%v" }}"
                 ],
                 "precision": "very-high"
               }
