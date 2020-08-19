@@ -55,15 +55,19 @@ func TestScanner_Detect(t *testing.T) {
 				osVer: "3.10.2",
 				pkgs: []ftypes.Package{
 					{
-						Name:    "ansible",
-						Version: "2.6.4",
+						Name:       "ansible",
+						Version:    "2.6.4",
+						SrcName:    "ansible",
+						SrcVersion: "2.6.4",
 						Layer: ftypes.Layer{
 							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						},
 					},
 					{
-						Name:    "invalid",
-						Version: "invalid", // skipped
+						Name:       "invalid",
+						Version:    "invalid", // skipped
+						SrcName:    "invalid",
+						SrcVersion: "invalid",
 					},
 				},
 			},
@@ -118,8 +122,10 @@ func TestScanner_Detect(t *testing.T) {
 				osVer: "3.9",
 				pkgs: []ftypes.Package{
 					{
-						Name:    "jq",
-						Version: "1.6-r0",
+						Name:       "jq",
+						Version:    "1.6-r0",
+						SrcName:    "jq",
+						SrcVersion: "1.6-r0",
 					},
 				},
 			},
@@ -159,8 +165,10 @@ func TestScanner_Detect(t *testing.T) {
 				osVer: "3.12",
 				pkgs: []ftypes.Package{
 					{
-						Name:    "test",
-						Version: "0.1.0_alpha",
+						Name:       "test",
+						Version:    "0.1.0_alpha",
+						SrcName:    "test-src",
+						SrcVersion: "0.1.0_alpha",
 						Layer: ftypes.Layer{
 							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						},
@@ -172,7 +180,7 @@ func TestScanner_Detect(t *testing.T) {
 					{
 						input: getInput{
 							osVer:   "3.12",
-							pkgName: "test",
+							pkgName: "test-src",
 						},
 						output: getOutput{
 							advisories: []dbTypes.Advisory{
@@ -207,8 +215,10 @@ func TestScanner_Detect(t *testing.T) {
 				osVer: "3.8.1",
 				pkgs: []ftypes.Package{
 					{
-						Name:    "jq",
-						Version: "1.6-r0",
+						Name:       "jq",
+						Version:    "1.6-r0",
+						SrcName:    "jq",
+						SrcVersion: "1.6-r0",
 					},
 				},
 			},
