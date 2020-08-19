@@ -220,7 +220,7 @@ func TestRegistry(t *testing.T) {
 	}
 }
 
-func scan(imageRef name.Reference, baseDir string, opt registryOption) (string, error) {
+func scan(imageRef name.Reference, baseDir, goldenFile string, opt registryOption) (string, error) {
 	// Copy DB file
 	cacheDir, err := gunzipDB()
 	if err != nil {
@@ -230,15 +230,17 @@ func scan(imageRef name.Reference, baseDir string, opt registryOption) (string, 
 
 	// Setup the output file
 	var outputFile string
-	output, err := ioutil.TempFile("", "integration")
-	if err != nil {
-		return "", err
-	}
-	if err = output.Close(); err != nil {
-		return "", err
-	}
+	if *update {
+		outputFile = goldenFile
+	} else {
+		output, err := ioutil.TempFile("", "integration")
+		if err != nil {
+			return "", err
+		}
+		defer output.Close()
 
-	outputFile = output.Name()
+		outputFile = output.Name()
+	}
 
 	// Setup env
 	if err = setupEnv(imageRef, baseDir, opt); err != nil {
