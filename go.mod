@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/Masterminds/semver/v3 v3.1.0
-	github.com/aquasecurity/fanal v0.0.0-20200819121806-c8fd9c6e5388
+	github.com/aquasecurity/fanal v0.0.0-20200820074632-6de62ef86882
 	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
 	github.com/aquasecurity/trivy-db v0.0.0-20200715174849-fa5a3ca24b16
 	github.com/caarlos0/env/v6 v6.0.0
