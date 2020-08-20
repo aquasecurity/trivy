@@ -20,20 +20,20 @@
               "id": "[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}",
               "name": "dockerfile_scan",
               "shortDescription": {
-                "text": "{{ .VulnerabilityID }} Package: {{ .PkgName }}"
+                "text": {{ printf "%v Package: %v" .VulnerabilityID .PkgName | printf "%q" }}
               },
               "fullDescription": {
-                "text": "{{ endWithPeriod (escapeString .Title) }}"
+                "text": {{ endWithPeriod (escapeString .Title) | printf "%q" }}
               },
               "help": {
-                "text": "Vulnerability {{ .VulnerabilityID }}\nSeverity: {{ .Vulnerability.Severity }}\nPackage: {{ .PkgName }}\nInstalled Version: {{ .InstalledVersion }}\nFixed Version: {{ .FixedVersion }}\nLink: [{{ .VulnerabilityID }}](https://nvd.nist.gov/vuln/detail/{{ .VulnerabilityID | toLower }})",
-                "markdown": "**Vulnerability {{ .VulnerabilityID }}**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|{{ .Vulnerability.Severity }}|{{ .PkgName }}|{{ .InstalledVersion }}|{{ .FixedVersion }}|[{{ .VulnerabilityID }}](https://nvd.nist.gov/vuln/detail/{{ .VulnerabilityID | toLower }})|\n"
+                "text": {{ printf "Vulnerability %v\nSeverity: %v\nPackage: %v\nInstalled Version: %v\nFixed Version: %v\nLink: [%v](https://nvd.nist.gov/vuln/detail/%v)" .VulnerabilityID .Vulnerability.Severity .PkgName .InstalledVersion .FixedVersion .VulnerabilityID (.VulnerabilityID | toLower) | printf "%q"}},
+                "markdown": {{ printf "**Vulnerability %v**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|%v|%v|%v|%v|[%v](https://nvd.nist.gov/vuln/detail/%v)|\n" .VulnerabilityID .Vulnerability.Severity .PkgName .InstalledVersion .FixedVersion .VulnerabilityID (.VulnerabilityID | toLower) | printf "%q"}}
               },
               "properties": {
                 "tags": [
                   "vulnerability",
                   "{{ .Vulnerability.Severity }}",
-                  "{{ .PkgName }}"
+                  {{ .PkgName | printf "%q" }}
                 ],
                 "precision": "very-high"
               }
