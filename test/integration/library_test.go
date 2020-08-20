@@ -5,6 +5,7 @@ package integration
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -44,6 +45,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+var update = flag.Bool("update", false, "update golden files")
 
 type testCase struct {
 	name                 string
@@ -260,6 +263,13 @@ func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 func checkPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	r := strings.NewReplacer("/", "-", ":", "-")
 	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", r.Replace(tc.imageName))
+	if *update {
+		b, err := json.MarshalIndent(detail.Packages, "", "  ")
+		require.NoError(t, err)
+		err = ioutil.WriteFile(goldenFile, b, 0666)
+		require.NoError(t, err)
+		return
+	}
 	data, err := ioutil.ReadFile(goldenFile)
 	require.NoError(t, err, tc.name)
 

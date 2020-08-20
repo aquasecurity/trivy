@@ -55,14 +55,9 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []types.Pa
 			}
 			pkg.Version = version
 		case "o:":
-			origin := string(line[2:])
-			originPkg := types.Package{
-				Name:    origin,
-				Version: version,
-			}
-			if analyzer.CheckPackage(&originPkg) {
-				pkgs = append(pkgs, originPkg)
-			}
+			origin := line[2:]
+			pkg.SrcName = origin
+			pkg.SrcVersion = version
 		}
 	}
 	// in case of last paragraph

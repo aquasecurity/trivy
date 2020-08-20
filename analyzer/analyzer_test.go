@@ -259,7 +259,7 @@ func TestAnalyzeFile(t *testing.T) {
 					{
 						FilePath: "/lib/apk/db/installed",
 						Packages: []types.Package{
-							{Name: "musl", Version: "1.1.24-r2"},
+							{Name: "musl", Version: "1.1.24-r2", SrcName: "musl", SrcVersion: "1.1.24-r2"},
 						},
 					},
 				},

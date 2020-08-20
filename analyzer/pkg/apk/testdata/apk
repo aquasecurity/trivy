@@ -519,7 +519,7 @@ I:618496
 T:C library that implements an SQL database engine (development files)
 U:http://www.sqlite.org
 L:Public-Domain
-o:sqlite
+o:test-parent
 m:Carlo Landmeter <clandmeter@gmail.com>
 t:1546255353
 c:856c64b1dc1f9b8176c60e28808482f8503c4e98
