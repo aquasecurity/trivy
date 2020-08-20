@@ -22,6 +22,42 @@
         "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
+        "VulnerabilityID": "openSUSE-SU-2020:0677-1",
+        "PkgName": "file-magic",
+        "InstalledVersion": "5.32-lp151.7.22",
+        "FixedVersion": "5.32-lp151.8.3.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for file",
+        "Description": "This update for file fixes the following issues:\n\nSecurity issues fixed:\n\n- CVE-2019-18218: Fixed a heap-based buffer overflow in cdf_read_property_info() (bsc#1154661).\n\nNon-security issue fixed:\n\n- Fixed broken '--help' output (bsc#1169512).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "LOW",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-05/msg00044.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2020:0467-1",
+        "PkgName": "glibc",
+        "InstalledVersion": "2.26-lp151.18.7",
+        "FixedVersion": "2.26-lp151.19.11.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for glibc",
+        "Description": "This update for glibc fixes the following issues:\n\n- CVE-2020-1752: Fixed a use after free in glob which could have allowed\n  a local attacker to create a specially crafted path that, when processed \n  by the glob function, could potentially have led to arbitrary code execution\n  (bsc#1167631).\n \nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "HIGH",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-04/msg00006.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
         "VulnerabilityID": "openSUSE-SU-2020:0381-1",
         "PkgName": "glibc",
         "InstalledVersion": "2.26-lp151.18.7",
@@ -31,7 +67,7 @@
         },
         "Title": "Security update for glibc",
         "Description": "This update for glibc fixes the following issues:\n\n- CVE-2020-10029: Fixed a potential overflow in  on-stack buffer \n  during range reduction (bsc#1165784).\t  \n- Fixed an issue where pthread were not always locked correctly (bsc#1164505).\n- Document mprotect and introduce section on memory protection (bsc#1163184).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
-        "Severity": "LOW",
+        "Severity": "MEDIUM",
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00033.html",
           "https://www.suse.com/support/security/rating/"
@@ -58,6 +94,24 @@
         "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
+        "VulnerabilityID": "openSUSE-SU-2020:0908-1",
+        "PkgName": "libcurl4",
+        "InstalledVersion": "7.60.0-lp151.5.6.1",
+        "FixedVersion": "7.60.0-lp151.5.12.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for curl",
+        "Description": "This update for curl fixes the following issues:\n\n- CVE-2020-8177: Fixed an issue where curl could have been tricked by a malicious \n  server to overwrite a local file when using the -J option (bsc#1173027).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "HIGH",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00072.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
         "VulnerabilityID": "openSUSE-SU-2020:0022-1",
         "PkgName": "libgcrypt20",
         "InstalledVersion": "1.8.2-lp151.9.4.1",
@@ -70,6 +124,78 @@
         "Severity": "MEDIUM",
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00018.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2020:0501-1",
+        "PkgName": "libgmp10",
+        "InstalledVersion": "6.1.2-lp151.3.70",
+        "FixedVersion": "6.1.2-lp151.4.3.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for gmp, gnutls, libnettle",
+        "Description": "This update for gmp, gnutls, libnettle fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2020-11501: Fixed zero random value in DTLS client hello (bsc#1168345)\n\nFIPS related bugfixes:\n\n- FIPS: Install checksums for binary integrity verification which are\n  required when running in FIPS mode (bsc#1152692, jsc#SLE-9518)\n- FIPS: Fixed a cfb8 decryption issue, no longer truncate output IV if\n  input is shorter than block size. (bsc#1166881)\n- FIPS: Added Diffie Hellman public key verification test. (bsc#1155327)\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-04/msg00015.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2020:0790-1",
+        "PkgName": "libgnutls30",
+        "InstalledVersion": "3.6.7-lp151.2.3.1",
+        "FixedVersion": "3.6.7-lp151.2.18.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for gnutls",
+        "Description": "This update for gnutls fixes the following issues:\n\n- CVE-2020-13777: Fixed an insecure session ticket key construction which could \n  have made the TLS server to not bind the session ticket encryption key with a\n  value supplied by the application until the initial key rotation, allowing\n  an attacker to bypass authentication in TLS 1.3 and recover previous\n  conversations in TLS 1.2 (bsc#1172506).\n- Fixed an  improper handling of certificate chain with cross-signed intermediate\n  CA certificates (bsc#1172461).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "HIGH",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00015.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2020:0501-1",
+        "PkgName": "libgnutls30",
+        "InstalledVersion": "3.6.7-lp151.2.3.1",
+        "FixedVersion": "3.6.7-lp151.2.6.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for gmp, gnutls, libnettle",
+        "Description": "This update for gmp, gnutls, libnettle fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2020-11501: Fixed zero random value in DTLS client hello (bsc#1168345)\n\nFIPS related bugfixes:\n\n- FIPS: Install checksums for binary integrity verification which are\n  required when running in FIPS mode (bsc#1152692, jsc#SLE-9518)\n- FIPS: Fixed a cfb8 decryption issue, no longer truncate output IV if\n  input is shorter than block size. (bsc#1166881)\n- FIPS: Added Diffie Hellman public key verification test. (bsc#1155327)\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-04/msg00015.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2020:0501-1",
+        "PkgName": "libhogweed4",
+        "InstalledVersion": "3.4.1-lp151.1.1",
+        "FixedVersion": "3.4.1-lp151.2.3.2",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for gmp, gnutls, libnettle",
+        "Description": "This update for gmp, gnutls, libnettle fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2020-11501: Fixed zero random value in DTLS client hello (bsc#1168345)\n\nFIPS related bugfixes:\n\n- FIPS: Install checksums for binary integrity verification which are\n  required when running in FIPS mode (bsc#1152692, jsc#SLE-9518)\n- FIPS: Fixed a cfb8 decryption issue, no longer truncate output IV if\n  input is shorter than block size. (bsc#1166881)\n- FIPS: Added Diffie Hellman public key verification test. (bsc#1155327)\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-04/msg00015.html",
           "https://www.suse.com/support/security/rating/"
         ],
         "PublishedDate": "0001-01-01T00:00:00Z",
@@ -94,6 +220,60 @@
         "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
+        "VulnerabilityID": "openSUSE-SU-2020:0647-1",
+        "PkgName": "libldap-2_4-2",
+        "InstalledVersion": "2.4.46-lp151.10.3.1",
+        "FixedVersion": "2.4.46-lp151.10.9.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for openldap2",
+        "Description": "This update for openldap2 fixes the following issues:\n\n- CVE-2020-12243: Fixed a denial of service related to recursive filters (bsc#1170771).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "HIGH",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-05/msg00016.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2020:0956-1",
+        "PkgName": "libldap-2_4-2",
+        "InstalledVersion": "2.4.46-lp151.10.3.1",
+        "FixedVersion": "2.4.46-lp151.10.12.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for openldap2",
+        "Description": "This update for openldap2 fixes the following issues:\n\n- CVE-2020-8023: Fixed a potential local privilege escalation from ldap to root when OPENLDAP_CONFIG_BACKEND='ldap' was used (bsc#1172698).\t  \n- Changed DB_CONFIG to root:ldap permissions (bsc#1172704).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "HIGH",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-07/msg00019.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2020:0677-1",
+        "PkgName": "libmagic1",
+        "InstalledVersion": "5.32-lp151.7.22",
+        "FixedVersion": "5.32-lp151.8.3.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for file",
+        "Description": "This update for file fixes the following issues:\n\nSecurity issues fixed:\n\n- CVE-2019-18218: Fixed a heap-based buffer overflow in cdf_read_property_info() (bsc#1154661).\n\nNon-security issue fixed:\n\n- Fixed broken '--help' output (bsc#1169512).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "LOW",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-05/msg00044.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
         "VulnerabilityID": "openSUSE-SU-2019:2551-1",
         "PkgName": "libncurses6",
         "InstalledVersion": "6.1-lp151.5.41",
@@ -112,6 +292,24 @@
         "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
+        "VulnerabilityID": "openSUSE-SU-2020:0501-1",
+        "PkgName": "libnettle6",
+        "InstalledVersion": "3.4.1-lp151.1.1",
+        "FixedVersion": "3.4.1-lp151.2.3.2",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for gmp, gnutls, libnettle",
+        "Description": "This update for gmp, gnutls, libnettle fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2020-11501: Fixed zero random value in DTLS client hello (bsc#1168345)\n\nFIPS related bugfixes:\n\n- FIPS: Install checksums for binary integrity verification which are\n  required when running in FIPS mode (bsc#1152692, jsc#SLE-9518)\n- FIPS: Fixed a cfb8 decryption issue, no longer truncate output IV if\n  input is shorter than block size. (bsc#1166881)\n- FIPS: Added Diffie Hellman public key verification test. (bsc#1155327)\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-04/msg00015.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
         "VulnerabilityID": "openSUSE-SU-2020:0379-1",
         "PkgName": "libnghttp2-14",
         "InstalledVersion": "1.39.2-lp151.3.3.1",
@@ -121,7 +319,7 @@
         },
         "Title": "Security update for nghttp2",
         "Description": "This update for nghttp2 fixes the following issues:\n\nnghttp2 was update to version 1.40.0 (bsc#1166481)\n\n- lib: Add nghttp2_check_authority as public API\n- lib: Fix the bug that stream is closed with wrong error code\n- lib: Faster huffman encoding and decoding\n- build: Avoid filename collision of static and dynamic lib\n- build: Add new flag ENABLE_STATIC_CRT for Windows\n- build: cmake: Support building nghttpx with systemd\n- third-party: Update neverbleed to fix memory leak\n- nghttpx: Fix bug that mruby is incorrectly shared between backends\n- nghttpx: Reconnect h1 backend if it lost connection before sending headers\n- nghttpx: Returns 408 if backend timed out before sending headers\n- nghttpx: Fix request stal\n\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
-        "Severity": "HIGH",
+        "Severity": "MEDIUM",
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00034.html",
           "https://www.suse.com/support/security/rating/"
@@ -202,6 +400,24 @@
         "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
+        "VulnerabilityID": "openSUSE-SU-2020:0510-1",
+        "PkgName": "libssh4",
+        "InstalledVersion": "0.8.7-lp151.2.3.1",
+        "FixedVersion": "0.8.7-lp151.2.12.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for libssh",
+        "Description": "This update for libssh fixes the following issues:\n\n- CVE-2020-1730: Fixed a possible denial of service when using AES-CTR (bsc#1168699).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-04/msg00018.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
         "VulnerabilityID": "openSUSE-SU-2020:0208-1",
         "PkgName": "libsystemd0",
         "InstalledVersion": "234-lp151.26.4.1",
@@ -232,6 +448,42 @@
         "Severity": "HIGH",
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00014.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2020:0681-1",
+        "PkgName": "libxml2-2",
+        "InstalledVersion": "2.9.7-lp151.5.3.1",
+        "FixedVersion": "2.9.7-lp151.5.9.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for libxml2",
+        "Description": "This update for libxml2 fixes the following issues:\n\n- CVE-2019-20388: Fixed a memory leak in xmlSchemaPreRun (bsc#1161521).\n- CVE-2019-19956: Fixed a memory leak (bsc#1159928).\n- CVE-2020-7595: Fixed an infinite loop in an EOF situation (bsc#1161517).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-updates/2020-05/msg00124.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2020:0781-1",
+        "PkgName": "libxml2-2",
+        "InstalledVersion": "2.9.7-lp151.5.3.1",
+        "FixedVersion": "2.9.7-lp151.5.12.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for libxml2",
+        "Description": "This update for libxml2 fixes the following issues:\n\n- CVE-2019-19956: Reverted the upstream fix for this memory leak because it introduced other, more severe vulnerabilities (bsc#1172021).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00005.html",
           "https://www.suse.com/support/security/rating/"
         ],
         "PublishedDate": "0001-01-01T00:00:00Z",
@@ -310,6 +562,24 @@
         "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
+        "VulnerabilityID": "openSUSE-SU-2020:0850-1",
+        "PkgName": "perl-base",
+        "InstalledVersion": "5.26.1-lp151.8.37",
+        "FixedVersion": "5.26.1-lp151.9.6.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for perl",
+        "Description": "This update for perl fixes the following issues:\n\n- CVE-2020-10543: Fixed a heap buffer overflow in regular expression compiler which could have \n  allowed overwriting of allocated memory with attacker's data (bsc#1171863).\n- CVE-2020-10878: Fixed multiple integer overflows which could have allowed the insertion of \n  instructions into the compiled form of Perl regular expression (bsc#1171864).\n- CVE-2020-12723: Fixed an attacker's corruption of the intermediate language state of a \n  compiled regular expression (bsc#1171866).\n- Fixed a bad warning in features.ph (bsc#1172348).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+        "Severity": "MEDIUM",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00044.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
         "VulnerabilityID": "openSUSE-SU-2019:2672-1",
         "PkgName": "permissions",
         "InstalledVersion": "20181116-lp151.4.6.1",
@@ -340,6 +610,42 @@
         "Severity": "MEDIUM",
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00010.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2020:0511-1",
+        "PkgName": "permissions",
+        "InstalledVersion": "20181116-lp151.4.6.1",
+        "FixedVersion": "20181116-lp151.4.18.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for permissions",
+        "Description": "This update for permissions fixes the following issues:\n\n- Fixed spelling of icinga group (bsc#1168364)\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+        "Severity": "UNKNOWN",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-04/msg00020.html",
+          "https://www.suse.com/support/security/rating/"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "openSUSE-SU-2020:0957-1",
+        "PkgName": "permissions",
+        "InstalledVersion": "20181116-lp151.4.6.1",
+        "FixedVersion": "20181116-lp151.4.24.1",
+        "Layer": {
+          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        },
+        "Title": "Security update for permissions",
+        "Description": "This update for permissions fixes the following issues:\n\n- Removed conflicting entries which might expose pcp to security issues (bsc#1171883) \t  \n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+        "Severity": "UNKNOWN",
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-07/msg00021.html",
           "https://www.suse.com/support/security/rating/"
         ],
         "PublishedDate": "0001-01-01T00:00:00Z",

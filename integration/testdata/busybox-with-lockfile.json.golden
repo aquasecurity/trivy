@@ -52,6 +52,38 @@
         "LastModifiedDate": "0001-01-01T00:00:00Z"
       },
       {
+        "VulnerabilityID": "RUSTSEC-2019-0035",
+        "PkgName": "rand_core",
+        "InstalledVersion": "0.3.1",
+        "Layer": {
+          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+        },
+        "Title": "Unaligned memory access",
+        "Description": "Affected versions of this crate violated alignment when casting byte slices to\ninteger slices, resulting in undefined behavior.\n\nThe flaw was corrected by Ralf Jung and Diggory Hardy.\n",
+        "Severity": "UNKNOWN",
+        "References": [
+          "https://github.com/rust-random/rand/blob/master/rand_core/CHANGELOG.md#050---2019-06-06"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "RUSTSEC-2019-0035",
+        "PkgName": "rand_core",
+        "InstalledVersion": "0.4.0",
+        "Layer": {
+          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+        },
+        "Title": "Unaligned memory access",
+        "Description": "Affected versions of this crate violated alignment when casting byte slices to\ninteger slices, resulting in undefined behavior.\n\nThe flaw was corrected by Ralf Jung and Diggory Hardy.\n",
+        "Severity": "UNKNOWN",
+        "References": [
+          "https://github.com/rust-random/rand/blob/master/rand_core/CHANGELOG.md#050---2019-06-06"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
         "VulnerabilityID": "RUSTSEC-2018-0003",
         "PkgName": "smallvec",
         "InstalledVersion": "0.6.9",
@@ -63,6 +95,22 @@
         "Severity": "UNKNOWN",
         "References": [
           "https://github.com/servo/rust-smallvec/issues/96"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "RUSTSEC-2018-0018",
+        "PkgName": "smallvec",
+        "InstalledVersion": "0.6.9",
+        "Layer": {
+          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+        },
+        "Title": "smallvec creates uninitialized value of any type",
+        "Description": "Affected versions of this crate called `mem::uninitialized()` to create values of a user-supplied type `T`.\nThis is unsound e.g. if `T` is a reference type (which must be non-null and thus may not remain uninitialized).\n \nThe flaw was corrected by avoiding the use of `mem::uninitialized()`, using `MaybeUninit` instead.\n",
+        "Severity": "UNKNOWN",
+        "References": [
+          "https://github.com/servo/rust-smallvec/issues/126"
         ],
         "PublishedDate": "0001-01-01T00:00:00Z",
         "LastModifiedDate": "0001-01-01T00:00:00Z"
@@ -95,6 +143,22 @@
         "Severity": "UNKNOWN",
         "References": [
           "https://github.com/servo/rust-smallvec/issues/149"
+        ],
+        "PublishedDate": "0001-01-01T00:00:00Z",
+        "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "RUSTSEC-2018-0017",
+        "PkgName": "tempdir",
+        "InstalledVersion": "0.3.7",
+        "Layer": {
+          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+        },
+        "Title": "`tempdir` crate has been deprecated; use `tempfile` instead",
+        "Description": "The [`tempdir`](https://crates.io/crates/tempdir) crate has been deprecated\nand the functionality is merged into [`tempfile`](https://crates.io/crates/tempfile).\n",
+        "Severity": "UNKNOWN",
+        "References": [
+          "https://github.com/rust-lang-deprecated/tempdir/pull/46"
         ],
         "PublishedDate": "0001-01-01T00:00:00Z",
         "LastModifiedDate": "0001-01-01T00:00:00Z"

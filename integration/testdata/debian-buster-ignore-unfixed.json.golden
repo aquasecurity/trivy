@@ -4,6 +4,43 @@
     "Type": "debian",
     "Vulnerabilities": [
       {
+        "VulnerabilityID": "CVE-2020-3810",
+        "PkgName": "apt",
+        "InstalledVersion": "1.8.2",
+        "FixedVersion": "1.8.2.1",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
+        "SeveritySource": "nvd",
+        "Description": "Missing input validation in the ar/tar implementations of APT before version 2.1.2 could result in denial of service when processing specially crafted deb files.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V2Score": 4.3,
+            "V3Score": 5.5
+          }
+        },
+        "References": [
+          "https://bugs.launchpad.net/bugs/1878177",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-3810",
+          "https://github.com/Debian/apt/issues/111",
+          "https://github.com/julian-klode/apt/commit/de4efadc3c92e26d37272fd310be148ec61dcf36",
+          "https://lists.debian.org/debian-security-announce/2020/msg00089.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U4PEH357MZM2SUGKETMEHMSGQS652QHH/",
+          "https://salsa.debian.org/apt-team/apt/-/commit/dceb1e49e4b8e4dadaf056be34088b415939cda6",
+          "https://salsa.debian.org/jak/apt/-/commit/dceb1e49e4b8e4dadaf056be34088b415939cda6",
+          "https://tracker.debian.org/news/1144109/accepted-apt-212-source-into-unstable/",
+          "https://usn.ubuntu.com/4359-1/",
+          "https://usn.ubuntu.com/4359-2/",
+          "https://usn.ubuntu.com/usn/usn-4359-1",
+          "https://usn.ubuntu.com/usn/usn-4359-2"
+        ],
+        "PublishedDate": "2020-05-15T14:15:00Z",
+        "LastModifiedDate": "2020-07-19T03:15:00Z"
+      },
+      {
         "VulnerabilityID": "CVE-2019-5094",
         "PkgName": "e2fsprogs",
         "InstalledVersion": "1.44.5-1+deb10u1",
@@ -12,19 +49,40 @@
           "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
         },
         "SeveritySource": "nvd",
-        "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
+        "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 6.4
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-5094.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1913.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://seclists.org/bugtraq/2019/Sep/58",
+          "https://security.gentoo.org/glsa/202003-05",
+          "https://security.netapp.com/advisory/ntap-20200115-0002/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+          "https://usn.ubuntu.com/4142-1/",
           "https://usn.ubuntu.com/4142-2/",
+          "https://usn.ubuntu.com/usn/usn-4142-1",
+          "https://usn.ubuntu.com/usn/usn-4142-2",
           "https://www.debian.org/security/2019/dsa-4535"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-24T22:15:00Z",
+        "LastModifiedDate": "2019-09-28T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -35,19 +93,71 @@
           "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
         },
         "SeveritySource": "nvd",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+        "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+          "https://lists.debian.org/debian-lts-announce/2020/03/msg00030.html",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00021.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/"
+          "https://usn.ubuntu.com/4249-1/",
+          "https://usn.ubuntu.com/usn/usn-4249-1"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-08T16:15:00Z",
+        "LastModifiedDate": "2020-07-26T18:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-3810",
+        "PkgName": "libapt-pkg5.0",
+        "InstalledVersion": "1.8.2",
+        "FixedVersion": "1.8.2.1",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
+        "SeveritySource": "nvd",
+        "Description": "Missing input validation in the ar/tar implementations of APT before version 2.1.2 could result in denial of service when processing specially crafted deb files.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V2Score": 4.3,
+            "V3Score": 5.5
+          }
+        },
+        "References": [
+          "https://bugs.launchpad.net/bugs/1878177",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-3810",
+          "https://github.com/Debian/apt/issues/111",
+          "https://github.com/julian-klode/apt/commit/de4efadc3c92e26d37272fd310be148ec61dcf36",
+          "https://lists.debian.org/debian-security-announce/2020/msg00089.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U4PEH357MZM2SUGKETMEHMSGQS652QHH/",
+          "https://salsa.debian.org/apt-team/apt/-/commit/dceb1e49e4b8e4dadaf056be34088b415939cda6",
+          "https://salsa.debian.org/jak/apt/-/commit/dceb1e49e4b8e4dadaf056be34088b415939cda6",
+          "https://tracker.debian.org/news/1144109/accepted-apt-212-source-into-unstable/",
+          "https://usn.ubuntu.com/4359-1/",
+          "https://usn.ubuntu.com/4359-2/",
+          "https://usn.ubuntu.com/usn/usn-4359-1",
+          "https://usn.ubuntu.com/usn/usn-4359-2"
+        ],
+        "PublishedDate": "2020-05-15T14:15:00Z",
+        "LastModifiedDate": "2020-07-19T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -58,19 +168,40 @@
           "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
         },
         "SeveritySource": "nvd",
-        "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
+        "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 6.4
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-5094.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1913.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://seclists.org/bugtraq/2019/Sep/58",
+          "https://security.gentoo.org/glsa/202003-05",
+          "https://security.netapp.com/advisory/ntap-20200115-0002/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+          "https://usn.ubuntu.com/4142-1/",
           "https://usn.ubuntu.com/4142-2/",
+          "https://usn.ubuntu.com/usn/usn-4142-1",
+          "https://usn.ubuntu.com/usn/usn-4142-2",
           "https://www.debian.org/security/2019/dsa-4535"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-24T22:15:00Z",
+        "LastModifiedDate": "2019-09-28T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -81,19 +212,34 @@
           "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
         },
         "SeveritySource": "nvd",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+        "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+          "https://lists.debian.org/debian-lts-announce/2020/03/msg00030.html",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00021.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/"
+          "https://usn.ubuntu.com/4249-1/",
+          "https://usn.ubuntu.com/usn/usn-4249-1"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-08T16:15:00Z",
+        "LastModifiedDate": "2020-07-26T18:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -104,19 +250,40 @@
           "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
         },
         "SeveritySource": "nvd",
-        "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
+        "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 6.4
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-5094.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1913.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://seclists.org/bugtraq/2019/Sep/58",
+          "https://security.gentoo.org/glsa/202003-05",
+          "https://security.netapp.com/advisory/ntap-20200115-0002/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+          "https://usn.ubuntu.com/4142-1/",
           "https://usn.ubuntu.com/4142-2/",
+          "https://usn.ubuntu.com/usn/usn-4142-1",
+          "https://usn.ubuntu.com/usn/usn-4142-2",
           "https://www.debian.org/security/2019/dsa-4535"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-24T22:15:00Z",
+        "LastModifiedDate": "2019-09-28T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -127,19 +294,122 @@
           "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
         },
         "SeveritySource": "nvd",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+        "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+          "https://lists.debian.org/debian-lts-announce/2020/03/msg00030.html",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00021.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/"
+          "https://usn.ubuntu.com/4249-1/",
+          "https://usn.ubuntu.com/usn/usn-4249-1"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-08T16:15:00Z",
+        "LastModifiedDate": "2020-07-26T18:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-11501",
+        "PkgName": "libgnutls30",
+        "InstalledVersion": "3.6.7-4",
+        "FixedVersion": "3.6.7-4+deb10u3",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
+        "SeveritySource": "nvd",
+        "Title": "gnutls: DTLS client hello contains a random value of all zeroes",
+        "Description": "GnuTLS 3.6.x before 3.6.13 uses incorrect cryptography for DTLS. The earliest affected version is 3.6.3 (2018-07-16) because of an error in a 2017-10-06 commit. The DTLS client always uses 32 '\\0' bytes instead of a random value, and thus contributes no randomness to a DTLS negotiation. This breaks the security guarantees of the DTLS protocol.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+            "V2Score": 5.8,
+            "V3Score": 7.4
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+            "V3Score": 7.4
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2020-11501.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1998.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-04/msg00015.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-11501",
+          "https://gitlab.com/gnutls/gnutls/-/commit/5b595e8e52653f6c5726a4cdd8fddeb6e83804d2",
+          "https://gitlab.com/gnutls/gnutls/-/issues/960",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ILMOWPKMTZAIMK5F32TUMO34XCABUCFJ/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/WDYY3R4F5CUTFAMXH2C5NKYFVDEJLTT7/",
+          "https://security.gentoo.org/glsa/202004-06",
+          "https://security.netapp.com/advisory/ntap-20200416-0002/",
+          "https://usn.ubuntu.com/4322-1/",
+          "https://usn.ubuntu.com/usn/usn-4322-1",
+          "https://www.debian.org/security/2020/dsa-4652",
+          "https://www.gnutls.org/security-new.html#GNUTLS-SA-2020-03-31",
+          "https://www.redhat.com/en/blog/understanding-dtls-all-zero-clienthellorandom-vulnerability"
+        ],
+        "PublishedDate": "2020-04-03T13:15:00Z",
+        "LastModifiedDate": "2020-06-12T23:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-13777",
+        "PkgName": "libgnutls30",
+        "InstalledVersion": "3.6.7-4",
+        "FixedVersion": "3.6.7-4+deb10u4",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
+        "SeveritySource": "nvd",
+        "Title": "gnutls: session resumption works without master key allowing MITM",
+        "Description": "GnuTLS 3.6.x before 3.6.14 uses incorrect cryptography for encrypting a session ticket (a loss of confidentiality in TLS 1.2, and an authentication bypass in TLS 1.3). The earliest affected version is 3.6.4 (2018-09-24) because of an error in a 2018-09-18 commit. Until the first key rotation, the TLS server always uses wrong data in place of an encryption key derived from an application.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+            "V2Score": 5.8,
+            "V3Score": 7.4
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+            "V3Score": 7.4
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2020-13777.html",
+          "http://linux.oracle.com/errata/ELSA-2020-2637.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00015.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13777",
+          "https://gnutls.org/security-new.html#GNUTLS-SA-2020-06-03",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6C4DHUKV6M6SJ5CV6KVHZNHNF7HCUE5P/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6RTXZOXC4MHTFE2HKY6IAZMF2WHD2WMV/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RRQBFK3UZ7SV76IYDTS4PS6ABS2DSJHK/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VMB3UGI5H5RCFRU6OGRPMNUCNLJGEN7Y/",
+          "https://security.gentoo.org/glsa/202006-01",
+          "https://security.netapp.com/advisory/ntap-20200619-0004/",
+          "https://usn.ubuntu.com/4384-1/",
+          "https://usn.ubuntu.com/usn/usn-4384-1",
+          "https://www.debian.org/security/2020/dsa-4697",
+          "https://www.gnutls.org/security-new.html#GNUTLS-SA-2020-06-03"
+        ],
+        "PublishedDate": "2020-06-04T07:15:00Z",
+        "LastModifiedDate": "2020-06-19T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-18224",
@@ -153,17 +423,35 @@
         "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
         "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 5.6
+          }
+        },
         "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00008.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00009.html",
           "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
           "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c",
           "https://github.com/libidn/libidn2/compare/libidn2-2.1.0...libidn2-2.1.1",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
-          "https://usn.ubuntu.com/4168-1/"
+          "https://seclists.org/bugtraq/2020/Feb/4",
+          "https://security.gentoo.org/glsa/202003-63",
+          "https://usn.ubuntu.com/4168-1/",
+          "https://usn.ubuntu.com/usn/usn-4168-1",
+          "https://www.debian.org/security/2020/dsa-4613"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-21T17:15:00Z",
+        "LastModifiedDate": "2019-10-29T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
@@ -177,6 +465,18 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V2Score": 4.6,
+            "V3Score": 5.3
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 5.3
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
@@ -184,8 +484,8 @@
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-14T21:15:00Z",
+        "LastModifiedDate": "2019-12-26T15:35:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17595",
@@ -199,6 +499,18 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:L",
+            "V2Score": 5.8,
+            "V3Score": 5.4
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
+            "V3Score": 5.4
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
@@ -206,8 +518,8 @@
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-14T21:15:00Z",
+        "LastModifiedDate": "2019-12-23T19:26:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -218,19 +530,40 @@
           "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
         },
         "SeveritySource": "nvd",
-        "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
+        "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 6.4
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-5094.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1913.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://seclists.org/bugtraq/2019/Sep/58",
+          "https://security.gentoo.org/glsa/202003-05",
+          "https://security.netapp.com/advisory/ntap-20200115-0002/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+          "https://usn.ubuntu.com/4142-1/",
           "https://usn.ubuntu.com/4142-2/",
+          "https://usn.ubuntu.com/usn/usn-4142-1",
+          "https://usn.ubuntu.com/usn/usn-4142-2",
           "https://www.debian.org/security/2019/dsa-4535"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-24T22:15:00Z",
+        "LastModifiedDate": "2019-09-28T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -241,19 +574,73 @@
           "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
         },
         "SeveritySource": "nvd",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+        "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+          "https://lists.debian.org/debian-lts-announce/2020/03/msg00030.html",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00021.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/"
+          "https://usn.ubuntu.com/4249-1/",
+          "https://usn.ubuntu.com/usn/usn-4249-1"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-08T16:15:00Z",
+        "LastModifiedDate": "2020-07-26T18:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-1712",
+        "PkgName": "libsystemd0",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "241-7~deb10u4",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
+        "SeveritySource": "nvd",
+        "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
+        "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 7.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 7.8
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2020-1712.html",
+          "http://linux.oracle.com/errata/ELSA-2020-0575.html",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1712",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1712",
+          "https://github.com/systemd/systemd/commit/1068447e6954dc6ce52f099ed174c442cb89ed54",
+          "https://github.com/systemd/systemd/commit/637486261528e8aa3da9f26a4487dc254f4b7abb",
+          "https://github.com/systemd/systemd/commit/bc130b6858327b382b07b3985cf48e2aa9016b2d",
+          "https://github.com/systemd/systemd/commit/ea0d0ede03c6f18dbc5036c5e9cccf97e415ccc2",
+          "https://usn.ubuntu.com/usn/usn-4269-1",
+          "https://www.openwall.com/lists/oss-security/2020/02/05/1"
+        ],
+        "PublishedDate": "2020-03-31T17:15:00Z",
+        "LastModifiedDate": "2020-04-10T15:42:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-15718",
@@ -267,18 +654,33 @@
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
         "Severity": "LOW",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 5.3
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-15718.html",
           "http://linux.oracle.com/errata/ELSA-2019-3592.html",
           "http://www.openwall.com/lists/oss-security/2019/09/03/1",
+          "https://access.redhat.com/errata/RHSA-2019:3592",
+          "https://access.redhat.com/errata/RHSA-2019:3941",
           "https://bugzilla.redhat.com/show_bug.cgi?id=1746057",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15718",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/"
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/",
+          "https://usn.ubuntu.com/usn/usn-4120-1"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-04T12:15:00Z",
+        "LastModifiedDate": "2019-09-19T04:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
@@ -292,6 +694,18 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V2Score": 4.6,
+            "V3Score": 5.3
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 5.3
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
@@ -299,8 +713,8 @@
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-14T21:15:00Z",
+        "LastModifiedDate": "2019-12-26T15:35:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17595",
@@ -314,6 +728,18 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:L",
+            "V2Score": 5.8,
+            "V3Score": 5.4
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
+            "V3Score": 5.4
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
@@ -321,8 +747,47 @@
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-14T21:15:00Z",
+        "LastModifiedDate": "2019-12-23T19:26:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-1712",
+        "PkgName": "libudev1",
+        "InstalledVersion": "241-7~deb10u1",
+        "FixedVersion": "241-7~deb10u4",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
+        "SeveritySource": "nvd",
+        "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
+        "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 7.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 7.8
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2020-1712.html",
+          "http://linux.oracle.com/errata/ELSA-2020-0575.html",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1712",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1712",
+          "https://github.com/systemd/systemd/commit/1068447e6954dc6ce52f099ed174c442cb89ed54",
+          "https://github.com/systemd/systemd/commit/637486261528e8aa3da9f26a4487dc254f4b7abb",
+          "https://github.com/systemd/systemd/commit/bc130b6858327b382b07b3985cf48e2aa9016b2d",
+          "https://github.com/systemd/systemd/commit/ea0d0ede03c6f18dbc5036c5e9cccf97e415ccc2",
+          "https://usn.ubuntu.com/usn/usn-4269-1",
+          "https://www.openwall.com/lists/oss-security/2020/02/05/1"
+        ],
+        "PublishedDate": "2020-03-31T17:15:00Z",
+        "LastModifiedDate": "2020-04-10T15:42:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-15718",
@@ -336,18 +801,33 @@
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
         "Severity": "LOW",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 5.3
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-15718.html",
           "http://linux.oracle.com/errata/ELSA-2019-3592.html",
           "http://www.openwall.com/lists/oss-security/2019/09/03/1",
+          "https://access.redhat.com/errata/RHSA-2019:3592",
+          "https://access.redhat.com/errata/RHSA-2019:3941",
           "https://bugzilla.redhat.com/show_bug.cgi?id=1746057",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15718",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/"
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/",
+          "https://usn.ubuntu.com/usn/usn-4120-1"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-04T12:15:00Z",
+        "LastModifiedDate": "2019-09-19T04:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
@@ -361,6 +841,18 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V2Score": 4.6,
+            "V3Score": 5.3
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 5.3
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
@@ -368,8 +860,8 @@
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-14T21:15:00Z",
+        "LastModifiedDate": "2019-12-26T15:35:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17595",
@@ -383,6 +875,18 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:L",
+            "V2Score": 5.8,
+            "V3Score": 5.4
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
+            "V3Score": 5.4
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
@@ -390,8 +894,8 @@
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-14T21:15:00Z",
+        "LastModifiedDate": "2019-12-23T19:26:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
@@ -405,6 +909,18 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V2Score": 4.6,
+            "V3Score": 5.3
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 5.3
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
@@ -412,8 +928,8 @@
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-14T21:15:00Z",
+        "LastModifiedDate": "2019-12-26T15:35:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17595",
@@ -427,6 +943,18 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:L",
+            "V2Score": 5.8,
+            "V3Score": 5.4
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
+            "V3Score": 5.4
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
@@ -434,8 +962,128 @@
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-14T21:15:00Z",
+        "LastModifiedDate": "2019-12-23T19:26:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-10878",
+        "PkgName": "perl-base",
+        "InstalledVersion": "5.28.1-6",
+        "FixedVersion": "5.28.1-6+deb10u1",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
+        "SeveritySource": "nvd",
+        "Title": "perl: corruption of intermediate language state of compiled regular expression due to integer overflow leads to DoS",
+        "Description": "Perl before 5.30.3 has an integer overflow related to mishandling of a \"PL_regkind[OP(n)] == NOTHING\" situation. A crafted regular expression could lead to malformed bytecode with a possibility of instruction injection.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:H",
+            "V2Score": 7.5,
+            "V3Score": 8.6
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:H",
+            "V3Score": 8.6
+          }
+        },
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00044.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10878",
+          "https://github.com/Perl/perl5/blob/blead/pod/perl5303delta.pod",
+          "https://github.com/Perl/perl5/compare/v5.30.2...v5.30.3",
+          "https://github.com/perl/perl5/commit/0a320d753fe7fca03df259a4dfd8e641e51edaa8",
+          "https://github.com/perl/perl5/commit/3295b48defa0f8570114877b063fe546dd348b3c",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IN3TTBO5KSGWE5IRIKDJ5JSQRH7ANNXE/",
+          "https://metacpan.org/pod/release/XSAWYERX/perl-5.28.3/pod/perldelta.pod",
+          "https://metacpan.org/pod/release/XSAWYERX/perl-5.30.3/pod/perldelta.pod",
+          "https://security.gentoo.org/glsa/202006-03",
+          "https://security.netapp.com/advisory/ntap-20200611-0001/"
+        ],
+        "PublishedDate": "2020-06-05T14:15:00Z",
+        "LastModifiedDate": "2020-06-23T02:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-10543",
+        "PkgName": "perl-base",
+        "InstalledVersion": "5.28.1-6",
+        "FixedVersion": "5.28.1-6+deb10u1",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
+        "SeveritySource": "nvd",
+        "Title": "perl: heap-based buffer overflow in regular expression compiler leads to DoS",
+        "Description": "Perl before 5.30.3 on 32-bit platforms allows a heap-based buffer overflow because nested regular expression quantifiers have an integer overflow.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:H",
+            "V2Score": 6.4,
+            "V3Score": 8.2
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:H",
+            "V3Score": 8.2
+          }
+        },
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00044.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10543",
+          "https://github.com/Perl/perl5/blob/blead/pod/perl5303delta.pod",
+          "https://github.com/Perl/perl5/compare/v5.30.2...v5.30.3",
+          "https://github.com/perl/perl5/commit/897d1f7fd515b828e4b198d8b8bef76c6faf03ed",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IN3TTBO5KSGWE5IRIKDJ5JSQRH7ANNXE/",
+          "https://metacpan.org/pod/release/XSAWYERX/perl-5.28.3/pod/perldelta.pod",
+          "https://metacpan.org/pod/release/XSAWYERX/perl-5.30.3/pod/perldelta.pod",
+          "https://security.gentoo.org/glsa/202006-03",
+          "https://security.netapp.com/advisory/ntap-20200611-0001/"
+        ],
+        "PublishedDate": "2020-06-05T14:15:00Z",
+        "LastModifiedDate": "2020-06-23T02:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-12723",
+        "PkgName": "perl-base",
+        "InstalledVersion": "5.28.1-6",
+        "FixedVersion": "5.28.1-6+deb10u1",
+        "Layer": {
+          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        },
+        "SeveritySource": "nvd",
+        "Title": "perl: corruption of intermediate language state of compiled regular expression due to recursive S_study_chunk() calls leads to DoS",
+        "Description": "regcomp.c in Perl before 5.30.3 allows a buffer overflow via a crafted regular expression because of recursive S_study_chunk calls.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00044.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-12723",
+          "https://github.com/Perl/perl5/blob/blead/pod/perl5303delta.pod",
+          "https://github.com/Perl/perl5/compare/v5.30.2...v5.30.3",
+          "https://github.com/Perl/perl5/issues/16947",
+          "https://github.com/Perl/perl5/issues/17743",
+          "https://github.com/perl/perl5/commit/66bbb51b93253a3f87d11c2695cfb7bdb782184a",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IN3TTBO5KSGWE5IRIKDJ5JSQRH7ANNXE/",
+          "https://metacpan.org/pod/release/XSAWYERX/perl-5.28.3/pod/perldelta.pod",
+          "https://metacpan.org/pod/release/XSAWYERX/perl-5.30.3/pod/perldelta.pod",
+          "https://security.gentoo.org/glsa/202006-03",
+          "https://security.netapp.com/advisory/ntap-20200611-0001/"
+        ],
+        "PublishedDate": "2020-06-05T15:15:00Z",
+        "LastModifiedDate": "2020-06-23T02:15:00Z"
       }
     ]
   }

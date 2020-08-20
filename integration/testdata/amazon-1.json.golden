@@ -4,6 +4,48 @@
     "Type": "amazon",
     "Vulnerabilities": [
       {
+        "VulnerabilityID": "CVE-2019-9924",
+        "PkgName": "bash",
+        "InstalledVersion": "4.2.46-28.37.amzn1",
+        "FixedVersion": "4.2.46-34.43.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "bash: BASH_CMD is writable in restricted bash shells",
+        "Description": "rbash in Bash before 4.4-beta2 did not prevent the shell user from modifying BASH_CMDS, thus allowing the user to execute any command with the permissions of the shell.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.2,
+            "V3Score": 7.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 7.8
+          }
+        },
+        "References": [
+          "http://git.savannah.gnu.org/cgit/bash.git/tree/CHANGES?h=bash-4.4-testing#n65",
+          "http://linux.oracle.com/cve/CVE-2019-9924.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1113.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00049.html",
+          "https://bugs.launchpad.net/ubuntu/+source/bash/+bug/1803441",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9924",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00028.html",
+          "https://lists.gnu.org/archive/html/bug-bash/2017-03/msg00077.html",
+          "https://security.netapp.com/advisory/ntap-20190411-0001/",
+          "https://usn.ubuntu.com/4058-1/",
+          "https://usn.ubuntu.com/4058-2/",
+          "https://usn.ubuntu.com/usn/usn-4058-1",
+          "https://usn.ubuntu.com/usn/usn-4058-2"
+        ],
+        "PublishedDate": "2019-03-22T08:29:00Z",
+        "LastModifiedDate": "2019-04-11T22:29:00Z"
+      },
+      {
         "VulnerabilityID": "CVE-2019-5481",
         "PkgName": "curl",
         "InstalledVersion": "7.61.1-11.91.amzn1",
@@ -15,16 +57,38 @@
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:H",
+            "V3Score": 5.7
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-5481.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1792.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
           "https://curl.haxx.se/docs/CVE-2019-5481.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6CI4QQ2RSZX4VCFM76SIWGKY6BY7UWIC/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+          "https://seclists.org/bugtraq/2020/Feb/36",
+          "https://security.gentoo.org/glsa/202003-29",
+          "https://security.netapp.com/advisory/ntap-20191004-0003/",
+          "https://usn.ubuntu.com/usn/usn-4129-1",
+          "https://www.debian.org/security/2020/dsa-4633",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
+          "https://www.oracle.com/security-alerts/cpujan2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-16T19:15:00Z",
+        "LastModifiedDate": "2019-09-18T00:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5482",
@@ -38,6 +102,18 @@
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 6.3
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-5482.html",
           "http://linux.oracle.com/errata/ELSA-2020-5562.html",
@@ -45,11 +121,99 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
           "https://curl.haxx.se/docs/CVE-2019-5482.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6CI4QQ2RSZX4VCFM76SIWGKY6BY7UWIC/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+          "https://seclists.org/bugtraq/2020/Feb/36",
+          "https://security.gentoo.org/glsa/202003-29",
+          "https://security.netapp.com/advisory/ntap-20191004-0003/",
+          "https://security.netapp.com/advisory/ntap-20200416-0003/",
+          "https://usn.ubuntu.com/usn/usn-4129-1",
+          "https://usn.ubuntu.com/usn/usn-4129-2",
+          "https://www.debian.org/security/2020/dsa-4633",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
+          "https://www.oracle.com/security-alerts/cpujan2020.html"
+        ],
+        "PublishedDate": "2019-09-16T19:15:00Z",
+        "LastModifiedDate": "2019-09-18T00:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-8177",
+        "PkgName": "curl",
+        "InstalledVersion": "7.61.1-11.91.amzn1",
+        "FixedVersion": "7.61.1-12.94.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "curl: Incorrect argument check can allow remote servers to overwrite local files",
+        "Description": "A flaw was found in curl. Overwriting local files is possible when using a certain combination of command line options. Requesting content from a malicious server could lead to overwriting local files with compromised files leading to unknown effects. The highest threat from this vulnerability is to file integrity.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:L/UI:R/S:U/C:N/I:H/A:L",
+            "V3Score": 5.4
+          }
+        },
+        "References": [
+          "https://curl.haxx.se/docs/CVE-2020-8177.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-8177",
+          "https://usn.ubuntu.com/usn/usn-4402-1"
         ],
         "PublishedDate": "0001-01-01T00:00:00Z",
         "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2015-2716",
+        "PkgName": "expat",
+        "InstalledVersion": "2.1.0-10.21.amzn1",
+        "FixedVersion": "2.1.0-11.22.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "expat: Integer overflow leading to buffer overflow in XML_GetBuffer()",
+        "Description": "Buffer overflow in the XML parser in Mozilla Firefox before 38.0, Firefox ESR 31.x before 31.7, and Thunderbird before 31.7 allows remote attackers to execute arbitrary code by providing a large amount of compressed XML data, a related issue to CVE-2015-1283.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 7.5
+          },
+          "redhat": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V2Score": 6.8
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2015-2716.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1011.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2015-05/msg00012.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2015-05/msg00054.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2015-06/msg00000.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2015-07/msg00031.html",
+          "http://lists.opensuse.org/opensuse-updates/2015-05/msg00036.html",
+          "http://rhn.redhat.com/errata/RHSA-2015-0988.html",
+          "http://rhn.redhat.com/errata/RHSA-2015-1012.html",
+          "http://www.debian.org/security/2015/dsa-3260",
+          "http://www.debian.org/security/2015/dsa-3264",
+          "http://www.mozilla.org/security/announce/2015/mfsa2015-54.html",
+          "http://www.oracle.com/technetwork/topics/security/bulletinapr2016-2952098.html",
+          "http://www.securityfocus.com/bid/74611",
+          "http://www.ubuntu.com/usn/USN-2602-1",
+          "http://www.ubuntu.com/usn/USN-2603-1",
+          "https://bugzilla.mozilla.org/show_bug.cgi?id=1140537",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-2716",
+          "https://hg.mozilla.org/releases/mozilla-esr31/rev/2f3e78643f5c",
+          "https://security.gentoo.org/glsa/201605-06",
+          "https://usn.ubuntu.com/usn/usn-2602-1",
+          "https://usn.ubuntu.com/usn/usn-2603-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2015-54/",
+          "https://www.mozilla.org/en-US/security/known-vulnerabilities/thunderbird/#thunderbird31.7",
+          "https://www.tenable.com/security/tns-2016-20"
+        ],
+        "PublishedDate": "2015-05-14T10:59:00Z",
+        "LastModifiedDate": "2018-10-30T16:27:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-18218",
@@ -63,19 +227,37 @@
         "Title": "file: heap-based buffer overflow in cdf_read_property_info in cdf.c",
         "Description": "cdf_read_property_info in cdf.c in file through 5.37 does not restrict the number of CDF_VECTOR elements, which allows a heap-based buffer overflow (4-byte out-of-bounds write).",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 9.8
+          }
+        },
         "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-05/msg00044.html",
           "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=16780",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18218",
           "https://github.com/file/file/commit/46a8443f76cec4b41ec736eca396984c74664f84",
           "https://lists.debian.org/debian-lts-announce/2019/10/msg00032.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CV6PFCEYHYALMTT45QE2U5C5TEJZQPXJ/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/D6BJVGXSCC6NMIAWX36FPWHEIFON3OSE/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VBK6XOJR6OVWT2FUEBO7V7KCOSSLAP52/",
+          "https://security.gentoo.org/glsa/202003-24",
+          "https://security.netapp.com/advisory/ntap-20200115-0001/",
           "https://usn.ubuntu.com/4172-1/",
           "https://usn.ubuntu.com/4172-2/",
+          "https://usn.ubuntu.com/usn/usn-4172-1",
+          "https://usn.ubuntu.com/usn/usn-4172-2",
           "https://www.debian.org/security/2019/dsa-4550"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-21T05:15:00Z",
+        "LastModifiedDate": "2020-05-23T00:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-10739",
@@ -89,18 +271,31 @@
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V2Score": 4.6,
+            "V3Score": 5.3
+          },
+          "redhat": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 4.6
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2016-10739.html",
           "http://linux.oracle.com/errata/ELSA-2019-3513.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
           "http://www.securityfocus.com/bid/106672",
           "https://access.redhat.com/errata/RHSA-2019:2118",
+          "https://access.redhat.com/errata/RHSA-2019:3513",
           "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-01-21T19:29:00Z",
+        "LastModifiedDate": "2019-08-06T17:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-10739",
@@ -114,18 +309,66 @@
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V2Score": 4.6,
+            "V3Score": 5.3
+          },
+          "redhat": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 4.6
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2016-10739.html",
           "http://linux.oracle.com/errata/ELSA-2019-3513.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
           "http://www.securityfocus.com/bid/106672",
           "https://access.redhat.com/errata/RHSA-2019:2118",
+          "https://access.redhat.com/errata/RHSA-2019:3513",
           "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-01-21T19:29:00Z",
+        "LastModifiedDate": "2019-08-06T17:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20217",
+        "PkgName": "krb5-libs",
+        "InstalledVersion": "1.15.1-34.44.amzn1",
+        "FixedVersion": "1.15.1-46.48.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "krb5: Reachable assertion in the KDC using S4U2Self requests",
+        "Description": "A Reachable Assertion issue was discovered in the KDC in MIT Kerberos 5 (aka krb5) before 1.17. If an attacker can obtain a krbtgt ticket using an older encryption type (single-DES, triple-DES, or RC4), the attacker can crash the KDC by making an S4U2Self request.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:S/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 3.5,
+            "V3Score": 5.3
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 5.3
+          }
+        },
+        "References": [
+          "http://krbdev.mit.edu/rt/Ticket/Display.html?id=8763",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20217",
+          "https://github.com/krb5/krb5/commit/5e6d1796106df8ba6bc1973ee0917c170d929086",
+          "https://lists.debian.org/debian-lts-announce/2019/01/msg00020.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2KNHELH4YHNT6H2ESJWX2UIDXLBNGB2O/",
+          "https://security.netapp.com/advisory/ntap-20190416-0006/"
+        ],
+        "PublishedDate": "2018-12-26T21:29:00Z",
+        "LastModifiedDate": "2019-10-03T00:03:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5481",
@@ -139,16 +382,38 @@
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:H",
+            "V3Score": 5.7
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-5481.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1792.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
           "https://curl.haxx.se/docs/CVE-2019-5481.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6CI4QQ2RSZX4VCFM76SIWGKY6BY7UWIC/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+          "https://seclists.org/bugtraq/2020/Feb/36",
+          "https://security.gentoo.org/glsa/202003-29",
+          "https://security.netapp.com/advisory/ntap-20191004-0003/",
+          "https://usn.ubuntu.com/usn/usn-4129-1",
+          "https://www.debian.org/security/2020/dsa-4633",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
+          "https://www.oracle.com/security-alerts/cpujan2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-16T19:15:00Z",
+        "LastModifiedDate": "2019-09-18T00:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5482",
@@ -162,6 +427,18 @@
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 6.3
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-5482.html",
           "http://linux.oracle.com/errata/ELSA-2020-5562.html",
@@ -169,11 +446,94 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
           "https://curl.haxx.se/docs/CVE-2019-5482.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6CI4QQ2RSZX4VCFM76SIWGKY6BY7UWIC/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+          "https://seclists.org/bugtraq/2020/Feb/36",
+          "https://security.gentoo.org/glsa/202003-29",
+          "https://security.netapp.com/advisory/ntap-20191004-0003/",
+          "https://security.netapp.com/advisory/ntap-20200416-0003/",
+          "https://usn.ubuntu.com/usn/usn-4129-1",
+          "https://usn.ubuntu.com/usn/usn-4129-2",
+          "https://www.debian.org/security/2020/dsa-4633",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
+          "https://www.oracle.com/security-alerts/cpujan2020.html"
+        ],
+        "PublishedDate": "2019-09-16T19:15:00Z",
+        "LastModifiedDate": "2019-09-18T00:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-8177",
+        "PkgName": "libcurl",
+        "InstalledVersion": "7.61.1-11.91.amzn1",
+        "FixedVersion": "7.61.1-12.94.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "curl: Incorrect argument check can allow remote servers to overwrite local files",
+        "Description": "A flaw was found in curl. Overwriting local files is possible when using a certain combination of command line options. Requesting content from a malicious server could lead to overwriting local files with compromised files leading to unknown effects. The highest threat from this vulnerability is to file integrity.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:L/UI:R/S:U/C:N/I:H/A:L",
+            "V3Score": 5.4
+          }
+        },
+        "References": [
+          "https://curl.haxx.se/docs/CVE-2020-8177.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-8177",
+          "https://usn.ubuntu.com/usn/usn-4402-1"
         ],
         "PublishedDate": "0001-01-01T00:00:00Z",
         "LastModifiedDate": "0001-01-01T00:00:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-10531",
+        "PkgName": "libicu",
+        "InstalledVersion": "50.1.2-11.12.amzn1",
+        "FixedVersion": "50.2-4.0.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "ICU: Integer overflow in UnicodeString::doAppend()",
+        "Description": "An issue was discovered in International Components for Unicode (ICU) for C/C++ through 66.1. An integer overflow, leading to a heap-based buffer overflow, exists in the UnicodeString::doAppend() function in common/unistr.cpp.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V3Score": 8.8
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2020-10531.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1317.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-04/msg00004.html",
+          "https://access.redhat.com/errata/RHSA-2020:0738",
+          "https://bugs.chromium.org/p/chromium/issues/detail?id=1044570",
+          "https://chromereleases.googleblog.com/2020/02/stable-channel-update-for-desktop_24.html",
+          "https://chromium.googlesource.com/chromium/deps/icu/+/9f4020916eb1f28f3666f018fdcbe6c9a37f0e08",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10531",
+          "https://github.com/unicode-org/icu/commit/b7d08bc04a4296982fcef8b6b8a354a9e4e7afca",
+          "https://github.com/unicode-org/icu/pull/971",
+          "https://lists.debian.org/debian-lts-announce/2020/03/msg00024.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6IOHSO6BUKC6I66J5PZOMAGFVJ66ZS57/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/X3B5RWJQD5LA45MYLLR55KZJOJ5NVZGP/",
+          "https://security.gentoo.org/glsa/202003-15",
+          "https://unicode-org.atlassian.net/browse/ICU-20958",
+          "https://usn.ubuntu.com/4305-1/",
+          "https://usn.ubuntu.com/usn/usn-4305-1",
+          "https://www.debian.org/security/2020/dsa-4646"
+        ],
+        "PublishedDate": "2020-03-12T19:15:00Z",
+        "LastModifiedDate": "2020-03-20T04:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-12290",
@@ -186,14 +546,32 @@
         "SeveritySource": "amazon",
         "Description": "GNU libidn2 before 2.2.0 fails to perform the roundtrip checks specified in RFC3490 Section 4.2 when converting A-labels to U-labels. This makes it possible in some circumstances for one domain to impersonate another. By creating a malicious domain that matches a target domain except for the inclusion of certain punycoded Unicode characters (that would be discarded when converted first to a Unicode label and then back to an ASCII label), arbitrary domains can be impersonated.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+            "V2Score": 5,
+            "V3Score": 7.5
+          }
+        },
         "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00008.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00009.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12290",
           "https://gitlab.com/libidn/libidn2/commit/241e8f486134793cb0f4a5b0e5817a97883401f5",
           "https://gitlab.com/libidn/libidn2/commit/614117ef6e4c60e1950d742e3edf0a0ef8d389de",
           "https://gitlab.com/libidn/libidn2/merge_requests/71",
-          "https://usn.ubuntu.com/4168-1/"
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/3UFT76Y7OSGPZV3EBEHD6ISVUM3DLARM/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/KXDKYWFV6N2HHVSE67FFDM7G3FEL2ZNE/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ONG3GJRRJO35COPGVJXXSZLU4J5Y42AT/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RSI4TI2JTQWQ3YEUX5X36GTVGKO4QKZ5/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U6ZXL2RDNQRAHCMKWPOMJFKYJ344X4HL/",
+          "https://security.gentoo.org/glsa/202003-63",
+          "https://usn.ubuntu.com/4168-1/",
+          "https://usn.ubuntu.com/usn/usn-4168-1"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-22T16:15:00Z",
+        "LastModifiedDate": "2019-10-29T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-18224",
@@ -207,17 +585,35 @@
         "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
         "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 5.6
+          }
+        },
         "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00008.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00009.html",
           "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
           "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c",
           "https://github.com/libidn/libidn2/compare/libidn2-2.1.0...libidn2-2.1.1",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
-          "https://usn.ubuntu.com/4168-1/"
+          "https://seclists.org/bugtraq/2020/Feb/4",
+          "https://security.gentoo.org/glsa/202003-63",
+          "https://usn.ubuntu.com/4168-1/",
+          "https://usn.ubuntu.com/usn/usn-4168-1",
+          "https://www.debian.org/security/2020/dsa-4613"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-21T17:15:00Z",
+        "LastModifiedDate": "2019-10-29T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9511",
@@ -231,29 +627,73 @@
         "Title": "HTTP/2: large amount of data requests leads to denial of service",
         "Description": "Some HTTP/2 implementations are vulnerable to window size manipulation and stream prioritization manipulation, potentially leading to a denial of service. The attacker requests a large amount of data from a specified resource over multiple streams. They manipulate window size and stream priority to force the server to queue the data in 1-byte chunks. Depending on how efficiently this data is queued, this can consume excess CPU, memory, or both.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:C",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 7.8,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 6.5
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-9511.html",
           "http://linux.oracle.com/errata/ELSA-2019-2925.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00031.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00032.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00035.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00003.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00005.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00014.html",
+          "https://access.redhat.com/errata/RHSA-2019:2692",
+          "https://access.redhat.com/errata/RHSA-2019:2745",
+          "https://access.redhat.com/errata/RHSA-2019:2746",
+          "https://access.redhat.com/errata/RHSA-2019:2775",
+          "https://access.redhat.com/errata/RHSA-2019:2799",
+          "https://access.redhat.com/errata/RHSA-2019:2925",
+          "https://access.redhat.com/errata/RHSA-2019:2939",
+          "https://access.redhat.com/errata/RHSA-2019:2949",
+          "https://access.redhat.com/errata/RHSA-2019:2955",
+          "https://access.redhat.com/errata/RHSA-2019:2966",
+          "https://access.redhat.com/errata/RHSA-2019:3041",
+          "https://access.redhat.com/errata/RHSA-2019:3932",
+          "https://access.redhat.com/errata/RHSA-2019:3933",
+          "https://access.redhat.com/errata/RHSA-2019:3935",
+          "https://access.redhat.com/errata/RHSA-2019:4018",
+          "https://access.redhat.com/errata/RHSA-2019:4019",
+          "https://access.redhat.com/errata/RHSA-2019:4020",
+          "https://access.redhat.com/errata/RHSA-2019:4021",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9511",
           "https://github.com/Netflix/security-bulletins/blob/master/advisories/third-party/2019-002.md",
           "https://kb.cert.org/vuls/id/605641/",
+          "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10296",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BP556LEG3WENHZI5TAQ6ZEBFTJB4E2IS/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JUBYAF6ED3O4XCHQ5C2HYENJLXYXZC4M/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/LZLUYPYY3RX4ZJDWZRJIKSULYRJ4PXW7/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/POPAEC4FWL4UU4LDEGPY5NPALU24FFQD/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TAZZEVTCN2B4WT6AIBJ7XGYJMBTORJU5/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XHTKU7YQ5EEP2XNSAV4M4VJ7QCBOJMOD/",
           "https://nodejs.org/en/blog/vulnerability/aug-2019-security-releases/",
           "https://seclists.org/bugtraq/2019/Aug/40",
+          "https://seclists.org/bugtraq/2019/Sep/1",
           "https://security.netapp.com/advisory/ntap-20190823-0002/",
           "https://security.netapp.com/advisory/ntap-20190823-0005/",
           "https://support.f5.com/csp/article/K02591030",
+          "https://support.f5.com/csp/article/K02591030?utm_source=f5support\u0026amp;utm_medium=RSS",
           "https://usn.ubuntu.com/4099-1/",
+          "https://usn.ubuntu.com/usn/usn-4099-1",
           "https://www.debian.org/security/2019/dsa-4505",
+          "https://www.debian.org/security/2019/dsa-4511",
+          "https://www.debian.org/security/2020/dsa-4669",
           "https://www.nginx.com/blog/nginx-updates-mitigate-august-2019-http-2-vulnerabilities/",
+          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html",
           "https://www.synology.com/security/advisory/Synology_SA_19_33"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-08-13T21:15:00Z",
+        "LastModifiedDate": "2019-08-23T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9513",
@@ -267,30 +707,686 @@
         "Title": "HTTP/2: flood using PRIORITY frames results in excessive resource consumption",
         "Description": "Some HTTP/2 implementations are vulnerable to resource loops, potentially leading to a denial of service. The attacker creates multiple request streams and continually shuffles the priority of the streams in a way that causes substantial churn to the priority tree. This can consume excess CPU.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:C",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 7.8,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-9513.html",
           "http://linux.oracle.com/errata/ELSA-2019-2925.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00031.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00032.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00035.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00003.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00005.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00014.html",
+          "https://access.redhat.com/errata/RHSA-2019:2692",
+          "https://access.redhat.com/errata/RHSA-2019:2745",
+          "https://access.redhat.com/errata/RHSA-2019:2746",
+          "https://access.redhat.com/errata/RHSA-2019:2775",
+          "https://access.redhat.com/errata/RHSA-2019:2799",
+          "https://access.redhat.com/errata/RHSA-2019:2925",
+          "https://access.redhat.com/errata/RHSA-2019:2939",
+          "https://access.redhat.com/errata/RHSA-2019:2949",
+          "https://access.redhat.com/errata/RHSA-2019:2955",
+          "https://access.redhat.com/errata/RHSA-2019:2966",
+          "https://access.redhat.com/errata/RHSA-2019:3041",
+          "https://access.redhat.com/errata/RHSA-2019:3932",
+          "https://access.redhat.com/errata/RHSA-2019:3933",
+          "https://access.redhat.com/errata/RHSA-2019:3935",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9513",
           "https://github.com/Netflix/security-bulletins/blob/master/advisories/third-party/2019-002.md",
           "https://kb.cert.org/vuls/id/605641/",
+          "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10296",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4ZQGHE3WTYLYAYJEIDJVF2FIGQTAYPMC/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CMNFX5MNYRWWIMO4BTKYQCGUDMHO3AXP/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JUBYAF6ED3O4XCHQ5C2HYENJLXYXZC4M/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/LZLUYPYY3RX4ZJDWZRJIKSULYRJ4PXW7/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/POPAEC4FWL4UU4LDEGPY5NPALU24FFQD/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TAZZEVTCN2B4WT6AIBJ7XGYJMBTORJU5/",
           "https://nghttp2.org/blog/2019/08/19/nghttp2-v1-39-2/",
           "https://nodejs.org/en/blog/vulnerability/aug-2019-security-releases/",
           "https://seclists.org/bugtraq/2019/Aug/40",
+          "https://seclists.org/bugtraq/2019/Sep/1",
           "https://security.netapp.com/advisory/ntap-20190823-0002/",
           "https://security.netapp.com/advisory/ntap-20190823-0005/",
           "https://support.f5.com/csp/article/K02591030",
+          "https://support.f5.com/csp/article/K02591030?utm_source=f5support\u0026amp;utm_medium=RSS",
           "https://usn.ubuntu.com/4099-1/",
+          "https://usn.ubuntu.com/usn/usn-4099-1",
           "https://www.debian.org/security/2019/dsa-4505",
+          "https://www.debian.org/security/2019/dsa-4511",
+          "https://www.debian.org/security/2020/dsa-4669",
           "https://www.nginx.com/blog/nginx-updates-mitigate-august-2019-http-2-vulnerabilities/",
           "https://www.synology.com/security/advisory/Synology_SA_19_33"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-08-13T21:15:00Z",
+        "LastModifiedDate": "2019-08-23T21:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-11080",
+        "PkgName": "libnghttp2",
+        "InstalledVersion": "1.21.1-1.4.amzn1",
+        "FixedVersion": "1.33.0-1.1.6.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "nghttp2: overly large SETTINGS frames can lead to DoS",
+        "Description": "In nghttp2 before version 1.41.0, the overly large HTTP/2 SETTINGS frame payload causes denial of service. The proof of concept attack involves a malicious client constructing a SETTINGS frame with a length of 14,400 bytes (2400 individual settings entries) over and over again. The attack causes the CPU to spike at 100%. nghttp2 v1.41.0 fixes this vulnerability. There is a workaround to this vulnerability. Implement nghttp2_on_frame_recv_callback callback, and if received frame is SETTINGS frame and the number of settings entries are large (e.g., \u003e 32), then drop the connection.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2020-11080.html",
+          "http://linux.oracle.com/errata/ELSA-2020-5765.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00024.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-11080",
+          "https://github.com/nghttp2/nghttp2/commit/336a98feb0d56b9ac54e12736b18785c27f75090",
+          "https://github.com/nghttp2/nghttp2/commit/f8da73bd042f810f34d19f9eae02b46d870af394",
+          "https://github.com/nghttp2/nghttp2/security/advisories/GHSA-q5wr-xfw9-q7xr",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/AAC2AA36OTRHKSVM5OV7TTVB3CZIGEFL/",
+          "https://www.debian.org/security/2020/dsa-4696",
+          "https://www.oracle.com/security-alerts/cpujul2020.html"
+        ],
+        "PublishedDate": "2020-06-03T23:15:00Z",
+        "LastModifiedDate": "2020-07-15T03:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2015-8035",
+        "PkgName": "libxml2",
+        "InstalledVersion": "2.9.1-6.3.52.amzn1",
+        "FixedVersion": "2.9.1-6.4.40.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "libxml2: DoS caused by incorrect error detection during XZ decompression",
+        "Description": "The xz_decomp function in xzlib.c in libxml2 2.9.1 does not properly detect compression errors, which allows context-dependent attackers to cause a denial of service (process hang) via crafted XML data.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:H/Au:N/C:N/I:N/A:P",
+            "V2Score": 2.6
+          },
+          "redhat": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+            "V2Score": 4.3
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2015-8035.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1190.html",
+          "http://lists.apple.com/archives/security-announce/2016/Mar/msg00000.html",
+          "http://lists.apple.com/archives/security-announce/2016/Mar/msg00001.html",
+          "http://lists.apple.com/archives/security-announce/2016/Mar/msg00002.html",
+          "http://lists.apple.com/archives/security-announce/2016/Mar/msg00004.html",
+          "http://lists.fedoraproject.org/pipermail/package-announce/2016-February/177341.html",
+          "http://lists.fedoraproject.org/pipermail/package-announce/2016-February/177381.html",
+          "http://lists.opensuse.org/opensuse-updates/2015-12/msg00120.html",
+          "http://lists.opensuse.org/opensuse-updates/2016-01/msg00031.html",
+          "http://rhn.redhat.com/errata/RHSA-2016-1089.html",
+          "http://www.debian.org/security/2015/dsa-3430",
+          "http://www.openwall.com/lists/oss-security/2015/11/02/2",
+          "http://www.openwall.com/lists/oss-security/2015/11/02/4",
+          "http://www.openwall.com/lists/oss-security/2015/11/03/1",
+          "http://www.securityfocus.com/bid/77390",
+          "http://www.securitytracker.com/id/1034243",
+          "http://www.ubuntu.com/usn/USN-2812-1",
+          "http://xmlsoft.org/news.html",
+          "https://bugzilla.gnome.org/show_bug.cgi?id=757466",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8035",
+          "https://h20566.www2.hpe.com/portal/site/hpsc/public/kb/docDisplay?docId=emr_na-c05111017",
+          "https://h20566.www2.hpe.com/portal/site/hpsc/public/kb/docDisplay?docId=emr_na-c05158380",
+          "https://security.gentoo.org/glsa/201701-37",
+          "https://support.apple.com/HT206166",
+          "https://support.apple.com/HT206167",
+          "https://support.apple.com/HT206168",
+          "https://support.apple.com/HT206169",
+          "https://usn.ubuntu.com/usn/usn-2812-1"
+        ],
+        "PublishedDate": "2015-11-18T16:59:00Z",
+        "LastModifiedDate": "2019-03-08T16:06:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2016-5131",
+        "PkgName": "libxml2",
+        "InstalledVersion": "2.9.1-6.3.52.amzn1",
+        "FixedVersion": "2.9.1-6.4.40.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "libxml2: Use after free triggered by XPointer paths beginning with range-to",
+        "Description": "Use-after-free vulnerability in libxml2 through 2.9.4, as used in Google Chrome before 52.0.2743.82, allows remote attackers to cause a denial of service or possibly have unspecified other impact via vectors related to the XPointer range-to function.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          },
+          "redhat": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          }
+        },
+        "References": [
+          "http://googlechromereleases.blogspot.com/2016/07/stable-channel-update.html",
+          "http://linux.oracle.com/cve/CVE-2016-5131.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1190.html",
+          "http://lists.apple.com/archives/security-announce/2016/Sep/msg00006.html",
+          "http://lists.apple.com/archives/security-announce/2016/Sep/msg00008.html",
+          "http://lists.apple.com/archives/security-announce/2016/Sep/msg00010.html",
+          "http://lists.apple.com/archives/security-announce/2016/Sep/msg00011.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2016-07/msg00020.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2016-07/msg00021.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2016-07/msg00022.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2016-07/msg00028.html",
+          "http://rhn.redhat.com/errata/RHSA-2016-1485.html",
+          "http://www.debian.org/security/2016/dsa-3637",
+          "http://www.securityfocus.com/bid/92053",
+          "http://www.securitytracker.com/id/1036428",
+          "http://www.securitytracker.com/id/1038623",
+          "http://www.ubuntu.com/usn/USN-3041-1",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1358641",
+          "https://codereview.chromium.org/2127493002",
+          "https://crbug.com/623378",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-5131",
+          "https://googlechromereleases.blogspot.com/2016/07/stable-channel-update.html",
+          "https://security.gentoo.org/glsa/201610-09",
+          "https://security.gentoo.org/glsa/201701-37",
+          "https://source.android.com/security/bulletin/2017-05-01",
+          "https://support.apple.com/HT207141",
+          "https://support.apple.com/HT207142",
+          "https://support.apple.com/HT207143",
+          "https://support.apple.com/HT207170",
+          "https://usn.ubuntu.com/usn/usn-3041-1",
+          "https://usn.ubuntu.com/usn/usn-3235-1"
+        ],
+        "PublishedDate": "2016-07-23T19:59:00Z",
+        "LastModifiedDate": "2019-03-26T17:14:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2017-15412",
+        "PkgName": "libxml2",
+        "InstalledVersion": "2.9.1-6.3.52.amzn1",
+        "FixedVersion": "2.9.1-6.4.40.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "libxml2: Use after free in xmlXPathCompOpEvalPositionalPredicate() function in xpath.c",
+        "Description": "Use after free in libxml2 before 2.9.5, as used in Google Chrome prior to 63.0.3239.84 and other products, allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V3Score": 8.8
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2017-15412.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1190.html",
+          "http://www.securitytracker.com/id/1040348",
+          "https://access.redhat.com/errata/RHSA-2017:3401",
+          "https://access.redhat.com/errata/RHSA-2018:0287",
+          "https://bugzilla.gnome.org/show_bug.cgi?id=783160",
+          "https://chromereleases.googleblog.com/2017/12/stable-channel-update-for-desktop.html",
+          "https://crbug.com/727039",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-15412",
+          "https://github.com/sparklemotion/nokogiri/issues/1714",
+          "https://lists.debian.org/debian-lts-announce/2017/12/msg00014.html",
+          "https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-15412.html",
+          "https://security.gentoo.org/glsa/201801-03",
+          "https://usn.ubuntu.com/usn/usn-3513-1",
+          "https://usn.ubuntu.com/usn/usn-3513-1/",
+          "https://usn.ubuntu.com/usn/usn-3513-2",
+          "https://www.debian.org/security/2018/dsa-4086"
+        ],
+        "PublishedDate": "2018-08-28T19:29:00Z",
+        "LastModifiedDate": "2018-10-25T11:35:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2017-18258",
+        "PkgName": "libxml2",
+        "InstalledVersion": "2.9.1-6.3.52.amzn1",
+        "FixedVersion": "2.9.1-6.4.40.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "libxml2: Unrestricted memory usage in xz_head() function in xzlib.c",
+        "Description": "The xz_head function in xzlib.c in libxml2 before 2.9.6 allows remote attackers to cause a denial of service (memory consumption) via a crafted LZMA file, because the decoder functionality does not restrict memory usage to what is required for a legitimate file.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V2Score": 4.3,
+            "V3Score": 6.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:L",
+            "V3Score": 3.5
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2017-18258.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1190.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-18258",
+          "https://git.gnome.org/browse/libxml2/commit/?id=e2a9122b8dde53d320750451e9907a7dcb2ca8bb",
+          "https://github.com/advisories/GHSA-882p-jqgm-f45g",
+          "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10284",
+          "https://lists.debian.org/debian-lts-announce/2018/09/msg00035.html",
+          "https://nvd.nist.gov/vuln/detail/CVE-2017-18258",
+          "https://security.netapp.com/advisory/ntap-20190719-0001/",
+          "https://usn.ubuntu.com/3739-1/",
+          "https://usn.ubuntu.com/usn/usn-3739-1"
+        ],
+        "PublishedDate": "2018-04-08T17:29:00Z",
+        "LastModifiedDate": "2019-10-03T00:03:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2018-14404",
+        "PkgName": "libxml2",
+        "InstalledVersion": "2.9.1-6.3.52.amzn1",
+        "FixedVersion": "2.9.1-6.4.40.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "libxml2: NULL pointer dereference in xmlXPathCompOpEval() function in xpath.c",
+        "Description": "A NULL pointer dereference vulnerability exists in the xpath.c:xmlXPathCompOpEval() function of libxml2 through 2.9.8 when parsing an invalid XPath expression in the XPATH_OP_AND or XPATH_OP_OR case. Applications processing untrusted XSL format inputs with the use of the libxml2 library may be vulnerable to a denial of service attack due to a crash of the application.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V3Score": 6.5
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-14404.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1827.html",
+          "https://access.redhat.com/errata/RHSA-2019:1543",
+          "https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=901817",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1595985",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14404",
+          "https://github.com/advisories/GHSA-6qvp-r6r3-9p7h",
+          "https://github.com/sparklemotion/nokogiri/issues/1785",
+          "https://gitlab.gnome.org/GNOME/libxml2/commit/2240fbf5912054af025fb6e01e26375100275e74",
+          "https://gitlab.gnome.org/GNOME/libxml2/commit/a436374994c47b12d5de1b8b1d191a098fa23594",
+          "https://gitlab.gnome.org/GNOME/libxml2/issues/10",
+          "https://groups.google.com/forum/#!msg/ruby-security-ann/uVrmO2HjqQw/Fw3ocLI0BQAJ",
+          "https://lists.debian.org/debian-lts-announce/2018/09/msg00035.html",
+          "https://nvd.nist.gov/vuln/detail/CVE-2018-14404",
+          "https://security.netapp.com/advisory/ntap-20190719-0002/",
+          "https://usn.ubuntu.com/3739-1/",
+          "https://usn.ubuntu.com/3739-2/",
+          "https://usn.ubuntu.com/usn/usn-3739-1",
+          "https://usn.ubuntu.com/usn/usn-3739-2"
+        ],
+        "PublishedDate": "2018-07-19T13:29:00Z",
+        "LastModifiedDate": "2018-09-28T10:29:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2018-14567",
+        "PkgName": "libxml2",
+        "InstalledVersion": "2.9.1-6.3.52.amzn1",
+        "FixedVersion": "2.9.1-6.4.40.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "libxml2: Infinite loop caused by incorrect error detection during LZMA decompression",
+        "Description": "libxml2 2.9.8, if --with-lzma is used, allows remote attackers to cause a denial of service (infinite loop) via a crafted XML file that triggers LZMA_MEMLIMIT_ERROR, as demonstrated by xmllint, a different vulnerability than CVE-2015-8035 and CVE-2018-9251.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V2Score": 4.3,
+            "V3Score": 6.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+            "V3Score": 4.3
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-14567.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1190.html",
+          "http://www.securityfocus.com/bid/105198",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14567",
+          "https://gitlab.gnome.org/GNOME/libxml2/commit/2240fbf5912054af025fb6e01e26375100275e74",
+          "https://lists.debian.org/debian-lts-announce/2018/09/msg00035.html",
+          "https://usn.ubuntu.com/3739-1/",
+          "https://usn.ubuntu.com/usn/usn-3739-1"
+        ],
+        "PublishedDate": "2018-08-16T20:29:00Z",
+        "LastModifiedDate": "2019-10-03T00:03:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2015-8035",
+        "PkgName": "libxml2-python27",
+        "InstalledVersion": "2.9.1-6.3.52.amzn1",
+        "FixedVersion": "2.9.1-6.4.40.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "libxml2: DoS caused by incorrect error detection during XZ decompression",
+        "Description": "The xz_decomp function in xzlib.c in libxml2 2.9.1 does not properly detect compression errors, which allows context-dependent attackers to cause a denial of service (process hang) via crafted XML data.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:H/Au:N/C:N/I:N/A:P",
+            "V2Score": 2.6
+          },
+          "redhat": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+            "V2Score": 4.3
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2015-8035.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1190.html",
+          "http://lists.apple.com/archives/security-announce/2016/Mar/msg00000.html",
+          "http://lists.apple.com/archives/security-announce/2016/Mar/msg00001.html",
+          "http://lists.apple.com/archives/security-announce/2016/Mar/msg00002.html",
+          "http://lists.apple.com/archives/security-announce/2016/Mar/msg00004.html",
+          "http://lists.fedoraproject.org/pipermail/package-announce/2016-February/177341.html",
+          "http://lists.fedoraproject.org/pipermail/package-announce/2016-February/177381.html",
+          "http://lists.opensuse.org/opensuse-updates/2015-12/msg00120.html",
+          "http://lists.opensuse.org/opensuse-updates/2016-01/msg00031.html",
+          "http://rhn.redhat.com/errata/RHSA-2016-1089.html",
+          "http://www.debian.org/security/2015/dsa-3430",
+          "http://www.openwall.com/lists/oss-security/2015/11/02/2",
+          "http://www.openwall.com/lists/oss-security/2015/11/02/4",
+          "http://www.openwall.com/lists/oss-security/2015/11/03/1",
+          "http://www.securityfocus.com/bid/77390",
+          "http://www.securitytracker.com/id/1034243",
+          "http://www.ubuntu.com/usn/USN-2812-1",
+          "http://xmlsoft.org/news.html",
+          "https://bugzilla.gnome.org/show_bug.cgi?id=757466",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8035",
+          "https://h20566.www2.hpe.com/portal/site/hpsc/public/kb/docDisplay?docId=emr_na-c05111017",
+          "https://h20566.www2.hpe.com/portal/site/hpsc/public/kb/docDisplay?docId=emr_na-c05158380",
+          "https://security.gentoo.org/glsa/201701-37",
+          "https://support.apple.com/HT206166",
+          "https://support.apple.com/HT206167",
+          "https://support.apple.com/HT206168",
+          "https://support.apple.com/HT206169",
+          "https://usn.ubuntu.com/usn/usn-2812-1"
+        ],
+        "PublishedDate": "2015-11-18T16:59:00Z",
+        "LastModifiedDate": "2019-03-08T16:06:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2016-5131",
+        "PkgName": "libxml2-python27",
+        "InstalledVersion": "2.9.1-6.3.52.amzn1",
+        "FixedVersion": "2.9.1-6.4.40.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "libxml2: Use after free triggered by XPointer paths beginning with range-to",
+        "Description": "Use-after-free vulnerability in libxml2 through 2.9.4, as used in Google Chrome before 52.0.2743.82, allows remote attackers to cause a denial of service or possibly have unspecified other impact via vectors related to the XPointer range-to function.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          },
+          "redhat": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          }
+        },
+        "References": [
+          "http://googlechromereleases.blogspot.com/2016/07/stable-channel-update.html",
+          "http://linux.oracle.com/cve/CVE-2016-5131.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1190.html",
+          "http://lists.apple.com/archives/security-announce/2016/Sep/msg00006.html",
+          "http://lists.apple.com/archives/security-announce/2016/Sep/msg00008.html",
+          "http://lists.apple.com/archives/security-announce/2016/Sep/msg00010.html",
+          "http://lists.apple.com/archives/security-announce/2016/Sep/msg00011.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2016-07/msg00020.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2016-07/msg00021.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2016-07/msg00022.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2016-07/msg00028.html",
+          "http://rhn.redhat.com/errata/RHSA-2016-1485.html",
+          "http://www.debian.org/security/2016/dsa-3637",
+          "http://www.securityfocus.com/bid/92053",
+          "http://www.securitytracker.com/id/1036428",
+          "http://www.securitytracker.com/id/1038623",
+          "http://www.ubuntu.com/usn/USN-3041-1",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1358641",
+          "https://codereview.chromium.org/2127493002",
+          "https://crbug.com/623378",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-5131",
+          "https://googlechromereleases.blogspot.com/2016/07/stable-channel-update.html",
+          "https://security.gentoo.org/glsa/201610-09",
+          "https://security.gentoo.org/glsa/201701-37",
+          "https://source.android.com/security/bulletin/2017-05-01",
+          "https://support.apple.com/HT207141",
+          "https://support.apple.com/HT207142",
+          "https://support.apple.com/HT207143",
+          "https://support.apple.com/HT207170",
+          "https://usn.ubuntu.com/usn/usn-3041-1",
+          "https://usn.ubuntu.com/usn/usn-3235-1"
+        ],
+        "PublishedDate": "2016-07-23T19:59:00Z",
+        "LastModifiedDate": "2019-03-26T17:14:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2017-15412",
+        "PkgName": "libxml2-python27",
+        "InstalledVersion": "2.9.1-6.3.52.amzn1",
+        "FixedVersion": "2.9.1-6.4.40.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "libxml2: Use after free in xmlXPathCompOpEvalPositionalPredicate() function in xpath.c",
+        "Description": "Use after free in libxml2 before 2.9.5, as used in Google Chrome prior to 63.0.3239.84 and other products, allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V3Score": 8.8
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2017-15412.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1190.html",
+          "http://www.securitytracker.com/id/1040348",
+          "https://access.redhat.com/errata/RHSA-2017:3401",
+          "https://access.redhat.com/errata/RHSA-2018:0287",
+          "https://bugzilla.gnome.org/show_bug.cgi?id=783160",
+          "https://chromereleases.googleblog.com/2017/12/stable-channel-update-for-desktop.html",
+          "https://crbug.com/727039",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-15412",
+          "https://github.com/sparklemotion/nokogiri/issues/1714",
+          "https://lists.debian.org/debian-lts-announce/2017/12/msg00014.html",
+          "https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-15412.html",
+          "https://security.gentoo.org/glsa/201801-03",
+          "https://usn.ubuntu.com/usn/usn-3513-1",
+          "https://usn.ubuntu.com/usn/usn-3513-1/",
+          "https://usn.ubuntu.com/usn/usn-3513-2",
+          "https://www.debian.org/security/2018/dsa-4086"
+        ],
+        "PublishedDate": "2018-08-28T19:29:00Z",
+        "LastModifiedDate": "2018-10-25T11:35:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2017-18258",
+        "PkgName": "libxml2-python27",
+        "InstalledVersion": "2.9.1-6.3.52.amzn1",
+        "FixedVersion": "2.9.1-6.4.40.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "libxml2: Unrestricted memory usage in xz_head() function in xzlib.c",
+        "Description": "The xz_head function in xzlib.c in libxml2 before 2.9.6 allows remote attackers to cause a denial of service (memory consumption) via a crafted LZMA file, because the decoder functionality does not restrict memory usage to what is required for a legitimate file.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V2Score": 4.3,
+            "V3Score": 6.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:L",
+            "V3Score": 3.5
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2017-18258.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1190.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-18258",
+          "https://git.gnome.org/browse/libxml2/commit/?id=e2a9122b8dde53d320750451e9907a7dcb2ca8bb",
+          "https://github.com/advisories/GHSA-882p-jqgm-f45g",
+          "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10284",
+          "https://lists.debian.org/debian-lts-announce/2018/09/msg00035.html",
+          "https://nvd.nist.gov/vuln/detail/CVE-2017-18258",
+          "https://security.netapp.com/advisory/ntap-20190719-0001/",
+          "https://usn.ubuntu.com/3739-1/",
+          "https://usn.ubuntu.com/usn/usn-3739-1"
+        ],
+        "PublishedDate": "2018-04-08T17:29:00Z",
+        "LastModifiedDate": "2019-10-03T00:03:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2018-14404",
+        "PkgName": "libxml2-python27",
+        "InstalledVersion": "2.9.1-6.3.52.amzn1",
+        "FixedVersion": "2.9.1-6.4.40.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "libxml2: NULL pointer dereference in xmlXPathCompOpEval() function in xpath.c",
+        "Description": "A NULL pointer dereference vulnerability exists in the xpath.c:xmlXPathCompOpEval() function of libxml2 through 2.9.8 when parsing an invalid XPath expression in the XPATH_OP_AND or XPATH_OP_OR case. Applications processing untrusted XSL format inputs with the use of the libxml2 library may be vulnerable to a denial of service attack due to a crash of the application.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V3Score": 6.5
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-14404.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1827.html",
+          "https://access.redhat.com/errata/RHSA-2019:1543",
+          "https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=901817",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1595985",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14404",
+          "https://github.com/advisories/GHSA-6qvp-r6r3-9p7h",
+          "https://github.com/sparklemotion/nokogiri/issues/1785",
+          "https://gitlab.gnome.org/GNOME/libxml2/commit/2240fbf5912054af025fb6e01e26375100275e74",
+          "https://gitlab.gnome.org/GNOME/libxml2/commit/a436374994c47b12d5de1b8b1d191a098fa23594",
+          "https://gitlab.gnome.org/GNOME/libxml2/issues/10",
+          "https://groups.google.com/forum/#!msg/ruby-security-ann/uVrmO2HjqQw/Fw3ocLI0BQAJ",
+          "https://lists.debian.org/debian-lts-announce/2018/09/msg00035.html",
+          "https://nvd.nist.gov/vuln/detail/CVE-2018-14404",
+          "https://security.netapp.com/advisory/ntap-20190719-0002/",
+          "https://usn.ubuntu.com/3739-1/",
+          "https://usn.ubuntu.com/3739-2/",
+          "https://usn.ubuntu.com/usn/usn-3739-1",
+          "https://usn.ubuntu.com/usn/usn-3739-2"
+        ],
+        "PublishedDate": "2018-07-19T13:29:00Z",
+        "LastModifiedDate": "2018-09-28T10:29:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2018-14567",
+        "PkgName": "libxml2-python27",
+        "InstalledVersion": "2.9.1-6.3.52.amzn1",
+        "FixedVersion": "2.9.1-6.4.40.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "libxml2: Infinite loop caused by incorrect error detection during LZMA decompression",
+        "Description": "libxml2 2.9.8, if --with-lzma is used, allows remote attackers to cause a denial of service (infinite loop) via a crafted XML file that triggers LZMA_MEMLIMIT_ERROR, as demonstrated by xmllint, a different vulnerability than CVE-2015-8035 and CVE-2018-9251.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V2Score": 4.3,
+            "V3Score": 6.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+            "V3Score": 4.3
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-14567.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1190.html",
+          "http://www.securityfocus.com/bid/105198",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-14567",
+          "https://gitlab.gnome.org/GNOME/libxml2/commit/2240fbf5912054af025fb6e01e26375100275e74",
+          "https://lists.debian.org/debian-lts-announce/2018/09/msg00035.html",
+          "https://usn.ubuntu.com/3739-1/",
+          "https://usn.ubuntu.com/usn/usn-3739-1"
+        ],
+        "PublishedDate": "2018-08-16T20:29:00Z",
+        "LastModifiedDate": "2019-10-03T00:03:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -304,21 +1400,44 @@
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11729.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00055.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00058.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00073.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00009.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00010.html",
           "https://access.redhat.com/errata/RHSA-2019:1951",
+          "https://access.redhat.com/errata/RHSA-2019:4190",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1515342",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11729",
+          "https://security.gentoo.org/glsa/201908-12",
+          "https://security.gentoo.org/glsa/201908-20",
+          "https://usn.ubuntu.com/usn/usn-4054-1",
+          "https://usn.ubuntu.com/usn/usn-4060-1",
+          "https://usn.ubuntu.com/usn/usn-4060-2",
+          "https://usn.ubuntu.com/usn/usn-4064-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-21/#CVE-2019-11729",
           "https://www.mozilla.org/en-US/security/advisories/mfsa2019-22/#CVE-2019-11729",
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-07-23T14:15:00Z",
+        "LastModifiedDate": "2019-07-29T16:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -332,23 +1451,48 @@
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 8.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11745.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
+          "https://access.redhat.com/errata/RHSA-2020:0243",
+          "https://access.redhat.com/errata/RHSA-2020:0466",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
+          "https://security.gentoo.org/glsa/202003-02",
+          "https://security.gentoo.org/glsa/202003-10",
+          "https://security.gentoo.org/glsa/202003-37",
           "https://usn.ubuntu.com/4241-1/",
+          "https://usn.ubuntu.com/4335-1/",
+          "https://usn.ubuntu.com/usn/usn-4203-1",
+          "https://usn.ubuntu.com/usn/usn-4203-2",
+          "https://usn.ubuntu.com/usn/usn-4216-1",
+          "https://usn.ubuntu.com/usn/usn-4216-2",
+          "https://usn.ubuntu.com/usn/usn-4241-1",
+          "https://usn.ubuntu.com/usn/usn-4335-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-38/#CVE-2019-11745",
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-08T20:15:00Z",
+        "LastModifiedDate": "2020-01-16T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -362,6 +1506,18 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 1.9,
+            "V3Score": 4.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-0495.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
@@ -371,8 +1527,11 @@
           "https://access.redhat.com/errata/RHSA-2018:3505",
           "https://access.redhat.com/errata/RHSA-2019:1296",
           "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://access.redhat.com/errata/RHSA-2019:1543",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
           "https://dev.gnupg.org/T4011",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.38_release_notes",
           "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
           "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
@@ -382,12 +1541,18 @@
           "https://usn.ubuntu.com/3692-2/",
           "https://usn.ubuntu.com/3850-1/",
           "https://usn.ubuntu.com/3850-2/",
+          "https://usn.ubuntu.com/usn/usn-3689-1",
+          "https://usn.ubuntu.com/usn/usn-3689-2",
+          "https://usn.ubuntu.com/usn/usn-3692-1",
+          "https://usn.ubuntu.com/usn/usn-3692-2",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2018-06-13T23:29:00Z",
+        "LastModifiedDate": "2019-05-30T18:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -401,16 +1566,34 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 4.3,
+            "V3Score": 5.9
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.9
+          }
+        },
         "References": [
+          "http://cat.eyalro.net/",
           "http://linux.oracle.com/cve/CVE-2018-12404.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.36.6_release_notes",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
+          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-05-02T17:29:00Z",
+        "LastModifiedDate": "2019-07-20T12:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -424,21 +1607,44 @@
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11729.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00055.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00058.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00073.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00009.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00010.html",
           "https://access.redhat.com/errata/RHSA-2019:1951",
+          "https://access.redhat.com/errata/RHSA-2019:4190",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1515342",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11729",
+          "https://security.gentoo.org/glsa/201908-12",
+          "https://security.gentoo.org/glsa/201908-20",
+          "https://usn.ubuntu.com/usn/usn-4054-1",
+          "https://usn.ubuntu.com/usn/usn-4060-1",
+          "https://usn.ubuntu.com/usn/usn-4060-2",
+          "https://usn.ubuntu.com/usn/usn-4064-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-21/#CVE-2019-11729",
           "https://www.mozilla.org/en-US/security/advisories/mfsa2019-22/#CVE-2019-11729",
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-07-23T14:15:00Z",
+        "LastModifiedDate": "2019-07-29T16:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -452,23 +1658,48 @@
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 8.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11745.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
+          "https://access.redhat.com/errata/RHSA-2020:0243",
+          "https://access.redhat.com/errata/RHSA-2020:0466",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
+          "https://security.gentoo.org/glsa/202003-02",
+          "https://security.gentoo.org/glsa/202003-10",
+          "https://security.gentoo.org/glsa/202003-37",
           "https://usn.ubuntu.com/4241-1/",
+          "https://usn.ubuntu.com/4335-1/",
+          "https://usn.ubuntu.com/usn/usn-4203-1",
+          "https://usn.ubuntu.com/usn/usn-4203-2",
+          "https://usn.ubuntu.com/usn/usn-4216-1",
+          "https://usn.ubuntu.com/usn/usn-4216-2",
+          "https://usn.ubuntu.com/usn/usn-4241-1",
+          "https://usn.ubuntu.com/usn/usn-4335-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-38/#CVE-2019-11745",
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-08T20:15:00Z",
+        "LastModifiedDate": "2020-01-16T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -482,6 +1713,18 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 1.9,
+            "V3Score": 4.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-0495.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
@@ -491,8 +1734,11 @@
           "https://access.redhat.com/errata/RHSA-2018:3505",
           "https://access.redhat.com/errata/RHSA-2019:1296",
           "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://access.redhat.com/errata/RHSA-2019:1543",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
           "https://dev.gnupg.org/T4011",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.38_release_notes",
           "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
           "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
@@ -502,12 +1748,18 @@
           "https://usn.ubuntu.com/3692-2/",
           "https://usn.ubuntu.com/3850-1/",
           "https://usn.ubuntu.com/3850-2/",
+          "https://usn.ubuntu.com/usn/usn-3689-1",
+          "https://usn.ubuntu.com/usn/usn-3689-2",
+          "https://usn.ubuntu.com/usn/usn-3692-1",
+          "https://usn.ubuntu.com/usn/usn-3692-2",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2018-06-13T23:29:00Z",
+        "LastModifiedDate": "2019-05-30T18:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -521,16 +1773,34 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 4.3,
+            "V3Score": 5.9
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.9
+          }
+        },
         "References": [
+          "http://cat.eyalro.net/",
           "http://linux.oracle.com/cve/CVE-2018-12404.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.36.6_release_notes",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
+          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-05-02T17:29:00Z",
+        "LastModifiedDate": "2019-07-20T12:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -544,21 +1814,44 @@
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11729.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00055.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00058.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00073.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00009.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00010.html",
           "https://access.redhat.com/errata/RHSA-2019:1951",
+          "https://access.redhat.com/errata/RHSA-2019:4190",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1515342",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11729",
+          "https://security.gentoo.org/glsa/201908-12",
+          "https://security.gentoo.org/glsa/201908-20",
+          "https://usn.ubuntu.com/usn/usn-4054-1",
+          "https://usn.ubuntu.com/usn/usn-4060-1",
+          "https://usn.ubuntu.com/usn/usn-4060-2",
+          "https://usn.ubuntu.com/usn/usn-4064-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-21/#CVE-2019-11729",
           "https://www.mozilla.org/en-US/security/advisories/mfsa2019-22/#CVE-2019-11729",
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-07-23T14:15:00Z",
+        "LastModifiedDate": "2019-07-29T16:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -572,23 +1865,48 @@
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 8.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11745.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
+          "https://access.redhat.com/errata/RHSA-2020:0243",
+          "https://access.redhat.com/errata/RHSA-2020:0466",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
+          "https://security.gentoo.org/glsa/202003-02",
+          "https://security.gentoo.org/glsa/202003-10",
+          "https://security.gentoo.org/glsa/202003-37",
           "https://usn.ubuntu.com/4241-1/",
+          "https://usn.ubuntu.com/4335-1/",
+          "https://usn.ubuntu.com/usn/usn-4203-1",
+          "https://usn.ubuntu.com/usn/usn-4203-2",
+          "https://usn.ubuntu.com/usn/usn-4216-1",
+          "https://usn.ubuntu.com/usn/usn-4216-2",
+          "https://usn.ubuntu.com/usn/usn-4241-1",
+          "https://usn.ubuntu.com/usn/usn-4335-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-38/#CVE-2019-11745",
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-08T20:15:00Z",
+        "LastModifiedDate": "2020-01-16T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -602,6 +1920,18 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 1.9,
+            "V3Score": 4.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-0495.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
@@ -611,8 +1941,11 @@
           "https://access.redhat.com/errata/RHSA-2018:3505",
           "https://access.redhat.com/errata/RHSA-2019:1296",
           "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://access.redhat.com/errata/RHSA-2019:1543",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
           "https://dev.gnupg.org/T4011",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.38_release_notes",
           "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
           "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
@@ -622,12 +1955,18 @@
           "https://usn.ubuntu.com/3692-2/",
           "https://usn.ubuntu.com/3850-1/",
           "https://usn.ubuntu.com/3850-2/",
+          "https://usn.ubuntu.com/usn/usn-3689-1",
+          "https://usn.ubuntu.com/usn/usn-3689-2",
+          "https://usn.ubuntu.com/usn/usn-3692-1",
+          "https://usn.ubuntu.com/usn/usn-3692-2",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2018-06-13T23:29:00Z",
+        "LastModifiedDate": "2019-05-30T18:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -641,16 +1980,34 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 4.3,
+            "V3Score": 5.9
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.9
+          }
+        },
         "References": [
+          "http://cat.eyalro.net/",
           "http://linux.oracle.com/cve/CVE-2018-12404.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.36.6_release_notes",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
+          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-05-02T17:29:00Z",
+        "LastModifiedDate": "2019-07-20T12:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -664,21 +2021,44 @@
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11729.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00055.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00058.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00073.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00009.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00010.html",
           "https://access.redhat.com/errata/RHSA-2019:1951",
+          "https://access.redhat.com/errata/RHSA-2019:4190",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1515342",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11729",
+          "https://security.gentoo.org/glsa/201908-12",
+          "https://security.gentoo.org/glsa/201908-20",
+          "https://usn.ubuntu.com/usn/usn-4054-1",
+          "https://usn.ubuntu.com/usn/usn-4060-1",
+          "https://usn.ubuntu.com/usn/usn-4060-2",
+          "https://usn.ubuntu.com/usn/usn-4064-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-21/#CVE-2019-11729",
           "https://www.mozilla.org/en-US/security/advisories/mfsa2019-22/#CVE-2019-11729",
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-07-23T14:15:00Z",
+        "LastModifiedDate": "2019-07-29T16:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -692,23 +2072,48 @@
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 8.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11745.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
+          "https://access.redhat.com/errata/RHSA-2020:0243",
+          "https://access.redhat.com/errata/RHSA-2020:0466",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
+          "https://security.gentoo.org/glsa/202003-02",
+          "https://security.gentoo.org/glsa/202003-10",
+          "https://security.gentoo.org/glsa/202003-37",
           "https://usn.ubuntu.com/4241-1/",
+          "https://usn.ubuntu.com/4335-1/",
+          "https://usn.ubuntu.com/usn/usn-4203-1",
+          "https://usn.ubuntu.com/usn/usn-4203-2",
+          "https://usn.ubuntu.com/usn/usn-4216-1",
+          "https://usn.ubuntu.com/usn/usn-4216-2",
+          "https://usn.ubuntu.com/usn/usn-4241-1",
+          "https://usn.ubuntu.com/usn/usn-4335-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-38/#CVE-2019-11745",
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-08T20:15:00Z",
+        "LastModifiedDate": "2020-01-16T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -722,6 +2127,18 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 1.9,
+            "V3Score": 4.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-0495.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
@@ -731,8 +2148,11 @@
           "https://access.redhat.com/errata/RHSA-2018:3505",
           "https://access.redhat.com/errata/RHSA-2019:1296",
           "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://access.redhat.com/errata/RHSA-2019:1543",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
           "https://dev.gnupg.org/T4011",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.38_release_notes",
           "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
           "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
@@ -742,12 +2162,18 @@
           "https://usn.ubuntu.com/3692-2/",
           "https://usn.ubuntu.com/3850-1/",
           "https://usn.ubuntu.com/3850-2/",
+          "https://usn.ubuntu.com/usn/usn-3689-1",
+          "https://usn.ubuntu.com/usn/usn-3689-2",
+          "https://usn.ubuntu.com/usn/usn-3692-1",
+          "https://usn.ubuntu.com/usn/usn-3692-2",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2018-06-13T23:29:00Z",
+        "LastModifiedDate": "2019-05-30T18:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -761,16 +2187,34 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 4.3,
+            "V3Score": 5.9
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.9
+          }
+        },
         "References": [
+          "http://cat.eyalro.net/",
           "http://linux.oracle.com/cve/CVE-2018-12404.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.36.6_release_notes",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
+          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-05-02T17:29:00Z",
+        "LastModifiedDate": "2019-07-20T12:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -784,21 +2228,44 @@
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11729.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00055.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00058.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00073.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00009.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00010.html",
           "https://access.redhat.com/errata/RHSA-2019:1951",
+          "https://access.redhat.com/errata/RHSA-2019:4190",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1515342",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11729",
+          "https://security.gentoo.org/glsa/201908-12",
+          "https://security.gentoo.org/glsa/201908-20",
+          "https://usn.ubuntu.com/usn/usn-4054-1",
+          "https://usn.ubuntu.com/usn/usn-4060-1",
+          "https://usn.ubuntu.com/usn/usn-4060-2",
+          "https://usn.ubuntu.com/usn/usn-4064-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-21/#CVE-2019-11729",
           "https://www.mozilla.org/en-US/security/advisories/mfsa2019-22/#CVE-2019-11729",
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-07-23T14:15:00Z",
+        "LastModifiedDate": "2019-07-29T16:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -812,23 +2279,48 @@
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 8.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11745.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
+          "https://access.redhat.com/errata/RHSA-2020:0243",
+          "https://access.redhat.com/errata/RHSA-2020:0466",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
+          "https://security.gentoo.org/glsa/202003-02",
+          "https://security.gentoo.org/glsa/202003-10",
+          "https://security.gentoo.org/glsa/202003-37",
           "https://usn.ubuntu.com/4241-1/",
+          "https://usn.ubuntu.com/4335-1/",
+          "https://usn.ubuntu.com/usn/usn-4203-1",
+          "https://usn.ubuntu.com/usn/usn-4203-2",
+          "https://usn.ubuntu.com/usn/usn-4216-1",
+          "https://usn.ubuntu.com/usn/usn-4216-2",
+          "https://usn.ubuntu.com/usn/usn-4241-1",
+          "https://usn.ubuntu.com/usn/usn-4335-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-38/#CVE-2019-11745",
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-08T20:15:00Z",
+        "LastModifiedDate": "2020-01-16T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -842,6 +2334,18 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 1.9,
+            "V3Score": 4.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-0495.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
@@ -851,8 +2355,11 @@
           "https://access.redhat.com/errata/RHSA-2018:3505",
           "https://access.redhat.com/errata/RHSA-2019:1296",
           "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://access.redhat.com/errata/RHSA-2019:1543",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
           "https://dev.gnupg.org/T4011",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.38_release_notes",
           "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
           "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
@@ -862,12 +2369,18 @@
           "https://usn.ubuntu.com/3692-2/",
           "https://usn.ubuntu.com/3850-1/",
           "https://usn.ubuntu.com/3850-2/",
+          "https://usn.ubuntu.com/usn/usn-3689-1",
+          "https://usn.ubuntu.com/usn/usn-3689-2",
+          "https://usn.ubuntu.com/usn/usn-3692-1",
+          "https://usn.ubuntu.com/usn/usn-3692-2",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2018-06-13T23:29:00Z",
+        "LastModifiedDate": "2019-05-30T18:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -881,16 +2394,34 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 4.3,
+            "V3Score": 5.9
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.9
+          }
+        },
         "References": [
+          "http://cat.eyalro.net/",
           "http://linux.oracle.com/cve/CVE-2018-12404.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.36.6_release_notes",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
+          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-05-02T17:29:00Z",
+        "LastModifiedDate": "2019-07-20T12:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -904,21 +2435,44 @@
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11729.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00055.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00058.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00073.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00009.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00010.html",
           "https://access.redhat.com/errata/RHSA-2019:1951",
+          "https://access.redhat.com/errata/RHSA-2019:4190",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1515342",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11729",
+          "https://security.gentoo.org/glsa/201908-12",
+          "https://security.gentoo.org/glsa/201908-20",
+          "https://usn.ubuntu.com/usn/usn-4054-1",
+          "https://usn.ubuntu.com/usn/usn-4060-1",
+          "https://usn.ubuntu.com/usn/usn-4060-2",
+          "https://usn.ubuntu.com/usn/usn-4064-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-21/#CVE-2019-11729",
           "https://www.mozilla.org/en-US/security/advisories/mfsa2019-22/#CVE-2019-11729",
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-07-23T14:15:00Z",
+        "LastModifiedDate": "2019-07-29T16:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -932,23 +2486,48 @@
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 8.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11745.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
+          "https://access.redhat.com/errata/RHSA-2020:0243",
+          "https://access.redhat.com/errata/RHSA-2020:0466",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
+          "https://security.gentoo.org/glsa/202003-02",
+          "https://security.gentoo.org/glsa/202003-10",
+          "https://security.gentoo.org/glsa/202003-37",
           "https://usn.ubuntu.com/4241-1/",
+          "https://usn.ubuntu.com/4335-1/",
+          "https://usn.ubuntu.com/usn/usn-4203-1",
+          "https://usn.ubuntu.com/usn/usn-4203-2",
+          "https://usn.ubuntu.com/usn/usn-4216-1",
+          "https://usn.ubuntu.com/usn/usn-4216-2",
+          "https://usn.ubuntu.com/usn/usn-4241-1",
+          "https://usn.ubuntu.com/usn/usn-4335-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-38/#CVE-2019-11745",
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-08T20:15:00Z",
+        "LastModifiedDate": "2020-01-16T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -962,6 +2541,18 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 1.9,
+            "V3Score": 4.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-0495.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
@@ -971,8 +2562,11 @@
           "https://access.redhat.com/errata/RHSA-2018:3505",
           "https://access.redhat.com/errata/RHSA-2019:1296",
           "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://access.redhat.com/errata/RHSA-2019:1543",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
           "https://dev.gnupg.org/T4011",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.38_release_notes",
           "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
           "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
@@ -982,12 +2576,18 @@
           "https://usn.ubuntu.com/3692-2/",
           "https://usn.ubuntu.com/3850-1/",
           "https://usn.ubuntu.com/3850-2/",
+          "https://usn.ubuntu.com/usn/usn-3689-1",
+          "https://usn.ubuntu.com/usn/usn-3689-2",
+          "https://usn.ubuntu.com/usn/usn-3692-1",
+          "https://usn.ubuntu.com/usn/usn-3692-2",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2018-06-13T23:29:00Z",
+        "LastModifiedDate": "2019-05-30T18:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -1001,16 +2601,34 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 4.3,
+            "V3Score": 5.9
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.9
+          }
+        },
         "References": [
+          "http://cat.eyalro.net/",
           "http://linux.oracle.com/cve/CVE-2018-12404.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.36.6_release_notes",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
+          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-05-02T17:29:00Z",
+        "LastModifiedDate": "2019-07-20T12:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11729",
@@ -1024,21 +2642,44 @@
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11729.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00055.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00058.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00073.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00009.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00010.html",
           "https://access.redhat.com/errata/RHSA-2019:1951",
+          "https://access.redhat.com/errata/RHSA-2019:4190",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1515342",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11729",
+          "https://security.gentoo.org/glsa/201908-12",
+          "https://security.gentoo.org/glsa/201908-20",
+          "https://usn.ubuntu.com/usn/usn-4054-1",
+          "https://usn.ubuntu.com/usn/usn-4060-1",
+          "https://usn.ubuntu.com/usn/usn-4060-2",
+          "https://usn.ubuntu.com/usn/usn-4064-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-21/#CVE-2019-11729",
           "https://www.mozilla.org/en-US/security/advisories/mfsa2019-22/#CVE-2019-11729",
           "https://www.mozilla.org/security/advisories/mfsa2019-21/",
           "https://www.mozilla.org/security/advisories/mfsa2019-22/",
           "https://www.mozilla.org/security/advisories/mfsa2019-23/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-07-23T14:15:00Z",
+        "LastModifiedDate": "2019-07-29T16:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11745",
@@ -1052,23 +2693,48 @@
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 8.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-11745.html",
           "http://linux.oracle.com/errata/ELSA-2019-4190.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
+          "https://access.redhat.com/errata/RHSA-2020:0243",
+          "https://access.redhat.com/errata/RHSA-2020:0466",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
+          "https://security.gentoo.org/glsa/202003-02",
+          "https://security.gentoo.org/glsa/202003-10",
+          "https://security.gentoo.org/glsa/202003-37",
           "https://usn.ubuntu.com/4241-1/",
+          "https://usn.ubuntu.com/4335-1/",
+          "https://usn.ubuntu.com/usn/usn-4203-1",
+          "https://usn.ubuntu.com/usn/usn-4203-2",
+          "https://usn.ubuntu.com/usn/usn-4216-1",
+          "https://usn.ubuntu.com/usn/usn-4216-2",
+          "https://usn.ubuntu.com/usn/usn-4241-1",
+          "https://usn.ubuntu.com/usn/usn-4335-1",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-38/#CVE-2019-11745",
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
           "https://www.mozilla.org/security/advisories/mfsa2019-38/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-08T20:15:00Z",
+        "LastModifiedDate": "2020-01-16T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-0495",
@@ -1082,6 +2748,18 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 1.9,
+            "V3Score": 4.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.1
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-0495.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
@@ -1091,8 +2769,11 @@
           "https://access.redhat.com/errata/RHSA-2018:3505",
           "https://access.redhat.com/errata/RHSA-2019:1296",
           "https://access.redhat.com/errata/RHSA-2019:1297",
+          "https://access.redhat.com/errata/RHSA-2019:1543",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-0495",
           "https://dev.gnupg.org/T4011",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.38_release_notes",
           "https://git.gnupg.org/cgi-bin/gitweb.cgi?p=libgcrypt.git;a=commit;h=9010d1576e278a4274ad3f4aa15776c28f6ba965",
           "https://lists.debian.org/debian-lts-announce/2018/06/msg00013.html",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2018q2/000426.html",
@@ -1102,12 +2783,18 @@
           "https://usn.ubuntu.com/3692-2/",
           "https://usn.ubuntu.com/3850-1/",
           "https://usn.ubuntu.com/3850-2/",
+          "https://usn.ubuntu.com/usn/usn-3689-1",
+          "https://usn.ubuntu.com/usn/usn-3689-2",
+          "https://usn.ubuntu.com/usn/usn-3692-1",
+          "https://usn.ubuntu.com/usn/usn-3692-2",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
           "https://www.debian.org/security/2018/dsa-4231",
           "https://www.nccgroup.trust/us/our-research/technical-advisory-return-of-the-hidden-number-problem/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2018-06-13T23:29:00Z",
+        "LastModifiedDate": "2019-05-30T18:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-12404",
@@ -1121,16 +2808,34 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 4.3,
+            "V3Score": 5.9
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.9
+          }
+        },
         "References": [
+          "http://cat.eyalro.net/",
           "http://linux.oracle.com/cve/CVE-2018-12404.html",
           "http://linux.oracle.com/errata/ELSA-2019-2237.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00021.html",
           "http://www.securityfocus.com/bid/107260",
+          "https://access.redhat.com/errata/RHSA-2019:2237",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=CVE-2018-12404",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-12404",
+          "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.36.6_release_notes",
+          "https://usn.ubuntu.com/usn/usn-3850-1",
+          "https://usn.ubuntu.com/usn/usn-3850-2",
+          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-05-02T17:29:00Z",
+        "LastModifiedDate": "2019-07-20T12:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1563",
@@ -1143,19 +2848,106 @@
         "SeveritySource": "amazon",
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
-        "Severity": "HIGH",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
+            "V2Score": 4.3,
+            "V3Score": 3.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
+            "V3Score": 3.7
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-1563.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1840.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00054.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00072.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00012.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00016.html",
           "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563",
           "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=08229ad838c50f644d7e928e2eef147b4308ad64",
           "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=631f94db0065c78181ca9ba5546ebc8bb3884b97",
           "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f",
+          "https://lists.debian.org/debian-lts-announce/2019/09/msg00026.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZN4VVQJ3JDCHGIHV4Y2YTXBYQZ6PWQ7E/",
+          "https://seclists.org/bugtraq/2019/Oct/0",
+          "https://seclists.org/bugtraq/2019/Oct/1",
           "https://seclists.org/bugtraq/2019/Sep/25",
+          "https://security.gentoo.org/glsa/201911-04",
           "https://security.netapp.com/advisory/ntap-20190919-0002/",
-          "https://www.openssl.org/news/secadv/20190910.txt"
+          "https://support.f5.com/csp/article/K97324400?utm_source=f5support\u0026amp;utm_medium=RSS",
+          "https://usn.ubuntu.com/4376-1/",
+          "https://usn.ubuntu.com/4376-2/",
+          "https://usn.ubuntu.com/usn/usn-4376-1",
+          "https://usn.ubuntu.com/usn/usn-4376-2",
+          "https://www.debian.org/security/2019/dsa-4539",
+          "https://www.debian.org/security/2019/dsa-4540",
+          "https://www.openssl.org/news/secadv/20190910.txt",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
+          "https://www.oracle.com/security-alerts/cpujan2020.html",
+          "https://www.oracle.com/security-alerts/cpujul2020.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html",
+          "https://www.tenable.com/security/tns-2019-09"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-10T17:15:00Z",
+        "LastModifiedDate": "2020-07-22T17:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20852",
+        "PkgName": "python27",
+        "InstalledVersion": "2.7.16-1.129.amzn1",
+        "FixedVersion": "2.7.18-1.137.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "python: Cookie domain check returns incorrect results",
+        "Description": "http.cookiejar.DefaultPolicy.domain_return_ok in Lib/http/cookiejar.py in Python before 3.7.3 does not correctly validate the domain: it can be tricked into sending existing cookies to the wrong server. An attacker may abuse this flaw by using a server with a hostname that has another valid hostname as a suffix (e.g., pythonicexample.com to steal cookies for example.com). When a program uses http.cookiejar.DefaultPolicy and tries to do an HTTP connection to an attacker-controlled server, existing cookies can be leaked to the attacker. This affects 2.x through 2.7.16, 3.x before 3.4.10, 3.5.x before 3.5.7, 3.6.x before 3.6.9, and 3.7.x before 3.7.3.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+            "V2Score": 5,
+            "V3Score": 5.3
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+            "V3Score": 5.3
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-20852.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1764.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00071.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00074.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00040.html",
+          "https://access.redhat.com/errata/RHSA-2019:3725",
+          "https://access.redhat.com/errata/RHSA-2019:3948",
+          "https://bugs.python.org/issue35121",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20852",
+          "https://lists.debian.org/debian-lts-announce/2019/08/msg00022.html",
+          "https://lists.debian.org/debian-lts-announce/2019/08/msg00040.html",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00011.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/COATURTCY7G67AYI6UDV5B2JZTBCKIDX/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K7HNVIFMETMFWWWUNTB72KYJYXCZOS5V/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZBTGPBUABGXZ7WH7677OEM3NSP6ZEA76/",
+          "https://python-security.readthedocs.io/vuln/cookie-domain-check.html",
+          "https://security.gentoo.org/glsa/202003-26",
+          "https://usn.ubuntu.com/4127-1/",
+          "https://usn.ubuntu.com/4127-2/",
+          "https://usn.ubuntu.com/usn/usn-4127-1",
+          "https://usn.ubuntu.com/usn/usn-4127-2",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html"
+        ],
+        "PublishedDate": "2019-07-13T21:15:00Z",
+        "LastModifiedDate": "2020-07-15T12:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-16056",
@@ -1169,19 +2961,60 @@
         "Title": "python: email.utils.parseaddr wrongly parses email addresses",
         "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 7.3
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-16056.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1764.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00062.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00063.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00012.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00021.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00040.html",
+          "https://access.redhat.com/errata/RHSA-2019:3725",
+          "https://access.redhat.com/errata/RHSA-2019:3948",
           "https://bugs.python.org/issue34155",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16056",
           "https://github.com/python/cpython/commit/8cb65d1381b027f0b09ee36bfed7f35bb4dec9a9",
+          "https://lists.apache.org/thread.html/r1b103833cb5bc8466e24ff0ecc5e75b45a705334ab6a444e64e840a0@%3Cissues.bookkeeper.apache.org%3E",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00018.html",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00019.html",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00011.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4X3HW5JRZ7GCPSR7UHJOLD7AWLTQCDVR/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BEARDOTXCYPYELKBD2KWZ27GSPXDI3GQ/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/COATURTCY7G67AYI6UDV5B2JZTBCKIDX/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/E2HP37NUVLQSBW3J735A2DQDOZ4ZGBLY/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ER6LONC2B2WYIO56GBQUDU6QTWZDPUNQ/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JCPGLTTOBB3QEARDX4JOYURP6ELNNA2V/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K4KZEFP6E4YPYB52AF4WXCUDSGQOTF37/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/NF3DRDGMVIRYNZMSLJIHNW47HOUQYXVG/"
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K7HNVIFMETMFWWWUNTB72KYJYXCZOS5V/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/M34WOYCDKTDE5KLUACE2YIEH7D37KHRX/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/NF3DRDGMVIRYNZMSLJIHNW47HOUQYXVG/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/OYGESQSGIHDCIGOBVF7VXCMIE6YDWRYB/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/QASRD4E2G65GGEHYKVHYCXB2XWAGTNL4/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/QP46PQSUKYPGWTADQ67NOV3BUN6JM34Z/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SDQQ56P7ZZR64XV5DUVWNSNXKKEXUG2J/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZBTGPBUABGXZ7WH7677OEM3NSP6ZEA76/",
+          "https://security.netapp.com/advisory/ntap-20190926-0005/",
+          "https://usn.ubuntu.com/4151-1/",
+          "https://usn.ubuntu.com/4151-2/",
+          "https://usn.ubuntu.com/usn/usn-4151-1",
+          "https://usn.ubuntu.com/usn/usn-4151-2",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
+          "https://www.oracle.com/security-alerts/cpujul2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-06T18:15:00Z",
+        "LastModifiedDate": "2020-07-29T12:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-16935",
@@ -1195,17 +3028,144 @@
         "Title": "python: XSS vulnerability in the documentation XML-RPC server in server_title field",
         "Description": "The documentation XML-RPC server in Python through 2.7.16, 3.x through 3.6.9, and 3.7.x through 3.7.4 has XSS via the server_title field. This occurs in Lib/DocXMLRPCServer.py in Python 2.x, and in Lib/xmlrpc/server.py in Python 3.x. If set_server_title is called with untrusted input, arbitrary JavaScript can be delivered to clients that visit the http URL for this server.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+            "V2Score": 4.3,
+            "V3Score": 6.1
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+            "V3Score": 6.1
+          }
+        },
         "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00062.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00063.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00012.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00021.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00040.html",
           "https://bugs.python.org/issue38243",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16935",
           "https://github.com/python/cpython/blob/35c0809158be7feae4c4f877a08b93baea2d8291/Lib/xmlrpc/server.py#L897",
           "https://github.com/python/cpython/blob/e007860b8b3609ce0bc62b1780efaa06241520bd/Lib/DocXMLRPCServer.py#L213",
           "https://github.com/python/cpython/pull/16373",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00011.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4X3HW5JRZ7GCPSR7UHJOLD7AWLTQCDVR/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BEARDOTXCYPYELKBD2KWZ27GSPXDI3GQ/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/COATURTCY7G67AYI6UDV5B2JZTBCKIDX/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JCPGLTTOBB3QEARDX4JOYURP6ELNNA2V/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K7HNVIFMETMFWWWUNTB72KYJYXCZOS5V/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/M34WOYCDKTDE5KLUACE2YIEH7D37KHRX/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/OYGESQSGIHDCIGOBVF7VXCMIE6YDWRYB/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZBTGPBUABGXZ7WH7677OEM3NSP6ZEA76/",
           "https://security.netapp.com/advisory/ntap-20191017-0004/",
           "https://usn.ubuntu.com/4151-1/",
-          "https://usn.ubuntu.com/4151-2/"
+          "https://usn.ubuntu.com/4151-2/",
+          "https://usn.ubuntu.com/usn/usn-4151-1",
+          "https://usn.ubuntu.com/usn/usn-4151-2",
+          "https://www.oracle.com/security-alerts/cpujul2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-28T02:15:00Z",
+        "LastModifiedDate": "2020-07-15T12:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-8492",
+        "PkgName": "python27",
+        "InstalledVersion": "2.7.16-1.129.amzn1",
+        "FixedVersion": "2.7.18-1.138.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "python: wrong backtracking in urllib.request.AbstractBasicAuthHandler allows for a ReDoS",
+        "Description": "Python 2.7 through 2.7.17, 3.5 through 3.5.9, 3.6 through 3.6.10, 3.7 through 3.7.6, and 3.8 through 3.8.1 allows an HTTP server to conduct Regular Expression Denial of Service (ReDoS) attacks against a client because of urllib.request.AbstractBasicAuthHandler catastrophic backtracking.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:C",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V2Score": 7.1,
+            "V3Score": 6.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V3Score": 6.5
+          }
+        },
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00003.html",
+          "https://bugs.python.org/issue39503",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-8492",
+          "https://github.com/python/cpython/commit/0b297d4ff1c0e4480ad33acae793fbaf4bf015b4",
+          "https://github.com/python/cpython/pull/18284",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00011.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/7WOKDEXLYW5UQ4S7PA7E37IITOC7C56J/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/A5NSAX4SC3V64PGZUPH7PRDLSON34Q5A/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/APGWEMYZIY5VHLCSZ3HD67PA5Z2UQFGH/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UESGYI5XDAHJBATEZN3MHNDUBDH47AS6/",
+          "https://python-security.readthedocs.io/vuln/urllib-basic-auth-regex.html",
+          "https://security.gentoo.org/glsa/202005-09",
+          "https://security.netapp.com/advisory/ntap-20200221-0001/",
+          "https://usn.ubuntu.com/4333-1/",
+          "https://usn.ubuntu.com/4333-2/",
+          "https://usn.ubuntu.com/usn/usn-4333-1",
+          "https://usn.ubuntu.com/usn/usn-4333-2"
+        ],
+        "PublishedDate": "2020-01-30T19:15:00Z",
+        "LastModifiedDate": "2020-07-15T12:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2018-20852",
+        "PkgName": "python27-libs",
+        "InstalledVersion": "2.7.16-1.129.amzn1",
+        "FixedVersion": "2.7.18-1.137.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "python: Cookie domain check returns incorrect results",
+        "Description": "http.cookiejar.DefaultPolicy.domain_return_ok in Lib/http/cookiejar.py in Python before 3.7.3 does not correctly validate the domain: it can be tricked into sending existing cookies to the wrong server. An attacker may abuse this flaw by using a server with a hostname that has another valid hostname as a suffix (e.g., pythonicexample.com to steal cookies for example.com). When a program uses http.cookiejar.DefaultPolicy and tries to do an HTTP connection to an attacker-controlled server, existing cookies can be leaked to the attacker. This affects 2.x through 2.7.16, 3.x before 3.4.10, 3.5.x before 3.5.7, 3.6.x before 3.6.9, and 3.7.x before 3.7.3.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+            "V2Score": 5,
+            "V3Score": 5.3
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+            "V3Score": 5.3
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2018-20852.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1764.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00071.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00074.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00040.html",
+          "https://access.redhat.com/errata/RHSA-2019:3725",
+          "https://access.redhat.com/errata/RHSA-2019:3948",
+          "https://bugs.python.org/issue35121",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20852",
+          "https://lists.debian.org/debian-lts-announce/2019/08/msg00022.html",
+          "https://lists.debian.org/debian-lts-announce/2019/08/msg00040.html",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00011.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/COATURTCY7G67AYI6UDV5B2JZTBCKIDX/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K7HNVIFMETMFWWWUNTB72KYJYXCZOS5V/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZBTGPBUABGXZ7WH7677OEM3NSP6ZEA76/",
+          "https://python-security.readthedocs.io/vuln/cookie-domain-check.html",
+          "https://security.gentoo.org/glsa/202003-26",
+          "https://usn.ubuntu.com/4127-1/",
+          "https://usn.ubuntu.com/4127-2/",
+          "https://usn.ubuntu.com/usn/usn-4127-1",
+          "https://usn.ubuntu.com/usn/usn-4127-2",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html"
+        ],
+        "PublishedDate": "2019-07-13T21:15:00Z",
+        "LastModifiedDate": "2020-07-15T12:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-16056",
@@ -1219,19 +3179,60 @@
         "Title": "python: email.utils.parseaddr wrongly parses email addresses",
         "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 7.3
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-16056.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1764.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00062.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00063.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00012.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00021.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00040.html",
+          "https://access.redhat.com/errata/RHSA-2019:3725",
+          "https://access.redhat.com/errata/RHSA-2019:3948",
           "https://bugs.python.org/issue34155",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16056",
           "https://github.com/python/cpython/commit/8cb65d1381b027f0b09ee36bfed7f35bb4dec9a9",
+          "https://lists.apache.org/thread.html/r1b103833cb5bc8466e24ff0ecc5e75b45a705334ab6a444e64e840a0@%3Cissues.bookkeeper.apache.org%3E",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00018.html",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00019.html",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00011.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4X3HW5JRZ7GCPSR7UHJOLD7AWLTQCDVR/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BEARDOTXCYPYELKBD2KWZ27GSPXDI3GQ/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/COATURTCY7G67AYI6UDV5B2JZTBCKIDX/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/E2HP37NUVLQSBW3J735A2DQDOZ4ZGBLY/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ER6LONC2B2WYIO56GBQUDU6QTWZDPUNQ/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JCPGLTTOBB3QEARDX4JOYURP6ELNNA2V/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K4KZEFP6E4YPYB52AF4WXCUDSGQOTF37/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/NF3DRDGMVIRYNZMSLJIHNW47HOUQYXVG/"
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K7HNVIFMETMFWWWUNTB72KYJYXCZOS5V/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/M34WOYCDKTDE5KLUACE2YIEH7D37KHRX/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/NF3DRDGMVIRYNZMSLJIHNW47HOUQYXVG/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/OYGESQSGIHDCIGOBVF7VXCMIE6YDWRYB/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/QASRD4E2G65GGEHYKVHYCXB2XWAGTNL4/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/QP46PQSUKYPGWTADQ67NOV3BUN6JM34Z/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SDQQ56P7ZZR64XV5DUVWNSNXKKEXUG2J/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZBTGPBUABGXZ7WH7677OEM3NSP6ZEA76/",
+          "https://security.netapp.com/advisory/ntap-20190926-0005/",
+          "https://usn.ubuntu.com/4151-1/",
+          "https://usn.ubuntu.com/4151-2/",
+          "https://usn.ubuntu.com/usn/usn-4151-1",
+          "https://usn.ubuntu.com/usn/usn-4151-2",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
+          "https://www.oracle.com/security-alerts/cpujul2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-06T18:15:00Z",
+        "LastModifiedDate": "2020-07-29T12:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-16935",
@@ -1245,17 +3246,93 @@
         "Title": "python: XSS vulnerability in the documentation XML-RPC server in server_title field",
         "Description": "The documentation XML-RPC server in Python through 2.7.16, 3.x through 3.6.9, and 3.7.x through 3.7.4 has XSS via the server_title field. This occurs in Lib/DocXMLRPCServer.py in Python 2.x, and in Lib/xmlrpc/server.py in Python 3.x. If set_server_title is called with untrusted input, arbitrary JavaScript can be delivered to clients that visit the http URL for this server.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+            "V2Score": 4.3,
+            "V3Score": 6.1
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+            "V3Score": 6.1
+          }
+        },
         "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00062.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00063.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00012.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00021.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00040.html",
           "https://bugs.python.org/issue38243",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16935",
           "https://github.com/python/cpython/blob/35c0809158be7feae4c4f877a08b93baea2d8291/Lib/xmlrpc/server.py#L897",
           "https://github.com/python/cpython/blob/e007860b8b3609ce0bc62b1780efaa06241520bd/Lib/DocXMLRPCServer.py#L213",
           "https://github.com/python/cpython/pull/16373",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00011.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4X3HW5JRZ7GCPSR7UHJOLD7AWLTQCDVR/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BEARDOTXCYPYELKBD2KWZ27GSPXDI3GQ/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/COATURTCY7G67AYI6UDV5B2JZTBCKIDX/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JCPGLTTOBB3QEARDX4JOYURP6ELNNA2V/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K7HNVIFMETMFWWWUNTB72KYJYXCZOS5V/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/M34WOYCDKTDE5KLUACE2YIEH7D37KHRX/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/OYGESQSGIHDCIGOBVF7VXCMIE6YDWRYB/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZBTGPBUABGXZ7WH7677OEM3NSP6ZEA76/",
           "https://security.netapp.com/advisory/ntap-20191017-0004/",
           "https://usn.ubuntu.com/4151-1/",
-          "https://usn.ubuntu.com/4151-2/"
+          "https://usn.ubuntu.com/4151-2/",
+          "https://usn.ubuntu.com/usn/usn-4151-1",
+          "https://usn.ubuntu.com/usn/usn-4151-2",
+          "https://www.oracle.com/security-alerts/cpujul2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-28T02:15:00Z",
+        "LastModifiedDate": "2020-07-15T12:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-8492",
+        "PkgName": "python27-libs",
+        "InstalledVersion": "2.7.16-1.129.amzn1",
+        "FixedVersion": "2.7.18-1.138.amzn1",
+        "Layer": {
+          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        },
+        "SeveritySource": "amazon",
+        "Title": "python: wrong backtracking in urllib.request.AbstractBasicAuthHandler allows for a ReDoS",
+        "Description": "Python 2.7 through 2.7.17, 3.5 through 3.5.9, 3.6 through 3.6.10, 3.7 through 3.7.6, and 3.8 through 3.8.1 allows an HTTP server to conduct Regular Expression Denial of Service (ReDoS) attacks against a client because of urllib.request.AbstractBasicAuthHandler catastrophic backtracking.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:C",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V2Score": 7.1,
+            "V3Score": 6.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V3Score": 6.5
+          }
+        },
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00003.html",
+          "https://bugs.python.org/issue39503",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-8492",
+          "https://github.com/python/cpython/commit/0b297d4ff1c0e4480ad33acae793fbaf4bf015b4",
+          "https://github.com/python/cpython/pull/18284",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00011.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/7WOKDEXLYW5UQ4S7PA7E37IITOC7C56J/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/A5NSAX4SC3V64PGZUPH7PRDLSON34Q5A/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/APGWEMYZIY5VHLCSZ3HD67PA5Z2UQFGH/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UESGYI5XDAHJBATEZN3MHNDUBDH47AS6/",
+          "https://python-security.readthedocs.io/vuln/urllib-basic-auth-regex.html",
+          "https://security.gentoo.org/glsa/202005-09",
+          "https://security.netapp.com/advisory/ntap-20200221-0001/",
+          "https://usn.ubuntu.com/4333-1/",
+          "https://usn.ubuntu.com/4333-2/",
+          "https://usn.ubuntu.com/usn/usn-4333-1",
+          "https://usn.ubuntu.com/usn/usn-4333-2"
+        ],
+        "PublishedDate": "2020-01-30T19:15:00Z",
+        "LastModifiedDate": "2020-07-15T12:15:00Z"
       }
     ]
   }

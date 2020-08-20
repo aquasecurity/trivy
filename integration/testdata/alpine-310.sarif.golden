@@ -75,6 +75,28 @@
               }
             },
             {
+              "id": "[MEDIUM] CVE-2020-1967",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2020-1967 Package: openssl"
+              },
+              "fullDescription": {
+                "text": "openssl: Segmentation fault in SSL_check_chain causes denial of service."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2020-1967\nSeverity: MEDIUM\nPackage: openssl\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1g-r0\nLink: [CVE-2020-1967](https://nvd.nist.gov/vuln/detail/cve-2020-1967)",
+                "markdown": "**Vulnerability CVE-2020-1967**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|openssl|1.1.1c-r0|1.1.1g-r0|[CVE-2020-1967](https://nvd.nist.gov/vuln/detail/cve-2020-1967)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "openssl"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
               "id": "[LOW] CVE-2019-1547",
               "name": "dockerfile_scan",
               "shortDescription": {
@@ -248,8 +270,28 @@
           }]
         },
         {
-          "ruleId": "[LOW] CVE-2019-1547",
+          "ruleId": "[MEDIUM] CVE-2020-1967",
           "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Server or client applications that call the SSL_check_chain() function during or after a TLS 1.3 handshake may crash due to a NULL pointer dereference as a result of incorrect handling of the &#34;signature_algorithms_cert&#34; TLS extension. The crash occurs if an invalid or unrecognised signature algorithm is received from the peer. This could be exploited by a malicious peer in a Denial of Service attack. OpenSSL version 1.1.1d, 1.1.1e, and 1.1.1f are affected by this issue. This issue did not affect OpenSSL versions prior to 1.1.1d. Fixed in OpenSSL 1.1.1g (Affected 1.1.1d-1.1.1f)."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-1547",
+          "ruleIndex": 4,
           "level": "error",
           "message": {
             "text": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s)."

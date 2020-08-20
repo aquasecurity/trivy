@@ -15,13 +15,27 @@
         "Title": "bash: when effective UID is not equal to its real UID the saved UID is not dropped",
         "Description": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support \"saved UID\" functionality, the saved UID is not dropped. An attacker with command execution in the shell can use \"enable -f\" for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected.",
         "Severity": "CRITICAL",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.2,
+            "V3Score": 7.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 7.8
+          }
+        },
         "References": [
           "http://packetstormsecurity.com/files/155498/Bash-5.0-Patch-11-Privilege-Escalation.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18276",
           "https://github.com/bminor/bash/commit/951bdaad7a18cc0dc1036bba86b18b90874d39ff",
+          "https://security.netapp.com/advisory/ntap-20200430-0003/",
           "https://www.youtube.com/watch?v=-wGtxJ8opa8"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-11-28T01:15:00Z",
+        "LastModifiedDate": "2020-04-30T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5481",
@@ -35,16 +49,38 @@
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "CRITICAL",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:H",
+            "V3Score": 5.7
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-5481.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1792.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
           "https://curl.haxx.se/docs/CVE-2019-5481.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6CI4QQ2RSZX4VCFM76SIWGKY6BY7UWIC/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+          "https://seclists.org/bugtraq/2020/Feb/36",
+          "https://security.gentoo.org/glsa/202003-29",
+          "https://security.netapp.com/advisory/ntap-20191004-0003/",
+          "https://usn.ubuntu.com/usn/usn-4129-1",
+          "https://www.debian.org/security/2020/dsa-4633",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
+          "https://www.oracle.com/security-alerts/cpujan2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-16T19:15:00Z",
+        "LastModifiedDate": "2019-09-18T00:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5482",
@@ -58,6 +94,18 @@
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "CRITICAL",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 6.3
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-5482.html",
           "http://linux.oracle.com/errata/ELSA-2020-5562.html",
@@ -65,11 +113,21 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
           "https://curl.haxx.se/docs/CVE-2019-5482.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6CI4QQ2RSZX4VCFM76SIWGKY6BY7UWIC/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+          "https://seclists.org/bugtraq/2020/Feb/36",
+          "https://security.gentoo.org/glsa/202003-29",
+          "https://security.netapp.com/advisory/ntap-20191004-0003/",
+          "https://security.netapp.com/advisory/ntap-20200416-0003/",
+          "https://usn.ubuntu.com/usn/usn-4129-1",
+          "https://usn.ubuntu.com/usn/usn-4129-2",
+          "https://www.debian.org/security/2020/dsa-4633",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
+          "https://www.oracle.com/security-alerts/cpujan2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-16T19:15:00Z",
+        "LastModifiedDate": "2019-09-18T00:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16890",
@@ -83,20 +141,61 @@
         "Title": "curl: NTLM type-2 heap out-of-bounds buffer read",
         "Description": "libcurl versions from 7.36.0 to before 7.64.0 is vulnerable to a heap buffer out-of-bounds read. The function handling incoming NTLM type-2 messages (`lib/vauth/ntlm.c:ntlm_decode_type2_target`) does not validate incoming data correctly and is subject to an integer overflow vulnerability. Using that overflow, a malicious or broken NTLM server could trick libcurl to accept a bad length + offset combination that would lead to a buffer read out-of-bounds.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+            "V3Score": 4.3
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-16890.html",
           "http://linux.oracle.com/errata/ELSA-2019-3701.html",
           "http://www.securityfocus.com/bid/106947",
+          "https://access.redhat.com/errata/RHSA-2019:3701",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16890",
           "https://cert-portal.siemens.com/productcert/pdf/ssa-436177.pdf",
           "https://curl.haxx.se/docs/CVE-2018-16890.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16890",
           "https://lists.apache.org/thread.html/8338a0f605bdbb3a6098bb76f666a95fc2b2f53f37fa1ecc89f1146f@%3Cdevnull.infra.apache.org%3E",
           "https://security.netapp.com/advisory/ntap-20190315-0001/",
+          "https://support.f5.com/csp/article/K03314397?utm_source=f5support\u0026amp;utm_medium=RSS",
           "https://usn.ubuntu.com/3882-1/",
+          "https://usn.ubuntu.com/usn/usn-3882-1",
           "https://www.debian.org/security/2019/dsa-4386",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
           "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html"
+        ],
+        "PublishedDate": "2019-02-06T20:29:00Z",
+        "LastModifiedDate": "2019-07-23T23:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-8177",
+        "PkgName": "curl",
+        "InstalledVersion": "7.59.0-7.ph2",
+        "FixedVersion": "7.59.0-10.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "curl: Incorrect argument check can allow remote servers to overwrite local files",
+        "Description": "A flaw was found in curl. Overwriting local files is possible when using a certain combination of command line options. Requesting content from a malicious server could lead to overwriting local files with compromised files leading to unknown effects. The highest threat from this vulnerability is to file integrity.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:L/UI:R/S:U/C:N/I:H/A:L",
+            "V3Score": 5.4
+          }
+        },
+        "References": [
+          "https://curl.haxx.se/docs/CVE-2020-8177.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-8177",
+          "https://usn.ubuntu.com/usn/usn-4402-1"
         ],
         "PublishedDate": "0001-01-01T00:00:00Z",
         "LastModifiedDate": "0001-01-01T00:00:00Z"
@@ -113,16 +212,38 @@
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "CRITICAL",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:H",
+            "V3Score": 5.7
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-5481.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1792.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
           "https://curl.haxx.se/docs/CVE-2019-5481.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6CI4QQ2RSZX4VCFM76SIWGKY6BY7UWIC/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+          "https://seclists.org/bugtraq/2020/Feb/36",
+          "https://security.gentoo.org/glsa/202003-29",
+          "https://security.netapp.com/advisory/ntap-20191004-0003/",
+          "https://usn.ubuntu.com/usn/usn-4129-1",
+          "https://www.debian.org/security/2020/dsa-4633",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
+          "https://www.oracle.com/security-alerts/cpujan2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-16T19:15:00Z",
+        "LastModifiedDate": "2019-09-18T00:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5482",
@@ -136,6 +257,18 @@
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "CRITICAL",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 6.3
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-5482.html",
           "http://linux.oracle.com/errata/ELSA-2020-5562.html",
@@ -143,11 +276,21 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
           "https://curl.haxx.se/docs/CVE-2019-5482.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6CI4QQ2RSZX4VCFM76SIWGKY6BY7UWIC/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+          "https://seclists.org/bugtraq/2020/Feb/36",
+          "https://security.gentoo.org/glsa/202003-29",
+          "https://security.netapp.com/advisory/ntap-20191004-0003/",
+          "https://security.netapp.com/advisory/ntap-20200416-0003/",
+          "https://usn.ubuntu.com/usn/usn-4129-1",
+          "https://usn.ubuntu.com/usn/usn-4129-2",
+          "https://www.debian.org/security/2020/dsa-4633",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
+          "https://www.oracle.com/security-alerts/cpujan2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-16T19:15:00Z",
+        "LastModifiedDate": "2019-09-18T00:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-16890",
@@ -161,20 +304,61 @@
         "Title": "curl: NTLM type-2 heap out-of-bounds buffer read",
         "Description": "libcurl versions from 7.36.0 to before 7.64.0 is vulnerable to a heap buffer out-of-bounds read. The function handling incoming NTLM type-2 messages (`lib/vauth/ntlm.c:ntlm_decode_type2_target`) does not validate incoming data correctly and is subject to an integer overflow vulnerability. Using that overflow, a malicious or broken NTLM server could trick libcurl to accept a bad length + offset combination that would lead to a buffer read out-of-bounds.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
+            "V3Score": 4.3
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-16890.html",
           "http://linux.oracle.com/errata/ELSA-2019-3701.html",
           "http://www.securityfocus.com/bid/106947",
+          "https://access.redhat.com/errata/RHSA-2019:3701",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-16890",
           "https://cert-portal.siemens.com/productcert/pdf/ssa-436177.pdf",
           "https://curl.haxx.se/docs/CVE-2018-16890.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16890",
           "https://lists.apache.org/thread.html/8338a0f605bdbb3a6098bb76f666a95fc2b2f53f37fa1ecc89f1146f@%3Cdevnull.infra.apache.org%3E",
           "https://security.netapp.com/advisory/ntap-20190315-0001/",
+          "https://support.f5.com/csp/article/K03314397?utm_source=f5support\u0026amp;utm_medium=RSS",
           "https://usn.ubuntu.com/3882-1/",
+          "https://usn.ubuntu.com/usn/usn-3882-1",
           "https://www.debian.org/security/2019/dsa-4386",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
           "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html"
+        ],
+        "PublishedDate": "2019-02-06T20:29:00Z",
+        "LastModifiedDate": "2019-07-23T23:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-8177",
+        "PkgName": "curl-libs",
+        "InstalledVersion": "7.59.0-7.ph2",
+        "FixedVersion": "7.59.0-10.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "curl: Incorrect argument check can allow remote servers to overwrite local files",
+        "Description": "A flaw was found in curl. Overwriting local files is possible when using a certain combination of command line options. Requesting content from a malicious server could lead to overwriting local files with compromised files leading to unknown effects. The highest threat from this vulnerability is to file integrity.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:L/UI:R/S:U/C:N/I:H/A:L",
+            "V3Score": 5.4
+          }
+        },
+        "References": [
+          "https://curl.haxx.se/docs/CVE-2020-8177.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-8177",
+          "https://usn.ubuntu.com/usn/usn-4402-1"
         ],
         "PublishedDate": "0001-01-01T00:00:00Z",
         "LastModifiedDate": "0001-01-01T00:00:00Z"
@@ -188,19 +372,40 @@
           "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
         },
         "SeveritySource": "photon",
-        "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
+        "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 6.4
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-5094.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1913.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://seclists.org/bugtraq/2019/Sep/58",
+          "https://security.gentoo.org/glsa/202003-05",
+          "https://security.netapp.com/advisory/ntap-20200115-0002/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+          "https://usn.ubuntu.com/4142-1/",
           "https://usn.ubuntu.com/4142-2/",
+          "https://usn.ubuntu.com/usn/usn-4142-1",
+          "https://usn.ubuntu.com/usn/usn-4142-2",
           "https://www.debian.org/security/2019/dsa-4535"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-24T22:15:00Z",
+        "LastModifiedDate": "2019-09-28T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -211,19 +416,34 @@
           "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
         },
         "SeveritySource": "photon",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+        "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+          "https://lists.debian.org/debian-lts-announce/2020/03/msg00030.html",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00021.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/"
+          "https://usn.ubuntu.com/4249-1/",
+          "https://usn.ubuntu.com/usn/usn-4249-1"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-08T16:15:00Z",
+        "LastModifiedDate": "2020-07-26T18:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-20843",
@@ -237,7 +457,20 @@
         "Title": "expat: large number of colons in input makes parser consume high amount of resources, leading to DoS",
         "Description": "In libexpat in Expat before 2.2.7, XML input including XML names that contain a large number of colons could make the XML parser consume a high amount of RAM and CPU resources while processing (enough to be usable for denial-of-service attacks).",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:C",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 7.8,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "V3Score": 5.3
+          }
+        },
         "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-07/msg00039.html",
           "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=5226",
           "https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=931031",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20843",
@@ -246,14 +479,230 @@
           "https://github.com/libexpat/libexpat/pull/262",
           "https://github.com/libexpat/libexpat/pull/262/commits/11f8838bf99ea0a6f0b76f9760c43704d00c4ff6",
           "https://lists.debian.org/debian-lts-announce/2019/06/msg00028.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CEJJSQSG3KSUQY4FPVHZ7ZTT7FORMFVD/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IDAUGEB3TUP6NEKJDBUBZX7N5OAUOOOK/",
           "https://seclists.org/bugtraq/2019/Jun/39",
+          "https://security.gentoo.org/glsa/201911-08",
           "https://security.netapp.com/advisory/ntap-20190703-0001/",
+          "https://support.f5.com/csp/article/K51011533",
           "https://usn.ubuntu.com/4040-1/",
           "https://usn.ubuntu.com/4040-2/",
-          "https://www.debian.org/security/2019/dsa-4472"
+          "https://usn.ubuntu.com/usn/usn-4040-1",
+          "https://usn.ubuntu.com/usn/usn-4040-2",
+          "https://www.debian.org/security/2019/dsa-4472",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-06-24T17:15:00Z",
+        "LastModifiedDate": "2019-06-26T21:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-15903",
+        "PkgName": "expat-libs",
+        "InstalledVersion": "2.2.4-1.ph2",
+        "FixedVersion": "2.2.9-1.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "expat: heap-based buffer over-read via crafted XML input",
+        "Description": "In libexpat before 2.2.8, crafted XML input could fool the parser into changing from DTD parsing to document parsing too early; a consecutive call to XML_GetCurrentLineNumber (or XML_GetCurrentColumnNumber) then resulted in a heap-based buffer over-read.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V3Score": 5.5
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2019-15903.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3237.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00080.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00081.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00000.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00002.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00003.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00013.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00016.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00017.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00018.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00019.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00008.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00040.html",
+          "http://packetstormsecurity.com/files/154503/Slackware-Security-Advisory-expat-Updates.html",
+          "http://packetstormsecurity.com/files/154927/Slackware-Security-Advisory-python-Updates.html",
+          "http://packetstormsecurity.com/files/154947/Slackware-Security-Advisory-mozilla-firefox-Updates.html",
+          "http://seclists.org/fulldisclosure/2019/Dec/23",
+          "http://seclists.org/fulldisclosure/2019/Dec/26",
+          "http://seclists.org/fulldisclosure/2019/Dec/27",
+          "http://seclists.org/fulldisclosure/2019/Dec/30",
+          "https://access.redhat.com/errata/RHSA-2019:3210",
+          "https://access.redhat.com/errata/RHSA-2019:3237",
+          "https://access.redhat.com/errata/RHSA-2019:3756",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15903",
+          "https://github.com/libexpat/libexpat/commit/c20b758c332d9a13afbbb276d30db1d183a85d43",
+          "https://github.com/libexpat/libexpat/issues/317",
+          "https://github.com/libexpat/libexpat/issues/342",
+          "https://github.com/libexpat/libexpat/pull/318",
+          "https://lists.debian.org/debian-lts-announce/2019/11/msg00006.html",
+          "https://lists.debian.org/debian-lts-announce/2019/11/msg00017.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/A4TZKPJFTURRLXIGLB34WVKQ5HGY6JJA/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BDUTI5TVQWIGGQXPEVI4T2ENHFSBMIBP/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/S26LGXXQ7YF2BP3RGOWELBFKM6BHF6UG/",
+          "https://seclists.org/bugtraq/2019/Dec/17",
+          "https://seclists.org/bugtraq/2019/Dec/21",
+          "https://seclists.org/bugtraq/2019/Dec/23",
+          "https://seclists.org/bugtraq/2019/Nov/1",
+          "https://seclists.org/bugtraq/2019/Nov/24",
+          "https://seclists.org/bugtraq/2019/Oct/29",
+          "https://seclists.org/bugtraq/2019/Sep/30",
+          "https://seclists.org/bugtraq/2019/Sep/37",
+          "https://security.gentoo.org/glsa/201911-08",
+          "https://security.netapp.com/advisory/ntap-20190926-0004/",
+          "https://support.apple.com/kb/HT210785",
+          "https://support.apple.com/kb/HT210788",
+          "https://support.apple.com/kb/HT210789",
+          "https://support.apple.com/kb/HT210790",
+          "https://support.apple.com/kb/HT210793",
+          "https://support.apple.com/kb/HT210794",
+          "https://support.apple.com/kb/HT210795",
+          "https://usn.ubuntu.com/4132-1/",
+          "https://usn.ubuntu.com/4132-2/",
+          "https://usn.ubuntu.com/4165-1/",
+          "https://usn.ubuntu.com/4202-1/",
+          "https://usn.ubuntu.com/4335-1/",
+          "https://usn.ubuntu.com/usn/usn-4132-1",
+          "https://usn.ubuntu.com/usn/usn-4132-2",
+          "https://usn.ubuntu.com/usn/usn-4165-1",
+          "https://usn.ubuntu.com/usn/usn-4202-1",
+          "https://usn.ubuntu.com/usn/usn-4335-1",
+          "https://www.debian.org/security/2019/dsa-4530",
+          "https://www.debian.org/security/2019/dsa-4549",
+          "https://www.debian.org/security/2019/dsa-4571",
+          "https://www.mozilla.org/en-US/security/advisories/mfsa2019-34/#CVE-2019-15903",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html"
+        ],
+        "PublishedDate": "2019-09-04T06:15:00Z",
+        "LastModifiedDate": "2019-09-12T21:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-1752",
+        "PkgName": "glibc",
+        "InstalledVersion": "2.26-16.ph2",
+        "FixedVersion": "2.26-18.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "glibc: use-after-free in glob() function when expanding ~user",
+        "Description": "A use-after-free vulnerability introduced in glibc upstream version 2.14 was found in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution. This was fixed in version 2.32.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:H/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 3.7,
+            "V3Score": 7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V3Score": 7
+          }
+        },
+        "References": [
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1752",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1752",
+          "https://security.netapp.com/advisory/ntap-20200511-0005/",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=25414",
+          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=ddc650e9b3dc916eab417ce9f79e67337b05035c",
+          "https://usn.ubuntu.com/4416-1/",
+          "https://usn.ubuntu.com/usn/usn-4416-1"
+        ],
+        "PublishedDate": "2020-04-30T17:15:00Z",
+        "LastModifiedDate": "2020-07-09T20:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2016-10739",
+        "PkgName": "glibc",
+        "InstalledVersion": "2.26-16.ph2",
+        "FixedVersion": "2.26-17.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V2Score": 4.6,
+            "V3Score": 5.3
+          },
+          "redhat": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 4.6
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2016-10739.html",
+          "http://linux.oracle.com/errata/ELSA-2019-3513.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
+          "http://www.securityfocus.com/bid/106672",
+          "https://access.redhat.com/errata/RHSA-2019:2118",
+          "https://access.redhat.com/errata/RHSA-2019:3513",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
+        ],
+        "PublishedDate": "2019-01-21T19:29:00Z",
+        "LastModifiedDate": "2019-08-06T17:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-10029",
+        "PkgName": "glibc",
+        "InstalledVersion": "2.26-16.ph2",
+        "FixedVersion": "2.26-17.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "glibc: stack corruption from crafted input in cosl, sinl, sincosl, and tanl functions",
+        "Description": "The GNU C Library (aka glibc or libc6) before 2.32 could overflow an on-stack buffer during range reduction if an input to an 80-bit long double function contains a non-canonical bit pattern, a seen when passing a 0x5d414141414141410000 value to sinl on x86 targets. This is related to sysdeps/ieee754/ldbl-96/e_rem_pio2l.c.",
+        "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:H",
+            "V3Score": 6.2
+          }
+        },
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00033.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10029",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/23N76M3EDP2GIW4GOIQRYTKRE7PPBRB2/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JZTFUD5VH2GU3YOXA2KBQSBIDZRDWNZ3/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VU5JJGENOK7K4X5RYAA5PL647C6HD22E/",
+          "https://security.gentoo.org/glsa/202006-04",
+          "https://security.netapp.com/advisory/ntap-20200327-0003/",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=25487",
+          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;a=commit;h=9333498794cde1d5cca518badf79533a24114b6f",
+          "https://usn.ubuntu.com/4416-1/",
+          "https://usn.ubuntu.com/usn/usn-4416-1"
+        ],
+        "PublishedDate": "2020-03-04T15:15:00Z",
+        "LastModifiedDate": "2020-07-09T20:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-20387",
@@ -267,14 +716,27 @@
         "Title": "libsolv: out-of-bounds read in repodata_schema2id in repodata.c",
         "Description": "repodata_schema2id in repodata.c in libsolv before 0.7.6 has a heap-based buffer over-read via a last schema whose length is less than the length of the input schema.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-20387",
           "https://github.com/openSUSE/libsolv/commit/fdb9c9c03508990e4583046b590c30d958f272da",
+          "https://github.com/openSUSE/libsolv/commit/fdb9c9c03508990e4583046b590c30d958f272da (0.7.6)",
           "https://github.com/openSUSE/libsolv/compare/0.7.5...0.7.6",
           "https://lists.debian.org/debian-lts-announce/2020/01/msg00034.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-21T23:15:00Z",
+        "LastModifiedDate": "2020-01-30T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-13115",
@@ -288,16 +750,33 @@
         "Title": "libssh2: integer overflow in kex_method_diffie_hellman_group_exchange_sha256_key_exchange in kex.c leads to out-of-bounds write",
         "Description": "In libssh2 before 1.9.0, kex_method_diffie_hellman_group_exchange_sha256_key_exchange in kex.c has an integer overflow that could lead to an out-of-bounds read in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to disclose sensitive information or cause a denial of service condition on the client system when a user connects to the server. This is related to an _libssh2_check_length mistake, and is different from the various issues fixed in 1.8.1, such as CVE-2019-3855.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:N/A:H",
+            "V2Score": 5.8,
+            "V3Score": 8.1
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:R/S:U/C:N/I:H/A:H",
+            "V3Score": 6.8
+          }
+        },
         "References": [
           "https://blog.semmle.com/libssh2-integer-overflow/",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-13115",
           "https://github.com/libssh2/libssh2/compare/02ecf17...42d37aa",
           "https://github.com/libssh2/libssh2/pull/350",
           "https://libssh2.org/changes.html",
-          "https://lists.debian.org/debian-lts-announce/2019/07/msg00024.html"
+          "https://lists.debian.org/debian-lts-announce/2019/07/msg00024.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6LUNHPW64IGCASZ4JQ2J5KDXNZN53DWW/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/M7IF3LNHOA75O4WZWIHJLIRMA5LJUED3/",
+          "https://security.netapp.com/advisory/ntap-20190806-0002/",
+          "https://support.f5.com/csp/article/K13322484",
+          "https://support.f5.com/csp/article/K13322484?utm_source=f5support\u0026amp;utm_medium=RSS"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-07-16T18:15:00Z",
+        "LastModifiedDate": "2019-07-25T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17498",
@@ -311,6 +790,18 @@
         "Title": "libssh2: integer overflow in SSH_MSG_DISCONNECT logic in packet.c",
         "Description": "In libssh2 v1.9.0 and earlier versions, the SSH_MSG_DISCONNECT logic in packet.c has an integer overflow in a bounds check, enabling an attacker to specify an arbitrary (out-of-bounds) offset for a subsequent memory read. A crafted SSH server may be able to disclose sensitive information or cause a denial of service condition on the client system when a user connects to the server.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:N/A:H",
+            "V2Score": 5.8,
+            "V3Score": 8.1
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:N/A:N",
+            "V3Score": 6.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00026.html",
           "https://blog.semmle.com/libssh2-integer-overflow-CVE-2019-17498/",
@@ -319,10 +810,11 @@
           "https://github.com/libssh2/libssh2/blob/42d37aa63129a1b2644bf6495198923534322d64/src/packet.c#L480",
           "https://github.com/libssh2/libssh2/pull/402/commits/1c6fa92b77e34d089493fe6d3e2c6c8775858b94",
           "https://lists.debian.org/debian-lts-announce/2019/11/msg00010.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/22H4Q5XMGS3QNSA7OCL3U7UQZ4NXMR5O/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TY7EEE34RFKCTXTMBQQWWSLXZWSCXNDB/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-21T22:15:00Z",
+        "LastModifiedDate": "2019-11-07T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17594",
@@ -336,6 +828,18 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V2Score": 4.6,
+            "V3Score": 5.3
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 5.3
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
@@ -343,8 +847,8 @@
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-14T21:15:00Z",
+        "LastModifiedDate": "2019-12-26T15:35:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17595",
@@ -358,6 +862,18 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:L",
+            "V2Score": 5.8,
+            "V3Score": 5.4
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
+            "V3Score": 5.4
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
@@ -365,8 +881,8 @@
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
           "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-10-14T21:15:00Z",
+        "LastModifiedDate": "2019-12-23T19:26:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1547",
@@ -380,19 +896,58 @@
         "Title": "openssl: side-channel weak encryption vulnerability",
         "Description": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+            "V2Score": 1.9,
+            "V3Score": 4.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.5
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-1547.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1840.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00054.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00072.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00012.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00016.html",
           "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html",
           "https://arxiv.org/abs/1909.01785",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1547",
           "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=21c856b75d81eff61aa63b4f036bb64a85bf6d46",
           "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=30c22fa8b1d840036b8e203585738df62a03cec8",
           "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=7c1709c2da5414f5b6133d00a03fc8c5bf996c7a",
+          "https://lists.debian.org/debian-lts-announce/2019/09/msg00026.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZN4VVQJ3JDCHGIHV4Y2YTXBYQZ6PWQ7E/",
+          "https://seclists.org/bugtraq/2019/Oct/0",
+          "https://seclists.org/bugtraq/2019/Oct/1",
           "https://seclists.org/bugtraq/2019/Sep/25",
+          "https://security.gentoo.org/glsa/201911-04",
           "https://security.netapp.com/advisory/ntap-20190919-0002/",
-          "https://www.openssl.org/news/secadv/20190910.txt"
+          "https://security.netapp.com/advisory/ntap-20200122-0002/",
+          "https://security.netapp.com/advisory/ntap-20200416-0003/",
+          "https://support.f5.com/csp/article/K73422160?utm_source=f5support\u0026amp;utm_medium=RSS",
+          "https://usn.ubuntu.com/4376-1/",
+          "https://usn.ubuntu.com/4376-2/",
+          "https://usn.ubuntu.com/usn/usn-4376-1",
+          "https://usn.ubuntu.com/usn/usn-4376-2",
+          "https://www.debian.org/security/2019/dsa-4539",
+          "https://www.debian.org/security/2019/dsa-4540",
+          "https://www.openssl.org/news/secadv/20190910.txt",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
+          "https://www.oracle.com/security-alerts/cpujan2020.html",
+          "https://www.oracle.com/security-alerts/cpujul2020.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html",
+          "https://www.tenable.com/security/tns-2019-08",
+          "https://www.tenable.com/security/tns-2019-09"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-10T17:15:00Z",
+        "LastModifiedDate": "2020-07-22T17:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1563",
@@ -406,18 +961,54 @@
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "LOW",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
+            "V2Score": 4.3,
+            "V3Score": 3.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
+            "V3Score": 3.7
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-1563.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1840.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00054.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00072.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00012.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00016.html",
           "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563",
           "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=08229ad838c50f644d7e928e2eef147b4308ad64",
           "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=631f94db0065c78181ca9ba5546ebc8bb3884b97",
           "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f",
+          "https://lists.debian.org/debian-lts-announce/2019/09/msg00026.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZN4VVQJ3JDCHGIHV4Y2YTXBYQZ6PWQ7E/",
+          "https://seclists.org/bugtraq/2019/Oct/0",
+          "https://seclists.org/bugtraq/2019/Oct/1",
           "https://seclists.org/bugtraq/2019/Sep/25",
+          "https://security.gentoo.org/glsa/201911-04",
           "https://security.netapp.com/advisory/ntap-20190919-0002/",
-          "https://www.openssl.org/news/secadv/20190910.txt"
+          "https://support.f5.com/csp/article/K97324400?utm_source=f5support\u0026amp;utm_medium=RSS",
+          "https://usn.ubuntu.com/4376-1/",
+          "https://usn.ubuntu.com/4376-2/",
+          "https://usn.ubuntu.com/usn/usn-4376-1",
+          "https://usn.ubuntu.com/usn/usn-4376-2",
+          "https://www.debian.org/security/2019/dsa-4539",
+          "https://www.debian.org/security/2019/dsa-4540",
+          "https://www.openssl.org/news/secadv/20190910.txt",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
+          "https://www.oracle.com/security-alerts/cpujan2020.html",
+          "https://www.oracle.com/security-alerts/cpujul2020.html",
+          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html",
+          "https://www.tenable.com/security/tns-2019-09"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-10T17:15:00Z",
+        "LastModifiedDate": "2020-07-22T17:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19317",
@@ -431,13 +1022,26 @@
         "Title": "sqlite: omits bits from the colUsed bitmask in the case of a generated column",
         "Description": "lookupName in resolve.c in SQLite 3.30.1 omits bits from the colUsed bitmask in the case of a generated column, which allows attackers to cause a denial of service or possibly have unspecified other impact.",
         "Severity": "CRITICAL",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "https://github.com/sqlite/sqlite/commit/522ebfa7cee96fb325a22ea3a2464a63485886a8",
           "https://github.com/sqlite/sqlite/commit/73bacb7f93eab9f4bd5a65cbc4ae242acf63c9e3",
-          "https://security.netapp.com/advisory/ntap-20191223-0001/"
+          "https://security.netapp.com/advisory/ntap-20191223-0001/",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-12-05T14:15:00Z",
+        "LastModifiedDate": "2020-04-15T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19603",
@@ -451,13 +1055,29 @@
         "Title": "sqlite: mishandles certain SELECT statements with a nonexistent VIEW, leading to DoS",
         "Description": "SQLite 3.30.1 mishandles certain SELECT statements with a nonexistent VIEW, leading to an application crash.",
         "Severity": "CRITICAL",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19603",
           "https://github.com/sqlite/sqlite/commit/527cbd4a104cb93bf3994b3dd3619a6299a78b13",
           "https://security.netapp.com/advisory/ntap-20191223-0001/",
+          "https://usn.ubuntu.com/4394-1/",
+          "https://usn.ubuntu.com/usn/usn-4394-1",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
           "https://www.sqlite.org/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-12-09T19:15:00Z",
+        "LastModifiedDate": "2020-06-16T20:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19646",
@@ -471,14 +1091,27 @@
         "Title": "sqlite: pragma.c mishandles NOT NULL in an integrity_check PRAGMA command in certain cases of generated columns",
         "Description": "pragma.c in SQLite through 3.30.1 mishandles NOT NULL in an integrity_check PRAGMA command in certain cases of generated columns.",
         "Severity": "CRITICAL",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 6.3
+          }
+        },
         "References": [
           "https://github.com/sqlite/sqlite/commit/926f796e8feec15f3836aa0a060ed906f8ae04d3",
           "https://github.com/sqlite/sqlite/commit/ebd70eedd5d6e6a890a670b5ee874a5eae86b4dd",
           "https://security.netapp.com/advisory/ntap-20191223-0001/",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
           "https://www.sqlite.org/"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-12-09T19:15:00Z",
+        "LastModifiedDate": "2019-12-23T05:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-20218",
@@ -492,12 +1125,139 @@
         "Title": "sqlite: selectExpander in select.c proceeds with WITH stack unwinding even after a parsing error",
         "Description": "selectExpander in select.c in SQLite 3.30.1 proceeds with WITH stack unwinding even after a parsing error.",
         "Severity": "CRITICAL",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-20218",
           "https://github.com/sqlite/sqlite/commit/a6c1a71cde082e09750465d5675699062922e387",
-          "https://usn.ubuntu.com/4298-1/"
+          "https://security.gentoo.org/glsa/202007-26",
+          "https://usn.ubuntu.com/4298-1/",
+          "https://usn.ubuntu.com/usn/usn-4298-1",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-02T14:16:00Z",
+        "LastModifiedDate": "2020-07-27T02:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-11656",
+        "PkgName": "sqlite-libs",
+        "InstalledVersion": "3.27.2-3.ph2",
+        "FixedVersion": "3.31.1-2.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "sqlite: use-after-free in the ALTER TABLE implementation",
+        "Description": "In SQLite through 3.31.1, the ALTER TABLE implementation has a use-after-free, as demonstrated by an ORDER BY clause that belongs to a compound SELECT statement.",
+        "Severity": "CRITICAL",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 8.8
+          }
+        },
+        "References": [
+          "https://security.FreeBSD.org/advisories/FreeBSD-SA-20:22.sqlite.asc",
+          "https://security.gentoo.org/glsa/202007-26",
+          "https://security.netapp.com/advisory/ntap-20200416-0001/",
+          "https://www.oracle.com/security-alerts/cpujul2020.html",
+          "https://www.sqlite.org/src/info/d09f8c3621d5f7f8",
+          "https://www3.sqlite.org/cgi/src/info/b64674919f673602"
+        ],
+        "PublishedDate": "2020-04-09T03:15:00Z",
+        "LastModifiedDate": "2020-08-05T20:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-13630",
+        "PkgName": "sqlite-libs",
+        "InstalledVersion": "3.27.2-3.ph2",
+        "FixedVersion": "3.32.1-1.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "sqlite: use-after-free in fts3EvalNextRow in ext/fts3/fts3.c",
+        "Description": "ext/fts3/fts3.c in SQLite before 3.32.0 has a use-after-free in fts3EvalNextRow, related to the snippet feature.",
+        "Severity": "CRITICAL",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.4,
+            "V3Score": 7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 7
+          }
+        },
+        "References": [
+          "https://bugs.chromium.org/p/chromium/issues/detail?id=1080459",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13630",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/L7KXQWHIY2MQP4LNM6ODWJENMXYYQYBN/",
+          "https://security.FreeBSD.org/advisories/FreeBSD-SA-20:22.sqlite.asc",
+          "https://security.gentoo.org/glsa/202007-26",
+          "https://security.netapp.com/advisory/ntap-20200608-0002/",
+          "https://sqlite.org/src/info/0d69f76f0865f962",
+          "https://usn.ubuntu.com/4394-1/",
+          "https://usn.ubuntu.com/usn/usn-4394-1",
+          "https://www.oracle.com/security-alerts/cpujul2020.html"
+        ],
+        "PublishedDate": "2020-05-27T15:15:00Z",
+        "LastModifiedDate": "2020-08-05T20:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-15358",
+        "PkgName": "sqlite-libs",
+        "InstalledVersion": "3.27.2-3.ph2",
+        "FixedVersion": "3.32.1-2.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "sqlite: heap-based buffer overflow in multiSelectOrderBy due to mishandling of query-flattener optimization in select.c",
+        "Description": "In SQLite before 3.32.3, select.c mishandles query-flattener optimization, leading to a multiSelectOrderBy heap overflow because of misuse of transitive properties for constant propagation.",
+        "Severity": "CRITICAL",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 5.5
+          }
+        },
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-15358",
+          "https://security.gentoo.org/glsa/202007-26",
+          "https://security.netapp.com/advisory/ntap-20200709-0001/",
+          "https://usn.ubuntu.com/4438-1/",
+          "https://usn.ubuntu.com/usn/usn-4438-1",
+          "https://www.sqlite.org/src/info/10fa79d00f8091e5",
+          "https://www.sqlite.org/src/timeline?p=version-3.32.3\u0026bt=version-3.32.2",
+          "https://www.sqlite.org/src/tktview?name=8f157e8010"
+        ],
+        "PublishedDate": "2020-06-27T12:15:00Z",
+        "LastModifiedDate": "2020-07-29T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-16168",
@@ -511,20 +1271,36 @@
         "Title": "sqlite: division by zero in whereLoopAddBtreeIndex in sqlite3.c",
         "Description": "In SQLite through 3.29.0, whereLoopAddBtreeIndex in sqlite3.c can crash a browser or other application because of missing validation of a sqlite_stat1 sz field, aka a \"severe division by zero in the query planner.\"",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V2Score": 4.3,
+            "V3Score": 6.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V3Score": 6.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00032.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00033.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16168",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XZARJHJJDBHI7CE5PZEBXS5HKK6HXKW2/",
+          "https://security.gentoo.org/glsa/202003-16",
           "https://security.netapp.com/advisory/ntap-20190926-0003/",
           "https://security.netapp.com/advisory/ntap-20200122-0003/",
           "https://usn.ubuntu.com/4205-1/",
+          "https://usn.ubuntu.com/usn/usn-4205-1",
           "https://www.mail-archive.com/sqlite-users@mailinglists.sqlite.org/msg116312.html",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html",
           "https://www.oracle.com/security-alerts/cpujan2020.html",
           "https://www.sqlite.org/src/info/e4598ecbdd18bd82945f6029013296690e719a62",
           "https://www.sqlite.org/src/timeline?c=98357d8c1263920b"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-09-09T17:15:00Z",
+        "LastModifiedDate": "2020-01-15T20:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19244",
@@ -538,12 +1314,27 @@
         "Title": "sqlite: allows a crash if a sub-select uses both DISTINCT and window functions and also has certain ORDER BY usage",
         "Description": "sqlite3Select in select.c in SQLite 3.30.1 allows a crash if a sub-select uses both DISTINCT and window functions, and also has certain ORDER BY usage.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19244",
           "https://github.com/sqlite/sqlite/commit/e59c562b3f6894f84c715772c4b116d7b5c01348",
-          "https://usn.ubuntu.com/4205-1/"
+          "https://usn.ubuntu.com/4205-1/",
+          "https://usn.ubuntu.com/usn/usn-4205-1",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-11-25T20:15:00Z",
+        "LastModifiedDate": "2020-04-15T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19880",
@@ -557,13 +1348,33 @@
         "Title": "sqlite: invalid pointer dereference in exprListAppendList in window.c",
         "Description": "exprListAppendList in window.c in SQLite 3.30.1 allows attackers to trigger an invalid pointer dereference because constant integer values in ORDER BY clauses of window definitions are mishandled.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00010.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00015.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00025.html",
+          "https://access.redhat.com/errata/RHSA-2020:0514",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19880",
           "https://github.com/sqlite/sqlite/commit/75e95e1fcd52d3ec8282edb75ac8cd0814095d54",
-          "https://security.netapp.com/advisory/ntap-20200114-0001/"
+          "https://security.netapp.com/advisory/ntap-20200114-0001/",
+          "https://usn.ubuntu.com/4298-1/",
+          "https://usn.ubuntu.com/usn/usn-4298-1",
+          "https://www.debian.org/security/2020/dsa-4638",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-12-18T06:15:00Z",
+        "LastModifiedDate": "2020-01-14T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19923",
@@ -577,13 +1388,35 @@
         "Title": "sqlite: mishandling of certain uses of SELECT DISTINCT involving a LEFT JOIN in flattenSubquery in select.c leads to a NULL pointer dereference",
         "Description": "flattenSubquery in select.c in SQLite 3.30.1 mishandles certain uses of SELECT DISTINCT involving a LEFT JOIN in which the right-hand side is a view. This can cause a NULL pointer dereference (or incorrect results).",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-19923.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1810.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00010.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00015.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00025.html",
+          "https://access.redhat.com/errata/RHSA-2020:0514",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19923",
           "https://github.com/sqlite/sqlite/commit/396afe6f6aa90a31303c183e11b2b2d4b7956b35",
-          "https://security.netapp.com/advisory/ntap-20200114-0003/"
+          "https://security.netapp.com/advisory/ntap-20200114-0003/",
+          "https://usn.ubuntu.com/4298-1/",
+          "https://usn.ubuntu.com/usn/usn-4298-1",
+          "https://www.debian.org/security/2020/dsa-4638",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-12-24T16:15:00Z",
+        "LastModifiedDate": "2020-01-14T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19925",
@@ -597,13 +1430,35 @@
         "Title": "sqlite: zipfileUpdate in ext/misc/zipfile.c mishandles a NULL pathname during an update of a ZIP archive",
         "Description": "zipfileUpdate in ext/misc/zipfile.c in SQLite 3.30.1 mishandles a NULL pathname during an update of a ZIP archive.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-19925.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1810.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00010.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00015.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00025.html",
+          "https://access.redhat.com/errata/RHSA-2020:0514",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19925",
           "https://github.com/sqlite/sqlite/commit/54d501092d88c0cf89bec4279951f548fb0b8618",
-          "https://security.netapp.com/advisory/ntap-20200114-0003/"
+          "https://security.netapp.com/advisory/ntap-20200114-0003/",
+          "https://usn.ubuntu.com/4298-1/",
+          "https://usn.ubuntu.com/usn/usn-4298-1",
+          "https://www.debian.org/security/2020/dsa-4638",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-12-24T17:15:00Z",
+        "LastModifiedDate": "2020-01-14T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19926",
@@ -617,13 +1472,35 @@
         "Title": "sqlite: error mishandling because of incomplete fix of CVE-2019-19880",
         "Description": "multiSelect in select.c in SQLite 3.30.1 mishandles certain errors during parsing, as demonstrated by errors from sqlite3WindowRewrite() calls. NOTE: this vulnerability exists because of an incomplete fix for CVE-2019-19880.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00010.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00015.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00025.html",
+          "https://access.redhat.com/errata/RHSA-2020:0514",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19926",
           "https://github.com/sqlite/sqlite/commit/8428b3b437569338a9d1e10c4cd8154acbe33089",
-          "https://security.netapp.com/advisory/ntap-20200114-0003/"
+          "https://security.netapp.com/advisory/ntap-20200114-0003/",
+          "https://usn.ubuntu.com/4298-1/",
+          "https://usn.ubuntu.com/4298-2/",
+          "https://usn.ubuntu.com/usn/usn-4298-1",
+          "https://usn.ubuntu.com/usn/usn-4298-2",
+          "https://www.debian.org/security/2020/dsa-4638",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-12-23T01:15:00Z",
+        "LastModifiedDate": "2020-08-06T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19959",
@@ -637,13 +1514,264 @@
         "Title": "sqlite: mishandles certain uses of INSERT INTO in situations involving embedded '\\0' characters in filenames",
         "Description": "ext/misc/zipfile.c in SQLite 3.30.1 mishandles certain uses of INSERT INTO in situations involving embedded '\\0' characters in filenames, leading to a memory-management error that can be detected by (for example) valgrind.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 7.3
+          }
+        },
         "References": [
+          "http://linux.oracle.com/cve/CVE-2019-19959.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1810.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19959",
           "https://github.com/sqlite/sqlite/commit/1e490c4ca6b43a9cf8637d695907888349f69bec",
           "https://github.com/sqlite/sqlite/commit/d8f2d46cbc9925e034a68aaaf60aad788d9373c1",
-          "https://security.netapp.com/advisory/ntap-20200204-0001/"
+          "https://security.netapp.com/advisory/ntap-20200204-0001/",
+          "https://usn.ubuntu.com/4298-1/",
+          "https://usn.ubuntu.com/usn/usn-4298-1",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2020-01-03T22:15:00Z",
+        "LastModifiedDate": "2020-02-04T12:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-11655",
+        "PkgName": "sqlite-libs",
+        "InstalledVersion": "3.27.2-3.ph2",
+        "FixedVersion": "3.31.1-2.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "sqlite: malformed window-function query leads to DoS",
+        "Description": "SQLite through 3.31.1 allows attackers to cause a denial of service (segmentation fault) via a malformed window-function query because the AggInfo object's initialization is mishandled.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-11655",
+          "https://lists.debian.org/debian-lts-announce/2020/05/msg00006.html",
+          "https://security.FreeBSD.org/advisories/FreeBSD-SA-20:22.sqlite.asc",
+          "https://security.gentoo.org/glsa/202007-26",
+          "https://security.netapp.com/advisory/ntap-20200416-0001/",
+          "https://usn.ubuntu.com/4394-1/",
+          "https://usn.ubuntu.com/usn/usn-4394-1",
+          "https://www.oracle.com/security-alerts/cpujul2020.html",
+          "https://www3.sqlite.org/cgi/src/info/4a302b42c7bf5e11",
+          "https://www3.sqlite.org/cgi/src/tktview?name=af4556bb5c"
+        ],
+        "PublishedDate": "2020-04-09T03:15:00Z",
+        "LastModifiedDate": "2020-08-05T20:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-13434",
+        "PkgName": "sqlite-libs",
+        "InstalledVersion": "3.27.2-3.ph2",
+        "FixedVersion": "3.32.1-1.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "sqlite: integer overflow in sqlite3_str_vappendf function in printf.c",
+        "Description": "SQLite through 3.32.0 has an integer overflow in sqlite3_str_vappendf in printf.c.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 5.5
+          }
+        },
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13434",
+          "https://lists.debian.org/debian-lts-announce/2020/05/msg00024.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/L7KXQWHIY2MQP4LNM6ODWJENMXYYQYBN/",
+          "https://security.FreeBSD.org/advisories/FreeBSD-SA-20:22.sqlite.asc",
+          "https://security.gentoo.org/glsa/202007-26",
+          "https://security.netapp.com/advisory/ntap-20200528-0004/",
+          "https://usn.ubuntu.com/4394-1/",
+          "https://usn.ubuntu.com/usn/usn-4394-1",
+          "https://www.oracle.com/security-alerts/cpujul2020.html",
+          "https://www.sqlite.org/src/info/23439ea582241138",
+          "https://www.sqlite.org/src/info/d08d3405878d394e"
+        ],
+        "PublishedDate": "2020-05-24T22:15:00Z",
+        "LastModifiedDate": "2020-08-05T20:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-13435",
+        "PkgName": "sqlite-libs",
+        "InstalledVersion": "3.27.2-3.ph2",
+        "FixedVersion": "3.32.1-1.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "sqlite: NULL pointer dereference leads to segmentation fault in sqlite3ExprCodeTarget in expr.c",
+        "Description": "SQLite through 3.32.0 has a segmentation fault in sqlite3ExprCodeTarget in expr.c.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 5.5
+          }
+        },
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13435",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/L7KXQWHIY2MQP4LNM6ODWJENMXYYQYBN/",
+          "https://security.FreeBSD.org/advisories/FreeBSD-SA-20:22.sqlite.asc",
+          "https://security.gentoo.org/glsa/202007-26",
+          "https://security.netapp.com/advisory/ntap-20200528-0004/",
+          "https://usn.ubuntu.com/4394-1/",
+          "https://usn.ubuntu.com/usn/usn-4394-1",
+          "https://www.oracle.com/security-alerts/cpujul2020.html",
+          "https://www.sqlite.org/src/info/7a5279a25c57adf1"
+        ],
+        "PublishedDate": "2020-05-24T22:15:00Z",
+        "LastModifiedDate": "2020-08-05T20:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-13631",
+        "PkgName": "sqlite-libs",
+        "InstalledVersion": "3.27.2-3.ph2",
+        "FixedVersion": "3.32.1-1.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "sqlite: virtual table can be renamed into the name of one of its shadow tables",
+        "Description": "SQLite before 3.32.0 allows a virtual table to be renamed to the name of one of its shadow tables, related to alter.c and build.c.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+            "V3Score": 5.5
+          }
+        },
+        "References": [
+          "https://bugs.chromium.org/p/chromium/issues/detail?id=1080459",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13631",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/L7KXQWHIY2MQP4LNM6ODWJENMXYYQYBN/",
+          "https://security.FreeBSD.org/advisories/FreeBSD-SA-20:22.sqlite.asc",
+          "https://security.gentoo.org/glsa/202007-26",
+          "https://security.netapp.com/advisory/ntap-20200608-0002/",
+          "https://sqlite.org/src/info/eca0ba2cf4c0fdf7",
+          "https://usn.ubuntu.com/4394-1/",
+          "https://usn.ubuntu.com/usn/usn-4394-1",
+          "https://www.oracle.com/security-alerts/cpujul2020.html"
+        ],
+        "PublishedDate": "2020-05-27T15:15:00Z",
+        "LastModifiedDate": "2020-08-05T20:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-13632",
+        "PkgName": "sqlite-libs",
+        "InstalledVersion": "3.27.2-3.ph2",
+        "FixedVersion": "3.32.1-1.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "sqlite: NULL pointer dereference in ext/fts3/fts3_snippet.c via a crafted matchinfo() query",
+        "Description": "ext/fts3/fts3_snippet.c in SQLite before 3.32.0 has a NULL pointer dereference via a crafted matchinfo() query.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 5.5
+          }
+        },
+        "References": [
+          "https://bugs.chromium.org/p/chromium/issues/detail?id=1080459",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13632",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/L7KXQWHIY2MQP4LNM6ODWJENMXYYQYBN/",
+          "https://security.FreeBSD.org/advisories/FreeBSD-SA-20:22.sqlite.asc",
+          "https://security.gentoo.org/glsa/202007-26",
+          "https://security.netapp.com/advisory/ntap-20200608-0002/",
+          "https://sqlite.org/src/info/a4dd148928ea65bd",
+          "https://usn.ubuntu.com/4394-1/",
+          "https://usn.ubuntu.com/usn/usn-4394-1",
+          "https://www.oracle.com/security-alerts/cpujul2020.html"
+        ],
+        "PublishedDate": "2020-05-27T15:15:00Z",
+        "LastModifiedDate": "2020-08-05T20:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-9327",
+        "PkgName": "sqlite-libs",
+        "InstalledVersion": "3.27.2-3.ph2",
+        "FixedVersion": "3.31.1-3.ph2",
+        "Layer": {
+          "DiffID": "sha256:41cdb0d109d6a7cf33d6a439c3d6e586d7dba0be84606066693ea4573a4a9b66"
+        },
+        "SeveritySource": "photon",
+        "Title": "sqlite: NULL pointer dereference and segmentation fault because of generated column optimizations",
+        "Description": "In SQLite 3.31.1, isAuxiliaryVtabOperator allows attackers to trigger a NULL pointer dereference and segmentation fault because of generated column optimizations.",
+        "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 6.5
+          }
+        },
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-9327",
+          "https://security.gentoo.org/glsa/202003-16",
+          "https://security.netapp.com/advisory/ntap-20200313-0002/",
+          "https://usn.ubuntu.com/4298-1/",
+          "https://usn.ubuntu.com/usn/usn-4298-1",
+          "https://www.oracle.com/security-alerts/cpujul2020.html",
+          "https://www.sqlite.org/cgi/src/info/4374860b29383380",
+          "https://www.sqlite.org/cgi/src/info/9d0d4ab95dc0c56e",
+          "https://www.sqlite.org/cgi/src/info/abc473fb8fb99900"
+        ],
+        "PublishedDate": "2020-02-21T22:15:00Z",
+        "LastModifiedDate": "2020-07-15T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19645",
@@ -657,12 +1785,28 @@
         "Title": "sqlite: infinite recursion via certain types of self-referential views in conjunction with ALTER TABLE statements",
         "Description": "alter.c in SQLite through 3.30.1 allows attackers to trigger infinite recursion via certain types of self-referential views in conjunction with ALTER TABLE statements.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 5.5
+          }
+        },
         "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19645",
           "https://github.com/sqlite/sqlite/commit/38096961c7cd109110ac21d3ed7dad7e0cb0ae06",
-          "https://security.netapp.com/advisory/ntap-20191223-0001/"
+          "https://security.netapp.com/advisory/ntap-20191223-0001/",
+          "https://usn.ubuntu.com/4394-1/",
+          "https://usn.ubuntu.com/usn/usn-4394-1",
+          "https://www.oracle.com/security-alerts/cpuapr2020.html"
         ],
-        "PublishedDate": "0001-01-01T00:00:00Z",
-        "LastModifiedDate": "0001-01-01T00:00:00Z"
+        "PublishedDate": "2019-12-09T16:15:00Z",
+        "LastModifiedDate": "2020-06-16T20:15:00Z"
       }
     ]
   }
