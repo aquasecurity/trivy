@@ -52,8 +52,6 @@ func TestScanner_Detect(t *testing.T) {
 		}
 
 		versionStr := "1.9.25-x64-mingw32"
-		versionStr = platformReplacer.Replace(versionStr)
-
 		v, _ := semver.NewVersion(versionStr)
 
 		vulns, err := s.DetectVulnerabilities("ffi", v)
