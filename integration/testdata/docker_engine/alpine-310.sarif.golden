@@ -1,0 +1,227 @@
+{
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.4.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Trivy",
+          "fullName": "Trivy Vulnerability Scanner",
+          "rules": [
+            {
+              "id": "[MEDIUM] CVE-2019-1549",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-1549 Package: openssl"
+              },
+              "fullDescription": {
+                "text": "openssl: information disclosure in fork()."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-1549\nSeverity: MEDIUM\nPackage: openssl\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1549](https://nvd.nist.gov/vuln/detail/cve-2019-1549)",
+                "markdown": "**Vulnerability CVE-2019-1549**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|openssl|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1549](https://nvd.nist.gov/vuln/detail/cve-2019-1549)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "openssl"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-1551",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-1551 Package: openssl"
+              },
+              "fullDescription": {
+                "text": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-1551\nSeverity: MEDIUM\nPackage: openssl\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r2\nLink: [CVE-2019-1551](https://nvd.nist.gov/vuln/detail/cve-2019-1551)",
+                "markdown": "**Vulnerability CVE-2019-1551**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|openssl|1.1.1c-r0|1.1.1d-r2|[CVE-2019-1551](https://nvd.nist.gov/vuln/detail/cve-2019-1551)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "openssl"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-1563",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-1563 Package: openssl"
+              },
+              "fullDescription": {
+                "text": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-1563\nSeverity: MEDIUM\nPackage: openssl\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1563](https://nvd.nist.gov/vuln/detail/cve-2019-1563)",
+                "markdown": "**Vulnerability CVE-2019-1563**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|openssl|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1563](https://nvd.nist.gov/vuln/detail/cve-2019-1563)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "openssl"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2020-1967",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2020-1967 Package: openssl"
+              },
+              "fullDescription": {
+                "text": "openssl: Segmentation fault in SSL_check_chain causes denial of service."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2020-1967\nSeverity: MEDIUM\nPackage: openssl\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1g-r0\nLink: [CVE-2020-1967](https://nvd.nist.gov/vuln/detail/cve-2020-1967)",
+                "markdown": "**Vulnerability CVE-2020-1967**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|openssl|1.1.1c-r0|1.1.1g-r0|[CVE-2020-1967](https://nvd.nist.gov/vuln/detail/cve-2020-1967)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "openssl"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-1547",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-1547 Package: openssl"
+              },
+              "fullDescription": {
+                "text": "openssl: side-channel weak encryption vulnerability."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-1547\nSeverity: LOW\nPackage: openssl\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1547](https://nvd.nist.gov/vuln/detail/cve-2019-1547)",
+                "markdown": "**Vulnerability CVE-2019-1547**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|openssl|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1547](https://nvd.nist.gov/vuln/detail/cve-2019-1547)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "openssl"
+                ],
+                "precision": "very-high"
+              }
+            }]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "[MEDIUM] CVE-2019-1549",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c)."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-1551",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t)."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-1563",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s)."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2020-1967",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Server or client applications that call the SSL_check_chain() function during or after a TLS 1.3 handshake may crash due to a NULL pointer dereference as a result of incorrect handling of the &#34;signature_algorithms_cert&#34; TLS extension. The crash occurs if an invalid or unrecognised signature algorithm is received from the peer. This could be exploited by a malicious peer in a Denial of Service attack. OpenSSL version 1.1.1d, 1.1.1e, and 1.1.1f are affected by this issue. This issue did not affect OpenSSL versions prior to 1.1.1d. Fixed in OpenSSL 1.1.1g (Affected 1.1.1d-1.1.1f)."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-1547",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s)."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        }],
+      "columnKind": "utf16CodeUnits"
+    }
+  ]
+}

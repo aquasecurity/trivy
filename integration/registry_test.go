@@ -152,7 +152,7 @@ func TestRegistry(t *testing.T) {
 				Username: authUsername,
 				Password: authPassword,
 			},
-			golden: "testdata/alpine-310-registry.json.golden",
+			golden: "testdata/registry/alpine-310-registry.json.golden",
 		},
 		{
 			name:      "happy path with registry token",
@@ -164,7 +164,7 @@ func TestRegistry(t *testing.T) {
 				Password:      authPassword,
 				RegistryToken: true,
 			},
-			golden: "testdata/alpine-310-registry.json.golden",
+			golden: "testdata/registry/alpine-310-registry.json.golden",
 		},
 		{
 			name:      "sad path",
