@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// Advisory represents security advisories for each programming language
 type Advisory struct {
 	lang     string
 	comparer comparer
@@ -25,7 +26,12 @@ func NewAdvisory(lang string) *Advisory {
 	}
 }
 
+// DetectVulnerabilities scans buckets with the prefix according to the programming language in "Advisory".
+// If "lang" is python, it looks for buckets with "python::" and gets security advisories from those buckets.
+// It allows us to add a new data source with the lang prefix (e.g. python::new-data-source)
+// and detect vulnerabilities without specifying a specific bucket name.
 func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
+	// e.g. "python::"
 	prefix := fmt.Sprintf("%s::", s.lang)
 	advisories, err := db.Config{}.GetAdvisories(prefix, pkgName)
 	if err != nil {
@@ -75,7 +81,7 @@ type comparer interface {
 func newComparer(lang string) comparer {
 	switch lang {
 	case "java":
-		// TODO
+		// TODO: we need to use another library for version comparison in the case of Java.
 	}
 	return generalComparer{}
 }

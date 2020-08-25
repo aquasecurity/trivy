@@ -9,12 +9,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+	"golang.org/x/xerrors"
+
 	fixtures "github.com/aquasecurity/bolt-fixtures"
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/stretchr/testify/require"
-
 	"github.com/aquasecurity/trivy/pkg/log"
-	"golang.org/x/xerrors"
 )
 
 var cacheDir string
