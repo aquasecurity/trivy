@@ -188,7 +188,7 @@ func TestRegistry(t *testing.T) {
 			require.NoError(t, err)
 
 			// 2. Scan it
-			resultFile, err := scan(imageRef, baseDir, tc.option)
+			resultFile, cleanup, err := scan(imageRef, baseDir, tc.golden, tc.option)
 
 			if tc.wantErr != "" {
 				require.NotNil(t, err)
@@ -197,7 +197,7 @@ func TestRegistry(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 			}
-			defer os.Remove(resultFile)
+			defer cleanup()
 
 			// 3. Compare want and got
 			golden, err := os.Open(tc.golden)
@@ -220,29 +220,36 @@ func TestRegistry(t *testing.T) {
 	}
 }
 
-func scan(imageRef name.Reference, baseDir string, opt registryOption) (string, error) {
+func scan(imageRef name.Reference, baseDir, goldenFile string, opt registryOption) (string, func(), error) {
+	cleanup := func() {}
+
 	// Copy DB file
 	cacheDir, err := gunzipDB()
 	if err != nil {
-		return "", err
+		return "", cleanup, err
 	}
 	defer os.RemoveAll(cacheDir)
 
 	// Setup the output file
 	var outputFile string
-	output, err := ioutil.TempFile("", "integration")
-	if err != nil {
-		return "", err
-	}
-	if err = output.Close(); err != nil {
-		return "", err
-	}
+	if *update && goldenFile != "" {
+		outputFile = goldenFile
+	} else {
+		output, err := ioutil.TempFile("", "integration")
+		if err != nil {
+			return "", cleanup, err
+		}
+		defer output.Close()
 
-	outputFile = output.Name()
+		outputFile = output.Name()
+		cleanup = func() {
+			os.Remove(outputFile)
+		}
+	}
 
 	// Setup env
 	if err = setupEnv(imageRef, baseDir, opt); err != nil {
-		return "", err
+		return "", cleanup, err
 	}
 	defer unsetEnv()
 
@@ -254,9 +261,9 @@ func scan(imageRef name.Reference, baseDir string, opt registryOption) (string, 
 
 	// Run Trivy
 	if err = app.Run(osArgs); err != nil {
-		return "", err
+		return "", cleanup, err
 	}
-	return outputFile, nil
+	return outputFile, cleanup, nil
 }
 
 func setupEnv(imageRef name.Reference, baseDir string, opt registryOption) error {

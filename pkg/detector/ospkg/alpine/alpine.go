@@ -61,12 +61,12 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.vs.Get(osVer, pkg.Name)
+		advisories, err := s.vs.Get(osVer, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get alpine advisories: %w", err)
 		}
 
-		installed := utils.FormatVersion(pkg)
+		installed := utils.FormatSrcVersion(pkg)
 		installedVersion, err := version.NewVersion(installed)
 		if err != nil {
 			log.Logger.Debugf("failed to parse Alpine Linux installed package version: %s", err)
@@ -74,8 +74,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 		}
 
 		for _, adv := range advisories {
-			f := strings.Replace(adv.FixedVersion, "_rc", "~rc", 1)
-			fixedVersion, err := version.NewVersion(f)
+			fixedVersion, err := version.NewVersion(adv.FixedVersion)
 			if err != nil {
 				log.Logger.Debugf("failed to parse Alpine Linux fixed version: %s", err)
 				continue
