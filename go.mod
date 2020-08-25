@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.1.0
 	github.com/aquasecurity/fanal v0.0.0-20200528202907-79693bf4a058
 	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
-	github.com/aquasecurity/trivy-db v0.0.0-20200715174849-fa5a3ca24b16
+	github.com/aquasecurity/trivy-db v0.0.0-20200816184446-3853f69c6e2f
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.3
@@ -32,6 +32,6 @@ require (
 	go.uber.org/multierr v1.4.0 // indirect
 	go.uber.org/zap v1.13.0
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
-	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	k8s.io/utils v0.0.0-20191114184206-e782cd3c129f
 )
