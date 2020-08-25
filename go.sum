@@ -50,8 +50,8 @@ github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuy
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239 h1:kFOfPq6dUM1hTo4JG6LR5AXSUEsOjtdm0kw0FtQtMJA=
 github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239/go.mod h1:2FmKhYUyUczH0OGQWaF5ceTx0UBShxjsH6f8oGKYe2c=
-github.com/aquasecurity/fanal v0.0.0-20200528202907-79693bf4a058 h1:vNAuJrimb3eqXSFMhZJNf0PVHfzHFnCRMDuhVi7z2Ok=
-github.com/aquasecurity/fanal v0.0.0-20200528202907-79693bf4a058/go.mod h1:omM/xBVqAPNzdV/MegrjayEkKEZzI+eUpyjCXpbTMG0=
+github.com/aquasecurity/fanal v0.0.0-20200820074632-6de62ef86882 h1:65VcAKqhkKwMpLr9Wz+wNnsk+U+lv+v/qfOK04uXT3E=
+github.com/aquasecurity/fanal v0.0.0-20200820074632-6de62ef86882/go.mod h1:VP1+n6hMi6krpA0umEl0CkJp4hbg0R21kXWg0mjrekc=
 github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b h1:55Ulc/gvfWm4ylhVaR7MxOwujRjA6et7KhmUbSgUFf4=
 github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b/go.mod h1:BpNTD9vHfrejKsED9rx04ldM1WIbeyXGYxUrqTVwxVQ=
 github.com/aquasecurity/testdocker v0.0.0-20200426142840-5f05bce6f12a h1:hsw7PpiymXP64evn/K7gsj3hWzMqLrdoeE6JkqDocVg=
