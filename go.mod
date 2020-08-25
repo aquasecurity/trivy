@@ -4,9 +4,10 @@ go 1.13
 
 require (
 	github.com/Masterminds/semver/v3 v3.1.0
+	github.com/aquasecurity/bolt-fixtures v0.0.0-20200825112230-c0f517aea2ed
 	github.com/aquasecurity/fanal v0.0.0-20200528202907-79693bf4a058
 	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
-	github.com/aquasecurity/trivy-db v0.0.0-20200824145911-f9dd1e532d82
+	github.com/aquasecurity/trivy-db v0.0.0-20200825113036-c70741942046
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.3
@@ -16,7 +17,6 @@ require (
 	github.com/google/go-containerregistry v0.0.0-20200331213917-3d03ed9b1ca2
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/wire v0.3.0
-	github.com/knqyf263/bolt-fixtures v0.0.0-20200823180512-e1abd174f296
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
+	fixtures "github.com/aquasecurity/bolt-fixtures"
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	fixtures "github.com/knqyf263/bolt-fixtures"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/log"
