@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"testing"
-	"time"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/golang/protobuf/ptypes/timestamp"
 
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -214,8 +214,8 @@ func TestScanner_Scan(t *testing.T) {
 										V3Score:  2.8,
 									},
 								},
-								LastModifiedDate: time.Date(2020, 01, 01, 01, 01, 00, 00, time.UTC),
-								PublishedDate:    time.Date(2001, 01, 01, 01, 01, 00, 00, time.UTC),
+								LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
+								PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
 								CweIDs:           []string{"CWE-78"},
 							},
 							SeveritySource: "nvd",

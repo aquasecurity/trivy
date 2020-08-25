@@ -7,7 +7,7 @@ require (
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200825112230-c0f517aea2ed
 	github.com/aquasecurity/fanal v0.0.0-20200820074632-6de62ef86882
 	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
-	github.com/aquasecurity/trivy-db v0.0.0-20200817213453-7cce93b3cb19
+	github.com/aquasecurity/trivy-db v0.0.0-20200825151756-7c701b7e9d92
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.3

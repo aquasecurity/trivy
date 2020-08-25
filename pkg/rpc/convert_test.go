@@ -3,8 +3,8 @@ package rpc
 import (
 	"os"
 	"testing"
-	"time"
 
+	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/golang/protobuf/ptypes/timestamp"
 
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -264,8 +264,8 @@ func TestConvertToRpcVulns(t *testing.T) {
 								},
 							},
 							References:       []string{"http://example.com"},
-							LastModifiedDate: time.Date(2020, 01, 01, 01, 01, 00, 00, time.UTC),
-							PublishedDate:    time.Date(2001, 01, 01, 01, 01, 00, 00, time.UTC),
+							LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
+							PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
 						},
 						Layer: ftypes.Layer{
 							Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
@@ -338,8 +338,6 @@ func TestConvertToRpcVulns(t *testing.T) {
 					Severity:         common.Severity_UNKNOWN,
 					Cvss:             make(map[string]*common.CVSS),
 					References:       []string{"http://example.com"},
-					LastModifiedDate: &timestamp.Timestamp{Seconds: -62135596800}, //0001-01-01T00:00:00Z
-					PublishedDate:    &timestamp.Timestamp{Seconds: -62135596800}, //0001-01-01T00:00:00Z
 					Layer: &common.Layer{
 						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",

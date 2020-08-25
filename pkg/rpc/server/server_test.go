@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/trivy-db/pkg/utils"
+
 	"github.com/golang/protobuf/ptypes"
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
 	"github.com/golang/protobuf/ptypes/timestamp"
@@ -70,8 +72,8 @@ func TestScanServer_Scan(t *testing.T) {
 									InstalledVersion: "1.2.3",
 									FixedVersion:     "1.2.4",
 									Vulnerability: dbTypes.Vulnerability{
-										LastModifiedDate: time.Date(2020, 01, 01, 01, 01, 00, 00, time.UTC),
-										PublishedDate:    time.Date(2001, 01, 01, 01, 01, 00, 00, time.UTC),
+										LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
+										PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
 									},
 									SeveritySource: "nvd",
 								},
@@ -94,8 +96,8 @@ func TestScanServer_Scan(t *testing.T) {
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "1.2.4",
 							Vulnerability: dbTypes.Vulnerability{
-								LastModifiedDate: time.Date(2020, 01, 01, 01, 01, 00, 00, time.UTC),
-								PublishedDate:    time.Date(2001, 01, 01, 01, 01, 00, 00, time.UTC),
+								LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
+								PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
 							},
 							SeveritySource: "nvd",
 						},

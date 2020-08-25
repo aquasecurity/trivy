@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
@@ -111,8 +112,14 @@ func ConvertToRpcVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			}
 		}
 
-		lastModifiedDate, _ := ptypes.TimestampProto(vuln.LastModifiedDate)
-		publishedDate, _ := ptypes.TimestampProto(vuln.PublishedDate)
+		var lastModifiedDate, publishedDate *timestamp.Timestamp
+		if vuln.LastModifiedDate != nil {
+			lastModifiedDate, _ = ptypes.TimestampProto(*vuln.LastModifiedDate)
+		}
+
+		if vuln.PublishedDate != nil {
+			publishedDate, _ = ptypes.TimestampProto(*vuln.PublishedDate)
+		}
 
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
 			VulnerabilityId:  vuln.VulnerabilityID,
@@ -168,8 +175,8 @@ func ConvertFromRpcResults(rpcResults []*scanner.Result) []report.Result {
 					Severity:         severity.String(),
 					CVSS:             cvssMap,
 					References:       vuln.References,
-					LastModifiedDate: lastModifiedDate,
-					PublishedDate:    publishedDate,
+					LastModifiedDate: &lastModifiedDate,
+					PublishedDate:    &publishedDate,
 					CweIDs:           vuln.CweIds,
 				},
 				Layer: ftypes.Layer{

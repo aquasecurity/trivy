@@ -4,8 +4,8 @@ import (
 	"context"
 	"os"
 	"testing"
-	"time"
 
+	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/golang/protobuf/ptypes/timestamp"
 
 	"github.com/stretchr/testify/assert"
@@ -67,8 +67,8 @@ func TestServer_Detect(t *testing.T) {
 							PkgName:         "musl",
 							Vulnerability: dbTypes.Vulnerability{
 								Severity:         "HIGH",
-								LastModifiedDate: time.Date(2020, 01, 01, 01, 01, 00, 00, time.UTC),
-								PublishedDate:    time.Date(2001, 01, 01, 01, 01, 00, 00, time.UTC),
+								LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
+								PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
 							},
 							Layer: ftypes.Layer{
 								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
@@ -86,8 +86,8 @@ func TestServer_Detect(t *testing.T) {
 							PkgName:         "musl",
 							Vulnerability: dbTypes.Vulnerability{
 								Severity:         "HIGH",
-								LastModifiedDate: time.Date(2020, 01, 01, 01, 01, 00, 00, time.UTC),
-								PublishedDate:    time.Date(2001, 01, 01, 01, 01, 00, 00, time.UTC),
+								LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
+								PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
 							},
 							Layer: ftypes.Layer{
 								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
