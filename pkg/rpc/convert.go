@@ -126,6 +126,7 @@ func ConvertToRpcVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			},
 			Cvss:           cvssMap,
 			SeveritySource: vuln.SeveritySource,
+			CweIds:         vuln.CweIDs,
 		})
 	}
 	return rpcVulns
@@ -159,6 +160,7 @@ func ConvertFromRpcResults(rpcResults []*scanner.Result) []report.Result {
 					Severity:    severity.String(),
 					CVSS:        cvssMap,
 					References:  vuln.References,
+					CweIDs:      vuln.CweIds,
 				},
 				Layer: ftypes.Layer{
 					Digest: vuln.Layer.Digest,

@@ -52,6 +52,7 @@ message Vulnerability {
   Layer             layer             = 10;
   string            severity_source   = 11;
   map<string, CVSS> cvss              = 12;
+  repeated string   cwe_ids           = 13;
 }
 
 message Layer {

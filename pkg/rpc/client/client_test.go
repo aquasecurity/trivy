@@ -167,6 +167,7 @@ func TestScanner_Scan(t *testing.T) {
 												V3Score:  2.8,
 											},
 										},
+										CweIds: []string{"CWE-78"},
 										Layer: &common.Layer{
 											DiffId: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 										},
@@ -205,6 +206,7 @@ func TestScanner_Scan(t *testing.T) {
 										V3Score:  2.8,
 									},
 								},
+								CweIDs: []string{"CWE-78"},
 							},
 							SeveritySource: "nvd",
 							Layer: ftypes.Layer{
