@@ -80,8 +80,7 @@ type comparer interface {
 
 func newComparer(lang string) comparer {
 	switch lang {
-	case "java":
-		// TODO: we need to use another library for version comparison in the case of Java.
+	// When another library is needed for version comparison, it can be added here.
 	}
 	return generalComparer{}
 }
