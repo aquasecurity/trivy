@@ -3,12 +3,18 @@ package utils
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
+
+	fixtures "github.com/aquasecurity/bolt-fixtures"
+	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var cacheDir string
@@ -118,4 +124,27 @@ func CopyFile(src, dst string) (int64, error) {
 	defer destination.Close()
 	n, err := io.Copy(destination, source)
 	return n, err
+}
+
+// InitTestDB is a utility function initializing BoltDB for unit testing
+func InitTestDB(t *testing.T, fixtureFiles []string) string {
+	// Create a temp dir
+	dir, err := ioutil.TempDir("", "TestDB")
+	require.NoError(t, err)
+
+	dbPath := db.Path(dir)
+	dbDir := filepath.Dir(dbPath)
+	err = os.MkdirAll(dbDir, 0700)
+	require.NoError(t, err)
+
+	// Load testdata into BoltDB
+	loader, err := fixtures.New(dbPath, fixtureFiles)
+	require.NoError(t, err)
+	require.NoError(t, loader.Load())
+	require.NoError(t, loader.Close())
+
+	// Initialize DB
+	require.NoError(t, db.Init(dir))
+
+	return dir
 }

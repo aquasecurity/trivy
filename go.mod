@@ -4,9 +4,10 @@ go 1.13
 
 require (
 	github.com/Masterminds/semver/v3 v3.1.0
+	github.com/aquasecurity/bolt-fixtures v0.0.0-20200825112230-c0f517aea2ed
 	github.com/aquasecurity/fanal v0.0.0-20200820074632-6de62ef86882
 	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
-	github.com/aquasecurity/trivy-db v0.0.0-20200816184446-3853f69c6e2f
+	github.com/aquasecurity/trivy-db v0.0.0-20200826140828-6da6467703aa
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.3
@@ -20,7 +21,6 @@ require (
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/kylelemons/godebug v1.1.0
-	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/olekukonko/tablewriter v0.0.2-0.20190607075207-195002e6e56a
 	github.com/open-policy-agent/opa v0.21.1
 	github.com/spf13/afero v1.2.2
