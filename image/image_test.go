@@ -227,6 +227,25 @@ func TestNewArchiveImage(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with OCI Image and tag Format",
+			args: args{
+				fileName: "../test/testdata/test_image_tag.oci:0.0.1",
+			},
+		},
+		{
+			name: "happy path with OCI Image only",
+			args: args{
+				fileName: "../test/testdata/test_image_tag.oci",
+			},
+		},
+		{
+			name: "sad path with OCI Image and invalid tagFormat",
+			args: args{
+				fileName: "../test/testdata/test_image_tag.oci:0.0.0",
+			},
+			wantErr: "invalid OCI image tag",
+		},
+		{
 			name: "sad path, oci image not found",
 			args: args{
 				fileName: "../test/testdata/invalid.tar.gz",
