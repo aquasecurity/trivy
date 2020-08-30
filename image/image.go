@@ -9,12 +9,14 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/aquasecurity/fanal/image/token"
+	ispec "github.com/opencontainers/image-spec/specs-go/v1"
 
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/google/go-containerregistry/pkg/v1"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/layout"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
@@ -186,7 +188,19 @@ func fileOpener(fileName string) func() (io.ReadCloser, error) {
 }
 
 func tryOCI(fileName string) (v1.Image, error) {
-	lp, err := layout.FromPath(fileName)
+	var inputTag, inputFileName string
+
+	// Check if tag is specified in input
+	if strings.Contains(fileName, ":") {
+		splitFileName := strings.Split(fileName, ":")
+		inputFileName = splitFileName[0]
+		inputTag = splitFileName[1]
+	} else {
+		inputFileName = fileName
+		inputTag = ""
+	}
+
+	lp, err := layout.FromPath(inputFileName)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to open %s as an OCI Image: %w", fileName, err)
 	}
@@ -205,12 +219,38 @@ func tryOCI(fileName string) (v1.Image, error) {
 		return nil, xerrors.New("no valid manifest")
 	}
 
-	// Support only first image
-	h := m.Manifests[0].Digest
-	img, err := index.Image(h)
-	if err != nil {
-		return nil, xerrors.New("invalid OCI image")
+	// Support image having tag separated by : , otherwise support first image
+
+	if inputTag != "" {
+		return getOCIImage(m, index, inputTag)
+	} else {
+		h := m.Manifests[0].Digest
+
+		img, err := index.Image(h)
+		if err != nil {
+			return nil, xerrors.New("invalid OCI image")
+		}
+
+		return img, nil
+	}
+}
+
+func getOCIImage(m *v1.IndexManifest, index v1.ImageIndex, inputTag string) (v1.Image, error) {
+	for _, manifest := range m.Manifests {
+		annotation := manifest.Annotations
+
+		tag := annotation[ispec.AnnotationRefName]
+		if tag == inputTag {
+			h := manifest.Digest
+
+			img, err := index.Image(h)
+			if err != nil {
+				return nil, xerrors.New("invalid OCI image")
+			}
+
+			return img, nil
+		}
 	}
 
-	return img, nil
+	return nil, xerrors.New("invalid OCI image tag")
 }
