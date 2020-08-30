@@ -67,3 +67,11 @@ $(GOBIN)/labeler:
 .PHONY: label
 label: $(GOBIN)/labeler
 	labeler apply misc/triage/labels.yaml -r aquasecurity/trivy -l 5
+
+## quality: Runs all the linting checks
+.PHONY: quality
+quality:
+	@echo "running linter checks..."
+	@go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.21.0
+	@golangci-lint run -v ./... cmd/... --deadline=30m
+	@echo "linter checks done..."
