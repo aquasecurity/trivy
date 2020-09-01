@@ -3,6 +3,7 @@ package apk
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	builtinos "os"
@@ -79,14 +80,23 @@ func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, e
 	}
 
 	url := fmt.Sprintf(apkIndexArchiveURL, osVer)
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to fetch APKINDEX archive: %w", err)
+	var reader io.Reader
+	if strings.HasPrefix(url, "file://") {
+		var err error
+		reader, err = builtinos.Open(strings.TrimPrefix(url, "file://"))
+		if err != nil {
+			return nil, xerrors.Errorf("failed to read APKINDEX archive file: %w", err)
+		}
+	} else {
+		resp, err := http.Get(url)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to fetch APKINDEX archive: %w", err)
+		}
+		defer resp.Body.Close()
+		reader = resp.Body
 	}
-	defer resp.Body.Close()
-
 	apkIndexArchive := &apkIndex{}
-	if err = json.NewDecoder(resp.Body).Decode(apkIndexArchive); err != nil {
+	if err := json.NewDecoder(reader).Decode(apkIndexArchive); err != nil {
 		return nil, xerrors.Errorf("failed to decode APKINDEX JSON: %w", err)
 	}
 
