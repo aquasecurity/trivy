@@ -1808,13 +1808,12 @@ See [here](docs/air-gap.md)
 
 | Scanner        | OS<br>Packages  | Application<br>Dependencies | Easy to use  | Accuracy    | Suitable<br>for CI  |
 | -------------- | :-------------: | :-------------------------: | :----------: | :---------: | :-----------------: |
-| Trivy          |       OK        |              OK             |      OK      |    Best     |       OK            |
-| Clair          |       OK        |         Not present         |      Good    |    OK       |       Good          |
-| Anchore Engine |       OK        |             Good            |      Good    |    OK       |       Good          |
-| Quay           |       OK        |         Not present         |      OK      |    OK       |    Not present      |
-| MicroScanner   |       OK        |         Not present         |      OK      |    OK       |       OK            |
-| Docker Hub     |       OK        |         Not present         |      OK      | Not present |    Not present      |
-| GCR            |       OK        |         Not present         |      OK      |    OK       |    Not present      |
+| Trivy          |       ✅        |       ✅<br>(5 languages)   |    ⭐ ⭐ ⭐    |  ⭐ ⭐ ⭐    |      ⭐ ⭐ ⭐         |
+| Clair          |       ✅        |              ×              |      ⭐       |   ⭐ ⭐      |      ⭐ ⭐           |
+| Anchore Engine |       ✅        |       ✅<br>(4 languages)   |     ⭐ ⭐      |   ⭐ ⭐      |     ⭐ ⭐ ⭐         |
+| Quay           |       ✅        |              ×              |    ⭐ ⭐ ⭐    |   ⭐ ⭐      |        ×            |
+| Docker Hub     |       ✅        |              ×              |    ⭐ ⭐ ⭐    |    ⭐        |        ×            |
+| GCR            |       ✅        |              ×              |    ⭐ ⭐ ⭐    |   ⭐ ⭐      |        ×            |
 
 ## Blogs
 - [Open Source CVE Scanner Round-Up: Clair vs Anchore vs Trivy](https://boxboat.com/2020/04/24/image-scanning-tech-compared/)
