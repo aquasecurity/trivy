@@ -1810,11 +1810,10 @@ See [here](docs/air-gap.md)
 | Scanner        | OS<br>Packages  | Application<br>Dependencies | Easy to use  | Accuracy    | Suitable<br>for CI  |
 | -------------- | :-------------: | :-------------------------: | :----------: | :---------: | :-----------------: |
 | Trivy          |       OK        |              OK             |      OK      |    Best     |       OK            |
-| Clair          |       OK        |         Not present         |      Good    |    OK       |       Good          |
-| Anchore Engine |       OK        |             Good            |      Good    |    OK       |       Good          |
+| Clair          |       OK        |         Not present         |     Not bad  |    OK       |      Not bad        |
+| Anchore Engine |       OK        |           Not bad           |     Not bad  |    OK       |       OK            |
 | Quay           |       OK        |         Not present         |      OK      |    OK       |    Not present      |
-| MicroScanner   |       OK        |         Not present         |      OK      |    OK       |       OK            |
-| Docker Hub     |       OK        |         Not present         |      OK      | Not present |    Not present      |
+| Docker Hub     |       OK        |         Not present         |      OK      | Not good    |    Not present      |
 | GCR            |       OK        |         Not present         |      OK      |    OK       |    Not present      |
 
 ## Blogs
