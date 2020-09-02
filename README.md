@@ -880,6 +880,7 @@ $ trivy image --format template --template "{{ range . }} {{ .Target }} {{ end }
 ```
 <details>
 <summary>Result</summary>
+
 ```
 2020-01-02T18:02:32.856+0100    INFO    Detecting Alpine vulnerabilities...
  golang:1.12-alpine (alpine 3.10.2)
