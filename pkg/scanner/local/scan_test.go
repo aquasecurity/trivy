@@ -1082,6 +1082,7 @@ func TestScanner_Scan(t *testing.T) {
 func Test_skipped(t *testing.T) {
 	type args struct {
 		filePath        string
+		skipFiles       []string
 		skipDirectories []string
 	}
 	tests := []struct {
@@ -1114,6 +1115,22 @@ func Test_skipped(t *testing.T) {
 			want: true,
 		},
 		{
+			name: "skip file with the leading slash",
+			args: args{
+				filePath:  "Gemfile.lock",
+				skipFiles: []string{"/Gemfile.lock"},
+			},
+			want: true,
+		},
+		{
+			name: "skip file without a slash",
+			args: args{
+				filePath:  "Gemfile.lock",
+				skipFiles: []string{"Gemfile.lock"},
+			},
+			want: true,
+		},
+		{
 			name: "not skipped",
 			args: args{
 				filePath:        "usr/lib/ruby/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock",
@@ -1124,7 +1141,7 @@ func Test_skipped(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := skipped(tt.args.filePath, tt.args.skipDirectories)
+			got := skipped(tt.args.filePath, tt.args.skipFiles, tt.args.skipDirectories)
 			assert.Equal(t, tt.want, got)
 		})
 	}
