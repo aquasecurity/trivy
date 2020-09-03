@@ -36,8 +36,11 @@ jobs:
       - setup_remote_docker:
           version: 18.06.0-ce
       - run:
-          name: setup docker
+          name: login to Docker Hub
           command: echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin
+      - run:
+          name: login to GitHub Container Registry
+          command: echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USER --password-stdin
       - run:
           name: Release
           command: goreleaser --rm-dist

@@ -81,6 +81,8 @@ dockers:
   - image_templates:
       - "docker.io/aquasec/trivy:{{ .Version }}"
       - "docker.io/aquasec/trivy:latest"
+      - "ghcr.io/aquasecurity/trivy:{{ .Version }}"
+      - "ghcr.io/aquasecurity/trivy:latest"
     binaries:
       - trivy
     build_flag_templates:
