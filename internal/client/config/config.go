@@ -61,11 +61,11 @@ func (c *Config) Init() (err error) {
 	}
 
 	if err := c.ArtifactConfig.Init(c.Context.Args(), c.Logger); err != nil {
+		cli.ShowAppHelp(c.Context)
 		return err
 	}
 
 	if err := c.ImageConfig.Init(c.Context.Args(), c.Logger); err != nil {
-		cli.ShowAppHelp(c.Context)
 		return err
 	}
 

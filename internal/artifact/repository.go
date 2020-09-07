@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy/internal/artifact/config"
+	artifact "github.com/aquasecurity/trivy/internal/config"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )
 
@@ -28,7 +29,10 @@ func RepositoryRun(cliCtx *cli.Context) error {
 	}
 
 	// initialize config
-	if err = c.Init(false); err != nil {
+	err = c.Init(false)
+	if xerrors.Is(err, artifact.ErrNoTarget) {
+		return nil
+	} else if err != nil {
 		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
 
