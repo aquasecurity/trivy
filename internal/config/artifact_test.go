@@ -35,13 +35,6 @@ func TestArtifactConfig_Init(t *testing.T) {
 			},
 			wantErr: "arguments error",
 		},
-		{
-			name: "sad: no image name",
-			logs: []string{
-				"trivy requires at least 1 argument or --input option",
-			},
-			wantErr: "no target is specified",
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -55,7 +48,7 @@ func TestArtifactConfig_Init(t *testing.T) {
 
 			c := config.NewArtifactConfig(ctx)
 
-			err := c.Init(ctx.Args(), logger.Sugar())
+			err := c.Init(ctx, logger.Sugar())
 
 			// tests log messages
 			var gotMessages []string
