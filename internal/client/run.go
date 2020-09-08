@@ -8,7 +8,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/internal/client/config"
-	artifact "github.com/aquasecurity/trivy/internal/config"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -32,10 +31,7 @@ func run(c config.Config) (err error) {
 	}
 
 	// initialize config
-	err = c.Init()
-	if xerrors.Is(err, artifact.ErrNoTarget) {
-		return nil
-	} else if err != nil {
+	if err = c.Init(); err != nil {
 		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
 

@@ -57,8 +57,7 @@ func (c *Config) Init(image bool) error {
 		return nil
 	}
 
-	if err := c.ArtifactConfig.Init(c.Context.Args(), c.Logger); err != nil {
-		cli.ShowAppHelp(c.Context)
+	if err := c.ArtifactConfig.Init(c.Context, c.Logger); err != nil {
 		return err
 	}
 
