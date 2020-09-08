@@ -1,6 +1,7 @@
 package config
 
 import (
+	"os"
 	"strings"
 	"time"
 
@@ -36,7 +37,8 @@ func NewArtifactConfig(c *cli.Context) ArtifactConfig {
 func (c *ArtifactConfig) Init(ctx *cli.Context, logger *zap.SugaredLogger) (err error) {
 	if c.Input == "" && ctx.Args().Len() == 0 {
 		logger.Debug(`trivy requires at least 1 argument or --input option`)
-		cli.ShowAppHelpAndExit(ctx, 0)
+		_ = cli.ShowSubcommandHelp(ctx)
+		os.Exit(0)
 	} else if ctx.Args().Len() > 1 {
 		logger.Error(`multiple targets cannot be specified`)
 		return xerrors.New("arguments error")
