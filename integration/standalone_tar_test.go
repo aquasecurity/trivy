@@ -40,7 +40,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/alpine-310.tar.gz",
 			},
-			golden: "testdata/docker_engine/alpine-310.json.golden",
+			golden: "testdata/alpine-310.json.golden",
 		},
 		{
 			name: "alpine 3.10 integration with image subcommand",
@@ -51,7 +51,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:              "json",
 				Input:               "testdata/fixtures/alpine-310.tar.gz",
 			},
-			golden: "testdata/docker_engine/alpine-310.json.golden",
+			golden: "testdata/alpine-310.json.golden",
 		},
 		{
 			name: "alpine 3.10 integration with --ignore-unfixed option",
@@ -62,7 +62,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:        "json",
 				Input:         "testdata/fixtures/alpine-310.tar.gz",
 			},
-			golden: "testdata/docker_engine/alpine-310-ignore-unfixed.json.golden",
+			golden: "testdata/alpine-310-ignore-unfixed.json.golden",
 		},
 		{
 			name: "alpine 3.10 integration with medium and high severity",
@@ -74,7 +74,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:        "json",
 				Input:         "testdata/fixtures/alpine-310.tar.gz",
 			},
-			golden: "testdata/docker_engine/alpine-310-medium-high.json.golden",
+			golden: "testdata/alpine-310-medium-high.json.golden",
 		},
 		{
 			name: "alpine 3.10 integration with .trivyignore",
@@ -86,7 +86,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:        "json",
 				Input:         "testdata/fixtures/alpine-310.tar.gz",
 			},
-			golden: "testdata/docker_engine/alpine-310-ignore-cveids.json.golden",
+			golden: "testdata/alpine-310-ignore-cveids.json.golden",
 		},
 		{
 			name: "alpine 3.9 integration",
@@ -96,7 +96,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/alpine-39.tar.gz",
 			},
-			golden: "testdata/docker_engine/alpine-39.json.golden",
+			golden: "testdata/alpine-39.json.golden",
 		},
 		{
 			name: "debian buster integration",
@@ -106,7 +106,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/debian-buster.tar.gz",
 			},
-			golden: "testdata/docker_engine/debian-buster.json.golden",
+			golden: "testdata/debian-buster.json.golden",
 		},
 		{
 			name: "debian buster integration with --ignore-unfixed option",
@@ -117,7 +117,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:        "json",
 				Input:         "testdata/fixtures/debian-buster.tar.gz",
 			},
-			golden: "testdata/docker_engine/debian-buster-ignore-unfixed.json.golden",
+			golden: "testdata/debian-buster-ignore-unfixed.json.golden",
 		},
 		{
 			name: "debian stretch integration",
@@ -127,7 +127,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/debian-stretch.tar.gz",
 			},
-			golden: "testdata/docker_engine/debian-stretch.json.golden",
+			golden: "testdata/debian-stretch.json.golden",
 		},
 		{
 			name: "ubuntu 18.04 integration",
@@ -137,7 +137,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/ubuntu-1804.tar.gz",
 			},
-			golden: "testdata/docker_engine/ubuntu-1804.json.golden",
+			golden: "testdata/ubuntu-1804.json.golden",
 		},
 		{
 			name: "ubuntu 18.04 integration with --ignore-unfixed option",
@@ -148,7 +148,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:        "json",
 				Input:         "testdata/fixtures/ubuntu-1804.tar.gz",
 			},
-			golden: "testdata/docker_engine/ubuntu-1804-ignore-unfixed.json.golden",
+			golden: "testdata/ubuntu-1804-ignore-unfixed.json.golden",
 		},
 		{
 			name: "ubuntu 16.04 integration",
@@ -158,7 +158,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/ubuntu-1604.tar.gz",
 			},
-			golden: "testdata/docker_engine/ubuntu-1604.json.golden",
+			golden: "testdata/ubuntu-1604.json.golden",
 		},
 		{
 			name: "centos 7 integration",
@@ -168,7 +168,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/centos-7.tar.gz",
 			},
-			golden: "testdata/docker_engine/centos-7.json.golden",
+			golden: "testdata/centos-7.json.golden",
 		},
 		{
 			name: "centos 7 integration with --ignore-unfixed option",
@@ -179,7 +179,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:        "json",
 				Input:         "testdata/fixtures/centos-7.tar.gz",
 			},
-			golden: "testdata/docker_engine/centos-7-ignore-unfixed.json.golden",
+			golden: "testdata/centos-7-ignore-unfixed.json.golden",
 		},
 		{
 			name: "centos 7 integration with low and high severity",
@@ -191,7 +191,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:        "json",
 				Input:         "testdata/fixtures/centos-7.tar.gz",
 			},
-			golden: "testdata/docker_engine/centos-7-low-high.json.golden",
+			golden: "testdata/centos-7-low-high.json.golden",
 		},
 		{
 			name: "centos 6 integration",
@@ -201,7 +201,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/centos-6.tar.gz",
 			},
-			golden: "testdata/docker_engine/centos-6.json.golden",
+			golden: "testdata/centos-6.json.golden",
 		},
 		{
 			name: "ubi 7 integration",
@@ -211,7 +211,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/ubi-7.tar.gz",
 			},
-			golden: "testdata/docker_engine/ubi-7.json.golden",
+			golden: "testdata/ubi-7.json.golden",
 		},
 		{
 			name: "distroless base integration",
@@ -221,7 +221,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/distroless-base.tar.gz",
 			},
-			golden: "testdata/docker_engine/distroless-base.json.golden",
+			golden: "testdata/distroless-base.json.golden",
 		},
 		{
 			name: "distroless base integration with --ignore-unfixed option",
@@ -232,7 +232,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:        "json",
 				Input:         "testdata/fixtures/distroless-base.tar.gz",
 			},
-			golden: "testdata/docker_engine/distroless-base-ignore-unfixed.json.golden",
+			golden: "testdata/distroless-base-ignore-unfixed.json.golden",
 		},
 		{
 			name: "distroless python27 integration",
@@ -242,7 +242,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/distroless-python27.tar.gz",
 			},
-			golden: "testdata/docker_engine/distroless-python27.json.golden",
+			golden: "testdata/distroless-python27.json.golden",
 		},
 		{
 			name: "amazon 1 integration",
@@ -252,7 +252,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/amazon-1.tar.gz",
 			},
-			golden: "testdata/docker_engine/amazon-1.json.golden",
+			golden: "testdata/amazon-1.json.golden",
 		},
 		{
 			name: "amazon 2 integration",
@@ -262,7 +262,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/amazon-2.tar.gz",
 			},
-			golden: "testdata/docker_engine/amazon-2.json.golden",
+			golden: "testdata/amazon-2.json.golden",
 		},
 		{
 			name: "oracle 6 integration",
@@ -272,7 +272,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/oraclelinux-6-slim.tar.gz",
 			},
-			golden: "testdata/docker_engine/oraclelinux-6-slim.json.golden",
+			golden: "testdata/oraclelinux-6-slim.json.golden",
 		},
 		{
 			name: "oracle 7 integration",
@@ -282,7 +282,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/oraclelinux-7-slim.tar.gz",
 			},
-			golden: "testdata/docker_engine/oraclelinux-7-slim.json.golden",
+			golden: "testdata/oraclelinux-7-slim.json.golden",
 		},
 		{
 			name: "oracle 8 integration",
@@ -292,7 +292,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/oraclelinux-8-slim.tar.gz",
 			},
-			golden: "testdata/docker_engine/oraclelinux-8-slim.json.golden",
+			golden: "testdata/oraclelinux-8-slim.json.golden",
 		},
 		{
 			name: "opensuse leap 15.1 integration",
@@ -302,7 +302,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/opensuse-leap-151.tar.gz",
 			},
-			golden: "testdata/docker_engine/opensuse-leap-151.json.golden",
+			golden: "testdata/opensuse-leap-151.json.golden",
 		},
 		{
 			name: "opensuse leap 42.3 integration",
@@ -312,7 +312,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/opensuse-leap-423.tar.gz",
 			},
-			golden: "testdata/docker_engine/opensuse-leap-423.json.golden",
+			golden: "testdata/opensuse-leap-423.json.golden",
 		},
 		{
 			name: "photon 1.0 integration",
@@ -322,7 +322,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/photon-10.tar.gz",
 			},
-			golden: "testdata/docker_engine/photon-10.json.golden",
+			golden: "testdata/photon-10.json.golden",
 		},
 		{
 			name: "photon 2.0 integration",
@@ -332,7 +332,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/photon-20.tar.gz",
 			},
-			golden: "testdata/docker_engine/photon-20.json.golden",
+			golden: "testdata/photon-20.json.golden",
 		},
 		{
 			name: "photon 3.0 integration",
@@ -342,7 +342,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/photon-30.tar.gz",
 			},
-			golden: "testdata/docker_engine/photon-30.json.golden",
+			golden: "testdata/photon-30.json.golden",
 		},
 		{
 			name: "buxybox with Cargo.lock integration",
@@ -352,7 +352,7 @@ func TestRun_WithTar(t *testing.T) {
 				Format:     "json",
 				Input:      "testdata/fixtures/busybox-with-lockfile.tar.gz",
 			},
-			golden: "testdata/docker_engine/busybox-with-lockfile.json.golden",
+			golden: "testdata/busybox-with-lockfile.json.golden",
 		},
 		{
 			name: "fluentd with multiple lock files",
