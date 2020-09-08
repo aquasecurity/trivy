@@ -46,6 +46,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
     + [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
     + [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
     + [Filter the vulnerabilities by Open Policy Agent](#filter-the-vulnerabilities-by-open-policy-agent-policy)
+    + [Skip traversal of the specific files](#skip-traversal-of-the-specific-files)
     + [Skip traversal in the specific directory](#skip-traversal-in-the-specific-directory)
     + [Skip update of vulnerability DB](#skip-update-of-vulnerability-db)
     + [Only download vulnerability database](#only-download-vulnerability-database)
@@ -1139,6 +1140,13 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
 </details>
 
+### Skip traversal of the specific files
+Trivy traversals directories and looks for all lock files by default. If your image contains lock files which are not maintained by you, you can skip the file.
+
+```
+$ trivy image --skip-files "/Gemfile.lock,/app/Pipfile.lock" quay.io/fluentd_elasticsearch/fluentd:v2.9.0
+```
+
 ### Skip traversal in the specific directory
 Trivy traversals directories and look for all lock files by default. If your image contains lock files which are not maintained by you, you can skip traversal in the specific directory.
 
@@ -1747,6 +1755,7 @@ OPTIONS:
    --timeout value     docker timeout (default: 2m0s) [$TRIVY_TIMEOUT]
    --light             light mode: it's faster, but vulnerability descriptions and references are not displayed (default: false) [$TRIVY_LIGHT]
    --list-all-pkgs     enabling the option will output all packages regardless of vulnerability [$TRIVY_LIST_ALL_PKGS]
+   --skip-files value  specify the file path to skip traversal [$TRIVY_SKIP_FILES]
    --skip-dirs value   specify the directory where the traversal is skipped [$TRIVY_SKIP_DIRS]
    --help, -h          show help (default: false)
 ```

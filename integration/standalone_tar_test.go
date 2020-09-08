@@ -24,6 +24,8 @@ func TestRun_WithTar(t *testing.T) {
 		IgnoreIDs           []string
 		Format              string
 		Input               string
+		SkipDirs            []string
+		SkipFiles           []string
 	}
 	cases := []struct {
 		name     string
@@ -352,6 +354,22 @@ func TestRun_WithTar(t *testing.T) {
 			},
 			golden: "testdata/busybox-with-lockfile.json.golden",
 		},
+		{
+			name: "fluentd with multiple lock files",
+			testArgs: args{
+				Version:       "dev",
+				SkipUpdate:    true,
+				IgnoreUnfixed: true,
+				Format:        "json",
+				Input:         "testdata/fixtures/fluentd-multiple-lockfiles.tar.gz",
+				SkipFiles:     []string{"/Gemfile.lock"},
+				SkipDirs: []string{
+					"/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0",
+					"/var/lib/gems/2.5.0/gems/fluent-plugin-detect-exceptions-0.0.13",
+				},
+			},
+			golden: "testdata/fluentd-multiple-lockfiles.json.golden",
+		},
 	}
 
 	// Copy DB file
@@ -391,7 +409,14 @@ func TestRun_WithTar(t *testing.T) {
 				defer os.Remove(trivyIgnore)
 			}
 			if c.testArgs.Input != "" {
-				osArgs = append(osArgs, []string{"--input", c.testArgs.Input}...)
+				osArgs = append(osArgs, "--input", c.testArgs.Input)
+			}
+
+			if len(c.testArgs.SkipFiles) != 0 {
+				osArgs = append(osArgs, "--skip-files", strings.Join(c.testArgs.SkipFiles, ","))
+			}
+			if len(c.testArgs.SkipDirs) != 0 {
+				osArgs = append(osArgs, "--skip-dirs", strings.Join(c.testArgs.SkipDirs, ","))
 			}
 
 			// Setup the output file
