@@ -1141,7 +1141,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 </details>
 
 ### Skip traversal of the specific files
-Trivy traversals directories and look for all lock files by default. If your image contains lock files which are not maintained by you, you can skip the file.
+Trivy traversals directories and looks for all lock files by default. If your image contains lock files which are not maintained by you, you can skip the file.
 
 ```
 $ trivy image --skip-files "/Gemfile.lock,/app/Pipfile.lock" quay.io/fluentd_elasticsearch/fluentd:v2.9.0
