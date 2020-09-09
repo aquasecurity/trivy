@@ -65,6 +65,12 @@ var (
 		EnvVars: []string{"TRIVY_OUTPUT"},
 	}
 
+	webhookFlag = cli.StringFlag{
+		Name:    "webhook",
+		Usage:   "webhook url",
+		EnvVars: []string{"TRIVY_WEBHOOK_URL"},
+	}
+
 	exitCodeFlag = cli.IntFlag{
 		Name:    "exit-code",
 		Usage:   "Exit code when vulnerabilities were found",
@@ -212,6 +218,7 @@ var (
 		&inputFlag,
 		&severityFlag,
 		&outputFlag,
+		&webhookFlag,
 		&exitCodeFlag,
 		&skipUpdateFlag,
 		&downloadDBOnlyFlag,
@@ -369,6 +376,7 @@ func NewFilesystemCommand() *cli.Command {
 			&inputFlag,
 			&severityFlag,
 			&outputFlag,
+			&webhookFlag,
 			&exitCodeFlag,
 			&clearCacheFlag,
 			&quietFlag,
@@ -401,6 +409,7 @@ func NewRepositoryCommand() *cli.Command {
 			&inputFlag,
 			&severityFlag,
 			&outputFlag,
+			&webhookFlag,
 			&exitCodeFlag,
 			&clearCacheFlag,
 			&quietFlag,
@@ -433,6 +442,7 @@ func NewClientCommand() *cli.Command {
 			&inputFlag,
 			&severityFlag,
 			&outputFlag,
+			&webhookFlag,
 			&exitCodeFlag,
 			&clearCacheFlag,
 			&quietFlag,

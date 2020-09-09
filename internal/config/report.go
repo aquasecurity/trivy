@@ -1,6 +1,7 @@
 package config
 
 import (
+	"net/url"
 	"os"
 	"strings"
 
@@ -23,17 +24,20 @@ type ReportConfig struct {
 	// these variables are not exported
 	vulnType   string
 	output     string
+	webhook    string
 	severities string
 
 	// these variables are populated by Init()
 	VulnType   []string
 	Output     *os.File
+	Webhook    *url.URL
 	Severities []dbTypes.Severity
 }
 
 func NewReportConfig(c *cli.Context) ReportConfig {
 	return ReportConfig{
 		output:       c.String("output"),
+		webhook:      c.String("webhook"),
 		Format:       c.String("format"),
 		Template:     c.String("template"),
 		IgnorePolicy: c.String("ignore-policy"),
@@ -69,6 +73,16 @@ func (c *ReportConfig) Init(logger *zap.SugaredLogger) (err error) {
 	if c.output != "" {
 		if c.Output, err = os.Create(c.output); err != nil {
 			return xerrors.Errorf("failed to create an output file: %w", err)
+		}
+	}
+
+	c.Webhook = nil
+	if c.webhook != "" {
+		if !strings.HasPrefix(c.webhook, "http://") && !strings.HasPrefix(c.webhook, "https://") {
+			c.webhook = "http://" + c.webhook
+		}
+		if c.Webhook, err = url.Parse(c.webhook); err != nil {
+			return xerrors.Errorf("failed to parse webhook url: %w", err)
 		}
 	}
 

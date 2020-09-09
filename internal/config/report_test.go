@@ -2,6 +2,7 @@ package config
 
 import (
 	"flag"
+	"net/url"
 	"os"
 	"testing"
 
@@ -15,6 +16,7 @@ import (
 func TestReportReportConfig_Init(t *testing.T) {
 	type fields struct {
 		output        string
+		webhook       string
 		Format        string
 		Template      string
 		vulnType      string
@@ -61,6 +63,25 @@ func TestReportReportConfig_Init(t *testing.T) {
 				Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
 				VulnType:   []string{"os", "library"},
 				Output:     os.Stdout,
+			},
+		},
+		{
+			name: "happy path with webhook url",
+			fields: fields{
+				severities: "HIGH",
+				webhook:    "http://example.org/webhook",
+			},
+			args: []string{"centos:7"},
+			want: ReportConfig{
+				Severities: []dbTypes.Severity{dbTypes.SeverityHigh},
+				VulnType:   []string{""},
+				Output:     os.Stdout,
+				webhook:    "http://example.org/webhook",
+				Webhook: &url.URL{
+					Host:   "example.org",
+					Scheme: "http",
+					Path:   "/webhook",
+				},
 			},
 		},
 		{
@@ -127,6 +148,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 
 			c := &ReportConfig{
 				output:        tt.fields.output,
+				webhook:       tt.fields.webhook,
 				Format:        tt.fields.Format,
 				Template:      tt.fields.Template,
 				vulnType:      tt.fields.vulnType,

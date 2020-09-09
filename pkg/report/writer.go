@@ -8,6 +8,8 @@ import (
 	"html"
 	"io"
 	"io/ioutil"
+	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"text/template"
@@ -33,7 +35,7 @@ type Result struct {
 	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities"`
 }
 
-func WriteResults(format string, output io.Writer, severities []dbTypes.Severity, results Results, outputTemplate string, light bool) error {
+func WriteResults(format string, output io.Writer, webhook *url.URL, severities []dbTypes.Severity, results Results, outputTemplate string, light bool) error {
 	var writer Writer
 	switch format {
 	case "table":
@@ -52,6 +54,15 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 	if err := writer.Write(results); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
+
+	// also send results to webhook server once designated
+	if webhook != nil {
+		writer = &WebhookWriter{webhook: webhook}
+		if err := writer.Write(results); err != nil {
+			return xerrors.Errorf("failed to write results to webhook: %w", err)
+		}
+	}
+
 	return nil
 }
 
@@ -202,5 +213,28 @@ func (tw TemplateWriter) Write(results Results) error {
 	if err != nil {
 		return xerrors.Errorf("failed to write with template: %w", err)
 	}
+	return nil
+}
+
+type WebhookWriter struct {
+	webhook *url.URL
+}
+
+func (ww WebhookWriter) Write(results Results) error {
+	output, err := json.MarshalIndent(results, "", "  ")
+	if err != nil {
+		return xerrors.Errorf("failed to marshal json: %w", err)
+	}
+
+	uri := ww.webhook.String()
+	res, err := http.Post(uri, "application/json", bytes.NewReader(output))
+
+	if err != nil {
+		return xerrors.Errorf("failed to send results to webhook server: %w", err)
+	}
+	if res == nil || (res.StatusCode >= 400 && res.StatusCode < 500) {
+		return xerrors.Errorf("failed to get appropriate response from webhook server: ", uri)
+	}
+
 	return nil
 }

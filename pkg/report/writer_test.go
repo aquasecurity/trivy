@@ -3,6 +3,10 @@ package report_test
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"os"
 	"testing"
 	"time"
@@ -124,7 +128,7 @@ func TestReportWriter_Table(t *testing.T) {
 				},
 			}
 			tableWritten := bytes.Buffer{}
-			assert.NoError(t, report.WriteResults("table", &tableWritten, nil, inputResults, "", tc.light), tc.name)
+			assert.NoError(t, report.WriteResults("table", &tableWritten, nil, nil, inputResults, "", tc.light), tc.name)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})
 	}
@@ -186,10 +190,85 @@ func TestReportWriter_JSON(t *testing.T) {
 				},
 			}
 
-			assert.NoError(t, report.WriteResults("json", &jsonWritten, nil, inputResults, "", false), tc.name)
+			assert.NoError(t, report.WriteResults("json", &jsonWritten, nil, nil, inputResults, "", false), tc.name)
 
 			writtenResults := report.Results{}
 			errJson := json.Unmarshal([]byte(jsonWritten.String()), &writtenResults)
+			assert.NoError(t, errJson, "invalid json written", tc.name)
+
+			assert.Equal(t, tc.expectedJSON, writtenResults, tc.name)
+		})
+	}
+
+}
+
+func TestReportWriter_Webhook(t *testing.T) {
+	testCases := []struct {
+		name               string
+		detectedVulns      []types.DetectedVulnerability
+		expectedJSON       report.Results
+		expectedStatusCode int
+	}{
+		{
+			name: "happy path",
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "123",
+					PkgName:          "foo",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "3.4.5",
+					Vulnerability: dbTypes.Vulnerability{
+						Title:       "foobar",
+						Description: "baz",
+						Severity:    "HIGH",
+					},
+				},
+			},
+			expectedJSON: report.Results{
+				report.Result{
+					Target: "foojson",
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "123",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "3.4.5",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "foobar",
+								Description: "baz",
+								Severity:    "HIGH",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			var jsonWritten []byte
+
+			mockServerHandler := http.NewServeMux()
+			mockServerHandler.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+				jsonWritten, _ = ioutil.ReadAll(request.Body)
+				writer.Write([]byte("mock response"))
+			})
+			mockServer := httptest.NewServer(mockServerHandler)
+			defer mockServer.Close()
+
+			webhook, _ := url.Parse(mockServer.URL)
+			inputResults := report.Results{
+				{
+					Target:          "foojson",
+					Vulnerabilities: tc.detectedVulns,
+				},
+			}
+
+			assert.NoError(t, report.WriteResults("json", &bytes.Buffer{}, webhook, nil, inputResults, "", false), tc.name)
+
+			writtenResults := report.Results{}
+			errJson := json.Unmarshal(jsonWritten, &writtenResults)
 			assert.NoError(t, errJson, "invalid json written", tc.name)
 
 			assert.Equal(t, tc.expectedJSON, writtenResults, tc.name)
@@ -327,7 +406,7 @@ func TestReportWriter_Template(t *testing.T) {
 				},
 			}
 
-			assert.NoError(t, report.WriteResults("template", &tmplWritten, nil, inputResults, tc.template, false))
+			assert.NoError(t, report.WriteResults("template", &tmplWritten, nil, nil, inputResults, tc.template, false))
 			assert.Equal(t, tc.expected, tmplWritten.String())
 		})
 	}
