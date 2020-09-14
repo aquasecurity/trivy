@@ -64,6 +64,8 @@ archives:
       - README.md
       - LICENSE
       - contrib/gitlab.tpl
+      - contrib/junit.tpl
+      - contrib/sarif.tpl
 
 brews:
   -
