@@ -83,7 +83,7 @@ func (tw TableWriter) Write(results Results) error {
 // TODO: refactror and fix cyclometic complexity
 func (tw TableWriter) write(result Result) {
 	table := tablewriter.NewWriter(tw.Output)
-	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version"}
+	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version", "AVD"}
 	if !tw.Light {
 		header = append(header, "Title")
 	}
@@ -103,10 +103,15 @@ func (tw TableWriter) write(result Result) {
 		}
 		var row []string
 		if tw.Output == os.Stdout {
-			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
-				v.InstalledVersion, v.FixedVersion}
+			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity), v.InstalledVersion, v.FixedVersion}
 		} else {
 			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion}
+		}
+
+		if strings.HasPrefix(strings.ToLower(v.VulnerabilityID), "cve") {
+			row = append(row, fmt.Sprintf("https://avd.aquasec.com/nvd/%s", strings.ToLower(v.VulnerabilityID)))
+		} else {
+			row = append(row, "")
 		}
 
 		if !tw.Light {
