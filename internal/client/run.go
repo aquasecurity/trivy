@@ -78,15 +78,8 @@ func run(c config.Config) (err error) {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
 
-	vulnClient := initializeVulnerabilityClient()
-	for i := range results {
-		//vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type) // TODO: Why is this missing?
-		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
-			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.IgnorePolicy)
-		if err != nil {
-			return err
-		}
-		results[i].Vulnerabilities = vulns
+	if err := scannerUtils.FillAndFilterVulns(ctx, initializeVulnerabilityClient, results, c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.IgnorePolicy); err != nil {
+		return err
 	}
 
 	if err = report.WriteResults(c.Format, c.Output, c.Severities, results, c.Template, false); err != nil {

@@ -1,11 +1,17 @@
 package utils
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
+
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/report"
 
@@ -113,4 +119,17 @@ func CheckExitCode(exitCode int, results report.Results) {
 			}
 		}
 	}
+}
+
+func FillAndFilterVulns(ctx context.Context, initializeVulnerabilityClient func() vulnerability.Client, results report.Results, severities []dbTypes.Severity, ignoreUnfixed bool, ignoreFile string, ignorePolicy string) error {
+	vulnClient := initializeVulnerabilityClient()
+	for i := range results {
+		vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
+		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities, severities, ignoreUnfixed, ignoreFile, ignorePolicy)
+		if err != nil {
+			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
+		}
+		results[i].Vulnerabilities = vulns
+	}
+	return nil
 }
