@@ -80,6 +80,7 @@ func run(c config.Config) (err error) {
 
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
+		//vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type) // TODO: Why is this missing?
 		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
 			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.IgnorePolicy)
 		if err != nil {
