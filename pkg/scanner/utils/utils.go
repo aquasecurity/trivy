@@ -2,9 +2,12 @@ package utils
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/aquasecurity/trivy/pkg/report"
 
 	"github.com/Masterminds/semver/v3"
 
@@ -100,4 +103,14 @@ func formatVersion(epoch int, version, release string) string {
 	}
 	return v
 
+}
+
+func CheckExitCode(exitCode int, results report.Results) {
+	if exitCode != 0 {
+		for _, result := range results {
+			if len(result.Vulnerabilities) > 0 {
+				os.Exit(exitCode)
+			}
+		}
+	}
 }

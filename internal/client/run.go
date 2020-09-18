@@ -2,8 +2,8 @@ package client
 
 import (
 	"context"
-	"os"
 
+	scannerUtils "github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
@@ -92,12 +92,6 @@ func run(c config.Config) (err error) {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	if c.ExitCode != 0 {
-		for _, result := range results {
-			if len(result.Vulnerabilities) > 0 {
-				os.Exit(c.ExitCode)
-			}
-		}
-	}
+	scannerUtils.CheckExitCode(c.ExitCode, results)
 	return nil
 }

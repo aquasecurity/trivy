@@ -3,7 +3,6 @@ package artifact
 import (
 	"context"
 	l "log"
-	"os"
 	"time"
 
 	"golang.org/x/xerrors"
@@ -15,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/scanner"
+	scannerUtils "github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -102,12 +102,6 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	if c.ExitCode != 0 {
-		for _, result := range results {
-			if len(result.Vulnerabilities) > 0 {
-				os.Exit(c.ExitCode)
-			}
-		}
-	}
+	scannerUtils.CheckExitCode(c.ExitCode, results)
 	return nil
 }
