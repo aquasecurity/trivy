@@ -63,7 +63,7 @@ archives:
     files:
       - README.md
       - LICENSE
-      - contrib/gitlab.tpl
+      - contrib/*.tpl
 
 brews:
   -
