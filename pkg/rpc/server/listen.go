@@ -74,6 +74,9 @@ func ListenAndServe(c config.Config, fsCache cache.FSCache) error {
 	libHandler := rpcDetector.NewLibDetectorServer(initializeLibServer(), nil)
 	mux.Handle(rpcDetector.LibDetectorPathPrefix, withToken(withWaitGroup(libHandler), c.Token, c.TokenHeader))
 
+	mux.HandleFunc("/healthz", func(rw http.ResponseWriter, r *http.Request) {
+		rw.Write([]byte("ok"))
+	})
 	log.Logger.Infof("Listening %s...", c.Listen)
 
 	return http.ListenAndServe(c.Listen, mux)
