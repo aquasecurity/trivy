@@ -33,6 +33,24 @@ func ListenAndServe(c config.Config, fsCache cache.FSCache) error {
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
 
+	go func() {
+		worker := initializeDBWorker(c.CacheDir, true)
+		ctx := context.Background()
+		for {
+			time.Sleep(1 * time.Hour)
+			if err := worker.update(ctx, c.AppVersion, c.CacheDir, dbUpdateWg, requestWg); err != nil {
+				log.Logger.Errorf("%+v\n", err)
+			}
+		}
+	}()
+
+	mux := newServeMux(fsCache, dbUpdateWg, requestWg, c.Token, c.TokenHeader)
+	log.Logger.Infof("Listening %s...", c.Listen)
+
+	return http.ListenAndServe(c.Listen, mux)
+}
+
+func newServeMux(fsCache cache.FSCache, dbUpdateWg, requestWg *sync.WaitGroup, token, tokenHeader string) *http.ServeMux {
 	withWaitGroup := func(base http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Stop processing requests during DB update
@@ -47,39 +65,29 @@ func ListenAndServe(c config.Config, fsCache cache.FSCache) error {
 		})
 	}
 
-	go func() {
-		worker := initializeDBWorker(c.CacheDir, true)
-		ctx := context.Background()
-		for {
-			time.Sleep(1 * time.Hour)
-			if err := worker.update(ctx, c.AppVersion, c.CacheDir, dbUpdateWg, requestWg); err != nil {
-				log.Logger.Errorf("%+v\n", err)
-			}
-		}
-	}()
-
 	mux := http.NewServeMux()
 
 	scanHandler := rpcScanner.NewScannerServer(initializeScanServer(fsCache), nil)
-	mux.Handle(rpcScanner.ScannerPathPrefix, withToken(withWaitGroup(scanHandler), c.Token, c.TokenHeader))
+	mux.Handle(rpcScanner.ScannerPathPrefix, withToken(withWaitGroup(scanHandler), token, tokenHeader))
 
 	layerHandler := rpcCache.NewCacheServer(NewCacheServer(fsCache), nil)
-	mux.Handle(rpcCache.CachePathPrefix, withToken(withWaitGroup(layerHandler), c.Token, c.TokenHeader))
+	mux.Handle(rpcCache.CachePathPrefix, withToken(withWaitGroup(layerHandler), token, tokenHeader))
 
 	// osHandler is for backward compatibility
 	osHandler := rpcDetector.NewOSDetectorServer(initializeOspkgServer(), nil)
-	mux.Handle(rpcDetector.OSDetectorPathPrefix, withToken(withWaitGroup(osHandler), c.Token, c.TokenHeader))
+	mux.Handle(rpcDetector.OSDetectorPathPrefix, withToken(withWaitGroup(osHandler), token, tokenHeader))
 
 	// libHandler is for backward compatibility
 	libHandler := rpcDetector.NewLibDetectorServer(initializeLibServer(), nil)
-	mux.Handle(rpcDetector.LibDetectorPathPrefix, withToken(withWaitGroup(libHandler), c.Token, c.TokenHeader))
+	mux.Handle(rpcDetector.LibDetectorPathPrefix, withToken(withWaitGroup(libHandler), token, tokenHeader))
 
 	mux.HandleFunc("/healthz", func(rw http.ResponseWriter, r *http.Request) {
-		rw.Write([]byte("ok"))
+		if _, err := rw.Write([]byte("ok")); err != nil {
+			log.Logger.Errorf("health check error: %s", err)
+		}
 	})
-	log.Logger.Infof("Listening %s...", c.Listen)
 
-	return http.ListenAndServe(c.Listen, mux)
+	return mux
 }
 
 func withToken(base http.Handler, token, tokenHeader string) http.Handler {
