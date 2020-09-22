@@ -1,4 +1,4 @@
-FROM circleci/golang:1.13-buster 
+FROM circleci/golang:1.15-buster
 
 RUN sudo apt-get -y update \
     && sudo apt-get -y install rpm reprepro createrepo distro-info
