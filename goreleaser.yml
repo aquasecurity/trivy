@@ -63,9 +63,8 @@ archives:
     files:
       - README.md
       - LICENSE
-      - contrib/gitlab.tpl
-      - contrib/junit.tpl
-      - contrib/sarif.tpl
+      - contrib/*.tpl
+
 
 brews:
   -
@@ -97,6 +96,5 @@ dockers:
       - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
       - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
     extra_files:
-    - contrib/gitlab.tpl
-    - contrib/junit.tpl
-    - contrib/sarif.tpl
+    - contrib/
+
