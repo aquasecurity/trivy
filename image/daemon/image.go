@@ -38,6 +38,11 @@ func Image(ref name.Reference) (v1.Image, func(), error) {
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to initialize a docker client: %w", err)
 	}
+	defer func() {
+		if err != nil {
+			c.Close()
+		}
+	}()
 
 	inspect, _, err := c.ImageInspectWithRaw(context.Background(), ref.Name())
 	if err != nil {
@@ -50,6 +55,8 @@ func Image(ref name.Reference) (v1.Image, func(), error) {
 	}
 
 	cleanup = func() {
+		c.Close()
+		f.Close()
 		_ = os.Remove(f.Name())
 	}
 
