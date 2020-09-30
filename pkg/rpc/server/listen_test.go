@@ -3,7 +3,10 @@ package server
 import (
 	"context"
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 	"os"
+	"path"
 	"path/filepath"
 	"sync"
 	"testing"
@@ -14,9 +17,11 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
+	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
 
 func TestMain(m *testing.M) {
@@ -156,6 +161,97 @@ func Test_dbWorker_update(t *testing.T) {
 			assert.Equal(t, tt.want, got, tt.name)
 
 			mockDBClient.AssertExpectations(t)
+		})
+	}
+}
+
+func Test_newServeMux(t *testing.T) {
+	type args struct {
+		token       string
+		tokenHeader string
+	}
+	tests := []struct {
+		name   string
+		args   args
+		path   string
+		header http.Header
+		want   int
+	}{
+		{
+			name: "health check",
+			path: "/healthz",
+			want: http.StatusOK,
+		},
+		{
+			name: "cache endpoint",
+			path: path.Join(rpcCache.CachePathPrefix, "MissingBlobs"),
+			header: http.Header{
+				"Content-Type": []string{"application/protobuf"},
+			},
+			want: http.StatusOK,
+		},
+		{
+			name: "with token",
+			args: args{
+				token:       "test",
+				tokenHeader: "Authorization",
+			},
+			path: path.Join(rpcCache.CachePathPrefix, "MissingBlobs"),
+			header: http.Header{
+				"Authorization": []string{"test"},
+				"Content-Type":  []string{"application/protobuf"},
+			},
+			want: http.StatusOK,
+		},
+		{
+			name: "sad path: no handler",
+			path: "/sad",
+			header: http.Header{
+				"Content-Type": []string{"application/protobuf"},
+			},
+			want: http.StatusNotFound,
+		},
+		{
+			name: "sad path: invalid token",
+			args: args{
+				token:       "test",
+				tokenHeader: "Authorization",
+			},
+			path: path.Join(rpcCache.CachePathPrefix, "MissingBlobs"),
+			header: http.Header{
+				"Content-Type": []string{"application/protobuf"},
+			},
+			want: http.StatusUnauthorized,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dbUpdateWg, requestWg := &sync.WaitGroup{}, &sync.WaitGroup{}
+
+			c, err := cache.NewFSCache(t.TempDir())
+			require.NoError(t, err)
+
+			ts := httptest.NewServer(newServeMux(
+				c, dbUpdateWg, requestWg, tt.args.token, tt.args.tokenHeader),
+			)
+			defer ts.Close()
+
+			var resp *http.Response
+			url := ts.URL + tt.path
+			if tt.header == nil {
+				resp, err = http.Get(url)
+			} else {
+				req, err := http.NewRequest(http.MethodPost, url, nil)
+				require.NoError(t, err)
+
+				req.Header = tt.header
+				client := new(http.Client)
+				resp, err = client.Do(req)
+			}
+
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, resp.StatusCode)
+			defer resp.Body.Close()
 		})
 	}
 }
