@@ -1484,6 +1484,7 @@ cache:
 ```
 
 Example: https://travis-ci.org/aquasecurity/trivy-ci-test
+
 Repository: https://github.com/aquasecurity/trivy-ci-test
 
 ## CircleCI
@@ -1524,6 +1525,7 @@ workflows:
 ```
 
 Example: https://circleci.com/gh/aquasecurity/trivy-ci-test
+
 Repository: https://github.com/aquasecurity/trivy-ci-test
 
 ## GitLab CI
@@ -1568,6 +1570,10 @@ trivy:
     reports:
       container_scanning: gl-container-scanning-report.json
 ```
+
+Example: https://gitlab.com/aquasecurity/trivy-ci-test/pipelines
+
+Repository: https://github.com/aquasecurity/trivy-ci-test
 
 ## AWS CodePipeline
 
