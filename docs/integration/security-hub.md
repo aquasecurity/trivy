@@ -8,7 +8,7 @@ In the following example using the template `asff.tpl`, [ASFF](https://docs.aws.
 $ AWS_REGION=us-west-1 AWS_ACCOUNT_ID=123456789012 trivy image --format template --template "@contrib/asff.tpl" -o report.asff golang:1.12-alpine
 ```
 
-ASFF template needs AWS_REGION and AWS_ACCOUNT_ID from environment variables.
+ASFF template needs `AWS_REGION` and `AWS_ACCOUNT_ID` from environment variables.
 
 Then, you can upload it with AWS CLI.
 
