@@ -304,7 +304,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 ## Filesystem
 Scan a filesystem (such as a host machine, a virtual machine image, or an unpacked container image filesystem).
 
-Trivy will look for vulnerabilities based on lock files such as Gemfile.lock and package-lock.json.
+Trivy will look for vulnerabilities based on lock files such as `Gemfile.lock` and `package-lock.json`.
 
 ```
 $ trivy fs /path/to/project
@@ -903,9 +903,9 @@ In the following example using the template `sarif.tpl` [Sarif](https://docs.git
 ```
 $ trivy image --format template --template "@contrib/sarif.tpl" -o report.sarif  golang:1.12-alpine
 ```
-This SARIF format can be uploaded to GitHub code scanning results, and there is a [Trivy GitHub Action](https://github.com/aquasecurity/trivy-action) for automating this process.
+This **SARIF** format can be uploaded to GitHub code scanning results, and there is a [Trivy GitHub Action](https://github.com/aquasecurity/trivy-action) for automating this process.
 
-Trivy also supports an [ASFF template for reporting findings to AWS Security Hub](docs/integration/security-hub.md)
+Trivy also supports an [ASFF template for reporting findings to AWS Security Hub](docs/integration/security-hub.md).
 ### Filter the vulnerabilities by severities
 
 ```
@@ -1112,7 +1112,7 @@ Total: 4751 (UNKNOWN: 1, LOW: 150, MEDIUM: 3504, HIGH: 1013, CRITICAL: 83)
 Trivy supports Open Policy Agent (OPA) to filter vulnerabilities. You can specify a Rego file with `--ignore-policy` option.
 
 The Rego package name must be `trivy` and it must include a rule called `ignore` which determines if each individual vulnerability should be excluded (ignore=true) or not (ignore=false). In the policy, each vulnerability will be available for inspection as the `input` variable. The structure of each vulnerability input is the same as for the Trivy JSON output.  
-There is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`. For more info about the helper functions, look at the library [here](pkg/vulnerability/module.go)
+There is a built-in Rego library with helper functions that you can import into your policy using: `import data.lib.trivy`. For more info about the helper functions, look at the library [here](pkg/vulnerability/module.go).
 
 To get started, see the [example policy](./contrib/example_policy).
 
@@ -1445,7 +1445,7 @@ $ trivy client --remote http://localhost:8080 --token dummy alpine:3.10
 
 ### Deprecated options
 
-`--only-update`, `--refresh` and `--auto-refresh` are deprecated since they are unnecessary now. These options will be removed at the next version
+`--only-update`, `--refresh` and `--auto-refresh` are deprecated since they are unnecessary now. These options will be removed at the next version.
 
 # Continuous Integration (CI)
 
@@ -1455,9 +1455,9 @@ Since in automated scenarios such as CI/CD you are only interested in the end re
 
 ## GitHub Actions
 
-- Here is the [Trivy Github Action](https://github.com/aquasecurity/trivy-action) (currently Experimental)
-- The Microsoft Azure team have written a [container-scan action](https://github.com/Azure/container-scan) that uses Trivy and Dockle
-- For full control over the options specified to Trivy, this [blog post](https://blog.aquasec.com/devsecops-with-trivy-github-actions) describes adding Trivy into your own GitHub action workflows 
+- Here is the [Trivy Github Action](https://github.com/aquasecurity/trivy-action) (currently Experimental).
+- The Microsoft Azure team have written a [container-scan action](https://github.com/Azure/container-scan) that uses Trivy and Dockle.
+- For full control over the options specified to Trivy, this [blog post](https://blog.aquasec.com/devsecops-with-trivy-github-actions) describes adding Trivy into your own GitHub action workflows .
 
 ## Travis CI
 
@@ -1964,7 +1964,7 @@ $ brew install aquasecurity/trivy/trivy
 
 ### GitHub Rate limiting
 
-Specify GITHUB_TOKEN for authentication
+Specify `GITHUB_TOKEN` for authentication
 https://developer.github.com/v3/#rate-limiting
 
 ```
