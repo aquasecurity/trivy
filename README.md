@@ -222,7 +222,7 @@ You also need to install `rpm` command for scanning images based on RHEL/CentOS.
 
 ## Image
 
-Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with the image cache.** See [Clear image caches](#clear-image-caches).
+Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with the image cache.** See [Clear caches](#clear-caches).
 
 ### Basic
 
