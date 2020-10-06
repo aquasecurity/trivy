@@ -189,7 +189,7 @@ yay -Sy trivy-bin
 You can use homebrew on macOS and Linux.
 
 ```
-$ brew install aquasecurity/trivy/trivy
+$ brew install trivy
 ```
 
 ## Install Script
