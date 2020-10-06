@@ -10,9 +10,9 @@
 
 A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifacts, Suitable for CI.
 
-<img src="imgs/usage.gif" width="700">
-<img src="imgs/usage1.png" width="600">
-<img src="imgs/usage2.png" width="600">
+<img src="imgs/usage.gif" width="850">
+<img src="imgs/usage1.png" width="930">
+<img src="imgs/usage2.png" width="930">
 
 # Table of Contents
 
