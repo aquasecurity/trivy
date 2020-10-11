@@ -288,7 +288,7 @@ func ConvertToRPCBlobInfo(diffID string, layerInfo ftypes.BlobInfo) *cache.PutBl
 		}
 	}
 
-	applications := make([]*common.Application, 0)
+	applications := make([]*common.Application, len(layerInfo.Applications))
 	for i, app := range layerInfo.Applications {
 		libs := make([]*common.Library, len(app.Libraries))
 		for j, lib := range app.Libraries {

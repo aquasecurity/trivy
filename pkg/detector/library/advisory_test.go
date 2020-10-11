@@ -90,6 +90,7 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 				pkgName: "symfony/symfony",
 				pkgVer:  semver.MustParse("4.4.7"),
 			},
+			want: []types.DetectedVulnerability{},
 		},
 	}
 	for _, tt := range tests {
