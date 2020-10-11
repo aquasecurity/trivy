@@ -93,7 +93,7 @@ func (tw TableWriter) write(result Result) {
 		severities[i] = sev.String()
 	}
 
-	results := make([]string, 0)
+	results := make([]string, 0, len(dbTypes.SeverityNames))
 	for _, severity := range dbTypes.SeverityNames {
 		if !utils.StringInSlice(severity, severities) {
 			continue

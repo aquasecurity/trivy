@@ -32,7 +32,7 @@ func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version)
 		return nil, xerrors.Errorf("failed to get node advisories: %w", err)
 	}
 
-	vulns := make([]types.DetectedVulnerability, 0)
+	vulns := make([]types.DetectedVulnerability, 0, len(advisories))
 	for _, advisory := range advisories {
 		// e.g. <= 2.15.0 || >= 3.0.0 <= 3.8.2
 		//  => {"<=2.15.0", ">= 3.0.0, <= 3.8.2"}

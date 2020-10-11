@@ -35,7 +35,7 @@ func (a *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version)
 		return nil, xerrors.Errorf("failed to get bundler advisories: %w", err)
 	}
 
-	vulns := make([]types.DetectedVulnerability, 0)
+	vulns := make([]types.DetectedVulnerability, 0, len(advisories))
 	for _, advisory := range advisories {
 		if utils.MatchVersions(pkgVer, advisory.PatchedVersions) {
 			continue
