@@ -35,7 +35,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 
 // ConvertFromRPCPkgs returns list of Fanal package objects
 func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
-	pkgs := make([]ftypes.Package, 0)
+	pkgs := make([]ftypes.Package, len(rpcPkgs))
 	for i, pkg := range rpcPkgs {
 		pkgs[i] = ftypes.Package{
 			Name:       pkg.Name,
