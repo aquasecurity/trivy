@@ -22,11 +22,13 @@ const (
 	repo  = "trivy-db"
 )
 
+// RepositoryInterface defines the operations on repository
 type RepositoryInterface interface {
 	ListReleases(ctx context.Context, opt *github.ListOptions) ([]*github.RepositoryRelease, *github.Response, error)
 	DownloadAsset(ctx context.Context, id int64) (io.ReadCloser, string, error)
 }
 
+// Repository implements RepositoryInterface
 type Repository struct {
 	repository *github.RepositoriesService
 	git        *github.GitService
@@ -34,22 +36,27 @@ type Repository struct {
 	repoName   string
 }
 
+// ListReleases returns all github releases on repository
 func (r Repository) ListReleases(ctx context.Context, opt *github.ListOptions) ([]*github.RepositoryRelease, *github.Response, error) {
 	return r.repository.ListReleases(ctx, r.owner, r.repoName, opt)
 }
 
+// DownloadAsset returns reader object of downloaded object
 func (r Repository) DownloadAsset(ctx context.Context, id int64) (io.ReadCloser, string, error) {
 	return r.repository.DownloadReleaseAsset(ctx, r.owner, r.repoName, id)
 }
 
+// Operation defines the file operations
 type Operation interface {
 	DownloadDB(ctx context.Context, fileName string) (io.ReadCloser, int, error)
 }
 
+// Client implements RepositoryInterface
 type Client struct {
 	Repository RepositoryInterface
 }
 
+// NewClient is the factory method to return Client for RepositoryInterface operations
 func NewClient() Client {
 	var client *http.Client
 	githubToken := os.Getenv("GITHUB_TOKEN")
@@ -73,6 +80,7 @@ func NewClient() Client {
 	}
 }
 
+// DownloadDB returns reader object of file content
 func (c Client) DownloadDB(ctx context.Context, fileName string) (io.ReadCloser, int, error) {
 	options := github.ListOptions{}
 	releases, _, err := c.Repository.ListReleases(ctx, &options)
@@ -120,7 +128,7 @@ func (c Client) downloadAsset(ctx context.Context, asset github.ReleaseAsset, fi
 	}
 
 	log.Logger.Debugf("asset URL: %s", url)
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) // nolint: gosec
 	if err != nil || resp.StatusCode != http.StatusOK {
 		return nil, 0, xerrors.Errorf("unable to download the asset via URL: %w", err)
 	}

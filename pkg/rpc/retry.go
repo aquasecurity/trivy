@@ -12,6 +12,7 @@ const (
 	maxRetries = 10
 )
 
+// Retry executes the function again using backoff until maxRetries or success
 func Retry(f func() error) error {
 	operation := func() error {
 		err := f()

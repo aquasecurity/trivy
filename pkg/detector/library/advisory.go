@@ -19,6 +19,7 @@ type Advisory struct {
 	comparer comparer
 }
 
+// NewAdvisory is the factory method of Advisory
 func NewAdvisory(lang string) *Advisory {
 	return &Advisory{
 		lang:     lang,
@@ -38,7 +39,7 @@ func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version)
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.lang, err)
 	}
 
-	var vulns []types.DetectedVulnerability
+	vulns := make([]types.DetectedVulnerability, 0)
 	for _, advisory := range advisories {
 		if !s.comparer.isVulnerable(pkgVer, advisory) {
 			continue

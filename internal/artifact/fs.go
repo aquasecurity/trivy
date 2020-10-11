@@ -21,6 +21,7 @@ func filesystemScanner(ctx context.Context, dir string, ac cache.ArtifactCache, 
 	return s, cleanup, nil
 }
 
+// FilesystemRun runs scan on filesystem
 func FilesystemRun(cliCtx *cli.Context) error {
 	c, err := config.New(cliCtx)
 	if err != nil {

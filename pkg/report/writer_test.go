@@ -175,7 +175,7 @@ func TestReportWriter_JSON(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 
-			jw := report.JsonWriter{}
+			jw := report.JSONWriter{}
 			jsonWritten := bytes.Buffer{}
 			jw.Output = &jsonWritten
 

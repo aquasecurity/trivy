@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
+// VersionInfo holds the trivy DB version Info
 type VersionInfo struct {
 	Version         string       `json:",omitempty"`
 	VulnerabilityDB *db.Metadata `json:",omitempty"`
@@ -250,6 +251,7 @@ var (
 	}
 )
 
+// NewApp is the factory method to return Trivy CLI
 func NewApp(version string) *cli.App {
 	cli.VersionPrinter = func(c *cli.Context) {
 		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
@@ -278,7 +280,7 @@ func NewApp(version string) *cli.App {
 }
 
 func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
-	var newFlags []cli.Flag
+	newFlags := make([]cli.Flag, 0)
 	for _, flag := range flags {
 		var f cli.Flag
 		switch pf := flag.(type) {
@@ -306,8 +308,10 @@ func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
 
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
 	var dbMeta *db.Metadata
-
-	metadata, _ := tdb.NewMetadata(afero.NewOsFs(), cacheDir).Get()
+	metadata, err := tdb.NewMetadata(afero.NewOsFs(), cacheDir).Get()
+	if err != nil {
+		fmt.Printf("showVersion: error initializing metadata: %v\n", err)
+	}
 	if !metadata.UpdatedAt.IsZero() && !metadata.NextUpdate.IsZero() && metadata.Version != 0 {
 		dbMeta = &db.Metadata{
 			Version:    metadata.Version,
@@ -316,35 +320,39 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 			UpdatedAt:  metadata.UpdatedAt.UTC(),
 		}
 	}
-
 	switch outputFormat {
 	case "json":
-		b, _ := json.Marshal(VersionInfo{
+		b, err := json.Marshal(VersionInfo{
 			Version:         version,
 			VulnerabilityDB: dbMeta,
 		})
+		if err != nil {
+			fmt.Printf("showVersion: error marshaling versionInfo: %v\n", err)
+		}
 		fmt.Fprintln(outputWriter, string(b))
-	default:
-		output := fmt.Sprintf("Version: %s\n", version)
-		if dbMeta != nil {
-			var dbType string
-			switch dbMeta.Type {
-			case 0:
-				dbType = "Full"
-			case 1:
-				dbType = "Light"
-			}
-			output += fmt.Sprintf(`Vulnerability DB:
+		return
+	}
+	output := fmt.Sprintf("Version: %s\n", version)
+	if dbMeta != nil {
+		var dbType string
+		switch dbMeta.Type {
+		case 0:
+			dbType = "Full"
+		case 1:
+			dbType = "Light"
+		}
+		output += fmt.Sprintf(`Vulnerability DB:
   Type: %s
   Version: %d
   UpdatedAt: %s
   NextUpdate: %s
 `, dbType, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC())
-		}
-		fmt.Fprintf(outputWriter, output)
 	}
+	fmt.Fprintf(outputWriter, output)
+	return
 }
 
+// NewImageCommand is the factory method to add image command
 func NewImageCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "image",
@@ -356,6 +364,7 @@ func NewImageCommand() *cli.Command {
 	}
 }
 
+// NewFilesystemCommand is the factory method to add filesystem command
 func NewFilesystemCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "filesystem",
@@ -389,6 +398,7 @@ func NewFilesystemCommand() *cli.Command {
 	}
 }
 
+// NewRepositoryCommand is the factory method to add repository command
 func NewRepositoryCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "repository",
@@ -422,6 +432,7 @@ func NewRepositoryCommand() *cli.Command {
 	}
 }
 
+// NewClientCommand is the factory method to add client command
 func NewClientCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "client",
@@ -465,6 +476,7 @@ func NewClientCommand() *cli.Command {
 	}
 }
 
+// NewServerCommand is the factory method to add server command
 func NewServerCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "server",

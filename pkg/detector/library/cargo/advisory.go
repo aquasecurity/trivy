@@ -11,23 +11,26 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// Advisory encapsulates the cargo vulnerability scanner
 type Advisory struct {
 	vs cargoSrc.VulnSrc
 }
 
+// NewAdvisory is the factory method to return cargo Scanner
 func NewAdvisory() *Advisory {
 	return &Advisory{
 		vs: cargoSrc.NewVulnSrc(),
 	}
 }
 
+// DetectVulnerabilities scans and returns the cargo vulnerabilities
 func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	advisories, err := s.vs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get cargo advisories: %w", err)
 	}
 
-	var vulns []types.DetectedVulnerability
+	vulns := make([]types.DetectedVulnerability, 0)
 	for _, advisory := range advisories {
 		if utils.MatchVersions(pkgVer, advisory.PatchedVersions) {
 			continue

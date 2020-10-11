@@ -12,23 +12,26 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 )
 
+// Advisory encapsulates the python vulnerability scanner
 type Advisory struct {
 	vs python.VulnSrc
 }
 
+// NewAdvisory is the factory method to reutrn Python Advisory
 func NewAdvisory() *Advisory {
 	return &Advisory{
 		vs: python.NewVulnSrc(),
 	}
 }
 
+// DetectVulnerabilities scans and returns pythin vulnerabilities
 func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	advisories, err := s.vs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get python advisories: %w", err)
 	}
 
-	var vulns []types.DetectedVulnerability
+	vulns := make([]types.DetectedVulnerability, 0)
 	for _, advisory := range advisories {
 		if !utils.MatchVersions(pkgVer, advisory.Specs) {
 			continue

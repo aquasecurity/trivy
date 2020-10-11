@@ -9,18 +9,21 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
+	"path/filepath"
 
 	"github.com/docker/docker/client"
 
 	"github.com/docker/docker/api/types"
 )
 
+// RegistryConfig holds the config for docker registry
 type RegistryConfig struct {
 	URL      *url.URL
 	Username string
 	Password string
 }
 
+// GetAuthConfig returns the docker registry authConfig
 func (c RegistryConfig) GetAuthConfig() types.AuthConfig {
 	return types.AuthConfig{
 		Username:      c.Username,
@@ -29,6 +32,7 @@ func (c RegistryConfig) GetAuthConfig() types.AuthConfig {
 	}
 }
 
+// GetRegistryAuth returns the json encoded docker registry auth
 func (c RegistryConfig) GetRegistryAuth() (string, error) {
 	authConfig := types.AuthConfig{
 		Username: c.Username,
@@ -41,10 +45,12 @@ func (c RegistryConfig) GetRegistryAuth() (string, error) {
 	return base64.URLEncoding.EncodeToString(encodedJSON), nil
 }
 
+// Docker returns docker client
 type Docker struct {
 	cli *client.Client
 }
 
+// New is the factory method to return docker client
 func New() (Docker, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -58,12 +64,12 @@ func New() (Docker, error) {
 // ReplicateImage tags the given imagePath and pushes it to the given dest registry.
 func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, dest RegistryConfig) error {
 	// remove existing Image if any
-	_, _ = d.cli.ImageRemove(ctx, imageRef, types.ImageRemoveOptions{
+	_, _ = d.cli.ImageRemove(ctx, imageRef, types.ImageRemoveOptions{ // nolint: errcheck
 		Force:         true,
 		PruneChildren: true,
 	})
 
-	testfile, err := os.Open(imagePath)
+	testfile, err := os.Open(filepath.Clean(imagePath))
 	if err != nil {
 		return err
 	}
@@ -73,10 +79,10 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 	if err != nil {
 		return err
 	}
-	if _, err := io.Copy(ioutil.Discard, resp.Body); err != nil {
+	if _, err = io.Copy(ioutil.Discard, resp.Body); err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint: errcheck
 
 	targetImageRef := fmt.Sprintf("%s/%s", dest.URL.Host, imageRef)
 
@@ -84,11 +90,11 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 		return err
 	}
 	defer func() {
-		_, _ = d.cli.ImageRemove(ctx, imageRef, types.ImageRemoveOptions{
+		_, _ = d.cli.ImageRemove(ctx, imageRef, types.ImageRemoveOptions{ // nolint: errcheck
 			Force:         true,
 			PruneChildren: true,
 		})
-		_, _ = d.cli.ImageRemove(ctx, targetImageRef, types.ImageRemoveOptions{
+		_, _ = d.cli.ImageRemove(ctx, targetImageRef, types.ImageRemoveOptions{ // nolint: errcheck
 			Force:         true,
 			PruneChildren: true,
 		})
@@ -103,7 +109,7 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 	if err != nil {
 		return err
 	}
-	defer pushOut.Close()
+	defer pushOut.Close() // nolint: errcheck
 
 	if _, err = io.Copy(ioutil.Discard, pushOut); err != nil {
 		return err

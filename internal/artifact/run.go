@@ -19,51 +19,57 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
+// InitializeScanner type to define initialize function signature
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration) (
 	scanner.Scanner, func(), error)
 
-func run(c config.Config, initializeScanner InitializeScanner) error {
+func initialize(c config.Config) (*cache.FSCache, bool, string, error) {
 	if err := log.InitLogger(c.Debug, c.Quiet); err != nil {
 		l.Fatal(err)
 	}
-
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
-	cacheClient, err := cache.NewFSCache(c.CacheDir)
-	if err != nil {
-		return xerrors.Errorf("unable to initialize the cache: %w", err)
-	}
-	defer cacheClient.Close()
-
-	cacheOperation := operation.NewCache(cacheClient)
-	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
-
-	if c.Reset {
-		return cacheOperation.Reset()
-	}
-	if c.ClearCache {
-		return cacheOperation.ClearImages()
-	}
-
-	// download the database file
-	noProgress := c.Quiet || c.NoProgress
-	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.Light, c.SkipUpdate); err != nil {
-		return err
-	}
-
-	if c.DownloadDBOnly {
-		return nil
-	}
-
-	if err = db.Init(c.CacheDir); err != nil {
-		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
-	}
-	defer db.Close()
-
 	target := c.Target
 	if c.Input != "" {
 		target = c.Input
 	}
+	cacheClient, err := cache.NewFSCache(c.CacheDir)
+	if err != nil {
+		return nil, true, target, xerrors.Errorf("unable to initialize the cache: %w", err)
+	}
+	cacheOperation := operation.NewCache(cacheClient)
+	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
+	if c.Reset {
+		return &cacheClient, true, target, cacheOperation.Reset()
+	}
+	if c.ClearCache {
+		return &cacheClient, true, target, cacheOperation.ClearImages()
+	}
+	// download the database file
+	noProgress := c.Quiet || c.NoProgress
+	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.Light, c.SkipUpdate); err != nil {
+		return &cacheClient, true, target, err
+	}
+	if c.DownloadDBOnly {
+		return &cacheClient, true, target, nil
+	}
+	return &cacheClient, false, target, nil
+}
+
+func run(c config.Config, initializeScanner InitializeScanner) error {
+	cacheClient, skip, target, err := initialize(c)
+	defer func() {
+		if cacheClient != nil {
+			cacheClient.Close() // nolint: errcheck,gosec
+		}
+	}()
+	if err != nil || skip {
+		return err
+	}
+	if err = db.Init(c.CacheDir); err != nil {
+		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
+	}
+	defer db.Close() // nolint: errcheck
 
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
@@ -90,10 +96,10 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
 		vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
-		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
+		vulns, fErr := vulnClient.Filter(ctx, results[i].Vulnerabilities,
 			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.IgnorePolicy)
-		if err != nil {
-			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
+		if fErr != nil {
+			return xerrors.Errorf("unable to filter vulnerabilities: %w", fErr)
 		}
 		results[i].Vulnerabilities = vulns
 	}
@@ -101,13 +107,16 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 	if err = report.WriteResults(c.Format, c.Output, c.Severities, results, c.Template, c.Light); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
+	checkExit(c.ExitCode, results)
+	return nil
+}
 
-	if c.ExitCode != 0 {
+func checkExit(exitCode int, results report.Results) {
+	if exitCode != 0 {
 		for _, result := range results {
 			if len(result.Vulnerabilities) > 0 {
-				os.Exit(c.ExitCode)
+				os.Exit(exitCode)
 			}
 		}
 	}
-	return nil
 }

@@ -12,24 +12,24 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
-	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
-	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
-	_ "github.com/aquasecurity/fanal/analyzer/library/composer"
-	_ "github.com/aquasecurity/fanal/analyzer/library/npm"
-	_ "github.com/aquasecurity/fanal/analyzer/library/pipenv"
-	_ "github.com/aquasecurity/fanal/analyzer/library/poetry"
-	_ "github.com/aquasecurity/fanal/analyzer/library/yarn"
-	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
-	_ "github.com/aquasecurity/fanal/analyzer/os/amazonlinux"
-	_ "github.com/aquasecurity/fanal/analyzer/os/debian"
-	_ "github.com/aquasecurity/fanal/analyzer/os/photon"
-	_ "github.com/aquasecurity/fanal/analyzer/os/redhatbase"
-	_ "github.com/aquasecurity/fanal/analyzer/os/suse"
-	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpmcmd"
+	_ "github.com/aquasecurity/fanal/analyzer/command/apk"      // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"  // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"    // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/library/composer" // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/library/npm"      // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/library/pipenv"   // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/library/poetry"   // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/library/yarn"     // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"        // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/os/amazonlinux"   // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/os/debian"        // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/os/photon"        // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/os/redhatbase"    // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/os/suse"          // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"        // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"          // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"         // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpmcmd"       // nolint: golint
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
 	libDetector "github.com/aquasecurity/trivy/pkg/detector/library"
@@ -40,6 +40,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
+// SuperSet binds dependencies for Local scan
 var SuperSet = wire.NewSet(
 	applier.NewApplier,
 	wire.Bind(new(Applier), new(applier.Applier)),
@@ -50,28 +51,34 @@ var SuperSet = wire.NewSet(
 	NewScanner,
 )
 
+// Applier defines operation to scan image layers
 type Applier interface {
 	ApplyLayers(artifactID string, blobIDs []string) (detail ftypes.ArtifactDetail, err error)
 }
 
+// OspkgDetector defines operation to detect OS vulnerabilities
 type OspkgDetector interface {
 	Detect(imageName, osFamily, osName string, created time.Time, pkgs []ftypes.Package) (detectedVulns []types.DetectedVulnerability, eosl bool, err error)
 }
 
+// LibraryDetector defines operation to detect library vulnerabilities
 type LibraryDetector interface {
 	Detect(imageName, filePath string, created time.Time, pkgs []ftypes.LibraryInfo) (detectedVulns []types.DetectedVulnerability, err error)
 }
 
+// Scanner implements the OspkgDetector and LibraryDetector
 type Scanner struct {
 	applier       Applier
 	ospkgDetector OspkgDetector
 	libDetector   LibraryDetector
 }
 
+// NewScanner is the factory method for Scanner
 func NewScanner(applier Applier, ospkgDetector OspkgDetector, libDetector LibraryDetector) Scanner {
 	return Scanner{applier: applier, ospkgDetector: ospkgDetector, libDetector: libDetector}
 }
 
+// Scan scans the local image and return results
 func (s Scanner) Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (report.Results, *ftypes.OS, bool, error) {
 	imageDetail, err := s.applier.ApplyLayers(imageID, layerIDs)
 	if err != nil {
@@ -90,24 +97,8 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 	var results report.Results
 
 	if utils.StringInSlice("os", options.VulnType) && imageDetail.OS != nil {
-		pkgs := imageDetail.Packages
-		if options.ScanRemovedPackages {
-			pkgs = mergePkgs(pkgs, imageDetail.HistoryPackages)
-		}
-
-		var result *report.Result
-		result, eosl, err = s.scanOSPkg(target, imageDetail.OS.Family, imageDetail.OS.Name, pkgs)
-		if err != nil {
+		if results, imageDetail.OS, eosl, err = s.addScanOSPkgResults(target, imageDetail, options); err != nil {
 			return nil, nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
-		}
-		if result != nil {
-			if options.ListAllPackages {
-				sort.Slice(pkgs, func(i, j int) bool {
-					return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
-				})
-				result.Packages = pkgs
-			}
-			results = append(results, *result)
 		}
 	}
 
@@ -119,6 +110,28 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 		results = append(results, libResults...)
 	}
 
+	return results, imageDetail.OS, eosl, nil
+}
+
+func (s Scanner) addScanOSPkgResults(target string, imageDetail ftypes.ArtifactDetail, options types.ScanOptions) (report.Results, *ftypes.OS, bool, error) {
+	pkgs := imageDetail.Packages
+	if options.ScanRemovedPackages {
+		pkgs = mergePkgs(pkgs, imageDetail.HistoryPackages)
+	}
+	var results report.Results
+	result, eosl, err := s.scanOSPkg(target, imageDetail.OS.Family, imageDetail.OS.Name, pkgs)
+	if err != nil {
+		return nil, nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
+	}
+	if result != nil {
+		if options.ListAllPackages {
+			sort.Slice(pkgs, func(i, j int) bool {
+				return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
+			})
+			result.Packages = pkgs
+		}
+		results = append(results, *result)
+	}
 	return results, imageDetail.OS, eosl, nil
 }
 

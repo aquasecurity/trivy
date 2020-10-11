@@ -9,6 +9,7 @@ import (
 	"github.com/aquasecurity/fanal/types"
 )
 
+// DockerConfig holds the config of Docker
 type DockerConfig struct {
 	UserName      string `env:"TRIVY_USERNAME"`
 	Password      string `env:"TRIVY_PASSWORD"`
@@ -17,6 +18,7 @@ type DockerConfig struct {
 	NonSSL        bool   `env:"TRIVY_NON_SSL" envDefault:"false"`
 }
 
+// GetDockerOption returns the Docker scanning options using DockerConfig
 func GetDockerOption(timeout time.Duration) (types.DockerOption, error) {
 	cfg := DockerConfig{}
 	if err := env.Parse(&cfg); err != nil {

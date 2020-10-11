@@ -22,10 +22,13 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
+// Now returns the current time
 var Now = time.Now
 
+// Results to hold list of Result
 type Results []Result
 
+// Result to hold image scan results
 type Result struct {
 	Target          string                        `json:"Target"`
 	Type            string                        `json:"Type,omitempty"`
@@ -33,13 +36,14 @@ type Result struct {
 	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities"`
 }
 
+// WriteResults writes the result to output, format as passed in argument
 func WriteResults(format string, output io.Writer, severities []dbTypes.Severity, results Results, outputTemplate string, light bool) error {
 	var writer Writer
 	switch format {
 	case "table":
 		writer = &TableWriter{Output: output, Light: light, Severities: severities}
 	case "json":
-		writer = &JsonWriter{Output: output}
+		writer = &JSONWriter{Output: output}
 	case "template":
 		var err error
 		if writer, err = NewTemplateWriter(output, outputTemplate); err != nil {
@@ -55,16 +59,19 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 	return nil
 }
 
+// Writer defines the result write operation
 type Writer interface {
 	Write(Results) error
 }
 
+// TableWriter implements Writer and output in tabular form
 type TableWriter struct {
 	Severities []dbTypes.Severity
 	Output     io.Writer
 	Light      bool
 }
 
+// Write writes the result on standard output
 func (tw TableWriter) Write(results Results) error {
 	for _, result := range results {
 		tw.write(result)
@@ -80,38 +87,13 @@ func (tw TableWriter) write(result Result) {
 	table.SetHeader(header)
 
 	severityCount := map[string]int{}
-	for _, v := range result.Vulnerabilities {
-		severityCount[v.Severity]++
-
-		title := v.Title
-		if title == "" {
-			title = v.Description
-		}
-		splittedTitle := strings.Split(title, " ")
-		if len(splittedTitle) >= 12 {
-			title = strings.Join(splittedTitle[:12], " ") + "..."
-		}
-		var row []string
-		if tw.Output == os.Stdout {
-			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
-				v.InstalledVersion, v.FixedVersion}
-		} else {
-			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion}
-		}
-
-		if !tw.Light {
-			row = append(row, title)
-		}
-		table.Append(row)
+	tw.append(table, severityCount, result)
+	severities := make([]string, len(tw.Severities))
+	for i, sev := range tw.Severities {
+		severities[i] = sev.String()
 	}
 
-	var results []string
-
-	var severities []string
-	for _, sev := range tw.Severities {
-		severities = append(severities, sev.String())
-	}
-
+	results := make([]string, 0)
 	for _, severity := range dbTypes.SeverityNames {
 		if !utils.StringInSlice(severity, severities) {
 			continue
@@ -134,11 +116,38 @@ func (tw TableWriter) write(result Result) {
 	return
 }
 
-type JsonWriter struct {
+func (tw TableWriter) append(table *tablewriter.Table, severityCount map[string]int, result Result) {
+	for _, v := range result.Vulnerabilities {
+		severityCount[v.Severity]++
+		title := v.Title
+		if title == "" {
+			title = v.Description
+		}
+		splittedTitle := strings.Split(title, " ")
+		if len(splittedTitle) >= 12 {
+			title = strings.Join(splittedTitle[:12], " ") + "..."
+		}
+		var row []string
+		if tw.Output == os.Stdout {
+			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
+				v.InstalledVersion, v.FixedVersion}
+		} else {
+			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion}
+		}
+		if !tw.Light {
+			row = append(row, title)
+		}
+		table.Append(row)
+	}
+}
+
+// JSONWriter implements result Writer
+type JSONWriter struct {
 	Output io.Writer
 }
 
-func (jw JsonWriter) Write(results Results) error {
+// Write writes the results in JSON format
+func (jw JSONWriter) Write(results Results) error {
 	output, err := json.MarshalIndent(results, "", "  ")
 	if err != nil {
 		return xerrors.Errorf("failed to marshal json: %w", err)
@@ -150,11 +159,13 @@ func (jw JsonWriter) Write(results Results) error {
 	return nil
 }
 
+// TemplateWriter write result in custom format defined by user's template
 type TemplateWriter struct {
 	Output   io.Writer
 	Template *template.Template
 }
 
+// NewTemplateWriter is the factory method to return TemplateWriter object
 func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter, error) {
 	if strings.HasPrefix(outputTemplate, "@") {
 		buf, err := ioutil.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
@@ -197,6 +208,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 	return &TemplateWriter{Output: output, Template: tmpl}, nil
 }
 
+// Write writes result
 func (tw TemplateWriter) Write(results Results) error {
 	err := tw.Template.Execute(tw.Output, results)
 	if err != nil {

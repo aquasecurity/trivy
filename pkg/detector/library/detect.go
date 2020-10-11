@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// SuperSet binds the dependencies for library scan
 var SuperSet = wire.NewSet(
 	wire.Struct(new(DriverFactory)),
 	wire.Bind(new(Factory), new(DriverFactory)),
@@ -24,18 +25,22 @@ var SuperSet = wire.NewSet(
 	wire.Bind(new(Operation), new(Detector)),
 )
 
+// Operation defines library scan operations
 type Operation interface {
 	Detect(imageName string, filePath string, created time.Time, pkgs []ftypes.LibraryInfo) (vulns []types.DetectedVulnerability, err error)
 }
 
+// Detector implements driverFactory
 type Detector struct {
 	driverFactory Factory
 }
 
+// NewDetector is the factory method for detector
 func NewDetector(factory Factory) Detector {
 	return Detector{driverFactory: factory}
 }
 
+// Detect scans and returns vulnerabilities of library
 func (d Detector) Detect(_, filePath string, _ time.Time, pkgs []ftypes.LibraryInfo) ([]types.DetectedVulnerability, error) {
 	log.Logger.Debugf("Detecting library vulnerabilities, path: %s", filePath)
 	driver, err := d.driverFactory.NewDriver(filepath.Base(filePath))
@@ -53,7 +58,7 @@ func (d Detector) Detect(_, filePath string, _ time.Time, pkgs []ftypes.LibraryI
 
 func detect(driver Driver, libs []ftypes.LibraryInfo) ([]types.DetectedVulnerability, error) {
 	log.Logger.Infof("Detecting %s vulnerabilities...", driver.Type())
-	var vulnerabilities []types.DetectedVulnerability
+	vulnerabilities := make([]types.DetectedVulnerability, 0)
 	for _, lib := range libs {
 		v, err := semver.NewVersion(utils.FormatPatchVersion(lib.Library.Version))
 		if err != nil {

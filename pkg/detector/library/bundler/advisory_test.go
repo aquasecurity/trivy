@@ -52,7 +52,8 @@ func TestScanner_Detect(t *testing.T) {
 		}
 
 		versionStr := "1.9.25-x64-mingw32"
-		v, _ := semver.NewVersion(versionStr)
+		v, err := semver.NewVersion(versionStr)
+		assert.Nil(t, err)
 
 		vulns, err := s.DetectVulnerabilities("ffi", v)
 

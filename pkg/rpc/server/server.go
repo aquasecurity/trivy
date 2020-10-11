@@ -17,6 +17,7 @@ import (
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
+// ScanSuperSet binds the dependencies for server
 var ScanSuperSet = wire.NewSet(
 	local.SuperSet,
 	wire.Bind(new(scanner.Driver), new(local.Scanner)),
@@ -24,15 +25,18 @@ var ScanSuperSet = wire.NewSet(
 	NewScanServer,
 )
 
+// ScanServer implements the scanner
 type ScanServer struct {
 	localScanner scanner.Driver
 	vulnClient   vulnerability.Operation
 }
 
+// NewScanServer is the factory method for scanner
 func NewScanServer(s scanner.Driver, vulnClient vulnerability.Operation) *ScanServer {
 	return &ScanServer{localScanner: s, vulnClient: vulnClient}
 }
 
+// Scan scans and return response
 func (s *ScanServer) Scan(_ context.Context, in *rpcScanner.ScanRequest) (*rpcScanner.ScanResponse, error) {
 	options := types.ScanOptions{VulnType: in.Options.VulnType}
 	results, os, eosl, err := s.localScanner.Scan(in.Target, in.ArtifactId, in.BlobIds, options)
@@ -43,39 +47,44 @@ func (s *ScanServer) Scan(_ context.Context, in *rpcScanner.ScanRequest) (*rpcSc
 	for i := range results {
 		s.vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
 	}
-	return rpc.ConvertToRpcScanResponse(results, os, eosl), nil
+	return rpc.ConvertToRPCScanResponse(results, os, eosl), nil
 }
 
+// CacheServer implements the cache
 type CacheServer struct {
 	cache cache.Cache
 }
 
+// NewCacheServer is the facotry method for cacheServer
 func NewCacheServer(c cache.Cache) *CacheServer {
 	return &CacheServer{cache: c}
 }
 
+// PutArtifact puts the artifacts in cache
 func (s *CacheServer) PutArtifact(_ context.Context, in *rpcCache.PutArtifactRequest) (*google_protobuf.Empty, error) {
 	if in.ArtifactInfo == nil {
 		return nil, xerrors.Errorf("empty image info")
 	}
-	imageInfo := rpc.ConvertFromRpcPutArtifactRequest(in)
+	imageInfo := rpc.ConvertFromRPCPutArtifactRequest(in)
 	if err := s.cache.PutArtifact(in.ArtifactId, imageInfo); err != nil {
 		return nil, xerrors.Errorf("unable to store image info in cache: %w", err)
 	}
 	return &google_protobuf.Empty{}, nil
 }
 
+// PutBlob puts the blobs in cache
 func (s *CacheServer) PutBlob(_ context.Context, in *rpcCache.PutBlobRequest) (*google_protobuf.Empty, error) {
 	if in.BlobInfo == nil {
 		return nil, xerrors.Errorf("empty layer info")
 	}
-	layerInfo := rpc.ConvertFromRpcPutBlobRequest(in)
+	layerInfo := rpc.ConvertFromRPCPutBlobRequest(in)
 	if err := s.cache.PutBlob(in.DiffId, layerInfo); err != nil {
 		return nil, xerrors.Errorf("unable to store layer info in cache: %w", err)
 	}
 	return &google_protobuf.Empty{}, nil
 }
 
+// MissingBlobs returns missing blobs from cache
 func (s *CacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBlobsRequest) (*rpcCache.MissingBlobsResponse, error) {
 	missingArtifact, blobIDs, err := s.cache.MissingBlobs(in.ArtifactId, in.BlobIds)
 	if err != nil {

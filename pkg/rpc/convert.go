@@ -14,10 +14,11 @@ import (
 	"github.com/aquasecurity/trivy/rpc/scanner"
 )
 
-func ConvertToRpcPkgs(pkgs []ftypes.Package) []*common.Package {
-	var rpcPkgs []*common.Package
-	for _, pkg := range pkgs {
-		rpcPkgs = append(rpcPkgs, &common.Package{
+// ConvertToRPCPkgs returns the list of RPC package objects
+func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
+	rpcPkgs := make([]*common.Package, len(pkgs))
+	for i, pkg := range pkgs {
+		rpcPkgs[i] = &common.Package{
 			Name:       pkg.Name,
 			Version:    pkg.Version,
 			Release:    pkg.Release,
@@ -27,15 +28,16 @@ func ConvertToRpcPkgs(pkgs []ftypes.Package) []*common.Package {
 			SrcVersion: pkg.SrcVersion,
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int32(pkg.SrcEpoch),
-		})
+		}
 	}
 	return rpcPkgs
 }
 
-func ConvertFromRpcPkgs(rpcPkgs []*common.Package) []ftypes.Package {
-	var pkgs []ftypes.Package
-	for _, pkg := range rpcPkgs {
-		pkgs = append(pkgs, ftypes.Package{
+// ConvertFromRPCPkgs returns list of Fanal package objects
+func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
+	pkgs := make([]ftypes.Package, 0)
+	for i, pkg := range rpcPkgs {
+		pkgs[i] = ftypes.Package{
 			Name:       pkg.Name,
 			Version:    pkg.Version,
 			Release:    pkg.Release,
@@ -45,40 +47,43 @@ func ConvertFromRpcPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			SrcVersion: pkg.SrcVersion,
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int(pkg.SrcEpoch),
-		})
+		}
 	}
 	return pkgs
 }
 
-func ConvertFromRpcLibraries(rpcLibs []*common.Library) []ftypes.LibraryInfo {
-	var libs []ftypes.LibraryInfo
-	for _, l := range rpcLibs {
-		libs = append(libs, ftypes.LibraryInfo{
+// ConvertFromRPCLibraries returns list of Fanal library
+func ConvertFromRPCLibraries(rpcLibs []*common.Library) []ftypes.LibraryInfo {
+	libs := make([]ftypes.LibraryInfo, len(rpcLibs))
+	for i, l := range rpcLibs {
+		libs[i] = ftypes.LibraryInfo{
 			Library: deptypes.Library{
 				Name:    l.Name,
 				Version: l.Version,
 			},
-		})
+		}
 	}
 	return libs
 }
 
-func ConvertToRpcLibraries(libs []deptypes.Library) []*common.Library {
-	var rpcLibs []*common.Library
-	for _, l := range libs {
-		rpcLibs = append(rpcLibs, &common.Library{
+// ConvertToRPCLibraries returns list of libraries
+func ConvertToRPCLibraries(libs []deptypes.Library) []*common.Library {
+	rpcLibs := make([]*common.Library, len(libs))
+	for i, l := range libs {
+		rpcLibs[i] = &common.Library{
 			Name:    l.Name,
 			Version: l.Version,
-		})
+		}
 	}
 	return rpcLibs
 }
 
-func ConvertFromRpcVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulnerability {
-	var vulns []types.DetectedVulnerability
-	for _, vuln := range rpcVulns {
+// ConvertFromRPCVulns returns converted vulnerability from common vulnerability format
+func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulnerability {
+	vulns := make([]types.DetectedVulnerability, len(rpcVulns))
+	for i, vuln := range rpcVulns {
 		severity := dbTypes.Severity(vuln.Severity)
-		vulns = append(vulns, types.DetectedVulnerability{
+		vulns[i] = types.DetectedVulnerability{
 			VulnerabilityID:  vuln.VulnerabilityId,
 			PkgName:          vuln.PkgName,
 			InstalledVersion: vuln.InstalledVersion,
@@ -89,14 +94,15 @@ func ConvertFromRpcVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				Severity:    severity.String(),
 				References:  vuln.References,
 			},
-		})
+		}
 	}
 	return vulns
 }
 
-func ConvertToRpcVulns(vulns []types.DetectedVulnerability) []*common.Vulnerability {
-	var rpcVulns []*common.Vulnerability
-	for _, vuln := range vulns {
+// ConvertToRPCVulns returns common.Vulnerability
+func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerability {
+	rpcVulns := make([]*common.Vulnerability, len(vulns))
+	for i, vuln := range vulns {
 		severity, err := dbTypes.NewSeverity(vuln.Severity)
 		if err != nil {
 			log.Logger.Warn(err)
@@ -111,7 +117,7 @@ func ConvertToRpcVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			}
 		}
 
-		rpcVulns = append(rpcVulns, &common.Vulnerability{
+		rpcVulns[i] = &common.Vulnerability{
 			VulnerabilityId:  vuln.VulnerabilityID,
 			PkgName:          vuln.PkgName,
 			InstalledVersion: vuln.InstalledVersion,
@@ -127,15 +133,15 @@ func ConvertToRpcVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			Cvss:           cvssMap,
 			SeveritySource: vuln.SeveritySource,
 			CweIds:         vuln.CweIDs,
-		})
+		}
 	}
 	return rpcVulns
 }
 
-func ConvertFromRpcResults(rpcResults []*scanner.Result) []report.Result {
-	var results []report.Result
-
-	for _, result := range rpcResults {
+// ConvertFromRPCResults converts scannel.Result to report.Result
+func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
+	results := make([]report.Result, len(rpcResults))
+	for i, result := range rpcResults {
 		var vulns []types.DetectedVulnerability
 		for _, vuln := range result.Vulnerabilities {
 			severity := dbTypes.Severity(vuln.Severity)
@@ -169,16 +175,17 @@ func ConvertFromRpcResults(rpcResults []*scanner.Result) []report.Result {
 				SeveritySource: vuln.SeveritySource,
 			})
 		}
-		results = append(results, report.Result{
+		results[i] = report.Result{
 			Target:          result.Target,
 			Vulnerabilities: vulns,
 			Type:            result.Type,
-		})
+		}
 	}
 	return results
 }
 
-func ConvertFromRpcOS(rpcOS *common.OS) *ftypes.OS {
+// ConvertFromRPCOS converts common.OS to fanal.OS
+func ConvertFromRPCOS(rpcOS *common.OS) *ftypes.OS {
 	if rpcOS == nil {
 		return nil
 	}
@@ -188,55 +195,60 @@ func ConvertFromRpcOS(rpcOS *common.OS) *ftypes.OS {
 	}
 }
 
-func ConvertFromRpcPackageInfos(rpcPkgInfos []*common.PackageInfo) []ftypes.PackageInfo {
-	var pkgInfos []ftypes.PackageInfo
-	for _, rpcPkgInfo := range rpcPkgInfos {
-		pkgInfos = append(pkgInfos, ftypes.PackageInfo{
+// ConvertFromRPCPackageInfos converts common.PackageInfo to fanal.PackageInfo
+func ConvertFromRPCPackageInfos(rpcPkgInfos []*common.PackageInfo) []ftypes.PackageInfo {
+	pkgInfos := make([]ftypes.PackageInfo, len(rpcPkgInfos))
+	for i, rpcPkgInfo := range rpcPkgInfos {
+		pkgInfos[i] = ftypes.PackageInfo{
 			FilePath: rpcPkgInfo.FilePath,
-			Packages: ConvertFromRpcPkgs(rpcPkgInfo.Packages),
-		})
+			Packages: ConvertFromRPCPkgs(rpcPkgInfo.Packages),
+		}
 	}
 	return pkgInfos
 }
 
-func ConvertFromRpcApplications(rpcApps []*common.Application) []ftypes.Application {
-	var apps []ftypes.Application
-	for _, rpcApp := range rpcApps {
-		apps = append(apps, ftypes.Application{
+// ConvertFromRPCApplications converts common.Application to fanal.Application
+func ConvertFromRPCApplications(rpcApps []*common.Application) []ftypes.Application {
+	apps := make([]ftypes.Application, len(rpcApps))
+	for i, rpcApp := range rpcApps {
+		apps[i] = ftypes.Application{
 			Type:      rpcApp.Type,
 			FilePath:  rpcApp.FilePath,
-			Libraries: ConvertFromRpcLibraries(rpcApp.Libraries),
-		})
+			Libraries: ConvertFromRPCLibraries(rpcApp.Libraries),
+		}
 	}
 	return apps
 }
 
-func ConvertFromRpcPutArtifactRequest(req *cache.PutArtifactRequest) ftypes.ArtifactInfo {
-	created, _ := ptypes.Timestamp(req.ArtifactInfo.Created)
+// ConvertFromRPCPutArtifactRequest converts cache.PutArtifactRequest to fanal.PutArtifactRequest
+func ConvertFromRPCPutArtifactRequest(req *cache.PutArtifactRequest) ftypes.ArtifactInfo {
+	created, _ := ptypes.Timestamp(req.ArtifactInfo.Created) // nolint: errcheck
 	return ftypes.ArtifactInfo{
 		SchemaVersion:   int(req.ArtifactInfo.SchemaVersion),
 		Architecture:    req.ArtifactInfo.Architecture,
 		Created:         created,
 		DockerVersion:   req.ArtifactInfo.DockerVersion,
 		OS:              req.ArtifactInfo.Os,
-		HistoryPackages: ConvertFromRpcPkgs(req.ArtifactInfo.HistoryPackages),
+		HistoryPackages: ConvertFromRPCPkgs(req.ArtifactInfo.HistoryPackages),
 	}
 }
 
-func ConvertFromRpcPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
+// ConvertFromRPCPutBlobRequest returns ftypes.BlobInfo
+func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 	return ftypes.BlobInfo{
 		SchemaVersion: int(req.BlobInfo.SchemaVersion),
 		Digest:        req.BlobInfo.Digest,
 		DiffID:        req.BlobInfo.DiffId,
-		OS:            ConvertFromRpcOS(req.BlobInfo.Os),
-		PackageInfos:  ConvertFromRpcPackageInfos(req.BlobInfo.PackageInfos),
-		Applications:  ConvertFromRpcApplications(req.BlobInfo.Applications),
+		OS:            ConvertFromRPCOS(req.BlobInfo.Os),
+		PackageInfos:  ConvertFromRPCPackageInfos(req.BlobInfo.PackageInfos),
+		Applications:  ConvertFromRPCApplications(req.BlobInfo.Applications),
 		OpaqueDirs:    req.BlobInfo.OpaqueDirs,
 		WhiteoutFiles: req.BlobInfo.WhiteoutFiles,
 	}
 }
 
-func ConvertToRpcOS(fos *ftypes.OS) *common.OS {
+// ConvertToRPCOS returns common.OS
+func ConvertToRPCOS(fos *ftypes.OS) *common.OS {
 	if fos == nil {
 		return nil
 	}
@@ -246,7 +258,8 @@ func ConvertToRpcOS(fos *ftypes.OS) *common.OS {
 	}
 }
 
-func ConvertToRpcArtifactInfo(imageID string, imageInfo ftypes.ArtifactInfo) *cache.PutArtifactRequest {
+// ConvertToRPCArtifactInfo returns PutArtifactRequest
+func ConvertToRPCArtifactInfo(imageID string, imageInfo ftypes.ArtifactInfo) *cache.PutArtifactRequest {
 	t, err := ptypes.TimestampProto(imageInfo.Created)
 	if err != nil {
 		log.Logger.Warnf("invalid timestamp: %s", err)
@@ -260,35 +273,35 @@ func ConvertToRpcArtifactInfo(imageID string, imageInfo ftypes.ArtifactInfo) *ca
 			Created:         t,
 			DockerVersion:   imageInfo.DockerVersion,
 			Os:              imageInfo.OS,
-			HistoryPackages: ConvertToRpcPkgs(imageInfo.HistoryPackages),
+			HistoryPackages: ConvertToRPCPkgs(imageInfo.HistoryPackages),
 		},
 	}
 }
 
-func ConvertToRpcBlobInfo(diffID string, layerInfo ftypes.BlobInfo) *cache.PutBlobRequest {
-	var packageInfos []*common.PackageInfo
-	for _, pkgInfo := range layerInfo.PackageInfos {
-		packageInfos = append(packageInfos, &common.PackageInfo{
+// ConvertToRPCBlobInfo returns PutBlobRequest
+func ConvertToRPCBlobInfo(diffID string, layerInfo ftypes.BlobInfo) *cache.PutBlobRequest {
+	packageInfos := make([]*common.PackageInfo, len(layerInfo.PackageInfos))
+	for i, pkgInfo := range layerInfo.PackageInfos {
+		packageInfos[i] = &common.PackageInfo{
 			FilePath: pkgInfo.FilePath,
-			Packages: ConvertToRpcPkgs(pkgInfo.Packages),
-		})
+			Packages: ConvertToRPCPkgs(pkgInfo.Packages),
+		}
 	}
 
-	var applications []*common.Application
-	for _, app := range layerInfo.Applications {
-		var libs []*common.Library
-		for _, lib := range app.Libraries {
-			libs = append(libs, &common.Library{
+	applications := make([]*common.Application, 0)
+	for i, app := range layerInfo.Applications {
+		libs := make([]*common.Library, len(app.Libraries))
+		for j, lib := range app.Libraries {
+			libs[j] = &common.Library{
 				Name:    lib.Library.Name,
 				Version: lib.Library.Version,
-			})
-
+			}
 		}
-		applications = append(applications, &common.Application{
+		applications[i] = &common.Application{
 			Type:      app.Type,
 			FilePath:  app.FilePath,
 			Libraries: libs,
-		})
+		}
 	}
 
 	return &cache.PutBlobRequest{
@@ -297,7 +310,7 @@ func ConvertToRpcBlobInfo(diffID string, layerInfo ftypes.BlobInfo) *cache.PutBl
 			SchemaVersion: ftypes.BlobJSONSchemaVersion,
 			Digest:        layerInfo.Digest,
 			DiffId:        layerInfo.DiffID,
-			Os:            ConvertToRpcOS(layerInfo.OS),
+			Os:            ConvertToRPCOS(layerInfo.OS),
 			PackageInfos:  packageInfos,
 			Applications:  applications,
 			OpaqueDirs:    layerInfo.OpaqueDirs,
@@ -306,6 +319,7 @@ func ConvertToRpcBlobInfo(diffID string, layerInfo ftypes.BlobInfo) *cache.PutBl
 	}
 }
 
+// ConvertToMissingBlobsRequest returns MissingBlobsRequest object
 func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.MissingBlobsRequest {
 	return &cache.MissingBlobsRequest{
 		ArtifactId: imageID,
@@ -313,20 +327,21 @@ func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.Miss
 	}
 }
 
-func ConvertToRpcScanResponse(results report.Results, os *ftypes.OS, eosl bool) *scanner.ScanResponse {
+// ConvertToRPCScanResponse converts report.Result to ScanResponse
+func ConvertToRPCScanResponse(results report.Results, os *ftypes.OS, eosl bool) *scanner.ScanResponse {
 	rpcOS := &common.OS{}
 	if os != nil {
 		rpcOS.Family = os.Family
 		rpcOS.Name = os.Name
 	}
 
-	var rpcResults []*scanner.Result
-	for _, result := range results {
-		rpcResults = append(rpcResults, &scanner.Result{
+	rpcResults := make([]*scanner.Result, len(results))
+	for i, result := range results {
+		rpcResults[i] = &scanner.Result{
 			Target:          result.Target,
-			Vulnerabilities: ConvertToRpcVulns(result.Vulnerabilities),
+			Vulnerabilities: ConvertToRPCVulns(result.Vulnerabilities),
 			Type:            result.Type,
-		})
+		}
 	}
 
 	return &scanner.ScanResponse{

@@ -41,16 +41,19 @@ var (
 	}
 )
 
+// Scanner implements the Alpine scanner
 type Scanner struct {
 	vs dbTypes.VulnSrc
 }
 
+// NewScanner is the factory method for Scanner
 func NewScanner() *Scanner {
 	return &Scanner{
 		vs: alpine.NewVulnSrc(),
 	}
 }
 
+// Detect vulnerabilities in package using Alpine scanner
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Alpine vulnerabilities...")
 	if strings.Count(osVer, ".") > 1 {
@@ -94,6 +97,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
+// IsSupportedVersion checks the OSFamily can be scanned using Alpine scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	now := time.Now()
 	return s.isSupportedVersion(now, osFamily, osVer)
