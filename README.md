@@ -1966,6 +1966,12 @@ $ brew unlink trivy && brew uninstall trivy
 $ brew install aquasecurity/trivy/trivy
 ```
 
+### Running in parallel takes same time as series run 
+When running trivy on multiple images simultaneously, it will take same time as running trivy in series.  
+This is because of a limitation of boltdb.  
+> Bolt obtains a file lock on the data file so multiple processes cannot open the same database at the same time. Opening an already open Bolt database will cause it to hang until the other process closes it.
+Reference : [boltdb: Opening a database](https://github.com/boltdb/bolt#opening-a-database).
+
 ## Others
 
 ### GitHub Rate limiting
