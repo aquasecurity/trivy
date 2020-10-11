@@ -9,7 +9,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
-          version: v1.21
+          version: v1.29
           args: --deadline=30m
 
   integration:
