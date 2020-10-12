@@ -39,7 +39,7 @@ func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version)
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.lang, err)
 	}
 
-	vulns := make([]types.DetectedVulnerability, 0, len(advisories))
+	var vulns []types.DetectedVulnerability
 	for _, advisory := range advisories {
 		if !s.comparer.isVulnerable(pkgVer, advisory) {
 			continue

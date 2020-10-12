@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
-	"path/filepath"
 
 	"github.com/docker/docker/client"
 
@@ -69,7 +68,7 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 		PruneChildren: true,
 	})
 
-	testfile, err := os.Open(filepath.Clean(imagePath))
+	testfile, err := os.Open(imagePath)
 	if err != nil {
 		return err
 	}
@@ -82,7 +81,7 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 	if _, err = io.Copy(ioutil.Discard, resp.Body); err != nil {
 		return err
 	}
-	defer resp.Body.Close() // nolint: errcheck
+	defer resp.Body.Close()
 
 	targetImageRef := fmt.Sprintf("%s/%s", dest.URL.Host, imageRef)
 
@@ -109,7 +108,7 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 	if err != nil {
 		return err
 	}
-	defer pushOut.Close() // nolint: errcheck
+	defer pushOut.Close()
 
 	if _, err = io.Copy(ioutil.Discard, pushOut); err != nil {
 		return err

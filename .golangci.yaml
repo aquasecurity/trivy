@@ -41,7 +41,6 @@ linters:
     - goimports
     - maligned
     - misspell
-    - prealloc
 
 run:
   skip-files:
@@ -49,6 +48,19 @@ run:
     - ".*._test.go$"
 
 issues:
+  exclude-rules:
+    - linters:
+        - gosec
+      text: "G304: Potential file inclusion"
+    - linters:
+        - gosec
+      text: "Deferring unsafe method"
+    - linters:
+        - errcheck
+      text: "Close` is not checked"
+    - linters:
+        - errcheck
+      text: "os.*` is not checked"
   exclude:
     - "should have a package comment, unless it's in another file for this package"
   exclude-use-default: false

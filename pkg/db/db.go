@@ -152,7 +152,7 @@ func (c Client) Download(ctx context.Context, cacheDir string, light bool) error
 	if err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
-	defer rc.Close() // nolint: errcheck
+	defer rc.Close()
 
 	bar := c.pb.Start(int64(size))
 	barReader := bar.NewProxyReader(rc)
@@ -173,7 +173,7 @@ func (c Client) Download(ctx context.Context, cacheDir string, light bool) error
 	if err != nil {
 		return xerrors.Errorf("unable to open DB file: %w", err)
 	}
-	defer file.Close() // nolint: errcheck,gosec
+	defer file.Close()
 
 	limited := io.LimitReader(gr, 2*gb)
 	if _, err = io.Copy(file, limited); err != nil {
@@ -191,7 +191,7 @@ func (c Client) UpdateMetadata(cacheDir string) error {
 	if err := db.Init(cacheDir); err != nil {
 		return xerrors.Errorf("DB error: %w", err)
 	}
-	defer db.Close() // nolint: errcheck
+	defer db.Close()
 
 	metadata, err := c.dbc.GetMetadata()
 	if err != nil {
@@ -241,7 +241,7 @@ func (m Metadata) Get() (db.Metadata, error) {
 	if err != nil {
 		return db.Metadata{}, xerrors.Errorf("unable to open a file: %w", err)
 	}
-	defer f.Close() // nolint: errcheck
+	defer f.Close()
 
 	var metadata db.Metadata
 	if err = json.NewDecoder(f).Decode(&metadata); err != nil {

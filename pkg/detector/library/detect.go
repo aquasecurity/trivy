@@ -58,7 +58,7 @@ func (d Detector) Detect(_, filePath string, _ time.Time, pkgs []ftypes.LibraryI
 
 func detect(driver Driver, libs []ftypes.LibraryInfo) ([]types.DetectedVulnerability, error) {
 	log.Logger.Infof("Detecting %s vulnerabilities...", driver.Type())
-	vulnerabilities := make([]types.DetectedVulnerability, 0)
+	var vulnerabilities []types.DetectedVulnerability
 	for _, lib := range libs {
 		v, err := semver.NewVersion(utils.FormatPatchVersion(lib.Library.Version))
 		if err != nil {

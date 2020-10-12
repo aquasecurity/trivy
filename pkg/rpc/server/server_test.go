@@ -192,9 +192,8 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 							t, _ := ptypes.TimestampProto(d)
 							return t
 						}(),
-						DockerVersion:   "18.09",
-						Os:              "linux",
-						HistoryPackages: []*common.Package{},
+						DockerVersion: "18.09",
+						Os:            "linux",
 					},
 				},
 			},
@@ -202,12 +201,11 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 				Args: cache.ArtifactCachePutArtifactArgs{
 					ArtifactID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 					ArtifactInfo: ftypes.ArtifactInfo{
-						SchemaVersion:   1,
-						Architecture:    "amd64",
-						Created:         time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC),
-						DockerVersion:   "18.09",
-						OS:              "linux",
-						HistoryPackages: []ftypes.Package{},
+						SchemaVersion: 1,
+						Architecture:  "amd64",
+						Created:       time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC),
+						DockerVersion: "18.09",
+						OS:            "linux",
 					},
 				},
 			},
@@ -225,7 +223,6 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 							t, _ := ptypes.TimestampProto(d)
 							return t
 						}(),
-						HistoryPackages: []*common.Package{},
 					},
 				},
 			},
@@ -233,9 +230,8 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 				Args: cache.ArtifactCachePutArtifactArgs{
 					ArtifactID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 					ArtifactInfo: ftypes.ArtifactInfo{
-						SchemaVersion:   1,
-						Created:         time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC),
-						HistoryPackages: []ftypes.Package{},
+						SchemaVersion: 1,
+						Created:       time.Date(2020, 1, 2, 3, 4, 5, 6, time.UTC),
 					},
 				},
 				Returns: cache.ArtifactCachePutArtifactReturns{

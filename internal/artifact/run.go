@@ -60,7 +60,7 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 	cacheClient, skip, target, err := initialize(c)
 	defer func() {
 		if cacheClient != nil {
-			cacheClient.Close() // nolint: errcheck,gosec
+			cacheClient.Close() // nolint: gosec
 		}
 	}()
 	if err != nil || skip {
@@ -69,7 +69,7 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 	if err = db.Init(c.CacheDir); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
-	defer db.Close() // nolint: errcheck
+	defer db.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()

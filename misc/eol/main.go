@@ -22,7 +22,7 @@ func debianEOL() {
 	if err != nil {
 		panic(err)
 	}
-	defer f.Close() // nolint: errcheck,gosec
+	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
@@ -46,7 +46,7 @@ func ubuntuEOL() {
 	if err != nil {
 		panic(err)
 	}
-	defer f.Close() // nolint: errcheck,gosec
+	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {

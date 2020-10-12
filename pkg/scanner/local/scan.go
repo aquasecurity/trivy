@@ -196,14 +196,14 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 
 func skipped(filePath string, skipFiles, skipDirectories []string) bool {
 	for _, skipFile := range skipFiles {
-		skipFile = strings.TrimLeft(filepath.Clean(skipFile), string(os.PathSeparator))
+		skipFile = strings.TrimLeft(skipFile, string(os.PathSeparator))
 		if filePath == skipFile {
 			return true
 		}
 	}
 
 	for _, skipDir := range skipDirectories {
-		skipDir = strings.TrimLeft(filepath.Clean(skipDir), string(os.PathSeparator))
+		skipDir = strings.TrimLeft(skipDir, string(os.PathSeparator))
 		rel, err := filepath.Rel(skipDir, filePath)
 		if err != nil {
 			log.Logger.Warnf("Unexpected error while skipping directories: %s", err)

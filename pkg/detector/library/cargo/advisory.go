@@ -30,7 +30,7 @@ func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version)
 		return nil, xerrors.Errorf("failed to get cargo advisories: %w", err)
 	}
 
-	vulns := make([]types.DetectedVulnerability, 0, len(advisories))
+	var vulns []types.DetectedVulnerability
 	for _, advisory := range advisories {
 		if utils.MatchVersions(pkgVer, advisory.PatchedVersions) {
 			continue

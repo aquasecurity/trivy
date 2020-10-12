@@ -132,7 +132,7 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 	if err != nil {
 		return xerrors.Errorf("failed to create a temp dir: %w", err)
 	}
-	defer os.RemoveAll(tmpDir) // nolint: errcheck
+	defer os.RemoveAll(tmpDir)
 
 	if err = w.dbClient.Download(ctx, tmpDir, false); err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)

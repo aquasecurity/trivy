@@ -280,7 +280,7 @@ func NewApp(version string) *cli.App {
 }
 
 func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
-	newFlags := make([]cli.Flag, 0, len(flags))
+	var newFlags []cli.Flag
 	for _, flag := range flags {
 		var f cli.Flag
 		switch pf := flag.(type) {

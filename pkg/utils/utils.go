@@ -62,11 +62,11 @@ func FileWalk(root string, targetFiles map[string]struct{}, walkFn func(r io.Rea
 			return nil
 		}
 
-		f, err := os.Open(filepath.Clean(path))
+		f, err := os.Open(path)
 		if err != nil {
 			return xerrors.Errorf("failed to open file: %w", err)
 		}
-		defer f.Close() // nolint: errcheck,gosec
+		defer f.Close()
 
 		if err = walkFn(f, path); err != nil {
 			return err
@@ -118,17 +118,17 @@ func CopyFile(src, dst string) (int64, error) {
 		return 0, fmt.Errorf("%s is not a regular file", src)
 	}
 
-	source, err := os.Open(filepath.Clean(src))
+	source, err := os.Open(src)
 	if err != nil {
 		return 0, err
 	}
-	defer source.Close() // nolint: errcheck,gosec
+	defer source.Close()
 
 	destination, err := os.Create(dst)
 	if err != nil {
 		return 0, err
 	}
-	defer destination.Close() // nolint: errcheck,gosec
+	defer destination.Close()
 	n, err := io.Copy(destination, source)
 	return n, err
 }
