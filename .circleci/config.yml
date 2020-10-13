@@ -34,7 +34,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 18.06.0-ce
+          version: 19.03.13
       - run:
           name: login to Docker Hub
           command: echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin
