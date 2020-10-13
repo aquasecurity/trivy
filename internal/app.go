@@ -308,10 +308,8 @@ func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
 
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
 	var dbMeta *db.Metadata
-	metadata, err := tdb.NewMetadata(afero.NewOsFs(), cacheDir).Get()
-	if err != nil {
-		fmt.Printf("showVersion: error initializing metadata: %v\n", err)
-	}
+
+	metadata, _ := tdb.NewMetadata(afero.NewOsFs(), cacheDir).Get() // nolint: errcheck
 	if !metadata.UpdatedAt.IsZero() && !metadata.NextUpdate.IsZero() && metadata.Version != 0 {
 		dbMeta = &db.Metadata{
 			Version:    metadata.Version,
@@ -320,36 +318,33 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 			UpdatedAt:  metadata.UpdatedAt.UTC(),
 		}
 	}
+
 	switch outputFormat {
 	case "json":
-		b, err := json.Marshal(VersionInfo{
+		b, _ := json.Marshal(VersionInfo{ // nolint: errcheck
 			Version:         version,
 			VulnerabilityDB: dbMeta,
 		})
-		if err != nil {
-			fmt.Printf("showVersion: error marshaling versionInfo: %v\n", err)
-		}
 		fmt.Fprintln(outputWriter, string(b))
-		return
-	}
-	output := fmt.Sprintf("Version: %s\n", version)
-	if dbMeta != nil {
-		var dbType string
-		switch dbMeta.Type {
-		case 0:
-			dbType = "Full"
-		case 1:
-			dbType = "Light"
-		}
-		output += fmt.Sprintf(`Vulnerability DB:
+	default:
+		output := fmt.Sprintf("Version: %s\n", version)
+		if dbMeta != nil {
+			var dbType string
+			switch dbMeta.Type {
+			case 0:
+				dbType = "Full"
+			case 1:
+				dbType = "Light"
+			}
+			output += fmt.Sprintf(`Vulnerability DB:
   Type: %s
   Version: %d
   UpdatedAt: %s
   NextUpdate: %s
 `, dbType, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC())
+		}
+		fmt.Fprintf(outputWriter, output)
 	}
-	fmt.Fprintf(outputWriter, output)
-	return
 }
 
 // NewImageCommand is the factory method to add image command

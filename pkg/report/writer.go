@@ -78,6 +78,9 @@ func (tw TableWriter) Write(results Results) error {
 	}
 	return nil
 }
+
+// nolint: gocyclo
+// TODO: refactror and fix cyclometic complexity
 func (tw TableWriter) write(result Result) {
 	table := tablewriter.NewWriter(tw.Output)
 	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version"}
@@ -87,13 +90,38 @@ func (tw TableWriter) write(result Result) {
 	table.SetHeader(header)
 
 	severityCount := map[string]int{}
-	tw.append(table, severityCount, result)
-	severities := make([]string, len(tw.Severities))
-	for i, sev := range tw.Severities {
-		severities[i] = sev.String()
+	for _, v := range result.Vulnerabilities {
+		severityCount[v.Severity]++
+
+		title := v.Title
+		if title == "" {
+			title = v.Description
+		}
+		splittedTitle := strings.Split(title, " ")
+		if len(splittedTitle) >= 12 {
+			title = strings.Join(splittedTitle[:12], " ") + "..."
+		}
+		var row []string
+		if tw.Output == os.Stdout {
+			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
+				v.InstalledVersion, v.FixedVersion}
+		} else {
+			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion}
+		}
+
+		if !tw.Light {
+			row = append(row, title)
+		}
+		table.Append(row)
 	}
 
 	var results []string
+
+	var severities []string
+	for _, sev := range tw.Severities {
+		severities = append(severities, sev.String())
+	}
+
 	for _, severity := range dbTypes.SeverityNames {
 		if !utils.StringInSlice(severity, severities) {
 			continue
@@ -114,31 +142,6 @@ func (tw TableWriter) write(result Result) {
 	table.SetRowLine(true)
 	table.Render()
 	return
-}
-
-func (tw TableWriter) append(table *tablewriter.Table, severityCount map[string]int, result Result) {
-	for _, v := range result.Vulnerabilities {
-		severityCount[v.Severity]++
-		title := v.Title
-		if title == "" {
-			title = v.Description
-		}
-		splittedTitle := strings.Split(title, " ")
-		if len(splittedTitle) >= 12 {
-			title = strings.Join(splittedTitle[:12], " ") + "..."
-		}
-		var row []string
-		if tw.Output == os.Stdout {
-			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
-				v.InstalledVersion, v.FixedVersion}
-		} else {
-			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion}
-		}
-		if !tw.Light {
-			row = append(row, title)
-		}
-		table.Append(row)
-	}
 }
 
 // JSONWriter implements result Writer

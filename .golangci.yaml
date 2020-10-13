@@ -46,6 +46,7 @@ run:
   skip-files:
     - ".*._mock.go$"
     - ".*._test.go$"
+    - "integration/*"
 
 issues:
   exclude-rules:

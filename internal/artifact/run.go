@@ -23,53 +23,50 @@ import (
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration) (
 	scanner.Scanner, func(), error)
 
-func initialize(c config.Config) (*cache.FSCache, bool, string, error) {
+// nolint: gocyclo
+// TODO: refactror and fix cyclometic complexity
+func run(c config.Config, initializeScanner InitializeScanner) error {
 	if err := log.InitLogger(c.Debug, c.Quiet); err != nil {
 		l.Fatal(err)
 	}
+
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
-	target := c.Target
-	if c.Input != "" {
-		target = c.Input
-	}
 	cacheClient, err := cache.NewFSCache(c.CacheDir)
 	if err != nil {
-		return nil, true, target, xerrors.Errorf("unable to initialize the cache: %w", err)
+		return xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
+	defer cacheClient.Close()
+
 	cacheOperation := operation.NewCache(cacheClient)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
+
 	if c.Reset {
-		return &cacheClient, true, target, cacheOperation.Reset()
+		return cacheOperation.Reset()
 	}
 	if c.ClearCache {
-		return &cacheClient, true, target, cacheOperation.ClearImages()
+		return cacheOperation.ClearImages()
 	}
+
 	// download the database file
 	noProgress := c.Quiet || c.NoProgress
 	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.Light, c.SkipUpdate); err != nil {
-		return &cacheClient, true, target, err
-	}
-	if c.DownloadDBOnly {
-		return &cacheClient, true, target, nil
-	}
-	return &cacheClient, false, target, nil
-}
-
-func run(c config.Config, initializeScanner InitializeScanner) error {
-	cacheClient, skip, target, err := initialize(c)
-	defer func() {
-		if cacheClient != nil {
-			cacheClient.Close() // nolint: gosec
-		}
-	}()
-	if err != nil || skip {
 		return err
 	}
+
+	if c.DownloadDBOnly {
+		return nil
+	}
+
 	if err = db.Init(c.CacheDir); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 	defer db.Close()
+
+	target := c.Target
+	if c.Input != "" {
+		target = c.Input
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
@@ -96,10 +93,11 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
 		vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
-		vulns, fErr := vulnClient.Filter(ctx, results[i].Vulnerabilities,
+		var vulns []types.DetectedVulnerability
+		vulns, err = vulnClient.Filter(ctx, results[i].Vulnerabilities,
 			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.IgnorePolicy)
-		if fErr != nil {
-			return xerrors.Errorf("unable to filter vulnerabilities: %w", fErr)
+		if err != nil {
+			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 		results[i].Vulnerabilities = vulns
 	}
@@ -107,16 +105,13 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 	if err = report.WriteResults(c.Format, c.Output, c.Severities, results, c.Template, c.Light); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
-	checkExit(c.ExitCode, results)
-	return nil
-}
 
-func checkExit(exitCode int, results report.Results) {
-	if exitCode != 0 {
+	if c.ExitCode != 0 {
 		for _, result := range results {
 			if len(result.Vulnerabilities) > 0 {
-				os.Exit(exitCode)
+				os.Exit(c.ExitCode)
 			}
 		}
 	}
+	return nil
 }

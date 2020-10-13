@@ -63,7 +63,7 @@ func New() (Docker, error) {
 // ReplicateImage tags the given imagePath and pushes it to the given dest registry.
 func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, dest RegistryConfig) error {
 	// remove existing Image if any
-	_, _ = d.cli.ImageRemove(ctx, imageRef, types.ImageRemoveOptions{ // nolint: errcheck
+	_, _ = d.cli.ImageRemove(ctx, imageRef, types.ImageRemoveOptions{
 		Force:         true,
 		PruneChildren: true,
 	})
@@ -89,11 +89,11 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 		return err
 	}
 	defer func() {
-		_, _ = d.cli.ImageRemove(ctx, imageRef, types.ImageRemoveOptions{ // nolint: errcheck
+		_, _ = d.cli.ImageRemove(ctx, imageRef, types.ImageRemoveOptions{
 			Force:         true,
 			PruneChildren: true,
 		})
-		_, _ = d.cli.ImageRemove(ctx, targetImageRef, types.ImageRemoveOptions{ // nolint: errcheck
+		_, _ = d.cli.ImageRemove(ctx, targetImageRef, types.ImageRemoveOptions{
 			Force:         true,
 			PruneChildren: true,
 		})

@@ -110,7 +110,11 @@ func (c Client) NeedsUpdate(cliVersion string, light, skip bool) (bool, error) {
 	}
 
 	if skip {
-		return c.skipErr(dbType, metadata)
+		if err = c.validate(dbType, metadata); err != nil {
+			return false, err
+		}
+		return false, nil
+
 	}
 
 	if db.SchemaVersion == metadata.Version && metadata.Type == dbType &&
@@ -121,22 +125,22 @@ func (c Client) NeedsUpdate(cliVersion string, light, skip bool) (bool, error) {
 	return true, nil
 }
 
-func (c Client) skipErr(dbType db.Type, metadata db.Metadata) (bool, error) {
+func (c Client) validate(dbType db.Type, metadata db.Metadata) error {
 	if db.SchemaVersion != metadata.Version {
 		log.Logger.Error("The local DB is old and needs to be updated")
-		return false, xerrors.New("--skip-update cannot be specified with the old DB")
+		return xerrors.New("--skip-update cannot be specified with the old DB")
 	} else if metadata.Type != dbType {
 		if dbType == db.TypeFull {
 			log.Logger.Error("The local DB is a lightweight DB. You have to download a full DB")
 		} else {
 			log.Logger.Error("The local DB is a full DB. You have to download a lightweight DB")
 		}
-		return false, xerrors.New("--skip-update cannot be specified with the different schema DB")
+		return xerrors.New("--skip-update cannot be specified with the different schema DB")
 	}
-	return false, nil
+	return nil
 }
 
-// Download downloads the file
+// Download downloads the DB file
 func (c Client) Download(ctx context.Context, cacheDir string, light bool) error {
 	// Remove the metadata file before downloading DB
 	if err := c.metadata.Delete(); err != nil {

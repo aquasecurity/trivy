@@ -26,28 +26,27 @@ func Run(cliCtx *cli.Context) error {
 	return run(c)
 }
 
-func initialize(c *config.Config) error {
-	if err := log.InitLogger(c.Debug, c.Quiet); err != nil {
+// nolint: gocyclo
+// TODO: refactror and fix cyclometic complexity
+func run(c config.Config) (err error) {
+	if err = log.InitLogger(c.Debug, c.Quiet); err != nil {
 		return xerrors.Errorf("failed to initialize a logger: %w", err)
 	}
+
 	// initialize config
-	if err := c.Init(); err != nil {
+	if err = c.Init(); err != nil {
 		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
+
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
-	return nil
-}
 
-func run(c config.Config) (err error) {
-	if err = initialize(&c); err != nil {
-		return err
-	}
 	if c.ClearCache {
 		log.Logger.Warn("A client doesn't have image cache")
 		return nil
 	}
+
 	var scanner scanner.Scanner
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
@@ -84,10 +83,11 @@ func run(c config.Config) (err error) {
 
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
-		vulns, fErr := vulnClient.Filter(ctx, results[i].Vulnerabilities,
+		var vulns []types.DetectedVulnerability
+		vulns, err = vulnClient.Filter(ctx, results[i].Vulnerabilities,
 			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.IgnorePolicy)
-		if fErr != nil {
-			return fErr
+		if err != nil {
+			return err
 		}
 		results[i].Vulnerabilities = vulns
 	}
@@ -95,16 +95,13 @@ func run(c config.Config) (err error) {
 	if err = report.WriteResults(c.Format, c.Output, c.Severities, results, c.Template, false); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
-	checkExit(c.ExitCode, results)
-	return nil
-}
 
-func checkExit(exitCode int, results report.Results) {
-	if exitCode != 0 {
+	if c.ExitCode != 0 {
 		for _, result := range results {
 			if len(result.Vulnerabilities) > 0 {
-				os.Exit(exitCode)
+				os.Exit(c.ExitCode)
 			}
 		}
 	}
+	return nil
 }

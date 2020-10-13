@@ -55,7 +55,6 @@ var (
 type Scanner struct {
 	vs    dbTypes.VulnSrc
 	clock clock.Clock
-	//family string
 }
 
 // Type to define SUSE type

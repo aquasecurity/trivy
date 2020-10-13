@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/urfave/cli/v2"
 
 	"github.com/aquasecurity/trivy/internal/config"
@@ -21,10 +19,7 @@ type Config struct {
 // New is the factory method to return cofig
 func New(c *cli.Context) Config {
 	// the error is ignored because logger is unnecessary
-	gc, err := config.NewGlobalConfig(c)
-	if err != nil {
-		fmt.Printf("error creating globalConfig: %v", err)
-	}
+	gc, _ := config.NewGlobalConfig(c) // nolint: errcheck
 	return Config{
 		GlobalConfig: gc,
 		DBConfig:     config.NewDBConfig(c),

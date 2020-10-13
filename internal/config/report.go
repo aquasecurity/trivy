@@ -80,13 +80,13 @@ func (c *ReportConfig) Init(logger *zap.SugaredLogger) (err error) {
 
 func (c *ReportConfig) splitSeverity(logger *zap.SugaredLogger, severity string) []dbTypes.Severity {
 	logger.Debugf("Severities: %s", severity)
-	severities := make([]dbTypes.Severity, len(strings.Split(severity, ",")))
-	for i, s := range strings.Split(severity, ",") {
+	var severities []dbTypes.Severity
+	for _, s := range strings.Split(severity, ",") {
 		severity, err := dbTypes.NewSeverity(s)
 		if err != nil {
 			logger.Warnf("unknown severity option: %s", err)
 		}
-		severities[i] = severity
+		severities = append(severities, severity)
 	}
 	return severities
 }

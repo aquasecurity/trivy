@@ -78,7 +78,8 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector, libDetector Librar
 	return Scanner{applier: applier, ospkgDetector: ospkgDetector, libDetector: libDetector}
 }
 
-// Scan scans the local image and return results
+// Scan scans the local image and return results. TODO: fix cyclometic complexity
+// nolint: gocyclo
 func (s Scanner) Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (report.Results, *ftypes.OS, bool, error) {
 	imageDetail, err := s.applier.ApplyLayers(imageID, layerIDs)
 	if err != nil {
@@ -97,8 +98,24 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 	var results report.Results
 
 	if utils.StringInSlice("os", options.VulnType) && imageDetail.OS != nil {
-		if results, imageDetail.OS, eosl, err = s.addScanOSPkgResults(target, imageDetail, options); err != nil {
+		pkgs := imageDetail.Packages
+		if options.ScanRemovedPackages {
+			pkgs = mergePkgs(pkgs, imageDetail.HistoryPackages)
+		}
+
+		var result *report.Result
+		result, eosl, err = s.scanOSPkg(target, imageDetail.OS.Family, imageDetail.OS.Name, pkgs)
+		if err != nil {
 			return nil, nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
+		}
+		if result != nil {
+			if options.ListAllPackages {
+				sort.Slice(pkgs, func(i, j int) bool {
+					return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
+				})
+				result.Packages = pkgs
+			}
+			results = append(results, *result)
 		}
 	}
 
@@ -110,28 +127,6 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 		results = append(results, libResults...)
 	}
 
-	return results, imageDetail.OS, eosl, nil
-}
-
-func (s Scanner) addScanOSPkgResults(target string, imageDetail ftypes.ArtifactDetail, options types.ScanOptions) (report.Results, *ftypes.OS, bool, error) {
-	pkgs := imageDetail.Packages
-	if options.ScanRemovedPackages {
-		pkgs = mergePkgs(pkgs, imageDetail.HistoryPackages)
-	}
-	var results report.Results
-	result, eosl, err := s.scanOSPkg(target, imageDetail.OS.Family, imageDetail.OS.Name, pkgs)
-	if err != nil {
-		return nil, nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
-	}
-	if result != nil {
-		if options.ListAllPackages {
-			sort.Slice(pkgs, func(i, j int) bool {
-				return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
-			})
-			result.Packages = pkgs
-		}
-		results = append(results, *result)
-	}
 	return results, imageDetail.OS, eosl, nil
 }
 
@@ -196,14 +191,14 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 
 func skipped(filePath string, skipFiles, skipDirectories []string) bool {
 	for _, skipFile := range skipFiles {
-		skipFile = strings.TrimLeft(skipFile, string(os.PathSeparator))
+		skipFile = strings.TrimLeft(filepath.Clean(skipFile), string(os.PathSeparator))
 		if filePath == skipFile {
 			return true
 		}
 	}
 
 	for _, skipDir := range skipDirectories {
-		skipDir = strings.TrimLeft(skipDir, string(os.PathSeparator))
+		skipDir = strings.TrimLeft(filepath.Clean(skipDir), string(os.PathSeparator))
 		rel, err := filepath.Rel(skipDir, filePath)
 		if err != nil {
 			log.Logger.Warnf("Unexpected error while skipping directories: %s", err)
