@@ -81,9 +81,10 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 		}
 
 		for _, adv := range advisories {
-			fixedVersion, verErr := version.NewVersion(adv.FixedVersion)
-			if verErr != nil {
-				log.Logger.Debugf("failed to parse Debian package version: %w", verErr)
+			var fixedVersion version.Version
+			fixedVersion, err = version.NewVersion(adv.FixedVersion)
+			if err != nil {
+				log.Logger.Debugf("failed to parse Debian package version: %w", err)
 				continue
 			}
 
