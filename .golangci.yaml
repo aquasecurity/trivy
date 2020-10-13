@@ -62,6 +62,9 @@ issues:
     - linters:
         - errcheck
       text: "os.*` is not checked"
+    - linters:
+        - golint
+      text: "a blank import should be only in a main or test package"
   exclude:
     - "should have a package comment, unless it's in another file for this package"
   exclude-use-default: false

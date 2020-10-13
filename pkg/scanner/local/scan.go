@@ -12,24 +12,24 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	_ "github.com/aquasecurity/fanal/analyzer/command/apk"      // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"  // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"    // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/library/composer" // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/library/npm"      // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/library/pipenv"   // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/library/poetry"   // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/library/yarn"     // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"        // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/os/amazonlinux"   // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/os/debian"        // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/os/photon"        // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/os/redhatbase"    // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/os/suse"          // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"        // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"          // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"         // nolint: golint
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpmcmd"       // nolint: golint
+	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
+	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
+	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
+	_ "github.com/aquasecurity/fanal/analyzer/library/composer"
+	_ "github.com/aquasecurity/fanal/analyzer/library/npm"
+	_ "github.com/aquasecurity/fanal/analyzer/library/pipenv"
+	_ "github.com/aquasecurity/fanal/analyzer/library/poetry"
+	_ "github.com/aquasecurity/fanal/analyzer/library/yarn"
+	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
+	_ "github.com/aquasecurity/fanal/analyzer/os/amazonlinux"
+	_ "github.com/aquasecurity/fanal/analyzer/os/debian"
+	_ "github.com/aquasecurity/fanal/analyzer/os/photon"
+	_ "github.com/aquasecurity/fanal/analyzer/os/redhatbase"
+	_ "github.com/aquasecurity/fanal/analyzer/os/suse"
+	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
+	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
+	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"
+	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpmcmd"
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
 	libDetector "github.com/aquasecurity/trivy/pkg/detector/library"
