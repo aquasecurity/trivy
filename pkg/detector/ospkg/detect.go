@@ -64,36 +64,27 @@ func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []ftypes.
 
 func newDriver(osFamily, osName string) Driver {
 	// TODO: use DI and change struct names
-	var d Driver
 	switch osFamily {
 	case fos.Alpine:
-		d = alpine.NewScanner()
-		return d
+		return alpine.NewScanner()
 	case fos.Debian:
-		d = debian.NewScanner()
-		return d
+		return debian.NewScanner()
 	case fos.Ubuntu:
-		d = ubuntu.NewScanner()
-		return d
+		return ubuntu.NewScanner()
 	case fos.RedHat, fos.CentOS:
-		d = redhat.NewScanner()
-		return d
+		return redhat.NewScanner()
 	case fos.Amazon:
-		d = amazon.NewScanner()
-		return d
+		return amazon.NewScanner()
 	case fos.Oracle:
-		d = oracle.NewScanner()
-		return d
+		return oracle.NewScanner()
 	case fos.OpenSUSELeap:
-		d = suse.NewScanner(suse.OpenSUSE)
-		return d
+		return suse.NewScanner(suse.OpenSUSE)
 	case fos.SLES:
-		d = suse.NewScanner(suse.SUSEEnterpriseLinux)
-		return d
+		return suse.NewScanner(suse.SUSEEnterpriseLinux)
 	case fos.Photon:
-		d = photon.NewScanner()
-		return d
+		return photon.NewScanner()
+	default:
+		log.Logger.Warnf("unsupported os : %s", osFamily)
+		return nil
 	}
-	log.Logger.Warnf("unsupported os : %s", osFamily)
-	return nil
 }

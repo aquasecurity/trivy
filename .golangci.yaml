@@ -20,7 +20,7 @@ linters-settings:
   misspell:
     locale: US
   goimports:
-    local-prefixes: github.com/rahul23/trivy
+    local-prefixes: github.com/rahul2393/trivy
 
 linters:
   disable-all: true
@@ -65,6 +65,9 @@ issues:
     - linters:
         - golint
       text: "a blank import should be only in a main or test package"
+    - linters:
+        - govet
+      text: "shadow: declaration of"
   exclude:
     - "should have a package comment, unless it's in another file for this package"
   exclude-use-default: false
