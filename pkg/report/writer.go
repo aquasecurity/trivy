@@ -15,11 +15,14 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/olekukonko/tablewriter"
+
 	ftypes "github.com/aquasecurity/fanal/types"
+
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/olekukonko/tablewriter"
 )
 
 // Now returns the current time

@@ -3,13 +3,17 @@ package amazon
 import (
 	"strings"
 
-	version "github.com/knqyf263/go-deb-version"
 	"go.uber.org/zap"
+
 	"golang.org/x/xerrors"
 
+	version "github.com/knqyf263/go-deb-version"
+
 	ftypes "github.com/aquasecurity/fanal/types"
+
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/amazon"
+
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"

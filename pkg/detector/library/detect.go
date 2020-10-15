@@ -4,15 +4,15 @@ import (
 	"path/filepath"
 	"time"
 
-	ftypes "github.com/aquasecurity/fanal/types"
+	"golang.org/x/xerrors"
 
 	"github.com/google/wire"
 
 	"github.com/Masterminds/semver/v3"
+
+	ftypes "github.com/aquasecurity/fanal/types"
+
 	"github.com/aquasecurity/trivy/pkg/log"
-
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )

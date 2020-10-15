@@ -4,10 +4,12 @@ import (
 	"context"
 	"time"
 
-	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
+	"github.com/urfave/cli/v2"
+
 	"github.com/aquasecurity/fanal/cache"
+
 	"github.com/aquasecurity/trivy/internal/artifact/config"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )

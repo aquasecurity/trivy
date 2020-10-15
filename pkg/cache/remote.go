@@ -8,6 +8,7 @@ import (
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/types"
+
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"

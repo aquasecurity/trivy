@@ -8,8 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/wire"
 	"golang.org/x/xerrors"
+
+	"github.com/google/wire"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
@@ -32,6 +33,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpmcmd"
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
+
 	libDetector "github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"

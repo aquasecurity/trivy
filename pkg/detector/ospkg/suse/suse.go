@@ -6,14 +6,17 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
+	version "github.com/knqyf263/go-rpm-version"
+
 	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
+
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	susecvrf "github.com/aquasecurity/trivy-db/pkg/vulnsrc/suse-cvrf"
+
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
-	version "github.com/knqyf263/go-rpm-version"
 )
 
 var (

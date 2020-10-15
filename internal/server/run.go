@@ -1,11 +1,14 @@
 package server
 
 import (
-	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
+	"github.com/urfave/cli/v2"
+
 	"github.com/aquasecurity/fanal/cache"
+
 	"github.com/aquasecurity/trivy-db/pkg/db"
+
 	"github.com/aquasecurity/trivy/internal/operation"
 	"github.com/aquasecurity/trivy/internal/server/config"
 	"github.com/aquasecurity/trivy/pkg/log"

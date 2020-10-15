@@ -10,11 +10,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/google/go-github/v28/github"
 	"golang.org/x/oauth2"
 	"golang.org/x/xerrors"
+
+	"github.com/google/go-github/v28/github"
+
+	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (

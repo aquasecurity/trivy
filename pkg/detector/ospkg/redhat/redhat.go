@@ -4,14 +4,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat"
+	"golang.org/x/xerrors"
 
 	version "github.com/knqyf263/go-rpm-version"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
+
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat"
+
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"

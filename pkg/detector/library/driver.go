@@ -3,9 +3,13 @@ package library
 import (
 	"fmt"
 
+	"golang.org/x/xerrors"
+
 	"github.com/Masterminds/semver/v3"
+
 	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
 	"github.com/aquasecurity/trivy/pkg/detector/library/cargo"
 	"github.com/aquasecurity/trivy/pkg/detector/library/composer"
@@ -13,7 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/node"
 	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"golang.org/x/xerrors"
 )
 
 // Factory defines library operations

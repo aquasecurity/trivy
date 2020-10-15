@@ -4,8 +4,11 @@ import (
 	"github.com/golang/protobuf/ptypes"
 
 	ftypes "github.com/aquasecurity/fanal/types"
+
 	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
