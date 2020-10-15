@@ -62,6 +62,8 @@ func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []ftypes.
 	return vulns, eosl, nil
 }
 
+// nolint: gocyclo
+// TODO: fix cyclometic complexity by removing default
 func newDriver(osFamily, osName string) Driver {
 	// TODO: use DI and change struct names
 	switch osFamily {
