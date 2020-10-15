@@ -19,8 +19,6 @@ linters-settings:
     min-occurrences: 3
   misspell:
     locale: US
-  goimports:
-    local-prefixes: github.com/aquasecurity/trivy
 
 linters:
   disable-all: true
