@@ -15,6 +15,9 @@
         "Title": "bash: BASH_CMD is writable in restricted bash shells",
         "Description": "rbash in Bash before 4.4-beta2 did not prevent the shell user from modifying BASH_CMDS, thus allowing the user to execute any command with the permissions of the shell.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -57,6 +60,9 @@
         "Title": "bind: Limiting simultaneous TCP clients is ineffective",
         "Description": "By design, BIND is intended to limit the number of TCP clients that can be connected at any given time. The number of allowed connections is a tunable parameter which, if unset, defaults to a conservative value for most servers. Unfortunately, the code which was intended to limit the number of simultaneous connections contained an error which could be exploited to grow the number of simultaneous connections beyond this limit. Versions affected: BIND 9.9.0 -\u003e 9.10.8-P1, 9.11.0 -\u003e 9.11.6, 9.12.0 -\u003e 9.12.4, 9.14.0. BIND 9 Supported Preview Edition versions 9.9.3-S1 -\u003e 9.11.5-S3, and 9.11.5-S5. Versions 9.13.0 -\u003e 9.13.7 of the 9.13 development branch are also affected. Versions prior to BIND 9.9.0 have not been evaluated for vulnerability to CVE-2018-5743.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-770"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -94,6 +100,9 @@
         "Title": "bind: BIND does not sufficiently limit the number of fetches performed when processing referrals",
         "Description": "A malicious actor who intentionally exploits this lack of effective limitation on the number of fetches performed when processing referrals can, through the use of specially crafted referrals, cause a recursing server to issue a very large number of fetches in an attempt to process the referral. This has at least two potential effects: The performance of the recursing server can potentially be degraded by the additional work required to perform these fetches, and The attacker can exploit this behavior to use the recursing server as a reflector in a reflection attack with a high amplification factor.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-400"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -140,6 +149,9 @@
         "Title": "bind: A logic error in code which checks TSIG validity can be used to trigger an assertion failure in tsig.c",
         "Description": "Using a specially-crafted message, an attacker may potentially cause a BIND server to reach an inconsistent state if the attacker knows (or successfully guesses) the name of a TSIG key used by the server. Since BIND, by default, configures a local session key even on servers whose configuration does not otherwise make use of it, almost all current BIND servers are vulnerable. In releases of BIND dating from March 2018 and after, an assertion check in tsig.c detects this inconsistent state and deliberately exits. Prior to the introduction of the check the server would continue operating in an inconsistent state, with potentially harmful results.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-617"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -184,6 +196,9 @@
         "Title": "bind: Incorrect documentation of krb5-subdomain and ms-subdomain update policies",
         "Description": "To provide fine-grained controls over the ability to use Dynamic DNS (DDNS) to update records in a zone, BIND 9 provides a feature called update-policy. Various rules can be configured to limit the types of updates that can be performed by a client, depending on the key used when sending the update request. Unfortunately, some rule types were not initially documented, and when documentation for them was added to the Administrator Reference Manual (ARM) in change #3112, the language that was added to the ARM at that time incorrectly described the behavior of two rule types, krb5-subdomain and ms-subdomain. This incorrect documentation could mislead operators into believing that policies they had configured were more restrictive than they actually were. This affects BIND versions prior to BIND 9.11.5 and BIND 9.12.3.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-254"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:S/C:N/I:P/A:N",
@@ -223,6 +238,9 @@
         "Title": "bind: TCP Pipelining doesn't limit TCP clients on a single connection",
         "Description": "With pipelining enabled each incoming query on a TCP connection requires a similar resource allocation to a query received via UDP or via TCP without pipelining enabled. A client using a TCP-pipelined connection to a server could consume more resources than the server has been provisioned to handle. When a TCP connection with a large number of pipelined queries is closed, the load on the server releasing these multiple resources can cause it to become unresponsive, even for queries that can be answered authoritatively or from cache. (This is most likely to be perceived as an intermittent server problem).",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-400"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -262,6 +280,9 @@
         "Title": "bind: An assertion failure if a trust anchor rolls over to an unsupported key algorithm when using managed-keys",
         "Description": "\"managed-keys\" is a feature which allows a BIND resolver to automatically maintain the keys used by trust anchors which operators configure for use in DNSSEC validation. Due to an error in the managed-keys feature it is possible for a BIND server which uses managed-keys to exit due to an assertion failure if, during key rollover, a trust anchor's keys are replaced with keys which use an unsupported algorithm. Versions affected: BIND 9.9.0 -\u003e 9.10.8-P1, 9.11.0 -\u003e 9.11.5-P1, 9.12.0 -\u003e 9.12.3-P1, and versions 9.9.3-S1 -\u003e 9.11.5-S3 of BIND 9 Supported Preview Edition. Versions 9.13.0 -\u003e 9.13.6 of the 9.13 development branch are also affected. Versions prior to BIND 9.9.0 have not been evaluated for vulnerability to CVE-2018-5745.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-327"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:S/C:N/I:N/A:P",
@@ -298,6 +319,9 @@
         "Title": "bind: Controls for zone transfers may not be properly applied to DLZs if the zones are writable",
         "Description": "Controls for zone transfers may not be properly applied to Dynamically Loadable Zones (DLZs) if the zones are writable Versions affected: BIND 9.9.0 -\u003e 9.10.8-P1, 9.11.0 -\u003e 9.11.5-P2, 9.12.0 -\u003e 9.12.3-P2, and versions 9.9.3-S1 -\u003e 9.11.5-S3 of BIND 9 Supported Preview Edition. Versions 9.13.0 -\u003e 9.13.6 of the 9.13 development branch are also affected. Versions prior to BIND 9.9.0 have not been evaluated for vulnerability to CVE-2019-6465.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-732"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -334,6 +358,9 @@
         "Title": "binutils: integer overflow leads to heap-based buffer overflow in objdump",
         "Description": "binutils version 2.32 and earlier contains a Integer Overflow vulnerability in objdump, bfd_get_dynamic_reloc_upper_bound,bfd_canonicalize_dynamic_reloc that can result in Integer overflow trigger heap overflow. Successful exploitation allows execution of arbitrary code.. This attack appear to be exploitable via Local. This vulnerability appears to have been fixed in after commit 3a551c7a1b80fca579461774860574eabfd7f18f.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -374,6 +401,9 @@
         "Title": "binutils: Stack Exhaustion in the demangling functions provided by libiberty",
         "Description": "An issue was discovered in arm_pt in cplus-dem.c in GNU libiberty, as distributed in GNU Binutils 2.30. Stack Exhaustion occurs in the C++ demangling functions provided by libiberty, and there are recursive stack frames: demangle_arm_hp_template, demangle_class_name, demangle_fund_type, do_type, do_arg, demangle_args, and demangle_nested_args. This can occur during execution of nm-new.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-400"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -415,6 +445,9 @@
         "Title": "binutils: NULL pointer dereference in work_stuff_copy_to_from in cplus-dem.c.",
         "Description": "A NULL pointer dereference (aka SEGV on unknown address 0x000000000000) was discovered in work_stuff_copy_to_from in cplus-dem.c in GNU libiberty, as distributed in GNU Binutils 2.30. This can occur during execution of objdump.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -457,6 +490,9 @@
         "Title": "curl: NTLM password overflow via integer overflow",
         "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:C/I:C/A:C",
@@ -503,6 +539,9 @@
         "Title": "curl: Heap-based buffer over-read in the curl tool warning formatting",
         "Description": "Curl versions 7.14.1 through 7.61.1 are vulnerable to a heap-based buffer over-read in the tool_msgs.c:voutf() function that may result in information exposure and denial of service.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:P",
@@ -548,6 +587,9 @@
         "Title": "curl: TFTP receive heap buffer overflow in tftp_receive_packet() function",
         "Description": "A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution in libcurl versions 7.19.4 through 7.64.1.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -595,6 +637,9 @@
         "Title": "dbus: denial of service via file descriptor leak",
         "Description": "An issue was discovered in dbus \u003e= 1.3.0 before 1.12.18. The DBusServer in libdbus, as used in dbus-daemon, leaks file descriptors when a message exceeds the per-message file descriptor limit. A local attacker with access to the D-Bus system bus or another system service's private AF_UNIX socket could use this to make the system service reach its file descriptor limit, denying service to subsequent D-Bus clients.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-404"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:C",
@@ -637,6 +682,9 @@
         "Title": "dbus: denial of service via file descriptor leak",
         "Description": "An issue was discovered in dbus \u003e= 1.3.0 before 1.12.18. The DBusServer in libdbus, as used in dbus-daemon, leaks file descriptors when a message exceeds the per-message file descriptor limit. A local attacker with access to the D-Bus system bus or another system service's private AF_UNIX socket could use this to make the system service reach its file descriptor limit, denying service to subsequent D-Bus clients.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-404"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:C",
@@ -679,6 +727,9 @@
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getaranges.c:dwarf_getaranges() via crafted file",
         "Description": "dwarf_getaranges in dwarf_getaranges.c in libdw in elfutils before 2018-08-18 allows remote attackers to cause a denial of service (heap-based buffer over-read) via a crafted file.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -718,6 +769,9 @@
         "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
         "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-415"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -756,6 +810,9 @@
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getabbrev.c and libwd/dwarf_hasattr.c causes crash",
         "Description": "libdw in elfutils 0.173 checks the end of the attributes list incorrectly in dwarf_getabbrev in dwarf_getabbrev.c and dwarf_hasattr in dwarf_hasattr.c, leading to a heap-based buffer over-read and an application crash.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -794,6 +851,9 @@
         "Title": "elfutils: invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl",
         "Description": "An invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl in elfutils through v0.174. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by consider_notes.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -833,6 +893,9 @@
         "Title": "elfutils: eu-size cannot handle recursive ar files",
         "Description": "An Invalid Memory Address Dereference exists in the function elf_end in libelf in elfutils through v0.174. Although eu-size is intended to support ar files inside ar files, handle_ar in size.c closes the outer ar file before handling all inner entries. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -872,6 +935,9 @@
         "Title": "elfutils: Divide-by-zero in arlib_add_symbols function in arlib.c",
         "Description": "Divide-by-zero vulnerabilities in the function arlib_add_symbols() in arlib.c in elfutils 0.174 allow remote attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by eu-ranlib, because a zero sh_entsize is mishandled.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-369"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -911,6 +977,9 @@
         "Title": "elfutils: heap-based buffer over-read in read_srclines in dwarf_getsrclines.c in libdw",
         "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -950,6 +1019,9 @@
         "Title": "elfutils: segmentation fault in elf64_xlatetom in libelf/elf32_xlatetom.c",
         "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -990,6 +1062,9 @@
         "Title": "elfutils: out of bound write in elf_cvt_note in libelf/note_xlate.h",
         "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1025,6 +1100,9 @@
         "Title": "elfutils: heap-based buffer over-read in function elf32_xlatetom in elf32_xlatetom.c",
         "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1065,6 +1143,9 @@
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getaranges.c:dwarf_getaranges() via crafted file",
         "Description": "dwarf_getaranges in dwarf_getaranges.c in libdw in elfutils before 2018-08-18 allows remote attackers to cause a denial of service (heap-based buffer over-read) via a crafted file.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1104,6 +1185,9 @@
         "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
         "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-415"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1142,6 +1226,9 @@
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getabbrev.c and libwd/dwarf_hasattr.c causes crash",
         "Description": "libdw in elfutils 0.173 checks the end of the attributes list incorrectly in dwarf_getabbrev in dwarf_getabbrev.c and dwarf_hasattr in dwarf_hasattr.c, leading to a heap-based buffer over-read and an application crash.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1180,6 +1267,9 @@
         "Title": "elfutils: invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl",
         "Description": "An invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl in elfutils through v0.174. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by consider_notes.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1219,6 +1309,9 @@
         "Title": "elfutils: eu-size cannot handle recursive ar files",
         "Description": "An Invalid Memory Address Dereference exists in the function elf_end in libelf in elfutils through v0.174. Although eu-size is intended to support ar files inside ar files, handle_ar in size.c closes the outer ar file before handling all inner entries. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1258,6 +1351,9 @@
         "Title": "elfutils: Divide-by-zero in arlib_add_symbols function in arlib.c",
         "Description": "Divide-by-zero vulnerabilities in the function arlib_add_symbols() in arlib.c in elfutils 0.174 allow remote attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by eu-ranlib, because a zero sh_entsize is mishandled.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-369"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1297,6 +1393,9 @@
         "Title": "elfutils: heap-based buffer over-read in read_srclines in dwarf_getsrclines.c in libdw",
         "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1336,6 +1435,9 @@
         "Title": "elfutils: segmentation fault in elf64_xlatetom in libelf/elf32_xlatetom.c",
         "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1376,6 +1478,9 @@
         "Title": "elfutils: out of bound write in elf_cvt_note in libelf/note_xlate.h",
         "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1411,6 +1516,9 @@
         "Title": "elfutils: heap-based buffer over-read in function elf32_xlatetom in elf32_xlatetom.c",
         "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1451,6 +1559,9 @@
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getaranges.c:dwarf_getaranges() via crafted file",
         "Description": "dwarf_getaranges in dwarf_getaranges.c in libdw in elfutils before 2018-08-18 allows remote attackers to cause a denial of service (heap-based buffer over-read) via a crafted file.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1490,6 +1601,9 @@
         "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
         "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-415"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1528,6 +1642,9 @@
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getabbrev.c and libwd/dwarf_hasattr.c causes crash",
         "Description": "libdw in elfutils 0.173 checks the end of the attributes list incorrectly in dwarf_getabbrev in dwarf_getabbrev.c and dwarf_hasattr in dwarf_hasattr.c, leading to a heap-based buffer over-read and an application crash.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1566,6 +1683,9 @@
         "Title": "elfutils: invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl",
         "Description": "An invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl in elfutils through v0.174. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by consider_notes.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1605,6 +1725,9 @@
         "Title": "elfutils: eu-size cannot handle recursive ar files",
         "Description": "An Invalid Memory Address Dereference exists in the function elf_end in libelf in elfutils through v0.174. Although eu-size is intended to support ar files inside ar files, handle_ar in size.c closes the outer ar file before handling all inner entries. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1644,6 +1767,9 @@
         "Title": "elfutils: Divide-by-zero in arlib_add_symbols function in arlib.c",
         "Description": "Divide-by-zero vulnerabilities in the function arlib_add_symbols() in arlib.c in elfutils 0.174 allow remote attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by eu-ranlib, because a zero sh_entsize is mishandled.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-369"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1683,6 +1809,9 @@
         "Title": "elfutils: heap-based buffer over-read in read_srclines in dwarf_getsrclines.c in libdw",
         "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1722,6 +1851,9 @@
         "Title": "elfutils: segmentation fault in elf64_xlatetom in libelf/elf32_xlatetom.c",
         "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1762,6 +1894,9 @@
         "Title": "elfutils: out of bound write in elf_cvt_note in libelf/note_xlate.h",
         "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1797,6 +1932,9 @@
         "Title": "elfutils: heap-based buffer over-read in function elf32_xlatetom in elf32_xlatetom.c",
         "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1837,6 +1975,9 @@
         "Title": "expat: Integer overflow leading to buffer overflow in XML_GetBuffer()",
         "Description": "Buffer overflow in the XML parser in Mozilla Firefox before 38.0, Firefox ESR 31.x before 31.7, and Thunderbird before 31.7 allows remote attackers to execute arbitrary code by providing a large amount of compressed XML data, a related issue to CVE-2015-1283.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1889,6 +2030,9 @@
         "Title": "file: out-of-bounds read via a crafted ELF file",
         "Description": "The do_core_note function in readelf.c in libmagic.a in file 5.33 allows remote attackers to cause a denial of service (out-of-bounds read and application crash) via a crafted ELF file.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1929,6 +2073,9 @@
         "Title": "LibRaw: DoS in parse_rollei function in internal/dcraw_common.cpp",
         "Description": "An error within the \"parse_rollei()\" function (internal/dcraw_common.cpp) within LibRaw versions prior to 0.19.1 can be exploited to trigger an infinite loop.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-400"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1965,6 +2112,9 @@
         "Title": "LibRaw: DoS in parse_sinar_ia function in internal/dcraw_common.cpp",
         "Description": "An error within the \"parse_sinar_ia()\" function (internal/dcraw_common.cpp) within LibRaw versions prior to 0.19.1 can be exploited to exhaust available CPU resources.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-400"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:C",
@@ -2001,6 +2151,9 @@
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -2039,6 +2192,9 @@
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -2077,6 +2233,9 @@
         "Title": "krb5: Reachable assertion in the KDC using S4U2Self requests",
         "Description": "A Reachable Assertion issue was discovered in the KDC in MIT Kerberos 5 (aka krb5) before 1.17. If an attacker can obtain a krbtgt ticket using an older encryption type (single-DES, triple-DES, or RC4), the attacker can crash the KDC by making an S4U2Self request.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-617"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:S/C:N/I:N/A:P",
@@ -2112,6 +2271,9 @@
         "Title": "curl: NTLM password overflow via integer overflow",
         "Description": "curl before version 7.61.1 is vulnerable to a buffer overrun in the NTLM authentication code. The internal function Curl_ntlm_core_mk_nt_hash multiplies the length of the password by two (SUM) to figure out how large temporary storage area to allocate from the heap. The length value is then subsequently used to iterate over the password and generate output into the allocated storage buffer. On systems with a 32 bit size_t, the math to calculate SUM triggers an integer overflow when the password length exceeds 2GB (2^31 bytes). This integer overflow usually causes a very small buffer to actually get allocated instead of the intended very huge one, making the use of that buffer end up in a heap buffer overflow. (This bug is almost identical to CVE-2017-8816.)",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:C/I:C/A:C",
@@ -2158,6 +2320,9 @@
         "Title": "curl: Heap-based buffer over-read in the curl tool warning formatting",
         "Description": "Curl versions 7.14.1 through 7.61.1 are vulnerable to a heap-based buffer over-read in the tool_msgs.c:voutf() function that may result in information exposure and denial of service.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:P",
@@ -2203,6 +2368,9 @@
         "Title": "curl: TFTP receive heap buffer overflow in tftp_receive_packet() function",
         "Description": "A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution in libcurl versions 7.19.4 through 7.64.1.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -2250,6 +2418,9 @@
         "Title": "libssh2: Integer overflow in transport read resulting in out of bounds write",
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way packets are read from the server. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:C/I:C/A:C",
@@ -2310,6 +2481,9 @@
         "Title": "libssh2: Integer overflow in keyboard interactive handling resulting in out of bounds write",
         "Description": "An integer overflow flaw, which could lead to an out of bounds write, was discovered in libssh2 before 1.8.1 in the way keyboard prompt requests are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -2359,6 +2533,9 @@
         "Title": "libssh2: Integer overflow in SSH packet processing channel resulting in out of bounds write",
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit signal are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -2408,6 +2585,9 @@
         "Title": "libssh2: Integer overflow in user authenticate keyboard interactive allows out-of-bounds writes",
         "Description": "A flaw was found in libssh2 before 1.8.1. A server could send a multiple keyboard interactive response messages whose total length are greater than unsigned char max characters. This value is used as an index to copy memory causing in an out of bounds memory write error.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -2457,6 +2637,9 @@
         "Title": "libssh2: Zero-byte allocation with a specially crafted SFTP packed leading to an out-of-bounds read",
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 when a specially crafted SFTP packet is received from the server. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:P",
@@ -2507,6 +2690,9 @@
         "Title": "libssh2: Out-of-bounds reads with specially crafted SSH packets",
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH packets with a padding length value greater than the packet length are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:P",
@@ -2552,6 +2738,9 @@
         "Title": "libssh2: Out-of-bounds memory comparison with specially crafted message channel request",
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit status message and no payload are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:P",
@@ -2604,6 +2793,9 @@
         "Title": "libxml2: Use after free triggered by XPointer paths beginning with range-to",
         "Description": "Use-after-free vulnerability in libxml2 through 2.9.4, as used in Google Chrome before 52.0.2743.82, allows remote attackers to cause a denial of service or possibly have unspecified other impact via vectors related to the XPointer range-to function.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -2666,6 +2858,9 @@
         "Title": "libxml2: Use after free in xmlXPathCompOpEvalPositionalPredicate() function in xpath.c",
         "Description": "Use after free in libxml2 before 2.9.5, as used in Google Chrome prior to 63.0.3239.84 and other products, allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -2712,6 +2907,9 @@
         "Title": "libxml2: DoS caused by incorrect error detection during XZ decompression",
         "Description": "The xz_decomp function in xzlib.c in libxml2 2.9.1 does not properly detect compression errors, which allows context-dependent attackers to cause a denial of service (process hang) via crafted XML data.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-399"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:H/Au:N/C:N/I:N/A:P",
@@ -2768,6 +2966,9 @@
         "Title": "libxml2: NULL pointer dereference in xmlXPathCompOpEval() function in xpath.c",
         "Description": "A NULL pointer dereference vulnerability exists in the xpath.c:xmlXPathCompOpEval() function of libxml2 through 2.9.8 when parsing an invalid XPath expression in the XPATH_OP_AND or XPATH_OP_OR case. Applications processing untrusted XSL format inputs with the use of the libxml2 library may be vulnerable to a denial of service attack due to a crash of the application.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -2816,6 +3017,9 @@
         "Title": "libxml2: Unrestricted memory usage in xz_head() function in xzlib.c",
         "Description": "The xz_head function in xzlib.c in libxml2 before 2.9.6 allows remote attackers to cause a denial of service (memory consumption) via a crafted LZMA file, because the decoder functionality does not restrict memory usage to what is required for a legitimate file.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-770"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -2856,6 +3060,9 @@
         "Title": "libxml2: Infinite loop caused by incorrect error detection during LZMA decompression",
         "Description": "libxml2 2.9.8, if --with-lzma is used, allows remote attackers to cause a denial of service (infinite loop) via a crafted XML file that triggers LZMA_MEMLIMIT_ERROR, as demonstrated by xmllint, a different vulnerability than CVE-2015-8035 and CVE-2018-9251.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-835"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -2893,6 +3100,9 @@
         "Title": "libxml2: Use after free triggered by XPointer paths beginning with range-to",
         "Description": "Use-after-free vulnerability in libxml2 through 2.9.4, as used in Google Chrome before 52.0.2743.82, allows remote attackers to cause a denial of service or possibly have unspecified other impact via vectors related to the XPointer range-to function.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -2955,6 +3165,9 @@
         "Title": "libxml2: Use after free in xmlXPathCompOpEvalPositionalPredicate() function in xpath.c",
         "Description": "Use after free in libxml2 before 2.9.5, as used in Google Chrome prior to 63.0.3239.84 and other products, allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -3001,6 +3214,9 @@
         "Title": "libxml2: DoS caused by incorrect error detection during XZ decompression",
         "Description": "The xz_decomp function in xzlib.c in libxml2 2.9.1 does not properly detect compression errors, which allows context-dependent attackers to cause a denial of service (process hang) via crafted XML data.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-399"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:H/Au:N/C:N/I:N/A:P",
@@ -3057,6 +3273,9 @@
         "Title": "libxml2: NULL pointer dereference in xmlXPathCompOpEval() function in xpath.c",
         "Description": "A NULL pointer dereference vulnerability exists in the xpath.c:xmlXPathCompOpEval() function of libxml2 through 2.9.8 when parsing an invalid XPath expression in the XPATH_OP_AND or XPATH_OP_OR case. Applications processing untrusted XSL format inputs with the use of the libxml2 library may be vulnerable to a denial of service attack due to a crash of the application.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -3105,6 +3324,9 @@
         "Title": "libxml2: Unrestricted memory usage in xz_head() function in xzlib.c",
         "Description": "The xz_head function in xzlib.c in libxml2 before 2.9.6 allows remote attackers to cause a denial of service (memory consumption) via a crafted LZMA file, because the decoder functionality does not restrict memory usage to what is required for a legitimate file.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-770"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -3145,6 +3367,9 @@
         "Title": "libxml2: Infinite loop caused by incorrect error detection during LZMA decompression",
         "Description": "libxml2 2.9.8, if --with-lzma is used, allows remote attackers to cause a denial of service (infinite loop) via a crafted XML file that triggers LZMA_MEMLIMIT_ERROR, as demonstrated by xmllint, a different vulnerability than CVE-2015-8035 and CVE-2018-9251.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-835"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -3182,6 +3407,9 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
@@ -3242,6 +3470,9 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-310"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -3283,6 +3514,9 @@
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -3338,6 +3572,9 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
@@ -3398,6 +3635,9 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-310"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -3439,6 +3679,9 @@
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -3490,6 +3733,9 @@
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -3545,6 +3791,9 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
@@ -3605,6 +3854,9 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-310"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -3646,6 +3898,9 @@
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -3697,6 +3952,9 @@
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -3752,6 +4010,9 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
@@ -3812,6 +4073,9 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-310"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -3853,6 +4117,9 @@
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -3904,6 +4171,9 @@
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -3959,6 +4229,9 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
@@ -4019,6 +4292,9 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-310"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -4060,6 +4336,9 @@
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -4111,6 +4390,9 @@
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -4166,6 +4448,9 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
@@ -4226,6 +4511,9 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-310"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -4267,6 +4555,9 @@
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -4318,6 +4609,9 @@
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -4373,6 +4667,9 @@
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
@@ -4433,6 +4730,9 @@
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-310"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -4474,6 +4774,9 @@
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -4525,6 +4828,9 @@
         "Title": "openssl: Side-channel vulnerability on SMT/Hyper-Threading architectures (PortSmash)",
         "Description": "Simultaneous Multi-threading (SMT) in processors can enable local users to exploit software vulnerable to timing attacks via a side-channel timing attack on 'port contention'.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
@@ -4588,6 +4894,9 @@
         "Title": "openssl: 0-byte record padding oracle",
         "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -4658,6 +4967,9 @@
         "Title": "openssl: timing side channel attack in the DSA signature algorithm",
         "Description": "The OpenSSL DSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.1a (Affected 1.1.1). Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.0.2q (Affected 1.0.2-1.0.2p).",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-320"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -4768,6 +5080,9 @@
         "Title": "python: regression of CVE-2019-9636 due to functional fix to allow port numbers in netloc",
         "Description": "A security regression of CVE-2019-9636 was discovered in python since commit d537ab0ff9767ef024f26246899728f0116b1ec3 affecting versions 2.7, 3.5, 3.6, 3.7 and from v3.8.0a4 through v3.8.0b1, which still allows an attacker to exploit CVE-2019-9636 by abusing the user and password parts of a URL. When an application parses user-supplied URLs to store cookies, authentication credentials, or other kind of information, it is possible for an attacker to provide specially crafted URLs to make the application locate host-related information (e.g. cookies, authentication data) and send them to a different host than where it should, unlike if the URLs had been correctly parsed. The result of an attack may vary based on the application.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-255"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -4829,6 +5144,9 @@
         "Title": "python: Information Disclosure due to urlsplit improper NFKC normalization",
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-255"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -4913,6 +5231,9 @@
         "Title": "python: Missing salt initialization in _elementtree.c module",
         "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. The vulnerability exists in Python versions 3.7.0, 3.6.0 through 3.6.6, 3.5.0 through 3.5.6, 3.4.0 through 3.4.9, 2.7.0 through 2.7.15.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-909"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -4963,6 +5284,9 @@
         "Title": "python: Cookie domain check returns incorrect results",
         "Description": "http.cookiejar.DefaultPolicy.domain_return_ok in Lib/http/cookiejar.py in Python before 3.7.3 does not correctly validate the domain: it can be tricked into sending existing cookies to the wrong server. An attacker may abuse this flaw by using a server with a hostname that has another valid hostname as a suffix (e.g., pythonicexample.com to steal cookies for example.com). When a program uses http.cookiejar.DefaultPolicy and tries to do an HTTP connection to an attacker-controlled server, existing cookies can be leaked to the attacker. This affects 2.x through 2.7.16, 3.x before 3.4.10, 3.5.x before 3.5.7, 3.6.x before 3.6.9, and 3.7.x before 3.7.3.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -5014,6 +5338,9 @@
         "Title": "python: email.utils.parseaddr wrongly parses email addresses",
         "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -5081,6 +5408,9 @@
         "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
         "Description": "An exploitable denial-of-service vulnerability exists in the X509 certificate parser of Python.org Python 2.7.11 / 3.6.6. A specially crafted X509 certificate can cause a NULL pointer dereference, resulting in a denial of service. An attacker can initiate or accept TLS connections using crafted certificates to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -5125,6 +5455,9 @@
         "Title": "python: CRLF injection via the query part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the query string after a ? character) followed by an HTTP header or a Redis command.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-93"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
@@ -5186,6 +5519,9 @@
         "Title": "python: CRLF injection via the path part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the path component of a URL that lacks a ? character) followed by an HTTP header or a Redis command. This is similar to the CVE-2019-9740 query string issue.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-93"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
@@ -5240,6 +5576,9 @@
         "Title": "python: Undocumented local_file protocol allows remote attackers to bypass protection mechanisms",
         "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-254"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:N",
@@ -5295,6 +5634,9 @@
         "Title": "python: regression of CVE-2019-9636 due to functional fix to allow port numbers in netloc",
         "Description": "A security regression of CVE-2019-9636 was discovered in python since commit d537ab0ff9767ef024f26246899728f0116b1ec3 affecting versions 2.7, 3.5, 3.6, 3.7 and from v3.8.0a4 through v3.8.0b1, which still allows an attacker to exploit CVE-2019-9636 by abusing the user and password parts of a URL. When an application parses user-supplied URLs to store cookies, authentication credentials, or other kind of information, it is possible for an attacker to provide specially crafted URLs to make the application locate host-related information (e.g. cookies, authentication data) and send them to a different host than where it should, unlike if the URLs had been correctly parsed. The result of an attack may vary based on the application.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-255"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -5356,6 +5698,9 @@
         "Title": "python: Information Disclosure due to urlsplit improper NFKC normalization",
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-255"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -5440,6 +5785,9 @@
         "Title": "python: Missing salt initialization in _elementtree.c module",
         "Description": "Python's elementtree C accelerator failed to initialise Expat's hash salt during initialization. This could make it easy to conduct denial of service attacks against Expat by constructing an XML document that would cause pathological hash collisions in Expat's internal data structures, consuming large amounts CPU and RAM. The vulnerability exists in Python versions 3.7.0, 3.6.0 through 3.6.6, 3.5.0 through 3.5.6, 3.4.0 through 3.4.9, 2.7.0 through 2.7.15.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-909"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -5490,6 +5838,9 @@
         "Title": "python: Cookie domain check returns incorrect results",
         "Description": "http.cookiejar.DefaultPolicy.domain_return_ok in Lib/http/cookiejar.py in Python before 3.7.3 does not correctly validate the domain: it can be tricked into sending existing cookies to the wrong server. An attacker may abuse this flaw by using a server with a hostname that has another valid hostname as a suffix (e.g., pythonicexample.com to steal cookies for example.com). When a program uses http.cookiejar.DefaultPolicy and tries to do an HTTP connection to an attacker-controlled server, existing cookies can be leaked to the attacker. This affects 2.x through 2.7.16, 3.x before 3.4.10, 3.5.x before 3.5.7, 3.6.x before 3.6.9, and 3.7.x before 3.7.3.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -5541,6 +5892,9 @@
         "Title": "python: email.utils.parseaddr wrongly parses email addresses",
         "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -5608,6 +5962,9 @@
         "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
         "Description": "An exploitable denial-of-service vulnerability exists in the X509 certificate parser of Python.org Python 2.7.11 / 3.6.6. A specially crafted X509 certificate can cause a NULL pointer dereference, resulting in a denial of service. An attacker can initiate or accept TLS connections using crafted certificates to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -5652,6 +6009,9 @@
         "Title": "python: CRLF injection via the query part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the query string after a ? character) followed by an HTTP header or a Redis command.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-93"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
@@ -5713,6 +6073,9 @@
         "Title": "python: CRLF injection via the path part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the path component of a URL that lacks a ? character) followed by an HTTP header or a Redis command. This is similar to the CVE-2019-9740 query string issue.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-93"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
@@ -5767,6 +6130,9 @@
         "Title": "python: Undocumented local_file protocol allows remote attackers to bypass protection mechanisms",
         "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-254"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:N",
@@ -5822,6 +6188,9 @@
         "Title": "gnome-shell: partial lock screen bypass",
         "Description": "It was discovered that the gnome-shell lock screen since version 3.15.91 did not properly restrict all contextual actions. An attacker with physical access to a locked workstation could invoke certain keyboard shortcuts, and potentially other actions.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-285"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -5860,6 +6229,9 @@
         "Title": "sqlite: fts3: improve shadow table corruption detection",
         "Description": "Out of bounds write in SQLite in Google Chrome prior to 79.0.3945.79 allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -5912,6 +6284,9 @@
         "Title": "systemd: line splitting via fgets() allows for state injection during daemon-reexec",
         "Description": "A vulnerability in unit_deserialize of systemd allows an attacker to supply arbitrary state across systemd re-execution via NotifyAccess. This can be used to improperly influence systemd execution and possibly lead to root privilege escalation. Affected releases are systemd versions up to and including 239.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-502"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:C/I:C/A:C",
@@ -5955,6 +6330,9 @@
         "Title": "systemd: out-of-bounds read when parsing a crafted syslog message",
         "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -6002,6 +6380,10 @@
         "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
         "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20",
+          "CWE-732"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:P",
@@ -6040,6 +6422,9 @@
         "Title": "systemd: line splitting via fgets() allows for state injection during daemon-reexec",
         "Description": "A vulnerability in unit_deserialize of systemd allows an attacker to supply arbitrary state across systemd re-execution via NotifyAccess. This can be used to improperly influence systemd execution and possibly lead to root privilege escalation. Affected releases are systemd versions up to and including 239.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-502"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:C/I:C/A:C",
@@ -6083,6 +6468,9 @@
         "Title": "systemd: out-of-bounds read when parsing a crafted syslog message",
         "Description": "An out of bounds read was discovered in systemd-journald in the way it parses log messages that terminate with a colon ':'. A local attacker can use this flaw to disclose process memory data. Versions from v221 to v239 are vulnerable.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -6130,6 +6518,10 @@
         "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
         "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20",
+          "CWE-732"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:P",
@@ -6168,6 +6560,9 @@
         "Title": "vim/neovim: ':source!' command allows arbitrary command execution via modelines",
         "Description": "getchar.c in Vim before 8.1.1365 and Neovim before 0.3.6 allows remote attackers to execute arbitrary OS commands via the :source! command in a modeline, as demonstrated by execute in Vim, and assert_fails or nvim_input in Neovim.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-78"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:C/I:C/A:C",

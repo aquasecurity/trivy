@@ -15,6 +15,9 @@
         "Title": "curl: NTLMv2 type-3 header stack buffer overflow",
         "Description": "libcurl versions from 7.36.0 to before 7.64.0 are vulnerable to a stack-based buffer overflow. The function creating an outgoing NTLM type-3 header (`lib/vauth/ntlm.c:Curl_auth_create_ntlm_type3_message()`), generates the request HTTP header contents based on previously received data. The check that exists to prevent the local buffer from getting overflowed is implemented wrongly (using unsigned math) and as such it does not prevent the overflow from happening. This output data can grow larger than the local buffer if very large 'nt response' data is extracted from a previous NTLMv2 header provided by the malicious or broken HTTP server. Such a 'large value' needs to be around 1000 bytes or more. The actual payload data copied to the target buffer comes from the NTLMv2 type-2 response header.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -63,6 +66,9 @@
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-415"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -108,6 +114,9 @@
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-120"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -155,6 +164,9 @@
         "Title": "curl: NTLM type-2 heap out-of-bounds buffer read",
         "Description": "libcurl versions from 7.36.0 to before 7.64.0 is vulnerable to a heap buffer out-of-bounds read. The function handling incoming NTLM type-2 messages (`lib/vauth/ntlm.c:ntlm_decode_type2_target`) does not validate incoming data correctly and is subject to an integer overflow vulnerability. Using that overflow, a malicious or broken NTLM server could trick libcurl to accept a bad length + offset combination that would lead to a buffer read out-of-bounds.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -200,6 +212,9 @@
         "Title": "curl: SMTP end-of-response out-of-bounds read",
         "Description": "libcurl versions from 7.34.0 to before 7.64.0 are vulnerable to a heap out-of-bounds read in the code handling the end-of-response for SMTP. If the buffer passed to `smtp_endofresp()` isn't NUL terminated and contains no character ending the parsed number, and `len` is set to 5, then the `strtol()` call reads beyond the allocated buffer. The read contents will not be returned to the caller.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -244,6 +259,9 @@
         "Title": "curl: TFTP receive heap buffer overflow in tftp_receive_packet() function",
         "Description": "A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution in libcurl versions 7.19.4 through 7.64.1.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -291,6 +309,9 @@
         "Title": "wget: Information exposure in set_file_metadata function in xattr.c",
         "Description": "set_file_metadata in xattr.c in GNU Wget before 1.20.1 stores a file's origin URL in the user.xdg.origin.url metadata attribute of the extended attributes of the downloaded file, which allows local users to obtain sensitive information (e.g., credentials contained in the URL) by reading this attribute, as demonstrated by getfattr. This also applies to Referer information in the user.xdg.referrer.url metadata attribute. According to 2016-07-22 in the Wget ChangeLog, user.xdg.origin.url was partially based on the behavior of fwrite_xattr in tool_xattr.c in curl.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-255"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -331,6 +352,9 @@
         "Title": "elfutils: buffer over-read in the ebl_object_note function in eblobjnote.c in libebl",
         "Description": "In elfutils 0.175, there is a buffer over-read in the ebl_object_note function in eblobjnote.c in libebl. Remote attackers could leverage this vulnerability to cause a denial-of-service via a crafted elf file, as demonstrated by eu-readelf.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -366,6 +390,9 @@
         "Title": "elfutils: heap-based buffer over-read in read_srclines in dwarf_getsrclines.c in libdw",
         "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -405,6 +432,9 @@
         "Title": "elfutils: segmentation fault in elf64_xlatetom in libelf/elf32_xlatetom.c",
         "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -445,6 +475,9 @@
         "Title": "elfutils: out of bound write in elf_cvt_note in libelf/note_xlate.h",
         "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -480,6 +513,9 @@
         "Title": "elfutils: heap-based buffer over-read in function elf32_xlatetom in elf32_xlatetom.c",
         "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -520,6 +556,9 @@
         "Title": "glib2: file_copy_fallback in gio/gfile.c in GNOME GLib does not properly restrict file permissions while a copy operation is in progress",
         "Description": "file_copy_fallback in gio/gfile.c in GNOME GLib 2.15.0 through 2.61.1 does not properly restrict file permissions while a copy operation is in progress. Instead, default permissions are used.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-275"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -562,6 +601,9 @@
         "Title": "ibus: missing authorization allows local attacker to access the input bus of another user",
         "Description": "A flaw was discovered in ibus that allows any unprivileged user to monitor and send method calls to the ibus bus of another user due to a misconfiguration in the DBus server setup. A local attacker may use this flaw to intercept all keystrokes of a victim user who is using the graphical interface, change the input method engine, or modify other input related configurations of the victim user.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-862"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:N",
@@ -600,6 +642,9 @@
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -638,6 +683,9 @@
         "Title": "glibc: LD_PREFER_MAP_32BIT_EXEC not ignored in setuid binaries",
         "Description": "On the x86-64 architecture, the GNU C Library (aka glibc) before 2.31 fails to ignore the LD_PREFER_MAP_32BIT_EXEC environment variable during program execution after a security transition, allowing local attackers to restrict the possible mapping addresses for loaded libraries and thus bypass ASLR for a setuid program.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -676,6 +724,9 @@
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -714,6 +765,9 @@
         "Title": "glibc: LD_PREFER_MAP_32BIT_EXEC not ignored in setuid binaries",
         "Description": "On the x86-64 architecture, the GNU C Library (aka glibc) before 2.31 fails to ignore the LD_PREFER_MAP_32BIT_EXEC environment variable during program execution after a security transition, allowing local attackers to restrict the possible mapping addresses for loaded libraries and thus bypass ASLR for a setuid program.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -752,6 +806,9 @@
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -790,6 +847,9 @@
         "Title": "glibc: LD_PREFER_MAP_32BIT_EXEC not ignored in setuid binaries",
         "Description": "On the x86-64 architecture, the GNU C Library (aka glibc) before 2.31 fails to ignore the LD_PREFER_MAP_32BIT_EXEC environment variable during program execution after a security transition, allowing local attackers to restrict the possible mapping addresses for loaded libraries and thus bypass ASLR for a setuid program.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -828,6 +888,10 @@
         "Title": "gnutls: use-after-free/double-free in certificate verification",
         "Description": "A vulnerability was found in gnutls versions from 3.5.8 before 3.6.7. A memory corruption (double free) vulnerability in the certificate verification API. Any client or server application that verifies X.509 certificates with GnuTLS 3.5.8 or later is affected.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-415",
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -873,6 +937,9 @@
         "Title": "gnutls: invalid pointer access upon receiving async handshake messages",
         "Description": "It was discovered in gnutls before version 3.6.7 upstream that there is an uninitialized pointer access in gnutls versions 3.6.3 or later which can be triggered by certain post-handshake messages.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-824"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -916,6 +983,9 @@
         "Title": "gnutls: DTLS client hello contains a random value of all zeroes",
         "Description": "GnuTLS 3.6.x before 3.6.13 uses incorrect cryptography for DTLS. The earliest affected version is 3.6.3 (2018-07-16) because of an error in a 2017-10-06 commit. The DTLS client always uses 32 '\\0' bytes instead of a random value, and thus contributes no randomness to a DTLS negotiation. This breaks the security guarantees of the DTLS protocol.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-327"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",
@@ -960,6 +1030,9 @@
         "Title": "gnutls: session resumption works without master key allowing MITM",
         "Description": "GnuTLS 3.6.x before 3.6.14 uses incorrect cryptography for encrypting a session ticket (a loss of confidentiality in TLS 1.2, and an authentication bypass in TLS 1.3). The earliest affected version is 3.6.4 (2018-09-24) because of an error in a 2018-09-18 commit. Until the first key rotation, the TLS server always uses wrong data in place of an encryption key derived from an application.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-327"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",
@@ -1004,6 +1077,9 @@
         "Title": "libarchive: Out-of-bounds read in lha_read_data_none",
         "Description": "libarchive 3.3.2 suffers from an out-of-bounds read within lha_read_data_none() in archive_read_support_format_lha.c when extracting a specially crafted lha archive, related to lha_crc16.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1045,6 +1121,9 @@
         "Title": "libarchive: Double free in RAR decoder resulting in a denial of service",
         "Description": "libarchive version commit 416694915449219d505531b1096384f3237dd6cc onwards (release v3.1.0 onwards) contains a CWE-415: Double Free vulnerability in RAR decoder - libarchive/archive_read_support_format_rar.c, parse_codes(), realloc(rar-\u003elzss.window, new_size) with new_size = 0 that can result in Crash/DoS. This attack appear to be exploitable via the victim must open a specially crafted RAR archive.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-415"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -1093,6 +1172,9 @@
         "Title": "libarchive: Use after free in RAR decoder resulting in a denial of service",
         "Description": "libarchive version commit 416694915449219d505531b1096384f3237dd6cc onwards (release v3.1.0 onwards) contains a CWE-416: Use After Free vulnerability in RAR decoder - libarchive/archive_read_support_format_rar.c that can result in Crash/DoS - it is unknown if RCE is possible. This attack appear to be exploitable via the victim must open a specially crafted RAR archive.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -1141,6 +1223,9 @@
         "Title": "libarchive: Out of bounds read in archive_read_support_format_7zip.c resulting in a denial of service",
         "Description": "libarchive version commit bf9aec176c6748f0ee7a678c5f9f9555b9a757c1 onwards (release v3.0.2 onwards) contains a CWE-125: Out-of-bounds Read vulnerability in 7zip decompression, archive_read_support_format_7zip.c, header_bytes() that can result in a crash (denial of service). This attack appears to be exploitable via the victim opening a specially crafted 7zip file.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1185,6 +1270,9 @@
         "Title": "libarchive: Infinite recursion in archive_read_support_format_iso9660.c resulting in denial of service",
         "Description": "libarchive version commit 5a98dcf8a86364b3c2c469c85b93647dfb139961 onwards (version v2.8.0 onwards) contains a CWE-835: Loop with Unreachable Exit Condition ('Infinite Loop') vulnerability in ISO9660 parser, archive_read_support_format_iso9660.c, read_CE()/parse_rockridge() that can result in DoS by infinite loop. This attack appears to be exploitable via the victim opening a specially crafted ISO9660 file.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-400"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1229,6 +1317,9 @@
         "Title": "libarchive: use-after-free in archive_read_format_rar_read_data when there is an error in the decompression of an archive entry",
         "Description": "archive_read_format_rar_read_data in archive_read_support_format_rar.c in libarchive before 3.4.0 has a use-after-free in a certain ARCHIVE_FAILED situation, related to Ppmd7_DecodeSymbol.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1277,6 +1368,9 @@
         "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -1321,6 +1415,9 @@
         "Title": "curl: NTLMv2 type-3 header stack buffer overflow",
         "Description": "libcurl versions from 7.36.0 to before 7.64.0 are vulnerable to a stack-based buffer overflow. The function creating an outgoing NTLM type-3 header (`lib/vauth/ntlm.c:Curl_auth_create_ntlm_type3_message()`), generates the request HTTP header contents based on previously received data. The check that exists to prevent the local buffer from getting overflowed is implemented wrongly (using unsigned math) and as such it does not prevent the overflow from happening. This output data can grow larger than the local buffer if very large 'nt response' data is extracted from a previous NTLMv2 header provided by the malicious or broken HTTP server. Such a 'large value' needs to be around 1000 bytes or more. The actual payload data copied to the target buffer comes from the NTLMv2 type-2 response header.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1369,6 +1466,9 @@
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-415"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1414,6 +1514,9 @@
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-120"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1461,6 +1564,9 @@
         "Title": "curl: NTLM type-2 heap out-of-bounds buffer read",
         "Description": "libcurl versions from 7.36.0 to before 7.64.0 is vulnerable to a heap buffer out-of-bounds read. The function handling incoming NTLM type-2 messages (`lib/vauth/ntlm.c:ntlm_decode_type2_target`) does not validate incoming data correctly and is subject to an integer overflow vulnerability. Using that overflow, a malicious or broken NTLM server could trick libcurl to accept a bad length + offset combination that would lead to a buffer read out-of-bounds.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1506,6 +1612,9 @@
         "Title": "curl: SMTP end-of-response out-of-bounds read",
         "Description": "libcurl versions from 7.34.0 to before 7.64.0 are vulnerable to a heap out-of-bounds read in the code handling the end-of-response for SMTP. If the buffer passed to `smtp_endofresp()` isn't NUL terminated and contains no character ending the parsed number, and `len` is set to 5, then the `strtol()` call reads beyond the allocated buffer. The read contents will not be returned to the caller.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1550,6 +1659,9 @@
         "Title": "curl: TFTP receive heap buffer overflow in tftp_receive_packet() function",
         "Description": "A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution in libcurl versions 7.19.4 through 7.64.1.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -1597,6 +1709,9 @@
         "Title": "wget: Information exposure in set_file_metadata function in xattr.c",
         "Description": "set_file_metadata in xattr.c in GNU Wget before 1.20.1 stores a file's origin URL in the user.xdg.origin.url metadata attribute of the extended attributes of the downloaded file, which allows local users to obtain sensitive information (e.g., credentials contained in the URL) by reading this attribute, as demonstrated by getfattr. This also applies to Referer information in the user.xdg.referrer.url metadata attribute. According to 2016-07-22 in the Wget ChangeLog, user.xdg.origin.url was partially based on the behavior of fwrite_xattr in tool_xattr.c in curl.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-255"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -1637,6 +1752,9 @@
         "Title": "libsolv: illegal address access in pool_whatprovides in src/pool.h",
         "Description": "** DISPUTED ** There is an illegal address access at ext/testcase.c in libsolv.a in libsolv through 0.7.2 that will cause a denial of service. NOTE: third parties dispute this issue stating that the issue affects the test suite and not the underlying library. It cannot be exploited in any real-world application.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1677,6 +1795,9 @@
         "Title": "libcomps: use after free when merging two objmrtrees",
         "Description": "A use-after-free flaw has been discovered in libcomps before version 0.1.10 in the way ObjMRTrees are merged. An attacker, who is able to make an application read a crafted comps XML file, may be able to crash the application or execute malicious code.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -1713,6 +1834,9 @@
         "Title": "gcc: POWER9 \"DARN\" RNG intrinsic produces repeated output",
         "Description": "The POWER9 backend in GNU Compiler Collection (GCC) before version 10 could optimize multiple calls of the __builtin_darn intrinsic into a single call, thus reducing the entropy of the random number generator. This occurred because a volatile operation was not specified. For example, within a single execution of a program, the output of every __builtin_darn() call may be the same.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-331"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -1748,6 +1872,9 @@
         "Title": "nghttp2: overly large SETTINGS frames can lead to DoS",
         "Description": "In nghttp2 before version 1.41.0, the overly large HTTP/2 SETTINGS frame payload causes denial of service. The proof of concept attack involves a malicious client constructing a SETTINGS frame with a length of 14,400 bytes (2400 individual settings entries) over and over again. The attack causes the CPU to spike at 100%. nghttp2 v1.41.0 fixes this vulnerability. There is a workaround to this vulnerability. Implement nghttp2_on_frame_recv_callback callback, and if received frame is SETTINGS frame and the number of settings entries are large (e.g., \u003e 32), then drop the connection.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-707"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1787,6 +1914,9 @@
         "Title": "libsolv: illegal address access in pool_whatprovides in src/pool.h",
         "Description": "** DISPUTED ** There is an illegal address access at ext/testcase.c in libsolv.a in libsolv through 0.7.2 that will cause a denial of service. NOTE: third parties dispute this issue stating that the issue affects the test suite and not the underlying library. It cannot be exploited in any real-world application.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1827,6 +1957,9 @@
         "Title": "libcomps: use after free when merging two objmrtrees",
         "Description": "A use-after-free flaw has been discovered in libcomps before version 0.1.10 in the way ObjMRTrees are merged. An attacker, who is able to make an application read a crafted comps XML file, may be able to crash the application or execute malicious code.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -1863,6 +1996,9 @@
         "Title": "libsolv: illegal address access in pool_whatprovides in src/pool.h",
         "Description": "** DISPUTED ** There is an illegal address access at ext/testcase.c in libsolv.a in libsolv through 0.7.2 that will cause a denial of service. NOTE: third parties dispute this issue stating that the issue affects the test suite and not the underlying library. It cannot be exploited in any real-world application.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1903,6 +2039,9 @@
         "Title": "libcomps: use after free when merging two objmrtrees",
         "Description": "A use-after-free flaw has been discovered in libcomps before version 0.1.10 in the way ObjMRTrees are merged. An attacker, who is able to make an application read a crafted comps XML file, may be able to crash the application or execute malicious code.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -1939,6 +2078,9 @@
         "Title": "gcc: POWER9 \"DARN\" RNG intrinsic produces repeated output",
         "Description": "The POWER9 backend in GNU Compiler Collection (GCC) before version 10 could optimize multiple calls of the __builtin_darn intrinsic into a single call, thus reducing the entropy of the random number generator. This occurred because a volatile operation was not specified. For example, within a single execution of a program, the output of every __builtin_darn() call may be the same.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-331"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -1974,6 +2116,9 @@
         "Title": "libxml2: NULL pointer dereference in xmlXPathCompOpEval() function in xpath.c",
         "Description": "A NULL pointer dereference vulnerability exists in the xpath.c:xmlXPathCompOpEval() function of libxml2 through 2.9.8 when parsing an invalid XPath expression in the XPATH_OP_AND or XPATH_OP_OR case. Applications processing untrusted XSL format inputs with the use of the libxml2 library may be vulnerable to a denial of service attack due to a crash of the application.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -2022,6 +2167,9 @@
         "Title": "libxml2: infinite loop in xz_decomp function in xzlib.c",
         "Description": "The xz_decomp function in xzlib.c in libxml2 2.9.8, if --with-lzma is used, allows remote attackers to cause a denial of service (infinite loop) via a crafted XML file that triggers LZMA_MEMLIMIT_ERROR, as demonstrated by xmllint, a different vulnerability than CVE-2015-8035.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-835"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:H/Au:N/C:N/I:N/A:P",
@@ -2055,6 +2203,9 @@
         "Title": "lua: use-after-free in lua_upvaluejoin in lapi.c resulting in denial of service",
         "Description": "Lua 5.3.5 has a use-after-free in lua_upvaluejoin in lapi.c. For example, a crash outcome might be achieved by an attacker who is able to trigger a debug.upvaluejoin call in which the arguments have certain relationships.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -2093,6 +2244,9 @@
         "Title": "libsolv: illegal address access in pool_whatprovides in src/pool.h",
         "Description": "** DISPUTED ** There is an illegal address access at ext/testcase.c in libsolv.a in libsolv through 0.7.2 that will cause a denial of service. NOTE: third parties dispute this issue stating that the issue affects the test suite and not the underlying library. It cannot be exploited in any real-world application.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -2133,6 +2287,9 @@
         "Title": "libcomps: use after free when merging two objmrtrees",
         "Description": "A use-after-free flaw has been discovered in libcomps before version 0.1.10 in the way ObjMRTrees are merged. An attacker, who is able to make an application read a crafted comps XML file, may be able to crash the application or execute malicious code.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -2169,6 +2326,9 @@
         "Title": "openssl: timing side channel attack in the DSA signature algorithm",
         "Description": "The OpenSSL DSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.1a (Affected 1.1.1). Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.0.2q (Affected 1.0.2-1.0.2p).",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-320"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -2231,6 +2391,9 @@
         "Title": "openssl: timing side channel attack in the ECDSA signature generation",
         "Description": "The OpenSSL ECDSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.1.1a (Affected 1.1.1).",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-320"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -2279,6 +2442,9 @@
         "Title": "openssl: ChaCha20-Poly1305 with long nonces",
         "Description": "ChaCha20-Poly1305 is an AEAD cipher, and requires a unique nonce input for every encryption operation. RFC 7539 specifies that the nonce value (IV) should be 96 bits (12 bytes). OpenSSL allows a variable nonce length and front pads the nonce with 0 bytes if it is less than 12 bytes. However it also incorrectly allows a nonce to be set of up to 16 bytes. In this case only the last 12 bytes are significant and any additional leading bytes are ignored. It is a requirement of using this cipher that nonce values are unique. Messages encrypted using a reused nonce value are susceptible to serious confidentiality and integrity attacks. If an application changes the default nonce length to be longer than 12 bytes and then makes a change to the leading bytes of the nonce expecting the new value to be a new unique nonce then such an application could inadvertently encrypt messages with a reused nonce. Additionally the ignored bytes in a long nonce are not covered by the integrity guarantee of this cipher. Any application that relies on the integrity of these ignored leading bytes of a long nonce may be further affected. Any OpenSSL internal use of this cipher, including in SSL/TLS, is safe because no such use sets such a long nonce value. However user applications that use this cipher directly and set a non-default nonce length to be longer than 12 bytes may be vulnerable. OpenSSL versions 1.1.1 and 1.1.0 are affected by this issue. Due to the limited scope of affected deployments this has been assessed as low severity and therefore we are not creating new releases at this time. Fixed in OpenSSL 1.1.1c (Affected 1.1.1-1.1.1b). Fixed in OpenSSL 1.1.0k (Affected 1.1.0-1.1.0j).",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-310"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",
@@ -2323,6 +2489,9 @@
         "Title": "openssl: information disclosure in fork()",
         "Description": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-330"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -2370,6 +2539,9 @@
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-311"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -2431,6 +2603,9 @@
         "Title": "openssl: side-channel weak encryption vulnerability",
         "Description": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-311"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
@@ -2496,6 +2671,9 @@
         "Title": "sqlite: heap out-of-bound read in function rtreenode()",
         "Description": "SQLite3 from 3.6.0 to and including 3.27.2 is vulnerable to heap out-of-bound read in the rtreenode() function when handling invalid rtree tables.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -2546,6 +2724,9 @@
         "Title": "sqlite: fts3: improve shadow table corruption detection",
         "Description": "Out of bounds write in SQLite in Google Chrome prior to 79.0.3945.79 allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -2598,6 +2779,9 @@
         "Title": "sqlite: fts3: improve shadow table corruption detection",
         "Description": "Out of bounds read in SQLite in Google Chrome prior to 79.0.3945.79 allowed a remote attacker to obtain potentially sensitive information from process memory via a crafted HTML page.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -2644,6 +2828,9 @@
         "Title": "sqlite: fts3: incorrectly removed corruption check",
         "Description": "Out of bounds read in SQLite in Google Chrome prior to 79.0.3945.79 allowed a remote attacker to obtain potentially sensitive information from process memory via a crafted HTML page.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -2690,6 +2877,9 @@
         "Title": "sqlite: mishandling of certain uses of SELECT DISTINCT involving a LEFT JOIN in flattenSubquery in select.c leads to a NULL pointer dereference",
         "Description": "flattenSubquery in select.c in SQLite 3.30.1 mishandles certain uses of SELECT DISTINCT involving a LEFT JOIN in which the right-hand side is a view. This can cause a NULL pointer dereference (or incorrect results).",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -2732,6 +2922,9 @@
         "Title": "sqlite: incorrect sqlite3WindowRewrite() error handling leads to mishandling certain parser-tree rewriting",
         "Description": "SQLite 3.30.1 mishandles certain parser-tree rewriting, related to expr.c, vdbeaux.c, and window.c. This is caused by incorrect sqlite3WindowRewrite() error handling.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-755"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:N",
@@ -2769,6 +2962,9 @@
         "Title": "sqlite: zipfileUpdate in ext/misc/zipfile.c mishandles a NULL pathname during an update of a ZIP archive",
         "Description": "zipfileUpdate in ext/misc/zipfile.c in SQLite 3.30.1 mishandles a NULL pathname during an update of a ZIP archive.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-434"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -2849,6 +3045,9 @@
         "Title": "systemd: services with DynamicUser can create SUID/SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can create a SUID/SGID binary that would be allowed to run as the transient service UID/GID even after the service is terminated. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the UID/GID will be recycled.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-264"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -2888,6 +3087,9 @@
         "Title": "systemd: services with DynamicUser can get new privileges and create SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can get new privileges through the execution of SUID binaries, which would allow to create binaries owned by the service transient group with the setgid bit set. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the GID will be recycled.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-264"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -2925,6 +3127,9 @@
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
         "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -2964,6 +3169,9 @@
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-284"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",

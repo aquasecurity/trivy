@@ -15,6 +15,9 @@
         "Title": "bash: when effective UID is not equal to its real UID the saved UID is not dropped",
         "Description": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support \"saved UID\" functionality, the saved UID is not dropped. An attacker with command execution in the shell can use \"enable -f\" for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-273"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -49,6 +52,9 @@
         "Title": "bash: heap-based buffer overflow during echo of unsupported characters",
         "Description": "A heap-based buffer overflow exists in GNU Bash before 4.3 when wide characters, not supported by the current locale set in the LC_CTYPE environment variable, are printed through the echo built-in function. A local attacker, who can provide data to print through the \"echo -e\" built-in function, may use this flaw to crash a script or execute code with the privileges of the bash process. This occurs because ansicstr() in lib/sh/strtrans.c mishandles u32cconv().",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -85,6 +91,9 @@
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-415"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -130,6 +139,9 @@
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-120"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -203,6 +215,9 @@
         "Title": "expat: heap-based buffer over-read via crafted XML input",
         "Description": "In libexpat before 2.2.8, crafted XML input could fool the parser into changing from DTD parsing to document parsing too early; a consecutive call to XML_GetCurrentLineNumber (or XML_GetCurrentColumnNumber) then resulted in a heap-based buffer over-read.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-611"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -298,6 +313,9 @@
         "Title": "file: heap-based buffer overflow in cdf_read_property_info in cdf.c",
         "Description": "cdf_read_property_info in cdf.c in file through 5.37 does not restrict the number of CDF_VECTOR elements, which allows a heap-based buffer overflow (4-byte out-of-bounds write).",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -342,6 +360,9 @@
         "Title": "file: stack-based buffer over-read in do_bid_note in readelf.c",
         "Description": "do_bid_note in readelf.c in libmagic.a in file 5.35 has a stack-based buffer over-read, related to file_printf and file_vprintf.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -376,6 +397,9 @@
         "Title": "file: stack-based buffer over-read in do_core_note in readelf.c",
         "Description": "do_core_note in readelf.c in libmagic.a in file 5.35 has a stack-based buffer over-read, related to file_printable, a different vulnerability than CVE-2018-10360.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -413,6 +437,9 @@
         "Title": "file: out-of-bounds read in do_core_note in readelf.c",
         "Description": "do_core_note in readelf.c in libmagic.a in file 5.35 has an out-of-bounds read because memcpy is misused.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -453,6 +480,9 @@
         "Title": "file: do_core_note in readelf.c allows remote attackers to cause a denial of service",
         "Description": "do_core_note in readelf.c in libmagic.a in file 5.35 allows remote attackers to cause a denial of service (stack corruption and application crash) or possibly have unspecified other impact.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -489,6 +519,9 @@
         "Title": "glibc: use-after-free in glob() function when expanding ~user",
         "Description": "A use-after-free vulnerability introduced in glibc upstream version 2.14 was found in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution. This was fixed in version 2.32.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:H/Au:N/C:P/I:P/A:P",
@@ -525,6 +558,9 @@
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -563,6 +599,9 @@
         "Title": "glibc: stack corruption from crafted input in cosl, sinl, sincosl, and tanl functions",
         "Description": "The GNU C Library (aka glibc or libc6) before 2.32 could overflow an on-stack buffer during range reduction if an input to an 80-bit long double function contains a non-canonical bit pattern, a seen when passing a 0x5d414141414141410000 value to sinl on x86 targets. This is related to sysdeps/ieee754/ldbl-96/e_rem_pio2l.c.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
@@ -603,6 +642,9 @@
         "Title": "libsolv: out-of-bounds read in repodata_schema2id in repodata.c",
         "Description": "repodata_schema2id in repodata.c in libsolv before 0.7.6 has a heap-based buffer over-read via a last schema whose length is less than the length of the input schema.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -637,6 +679,9 @@
         "Title": "libssh2: integer overflow in SSH_MSG_DISCONNECT logic in packet.c",
         "Description": "In libssh2 v1.9.0 and earlier versions, the SSH_MSG_DISCONNECT logic in packet.c has an integer overflow in a bounds check, enabling an attacker to specify an arbitrary (out-of-bounds) offset for a subsequent memory read. A crafted SSH server may be able to disclose sensitive information or cause a denial of service condition on the client system when a user connects to the server.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
@@ -675,6 +720,9 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -709,6 +757,9 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
@@ -743,6 +794,9 @@
         "Title": "openssl: side-channel weak encryption vulnerability",
         "Description": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-311"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
@@ -808,6 +862,9 @@
         "Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
         "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -857,6 +914,9 @@
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-311"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
@@ -918,6 +978,9 @@
         "Title": "pcre: buffer over-read in JIT when UTF is disabled",
         "Description": "libpcre in PCRE before 8.43 allows a subject buffer over-read in JIT when UTF is disabled, and \\X or \\R has more than one fixed quantifier, a related issue to CVE-2019-20454.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -950,6 +1013,9 @@
         "Title": "pcre: integer overflow in libpcre",
         "Description": "libpcre in PCRE before 8.44 allows an integer overflow via a large number after a (?C substring.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -983,6 +1049,9 @@
         "Title": "sqlite: omits bits from the colUsed bitmask in the case of a generated column",
         "Description": "lookupName in resolve.c in SQLite 3.30.1 omits bits from the colUsed bitmask in the case of a generated column, which allows attackers to cause a denial of service or possibly have unspecified other impact.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1052,6 +1121,9 @@
         "Title": "sqlite: pragma.c mishandles NOT NULL in an integrity_check PRAGMA command in certain cases of generated columns",
         "Description": "pragma.c in SQLite through 3.30.1 mishandles NOT NULL in an integrity_check PRAGMA command in certain cases of generated columns.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-754"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1086,6 +1158,9 @@
         "Title": "sqlite: selectExpander in select.c proceeds with WITH stack unwinding even after a parsing error",
         "Description": "selectExpander in select.c in SQLite 3.30.1 proceeds with WITH stack unwinding even after a parsing error.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-755"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1121,6 +1196,9 @@
         "Title": "sqlite: use-after-free in the ALTER TABLE implementation",
         "Description": "In SQLite through 3.31.1, the ALTER TABLE implementation has a use-after-free, as demonstrated by an ORDER BY clause that belongs to a compound SELECT statement.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1156,6 +1234,9 @@
         "Title": "sqlite: use-after-free in fts3EvalNextRow in ext/fts3/fts3.c",
         "Description": "ext/fts3/fts3.c in SQLite before 3.32.0 has a use-after-free in fts3EvalNextRow, related to the snippet feature.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:P/A:P",
@@ -1195,6 +1276,9 @@
         "Title": "sqlite: heap-based buffer overflow in multiSelectOrderBy due to mishandling of query-flattener optimization in select.c",
         "Description": "In SQLite before 3.32.3, select.c mishandles query-flattener optimization, leading to a multiSelectOrderBy heap overflow because of misuse of transitive properties for constant propagation.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
@@ -1232,6 +1316,9 @@
         "Title": "sqlite: allows a crash if a sub-select uses both DISTINCT and window functions and also has certain ORDER BY usage",
         "Description": "sqlite3Select in select.c in SQLite 3.30.1 allows a crash if a sub-select uses both DISTINCT and window functions, and also has certain ORDER BY usage.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1266,6 +1353,9 @@
         "Title": "sqlite: invalid pointer dereference in exprListAppendList in window.c",
         "Description": "exprListAppendList in window.c in SQLite 3.30.1 allows attackers to trigger an invalid pointer dereference because constant integer values in ORDER BY clauses of window definitions are mishandled.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1306,6 +1396,9 @@
         "Title": "sqlite: mishandling of certain uses of SELECT DISTINCT involving a LEFT JOIN in flattenSubquery in select.c leads to a NULL pointer dereference",
         "Description": "flattenSubquery in select.c in SQLite 3.30.1 mishandles certain uses of SELECT DISTINCT involving a LEFT JOIN in which the right-hand side is a view. This can cause a NULL pointer dereference (or incorrect results).",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1348,6 +1441,9 @@
         "Title": "sqlite: zipfileUpdate in ext/misc/zipfile.c mishandles a NULL pathname during an update of a ZIP archive",
         "Description": "zipfileUpdate in ext/misc/zipfile.c in SQLite 3.30.1 mishandles a NULL pathname during an update of a ZIP archive.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-434"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1390,6 +1486,9 @@
         "Title": "sqlite: error mishandling because of incomplete fix of CVE-2019-19880",
         "Description": "multiSelect in select.c in SQLite 3.30.1 mishandles certain errors during parsing, as demonstrated by errors from sqlite3WindowRewrite() calls. NOTE: this vulnerability exists because of an incomplete fix for CVE-2019-19880.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1470,6 +1569,9 @@
         "Title": "sqlite: malformed window-function query leads to DoS",
         "Description": "SQLite through 3.31.1 allows attackers to cause a denial of service (segmentation fault) via a malformed window-function query because the AggInfo object's initialization is mishandled.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1509,6 +1611,9 @@
         "Title": "sqlite: integer overflow in sqlite3_str_vappendf function in printf.c",
         "Description": "SQLite through 3.32.0 has an integer overflow in sqlite3_str_vappendf in printf.c.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
@@ -1549,6 +1654,9 @@
         "Title": "sqlite: NULL pointer dereference leads to segmentation fault in sqlite3ExprCodeTarget in expr.c",
         "Description": "SQLite through 3.32.0 has a segmentation fault in sqlite3ExprCodeTarget in expr.c.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
@@ -1626,6 +1734,9 @@
         "Title": "sqlite: NULL pointer dereference in ext/fts3/fts3_snippet.c via a crafted matchinfo() query",
         "Description": "ext/fts3/fts3_snippet.c in SQLite before 3.32.0 has a NULL pointer dereference via a crafted matchinfo() query.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
@@ -1665,6 +1776,9 @@
         "Title": "sqlite: NULL pointer dereference and segmentation fault because of generated column optimizations",
         "Description": "In SQLite 3.31.1, isAuxiliaryVtabOperator allows attackers to trigger a NULL pointer dereference and segmentation fault because of generated column optimizations.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1703,6 +1817,9 @@
         "Title": "sqlite: infinite recursion via certain types of self-referential views in conjunction with ALTER TABLE statements",
         "Description": "alter.c in SQLite through 3.30.1 allows attackers to trigger infinite recursion via certain types of self-referential views in conjunction with ALTER TABLE statements.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-674"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
@@ -1738,6 +1855,9 @@
         "Title": "vim: users can execute arbitrary OS commands via scripting interfaces in the rvim restricted mode",
         "Description": "In Vim before 8.1.0881, users can circumvent the rvim restricted mode and execute arbitrary OS commands via scripting interfaces (e.g., Python, Ruby, or Lua).",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-78"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",

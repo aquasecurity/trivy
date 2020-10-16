@@ -14,6 +14,9 @@
         "SeveritySource": "nvd",
         "Description": "Missing input validation in the ar/tar implementations of APT before version 2.1.2 could result in denial of service when processing specially crafted deb files.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -52,6 +55,9 @@
         "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -96,6 +102,9 @@
         "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -133,6 +142,9 @@
         "SeveritySource": "nvd",
         "Description": "Missing input validation in the ar/tar implementations of APT before version 2.1.2 could result in denial of service when processing specially crafted deb files.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -171,6 +183,9 @@
         "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -215,6 +230,9 @@
         "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -253,6 +271,9 @@
         "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -297,6 +318,9 @@
         "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -335,6 +359,9 @@
         "Title": "gnutls: DTLS client hello contains a random value of all zeroes",
         "Description": "GnuTLS 3.6.x before 3.6.13 uses incorrect cryptography for DTLS. The earliest affected version is 3.6.3 (2018-07-16) because of an error in a 2017-10-06 commit. The DTLS client always uses 32 '\\0' bytes instead of a random value, and thus contributes no randomness to a DTLS negotiation. This breaks the security guarantees of the DTLS protocol.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-327"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",
@@ -379,6 +406,9 @@
         "Title": "gnutls: session resumption works without master key allowing MITM",
         "Description": "GnuTLS 3.6.x before 3.6.14 uses incorrect cryptography for encrypting a session ticket (a loss of confidentiality in TLS 1.2, and an authentication bypass in TLS 1.3). The earliest affected version is 3.6.4 (2018-09-24) because of an error in a 2018-09-18 commit. Until the first key rotation, the TLS server always uses wrong data in place of an encryption key derived from an application.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-327"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",
@@ -423,6 +453,9 @@
         "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
         "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -465,6 +498,9 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -499,6 +535,9 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
@@ -533,6 +572,9 @@
         "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -577,6 +619,9 @@
         "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -615,6 +660,9 @@
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
         "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -654,6 +702,9 @@
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-284"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",
@@ -694,6 +745,9 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -728,6 +782,9 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
@@ -762,6 +819,9 @@
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
         "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -801,6 +861,9 @@
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-284"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",
@@ -841,6 +904,9 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -875,6 +941,9 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
@@ -909,6 +978,9 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -943,6 +1015,9 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
@@ -977,6 +1052,9 @@
         "Title": "perl: corruption of intermediate language state of compiled regular expression due to integer overflow leads to DoS",
         "Description": "Perl before 5.30.3 has an integer overflow related to mishandling of a \"PL_regkind[OP(n)] == NOTHING\" situation. A crafted regular expression could lead to malformed bytecode with a possibility of instruction injection.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1017,6 +1095,9 @@
         "Title": "perl: heap-based buffer overflow in regular expression compiler leads to DoS",
         "Description": "Perl before 5.30.3 on 32-bit platforms allows a heap-based buffer overflow because nested regular expression quantifiers have an integer overflow.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:P",
@@ -1056,6 +1137,9 @@
         "Title": "perl: corruption of intermediate language state of compiled regular expression due to recursive S_study_chunk() calls leads to DoS",
         "Description": "regcomp.c in Perl before 5.30.3 allows a buffer overflow via a crafted regular expression because of recursive S_study_chunk calls.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-120"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",

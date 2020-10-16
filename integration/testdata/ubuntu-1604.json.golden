@@ -14,6 +14,9 @@
         "SeveritySource": "ubuntu",
         "Description": "Missing input validation in the ar/tar implementations of APT before version 2.1.2 could result in denial of service when processing specially crafted deb files.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -51,6 +54,9 @@
         "Title": "bash: when effective UID is not equal to its real UID the saved UID is not dropped",
         "Description": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support \"saved UID\" functionality, the saved UID is not dropped. An attacker with command execution in the shell can use \"enable -f\" for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-273"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -84,6 +90,9 @@
         "Title": "util-linux: runuser tty hijack via TIOCSTI ioctl",
         "Description": "runuser in util-linux allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-264"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -119,6 +128,9 @@
         "Title": "util-linux: Extended partition loop in MBR partition table leads to DOS",
         "Description": "The parse_dos_extended function in partitions/dos.c in the libblkid library in util-linux allows physically proximate attackers to cause a denial of service (memory consumption) via a crafted MSDOS partition table with an extended partition boot record at zero offset.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-399"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:C",
@@ -159,6 +171,9 @@
         "Title": "coreutils: Non-privileged session can escape to the parent session in chroot",
         "Description": "chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",
@@ -192,6 +207,9 @@
         "SeveritySource": "ubuntu",
         "Description": "dpkg-source in dpkg 1.3.0 through 1.18.23 is able to use a non-GNU patch program and does not offer a protection mechanism for blank-indented diff hunks, which allows remote attackers to conduct directory traversal attacks via a crafted Debian source package, as demonstrated by use of dpkg-source on NetBSD.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-22"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -220,6 +238,9 @@
         "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -264,6 +285,9 @@
         "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -302,6 +326,9 @@
         "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -346,6 +373,9 @@
         "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -383,6 +413,9 @@
         "Title": "kernel: ARM straight-line speculation vulnerability",
         "Description": "Arm Armv8-A core implementations utilizing speculative execution past unconditional changes in control flow may allow unauthorized disclosure of information to an attacker with local user access via a side-channel analysis, aka \"straight-line speculation.\"",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -418,6 +451,9 @@
         "Title": "kernel: ARM straight-line speculation vulnerability",
         "Description": "Arm Armv8-A core implementations utilizing speculative execution past unconditional changes in control flow may allow unauthorized disclosure of information to an attacker with local user access via a side-channel analysis, aka \"straight-line speculation.\"",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -453,6 +489,9 @@
         "Title": "GnuPG: interaction between the sks-keyserver code and GnuPG allows for a Certificate Spamming Attack which leads to persistent DoS",
         "Description": "Interaction between the sks-keyserver code through 1.2.0 of the SKS keyserver network, and GnuPG through 2.2.16, makes it risky to have a GnuPG keyserver configuration line referring to a host on the SKS keyserver network. Retrieving data from this network may cause a persistent denial of service, because of a Certificate Spamming Attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-297"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -491,6 +530,9 @@
         "Title": "gnupg2: OpenPGP Key Certification Forgeries with SHA-1",
         "Description": "A flaw was found in the way certificate signatures could be forged using collisions found in the SHA-1 algorithm. An attacker could use this weakness to create forged certificate signatures. This issue affects GnuPG versions before 2.2.18.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-327"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -525,6 +567,9 @@
         "Title": "GnuPG: interaction between the sks-keyserver code and GnuPG allows for a Certificate Spamming Attack which leads to persistent DoS",
         "Description": "Interaction between the sks-keyserver code through 1.2.0 of the SKS keyserver network, and GnuPG through 2.2.16, makes it risky to have a GnuPG keyserver configuration line referring to a host on the SKS keyserver network. Retrieving data from this network may cause a persistent denial of service, because of a Certificate Spamming Attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-297"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -563,6 +608,9 @@
         "Title": "gnupg2: OpenPGP Key Certification Forgeries with SHA-1",
         "Description": "A flaw was found in the way certificate signatures could be forged using collisions found in the SHA-1 algorithm. An attacker could use this weakness to create forged certificate signatures. This issue affects GnuPG versions before 2.2.18.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-327"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -596,6 +644,9 @@
         "SeveritySource": "ubuntu",
         "Description": "In all versions of AppArmor mount rules are accidentally widened when compiled.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-254"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -622,6 +673,9 @@
         "SeveritySource": "ubuntu",
         "Description": "Missing input validation in the ar/tar implementations of APT before version 2.1.2 could result in denial of service when processing specially crafted deb files.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -659,6 +713,9 @@
         "Title": "util-linux: runuser tty hijack via TIOCSTI ioctl",
         "Description": "runuser in util-linux allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-264"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -694,6 +751,9 @@
         "Title": "util-linux: Extended partition loop in MBR partition table leads to DOS",
         "Description": "The parse_dos_extended function in partitions/dos.c in the libblkid library in util-linux allows physically proximate attackers to cause a denial of service (memory consumption) via a crafted MSDOS partition table with an extended partition boot record at zero offset.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-399"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:C",
@@ -735,6 +795,9 @@
         "Title": "glibc: memory corruption in memcpy-sse2-unaligned.S",
         "Description": "An SSE2-optimized memmove implementation for i386 in sysdeps/i386/i686/multiarch/memcpy-sse2-unaligned.S in the GNU C Library (aka glibc or libc6) 2.21 through 2.27 does not correctly perform the overlapping memory check if the source memory range spans the middle of the address space, resulting in corrupt data being produced by the copy operation. This may disclose information to context-dependent attackers, or result in a denial of service, or, possibly, code execution.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -772,6 +835,9 @@
         "Title": "glibc: Integer overflow in stdlib/canonicalize.c on 32-bit architectures leading to stack-based buffer overflow",
         "Description": "stdlib/canonicalize.c in the GNU C Library (aka glibc or libc6) 2.27 and earlier, when processing very long pathname arguments to the realpath function, could encounter an integer overflow on 32-bit architectures, leading to a stack-based buffer overflow and, potentially, arbitrary code execution.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -814,6 +880,9 @@
         "Title": "glibc: Buffer overflow in __mempcpy_avx512_no_vzeroupper",
         "Description": "An AVX-512-optimized implementation of the mempcpy function in the GNU C Library (aka glibc or libc6) 2.27 and earlier may write data beyond the target buffer, leading to a buffer overflow in __mempcpy_avx512_no_vzeroupper.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -856,6 +925,9 @@
         "Title": "glibc: Integer overflow in posix_memalign in memalign functions",
         "Description": "An integer overflow in the implementation of the posix_memalign in memalign functions in the GNU C Library (aka glibc or libc6) 2.26 and earlier could cause these functions to return a pointer to a heap area that is too small, potentially leading to heap corruption.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -899,6 +971,9 @@
         "Title": "glibc: array overflow in backtrace functions for powerpc",
         "Description": "An out-of-bounds write vulnerability was found in glibc before 2.31 when handling signal trampolines on PowerPC. Specifically, the backtrace function did not properly check the array bounds when storing the frame address, resulting in a denial of service or potential code execution. The highest threat from this vulnerability is to system availability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:P/A:C",
@@ -934,6 +1009,9 @@
         "Title": "glibc: parse_reg_exp in posix/regcomp.c misparses alternatives leading to denial of service or trigger incorrect result",
         "Description": "In the GNU C Library (aka glibc or libc6) before 2.28, parse_reg_exp in posix/regcomp.c misparses alternatives, which allows attackers to cause a denial of service (assertion failure and application exit) or trigger an incorrect result by attempting a regular-expression match.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-19"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -973,6 +1051,9 @@
         "Title": "glibc: potential denial of service in pop_fail_stack()",
         "Description": "The pop_fail_stack function in the GNU C Library (aka glibc or libc6) allows context-dependent attackers to cause a denial of service (assertion failure and application crash) via vectors related to extended regular expression processing.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-19"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1006,6 +1087,9 @@
         "Title": "glibc: iconv program can hang when invoked with the -c option",
         "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1038,6 +1122,9 @@
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -1075,6 +1162,9 @@
         "Title": "glibc: Fragmentation attacks possible when EDNS0 is enabled",
         "Description": "The DNS stub resolver in the GNU C Library (aka glibc or libc6) before version 2.26, when EDNS support is enabled, will solicit large UDP responses from name servers, potentially simplifying off-path DNS spoofing attacks due to IP fragmentation.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-770"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
@@ -1111,6 +1201,9 @@
         "Title": "glibc: Use-after-free read access in clntudp_call in sunrpc",
         "Description": "Use-after-free vulnerability in the clntudp_call function in sunrpc/clnt_udp.c in the GNU C Library (aka glibc or libc6) before 2.26 allows remote attackers to have unspecified impact via vectors related to error path.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
@@ -1147,6 +1240,9 @@
         "Title": "glibc: LD_PREFER_MAP_32BIT_EXEC not ignored in setuid binaries",
         "Description": "On the x86-64 architecture, the GNU C Library (aka glibc) before 2.31 fails to ignore the LD_PREFER_MAP_32BIT_EXEC environment variable during program execution after a security transition, allowing local attackers to restrict the possible mapping addresses for loaded libraries and thus bypass ASLR for a setuid program.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -1185,6 +1281,9 @@
         "Title": "glibc: regular-expression match via proceed_next_node in posix/regexec.c leads to heap-based buffer over-read",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, proceed_next_node in posix/regexec.c has a heap-based buffer over-read via an attempted case-insensitive regular-expression match.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1226,6 +1325,9 @@
         "Title": "glibc: stack corruption from crafted input in cosl, sinl, sincosl, and tanl functions",
         "Description": "The GNU C Library (aka glibc or libc6) before 2.32 could overflow an on-stack buffer during range reduction if an input to an 80-bit long double function contains a non-canonical bit pattern, a seen when passing a 0x5d414141414141410000 value to sinl on x86 targets. This is related to sysdeps/ieee754/ldbl-96/e_rem_pio2l.c.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
@@ -1266,6 +1368,9 @@
         "Title": "glibc: use-after-free in glob() function when expanding ~user",
         "Description": "A use-after-free vulnerability introduced in glibc upstream version 2.14 was found in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution. This was fixed in version 2.32.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:H/Au:N/C:P/I:P/A:P",
@@ -1301,6 +1406,9 @@
         "Title": "glibc: signed comparison vulnerability in the ARMv7 memcpy function",
         "Description": "An exploitable signed comparison vulnerability exists in the ARMv7 memcpy() implementation of GNU glibc 2.30.9000. Calling memcpy() (on ARMv7 targets that utilize the GNU glibc implementation) with a negative value for the 'num' parameter results in a signed comparison vulnerability. If an attacker underflows the 'num' parameter to memcpy(), this vulnerability could lead to undefined behavior such as writing to out-of-bounds memory and potentially remote code execution. Furthermore, this memcpy() implementation allows for program execution to continue in scenarios where a segmentation fault or crash should have occurred. The dangers occur in that subsequent execution and iterations of this code will be executed with this corrupted data.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-191"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -1337,6 +1445,9 @@
         "Title": "glibc: memory corruption in memcpy-sse2-unaligned.S",
         "Description": "An SSE2-optimized memmove implementation for i386 in sysdeps/i386/i686/multiarch/memcpy-sse2-unaligned.S in the GNU C Library (aka glibc or libc6) 2.21 through 2.27 does not correctly perform the overlapping memory check if the source memory range spans the middle of the address space, resulting in corrupt data being produced by the copy operation. This may disclose information to context-dependent attackers, or result in a denial of service, or, possibly, code execution.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1374,6 +1485,9 @@
         "Title": "glibc: Integer overflow in stdlib/canonicalize.c on 32-bit architectures leading to stack-based buffer overflow",
         "Description": "stdlib/canonicalize.c in the GNU C Library (aka glibc or libc6) 2.27 and earlier, when processing very long pathname arguments to the realpath function, could encounter an integer overflow on 32-bit architectures, leading to a stack-based buffer overflow and, potentially, arbitrary code execution.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1416,6 +1530,9 @@
         "Title": "glibc: Buffer overflow in __mempcpy_avx512_no_vzeroupper",
         "Description": "An AVX-512-optimized implementation of the mempcpy function in the GNU C Library (aka glibc or libc6) 2.27 and earlier may write data beyond the target buffer, leading to a buffer overflow in __mempcpy_avx512_no_vzeroupper.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -1458,6 +1575,9 @@
         "Title": "glibc: Integer overflow in posix_memalign in memalign functions",
         "Description": "An integer overflow in the implementation of the posix_memalign in memalign functions in the GNU C Library (aka glibc or libc6) 2.26 and earlier could cause these functions to return a pointer to a heap area that is too small, potentially leading to heap corruption.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1501,6 +1621,9 @@
         "Title": "glibc: array overflow in backtrace functions for powerpc",
         "Description": "An out-of-bounds write vulnerability was found in glibc before 2.31 when handling signal trampolines on PowerPC. Specifically, the backtrace function did not properly check the array bounds when storing the frame address, resulting in a denial of service or potential code execution. The highest threat from this vulnerability is to system availability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:P/A:C",
@@ -1536,6 +1659,9 @@
         "Title": "glibc: parse_reg_exp in posix/regcomp.c misparses alternatives leading to denial of service or trigger incorrect result",
         "Description": "In the GNU C Library (aka glibc or libc6) before 2.28, parse_reg_exp in posix/regcomp.c misparses alternatives, which allows attackers to cause a denial of service (assertion failure and application exit) or trigger an incorrect result by attempting a regular-expression match.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-19"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -1575,6 +1701,9 @@
         "Title": "glibc: potential denial of service in pop_fail_stack()",
         "Description": "The pop_fail_stack function in the GNU C Library (aka glibc or libc6) allows context-dependent attackers to cause a denial of service (assertion failure and application crash) via vectors related to extended regular expression processing.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-19"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1608,6 +1737,9 @@
         "Title": "glibc: iconv program can hang when invoked with the -c option",
         "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1640,6 +1772,9 @@
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -1677,6 +1812,9 @@
         "Title": "glibc: Fragmentation attacks possible when EDNS0 is enabled",
         "Description": "The DNS stub resolver in the GNU C Library (aka glibc or libc6) before version 2.26, when EDNS support is enabled, will solicit large UDP responses from name servers, potentially simplifying off-path DNS spoofing attacks due to IP fragmentation.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-770"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
@@ -1713,6 +1851,9 @@
         "Title": "glibc: Use-after-free read access in clntudp_call in sunrpc",
         "Description": "Use-after-free vulnerability in the clntudp_call function in sunrpc/clnt_udp.c in the GNU C Library (aka glibc or libc6) before 2.26 allows remote attackers to have unspecified impact via vectors related to error path.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
@@ -1749,6 +1890,9 @@
         "Title": "glibc: LD_PREFER_MAP_32BIT_EXEC not ignored in setuid binaries",
         "Description": "On the x86-64 architecture, the GNU C Library (aka glibc) before 2.31 fails to ignore the LD_PREFER_MAP_32BIT_EXEC environment variable during program execution after a security transition, allowing local attackers to restrict the possible mapping addresses for loaded libraries and thus bypass ASLR for a setuid program.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -1787,6 +1931,9 @@
         "Title": "glibc: regular-expression match via proceed_next_node in posix/regexec.c leads to heap-based buffer over-read",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, proceed_next_node in posix/regexec.c has a heap-based buffer over-read via an attempted case-insensitive regular-expression match.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -1828,6 +1975,9 @@
         "Title": "glibc: stack corruption from crafted input in cosl, sinl, sincosl, and tanl functions",
         "Description": "The GNU C Library (aka glibc or libc6) before 2.32 could overflow an on-stack buffer during range reduction if an input to an 80-bit long double function contains a non-canonical bit pattern, a seen when passing a 0x5d414141414141410000 value to sinl on x86 targets. This is related to sysdeps/ieee754/ldbl-96/e_rem_pio2l.c.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
@@ -1868,6 +2018,9 @@
         "Title": "glibc: use-after-free in glob() function when expanding ~user",
         "Description": "A use-after-free vulnerability introduced in glibc upstream version 2.14 was found in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution. This was fixed in version 2.32.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:H/Au:N/C:P/I:P/A:P",
@@ -1903,6 +2056,9 @@
         "Title": "glibc: signed comparison vulnerability in the ARMv7 memcpy function",
         "Description": "An exploitable signed comparison vulnerability exists in the ARMv7 memcpy() implementation of GNU glibc 2.30.9000. Calling memcpy() (on ARMv7 targets that utilize the GNU glibc implementation) with a negative value for the 'num' parameter results in a signed comparison vulnerability. If an attacker underflows the 'num' parameter to memcpy(), this vulnerability could lead to undefined behavior such as writing to out-of-bounds memory and potentially remote code execution. Furthermore, this memcpy() implementation allows for program execution to continue in scenarios where a segmentation fault or crash should have occurred. The dangers occur in that subsequent execution and iterations of this code will be executed with this corrupted data.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-191"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -1939,6 +2095,9 @@
         "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -1983,6 +2142,9 @@
         "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -2020,6 +2182,9 @@
         "Title": "dracut: Brute force attack on LUKS password decryption via initramfs",
         "Description": "The Debian initrd script for the cryptsetup package 2:1.7.3-2 and earlier allows physically proximate attackers to gain shell access via many log in attempts with an invalid password.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-287"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -2059,6 +2224,9 @@
         "Title": "util-linux: runuser tty hijack via TIOCSTI ioctl",
         "Description": "runuser in util-linux allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-264"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -2094,6 +2262,9 @@
         "Title": "util-linux: Extended partition loop in MBR partition table leads to DOS",
         "Description": "The parse_dos_extended function in partitions/dos.c in the libblkid library in util-linux allows physically proximate attackers to cause a denial of service (memory consumption) via a crafted MSDOS partition table with an extended partition boot record at zero offset.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-399"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:C",
@@ -2134,6 +2305,9 @@
         "Title": "kernel: ARM straight-line speculation vulnerability",
         "Description": "Arm Armv8-A core implementations utilizing speculative execution past unconditional changes in control flow may allow unauthorized disclosure of information to an attacker with local user access via a side-channel analysis, aka \"straight-line speculation.\"",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -2170,6 +2344,9 @@
         "Title": "libgcrypt: ECDSA timing attack in the libgcrypt20 cryptographic library",
         "Description": "It was discovered that there was a ECDSA timing attack in the libgcrypt20 cryptographic library. Version affected: 1.8.4-5, 1.7.6-2+deb9u3, and 1.6.3-2+deb8u4. Versions fixed: 1.8.5-2 and 1.6.3-2+deb8u7.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-362"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:H/Au:N/C:P/I:P/A:N",
@@ -2215,6 +2392,9 @@
         "Title": "lz4: heap-based buffer overflow in LZ4_write32",
         "Description": "LZ4 before 1.9.2 has a heap-based buffer overflow in LZ4_write32 (related to LZ4_compress_destSize), affecting applications that call LZ4_compress_fast with a large input. (This issue can also lead to data corruption.) NOTE: the vendor states \"only a few specific / uncommon usages of the API are at risk.\"",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-120"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -2260,6 +2440,9 @@
         "Title": "util-linux: runuser tty hijack via TIOCSTI ioctl",
         "Description": "runuser in util-linux allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-264"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -2295,6 +2478,9 @@
         "Title": "util-linux: Extended partition loop in MBR partition table leads to DOS",
         "Description": "The parse_dos_extended function in partitions/dos.c in the libblkid library in util-linux allows physically proximate attackers to cause a denial of service (memory consumption) via a crafted MSDOS partition table with an extended partition boot record at zero offset.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-399"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:C",
@@ -2335,6 +2521,9 @@
         "Title": "ncurses: Stack-based buffer overflow in fmt_entry function in dump_entry.c",
         "Description": "In ncurses 6.0, there is a stack-based buffer overflow in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -2366,6 +2555,9 @@
         "Title": "ncurses: Stack-based buffer overflow caused by format string vulnerability in fmt_entry function",
         "Description": "In ncurses 6.0, there is a format string vulnerability in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-134"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -2397,6 +2589,9 @@
         "Title": "ncurses: Illegal address access in append_acs function",
         "Description": "In ncurses 6.0, there is an attempted 0xffffffffffffffff access in the append_acs function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -2428,6 +2623,9 @@
         "Title": "ncurses: Null pointer dereference vulnerability in _nc_parse_entry function",
         "Description": "In ncurses 6.0, there is a NULL Pointer Dereference in the _nc_parse_entry function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -2459,6 +2657,9 @@
         "Title": "ncurses: Infinite loop in the next_char function",
         "Description": "There is an infinite loop in the next_char function in comp_scan.c in ncurses 6.0, related to libtic. A crafted input will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-835"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -2490,6 +2691,9 @@
         "Title": "ncurses: Illegal address access in the _nc_save_str function",
         "Description": "There is an illegal address access in the _nc_save_str function in alloc_entry.c in ncurses 6.0. It will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -2521,6 +2725,9 @@
         "Title": "ncurses: Illegal address access in the function _nc_read_entry_source()",
         "Description": "There is an illegal address access in the function _nc_read_entry_source() in progs/tic.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -2552,6 +2759,9 @@
         "Title": "ncurses: Illegal address access in the function postprocess_termcap()",
         "Description": "There is an illegal address access in the function postprocess_termcap() in parse_entry.c in ncurses 6.0 that will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -2583,6 +2793,9 @@
         "Title": "ncurses: Illegal address access in the function dump_uses()",
         "Description": "There is an illegal address access in the function dump_uses() in progs/dump_entry.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -2614,6 +2827,9 @@
         "Title": "ncurses: Illegal address access in the function fmt_entry",
         "Description": "There is an illegal address access in the fmt_entry function in progs/dump_entry.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -2645,6 +2861,9 @@
         "Title": "ncurses: Illegal address access in the function _nc_safe_strcat",
         "Description": "There is an illegal address access in the _nc_safe_strcat function in strings.c in ncurses 6.0 that will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -2676,6 +2895,9 @@
         "Title": "ncurses: Stack-based buffer overflow in the _nc_write_entry function",
         "Description": "Stack-based buffer overflow in the _nc_write_entry function in tinfo/write_entry.c in ncurses 6.0 allows attackers to cause a denial of service (application crash) or possibly execute arbitrary code via a crafted terminfo file, as demonstrated by tic.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -2709,6 +2931,9 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -2742,6 +2967,9 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
@@ -2775,6 +3003,9 @@
         "Title": "ncurses: Stack-based buffer overflow in fmt_entry function in dump_entry.c",
         "Description": "In ncurses 6.0, there is a stack-based buffer overflow in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -2806,6 +3037,9 @@
         "Title": "ncurses: Stack-based buffer overflow caused by format string vulnerability in fmt_entry function",
         "Description": "In ncurses 6.0, there is a format string vulnerability in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-134"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -2837,6 +3071,9 @@
         "Title": "ncurses: Illegal address access in append_acs function",
         "Description": "In ncurses 6.0, there is an attempted 0xffffffffffffffff access in the append_acs function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -2868,6 +3105,9 @@
         "Title": "ncurses: Null pointer dereference vulnerability in _nc_parse_entry function",
         "Description": "In ncurses 6.0, there is a NULL Pointer Dereference in the _nc_parse_entry function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -2899,6 +3139,9 @@
         "Title": "ncurses: Infinite loop in the next_char function",
         "Description": "There is an infinite loop in the next_char function in comp_scan.c in ncurses 6.0, related to libtic. A crafted input will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-835"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -2930,6 +3173,9 @@
         "Title": "ncurses: Illegal address access in the _nc_save_str function",
         "Description": "There is an illegal address access in the _nc_save_str function in alloc_entry.c in ncurses 6.0. It will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -2961,6 +3207,9 @@
         "Title": "ncurses: Illegal address access in the function _nc_read_entry_source()",
         "Description": "There is an illegal address access in the function _nc_read_entry_source() in progs/tic.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -2992,6 +3241,9 @@
         "Title": "ncurses: Illegal address access in the function postprocess_termcap()",
         "Description": "There is an illegal address access in the function postprocess_termcap() in parse_entry.c in ncurses 6.0 that will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -3023,6 +3275,9 @@
         "Title": "ncurses: Illegal address access in the function dump_uses()",
         "Description": "There is an illegal address access in the function dump_uses() in progs/dump_entry.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -3054,6 +3309,9 @@
         "Title": "ncurses: Illegal address access in the function fmt_entry",
         "Description": "There is an illegal address access in the fmt_entry function in progs/dump_entry.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -3085,6 +3343,9 @@
         "Title": "ncurses: Illegal address access in the function _nc_safe_strcat",
         "Description": "There is an illegal address access in the _nc_safe_strcat function in strings.c in ncurses 6.0 that will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -3116,6 +3377,9 @@
         "Title": "ncurses: Stack-based buffer overflow in the _nc_write_entry function",
         "Description": "Stack-based buffer overflow in the _nc_write_entry function in tinfo/write_entry.c in ncurses 6.0 allows attackers to cause a denial of service (application crash) or possibly execute arbitrary code via a crafted terminfo file, as demonstrated by tic.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -3149,6 +3413,9 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -3182,6 +3449,9 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
@@ -3215,6 +3485,9 @@
         "Title": "pcre: OP_KETRMAX feature in the match function in pcre_exec.c",
         "Description": "In PCRE 8.41, the OP_KETRMAX feature in the match function in pcre_exec.c allows stack exhaustion (uncontrolled recursion) when processing a crafted regular expression.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-674"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:C",
@@ -3246,6 +3519,9 @@
         "Title": "pcre: Out-of-bounds read in compile_bracket_matchingpath function (8.41/3)",
         "Description": "The compile_bracket_matchingpath function in pcre_jit_compile.c in PCRE through 8.x before revision 1680 (e.g., the PHP 7.1.1 bundled version) allows remote attackers to cause a denial of service (out-of-bounds read and application crash) via a crafted regular expression.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -3281,6 +3557,9 @@
         "Title": "pcre: Invalid Unicode property lookup (8.41/7, 10.24/2)",
         "Description": "libpcre1 in PCRE 8.40 and libpcre2 in PCRE2 10.23 allow remote attackers to cause a denial of service (segmentation violation for read access, and application crash) by triggering an invalid Unicode property lookup.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -3320,6 +3599,9 @@
         "Title": "pcre: invalid memory read in _pcre32_xclass (pcre_xclass.c)",
         "Description": "The _pcre32_xclass function in pcre_xclass.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (invalid memory read) via a crafted file.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -3353,6 +3635,9 @@
         "Title": "pcre: buffer over-read in JIT when UTF is disabled",
         "Description": "libpcre in PCRE before 8.43 allows a subject buffer over-read in JIT when UTF is disabled, and \\X or \\R has more than one fixed quantifier, a related issue to CVE-2019-20454.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -3384,6 +3669,9 @@
         "Title": "pcre: integer overflow in libpcre",
         "Description": "libpcre in PCRE before 8.44 allows an integer overflow via a large number after a (?C substring.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -3416,6 +3704,9 @@
         "Title": "util-linux: runuser tty hijack via TIOCSTI ioctl",
         "Description": "runuser in util-linux allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-264"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -3451,6 +3742,9 @@
         "Title": "util-linux: Extended partition loop in MBR partition table leads to DOS",
         "Description": "The parse_dos_extended function in partitions/dos.c in the libblkid library in util-linux allows physically proximate attackers to cause a denial of service (memory consumption) via a crafted MSDOS partition table with an extended partition boot record at zero offset.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-399"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:C",
@@ -3492,6 +3786,9 @@
         "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -3536,6 +3833,9 @@
         "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -3573,6 +3873,9 @@
         "Title": "kernel: ARM straight-line speculation vulnerability",
         "Description": "Arm Armv8-A core implementations utilizing speculative execution past unconditional changes in control flow may allow unauthorized disclosure of information to an attacker with local user access via a side-channel analysis, aka \"straight-line speculation.\"",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -3608,6 +3911,9 @@
         "Title": "systemd: mishandling of the current keyboard mode check leading to passwords being disclosed in cleartext to attacker",
         "Description": "systemd 242 changes the VT1 mode upon a logout, which allows attackers to read cleartext passwords in certain circumstances, such as watching a shutdown, or using Ctrl-Alt-F1 and Ctrl-Alt-F2. This occurs because the KDGKBMODE (aka current keyboard mode) check is mishandled.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-255"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -3644,6 +3950,9 @@
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
         "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -3683,6 +3992,10 @@
         "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
         "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20",
+          "CWE-732"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:P",
@@ -3721,6 +4034,9 @@
         "Title": "systemd: memory leak in button_open() in login/logind-button.c when udev events are received",
         "Description": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-772"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
@@ -3756,6 +4072,9 @@
         "Title": "systemd: mishandles numerical usernames beginning with decimal digits or 0x followed by hexadecimal digits",
         "Description": "systemd through v245 mishandles numerical usernames such as ones composed of decimal digits or 0x followed by hex digits, as demonstrated by use of root privileges when privileges of the 0x0 user account were intended. NOTE: this issue exists because of an incomplete fix for CVE-2017-1000082.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:H/Au:N/C:C/I:C/A:C",
@@ -3788,6 +4107,9 @@
         "Title": "ncurses: Stack-based buffer overflow in fmt_entry function in dump_entry.c",
         "Description": "In ncurses 6.0, there is a stack-based buffer overflow in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -3819,6 +4141,9 @@
         "Title": "ncurses: Stack-based buffer overflow caused by format string vulnerability in fmt_entry function",
         "Description": "In ncurses 6.0, there is a format string vulnerability in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-134"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -3850,6 +4175,9 @@
         "Title": "ncurses: Illegal address access in append_acs function",
         "Description": "In ncurses 6.0, there is an attempted 0xffffffffffffffff access in the append_acs function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -3881,6 +4209,9 @@
         "Title": "ncurses: Null pointer dereference vulnerability in _nc_parse_entry function",
         "Description": "In ncurses 6.0, there is a NULL Pointer Dereference in the _nc_parse_entry function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -3912,6 +4243,9 @@
         "Title": "ncurses: Infinite loop in the next_char function",
         "Description": "There is an infinite loop in the next_char function in comp_scan.c in ncurses 6.0, related to libtic. A crafted input will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-835"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -3943,6 +4277,9 @@
         "Title": "ncurses: Illegal address access in the _nc_save_str function",
         "Description": "There is an illegal address access in the _nc_save_str function in alloc_entry.c in ncurses 6.0. It will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -3974,6 +4311,9 @@
         "Title": "ncurses: Illegal address access in the function _nc_read_entry_source()",
         "Description": "There is an illegal address access in the function _nc_read_entry_source() in progs/tic.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -4005,6 +4345,9 @@
         "Title": "ncurses: Illegal address access in the function postprocess_termcap()",
         "Description": "There is an illegal address access in the function postprocess_termcap() in parse_entry.c in ncurses 6.0 that will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -4036,6 +4379,9 @@
         "Title": "ncurses: Illegal address access in the function dump_uses()",
         "Description": "There is an illegal address access in the function dump_uses() in progs/dump_entry.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -4067,6 +4413,9 @@
         "Title": "ncurses: Illegal address access in the function fmt_entry",
         "Description": "There is an illegal address access in the fmt_entry function in progs/dump_entry.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -4098,6 +4447,9 @@
         "Title": "ncurses: Illegal address access in the function _nc_safe_strcat",
         "Description": "There is an illegal address access in the _nc_safe_strcat function in strings.c in ncurses 6.0 that will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -4129,6 +4481,9 @@
         "Title": "ncurses: Stack-based buffer overflow in the _nc_write_entry function",
         "Description": "Stack-based buffer overflow in the _nc_write_entry function in tinfo/write_entry.c in ncurses 6.0 allows attackers to cause a denial of service (application crash) or possibly execute arbitrary code via a crafted terminfo file, as demonstrated by tic.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -4162,6 +4517,9 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -4195,6 +4553,9 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
@@ -4228,6 +4589,9 @@
         "Title": "systemd: mishandling of the current keyboard mode check leading to passwords being disclosed in cleartext to attacker",
         "Description": "systemd 242 changes the VT1 mode upon a logout, which allows attackers to read cleartext passwords in certain circumstances, such as watching a shutdown, or using Ctrl-Alt-F1 and Ctrl-Alt-F2. This occurs because the KDGKBMODE (aka current keyboard mode) check is mishandled.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-255"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -4264,6 +4628,9 @@
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
         "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -4303,6 +4670,10 @@
         "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
         "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20",
+          "CWE-732"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:P",
@@ -4341,6 +4712,9 @@
         "Title": "systemd: memory leak in button_open() in login/logind-button.c when udev events are received",
         "Description": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-772"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
@@ -4376,6 +4750,9 @@
         "Title": "systemd: mishandles numerical usernames beginning with decimal digits or 0x followed by hexadecimal digits",
         "Description": "systemd through v245 mishandles numerical usernames such as ones composed of decimal digits or 0x followed by hex digits, as demonstrated by use of root privileges when privileges of the 0x0 user account were intended. NOTE: this issue exists because of an incomplete fix for CVE-2017-1000082.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:H/Au:N/C:C/I:C/A:C",
@@ -4408,6 +4785,9 @@
         "Title": "util-linux: runuser tty hijack via TIOCSTI ioctl",
         "Description": "runuser in util-linux allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-264"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -4443,6 +4823,9 @@
         "Title": "util-linux: Extended partition loop in MBR partition table leads to DOS",
         "Description": "The parse_dos_extended function in partitions/dos.c in the libblkid library in util-linux allows physically proximate attackers to cause a denial of service (memory consumption) via a crafted MSDOS partition table with an extended partition boot record at zero offset.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-399"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:C",
@@ -4483,6 +4866,9 @@
         "Title": "shadow-utils: TOCTOU race conditions by copying and removing directory trees",
         "Description": "shadow: TOCTOU (time-of-check time-of-use) race condition when copying and removing directory trees",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-367"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:P/A:P",
@@ -4517,6 +4903,9 @@
         "Title": "shadow-utils: Buffer overflow via newusers tool",
         "Description": "In shadow before 4.5, the newusers tool could be made to manipulate internal data structures in ways unintended by the authors. Malformed input may lead to crashes (with a buffer overflow or other memory corruption) or other unspecified behaviors. This crosses a privilege boundary in, for example, certain web-hosting environments in which a Control Panel allows an unprivileged user account to create subaccounts.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -4550,6 +4939,9 @@
         "Title": "shadow-utils: newgidmap allows unprivileged user to drop supplementary groups potentially allowing privilege escalation",
         "Description": "An issue was discovered in shadow 4.5. newgidmap (in shadow-utils) is setuid and allows an unprivileged user to be placed in a user namespace where setgroups(2) is permitted. This allows an attacker to remove themselves from a supplementary group, which may allow access to certain filesystem paths if the administrator has used \"group blacklisting\" (e.g., chmod g-rwx) to restrict access to paths. This flaw effectively reverts a security feature in the kernel (in particular, the /proc/self/setgroups knob) to prevent this sort of privilege escalation.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-732"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -4582,6 +4974,9 @@
         "Title": "util-linux: runuser tty hijack via TIOCSTI ioctl",
         "Description": "runuser in util-linux allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-264"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -4617,6 +5012,9 @@
         "Title": "util-linux: Extended partition loop in MBR partition table leads to DOS",
         "Description": "The parse_dos_extended function in partitions/dos.c in the libblkid library in util-linux allows physically proximate attackers to cause a denial of service (memory consumption) via a crafted MSDOS partition table with an extended partition boot record at zero offset.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-399"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:C",
@@ -4658,6 +5056,9 @@
         "Title": "glibc: memory corruption in memcpy-sse2-unaligned.S",
         "Description": "An SSE2-optimized memmove implementation for i386 in sysdeps/i386/i686/multiarch/memcpy-sse2-unaligned.S in the GNU C Library (aka glibc or libc6) 2.21 through 2.27 does not correctly perform the overlapping memory check if the source memory range spans the middle of the address space, resulting in corrupt data being produced by the copy operation. This may disclose information to context-dependent attackers, or result in a denial of service, or, possibly, code execution.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -4695,6 +5096,9 @@
         "Title": "glibc: Integer overflow in stdlib/canonicalize.c on 32-bit architectures leading to stack-based buffer overflow",
         "Description": "stdlib/canonicalize.c in the GNU C Library (aka glibc or libc6) 2.27 and earlier, when processing very long pathname arguments to the realpath function, could encounter an integer overflow on 32-bit architectures, leading to a stack-based buffer overflow and, potentially, arbitrary code execution.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -4737,6 +5141,9 @@
         "Title": "glibc: Buffer overflow in __mempcpy_avx512_no_vzeroupper",
         "Description": "An AVX-512-optimized implementation of the mempcpy function in the GNU C Library (aka glibc or libc6) 2.27 and earlier may write data beyond the target buffer, leading to a buffer overflow in __mempcpy_avx512_no_vzeroupper.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -4779,6 +5186,9 @@
         "Title": "glibc: Integer overflow in posix_memalign in memalign functions",
         "Description": "An integer overflow in the implementation of the posix_memalign in memalign functions in the GNU C Library (aka glibc or libc6) 2.26 and earlier could cause these functions to return a pointer to a heap area that is too small, potentially leading to heap corruption.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -4822,6 +5232,9 @@
         "Title": "glibc: array overflow in backtrace functions for powerpc",
         "Description": "An out-of-bounds write vulnerability was found in glibc before 2.31 when handling signal trampolines on PowerPC. Specifically, the backtrace function did not properly check the array bounds when storing the frame address, resulting in a denial of service or potential code execution. The highest threat from this vulnerability is to system availability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:P/I:P/A:C",
@@ -4857,6 +5270,9 @@
         "Title": "glibc: parse_reg_exp in posix/regcomp.c misparses alternatives leading to denial of service or trigger incorrect result",
         "Description": "In the GNU C Library (aka glibc or libc6) before 2.28, parse_reg_exp in posix/regcomp.c misparses alternatives, which allows attackers to cause a denial of service (assertion failure and application exit) or trigger an incorrect result by attempting a regular-expression match.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-19"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -4896,6 +5312,9 @@
         "Title": "glibc: potential denial of service in pop_fail_stack()",
         "Description": "The pop_fail_stack function in the GNU C Library (aka glibc or libc6) allows context-dependent attackers to cause a denial of service (assertion failure and application crash) via vectors related to extended regular expression processing.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-19"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -4929,6 +5348,9 @@
         "Title": "glibc: iconv program can hang when invoked with the -c option",
         "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -4961,6 +5383,9 @@
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -4998,6 +5423,9 @@
         "Title": "glibc: Fragmentation attacks possible when EDNS0 is enabled",
         "Description": "The DNS stub resolver in the GNU C Library (aka glibc or libc6) before version 2.26, when EDNS support is enabled, will solicit large UDP responses from name servers, potentially simplifying off-path DNS spoofing attacks due to IP fragmentation.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-770"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
@@ -5034,6 +5462,9 @@
         "Title": "glibc: Use-after-free read access in clntudp_call in sunrpc",
         "Description": "Use-after-free vulnerability in the clntudp_call function in sunrpc/clnt_udp.c in the GNU C Library (aka glibc or libc6) before 2.26 allows remote attackers to have unspecified impact via vectors related to error path.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
@@ -5070,6 +5501,9 @@
         "Title": "glibc: LD_PREFER_MAP_32BIT_EXEC not ignored in setuid binaries",
         "Description": "On the x86-64 architecture, the GNU C Library (aka glibc) before 2.31 fails to ignore the LD_PREFER_MAP_32BIT_EXEC environment variable during program execution after a security transition, allowing local attackers to restrict the possible mapping addresses for loaded libraries and thus bypass ASLR for a setuid program.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-200"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
@@ -5108,6 +5542,9 @@
         "Title": "glibc: regular-expression match via proceed_next_node in posix/regexec.c leads to heap-based buffer over-read",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, proceed_next_node in posix/regexec.c has a heap-based buffer over-read via an attempted case-insensitive regular-expression match.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -5149,6 +5586,9 @@
         "Title": "glibc: stack corruption from crafted input in cosl, sinl, sincosl, and tanl functions",
         "Description": "The GNU C Library (aka glibc or libc6) before 2.32 could overflow an on-stack buffer during range reduction if an input to an 80-bit long double function contains a non-canonical bit pattern, a seen when passing a 0x5d414141414141410000 value to sinl on x86 targets. This is related to sysdeps/ieee754/ldbl-96/e_rem_pio2l.c.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
@@ -5189,6 +5629,9 @@
         "Title": "glibc: use-after-free in glob() function when expanding ~user",
         "Description": "A use-after-free vulnerability introduced in glibc upstream version 2.14 was found in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution. This was fixed in version 2.32.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:H/Au:N/C:P/I:P/A:P",
@@ -5224,6 +5667,9 @@
         "Title": "glibc: signed comparison vulnerability in the ARMv7 memcpy function",
         "Description": "An exploitable signed comparison vulnerability exists in the ARMv7 memcpy() implementation of GNU glibc 2.30.9000. Calling memcpy() (on ARMv7 targets that utilize the GNU glibc implementation) with a negative value for the 'num' parameter results in a signed comparison vulnerability. If an attacker underflows the 'num' parameter to memcpy(), this vulnerability could lead to undefined behavior such as writing to out-of-bounds memory and potentially remote code execution. Furthermore, this memcpy() implementation allows for program execution to continue in scenarios where a segmentation fault or crash should have occurred. The dangers occur in that subsequent execution and iterations of this code will be executed with this corrupted data.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-191"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -5259,6 +5705,9 @@
         "Title": "ncurses: Stack-based buffer overflow in fmt_entry function in dump_entry.c",
         "Description": "In ncurses 6.0, there is a stack-based buffer overflow in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -5290,6 +5739,9 @@
         "Title": "ncurses: Stack-based buffer overflow caused by format string vulnerability in fmt_entry function",
         "Description": "In ncurses 6.0, there is a format string vulnerability in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-134"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -5321,6 +5773,9 @@
         "Title": "ncurses: Illegal address access in append_acs function",
         "Description": "In ncurses 6.0, there is an attempted 0xffffffffffffffff access in the append_acs function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -5352,6 +5807,9 @@
         "Title": "ncurses: Null pointer dereference vulnerability in _nc_parse_entry function",
         "Description": "In ncurses 6.0, there is a NULL Pointer Dereference in the _nc_parse_entry function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -5383,6 +5841,9 @@
         "Title": "ncurses: Infinite loop in the next_char function",
         "Description": "There is an infinite loop in the next_char function in comp_scan.c in ncurses 6.0, related to libtic. A crafted input will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-835"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -5414,6 +5875,9 @@
         "Title": "ncurses: Illegal address access in the _nc_save_str function",
         "Description": "There is an illegal address access in the _nc_save_str function in alloc_entry.c in ncurses 6.0. It will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -5445,6 +5909,9 @@
         "Title": "ncurses: Illegal address access in the function _nc_read_entry_source()",
         "Description": "There is an illegal address access in the function _nc_read_entry_source() in progs/tic.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -5476,6 +5943,9 @@
         "Title": "ncurses: Illegal address access in the function postprocess_termcap()",
         "Description": "There is an illegal address access in the function postprocess_termcap() in parse_entry.c in ncurses 6.0 that will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -5507,6 +5977,9 @@
         "Title": "ncurses: Illegal address access in the function dump_uses()",
         "Description": "There is an illegal address access in the function dump_uses() in progs/dump_entry.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -5538,6 +6011,9 @@
         "Title": "ncurses: Illegal address access in the function fmt_entry",
         "Description": "There is an illegal address access in the fmt_entry function in progs/dump_entry.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -5569,6 +6045,9 @@
         "Title": "ncurses: Illegal address access in the function _nc_safe_strcat",
         "Description": "There is an illegal address access in the _nc_safe_strcat function in strings.c in ncurses 6.0 that will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -5600,6 +6079,9 @@
         "Title": "ncurses: Stack-based buffer overflow in the _nc_write_entry function",
         "Description": "Stack-based buffer overflow in the _nc_write_entry function in tinfo/write_entry.c in ncurses 6.0 allows attackers to cause a denial of service (application crash) or possibly execute arbitrary code via a crafted terminfo file, as demonstrated by tic.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -5633,6 +6115,9 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -5666,6 +6151,9 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
@@ -5699,6 +6187,9 @@
         "Title": "ncurses: Stack-based buffer overflow in fmt_entry function in dump_entry.c",
         "Description": "In ncurses 6.0, there is a stack-based buffer overflow in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -5730,6 +6221,9 @@
         "Title": "ncurses: Stack-based buffer overflow caused by format string vulnerability in fmt_entry function",
         "Description": "In ncurses 6.0, there is a format string vulnerability in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-134"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -5761,6 +6255,9 @@
         "Title": "ncurses: Illegal address access in append_acs function",
         "Description": "In ncurses 6.0, there is an attempted 0xffffffffffffffff access in the append_acs function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -5792,6 +6289,9 @@
         "Title": "ncurses: Null pointer dereference vulnerability in _nc_parse_entry function",
         "Description": "In ncurses 6.0, there is a NULL Pointer Dereference in the _nc_parse_entry function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -5823,6 +6323,9 @@
         "Title": "ncurses: Infinite loop in the next_char function",
         "Description": "There is an infinite loop in the next_char function in comp_scan.c in ncurses 6.0, related to libtic. A crafted input will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-835"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -5854,6 +6357,9 @@
         "Title": "ncurses: Illegal address access in the _nc_save_str function",
         "Description": "There is an illegal address access in the _nc_save_str function in alloc_entry.c in ncurses 6.0. It will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -5885,6 +6391,9 @@
         "Title": "ncurses: Illegal address access in the function _nc_read_entry_source()",
         "Description": "There is an illegal address access in the function _nc_read_entry_source() in progs/tic.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -5916,6 +6425,9 @@
         "Title": "ncurses: Illegal address access in the function postprocess_termcap()",
         "Description": "There is an illegal address access in the function postprocess_termcap() in parse_entry.c in ncurses 6.0 that will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -5947,6 +6459,9 @@
         "Title": "ncurses: Illegal address access in the function dump_uses()",
         "Description": "There is an illegal address access in the function dump_uses() in progs/dump_entry.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -5978,6 +6493,9 @@
         "Title": "ncurses: Illegal address access in the function fmt_entry",
         "Description": "There is an illegal address access in the fmt_entry function in progs/dump_entry.c in ncurses 6.0 that might lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -6009,6 +6527,9 @@
         "Title": "ncurses: Illegal address access in the function _nc_safe_strcat",
         "Description": "There is an illegal address access in the _nc_safe_strcat function in strings.c in ncurses 6.0 that will lead to a remote denial of service attack.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -6040,6 +6561,9 @@
         "Title": "ncurses: Stack-based buffer overflow in the _nc_write_entry function",
         "Description": "Stack-based buffer overflow in the _nc_write_entry function in tinfo/write_entry.c in ncurses 6.0 allows attackers to cause a denial of service (application crash) or possibly execute arbitrary code via a crafted terminfo file, as demonstrated by tic.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -6073,6 +6597,9 @@
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -6106,6 +6633,9 @@
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-125"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
@@ -6139,6 +6669,9 @@
         "Title": "shadow-utils: TOCTOU race conditions by copying and removing directory trees",
         "Description": "shadow: TOCTOU (time-of-check time-of-use) race condition when copying and removing directory trees",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-367"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:P/A:P",
@@ -6173,6 +6706,9 @@
         "Title": "shadow-utils: Buffer overflow via newusers tool",
         "Description": "In shadow before 4.5, the newusers tool could be made to manipulate internal data structures in ways unintended by the authors. Malformed input may lead to crashes (with a buffer overflow or other memory corruption) or other unspecified behaviors. This crosses a privilege boundary in, for example, certain web-hosting environments in which a Control Panel allows an unprivileged user account to create subaccounts.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -6206,6 +6742,9 @@
         "Title": "shadow-utils: newgidmap allows unprivileged user to drop supplementary groups potentially allowing privilege escalation",
         "Description": "An issue was discovered in shadow 4.5. newgidmap (in shadow-utils) is setuid and allows an unprivileged user to be placed in a user namespace where setgroups(2) is permitted. This allows an attacker to remove themselves from a supplementary group, which may allow access to certain filesystem paths if the administrator has used \"group blacklisting\" (e.g., chmod g-rwx) to restrict access to paths. This flaw effectively reverts a security feature in the kernel (in particular, the /proc/self/setgroups knob) to prevent this sort of privilege escalation.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-732"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -6238,6 +6777,9 @@
         "Title": "perl: heap-based buffer overflow in regular expression compiler leads to DoS",
         "Description": "Perl before 5.30.3 on 32-bit platforms allows a heap-based buffer overflow because nested regular expression quantifiers have an integer overflow.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-787"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:P",
@@ -6276,6 +6818,9 @@
         "Title": "perl: corruption of intermediate language state of compiled regular expression due to integer overflow leads to DoS",
         "Description": "Perl before 5.30.3 has an integer overflow related to mishandling of a \"PL_regkind[OP(n)] == NOTHING\" situation. A crafted regular expression could lead to malformed bytecode with a possibility of instruction injection.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-190"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -6315,6 +6860,9 @@
         "Title": "perl: corruption of intermediate language state of compiled regular expression due to recursive S_study_chunk() calls leads to DoS",
         "Description": "regcomp.c in Perl before 5.30.3 allows a buffer overflow via a crafted regular expression because of recursive S_study_chunk calls.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-120"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -6355,6 +6903,9 @@
         "Title": "systemd: mishandling of the current keyboard mode check leading to passwords being disclosed in cleartext to attacker",
         "Description": "systemd 242 changes the VT1 mode upon a logout, which allows attackers to read cleartext passwords in certain circumstances, such as watching a shutdown, or using Ctrl-Alt-F1 and Ctrl-Alt-F2. This occurs because the KDGKBMODE (aka current keyboard mode) check is mishandled.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-255"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -6391,6 +6942,9 @@
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
         "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -6430,6 +6984,10 @@
         "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
         "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20",
+          "CWE-732"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:P",
@@ -6468,6 +7026,9 @@
         "Title": "systemd: memory leak in button_open() in login/logind-button.c when udev events are received",
         "Description": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-772"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
@@ -6503,6 +7064,9 @@
         "Title": "systemd: mishandles numerical usernames beginning with decimal digits or 0x followed by hexadecimal digits",
         "Description": "systemd through v245 mishandles numerical usernames such as ones composed of decimal digits or 0x followed by hex digits, as demonstrated by use of root privileges when privileges of the 0x0 user account were intended. NOTE: this issue exists because of an incomplete fix for CVE-2017-1000082.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:H/Au:N/C:C/I:C/A:C",
@@ -6535,6 +7099,9 @@
         "Title": "systemd: mishandling of the current keyboard mode check leading to passwords being disclosed in cleartext to attacker",
         "Description": "systemd 242 changes the VT1 mode upon a logout, which allows attackers to read cleartext passwords in certain circumstances, such as watching a shutdown, or using Ctrl-Alt-F1 and Ctrl-Alt-F2. This occurs because the KDGKBMODE (aka current keyboard mode) check is mishandled.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-255"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
@@ -6571,6 +7138,9 @@
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
         "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
@@ -6610,6 +7180,10 @@
         "Title": "systemd: kills privileged process if unprivileged PIDFile was tampered",
         "Description": "It was discovered systemd does not correctly check the content of PIDFile files before using it to kill processes. When a service is run from an unprivileged user (e.g. User field set in the service file), a local attacker who is able to write to the PIDFile of the mentioned service may use this flaw to trick systemd into killing other services and/or privileged processes. Versions before v237 are vulnerable.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20",
+          "CWE-732"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:P",
@@ -6648,6 +7222,9 @@
         "Title": "systemd: memory leak in button_open() in login/logind-button.c when udev events are received",
         "Description": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-772"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
@@ -6683,6 +7260,9 @@
         "Title": "systemd: mishandles numerical usernames beginning with decimal digits or 0x followed by hexadecimal digits",
         "Description": "systemd through v245 mishandles numerical usernames such as ones composed of decimal digits or 0x followed by hex digits, as demonstrated by use of root privileges when privileges of the 0x0 user account were intended. NOTE: this issue exists because of an incomplete fix for CVE-2017-1000082.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-20"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:H/Au:N/C:C/I:C/A:C",
@@ -6715,6 +7295,9 @@
         "Title": "tar: Infinite read loop in sparse_dump_region function in sparse.c",
         "Description": "GNU Tar through 1.30, when --sparse is used, mishandles file shrinkage during read access, which allows local users to cause a denial of service (infinite read loop in sparse_dump_region in sparse.c) by modifying a file that is supposed to be archived by a different user's process (e.g., a system backup running as root).",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-835"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:P",
@@ -6753,6 +7336,9 @@
         "Title": "tar: null-pointer dereference in pax_decode_header in sparse.c",
         "Description": "pax_decode_header in sparse.c in GNU Tar before 1.32 had a NULL pointer dereference when parsing certain archives that have malformed extended headers.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-476"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -6786,6 +7372,9 @@
         "Title": "util-linux: runuser tty hijack via TIOCSTI ioctl",
         "Description": "runuser in util-linux allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-264"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -6821,6 +7410,9 @@
         "Title": "util-linux: Extended partition loop in MBR partition table leads to DOS",
         "Description": "The parse_dos_extended function in partitions/dos.c in the libblkid library in util-linux allows physically proximate attackers to cause a denial of service (memory consumption) via a crafted MSDOS partition table with an extended partition boot record at zero offset.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-399"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:C",
@@ -6862,6 +7454,9 @@
         "Title": "zlib: Out-of-bounds pointer arithmetic in inftrees.c",
         "Description": "inftrees.c in zlib 1.2.8 might allow context-dependent attackers to have unspecified impact by leveraging improper pointer arithmetic.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-189"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -6928,6 +7523,9 @@
         "Title": "zlib: Out-of-bounds pointer arithmetic in inffast.c",
         "Description": "inffast.c in zlib 1.2.8 might allow context-dependent attackers to have unspecified impact by leveraging improper pointer arithmetic.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-189"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -6996,6 +7594,9 @@
         "Title": "zlib: Undefined left shift of negative number",
         "Description": "The inflateMark function in inflate.c in zlib 1.2.8 might allow context-dependent attackers to have unspecified impact via vectors involving left shifts of negative integers.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-189"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
@@ -7062,6 +7663,9 @@
         "Title": "zlib: Big-endian out-of-bounds pointer",
         "Description": "The crc32_big function in crc32.c in zlib 1.2.8 might allow context-dependent attackers to have unspecified impact via vectors involving big-endian CRC calculation.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-189"
+        ],
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
