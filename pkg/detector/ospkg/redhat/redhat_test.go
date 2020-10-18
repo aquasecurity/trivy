@@ -208,6 +208,45 @@ func TestScanner_Detect(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name: "happy path: packages from remi repository are skipped",
+			args: args{
+				osVer: "7.6",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "php",
+						Version:    "7.3.23",
+						Release:    "1.el7.remi",
+						Arch:       "x86_64",
+						Epoch:      0,
+						SrcName:    "php",
+						SrcVersion: "7.3.23",
+						SrcRelease: "1.el7.remi",
+						SrcEpoch:   0,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:c27b3cf4d516baf5932d5df3a573c6a571ddace3ee2a577492292d2e849c112b",
+						},
+					},
+				},
+			},
+			get: []dbTypes.GetExpectation{
+				{
+					Args: dbTypes.GetArgs{
+						Release: "7",
+						PkgName: "php",
+					},
+					Returns: dbTypes.GetReturns{
+						Advisories: []dbTypes.Advisory{
+							{
+								VulnerabilityID: "CVE-2011-4718",
+								FixedVersion:    "",
+							},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability(nil),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

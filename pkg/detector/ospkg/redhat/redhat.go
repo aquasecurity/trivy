@@ -1,6 +1,7 @@
 package redhat
 
 import (
+	"regexp"
 	"strings"
 	"time"
 
@@ -35,6 +36,9 @@ var (
 		// N/A
 		"8": time.Date(3000, 6, 30, 23, 59, 59, 0, time.UTC),
 	}
+	excludedVendorsRe = []*regexp.Regexp{
+		regexp.MustCompile("\\.remi$"),
+	}
 )
 
 type Scanner struct {
@@ -57,6 +61,11 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
+		if !s.isFromSupportedVendor(pkg) {
+			log.Logger.Debugf("Skipping %s: unsupported vendor", pkg.SrcName)
+			continue
+		}
+
 		// For Red Hat Security Data API containing only source package names
 		advisories, err := s.vs.Get(osVer, pkg.SrcName)
 		if err != nil {
@@ -124,4 +133,13 @@ func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool
 		return false
 	}
 	return now.Before(eolDate)
+}
+
+func (s *Scanner) isFromSupportedVendor(pkg ftypes.Package) bool {
+	for _, re := range excludedVendorsRe {
+		if re.MatchString(pkg.Release) {
+			return false
+		}
+	}
+	return true
 }
