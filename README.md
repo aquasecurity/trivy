@@ -112,7 +112,7 @@ See [here](#continuous-integration-ci) for details.
   - **No pre-requisites** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
 - High accuracy
   - **Especially Alpine Linux and RHEL/CentOS**
-  - Other OSes are also high
+  - Accuracy for other OSes are also high
 - DevSecOps
   - **Suitable for CI** such as Travis CI, CircleCI, Jenkins, GitLab CI, etc.
   - See [CI Example](#continuous-integration-ci)
