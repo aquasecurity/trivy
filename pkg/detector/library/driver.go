@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/composer"
 	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
 	"github.com/aquasecurity/trivy/pkg/detector/library/node"
+	"github.com/aquasecurity/trivy/pkg/detector/library/nuget"
 	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -43,6 +44,8 @@ func (d DriverFactory) NewDriver(filename string) (Driver, error) {
 		driver = newNpmDriver()
 	case "Pipfile.lock", "poetry.lock":
 		driver = newPipDriver()
+	case "packages.lock.json":
+		driver = newCSharpDriver()
 	default:
 		return Driver{}, xerrors.New(fmt.Sprintf("unsupport filename %s", filename))
 	}
@@ -113,4 +116,8 @@ func newPipDriver() Driver {
 	c := comparer.GenericComparer{}
 	return NewDriver(ghsa.NewAdvisory(ecosystem.Pip, c), python.NewAdvisory(),
 		NewAdvisory(vulnerability.Pip, c))
+}
+
+func newCSharpDriver() Driver {
+	return NewDriver(vulnerability.CSharp, ghsa.NewAdvisory(ecosystem.Nuget))
 }
