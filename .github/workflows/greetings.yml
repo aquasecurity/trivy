@@ -1,0 +1,14 @@
+name: Greetings
+
+on: [pull_request, issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: "Hola! @${{ github.actor }} 🥳 , You've just created an Issue!🌟 Thanks for making the Project Better"
+        pr-message: 'Submitted a PR already ?? @${{ github.actor }} . Sit tight until one of our amazing maintainers review it. Make sure you read the contributing guide'
+
