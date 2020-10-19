@@ -4,17 +4,15 @@ import (
 	"strings"
 	"time"
 
-	"k8s.io/utils/clock"
+	version "github.com/knqyf263/go-rpm-version"
 
 	"golang.org/x/xerrors"
 
-	version "github.com/knqyf263/go-rpm-version"
+	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
-
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"

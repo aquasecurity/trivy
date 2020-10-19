@@ -8,10 +8,8 @@ import (
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/photon"
-
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"

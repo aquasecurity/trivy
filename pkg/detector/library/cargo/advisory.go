@@ -8,10 +8,8 @@ import (
 	"github.com/Masterminds/semver/v3"
 
 	cargoSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/cargo"
-
-	"github.com/aquasecurity/trivy/pkg/types"
-
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // Advisory encapsulates the cargo vulnerability scanner

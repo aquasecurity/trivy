@@ -3,13 +3,11 @@ package ospkg
 import (
 	"time"
 
-	"golang.org/x/xerrors"
-
 	"github.com/google/wire"
+	"golang.org/x/xerrors"
 
 	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
-
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"

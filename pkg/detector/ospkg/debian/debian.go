@@ -4,16 +4,14 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/xerrors"
-
-	version "github.com/knqyf263/go-deb-version"
-
-	ftypes "github.com/aquasecurity/fanal/types"
-
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian"
 	debianoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian-oval"
 
+	version "github.com/knqyf263/go-deb-version"
+	"golang.org/x/xerrors"
+
+	ftypes "github.com/aquasecurity/fanal/types"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"

@@ -20,7 +20,7 @@ linters-settings:
   misspell:
     locale: US
   goimports:
-    local-prefixes: github.com/aquasecurity/trivy
+    local-prefixes: github.com/aquasecurity
 
 linters:
   disable-all: true

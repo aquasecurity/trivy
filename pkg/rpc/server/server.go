@@ -4,13 +4,10 @@ import (
 	"context"
 
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
-
 	"github.com/google/wire"
-
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
-
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"

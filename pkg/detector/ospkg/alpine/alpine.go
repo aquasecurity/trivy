@@ -4,15 +4,12 @@ import (
 	"strings"
 	"time"
 
+	version "github.com/knqyf263/go-apk-version"
 	"golang.org/x/xerrors"
 
-	version "github.com/knqyf263/go-apk-version"
-
 	ftypes "github.com/aquasecurity/fanal/types"
-
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alpine"
-
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
