@@ -26,8 +26,8 @@
                 "text": {{ endWithPeriod (escapeString .Title) | printf "%q" }}
               },
               "help": {
-                "text": {{ printf "Vulnerability %v\nSeverity: %v\nPackage: %v\nInstalled Version: %v\nFixed Version: %v\nLink: [%v](https://nvd.nist.gov/vuln/detail/%v)" .VulnerabilityID .Vulnerability.Severity .PkgName .InstalledVersion .FixedVersion .VulnerabilityID (.VulnerabilityID | toLower) | printf "%q"}},
-                "markdown": {{ printf "**Vulnerability %v**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|%v|%v|%v|%v|[%v](https://nvd.nist.gov/vuln/detail/%v)|\n" .VulnerabilityID .Vulnerability.Severity .PkgName .InstalledVersion .FixedVersion .VulnerabilityID (.VulnerabilityID | toLower) | printf "%q"}}
+                "text": {{ printf "Vulnerability %v\nSeverity: %v\nPackage: %v\nInstalled Version: %v\nFixed Version: %v\nLink: [%v](https://avd.aquasec.com/nvd/%v)" .VulnerabilityID .Vulnerability.Severity .PkgName .InstalledVersion .FixedVersion .VulnerabilityID (.VulnerabilityID | toLower) | printf "%q"}},
+                "markdown": {{ printf "**Vulnerability %v**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|%v|%v|%v|%v|[%v](https://avd.aquasec.com/nvd/%v)|\n" .VulnerabilityID .Vulnerability.Severity .PkgName .InstalledVersion .FixedVersion .VulnerabilityID (.VulnerabilityID | toLower) | printf "%q"}}
               },
               "properties": {
                 "tags": [
