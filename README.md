@@ -26,6 +26,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
   * [Install Script](#install-script)
   * [Binary](#binary)
   * [From source](#from-source)
+- [Contributing](#contributing)
 - [Quick Start](#quick-start)
   * [Image](#image)
     + [Basic](#basic)
@@ -95,6 +96,7 @@ A software vulnerability is a glitch, flaw, or weakness present in the software 
 
 It is considered to be used in CI. Before pushing to a container registry or deploying your application, you can scan your local container image and other artifacts easily.
 See [here](#continuous-integration-ci) for details.
+
 
 # Features
 
@@ -217,6 +219,11 @@ $ go install
 ```
 
 You also need to install `rpm` command for scanning images based on RHEL/CentOS.
+# Contributing 
+
+All you need to know for contributing to this project is basic **Golang**.
+
+You can visit the issues page to find some relevant issues to contribute to or feel free to open a new issue for something that you think can be improved.
 
 # Quick Start
 
