@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// EOL can't be find for photon https://github.com/vmware/photon/issues/1031
+// EOL can't be found for photon https://github.com/vmware/photon/issues/1031
 //var (
 //	eolDates = map[string]time.Time{}
 //)
