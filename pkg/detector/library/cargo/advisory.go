@@ -3,9 +3,8 @@ package cargo
 import (
 	"strings"
 
-	"golang.org/x/xerrors"
-
 	"github.com/Masterminds/semver/v3"
+	"golang.org/x/xerrors"
 
 	cargoSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/cargo"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"

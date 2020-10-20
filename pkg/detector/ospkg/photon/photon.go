@@ -2,9 +2,7 @@ package photon
 
 import (
 	version "github.com/knqyf263/go-rpm-version"
-
 	"golang.org/x/xerrors"
-
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"

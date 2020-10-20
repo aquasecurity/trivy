@@ -3,9 +3,8 @@ package python
 import (
 	"strings"
 
-	"golang.org/x/xerrors"
-
 	"github.com/Masterminds/semver/v3"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/python"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"

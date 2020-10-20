@@ -3,9 +3,8 @@ package library
 import (
 	"fmt"
 
-	"golang.org/x/xerrors"
-
 	"github.com/Masterminds/semver/v3"
+	"golang.org/x/xerrors"
 
 	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"

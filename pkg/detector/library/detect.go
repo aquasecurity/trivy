@@ -4,11 +4,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"golang.org/x/xerrors"
-
-	"github.com/google/wire"
-
 	"github.com/Masterminds/semver/v3"
+	"github.com/google/wire"
+	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"

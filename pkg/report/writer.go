@@ -13,9 +13,8 @@ import (
 	"text/template"
 	"time"
 
-	"golang.org/x/xerrors"
-
 	"github.com/olekukonko/tablewriter"
+	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"

@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff"
-
 	"github.com/twitchtv/twirp"
 
 	"github.com/aquasecurity/trivy/pkg/log"
