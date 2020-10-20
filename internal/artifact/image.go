@@ -30,6 +30,7 @@ func dockerScanner(ctx context.Context, imageName string, ac cache.ArtifactCache
 	return s, cleanup, nil
 }
 
+// ImageRun runs scan on docker image
 func ImageRun(cliCtx *cli.Context) error {
 	c, err := config.New(cliCtx)
 	if err != nil {

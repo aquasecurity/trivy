@@ -11,20 +11,24 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// VulnSrc defines the operations on vulnerability source
 type VulnSrc interface {
 	Get(pkgName string) ([]ghsa.Advisory, error)
 }
 
+// Advisory implements VulnSrc
 type Advisory struct {
 	vs VulnSrc
 }
 
+// NewAdvisory is the factory method to return advisory
 func NewAdvisory(ecosystem ghsa.Ecosystem) *Advisory {
 	return &Advisory{
 		vs: ghsa.NewVulnSrc(ecosystem),
 	}
 }
 
+// DetectVulnerabilities scans package for vulnerabilities
 func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	advisories, err := s.vs.Get(pkgName)
 	if err != nil {

@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
+// Run runs the scan
 func Run(ctx *cli.Context) error {
 	return run(config.New(ctx))
 }

@@ -14,6 +14,7 @@ import (
 	proto "github.com/aquasecurity/trivy/rpc/detector"
 )
 
+// SuperSet binds dependencies for RPC server
 var SuperSet = wire.NewSet(
 	detector.SuperSet,
 	vulnerability.SuperSet,
@@ -26,13 +27,14 @@ type Server struct {
 	vulnClient vulnerability.Operation
 }
 
+// NewServer is the factory method to return Server
 func NewServer(detector detector.Operation, vulnClient vulnerability.Operation) *Server {
 	return &Server{detector: detector, vulnClient: vulnClient}
 }
 
 // Detect is for backward compatibility
 func (s *Server) Detect(_ context.Context, req *proto.OSDetectRequest) (res *proto.DetectResponse, err error) {
-	vulns, eosl, err := s.detector.Detect("", req.OsFamily, req.OsName, time.Time{}, rpc.ConvertFromRpcPkgs(req.Packages))
+	vulns, eosl, err := s.detector.Detect("", req.OsFamily, req.OsName, time.Time{}, rpc.ConvertFromRPCPkgs(req.Packages))
 	if err != nil {
 		err = xerrors.Errorf("failed to detect vulnerabilities of OS packages: %w", err)
 		log.Logger.Error(err)
@@ -41,5 +43,5 @@ func (s *Server) Detect(_ context.Context, req *proto.OSDetectRequest) (res *pro
 
 	s.vulnClient.FillInfo(vulns, "")
 
-	return &proto.DetectResponse{Vulnerabilities: rpc.ConvertToRpcVulns(vulns), Eosl: eosl}, nil
+	return &proto.DetectResponse{Vulnerabilities: rpc.ConvertToRPCVulns(vulns), Eosl: eosl}, nil
 }

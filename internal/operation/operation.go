@@ -15,20 +15,24 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
+// SuperSet binds cache dependencies
 var SuperSet = wire.NewSet(
 	cache.NewFSCache,
 	wire.Bind(new(cache.LocalArtifactCache), new(cache.FSCache)),
 	NewCache,
 )
 
+// Cache implements the local cache
 type Cache struct {
 	client cache.LocalArtifactCache
 }
 
+// NewCache is the factory method for Cache
 func NewCache(client cache.LocalArtifactCache) Cache {
 	return Cache{client: client}
 }
 
+// Reset resets the cache
 func (c Cache) Reset() (err error) {
 	if err := c.ClearDB(); err != nil {
 		return xerrors.Errorf("failed to clear the database: %w", err)
@@ -39,6 +43,7 @@ func (c Cache) Reset() (err error) {
 	return nil
 }
 
+// ClearDB clears the DB cache
 func (c Cache) ClearDB() (err error) {
 	log.Logger.Info("Removing DB file...")
 	if err = os.RemoveAll(utils.CacheDir()); err != nil {
@@ -47,6 +52,7 @@ func (c Cache) ClearDB() (err error) {
 	return nil
 }
 
+// ClearImages clears the cache images
 func (c Cache) ClearImages() error {
 	log.Logger.Info("Removing image caches...")
 	if err := c.client.Clear(); err != nil {
@@ -55,6 +61,7 @@ func (c Cache) ClearImages() error {
 	return nil
 }
 
+// DownloadDB downloads the DB
 func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) error {
 	client := initializeDBClient(cacheDir, quiet)
 	ctx := context.Background()
@@ -66,7 +73,7 @@ func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) erro
 	if needsUpdate {
 		log.Logger.Info("Need to update DB")
 		log.Logger.Info("Downloading DB...")
-		if err := client.Download(ctx, cacheDir, light); err != nil {
+		if err = client.Download(ctx, cacheDir, light); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}
 		if err = client.UpdateMetadata(cacheDir); err != nil {

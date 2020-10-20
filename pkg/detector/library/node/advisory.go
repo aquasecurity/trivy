@@ -12,16 +12,19 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// Advisory encapsulate Node vulnerability source
 type Advisory struct {
 	vs node.VulnSrc
 }
 
+// NewAdvisory is the factory method for Node Advisory
 func NewAdvisory() *Advisory {
 	return &Advisory{
 		vs: node.NewVulnSrc(),
 	}
 }
 
+// DetectVulnerabilities scans and return vulnerability using Node package scanner
 func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	replacer := strings.NewReplacer(".alpha", "-alpha", ".beta", "-beta", ".rc", "-rc", " <", ", <", " >", ", >")
 	advisories, err := s.vs.Get(pkgName)

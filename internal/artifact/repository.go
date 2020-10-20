@@ -21,6 +21,7 @@ func repositoryScanner(ctx context.Context, dir string, ac cache.ArtifactCache, 
 	return s, cleanup, nil
 }
 
+// RepositoryRun runs scan on repository
 func RepositoryRun(cliCtx *cli.Context) error {
 	c, err := config.New(cliCtx)
 	if err != nil {

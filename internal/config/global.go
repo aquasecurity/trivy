@@ -8,6 +8,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
+// GlobalConfig holds the global config for trivy
 type GlobalConfig struct {
 	Context *cli.Context
 	Logger  *zap.SugaredLogger
@@ -18,6 +19,7 @@ type GlobalConfig struct {
 	CacheDir   string
 }
 
+// NewGlobalConfig is the factory method to return GlobalConfig
 func NewGlobalConfig(c *cli.Context) (GlobalConfig, error) {
 	quiet := c.Bool("quiet")
 	debug := c.Bool("debug")

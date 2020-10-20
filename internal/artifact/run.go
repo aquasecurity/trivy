@@ -19,9 +19,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
+// InitializeScanner type to define initialize function signature
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration) (
 	scanner.Scanner, func(), error)
 
+// nolint: gocyclo
+// TODO: refactror and fix cyclometic complexity
 func run(c config.Config, initializeScanner InitializeScanner) error {
 	if err := log.InitLogger(c.Debug, c.Quiet); err != nil {
 		l.Fatal(err)

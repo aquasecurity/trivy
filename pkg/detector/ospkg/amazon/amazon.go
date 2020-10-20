@@ -15,11 +15,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// Scanner to scan amazon vulnerabilities
 type Scanner struct {
 	l  *zap.SugaredLogger
 	ac dbTypes.VulnSrc
 }
 
+// NewScanner is the factory method to return Amazon scanner
 func NewScanner() *Scanner {
 	return &Scanner{
 		l:  log.Logger,
@@ -27,6 +29,7 @@ func NewScanner() *Scanner {
 	}
 }
 
+// Detect scans the packages using amazon scanner
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Amazon Linux vulnerabilities...")
 
@@ -77,6 +80,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
+// IsSupportedVersion checks if os can be scanned using amazon scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	return true
 }

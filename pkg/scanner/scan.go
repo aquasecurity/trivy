@@ -26,6 +26,7 @@ var StandaloneSuperSet = wire.NewSet(
 	NewScanner,
 )
 
+// StandaloneDockerSet binds docker dependencies
 var StandaloneDockerSet = wire.NewSet(
 	types.GetDockerOption,
 	image.NewDockerImage,
@@ -33,17 +34,20 @@ var StandaloneDockerSet = wire.NewSet(
 	StandaloneSuperSet,
 )
 
+// StandaloneArchiveSet binds archive scan dependencies
 var StandaloneArchiveSet = wire.NewSet(
 	image.NewArchiveImage,
 	aimage.NewArtifact,
 	StandaloneSuperSet,
 )
 
+// StandaloneFilesystemSet binds filesystem dependencies
 var StandaloneFilesystemSet = wire.NewSet(
 	flocal.NewArtifact,
 	StandaloneSuperSet,
 )
 
+// StandaloneRepositorySet binds repository dependencies
 var StandaloneRepositorySet = wire.NewSet(
 	remote.NewArtifact,
 	StandaloneSuperSet,
@@ -57,30 +61,36 @@ var RemoteSuperSet = wire.NewSet(
 	NewScanner,
 )
 
+// RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
 	types.GetDockerOption,
 	image.NewDockerImage,
 	RemoteSuperSet,
 )
 
+// RemoteArchiveSet binds remote archive dependencies
 var RemoteArchiveSet = wire.NewSet(
 	image.NewArchiveImage,
 	RemoteSuperSet,
 )
 
+// Scanner implements the Artifact and Driver operations
 type Scanner struct {
 	driver   Driver
 	artifact artifact.Artifact
 }
 
+// Driver defines operations of scanner
 type Driver interface {
 	Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (results report.Results, osFound *ftypes.OS, eols bool, err error)
 }
 
+// NewScanner is the factory method of Scanner
 func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
 	return Scanner{driver: driver, artifact: ar}
 }
 
+// ScanArtifact scans the artifacts and returns results
 func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (report.Results, error) {
 	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {

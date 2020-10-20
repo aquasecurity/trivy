@@ -40,6 +40,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
+// SuperSet binds dependencies for Local scan
 var SuperSet = wire.NewSet(
 	applier.NewApplier,
 	wire.Bind(new(Applier), new(applier.Applier)),
@@ -50,28 +51,35 @@ var SuperSet = wire.NewSet(
 	NewScanner,
 )
 
+// Applier defines operation to scan image layers
 type Applier interface {
 	ApplyLayers(artifactID string, blobIDs []string) (detail ftypes.ArtifactDetail, err error)
 }
 
+// OspkgDetector defines operation to detect OS vulnerabilities
 type OspkgDetector interface {
 	Detect(imageName, osFamily, osName string, created time.Time, pkgs []ftypes.Package) (detectedVulns []types.DetectedVulnerability, eosl bool, err error)
 }
 
+// LibraryDetector defines operation to detect library vulnerabilities
 type LibraryDetector interface {
 	Detect(imageName, filePath string, created time.Time, pkgs []ftypes.LibraryInfo) (detectedVulns []types.DetectedVulnerability, err error)
 }
 
+// Scanner implements the OspkgDetector and LibraryDetector
 type Scanner struct {
 	applier       Applier
 	ospkgDetector OspkgDetector
 	libDetector   LibraryDetector
 }
 
+// NewScanner is the factory method for Scanner
 func NewScanner(applier Applier, ospkgDetector OspkgDetector, libDetector LibraryDetector) Scanner {
 	return Scanner{applier: applier, ospkgDetector: ospkgDetector, libDetector: libDetector}
 }
 
+// Scan scans the local image and return results. TODO: fix cyclometic complexity
+// nolint: gocyclo
 func (s Scanner) Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (report.Results, *ftypes.OS, bool, error) {
 	imageDetail, err := s.applier.ApplyLayers(imageID, layerIDs)
 	if err != nil {

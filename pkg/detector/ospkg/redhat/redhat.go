@@ -4,14 +4,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat"
-
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -37,16 +36,19 @@ var (
 	}
 )
 
+// Scanner implements the Redhat scanner
 type Scanner struct {
 	vs dbTypes.VulnSrc
 }
 
+// NewScanner is the factory method for Scanner
 func NewScanner() *Scanner {
 	return &Scanner{
 		vs: redhat.NewVulnSrc(),
 	}
 }
 
+// Detect scans and returns redhat vulenrabilities
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting RHEL/CentOS vulnerabilities...")
 	if strings.Count(osVer, ".") > 0 {
@@ -102,6 +104,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
+// IsSupportedVersion checks is OSFamily can be scanned with Redhat scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	now := time.Now()
 	return s.isSupportedVersion(now, osFamily, osVer)

@@ -19,6 +19,7 @@ type Advisory struct {
 	comparer comparer
 }
 
+// NewAdvisory is the factory method of Advisory
 func NewAdvisory(lang string) *Advisory {
 	return &Advisory{
 		lang:     lang,

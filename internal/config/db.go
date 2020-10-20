@@ -5,6 +5,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// DBConfig holds the config for trivy DB
 type DBConfig struct {
 	Reset          bool
 	DownloadDBOnly bool
@@ -13,6 +14,7 @@ type DBConfig struct {
 	NoProgress     bool
 }
 
+// NewDBConfig is the factory method to return the DBConfig
 func NewDBConfig(c *cli.Context) DBConfig {
 	return DBConfig{
 		Reset:          c.Bool("reset"),
@@ -23,6 +25,7 @@ func NewDBConfig(c *cli.Context) DBConfig {
 	}
 }
 
+// Init initialize the DBConfig
 func (c *DBConfig) Init() (err error) {
 	if c.SkipUpdate && c.DownloadDBOnly {
 		return xerrors.New("--skip-update and --download-db-only options can not be specified both")

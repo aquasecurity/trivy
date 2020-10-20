@@ -9,10 +9,12 @@ import (
 )
 
 var (
+	// Logger is the global variable for logging
 	Logger      *zap.SugaredLogger
 	debugOption bool
 )
 
+// InitLogger initialize the logger variable
 func InitLogger(debug, disable bool) (err error) {
 	debugOption = debug
 	Logger, err = NewLogger(debug, disable)
@@ -23,6 +25,7 @@ func InitLogger(debug, disable bool) (err error) {
 
 }
 
+// NewLogger is the factory method to return the instance of logger
 func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 	// First, define our level-handling logic.
 	errorPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
@@ -78,6 +81,7 @@ func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 	return logger.Sugar(), nil
 }
 
+// Fatal for logging fatal errors
 func Fatal(err error) {
 	if debugOption {
 		Logger.Fatalf("%+v", err)
