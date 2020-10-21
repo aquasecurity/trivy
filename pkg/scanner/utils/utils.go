@@ -43,38 +43,13 @@ func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool 
 
 		// In this case, it can either be a patch version or a revision version (c.Metadata()) or just a general error.
 		if currentVersion.Metadata() != "" {
-			part := strings.Split(v, "+")
-			// We create a new constraint to use in case there is a revision in the current constraint.
-			c2 := c
-			conRev := 0
-			if len(part) > 1 {
-				c2, err = semver.NewConstraint(part[0]) // Set new constraint to only version.
-				if err != nil {
-					c2 = c // Just reset and let it fail later on.
-				}
-				conRev, err = strconv.Atoi(part[1])
-				if err != nil {
-					log.Logger.Debug("Atoi", "error", err)
-				}
+			valid, err := matchRevisionVersion(currentVersion, v)
+			if err != nil {
+				log.Logger.Debug("MatchRevision", "error", err)
+				continue
 			}
-
-			curPatch := currentVersion.Patch()
-			curRev, err2 := strconv.Atoi(currentVersion.Metadata())
-			if err == nil && err2 == nil {
-				// In case the revision of current is other than the one of the constraint we either  + or - on the  patch val.
-				if curRev > conRev {
-					curPatch++
-				} else if curRev < conRev {
-					curPatch--
-				}
-
-				v2, err := semver.NewVersion(fmt.Sprintf("%v.%v.%v", currentVersion.Major(), currentVersion.Minor(), curPatch))
-				if err == nil {
-					valid, _ = c2.Validate(v2)
-					if valid {
-						return true
-					}
-				}
+			if valid {
+				return true
 			}
 		}
 
@@ -142,4 +117,44 @@ func formatVersion(epoch int, version, release string) string {
 	}
 	return v
 
+}
+
+func matchRevisionVersion(currentVersion *semver.Version, constraint string) (bool, error) {
+	// Constraint may or may not have a revision.
+	part := strings.Split(constraint, "+")
+	conRev := 0
+	c, err := semver.NewConstraint(part[0])
+	if err != nil {
+		return false, fmt.Errorf("failed create constraint: %s", err)
+	}
+
+	if len(part) > 1 {
+		conRev, err = strconv.Atoi(part[1])
+		if err != nil {
+			return false, fmt.Errorf("failed to convert revision to integer: %s", err)
+		}
+	}
+
+	curPatch := currentVersion.Patch()
+	curRev, err := strconv.Atoi(currentVersion.Metadata())
+	if err != nil {
+		return false, fmt.Errorf("failed to convert revision to integer: %s", err)
+	}
+
+	// In case the revision of current is other than the one of the constraint we either  + or - on the  patch val.
+	if curRev > conRev {
+		curPatch++
+	} else if curRev < conRev {
+		curPatch--
+	}
+
+	v2, err := semver.NewVersion(fmt.Sprintf("%v.%v.%v", currentVersion.Major(), currentVersion.Minor(), curPatch))
+	if err == nil {
+		valid, _ := c.Validate(v2)
+		if valid {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
