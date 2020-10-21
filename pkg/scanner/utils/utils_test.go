@@ -76,6 +76,41 @@ func TestMatchVersions(t *testing.T) {
 			expectedCheck:  true,
 		},
 		{
+			name:           "expect none-revision to not care about revision number",
+			currentVersion: "1.2.3",
+			rangeVersion:   []string{"<1.2.3.1"},
+			expectedCheck:  false,
+		},
+		{
+			name:           "expect ",
+			currentVersion: "1.2.3.4",
+			rangeVersion:   []string{"<1.2.3.5", ">1.2.3.3"},
+			expectedCheck:  true,
+		},
+		{
+			name:           "expect revision to be higher than same minor but lower than higher minor",
+			currentVersion: "1.2.3.4",
+			rangeVersion:   []string{">1.2.3", "<1.2.4"},
+			expectedCheck:  true,
+		},
+		{
+			name:           "expect revision to not be lower than none-revision",
+			currentVersion: "1.2.3.4",
+			rangeVersion:   []string{"<1.2.3"},
+		},
+		{
+			name:           "expect revision numbers to be tested",
+			currentVersion: "1.2.3.4",
+			rangeVersion:   []string{">1.2.3.3", "<1.2.3.5"},
+			expectedCheck:  true,
+		},
+		{
+			name:           "expect revision to equal same revision",
+			currentVersion: "1.2.3.4",
+			rangeVersion:   []string{"1.2.3.4"},
+			expectedCheck:  true,
+		},
+		{
 			name:           "expect prerelease suffixed in minor version to work",
 			currentVersion: "4.1a",
 			rangeVersion:   []string{`< 4.2b1`},
@@ -128,19 +163,19 @@ func TestFormatPatchVersio(t *testing.T) {
 			expectedVersion: "1.2.3-beta.1",
 		},
 		{
-			name:            "patch with dots after integer patch version should append dash and join rest versions parts",
+			name:            "patch with dots after integer patch version should append plus and join rest versions parts",
 			currentVersion:  "1.2.3.4",
-			expectedVersion: "1.2.3-4",
+			expectedVersion: "1.2.3+4",
 		},
 		{
-			name:            "patch with dots after integer patch version should append dash and join extra versions parts",
+			name:            "patch with dots after integer patch version should append plus and join extra versions parts",
 			currentVersion:  "1.2.3.4.5",
-			expectedVersion: "1.2.3-4.5",
+			expectedVersion: "1.2.3+4.5",
 		},
 		{
 			name:            "unchanged case",
 			currentVersion:  "1.2.3.4-5",
-			expectedVersion: "1.2.3-4-5",
+			expectedVersion: "1.2.3+4-5",
 		},
 		{
 			name:            "prerelease suffixed in minor",

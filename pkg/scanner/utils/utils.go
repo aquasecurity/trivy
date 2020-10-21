@@ -40,6 +40,39 @@ func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool 
 		if valid {
 			return true
 		}
+
+		// In this case, it can either be a patch version or a revision version (c.Metadata()) or just a general error.
+		if currentVersion.Metadata() != "" {
+			part := strings.Split(v, "+")
+			// We create a new constraint to use in case there is a revision in the current constraint.
+			c2 := c
+			conRev := 0
+			if len(part) > 1 {
+				c2, err = semver.NewConstraint(part[0]) // Set new constraint to only version.
+				if err != nil {
+					c2 = c // Just reset and let it fail.
+				}
+				conRev, _ = strconv.Atoi(part[1])
+			}
+
+			curPatch := currentVersion.Patch()
+			curRev, _ := strconv.Atoi(currentVersion.Metadata())
+			// In case the revision of current is other than the one of the constraint we either  + or - on the  patch val.
+			if curRev > conRev {
+				curPatch++
+			} else if curRev < conRev {
+				curPatch--
+			}
+
+			v2, err := semver.NewVersion(fmt.Sprintf("%v.%v.%v", currentVersion.Major(), currentVersion.Minor(), curPatch))
+			if err == nil {
+				valid, _ = c2.Validate(v2)
+				if valid {
+					return true
+				}
+			}
+		}
+
 		for _, m := range msgs {
 			// re-validate after removing the patch version
 			if strings.HasSuffix(m.Error(), "is a prerelease version and the constraint is only looking for release versions") {
@@ -71,7 +104,7 @@ func FormatPatchVersion(version string) string {
 	part := strings.Split(version, ".")
 	if len(part) > 3 {
 		if _, err := strconv.Atoi(part[2]); err == nil {
-			version = strings.Join(part[:3], ".") + "-" + strings.Join(part[3:], ".")
+			version = strings.Join(part[:3], ".") + "+" + strings.Join(part[3:], ".")
 		}
 	} else {
 		for i := range part {
