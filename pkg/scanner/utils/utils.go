@@ -50,25 +50,30 @@ func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool 
 			if len(part) > 1 {
 				c2, err = semver.NewConstraint(part[0]) // Set new constraint to only version.
 				if err != nil {
-					c2 = c // Just reset and let it fail.
+					c2 = c // Just reset and let it fail later on.
 				}
-				conRev, _ = strconv.Atoi(part[1])
+				conRev, err = strconv.Atoi(part[1])
+				if err != nil {
+					log.Logger.Debug("Atoi", "error", err)
+				}
 			}
 
 			curPatch := currentVersion.Patch()
-			curRev, _ := strconv.Atoi(currentVersion.Metadata())
-			// In case the revision of current is other than the one of the constraint we either  + or - on the  patch val.
-			if curRev > conRev {
-				curPatch++
-			} else if curRev < conRev {
-				curPatch--
-			}
+			curRev, err2 := strconv.Atoi(currentVersion.Metadata())
+			if err == nil && err2 == nil {
+				// In case the revision of current is other than the one of the constraint we either  + or - on the  patch val.
+				if curRev > conRev {
+					curPatch++
+				} else if curRev < conRev {
+					curPatch--
+				}
 
-			v2, err := semver.NewVersion(fmt.Sprintf("%v.%v.%v", currentVersion.Major(), currentVersion.Minor(), curPatch))
-			if err == nil {
-				valid, _ = c2.Validate(v2)
-				if valid {
-					return true
+				v2, err := semver.NewVersion(fmt.Sprintf("%v.%v.%v", currentVersion.Major(), currentVersion.Minor(), curPatch))
+				if err == nil {
+					valid, _ = c2.Validate(v2)
+					if valid {
+						return true
+					}
 				}
 			}
 		}
