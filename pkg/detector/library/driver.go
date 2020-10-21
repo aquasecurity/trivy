@@ -13,7 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/composer"
 	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
 	"github.com/aquasecurity/trivy/pkg/detector/library/node"
-	"github.com/aquasecurity/trivy/pkg/detector/library/nuget"
 	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
