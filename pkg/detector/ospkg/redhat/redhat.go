@@ -1,7 +1,6 @@
 package redhat
 
 import (
-	"regexp"
 	"strings"
 	"time"
 
@@ -36,8 +35,8 @@ var (
 		// N/A
 		"8": time.Date(3000, 6, 30, 23, 59, 59, 0, time.UTC),
 	}
-	excludedVendorsRe = []*regexp.Regexp{
-		regexp.MustCompile("\\.remi$"),
+	excludedVendorsSuffix = []string{
+		".remi",
 	}
 )
 
@@ -136,8 +135,8 @@ func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool
 }
 
 func (s *Scanner) isFromSupportedVendor(pkg ftypes.Package) bool {
-	for _, re := range excludedVendorsRe {
-		if re.MatchString(pkg.Release) {
+	for _, s := range excludedVendorsSuffix {
+		if strings.HasSuffix(pkg.Release, s) {
 			return false
 		}
 	}
