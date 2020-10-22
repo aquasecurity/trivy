@@ -1,5 +1,5 @@
 # LAYER builder — — — — — — — — — — — — — — — — — — — — — — —
-FROM golang:1.12-alpine AS builder
+FROM golang:1.15-alpine AS builder
 ADD go.mod go.sum /app/
 WORKDIR /app/
 RUN apk --no-cache add git upx
@@ -9,7 +9,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$(g
 
 
 # LAYER compress — — — — — — — — — — — — — — — — — — — — — — —
-FROM alpine:3.11 AS compress
+FROM alpine:3.12 AS compress
 COPY --from=builder /trivy /usr/local/bin/trivy
 
 RUN set -eux && apk --update --no-cache add \
@@ -21,7 +21,7 @@ RUN set -eux && apk --update --no-cache add \
 
 
 # LAYER final — — — — — — — — — — — — — — — — — — — — — — — —
-FROM alpine:3.11 AS final
+FROM alpine:3.12 AS final
 COPY --from=compress /usr/local/bin/trivy /usr/local/bin/trivy
 
 RUN set -eux && apk --update --no-cache add \
@@ -39,7 +39,8 @@ LABEL org.opencontainers.image.authors="Author"                                 
       org.opencontainers.image.source="https://github.com/0o0o/0o0o"                    \
       org.opencontainers.image.licenses="https://github.com/0o0o/0o0o/LICENSE.md"       \
       org.example.image.user="root"                                                     \
-      org.example.image.alpineversion="3.9"                                             \
+      org.example.image.alpineversion="3.12"                                            \
       org.example.image.schemaversion="1.0"
 
-CMD [ "trivy" ]
+ENTRYPOINT [ "trivy" ]
+CMD [ "--help" ]
