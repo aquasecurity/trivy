@@ -1,6 +1,7 @@
 package debian
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -96,6 +97,9 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 					FixedVersion:     adv.FixedVersion,
 					Layer:            pkg.Layer,
 				}
+				if !strings.Contains(strings.ToLower(adv.VulnerabilityID), "temp") {
+					vuln.URL = fmt.Sprintf("https://avd.aquasec.com/nvd/%s", strings.ToLower(adv.VulnerabilityID))
+				}
 				vulns = append(vulns, vuln)
 			}
 		}
@@ -112,6 +116,9 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				Layer:            pkg.Layer,
+			}
+			if !strings.Contains(strings.ToLower(adv.VulnerabilityID), "temp") {
+				vuln.URL = fmt.Sprintf("https://avd.aquasec.com/nvd/%s", strings.ToLower(adv.VulnerabilityID))
 			}
 			vulns = append(vulns, vuln)
 		}

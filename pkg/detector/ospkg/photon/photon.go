@@ -1,6 +1,9 @@
 package photon
 
 import (
+	"fmt"
+	"strings"
+
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
@@ -54,6 +57,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				Layer:            pkg.Layer,
+				URL:              fmt.Sprintf("https://avd.aquasec.com/nvd/%s", strings.ToLower(adv.VulnerabilityID)),
 			}
 			if installedVersion.LessThan(fixedVersion) {
 				vuln.FixedVersion = adv.FixedVersion

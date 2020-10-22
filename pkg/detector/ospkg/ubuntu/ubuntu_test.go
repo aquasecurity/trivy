@@ -101,7 +101,7 @@ func TestScanner_Detect(t *testing.T) {
 				get: func(s string, s2 string) (advisories []dbTypes.Advisory, err error) {
 					return []dbTypes.Advisory{
 						{
-							VulnerabilityID: "ubuntu-123",
+							VulnerabilityID: "CVE-2011-123",
 							FixedVersion:    "3.0.0",
 						},
 					}, nil
@@ -124,13 +124,14 @@ func TestScanner_Detect(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, []types.DetectedVulnerability{
 			{
-				VulnerabilityID:  "ubuntu-123",
+				VulnerabilityID:  "CVE-2011-123",
 				PkgName:          "testpkg",
 				InstalledVersion: "2.1.0-test-hotfix",
 				FixedVersion:     "3.0.0",
 				Layer: ftypes.Layer{
 					DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 				},
+				URL: "https://avd.aquasec.com/nvd/cve-2011-123",
 			},
 		}, vuls)
 	})

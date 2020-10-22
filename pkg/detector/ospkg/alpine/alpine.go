@@ -1,6 +1,7 @@
 package alpine
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -89,6 +90,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 					InstalledVersion: installed,
 					FixedVersion:     adv.FixedVersion,
 					Layer:            pkg.Layer,
+					URL:              fmt.Sprintf("https://avd.aquasec.com/nvd/%s", strings.ToLower(adv.VulnerabilityID)),
 				}
 				vulns = append(vulns, vuln)
 			}

@@ -1,6 +1,9 @@
 package rpc
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/golang/protobuf/ptypes"
 
 	ftypes "github.com/aquasecurity/fanal/types"
@@ -155,6 +158,11 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 				}
 			}
 
+			var avdURL string
+			if strings.Contains(strings.ToLower(vuln.VulnerabilityId), "cve") {
+				avdURL = strings.ToLower(fmt.Sprintf("https://avd.aquasec.com/nvd/%s", vuln.VulnerabilityId))
+			}
+
 			vulns = append(vulns, types.DetectedVulnerability{
 				VulnerabilityID:  vuln.VulnerabilityId,
 				PkgName:          vuln.PkgName,
@@ -173,6 +181,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 					DiffID: vuln.Layer.DiffId,
 				},
 				SeveritySource: vuln.SeveritySource,
+				URL:            avdURL,
 			})
 		}
 		results = append(results, report.Result{
