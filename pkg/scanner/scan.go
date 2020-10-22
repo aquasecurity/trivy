@@ -2,95 +2,112 @@ package scanner
 
 import (
 	"context"
-	"flag"
-	"fmt"
-	"os"
 
-	"github.com/knqyf263/fanal/analyzer"
-	"github.com/knqyf263/fanal/extractor"
-	"github.com/knqyf263/trivy/pkg/scanner/library"
-	"github.com/knqyf263/trivy/pkg/scanner/ospkg"
-	"github.com/knqyf263/trivy/pkg/types"
-	"github.com/knqyf263/trivy/pkg/utils"
-	"github.com/knqyf263/trivy/pkg/vulnsrc/vulnerability"
-	"golang.org/x/crypto/ssh/terminal"
+	"github.com/google/wire"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/fanal/artifact"
+	aimage "github.com/aquasecurity/fanal/artifact/image"
+	flocal "github.com/aquasecurity/fanal/artifact/local"
+	"github.com/aquasecurity/fanal/artifact/remote"
+	"github.com/aquasecurity/fanal/image"
+	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/rpc/client"
+	"github.com/aquasecurity/trivy/pkg/scanner/local"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func ScanImage(imageName, filePath string, scanOptions types.ScanOptions) (map[string][]vulnerability.DetectedVulnerability, error) {
-	results := map[string][]vulnerability.DetectedVulnerability{}
-	ctx := context.Background()
+// StandaloneSuperSet is used in the standalone mode
+var StandaloneSuperSet = wire.NewSet(
+	local.SuperSet,
+	wire.Bind(new(Driver), new(local.Scanner)),
+	NewScanner,
+)
 
-	var target string
-	var files extractor.FileMap
-	if imageName != "" {
-		target = imageName
-		dockerOption, err := types.GetDockerOption()
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get docker option: %w", err)
-		}
-		files, err = analyzer.Analyze(ctx, imageName, dockerOption)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to analyze image: %w", err)
-		}
-	} else if filePath != "" {
-		target = filePath
-		rc, err := openStream(filePath)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to open stream: %w", err)
-		}
+// StandaloneDockerSet binds docker dependencies
+var StandaloneDockerSet = wire.NewSet(
+	types.GetDockerOption,
+	image.NewDockerImage,
+	aimage.NewArtifact,
+	StandaloneSuperSet,
+)
 
-		files, err = analyzer.AnalyzeFromFile(ctx, rc)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		return nil, xerrors.New("image name or image file must be specified")
-	}
+// StandaloneArchiveSet binds archive scan dependencies
+var StandaloneArchiveSet = wire.NewSet(
+	image.NewArchiveImage,
+	aimage.NewArtifact,
+	StandaloneSuperSet,
+)
 
-	if utils.StringInSlice("os", scanOptions.VulnType) {
-		osFamily, osVersion, osVulns, err := ospkg.Scan(files)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to scan image: %w", err)
-		}
-		if osFamily != "" {
-			imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osVersion)
-			results[imageDetail] = osVulns
-		}
-	}
+// StandaloneFilesystemSet binds filesystem dependencies
+var StandaloneFilesystemSet = wire.NewSet(
+	flocal.NewArtifact,
+	StandaloneSuperSet,
+)
 
-	if utils.StringInSlice("library", scanOptions.VulnType) {
-		libVulns, err := library.Scan(files, scanOptions)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to scan libraries: %w", err)
-		}
-		for path, vulns := range libVulns {
-			results[path] = vulns
-		}
-	}
+// StandaloneRepositorySet binds repository dependencies
+var StandaloneRepositorySet = wire.NewSet(
+	remote.NewArtifact,
+	StandaloneSuperSet,
+)
 
-	return results, nil
+// RemoteSuperSet is used in the client mode
+var RemoteSuperSet = wire.NewSet(
+	aimage.NewArtifact,
+	client.SuperSet,
+	wire.Bind(new(Driver), new(client.Scanner)),
+	NewScanner,
+)
+
+// RemoteDockerSet binds remote docker dependencies
+var RemoteDockerSet = wire.NewSet(
+	types.GetDockerOption,
+	image.NewDockerImage,
+	RemoteSuperSet,
+)
+
+// RemoteArchiveSet binds remote archive dependencies
+var RemoteArchiveSet = wire.NewSet(
+	image.NewArchiveImage,
+	RemoteSuperSet,
+)
+
+// Scanner implements the Artifact and Driver operations
+type Scanner struct {
+	driver   Driver
+	artifact artifact.Artifact
 }
 
-func ScanFile(f *os.File) (map[string][]vulnerability.DetectedVulnerability, error) {
-	vulns, err := library.ScanFile(f)
+// Driver defines operations of scanner
+type Driver interface {
+	Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (results report.Results, osFound *ftypes.OS, eols bool, err error)
+}
+
+// NewScanner is the factory method of Scanner
+func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
+	return Scanner{driver: driver, artifact: ar}
+}
+
+// ScanArtifact scans the artifacts and returns results
+func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (report.Results, error) {
+	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to scan libraries in file: %w", err)
+		return nil, xerrors.Errorf("failed analysis: %w", err)
 	}
-	results := map[string][]vulnerability.DetectedVulnerability{
-		f.Name(): vulns,
-	}
-	return results, nil
-}
 
-func openStream(path string) (*os.File, error) {
-	if path == "-" {
-		if terminal.IsTerminal(0) {
-			flag.Usage()
-			os.Exit(64)
-		} else {
-			return os.Stdin, nil
-		}
+	log.Logger.Debugf("Artifact ID: %s", artifactInfo.ID)
+	log.Logger.Debugf("Blob IDs: %v", artifactInfo.BlobIDs)
+
+	results, osFound, eosl, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
+	if err != nil {
+		return nil, xerrors.Errorf("scan failed: %w", err)
 	}
-	return os.Open(path)
+	if eosl {
+		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
+		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
+	}
+
+	return results, nil
 }

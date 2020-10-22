@@ -12,3 +12,11 @@
 *.out
 
 .idea
+
+# Directory Cache Files
+.DS_Store
+thumbs.db
+
+# test fixtures
+coverage.txt
+integration/testdata/fixtures/

@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package trivy.common;
+option  go_package = "common";
+
+message OS {
+  string family = 1;
+  string name   = 2;
+}
+
+message PackageInfo {
+  string           file_path = 1;
+  repeated Package packages  = 2;
+}
+
+message Application {
+  string           type      = 1;
+  string           file_path = 2;
+  repeated Library libraries = 3;
+}
+
+message Package {
+  // binary package
+  // e.g. bind-utils
+  string name    = 1;
+  string version = 2;
+  string release = 3;
+  int32  epoch   = 4;
+  string arch    = 5;
+  // src package containing some binary packages
+  // e.g. bind
+  string src_name    = 6;
+  string src_version = 7;
+  string src_release = 8;
+  int32  src_epoch   = 9;
+}
+
+message Library {
+  string name    = 1;
+  string version = 2;
+}
+
+message Vulnerability {
+  string            vulnerability_id  = 1;
+  string            pkg_name          = 2;
+  string            installed_version = 3;
+  string            fixed_version     = 4;
+  string            title             = 5;
+  string            description       = 6;
+  Severity          severity          = 7;
+  repeated string   references        = 8;
+  Layer             layer             = 10;
+  string            severity_source   = 11;
+  map<string, CVSS> cvss              = 12;
+  repeated string   cwe_ids           = 13;
+}
+
+message Layer {
+  string digest  = 1;
+  string diff_id = 2;
+}
+
+enum Severity {
+  UNKNOWN  = 0;
+  LOW      = 1;
+  MEDIUM   = 2;
+  HIGH     = 3;
+  CRITICAL = 4;
+}
+
+message CVSS {
+  string v2_vector = 1;
+  string v3_vector = 2;
+  double v2_score  = 3;
+  double v3_score  = 4;
+}

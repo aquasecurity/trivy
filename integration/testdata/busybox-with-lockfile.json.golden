@@ -1,0 +1,92 @@
+[
+  {
+    "Target": "Cargo.lock",
+    "Type": "cargo",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "RUSTSEC-2019-0001",
+        "PkgName": "ammonia",
+        "InstalledVersion": "1.9.0",
+        "Layer": {
+          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+        },
+        "Title": "Uncontrolled recursion leads to abort in HTML serialization",
+        "Description": "Affected versions of this crate did use recursion for serialization of HTML\nDOM trees.\n\nThis allows an attacker to cause abort due to stack overflow by providing\na pathologically nested input.\n\nThe flaw was corrected by serializing the DOM tree iteratively instead.\n",
+        "Severity": "UNKNOWN",
+        "References": [
+          "https://github.com/rust-ammonia/ammonia/blob/master/CHANGELOG.md#210"
+        ]
+      },
+      {
+        "VulnerabilityID": "RUSTSEC-2016-0001",
+        "PkgName": "openssl",
+        "InstalledVersion": "0.8.3",
+        "Layer": {
+          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+        },
+        "Title": "SSL/TLS MitM vulnerability due to insecure defaults",
+        "Description": "All versions of rust-openssl prior to 0.9.0 contained numerous insecure defaults\nincluding off-by-default certificate verification and no API to perform hostname\nverification.\n\nUnless configured correctly by a developer, these defaults could allow an attacker\nto perform man-in-the-middle attacks.\n\nThe problem was addressed in newer versions by enabling certificate verification\nby default and exposing APIs to perform hostname verification. Use the\n`SslConnector` and `SslAcceptor` types to take advantage of these new features\n(as opposed to the lower-level `SslContext` type).\n",
+        "Severity": "UNKNOWN",
+        "References": [
+          "https://github.com/sfackler/rust-openssl/releases/tag/v0.9.0"
+        ]
+      },
+      {
+        "VulnerabilityID": "RUSTSEC-2018-0010",
+        "PkgName": "openssl",
+        "InstalledVersion": "0.8.3",
+        "Layer": {
+          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+        },
+        "Title": "Use after free in CMS Signing",
+        "Description": "Affected versions of the OpenSSL crate used structures after they'd been freed.",
+        "Severity": "UNKNOWN",
+        "References": [
+          "https://github.com/sfackler/rust-openssl/pull/942"
+        ]
+      },
+      {
+        "VulnerabilityID": "RUSTSEC-2018-0003",
+        "PkgName": "smallvec",
+        "InstalledVersion": "0.6.9",
+        "Layer": {
+          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+        },
+        "Title": "Possible double free during unwinding in SmallVec::insert_many",
+        "Description": "If an iterator passed to `SmallVec::insert_many` panicked in `Iterator::next`,\ndestructors were run during unwinding while the vector was in an inconsistent\nstate, possibly causing a double free (a destructor running on two copies of\nthe same value).\n\nThis is fixed in smallvec 0.6.3 by ensuring that the vector's length is not\nupdated to include moved items until they have been removed from their\noriginal positions.  Items may now be leaked if `Iterator::next` panics, but\nthey will not be dropped more than once.\n\nThank you to @Vurich for reporting this bug.\n",
+        "Severity": "UNKNOWN",
+        "References": [
+          "https://github.com/servo/rust-smallvec/issues/96"
+        ]
+      },
+      {
+        "VulnerabilityID": "RUSTSEC-2019-0009",
+        "PkgName": "smallvec",
+        "InstalledVersion": "0.6.9",
+        "Layer": {
+          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+        },
+        "Title": "Double-free and use-after-free in SmallVec::grow()",
+        "Description": "Attempting to call `grow` on a spilled SmallVec with a value equal to the current capacity causes it to free the existing data. This performs a double free immediately and may lead to use-after-free on subsequent accesses to the SmallVec contents.\n\nAn attacker that controls the value passed to `grow` may exploit this flaw to obtain memory contents or gain remote code execution.\n\nCredits to @ehuss for discovering, reporting and fixing the bug.\n",
+        "Severity": "UNKNOWN",
+        "References": [
+          "https://github.com/servo/rust-smallvec/issues/148"
+        ]
+      },
+      {
+        "VulnerabilityID": "RUSTSEC-2019-0012",
+        "PkgName": "smallvec",
+        "InstalledVersion": "0.6.9",
+        "Layer": {
+          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+        },
+        "Title": "Memory corruption in SmallVec::grow()",
+        "Description": "Attempting to call `grow` on a spilled SmallVec with a value less than the current capacity causes corruption of memory allocator data structures.\n\nAn attacker that controls the value passed to `grow` may exploit this flaw to obtain memory contents or gain remote code execution.\n\nCredits to @ehuss for discovering, reporting and fixing the bug.\n",
+        "Severity": "UNKNOWN",
+        "References": [
+          "https://github.com/servo/rust-smallvec/issues/149"
+        ]
+      }
+    ]
+  }
+]

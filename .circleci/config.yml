@@ -1,27 +1,52 @@
+version: 2.1
+orbs:
+  codecov: codecov/codecov@1.1.0
+
 defaults: &defaults
   docker :
-    - image: knqyf263/ci-trivy:latest
+    - image: aquasec/trivy-ci:latest
   environment:
     CGO_ENABLED: "0"
 
 jobs:
-  test:
+  unit-test:
     <<: *defaults
     steps:
       - checkout
       - run:
+          name: Check if there's anything to fix with gofmt
+          command: |
+            if test -z "$(gofmt -l .)"; then
+              echo "Congrats! There is nothing to fix."
+            else
+              echo "The following lines should be fixed."
+              gofmt -s -d .
+              exit 1
+            fi
+      - run:
           name: Test
-          command: go test ./...
+          command: make test
+      - codecov/upload:
+          file: ./coverage.txt
+
   release:
     <<: *defaults
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - run:
+          name: login to Docker Hub
+          command: echo $DOCKER_PASS | docker login --username $DOCKER_USER --password-stdin
+      - run:
+          name: login to GitHub Container Registry
+          command: echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USER --password-stdin
       - run:
           name: Release
           command: goreleaser --rm-dist
       - run:
           name: Clone trivy repository
-          command: git clone git@github.com:knqyf263/trivy-repo.git
+          command: git clone git@github.com:aquasecurity/trivy-repo.git
       - run:
           name: Setup git settings
           command: |
@@ -36,12 +61,12 @@ jobs:
       - run:
           name: Create deb repository
           command: ci/deploy-deb.sh
-            
+
 workflows:
   version: 2
   release:
-    jobs:  
-      - test
+    jobs:
+      - unit-test
       - release:
           filters:
             branches:
