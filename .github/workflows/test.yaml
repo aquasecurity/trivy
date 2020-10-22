@@ -1,6 +1,17 @@
 name: Test
 on: pull_request
 jobs:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.31
+          args: --deadline=30m
+
   integration:
     name: Integration Test
     runs-on: ubuntu-latest
@@ -34,3 +45,4 @@ jobs:
       with:
         version: latest
         args: release --snapshot --rm-dist --skip-publish
+

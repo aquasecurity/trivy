@@ -40,11 +40,13 @@ var (
 	}
 )
 
+// Scanner implements the Debian scanner
 type Scanner struct {
 	ovalVs dbTypes.VulnSrc
 	vs     dbTypes.VulnSrc
 }
 
+// NewScanner is the factory method to return Scanner
 func NewScanner() *Scanner {
 	return &Scanner{
 		ovalVs: debianoval.NewVulnSrc(),
@@ -52,6 +54,7 @@ func NewScanner() *Scanner {
 	}
 }
 
+// Detect scans and return vulnerabilities using Debian scanner
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Debian vulnerabilities...")
 
@@ -78,7 +81,8 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 		}
 
 		for _, adv := range advisories {
-			fixedVersion, err := version.NewVersion(adv.FixedVersion)
+			var fixedVersion version.Version
+			fixedVersion, err = version.NewVersion(adv.FixedVersion)
 			if err != nil {
 				log.Logger.Debugf("failed to parse Debian package version: %w", err)
 				continue
@@ -115,6 +119,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
+// IsSupportedVersion checks is OSFamily can be scanned using Debian
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	now := time.Now()
 	return s.isSupportedVersion(now, osFamily, osVer)

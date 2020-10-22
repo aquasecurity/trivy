@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/Masterminds/semver/v3"
+	"golang.org/x/xerrors"
+
 	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
@@ -13,9 +15,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/node"
 	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"golang.org/x/xerrors"
 )
 
+// Factory defines library operations
 type Factory interface {
 	NewDriver(filename string) (Driver, error)
 }
@@ -24,8 +26,10 @@ type advisory interface {
 	DetectVulnerabilities(string, *semver.Version) ([]types.DetectedVulnerability, error)
 }
 
+// DriverFactory implements Factory
 type DriverFactory struct{}
 
+// NewDriver factory method for driver
 func (d DriverFactory) NewDriver(filename string) (Driver, error) {
 	// TODO: use DI
 	var driver Driver
@@ -46,28 +50,31 @@ func (d DriverFactory) NewDriver(filename string) (Driver, error) {
 	return driver, nil
 }
 
+// Driver implements the advisory
 type Driver struct {
 	lang       string
 	advisories []advisory
 }
 
+// NewDriver is the factory method from drier
 func NewDriver(lang string, advisories ...advisory) Driver {
 	return Driver{lang: lang, advisories: advisories}
 }
 
+// Detect scans and returns vulnerabilities
 func (d *Driver) Detect(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	var detectedVulnerabilities []types.DetectedVulnerability
-	uniqVulnIdMap := make(map[string]struct{})
+	uniqVulnIDMap := make(map[string]struct{})
 	for _, d := range append(d.advisories, NewAdvisory(d.lang)) {
 		vulns, err := d.DetectVulnerabilities(pkgName, pkgVer)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 		}
 		for _, vuln := range vulns {
-			if _, ok := uniqVulnIdMap[vuln.VulnerabilityID]; ok {
+			if _, ok := uniqVulnIDMap[vuln.VulnerabilityID]; ok {
 				continue
 			}
-			uniqVulnIdMap[vuln.VulnerabilityID] = struct{}{}
+			uniqVulnIDMap[vuln.VulnerabilityID] = struct{}{}
 			detectedVulnerabilities = append(detectedVulnerabilities, vuln)
 		}
 	}
@@ -75,6 +82,7 @@ func (d *Driver) Detect(pkgName string, pkgVer *semver.Version) ([]types.Detecte
 	return detectedVulnerabilities, nil
 }
 
+// Type returns the driver lang
 func (d *Driver) Type() string {
 	return d.lang
 }

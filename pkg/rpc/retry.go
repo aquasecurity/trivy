@@ -3,15 +3,17 @@ package rpc
 import (
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/cenkalti/backoff"
 	"github.com/twitchtv/twirp"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
 	maxRetries = 10
 )
 
+// Retry executes the function again using backoff until maxRetries or success
 func Retry(f func() error) error {
 	operation := func() error {
 		err := f()

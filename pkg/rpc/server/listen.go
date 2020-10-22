@@ -24,11 +24,13 @@ import (
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
+// DBWorkerSuperSet binds the dependencies for Trivy DB worker
 var DBWorkerSuperSet = wire.NewSet(
 	dbFile.SuperSet,
 	newDBWorker,
 )
 
+// ListenAndServe starts Trivy server
 func ListenAndServe(c config.Config, fsCache cache.FSCache) error {
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
@@ -132,7 +134,7 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 	}
 	defer os.RemoveAll(tmpDir)
 
-	if err := w.dbClient.Download(ctx, tmpDir, false); err != nil {
+	if err = w.dbClient.Download(ctx, tmpDir, false); err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 

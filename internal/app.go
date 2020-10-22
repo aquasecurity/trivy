@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
+// VersionInfo holds the trivy DB version Info
 type VersionInfo struct {
 	Version         string       `json:",omitempty"`
 	VulnerabilityDB *db.Metadata `json:",omitempty"`
@@ -250,6 +251,7 @@ var (
 	}
 )
 
+// NewApp is the factory method to return Trivy CLI
 func NewApp(version string) *cli.App {
 	cli.VersionPrinter = func(c *cli.Context) {
 		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
@@ -307,7 +309,7 @@ func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
 	var dbMeta *db.Metadata
 
-	metadata, _ := tdb.NewMetadata(afero.NewOsFs(), cacheDir).Get()
+	metadata, _ := tdb.NewMetadata(afero.NewOsFs(), cacheDir).Get() // nolint: errcheck
 	if !metadata.UpdatedAt.IsZero() && !metadata.NextUpdate.IsZero() && metadata.Version != 0 {
 		dbMeta = &db.Metadata{
 			Version:    metadata.Version,
@@ -319,7 +321,7 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 
 	switch outputFormat {
 	case "json":
-		b, _ := json.Marshal(VersionInfo{
+		b, _ := json.Marshal(VersionInfo{ // nolint: errcheck
 			Version:         version,
 			VulnerabilityDB: dbMeta,
 		})
@@ -345,6 +347,7 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 	}
 }
 
+// NewImageCommand is the factory method to add image command
 func NewImageCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "image",
@@ -356,6 +359,7 @@ func NewImageCommand() *cli.Command {
 	}
 }
 
+// NewFilesystemCommand is the factory method to add filesystem command
 func NewFilesystemCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "filesystem",
@@ -389,6 +393,7 @@ func NewFilesystemCommand() *cli.Command {
 	}
 }
 
+// NewRepositoryCommand is the factory method to add repository command
 func NewRepositoryCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "repository",
@@ -422,6 +427,7 @@ func NewRepositoryCommand() *cli.Command {
 	}
 }
 
+// NewClientCommand is the factory method to add client command
 func NewClientCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "client",
@@ -465,6 +471,7 @@ func NewClientCommand() *cli.Command {
 	}
 }
 
+// NewServerCommand is the factory method to add server command
 func NewServerCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "server",

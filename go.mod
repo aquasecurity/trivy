@@ -33,5 +33,5 @@ require (
 	go.uber.org/zap v1.13.0
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
-	k8s.io/utils v0.0.0-20201005171033-6301aaf42dc7
+	k8s.io/utils v0.0.0-20191114184206-e782cd3c129f
 )

@@ -68,7 +68,7 @@ func TestConvertToRpcPkgs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertToRpcPkgs(tt.args.pkgs)
+			got := ConvertToRPCPkgs(tt.args.pkgs)
 			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
@@ -116,7 +116,7 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertFromRpcPkgs(tt.args.rpcPkgs)
+			got := ConvertFromRPCPkgs(tt.args.rpcPkgs)
 			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
@@ -147,7 +147,7 @@ func TestConvertFromRpcLibraries(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertFromRpcLibraries(tt.args.rpcLibs)
+			got := ConvertFromRPCLibraries(tt.args.rpcLibs)
 			assert.Equal(t, got, tt.want, tt.name)
 		})
 	}
@@ -178,7 +178,7 @@ func TestConvertToRpcLibraries(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertToRpcLibraries(tt.args.libs)
+			got := ConvertToRPCLibraries(tt.args.libs)
 			assert.Equal(t, got, tt.want, tt.name)
 		})
 	}
@@ -227,7 +227,7 @@ func TestConvertFromRpcVulns(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertFromRpcVulns(tt.args.rpcVulns)
+			got := ConvertFromRPCVulns(tt.args.rpcVulns)
 			assert.Equal(t, got, tt.want, tt.name)
 		})
 	}

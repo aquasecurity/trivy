@@ -4,18 +4,16 @@ import (
 	"strings"
 	"time"
 
-	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
 	version "github.com/knqyf263/go-rpm-version"
-
 	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
-
-	"k8s.io/utils/clock"
 )
 
 var (
@@ -32,11 +30,13 @@ var (
 	}
 )
 
+// Scanner implements oracle vulnerability scanner
 type Scanner struct {
 	vs    dbTypes.VulnSrc
 	clock clock.Clock
 }
 
+// NewScanner is the factory method to return oracle vulnerabilities
 func NewScanner() *Scanner {
 	return &Scanner{
 		vs:    oracleoval.NewVulnSrc(),
@@ -44,6 +44,7 @@ func NewScanner() *Scanner {
 	}
 }
 
+// Detect scans and return vulnerability in Oracle scanner
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Oracle Linux vulnerabilities...")
 
@@ -81,6 +82,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
+// IsSupportedVersion checks is OSFamily can be scanned with Oracle scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]

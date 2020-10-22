@@ -18,6 +18,7 @@ var (
 	preReleaseSplitter = regexp.MustCompile(`(?P<Number>^[0-9]+)(?P<PreRelease>[a-z]*.*)`)
 )
 
+// MatchVersions runs comparison on currentVersion based on rangeVersions and return true/false
 func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool {
 	for _, v := range rangeVersions {
 		v = replacer.Replace(v)
@@ -55,14 +56,17 @@ func MatchVersions(currentVersion *semver.Version, rangeVersions []string) bool 
 	return false
 }
 
+// FormatVersion formats the package version based on epoch, version & release
 func FormatVersion(pkg types.Package) string {
 	return formatVersion(pkg.Epoch, pkg.Version, pkg.Release)
 }
 
+// FormatSrcVersion formats the package version based on source epoch, version & release
 func FormatSrcVersion(pkg types.Package) string {
 	return formatVersion(pkg.SrcEpoch, pkg.SrcVersion, pkg.SrcRelease)
 }
 
+// FormatPatchVersion returns the semver compatible version string given non-semver version
 func FormatPatchVersion(version string) string {
 	part := strings.Split(version, ".")
 	if len(part) > 3 {

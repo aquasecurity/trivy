@@ -16,28 +16,35 @@ import (
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
+// SuperSet binds the dependencies for RPC client
 var SuperSet = wire.NewSet(
 	NewProtobufClient,
 	NewScanner,
 )
 
+// RemoteURL for RPC remote host
 type RemoteURL string
 
+// NewProtobufClient is the factory method to return RPC scanner
 func NewProtobufClient(remoteURL RemoteURL) rpc.Scanner {
 	return rpc.NewScannerProtobufClient(string(remoteURL), &http.Client{})
 }
 
+// CustomHeaders for holding HTTP headers
 type CustomHeaders http.Header
 
+// Scanner implements the RPC scanner
 type Scanner struct {
 	customHeaders CustomHeaders
 	client        rpc.Scanner
 }
 
+// NewScanner is the factory method to return RPC Scanner
 func NewScanner(customHeaders CustomHeaders, s rpc.Scanner) Scanner {
 	return Scanner{customHeaders: customHeaders, client: s}
 }
 
+// Scan scans the image
 func (s Scanner) Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (report.Results, *ftypes.OS, bool, error) {
 	ctx := WithCustomHeaders(context.Background(), http.Header(s.customHeaders))
 
@@ -58,5 +65,5 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 		return nil, nil, false, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
-	return r.ConvertFromRpcResults(res.Results), r.ConvertFromRpcOS(res.Os), res.Eosl, nil
+	return r.ConvertFromRPCResults(res.Results), r.ConvertFromRPCOS(res.Os), res.Eosl, nil
 }

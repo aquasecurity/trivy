@@ -14,16 +14,19 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 )
 
+// Advisory encapsulates composer.VulnSrc
 type Advisory struct {
 	vs composerSrc.VulnSrc
 }
 
+// NewAdvisory is the factory method of Advisory
 func NewAdvisory() *Advisory {
 	return &Advisory{
 		vs: composerSrc.NewVulnSrc(),
 	}
 }
 
+// DetectVulnerabilities returns the vulnerabilities in a package
 func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	ref := fmt.Sprintf("composer://%s", pkgName)
 	advisories, err := s.vs.Get(ref)

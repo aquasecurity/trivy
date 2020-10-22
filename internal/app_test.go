@@ -109,3 +109,12 @@ Vulnerability DB:
 		})
 	}
 }
+
+func TestNewCommands(t *testing.T) {
+	NewApp("test")
+	NewClientCommand()
+	NewFilesystemCommand()
+	NewImageCommand()
+	NewRepositoryCommand()
+	NewServerCommand()
+}

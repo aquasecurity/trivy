@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
+// Run runs the scan
 func Run(cliCtx *cli.Context) error {
 	c, err := config.New(cliCtx)
 	if err != nil {
@@ -25,6 +26,8 @@ func Run(cliCtx *cli.Context) error {
 	return run(c)
 }
 
+// nolint: gocyclo
+// TODO: refactror and fix cyclometic complexity
 func run(c config.Config) (err error) {
 	if err = log.InitLogger(c.Debug, c.Quiet); err != nil {
 		return xerrors.Errorf("failed to initialize a logger: %w", err)

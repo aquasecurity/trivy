@@ -11,20 +11,24 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// VulnSrc defines the operation on bundler vulnerability
 type VulnSrc interface {
 	Get(pkgName string) ([]bundlerSrc.Advisory, error)
 }
 
+// Advisory implements the bundler VulnSrc
 type Advisory struct {
 	vs VulnSrc
 }
 
+// NewAdvisory is the factory method to return bundler.Advisory
 func NewAdvisory() *Advisory {
 	return &Advisory{
 		vs: bundlerSrc.NewVulnSrc(),
 	}
 }
 
+// DetectVulnerabilities scans and returns Vulnerability in bundler
 func (a *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	advisories, err := a.vs.Get(pkgName)
 	if err != nil {

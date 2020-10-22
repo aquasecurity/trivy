@@ -3,25 +3,27 @@ package python
 import (
 	"strings"
 
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/python"
-	"github.com/aquasecurity/trivy/pkg/types"
-
+	"github.com/Masterminds/semver/v3"
 	"golang.org/x/xerrors"
 
-	"github.com/Masterminds/semver/v3"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/python"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// Advisory encapsulates the python vulnerability scanner
 type Advisory struct {
 	vs python.VulnSrc
 }
 
+// NewAdvisory is the factory method to reutrn Python Advisory
 func NewAdvisory() *Advisory {
 	return &Advisory{
 		vs: python.NewVulnSrc(),
 	}
 }
 
+// DetectVulnerabilities scans and returns pythin vulnerabilities
 func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
 	advisories, err := s.vs.Get(pkgName)
 	if err != nil {

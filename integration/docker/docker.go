@@ -15,12 +15,14 @@ import (
 	"github.com/docker/docker/api/types"
 )
 
+// RegistryConfig holds the config for docker registry
 type RegistryConfig struct {
 	URL      *url.URL
 	Username string
 	Password string
 }
 
+// GetAuthConfig returns the docker registry authConfig
 func (c RegistryConfig) GetAuthConfig() types.AuthConfig {
 	return types.AuthConfig{
 		Username:      c.Username,
@@ -29,6 +31,7 @@ func (c RegistryConfig) GetAuthConfig() types.AuthConfig {
 	}
 }
 
+// GetRegistryAuth returns the json encoded docker registry auth
 func (c RegistryConfig) GetRegistryAuth() (string, error) {
 	authConfig := types.AuthConfig{
 		Username: c.Username,
@@ -41,10 +44,12 @@ func (c RegistryConfig) GetRegistryAuth() (string, error) {
 	return base64.URLEncoding.EncodeToString(encodedJSON), nil
 }
 
+// Docker returns docker client
 type Docker struct {
 	cli *client.Client
 }
 
+// New is the factory method to return docker client
 func New() (Docker, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -73,7 +78,7 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 	if err != nil {
 		return err
 	}
-	if _, err := io.Copy(ioutil.Discard, resp.Body); err != nil {
+	if _, err = io.Copy(ioutil.Discard, resp.Body); err != nil {
 		return err
 	}
 	defer resp.Body.Close()

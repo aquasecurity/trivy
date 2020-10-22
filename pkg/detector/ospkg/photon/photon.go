@@ -1,31 +1,30 @@
 package photon
 
 import (
-	"time"
-
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/photon"
 	version "github.com/knqyf263/go-rpm-version"
-
 	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/photon"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
-
-	"k8s.io/utils/clock"
 )
 
-var (
-	eolDates = map[string]time.Time{}
-)
+// EOL can't be found for photon https://github.com/vmware/photon/issues/1031
+//var (
+//	eolDates = map[string]time.Time{}
+//)
 
+// Scanner implements Photon scanner
 type Scanner struct {
 	vs    dbTypes.VulnSrc
 	clock clock.Clock
 }
 
+// NewScanner is the factory method for Scanner
 func NewScanner() *Scanner {
 	return &Scanner{
 		vs:    photon.NewVulnSrc(),
@@ -33,6 +32,7 @@ func NewScanner() *Scanner {
 	}
 }
 
+// Detect scans and returns vulnerabilities using photon scanner
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Photon Linux vulnerabilities...")
 	log.Logger.Debugf("Photon Linux: os version: %s", osVer)
@@ -64,6 +64,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
+// IsSupportedVersion checks is OSFamily can be scanned
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	return true
 }

@@ -6,6 +6,8 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
+	version "github.com/knqyf263/go-rpm-version"
+
 	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -13,7 +15,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
-	version "github.com/knqyf263/go-rpm-version"
 )
 
 var (
@@ -52,20 +53,24 @@ var (
 	}
 )
 
+// Scanner implements suse scanner
 type Scanner struct {
-	vs     dbTypes.VulnSrc
-	clock  clock.Clock
-	family string
+	vs    dbTypes.VulnSrc
+	clock clock.Clock
 }
 
-type SUSEType int
+// Type to define SUSE type
+type Type int
 
 const (
-	SUSEEnterpriseLinux SUSEType = iota
+	// SUSEEnterpriseLinux is Linux Enterprise version
+	SUSEEnterpriseLinux Type = iota
+	// OpenSUSE for open versions
 	OpenSUSE
 )
 
-func NewScanner(t SUSEType) *Scanner {
+// NewScanner is the factory method for Scanner
+func NewScanner(t Type) *Scanner {
 	switch t {
 	case SUSEEnterpriseLinux:
 		return &Scanner{
@@ -81,6 +86,7 @@ func NewScanner(t SUSEType) *Scanner {
 	return nil
 }
 
+// Detect scans and returns the vulnerabilities
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting SUSE vulnerabilities...")
 	log.Logger.Debugf("SUSE: os version: %s", osVer)
@@ -112,6 +118,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
+// IsSupportedVersion checks if OSFamily can be scanned using SUSE scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	var eolDate time.Time
 	var ok bool

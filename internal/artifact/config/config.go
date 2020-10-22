@@ -7,6 +7,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/config"
 )
 
+// Config holds the artifact config
 type Config struct {
 	config.GlobalConfig
 	config.ArtifactConfig
@@ -22,6 +23,7 @@ type Config struct {
 	autoRefresh bool
 }
 
+// New is the factory method to return config
 func New(c *cli.Context) (Config, error) {
 	gc, err := config.NewGlobalConfig(c)
 	if err != nil {
@@ -41,6 +43,7 @@ func New(c *cli.Context) (Config, error) {
 	}, nil
 }
 
+// Init initializes the artifact config
 func (c *Config) Init(image bool) error {
 	if err := c.ReportConfig.Init(c.Logger); err != nil {
 		return err
@@ -53,7 +56,7 @@ func (c *Config) Init(image bool) error {
 	}
 
 	// --clear-cache, --download-db-only and --reset don't conduct the scan
-	if c.ClearCache || c.DownloadDBOnly || c.Reset {
+	if c.skipScan() {
 		return nil
 	}
 
@@ -68,4 +71,11 @@ func (c *Config) Init(image bool) error {
 	}
 
 	return nil
+}
+
+func (c *Config) skipScan() bool {
+	if c.ClearCache || c.DownloadDBOnly || c.Reset {
+		return true
+	}
+	return false
 }
