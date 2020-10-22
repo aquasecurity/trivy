@@ -7,7 +7,6 @@ RUN go mod download
 ADD . /app/
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$(git describe --tags --abbrev=0)" -a -o /trivy cmd/trivy/main.go
 
-
 # LAYER compress — — — — — — — — — — — — — — — — — — — — — — —
 FROM alpine:3.12 AS compress
 COPY --from=builder /trivy /usr/local/bin/trivy
@@ -18,7 +17,6 @@ RUN set -eux && apk --update --no-cache add \
 # unit test
     upx -t /usr/local/bin/trivy && \
     trivy --version
-
 
 # LAYER final — — — — — — — — — — — — — — — — — — — — — — — —
 FROM alpine:3.12 AS final
@@ -41,6 +39,8 @@ LABEL org.opencontainers.image.authors="Author"                                 
       org.example.image.user="root"                                                     \
       org.example.image.alpineversion="3.12"                                            \
       org.example.image.schemaversion="1.0"
+
+COPY contrib/gitlab.tpl contrib/gitlab.tpl
 
 ENTRYPOINT [ "trivy" ]
 CMD [ "--help" ]
