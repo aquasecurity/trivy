@@ -59,7 +59,7 @@
           "type": "cve",
           "name": "{{ .VulnerabilityID }}",
           "value": "{{ .VulnerabilityID }}",
-          "url": ""
+          "url": "https://avd.aquasec.com/nvd/{{.VulnerabilityID | toLower}}"
         }
       ],
       "links": [
