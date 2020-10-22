@@ -5,7 +5,7 @@ UBUNTU_RELEASES=$(ubuntu-distro-info --supported)
 
 cd trivy-repo/deb
 
-for release in $(reprepro ls trivy | awk -F "|" '{print $3}' | sed 's/ //g'); do
+for release in ${DEBIAN_RELEASES[@]} ${UBUNTU_RELEASES[@]}; do
   echo "Removing deb package of $release"
   reprepro -A i386 remove $release trivy
   reprepro -A amd64 remove $release trivy
