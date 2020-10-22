@@ -54,9 +54,9 @@ message Vulnerability {
   Layer                     layer              = 10;
   string                    severity_source    = 11;
   map<string, CVSS>         cvss               = 12;
-  google.protobuf.Timestamp published_date     = 13;
-  google.protobuf.Timestamp last_modified_date = 14;
-  repeated string           cwe_ids            = 15;
+  repeated string           cwe_ids            = 13;
+  google.protobuf.Timestamp published_date     = 14;
+  google.protobuf.Timestamp last_modified_date = 15;
 }
 
 message Layer {
