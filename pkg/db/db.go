@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/google/wire"
 	"github.com/spf13/afero"
@@ -117,10 +118,15 @@ func (c Client) NeedsUpdate(cliVersion string, light, skip bool) (bool, error) {
 
 	}
 
-	if db.SchemaVersion == metadata.Version && metadata.Type == dbType &&
-		c.clock.Now().Before(metadata.NextUpdate) {
-		log.Logger.Debug("DB update was skipped because DB is the latest")
-		return false, nil
+	if db.SchemaVersion == metadata.Version && metadata.Type == dbType {
+		if c.clock.Now().Before(metadata.NextUpdate) {
+			log.Logger.Debug("DB update was skipped because DB is the latest")
+			return false, nil
+		}
+		if c.clock.Now().Before(metadata.DownloadedAt.Add(time.Hour)) {
+			log.Logger.Debug("DB update was skipped because DB was downloaded during the last hour")
+			return false, nil
+		}
 	}
 	return true, nil
 }
@@ -202,6 +208,7 @@ func (c Client) UpdateMetadata(cacheDir string) error {
 		return xerrors.Errorf("unable to get metadata: %w", err)
 	}
 
+	metadata.DownloadedAt = c.clock.Now()
 	if err = c.dbc.StoreMetadata(metadata, filepath.Join(cacheDir, "db")); err != nil {
 		return xerrors.Errorf("failed to store metadata: %w", err)
 	}

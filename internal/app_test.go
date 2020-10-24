@@ -42,6 +42,7 @@ Vulnerability DB:
   Version: 42
   UpdatedAt: 2020-03-16 23:40:20 +0000 UTC
   NextUpdate: 2020-03-16 23:57:00 +0000 UTC
+  DownloadedAt: 2020-03-16 23:40:20 +0000 UTC
 `,
 			createDB: true,
 		},
@@ -51,7 +52,7 @@ Vulnerability DB:
 				outputFormat: "json",
 				version:      "1.2.3",
 			},
-			expectedOutput: `{"Version":"1.2.3","VulnerabilityDB":{"Version":42,"Type":1,"NextUpdate":"2020-03-16T23:57:00Z","UpdatedAt":"2020-03-16T23:40:20Z"}}
+			expectedOutput: `{"Version":"1.2.3","VulnerabilityDB":{"Version":42,"Type":1,"NextUpdate":"2020-03-16T23:57:00Z","UpdatedAt":"2020-03-16T23:40:20Z","DownloadedAt":"2020-03-16T23:40:20Z"}}
 `,
 			createDB: true,
 		},
@@ -93,10 +94,11 @@ Vulnerability DB:
 				metadataFile := filepath.Join(cacheDir, "db", "metadata.json")
 
 				b, err := json.Marshal(db.Metadata{
-					Version:    42,
-					Type:       1,
-					NextUpdate: time.Unix(1584403020, 0),
-					UpdatedAt:  time.Unix(1584402020, 0),
+					Version:      42,
+					Type:         1,
+					NextUpdate:   time.Unix(1584403020, 0),
+					UpdatedAt:    time.Unix(1584402020, 0),
+					DownloadedAt: time.Unix(1584402020, 0),
 				})
 				require.NoError(t, err)
 				err = afero.WriteFile(fs, metadataFile, b, 0600)
