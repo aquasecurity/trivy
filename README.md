@@ -258,6 +258,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 </details>
 
 ### Docker
+#### Docker Hub
 
 Replace [YOUR_CACHE_DIR] with the cache directory on your machine.
 
@@ -300,6 +301,14 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 ```
 
 </details>
+
+#### GitHub Container Registry
+The same image is hosted on GitHub Container Registry as well.  
+https://github.com/orgs/aquasecurity/packages/container/package/trivy
+
+```
+$ docker pull ghcr.io/aquasecurity/trivy:latest
+```
 
 ## Filesystem
 Scan a filesystem (such as a host machine, a virtual machine image, or an unpacked container image filesystem).
