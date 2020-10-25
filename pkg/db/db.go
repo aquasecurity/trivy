@@ -118,15 +118,13 @@ func (c Client) NeedsUpdate(cliVersion string, light, skip bool) (bool, error) {
 
 	}
 
-	if db.SchemaVersion == metadata.Version && metadata.Type == dbType {
-		if c.clock.Now().Before(metadata.NextUpdate) {
-			log.Logger.Debug("DB update was skipped because DB is the latest")
-			return false, nil
-		}
-		if c.clock.Now().Before(metadata.DownloadedAt.Add(time.Hour)) {
-			log.Logger.Debug("DB update was skipped because DB was downloaded during the last hour")
-			return false, nil
-		}
+	if c.isLatestDB(dbType, metadata) {
+		log.Logger.Debug("DB update was skipped because DB is the latest")
+		return false, nil
+	}
+	if c.isNewDB(dbType, metadata) {
+		log.Logger.Debug("DB update was skipped because DB was downloaded during the last hour")
+		return false, nil
 	}
 	return true, nil
 }
@@ -144,6 +142,14 @@ func (c Client) validate(dbType db.Type, metadata db.Metadata) error {
 		return xerrors.New("--skip-update cannot be specified with the different schema DB")
 	}
 	return nil
+}
+
+func (c Client) isLatestDB(dbType db.Type, metadata db.Metadata) bool {
+	return db.SchemaVersion == metadata.Version && metadata.Type == dbType && c.clock.Now().Before(metadata.NextUpdate)
+}
+
+func (c Client) isNewDB(dbType db.Type, metadata db.Metadata) bool {
+	return db.SchemaVersion == metadata.Version && metadata.Type == dbType && c.clock.Now().Before(metadata.DownloadedAt.Add(time.Hour))
 }
 
 // Download downloads the DB file
