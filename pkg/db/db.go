@@ -214,7 +214,7 @@ func (c Client) UpdateMetadata(cacheDir string) error {
 		return xerrors.Errorf("unable to get metadata: %w", err)
 	}
 
-	metadata.DownloadedAt = c.clock.Now()
+	metadata.DownloadedAt = c.clock.Now().UTC()
 	if err = c.dbc.StoreMetadata(metadata, filepath.Join(cacheDir, "db")); err != nil {
 		return xerrors.Errorf("failed to store metadata: %w", err)
 	}
