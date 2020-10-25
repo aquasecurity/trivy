@@ -134,7 +134,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			expectedError: xerrors.New("--skip-update cannot be specified with the old DB"),
 		},
 		{
-			name:  "happly with old DownloadedAt",
+			name:  "happy with old DownloadedAt",
 			light: false,
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
 			metadata: db.Metadata{
