@@ -72,6 +72,7 @@ get_binaries() {
     freebsd/armv7) BINARIES="trivy" ;;
     linux/386) BINARIES="trivy" ;;
     linux/amd64) BINARIES="trivy" ;;
+    linux/ppc64le) BINARIES="trivy" ;;
     linux/arm64) BINARIES="trivy" ;;
     linux/armv7) BINARIES="trivy" ;;
     openbsd/386) BINARIES="trivy" ;;
@@ -110,6 +111,7 @@ adjust_os() {
     amd64) OS=64bit ;;
     arm) OS=ARM ;;
     arm64) OS=ARM64 ;;
+    ppc64le) OS=PPC64LE ;;
     darwin) OS=macOS ;;
     dragonfly) OS=DragonFlyBSD ;;
     freebsd) OS=FreeBSD ;;
@@ -126,6 +128,7 @@ adjust_arch() {
     amd64) ARCH=64bit ;;
     arm) ARCH=ARM ;;
     arm64) ARCH=ARM64 ;;
+    ppc64le) OS=PPC64LE ;;
     darwin) ARCH=macOS ;;
     dragonfly) ARCH=DragonFlyBSD ;;
     freebsd) ARCH=FreeBSD ;;
@@ -209,6 +212,7 @@ uname_arch() {
     x86) arch="386" ;;
     i686) arch="386" ;;
     i386) arch="386" ;;
+    ppc64le) arch="ppc64le" ;;
     aarch64) arch="arm64" ;;
     armv5*) arch="armv5" ;;
     armv6*) arch="armv6" ;;
