@@ -312,10 +312,11 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 	metadata, _ := tdb.NewMetadata(afero.NewOsFs(), cacheDir).Get() // nolint: errcheck
 	if !metadata.UpdatedAt.IsZero() && !metadata.NextUpdate.IsZero() && metadata.Version != 0 {
 		dbMeta = &db.Metadata{
-			Version:    metadata.Version,
-			Type:       metadata.Type,
-			NextUpdate: metadata.NextUpdate.UTC(),
-			UpdatedAt:  metadata.UpdatedAt.UTC(),
+			Version:      metadata.Version,
+			Type:         metadata.Type,
+			NextUpdate:   metadata.NextUpdate.UTC(),
+			UpdatedAt:    metadata.UpdatedAt.UTC(),
+			DownloadedAt: metadata.DownloadedAt.UTC(),
 		}
 	}
 
@@ -341,7 +342,8 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
   Version: %d
   UpdatedAt: %s
   NextUpdate: %s
-`, dbType, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC())
+  DownloadedAt: %s
+`, dbType, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC(), dbMeta.DownloadedAt.UTC())
 		}
 		fmt.Fprintf(outputWriter, output)
 	}
