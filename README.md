@@ -81,6 +81,10 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
   * [Image](#image-1)
   * [Client](#client-1)
   * [Server](#server-1)
+- [Contributing](#contributing)
+    - [Bugs](#bugs)
+    - [Features](#features)
+    - [Pull Requests](#pull-requests)  
 - [Q&A](#qa)
   * [Homebrew](#homebrew-2)
   * [Others](#others)
@@ -1936,6 +1940,34 @@ $ brew install aquasecurity/trivy/trivy
 ## Binary
 No need to fix.
 
+## Contributing
+
+### Bugs
+
+If you think you have found a bug please follow the instructions below.
+
+- Please spend a small amount of time giving due diligence to the issue tracker. Your issue might be a duplicate.
+- Open a new issue if a duplicate doesn't already exist.
+- Remember users might be searching for your issue in the future, so please give it a meaningful title to help others.
+
+### Features
+
+We also use the GitHub issue tracker to track feature requests. If you have an idea to make kube-bench even more awesome follow the steps below.
+
+- Open a new issue.
+- Remember users might be searching for your issue in the future, so please give it a meaningful title to helps others.
+- Clearly define the use case, using concrete examples.
+- If you would like to include a technical design for your feature please feel free to do so.
+
+### Pull Requests
+
+We welcome pull requests!
+
+- Your PR is more likely to be accepted if it focuses on just one change.
+- Please include a comment with the results before and after your change.
+- Your PR is more likely to be accepted if it includes tests. (We have not historically been very strict about tests, but we would like to improve this!).
+- You're welcome to submit a draft PR if you would like early feedback on an idea or an approach.
+- Happy coding!
 
 # Q&A
 
