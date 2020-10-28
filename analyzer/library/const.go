@@ -5,6 +5,7 @@ const (
 	Cargo    = "cargo"
 	Composer = "composer"
 	Npm      = "npm"
+	NuGet    = "nuget"
 	Pipenv   = "pipenv"
 	Poetry   = "poetry"
 	Yarn     = "yarn"
