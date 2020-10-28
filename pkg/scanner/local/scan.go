@@ -152,7 +152,7 @@ func (s Scanner) scanOSPkg(target, osFamily, osName string, pkgs []ftypes.Packag
 
 func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOptions) (report.Results, error) {
 	if len(apps) == 0 {
-		log.Logger.Warn("Trivy is unable to scan this library because no lock files were detected")
+		log.Logger.Info("Trivy skips scanning programming language libraries because no supported file was detected")
 		return nil, nil
 	}
 	var results report.Results
