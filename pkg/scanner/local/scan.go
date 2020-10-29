@@ -151,6 +151,10 @@ func (s Scanner) scanOSPkg(target, osFamily, osName string, pkgs []ftypes.Packag
 }
 
 func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOptions) (report.Results, error) {
+	if len(apps) == 0 {
+		log.Logger.Info("Trivy skips scanning programming language libraries because no supported file was detected")
+		return nil, nil
+	}
 	var results report.Results
 	for _, app := range apps {
 		vulns, err := s.libDetector.Detect("", app.FilePath, time.Time{}, app.Libraries)
