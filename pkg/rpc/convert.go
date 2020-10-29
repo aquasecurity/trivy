@@ -120,11 +120,11 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 
 		var lastModifiedDate, publishedDate *timestamp.Timestamp
 		if vuln.LastModifiedDate != nil {
-			lastModifiedDate, _ = ptypes.TimestampProto(*vuln.LastModifiedDate)
+			lastModifiedDate, _ = ptypes.TimestampProto(*vuln.LastModifiedDate) // nolint: errcheck
 		}
 
 		if vuln.PublishedDate != nil {
-			publishedDate, _ = ptypes.TimestampProto(*vuln.PublishedDate)
+			publishedDate, _ = ptypes.TimestampProto(*vuln.PublishedDate) // nolint: errcheck
 		}
 
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
@@ -167,8 +167,8 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 				}
 			}
 
-			lastModifiedDate, _ := ptypes.Timestamp(vuln.LastModifiedDate)
-			publishedDate, _ := ptypes.Timestamp(vuln.PublishedDate)
+			lastModifiedDate, _ := ptypes.Timestamp(vuln.LastModifiedDate) // nolint: errcheck
+			publishedDate, _ := ptypes.Timestamp(vuln.PublishedDate)       // nolint: errcheck
 
 			vulns = append(vulns, types.DetectedVulnerability{
 				VulnerabilityID:  vuln.VulnerabilityId,
