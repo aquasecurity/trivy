@@ -106,7 +106,7 @@ See [here](#continuous-integration-ci) for details.
   - See [Quick Start](#quick-start) and [Examples](#examples)
 - Fast
   - The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish in single seconds.
-  - Unlike other scanners that take long to fetch vulnerability information (~10 minutes) on the first run, and encourage you to maintain the a durable vulnerability database, Trivy is stateless and requires no maintenance or preparation.
+  - Unlike other scanners that take long to fetch vulnerability information (~10 minutes) on the first run, and encourage you to maintain a durable vulnerability database, Trivy is stateless and requires no maintenance or preparation.
 - Easy installation
   - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](#installation))
   - **No pre-requisites** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
