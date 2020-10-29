@@ -12,6 +12,8 @@ builds:
     goos:
       - darwin
       - linux
+      - freebsd
+      - openbsd
     goarch:
       - amd64
       - 386
