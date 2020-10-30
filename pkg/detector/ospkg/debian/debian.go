@@ -56,6 +56,7 @@ func NewScanner() *Scanner {
 }
 
 // Detect scans and return vulnerabilities using Debian scanner
+// nolint: gocyclo
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Debian vulnerabilities...")
 
