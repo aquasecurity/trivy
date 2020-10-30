@@ -97,6 +97,16 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/alpine-310.sarif.golden",
 		},
 		{
+			name: "debian buster integration with sarif template",
+			testArgs: args{
+				Format:       "template",
+				TemplatePath: "@../contrib/sarif.tpl",
+				Version:      "dev",
+				Input:        "testdata/fixtures/debian-buster.tar.gz",
+			},
+			golden: "testdata/debian-buster.sarif.json.golden",
+		},
+		{
 			name: "alpine 3.9 integration",
 			testArgs: args{
 				Version: "dev",
@@ -319,6 +329,16 @@ func TestClientServer(t *testing.T) {
 				Input:        "testdata/fixtures/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.asff.golden",
+		},
+		{
+			name: "debian buster integration with ASFF template",
+			testArgs: args{
+				Format:       "template",
+				TemplatePath: "@../contrib/asff.tpl",
+				Version:      "dev",
+				Input:        "testdata/fixtures/debian-buster.tar.gz",
+			},
+			golden: "testdata/debian-buster.asff.json.golden",
 		},
 	}
 

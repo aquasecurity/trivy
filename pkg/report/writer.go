@@ -209,6 +209,12 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 		"getCurrentTime": func() string {
 			return Now().UTC().Format(time.RFC3339Nano)
 		},
+		"filterForCVE": func(input string) string {
+			if !strings.Contains(strings.ToLower(input), "cve") {
+				return ""
+			}
+			return strings.ToLower(fmt.Sprintf("https://avd.aquasec.com/nvd/%s", input))
+		},
 	}).Parse(outputTemplate)
 	if err != nil {
 		return nil, xerrors.Errorf("error parsing template: %w", err)

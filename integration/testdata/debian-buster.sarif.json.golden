@@ -1,0 +1,4175 @@
+{
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.4.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Trivy",
+          "fullName": "Trivy Vulnerability Scanner",
+          "rules": [
+            {
+              "id": "[LOW] CVE-2011-3374",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2011-3374 Package: apt"
+              },
+              "fullDescription": {
+                "text": "."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2011-3374\nSeverity: LOW\nPackage: apt\nInstalled Version: 1.8.2\nFixed Version: \nLink: [CVE-2011-3374](https://avd.aquasec.com/nvd/cve-2011-3374)",
+                "markdown": "**Vulnerability CVE-2011-3374**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|apt|1.8.2||[CVE-2011-3374](https://avd.aquasec.com/nvd/cve-2011-3374)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "apt"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-18276",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-18276 Package: bash"
+              },
+              "fullDescription": {
+                "text": "bash: when effective UID is not equal to its real UID the saved UID is not dropped."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-18276\nSeverity: LOW\nPackage: bash\nInstalled Version: 5.0-4\nFixed Version: \nLink: [CVE-2019-18276](https://avd.aquasec.com/nvd/cve-2019-18276)",
+                "markdown": "**Vulnerability CVE-2019-18276**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|bash|5.0-4||[CVE-2019-18276](https://avd.aquasec.com/nvd/cve-2019-18276)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "bash"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] TEMP-0841856-B18BAF",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "TEMP-0841856-B18BAF Package: bash"
+              },
+              "fullDescription": {
+                "text": "."
+              },
+              "help": {
+                "text": "Vulnerability TEMP-0841856-B18BAF\nSeverity: LOW\nPackage: bash\nInstalled Version: 5.0-4\nFixed Version: \nLink: [TEMP-0841856-B18BAF]()",
+                "markdown": "**Vulnerability TEMP-0841856-B18BAF**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|bash|5.0-4||[TEMP-0841856-B18BAF]()|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "bash"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2016-2781",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2016-2781 Package: coreutils"
+              },
+              "fullDescription": {
+                "text": "coreutils: Non-privileged session can escape to the parent session in chroot."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2016-2781\nSeverity: LOW\nPackage: coreutils\nInstalled Version: 8.30-3\nFixed Version: \nLink: [CVE-2016-2781](https://avd.aquasec.com/nvd/cve-2016-2781)",
+                "markdown": "**Vulnerability CVE-2016-2781**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|coreutils|8.30-3||[CVE-2016-2781](https://avd.aquasec.com/nvd/cve-2016-2781)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "coreutils"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2017-18018",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2017-18018 Package: coreutils"
+              },
+              "fullDescription": {
+                "text": "coreutils: race condition vulnerability in chown and chgrp."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2017-18018\nSeverity: LOW\nPackage: coreutils\nInstalled Version: 8.30-3\nFixed Version: \nLink: [CVE-2017-18018](https://avd.aquasec.com/nvd/cve-2017-18018)",
+                "markdown": "**Vulnerability CVE-2017-18018**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|coreutils|8.30-3||[CVE-2017-18018](https://avd.aquasec.com/nvd/cve-2017-18018)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "coreutils"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-5094",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-5094 Package: e2fsprogs"
+              },
+              "fullDescription": {
+                "text": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-5094\nSeverity: MEDIUM\nPackage: e2fsprogs\nInstalled Version: 1.44.5-1+deb10u1\nFixed Version: 1.44.5-1+deb10u2\nLink: [CVE-2019-5094](https://avd.aquasec.com/nvd/cve-2019-5094)",
+                "markdown": "**Vulnerability CVE-2019-5094**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|e2fsprogs|1.44.5-1+deb10u1|1.44.5-1+deb10u2|[CVE-2019-5094](https://avd.aquasec.com/nvd/cve-2019-5094)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "e2fsprogs"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-5188",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-5188 Package: e2fsprogs"
+              },
+              "fullDescription": {
+                "text": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-5188\nSeverity: MEDIUM\nPackage: e2fsprogs\nInstalled Version: 1.44.5-1+deb10u1\nFixed Version: 1.44.5-1+deb10u3\nLink: [CVE-2019-5188](https://avd.aquasec.com/nvd/cve-2019-5188)",
+                "markdown": "**Vulnerability CVE-2019-5188**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|e2fsprogs|1.44.5-1+deb10u1|1.44.5-1+deb10u3|[CVE-2019-5188](https://avd.aquasec.com/nvd/cve-2019-5188)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "e2fsprogs"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2018-12886",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2018-12886 Package: gcc-8-base"
+              },
+              "fullDescription": {
+                "text": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2018-12886\nSeverity: MEDIUM\nPackage: gcc-8-base\nInstalled Version: 8.3.0-6\nFixed Version: \nLink: [CVE-2018-12886](https://avd.aquasec.com/nvd/cve-2018-12886)",
+                "markdown": "**Vulnerability CVE-2018-12886**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|gcc-8-base|8.3.0-6||[CVE-2018-12886](https://avd.aquasec.com/nvd/cve-2018-12886)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "gcc-8-base"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-15847",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-15847 Package: gcc-8-base"
+              },
+              "fullDescription": {
+                "text": "gcc: POWER9 &#34;DARN&#34; RNG intrinsic produces repeated output."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-15847\nSeverity: MEDIUM\nPackage: gcc-8-base\nInstalled Version: 8.3.0-6\nFixed Version: \nLink: [CVE-2019-15847](https://avd.aquasec.com/nvd/cve-2019-15847)",
+                "markdown": "**Vulnerability CVE-2019-15847**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|gcc-8-base|8.3.0-6||[CVE-2019-15847](https://avd.aquasec.com/nvd/cve-2019-15847)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "gcc-8-base"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-14855",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-14855 Package: gpgv"
+              },
+              "fullDescription": {
+                "text": "gnupg2: OpenPGP Key Certification Forgeries with SHA-1."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-14855\nSeverity: LOW\nPackage: gpgv\nInstalled Version: 2.2.12-1+deb10u1\nFixed Version: \nLink: [CVE-2019-14855](https://avd.aquasec.com/nvd/cve-2019-14855)",
+                "markdown": "**Vulnerability CVE-2019-14855**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|gpgv|2.2.12-1+deb10u1||[CVE-2019-14855](https://avd.aquasec.com/nvd/cve-2019-14855)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "gpgv"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2011-3374",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2011-3374 Package: libapt-pkg5.0"
+              },
+              "fullDescription": {
+                "text": "."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2011-3374\nSeverity: LOW\nPackage: libapt-pkg5.0\nInstalled Version: 1.8.2\nFixed Version: \nLink: [CVE-2011-3374](https://avd.aquasec.com/nvd/cve-2011-3374)",
+                "markdown": "**Vulnerability CVE-2011-3374**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libapt-pkg5.0|1.8.2||[CVE-2011-3374](https://avd.aquasec.com/nvd/cve-2011-3374)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libapt-pkg5.0"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[HIGH] CVE-2020-1752",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2020-1752 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "glibc: use-after-free in glob() function when expanding ~user."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2020-1752\nSeverity: HIGH\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2020-1752](https://avd.aquasec.com/nvd/cve-2020-1752)",
+                "markdown": "**Vulnerability CVE-2020-1752**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|HIGH|libc-bin|2.28-10||[CVE-2020-1752](https://avd.aquasec.com/nvd/cve-2020-1752)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "HIGH",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2020-1751",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2020-1751 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "glibc: array overflow in backtrace on powerpc."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2020-1751\nSeverity: MEDIUM\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2020-1751](https://avd.aquasec.com/nvd/cve-2020-1751)",
+                "markdown": "**Vulnerability CVE-2020-1751**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libc-bin|2.28-10||[CVE-2020-1751](https://avd.aquasec.com/nvd/cve-2020-1751)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2010-4051",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2010-4051 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "CVE-2010-4052 glibc: De-recursivise regular expression engine."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2010-4051\nSeverity: LOW\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2010-4051](https://avd.aquasec.com/nvd/cve-2010-4051)",
+                "markdown": "**Vulnerability CVE-2010-4051**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc-bin|2.28-10||[CVE-2010-4051](https://avd.aquasec.com/nvd/cve-2010-4051)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2010-4052",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2010-4052 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "CVE-2010-4051 CVE-2010-4052 glibc: De-recursivise regular expression engine."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2010-4052\nSeverity: LOW\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2010-4052](https://avd.aquasec.com/nvd/cve-2010-4052)",
+                "markdown": "**Vulnerability CVE-2010-4052**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc-bin|2.28-10||[CVE-2010-4052](https://avd.aquasec.com/nvd/cve-2010-4052)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2010-4756",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2010-4756 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "glibc: glob implementation can cause excessive CPU and memory consumption due to crafted glob expressions."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2010-4756\nSeverity: LOW\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2010-4756](https://avd.aquasec.com/nvd/cve-2010-4756)",
+                "markdown": "**Vulnerability CVE-2010-4756**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc-bin|2.28-10||[CVE-2010-4756](https://avd.aquasec.com/nvd/cve-2010-4756)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2016-10228",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2016-10228 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "glibc: iconv program can hang when invoked with the -c option."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2016-10228\nSeverity: LOW\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2016-10228](https://avd.aquasec.com/nvd/cve-2016-10228)",
+                "markdown": "**Vulnerability CVE-2016-10228**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc-bin|2.28-10||[CVE-2016-10228](https://avd.aquasec.com/nvd/cve-2016-10228)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2018-20796",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2018-20796 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2018-20796\nSeverity: LOW\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2018-20796](https://avd.aquasec.com/nvd/cve-2018-20796)",
+                "markdown": "**Vulnerability CVE-2018-20796**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc-bin|2.28-10||[CVE-2018-20796](https://avd.aquasec.com/nvd/cve-2018-20796)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-1010022",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-1010022 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "glibc: stack guard protection bypass."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-1010022\nSeverity: LOW\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2019-1010022](https://avd.aquasec.com/nvd/cve-2019-1010022)",
+                "markdown": "**Vulnerability CVE-2019-1010022**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc-bin|2.28-10||[CVE-2019-1010022](https://avd.aquasec.com/nvd/cve-2019-1010022)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-1010023",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-1010023 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "glibc: running ldd on malicious ELF leads to code execution because of wrong size computation."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-1010023\nSeverity: LOW\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2019-1010023](https://avd.aquasec.com/nvd/cve-2019-1010023)",
+                "markdown": "**Vulnerability CVE-2019-1010023**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc-bin|2.28-10||[CVE-2019-1010023](https://avd.aquasec.com/nvd/cve-2019-1010023)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-1010024",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-1010024 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "glibc: ASLR bypass using cache of thread stack and heap."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-1010024\nSeverity: LOW\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2019-1010024](https://avd.aquasec.com/nvd/cve-2019-1010024)",
+                "markdown": "**Vulnerability CVE-2019-1010024**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc-bin|2.28-10||[CVE-2019-1010024](https://avd.aquasec.com/nvd/cve-2019-1010024)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-1010025",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-1010025 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "glibc: information disclosure of heap addresses of pthread_created thread."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-1010025\nSeverity: LOW\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2019-1010025](https://avd.aquasec.com/nvd/cve-2019-1010025)",
+                "markdown": "**Vulnerability CVE-2019-1010025**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc-bin|2.28-10||[CVE-2019-1010025](https://avd.aquasec.com/nvd/cve-2019-1010025)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-19126",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-19126 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "glibc: LD_PREFER_MAP_32BIT_EXEC not ignored in setuid binaries."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-19126\nSeverity: LOW\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2019-19126](https://avd.aquasec.com/nvd/cve-2019-19126)",
+                "markdown": "**Vulnerability CVE-2019-19126**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc-bin|2.28-10||[CVE-2019-19126](https://avd.aquasec.com/nvd/cve-2019-19126)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-9192",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-9192 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-9192\nSeverity: LOW\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2019-9192](https://avd.aquasec.com/nvd/cve-2019-9192)",
+                "markdown": "**Vulnerability CVE-2019-9192**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc-bin|2.28-10||[CVE-2019-9192](https://avd.aquasec.com/nvd/cve-2019-9192)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2020-10029",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2020-10029 Package: libc-bin"
+              },
+              "fullDescription": {
+                "text": "glibc: stack corruption from crafted input in cosl, sinl, sincosl, and tanl functions."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2020-10029\nSeverity: LOW\nPackage: libc-bin\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2020-10029](https://avd.aquasec.com/nvd/cve-2020-10029)",
+                "markdown": "**Vulnerability CVE-2020-10029**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc-bin|2.28-10||[CVE-2020-10029](https://avd.aquasec.com/nvd/cve-2020-10029)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[HIGH] CVE-2020-1752",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2020-1752 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "glibc: use-after-free in glob() function when expanding ~user."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2020-1752\nSeverity: HIGH\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2020-1752](https://avd.aquasec.com/nvd/cve-2020-1752)",
+                "markdown": "**Vulnerability CVE-2020-1752**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|HIGH|libc6|2.28-10||[CVE-2020-1752](https://avd.aquasec.com/nvd/cve-2020-1752)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "HIGH",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2020-1751",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2020-1751 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "glibc: array overflow in backtrace on powerpc."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2020-1751\nSeverity: MEDIUM\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2020-1751](https://avd.aquasec.com/nvd/cve-2020-1751)",
+                "markdown": "**Vulnerability CVE-2020-1751**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libc6|2.28-10||[CVE-2020-1751](https://avd.aquasec.com/nvd/cve-2020-1751)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2010-4051",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2010-4051 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "CVE-2010-4052 glibc: De-recursivise regular expression engine."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2010-4051\nSeverity: LOW\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2010-4051](https://avd.aquasec.com/nvd/cve-2010-4051)",
+                "markdown": "**Vulnerability CVE-2010-4051**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc6|2.28-10||[CVE-2010-4051](https://avd.aquasec.com/nvd/cve-2010-4051)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2010-4052",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2010-4052 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "CVE-2010-4051 CVE-2010-4052 glibc: De-recursivise regular expression engine."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2010-4052\nSeverity: LOW\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2010-4052](https://avd.aquasec.com/nvd/cve-2010-4052)",
+                "markdown": "**Vulnerability CVE-2010-4052**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc6|2.28-10||[CVE-2010-4052](https://avd.aquasec.com/nvd/cve-2010-4052)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2010-4756",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2010-4756 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "glibc: glob implementation can cause excessive CPU and memory consumption due to crafted glob expressions."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2010-4756\nSeverity: LOW\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2010-4756](https://avd.aquasec.com/nvd/cve-2010-4756)",
+                "markdown": "**Vulnerability CVE-2010-4756**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc6|2.28-10||[CVE-2010-4756](https://avd.aquasec.com/nvd/cve-2010-4756)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2016-10228",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2016-10228 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "glibc: iconv program can hang when invoked with the -c option."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2016-10228\nSeverity: LOW\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2016-10228](https://avd.aquasec.com/nvd/cve-2016-10228)",
+                "markdown": "**Vulnerability CVE-2016-10228**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc6|2.28-10||[CVE-2016-10228](https://avd.aquasec.com/nvd/cve-2016-10228)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2018-20796",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2018-20796 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2018-20796\nSeverity: LOW\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2018-20796](https://avd.aquasec.com/nvd/cve-2018-20796)",
+                "markdown": "**Vulnerability CVE-2018-20796**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc6|2.28-10||[CVE-2018-20796](https://avd.aquasec.com/nvd/cve-2018-20796)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-1010022",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-1010022 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "glibc: stack guard protection bypass."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-1010022\nSeverity: LOW\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2019-1010022](https://avd.aquasec.com/nvd/cve-2019-1010022)",
+                "markdown": "**Vulnerability CVE-2019-1010022**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc6|2.28-10||[CVE-2019-1010022](https://avd.aquasec.com/nvd/cve-2019-1010022)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-1010023",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-1010023 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "glibc: running ldd on malicious ELF leads to code execution because of wrong size computation."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-1010023\nSeverity: LOW\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2019-1010023](https://avd.aquasec.com/nvd/cve-2019-1010023)",
+                "markdown": "**Vulnerability CVE-2019-1010023**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc6|2.28-10||[CVE-2019-1010023](https://avd.aquasec.com/nvd/cve-2019-1010023)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-1010024",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-1010024 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "glibc: ASLR bypass using cache of thread stack and heap."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-1010024\nSeverity: LOW\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2019-1010024](https://avd.aquasec.com/nvd/cve-2019-1010024)",
+                "markdown": "**Vulnerability CVE-2019-1010024**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc6|2.28-10||[CVE-2019-1010024](https://avd.aquasec.com/nvd/cve-2019-1010024)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-1010025",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-1010025 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "glibc: information disclosure of heap addresses of pthread_created thread."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-1010025\nSeverity: LOW\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2019-1010025](https://avd.aquasec.com/nvd/cve-2019-1010025)",
+                "markdown": "**Vulnerability CVE-2019-1010025**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc6|2.28-10||[CVE-2019-1010025](https://avd.aquasec.com/nvd/cve-2019-1010025)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-19126",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-19126 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "glibc: LD_PREFER_MAP_32BIT_EXEC not ignored in setuid binaries."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-19126\nSeverity: LOW\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2019-19126](https://avd.aquasec.com/nvd/cve-2019-19126)",
+                "markdown": "**Vulnerability CVE-2019-19126**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc6|2.28-10||[CVE-2019-19126](https://avd.aquasec.com/nvd/cve-2019-19126)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-9192",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-9192 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-9192\nSeverity: LOW\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2019-9192](https://avd.aquasec.com/nvd/cve-2019-9192)",
+                "markdown": "**Vulnerability CVE-2019-9192**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc6|2.28-10||[CVE-2019-9192](https://avd.aquasec.com/nvd/cve-2019-9192)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2020-10029",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2020-10029 Package: libc6"
+              },
+              "fullDescription": {
+                "text": "glibc: stack corruption from crafted input in cosl, sinl, sincosl, and tanl functions."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2020-10029\nSeverity: LOW\nPackage: libc6\nInstalled Version: 2.28-10\nFixed Version: \nLink: [CVE-2020-10029](https://avd.aquasec.com/nvd/cve-2020-10029)",
+                "markdown": "**Vulnerability CVE-2020-10029**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libc6|2.28-10||[CVE-2020-10029](https://avd.aquasec.com/nvd/cve-2020-10029)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libc6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-5094",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-5094 Package: libcom-err2"
+              },
+              "fullDescription": {
+                "text": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-5094\nSeverity: MEDIUM\nPackage: libcom-err2\nInstalled Version: 1.44.5-1+deb10u1\nFixed Version: 1.44.5-1+deb10u2\nLink: [CVE-2019-5094](https://avd.aquasec.com/nvd/cve-2019-5094)",
+                "markdown": "**Vulnerability CVE-2019-5094**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcom-err2|1.44.5-1+deb10u1|1.44.5-1+deb10u2|[CVE-2019-5094](https://avd.aquasec.com/nvd/cve-2019-5094)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libcom-err2"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-5188",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-5188 Package: libcom-err2"
+              },
+              "fullDescription": {
+                "text": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-5188\nSeverity: MEDIUM\nPackage: libcom-err2\nInstalled Version: 1.44.5-1+deb10u1\nFixed Version: 1.44.5-1+deb10u3\nLink: [CVE-2019-5188](https://avd.aquasec.com/nvd/cve-2019-5188)",
+                "markdown": "**Vulnerability CVE-2019-5188**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcom-err2|1.44.5-1+deb10u1|1.44.5-1+deb10u3|[CVE-2019-5188](https://avd.aquasec.com/nvd/cve-2019-5188)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libcom-err2"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-5094",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-5094 Package: libext2fs2"
+              },
+              "fullDescription": {
+                "text": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-5094\nSeverity: MEDIUM\nPackage: libext2fs2\nInstalled Version: 1.44.5-1+deb10u1\nFixed Version: 1.44.5-1+deb10u2\nLink: [CVE-2019-5094](https://avd.aquasec.com/nvd/cve-2019-5094)",
+                "markdown": "**Vulnerability CVE-2019-5094**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libext2fs2|1.44.5-1+deb10u1|1.44.5-1+deb10u2|[CVE-2019-5094](https://avd.aquasec.com/nvd/cve-2019-5094)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libext2fs2"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-5188",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-5188 Package: libext2fs2"
+              },
+              "fullDescription": {
+                "text": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-5188\nSeverity: MEDIUM\nPackage: libext2fs2\nInstalled Version: 1.44.5-1+deb10u1\nFixed Version: 1.44.5-1+deb10u3\nLink: [CVE-2019-5188](https://avd.aquasec.com/nvd/cve-2019-5188)",
+                "markdown": "**Vulnerability CVE-2019-5188**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libext2fs2|1.44.5-1+deb10u1|1.44.5-1+deb10u3|[CVE-2019-5188](https://avd.aquasec.com/nvd/cve-2019-5188)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libext2fs2"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2018-12886",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2018-12886 Package: libgcc1"
+              },
+              "fullDescription": {
+                "text": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2018-12886\nSeverity: MEDIUM\nPackage: libgcc1\nInstalled Version: 8.3.0-6\nFixed Version: \nLink: [CVE-2018-12886](https://avd.aquasec.com/nvd/cve-2018-12886)",
+                "markdown": "**Vulnerability CVE-2018-12886**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libgcc1|8.3.0-6||[CVE-2018-12886](https://avd.aquasec.com/nvd/cve-2018-12886)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libgcc1"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-15847",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-15847 Package: libgcc1"
+              },
+              "fullDescription": {
+                "text": "gcc: POWER9 &#34;DARN&#34; RNG intrinsic produces repeated output."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-15847\nSeverity: MEDIUM\nPackage: libgcc1\nInstalled Version: 8.3.0-6\nFixed Version: \nLink: [CVE-2019-15847](https://avd.aquasec.com/nvd/cve-2019-15847)",
+                "markdown": "**Vulnerability CVE-2019-15847**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libgcc1|8.3.0-6||[CVE-2019-15847](https://avd.aquasec.com/nvd/cve-2019-15847)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libgcc1"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-12904",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-12904 Package: libgcrypt20"
+              },
+              "fullDescription": {
+                "text": "Libgcrypt: physical addresses being available to other processes leads to a flush-and-reload side-channel attack."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-12904\nSeverity: MEDIUM\nPackage: libgcrypt20\nInstalled Version: 1.8.4-5\nFixed Version: \nLink: [CVE-2019-12904](https://avd.aquasec.com/nvd/cve-2019-12904)",
+                "markdown": "**Vulnerability CVE-2019-12904**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libgcrypt20|1.8.4-5||[CVE-2019-12904](https://avd.aquasec.com/nvd/cve-2019-12904)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libgcrypt20"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-13627",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-13627 Package: libgcrypt20"
+              },
+              "fullDescription": {
+                "text": "libgcrypt: ECDSA timing attack in the libgcrypt20 cryptographic library."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-13627\nSeverity: MEDIUM\nPackage: libgcrypt20\nInstalled Version: 1.8.4-5\nFixed Version: \nLink: [CVE-2019-13627](https://avd.aquasec.com/nvd/cve-2019-13627)",
+                "markdown": "**Vulnerability CVE-2019-13627**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libgcrypt20|1.8.4-5||[CVE-2019-13627](https://avd.aquasec.com/nvd/cve-2019-13627)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libgcrypt20"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2018-6829",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2018-6829 Package: libgcrypt20"
+              },
+              "fullDescription": {
+                "text": "libgcrypt: ElGamal implementation doesn&#39;t have semantic security due to incorrectly encoded plaintexts possibly allowing to obtain sensitive information."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2018-6829\nSeverity: LOW\nPackage: libgcrypt20\nInstalled Version: 1.8.4-5\nFixed Version: \nLink: [CVE-2018-6829](https://avd.aquasec.com/nvd/cve-2018-6829)",
+                "markdown": "**Vulnerability CVE-2018-6829**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libgcrypt20|1.8.4-5||[CVE-2018-6829](https://avd.aquasec.com/nvd/cve-2018-6829)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libgcrypt20"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2011-3389",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2011-3389 Package: libgnutls30"
+              },
+              "fullDescription": {
+                "text": "HTTPS: block-wise chosen-plaintext attack against SSL/TLS (BEAST)."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2011-3389\nSeverity: LOW\nPackage: libgnutls30\nInstalled Version: 3.6.7-4\nFixed Version: \nLink: [CVE-2011-3389](https://avd.aquasec.com/nvd/cve-2011-3389)",
+                "markdown": "**Vulnerability CVE-2011-3389**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libgnutls30|3.6.7-4||[CVE-2011-3389](https://avd.aquasec.com/nvd/cve-2011-3389)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libgnutls30"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[HIGH] CVE-2019-18224",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-18224 Package: libidn2-0"
+              },
+              "fullDescription": {
+                "text": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-18224\nSeverity: HIGH\nPackage: libidn2-0\nInstalled Version: 2.0.5-1\nFixed Version: 2.0.5-1+deb10u1\nLink: [CVE-2019-18224](https://avd.aquasec.com/nvd/cve-2019-18224)",
+                "markdown": "**Vulnerability CVE-2019-18224**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|HIGH|libidn2-0|2.0.5-1|2.0.5-1+deb10u1|[CVE-2019-18224](https://avd.aquasec.com/nvd/cve-2019-18224)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "HIGH",
+                  "libidn2-0"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-12290",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-12290 Package: libidn2-0"
+              },
+              "fullDescription": {
+                "text": "."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-12290\nSeverity: MEDIUM\nPackage: libidn2-0\nInstalled Version: 2.0.5-1\nFixed Version: \nLink: [CVE-2019-12290](https://avd.aquasec.com/nvd/cve-2019-12290)",
+                "markdown": "**Vulnerability CVE-2019-12290**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libidn2-0|2.0.5-1||[CVE-2019-12290](https://avd.aquasec.com/nvd/cve-2019-12290)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libidn2-0"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-17543",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-17543 Package: liblz4-1"
+              },
+              "fullDescription": {
+                "text": "lz4: heap-based buffer overflow in LZ4_write32."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-17543\nSeverity: LOW\nPackage: liblz4-1\nInstalled Version: 1.8.3-1\nFixed Version: \nLink: [CVE-2019-17543](https://avd.aquasec.com/nvd/cve-2019-17543)",
+                "markdown": "**Vulnerability CVE-2019-17543**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|liblz4-1|1.8.3-1||[CVE-2019-17543](https://avd.aquasec.com/nvd/cve-2019-17543)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "liblz4-1"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-17594",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-17594 Package: libncursesw6"
+              },
+              "fullDescription": {
+                "text": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-17594\nSeverity: LOW\nPackage: libncursesw6\nInstalled Version: 6.1+20181013-2+deb10u1\nFixed Version: 6.1+20181013-2+deb10u2\nLink: [CVE-2019-17594](https://avd.aquasec.com/nvd/cve-2019-17594)",
+                "markdown": "**Vulnerability CVE-2019-17594**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libncursesw6|6.1+20181013-2+deb10u1|6.1+20181013-2+deb10u2|[CVE-2019-17594](https://avd.aquasec.com/nvd/cve-2019-17594)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libncursesw6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-17595",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-17595 Package: libncursesw6"
+              },
+              "fullDescription": {
+                "text": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-17595\nSeverity: LOW\nPackage: libncursesw6\nInstalled Version: 6.1+20181013-2+deb10u1\nFixed Version: 6.1+20181013-2+deb10u2\nLink: [CVE-2019-17595](https://avd.aquasec.com/nvd/cve-2019-17595)",
+                "markdown": "**Vulnerability CVE-2019-17595**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libncursesw6|6.1+20181013-2+deb10u1|6.1+20181013-2+deb10u2|[CVE-2019-17595](https://avd.aquasec.com/nvd/cve-2019-17595)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libncursesw6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2017-11164",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2017-11164 Package: libpcre3"
+              },
+              "fullDescription": {
+                "text": "pcre: OP_KETRMAX feature in the match function in pcre_exec.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2017-11164\nSeverity: LOW\nPackage: libpcre3\nInstalled Version: 2:8.39-12\nFixed Version: \nLink: [CVE-2017-11164](https://avd.aquasec.com/nvd/cve-2017-11164)",
+                "markdown": "**Vulnerability CVE-2017-11164**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libpcre3|2:8.39-12||[CVE-2017-11164](https://avd.aquasec.com/nvd/cve-2017-11164)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libpcre3"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2017-16231",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2017-16231 Package: libpcre3"
+              },
+              "fullDescription": {
+                "text": "pcre: self-recursive call in match() in pcre_exec.c leads to denial of service."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2017-16231\nSeverity: LOW\nPackage: libpcre3\nInstalled Version: 2:8.39-12\nFixed Version: \nLink: [CVE-2017-16231](https://avd.aquasec.com/nvd/cve-2017-16231)",
+                "markdown": "**Vulnerability CVE-2017-16231**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libpcre3|2:8.39-12||[CVE-2017-16231](https://avd.aquasec.com/nvd/cve-2017-16231)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libpcre3"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2017-7245",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2017-7245 Package: libpcre3"
+              },
+              "fullDescription": {
+                "text": "pcre: stack-based buffer overflow write in pcre32_copy_substring."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2017-7245\nSeverity: LOW\nPackage: libpcre3\nInstalled Version: 2:8.39-12\nFixed Version: \nLink: [CVE-2017-7245](https://avd.aquasec.com/nvd/cve-2017-7245)",
+                "markdown": "**Vulnerability CVE-2017-7245**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libpcre3|2:8.39-12||[CVE-2017-7245](https://avd.aquasec.com/nvd/cve-2017-7245)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libpcre3"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2017-7246",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2017-7246 Package: libpcre3"
+              },
+              "fullDescription": {
+                "text": "pcre: stack-based buffer overflow write in pcre32_copy_substring."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2017-7246\nSeverity: LOW\nPackage: libpcre3\nInstalled Version: 2:8.39-12\nFixed Version: \nLink: [CVE-2017-7246](https://avd.aquasec.com/nvd/cve-2017-7246)",
+                "markdown": "**Vulnerability CVE-2017-7246**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libpcre3|2:8.39-12||[CVE-2017-7246](https://avd.aquasec.com/nvd/cve-2017-7246)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libpcre3"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-9893",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-9893 Package: libseccomp2"
+              },
+              "fullDescription": {
+                "text": "libseccomp: incorrect generation of syscall filters in libseccomp."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-9893\nSeverity: LOW\nPackage: libseccomp2\nInstalled Version: 2.3.3-4\nFixed Version: \nLink: [CVE-2019-9893](https://avd.aquasec.com/nvd/cve-2019-9893)",
+                "markdown": "**Vulnerability CVE-2019-9893**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libseccomp2|2.3.3-4||[CVE-2019-9893](https://avd.aquasec.com/nvd/cve-2019-9893)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libseccomp2"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-5094",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-5094 Package: libss2"
+              },
+              "fullDescription": {
+                "text": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-5094\nSeverity: MEDIUM\nPackage: libss2\nInstalled Version: 1.44.5-1+deb10u1\nFixed Version: 1.44.5-1+deb10u2\nLink: [CVE-2019-5094](https://avd.aquasec.com/nvd/cve-2019-5094)",
+                "markdown": "**Vulnerability CVE-2019-5094**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libss2|1.44.5-1+deb10u1|1.44.5-1+deb10u2|[CVE-2019-5094](https://avd.aquasec.com/nvd/cve-2019-5094)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libss2"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-5188",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-5188 Package: libss2"
+              },
+              "fullDescription": {
+                "text": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-5188\nSeverity: MEDIUM\nPackage: libss2\nInstalled Version: 1.44.5-1+deb10u1\nFixed Version: 1.44.5-1+deb10u3\nLink: [CVE-2019-5188](https://avd.aquasec.com/nvd/cve-2019-5188)",
+                "markdown": "**Vulnerability CVE-2019-5188**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libss2|1.44.5-1+deb10u1|1.44.5-1+deb10u3|[CVE-2019-5188](https://avd.aquasec.com/nvd/cve-2019-5188)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libss2"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2018-12886",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2018-12886 Package: libstdc++6"
+              },
+              "fullDescription": {
+                "text": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2018-12886\nSeverity: MEDIUM\nPackage: libstdc++6\nInstalled Version: 8.3.0-6\nFixed Version: \nLink: [CVE-2018-12886](https://avd.aquasec.com/nvd/cve-2018-12886)",
+                "markdown": "**Vulnerability CVE-2018-12886**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libstdc++6|8.3.0-6||[CVE-2018-12886](https://avd.aquasec.com/nvd/cve-2018-12886)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libstdc++6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-15847",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-15847 Package: libstdc++6"
+              },
+              "fullDescription": {
+                "text": "gcc: POWER9 &#34;DARN&#34; RNG intrinsic produces repeated output."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-15847\nSeverity: MEDIUM\nPackage: libstdc++6\nInstalled Version: 8.3.0-6\nFixed Version: \nLink: [CVE-2019-15847](https://avd.aquasec.com/nvd/cve-2019-15847)",
+                "markdown": "**Vulnerability CVE-2019-15847**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libstdc++6|8.3.0-6||[CVE-2019-15847](https://avd.aquasec.com/nvd/cve-2019-15847)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libstdc++6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[HIGH] CVE-2020-1712",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2020-1712 Package: libsystemd0"
+              },
+              "fullDescription": {
+                "text": "systemd: use-after-free when asynchronous polkit queries are performed."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2020-1712\nSeverity: HIGH\nPackage: libsystemd0\nInstalled Version: 241-7~deb10u1\nFixed Version: \nLink: [CVE-2020-1712](https://avd.aquasec.com/nvd/cve-2020-1712)",
+                "markdown": "**Vulnerability CVE-2020-1712**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|HIGH|libsystemd0|241-7~deb10u1||[CVE-2020-1712](https://avd.aquasec.com/nvd/cve-2020-1712)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "HIGH",
+                  "libsystemd0"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-3843",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-3843 Package: libsystemd0"
+              },
+              "fullDescription": {
+                "text": "systemd: services with DynamicUser can create SUID/SGID binaries."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-3843\nSeverity: MEDIUM\nPackage: libsystemd0\nInstalled Version: 241-7~deb10u1\nFixed Version: \nLink: [CVE-2019-3843](https://avd.aquasec.com/nvd/cve-2019-3843)",
+                "markdown": "**Vulnerability CVE-2019-3843**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libsystemd0|241-7~deb10u1||[CVE-2019-3843](https://avd.aquasec.com/nvd/cve-2019-3843)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libsystemd0"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-3844",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-3844 Package: libsystemd0"
+              },
+              "fullDescription": {
+                "text": "systemd: services with DynamicUser can get new privileges and create SGID binaries."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-3844\nSeverity: MEDIUM\nPackage: libsystemd0\nInstalled Version: 241-7~deb10u1\nFixed Version: \nLink: [CVE-2019-3844](https://avd.aquasec.com/nvd/cve-2019-3844)",
+                "markdown": "**Vulnerability CVE-2019-3844**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libsystemd0|241-7~deb10u1||[CVE-2019-3844](https://avd.aquasec.com/nvd/cve-2019-3844)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libsystemd0"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2013-4392",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2013-4392 Package: libsystemd0"
+              },
+              "fullDescription": {
+                "text": "systemd: TOCTOU race condition when updating file permissions and SELinux security contexts."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2013-4392\nSeverity: LOW\nPackage: libsystemd0\nInstalled Version: 241-7~deb10u1\nFixed Version: \nLink: [CVE-2013-4392](https://avd.aquasec.com/nvd/cve-2013-4392)",
+                "markdown": "**Vulnerability CVE-2013-4392**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libsystemd0|241-7~deb10u1||[CVE-2013-4392](https://avd.aquasec.com/nvd/cve-2013-4392)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libsystemd0"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-15718",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-15718 Package: libsystemd0"
+              },
+              "fullDescription": {
+                "text": "systemd: systemd-resolved allows unprivileged users to configure DNS."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-15718\nSeverity: LOW\nPackage: libsystemd0\nInstalled Version: 241-7~deb10u1\nFixed Version: 241-7~deb10u2\nLink: [CVE-2019-15718](https://avd.aquasec.com/nvd/cve-2019-15718)",
+                "markdown": "**Vulnerability CVE-2019-15718**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libsystemd0|241-7~deb10u1|241-7~deb10u2|[CVE-2019-15718](https://avd.aquasec.com/nvd/cve-2019-15718)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libsystemd0"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-20386",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-20386 Package: libsystemd0"
+              },
+              "fullDescription": {
+                "text": "systemd: a memory leak was discovered in button_open in login/logind-button.c when udev events are received."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-20386\nSeverity: LOW\nPackage: libsystemd0\nInstalled Version: 241-7~deb10u1\nFixed Version: \nLink: [CVE-2019-20386](https://avd.aquasec.com/nvd/cve-2019-20386)",
+                "markdown": "**Vulnerability CVE-2019-20386**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libsystemd0|241-7~deb10u1||[CVE-2019-20386](https://avd.aquasec.com/nvd/cve-2019-20386)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libsystemd0"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2018-1000654",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2018-1000654 Package: libtasn1-6"
+              },
+              "fullDescription": {
+                "text": "libtasn1: Infinite loop in _asn1_expand_object_id(ptree) leads to memory exhaustion."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2018-1000654\nSeverity: LOW\nPackage: libtasn1-6\nInstalled Version: 4.13-3\nFixed Version: \nLink: [CVE-2018-1000654](https://avd.aquasec.com/nvd/cve-2018-1000654)",
+                "markdown": "**Vulnerability CVE-2018-1000654**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libtasn1-6|4.13-3||[CVE-2018-1000654](https://avd.aquasec.com/nvd/cve-2018-1000654)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libtasn1-6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-17594",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-17594 Package: libtinfo6"
+              },
+              "fullDescription": {
+                "text": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-17594\nSeverity: LOW\nPackage: libtinfo6\nInstalled Version: 6.1+20181013-2+deb10u1\nFixed Version: 6.1+20181013-2+deb10u2\nLink: [CVE-2019-17594](https://avd.aquasec.com/nvd/cve-2019-17594)",
+                "markdown": "**Vulnerability CVE-2019-17594**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libtinfo6|6.1+20181013-2+deb10u1|6.1+20181013-2+deb10u2|[CVE-2019-17594](https://avd.aquasec.com/nvd/cve-2019-17594)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libtinfo6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-17595",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-17595 Package: libtinfo6"
+              },
+              "fullDescription": {
+                "text": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-17595\nSeverity: LOW\nPackage: libtinfo6\nInstalled Version: 6.1+20181013-2+deb10u1\nFixed Version: 6.1+20181013-2+deb10u2\nLink: [CVE-2019-17595](https://avd.aquasec.com/nvd/cve-2019-17595)",
+                "markdown": "**Vulnerability CVE-2019-17595**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libtinfo6|6.1+20181013-2+deb10u1|6.1+20181013-2+deb10u2|[CVE-2019-17595](https://avd.aquasec.com/nvd/cve-2019-17595)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libtinfo6"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[HIGH] CVE-2020-1712",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2020-1712 Package: libudev1"
+              },
+              "fullDescription": {
+                "text": "systemd: use-after-free when asynchronous polkit queries are performed."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2020-1712\nSeverity: HIGH\nPackage: libudev1\nInstalled Version: 241-7~deb10u1\nFixed Version: \nLink: [CVE-2020-1712](https://avd.aquasec.com/nvd/cve-2020-1712)",
+                "markdown": "**Vulnerability CVE-2020-1712**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|HIGH|libudev1|241-7~deb10u1||[CVE-2020-1712](https://avd.aquasec.com/nvd/cve-2020-1712)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "HIGH",
+                  "libudev1"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-3843",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-3843 Package: libudev1"
+              },
+              "fullDescription": {
+                "text": "systemd: services with DynamicUser can create SUID/SGID binaries."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-3843\nSeverity: MEDIUM\nPackage: libudev1\nInstalled Version: 241-7~deb10u1\nFixed Version: \nLink: [CVE-2019-3843](https://avd.aquasec.com/nvd/cve-2019-3843)",
+                "markdown": "**Vulnerability CVE-2019-3843**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libudev1|241-7~deb10u1||[CVE-2019-3843](https://avd.aquasec.com/nvd/cve-2019-3843)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libudev1"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[MEDIUM] CVE-2019-3844",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-3844 Package: libudev1"
+              },
+              "fullDescription": {
+                "text": "systemd: services with DynamicUser can get new privileges and create SGID binaries."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-3844\nSeverity: MEDIUM\nPackage: libudev1\nInstalled Version: 241-7~deb10u1\nFixed Version: \nLink: [CVE-2019-3844](https://avd.aquasec.com/nvd/cve-2019-3844)",
+                "markdown": "**Vulnerability CVE-2019-3844**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libudev1|241-7~deb10u1||[CVE-2019-3844](https://avd.aquasec.com/nvd/cve-2019-3844)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "MEDIUM",
+                  "libudev1"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2013-4392",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2013-4392 Package: libudev1"
+              },
+              "fullDescription": {
+                "text": "systemd: TOCTOU race condition when updating file permissions and SELinux security contexts."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2013-4392\nSeverity: LOW\nPackage: libudev1\nInstalled Version: 241-7~deb10u1\nFixed Version: \nLink: [CVE-2013-4392](https://avd.aquasec.com/nvd/cve-2013-4392)",
+                "markdown": "**Vulnerability CVE-2013-4392**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libudev1|241-7~deb10u1||[CVE-2013-4392](https://avd.aquasec.com/nvd/cve-2013-4392)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libudev1"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-15718",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-15718 Package: libudev1"
+              },
+              "fullDescription": {
+                "text": "systemd: systemd-resolved allows unprivileged users to configure DNS."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-15718\nSeverity: LOW\nPackage: libudev1\nInstalled Version: 241-7~deb10u1\nFixed Version: 241-7~deb10u2\nLink: [CVE-2019-15718](https://avd.aquasec.com/nvd/cve-2019-15718)",
+                "markdown": "**Vulnerability CVE-2019-15718**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libudev1|241-7~deb10u1|241-7~deb10u2|[CVE-2019-15718](https://avd.aquasec.com/nvd/cve-2019-15718)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libudev1"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-20386",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-20386 Package: libudev1"
+              },
+              "fullDescription": {
+                "text": "systemd: a memory leak was discovered in button_open in login/logind-button.c when udev events are received."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-20386\nSeverity: LOW\nPackage: libudev1\nInstalled Version: 241-7~deb10u1\nFixed Version: \nLink: [CVE-2019-20386](https://avd.aquasec.com/nvd/cve-2019-20386)",
+                "markdown": "**Vulnerability CVE-2019-20386**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libudev1|241-7~deb10u1||[CVE-2019-20386](https://avd.aquasec.com/nvd/cve-2019-20386)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libudev1"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2012-2663",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2012-2663 Package: libxtables12"
+              },
+              "fullDescription": {
+                "text": "iptables: --syn flag bypass."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2012-2663\nSeverity: LOW\nPackage: libxtables12\nInstalled Version: 1.8.2-4\nFixed Version: \nLink: [CVE-2012-2663](https://avd.aquasec.com/nvd/cve-2012-2663)",
+                "markdown": "**Vulnerability CVE-2012-2663**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libxtables12|1.8.2-4||[CVE-2012-2663](https://avd.aquasec.com/nvd/cve-2012-2663)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libxtables12"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-11360",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-11360 Package: libxtables12"
+              },
+              "fullDescription": {
+                "text": "."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-11360\nSeverity: LOW\nPackage: libxtables12\nInstalled Version: 1.8.2-4\nFixed Version: \nLink: [CVE-2019-11360](https://avd.aquasec.com/nvd/cve-2019-11360)",
+                "markdown": "**Vulnerability CVE-2019-11360**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libxtables12|1.8.2-4||[CVE-2019-11360](https://avd.aquasec.com/nvd/cve-2019-11360)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "libxtables12"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2007-5686",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2007-5686 Package: login"
+              },
+              "fullDescription": {
+                "text": "."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2007-5686\nSeverity: LOW\nPackage: login\nInstalled Version: 1:4.5-1.1\nFixed Version: \nLink: [CVE-2007-5686](https://avd.aquasec.com/nvd/cve-2007-5686)",
+                "markdown": "**Vulnerability CVE-2007-5686**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|login|1:4.5-1.1||[CVE-2007-5686](https://avd.aquasec.com/nvd/cve-2007-5686)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "login"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2013-4235",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2013-4235 Package: login"
+              },
+              "fullDescription": {
+                "text": "shadow-utils: TOCTOU race conditions by copying and removing directory trees."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2013-4235\nSeverity: LOW\nPackage: login\nInstalled Version: 1:4.5-1.1\nFixed Version: \nLink: [CVE-2013-4235](https://avd.aquasec.com/nvd/cve-2013-4235)",
+                "markdown": "**Vulnerability CVE-2013-4235**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|login|1:4.5-1.1||[CVE-2013-4235](https://avd.aquasec.com/nvd/cve-2013-4235)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "login"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2018-7169",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2018-7169 Package: login"
+              },
+              "fullDescription": {
+                "text": "shadow-utils: newgidmap allows unprivileged user to drop supplementary groups potentially allowing privilege escalation."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2018-7169\nSeverity: LOW\nPackage: login\nInstalled Version: 1:4.5-1.1\nFixed Version: \nLink: [CVE-2018-7169](https://avd.aquasec.com/nvd/cve-2018-7169)",
+                "markdown": "**Vulnerability CVE-2018-7169**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|login|1:4.5-1.1||[CVE-2018-7169](https://avd.aquasec.com/nvd/cve-2018-7169)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "login"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-19882",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-19882 Package: login"
+              },
+              "fullDescription": {
+                "text": "shadow-utils: local users can obtain root access because setuid programs are misconfigured."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-19882\nSeverity: LOW\nPackage: login\nInstalled Version: 1:4.5-1.1\nFixed Version: \nLink: [CVE-2019-19882](https://avd.aquasec.com/nvd/cve-2019-19882)",
+                "markdown": "**Vulnerability CVE-2019-19882**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|login|1:4.5-1.1||[CVE-2019-19882](https://avd.aquasec.com/nvd/cve-2019-19882)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "login"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] TEMP-0628843-DBAD28",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "TEMP-0628843-DBAD28 Package: login"
+              },
+              "fullDescription": {
+                "text": "."
+              },
+              "help": {
+                "text": "Vulnerability TEMP-0628843-DBAD28\nSeverity: LOW\nPackage: login\nInstalled Version: 1:4.5-1.1\nFixed Version: \nLink: [TEMP-0628843-DBAD28]()",
+                "markdown": "**Vulnerability TEMP-0628843-DBAD28**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|login|1:4.5-1.1||[TEMP-0628843-DBAD28]()|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "login"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-17594",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-17594 Package: ncurses-base"
+              },
+              "fullDescription": {
+                "text": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-17594\nSeverity: LOW\nPackage: ncurses-base\nInstalled Version: 6.1+20181013-2+deb10u1\nFixed Version: 6.1+20181013-2+deb10u2\nLink: [CVE-2019-17594](https://avd.aquasec.com/nvd/cve-2019-17594)",
+                "markdown": "**Vulnerability CVE-2019-17594**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|ncurses-base|6.1+20181013-2+deb10u1|6.1+20181013-2+deb10u2|[CVE-2019-17594](https://avd.aquasec.com/nvd/cve-2019-17594)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "ncurses-base"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-17595",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-17595 Package: ncurses-base"
+              },
+              "fullDescription": {
+                "text": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-17595\nSeverity: LOW\nPackage: ncurses-base\nInstalled Version: 6.1+20181013-2+deb10u1\nFixed Version: 6.1+20181013-2+deb10u2\nLink: [CVE-2019-17595](https://avd.aquasec.com/nvd/cve-2019-17595)",
+                "markdown": "**Vulnerability CVE-2019-17595**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|ncurses-base|6.1+20181013-2+deb10u1|6.1+20181013-2+deb10u2|[CVE-2019-17595](https://avd.aquasec.com/nvd/cve-2019-17595)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "ncurses-base"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-17594",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-17594 Package: ncurses-bin"
+              },
+              "fullDescription": {
+                "text": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-17594\nSeverity: LOW\nPackage: ncurses-bin\nInstalled Version: 6.1+20181013-2+deb10u1\nFixed Version: 6.1+20181013-2+deb10u2\nLink: [CVE-2019-17594](https://avd.aquasec.com/nvd/cve-2019-17594)",
+                "markdown": "**Vulnerability CVE-2019-17594**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|ncurses-bin|6.1+20181013-2+deb10u1|6.1+20181013-2+deb10u2|[CVE-2019-17594](https://avd.aquasec.com/nvd/cve-2019-17594)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "ncurses-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-17595",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-17595 Package: ncurses-bin"
+              },
+              "fullDescription": {
+                "text": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-17595\nSeverity: LOW\nPackage: ncurses-bin\nInstalled Version: 6.1+20181013-2+deb10u1\nFixed Version: 6.1+20181013-2+deb10u2\nLink: [CVE-2019-17595](https://avd.aquasec.com/nvd/cve-2019-17595)",
+                "markdown": "**Vulnerability CVE-2019-17595**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|ncurses-bin|6.1+20181013-2+deb10u1|6.1+20181013-2+deb10u2|[CVE-2019-17595](https://avd.aquasec.com/nvd/cve-2019-17595)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "ncurses-bin"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2007-5686",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2007-5686 Package: passwd"
+              },
+              "fullDescription": {
+                "text": "."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2007-5686\nSeverity: LOW\nPackage: passwd\nInstalled Version: 1:4.5-1.1\nFixed Version: \nLink: [CVE-2007-5686](https://avd.aquasec.com/nvd/cve-2007-5686)",
+                "markdown": "**Vulnerability CVE-2007-5686**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|passwd|1:4.5-1.1||[CVE-2007-5686](https://avd.aquasec.com/nvd/cve-2007-5686)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "passwd"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2013-4235",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2013-4235 Package: passwd"
+              },
+              "fullDescription": {
+                "text": "shadow-utils: TOCTOU race conditions by copying and removing directory trees."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2013-4235\nSeverity: LOW\nPackage: passwd\nInstalled Version: 1:4.5-1.1\nFixed Version: \nLink: [CVE-2013-4235](https://avd.aquasec.com/nvd/cve-2013-4235)",
+                "markdown": "**Vulnerability CVE-2013-4235**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|passwd|1:4.5-1.1||[CVE-2013-4235](https://avd.aquasec.com/nvd/cve-2013-4235)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "passwd"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2018-7169",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2018-7169 Package: passwd"
+              },
+              "fullDescription": {
+                "text": "shadow-utils: newgidmap allows unprivileged user to drop supplementary groups potentially allowing privilege escalation."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2018-7169\nSeverity: LOW\nPackage: passwd\nInstalled Version: 1:4.5-1.1\nFixed Version: \nLink: [CVE-2018-7169](https://avd.aquasec.com/nvd/cve-2018-7169)",
+                "markdown": "**Vulnerability CVE-2018-7169**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|passwd|1:4.5-1.1||[CVE-2018-7169](https://avd.aquasec.com/nvd/cve-2018-7169)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "passwd"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-19882",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-19882 Package: passwd"
+              },
+              "fullDescription": {
+                "text": "shadow-utils: local users can obtain root access because setuid programs are misconfigured."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-19882\nSeverity: LOW\nPackage: passwd\nInstalled Version: 1:4.5-1.1\nFixed Version: \nLink: [CVE-2019-19882](https://avd.aquasec.com/nvd/cve-2019-19882)",
+                "markdown": "**Vulnerability CVE-2019-19882**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|passwd|1:4.5-1.1||[CVE-2019-19882](https://avd.aquasec.com/nvd/cve-2019-19882)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "passwd"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] TEMP-0628843-DBAD28",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "TEMP-0628843-DBAD28 Package: passwd"
+              },
+              "fullDescription": {
+                "text": "."
+              },
+              "help": {
+                "text": "Vulnerability TEMP-0628843-DBAD28\nSeverity: LOW\nPackage: passwd\nInstalled Version: 1:4.5-1.1\nFixed Version: \nLink: [TEMP-0628843-DBAD28]()",
+                "markdown": "**Vulnerability TEMP-0628843-DBAD28**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|passwd|1:4.5-1.1||[TEMP-0628843-DBAD28]()|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "passwd"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2011-4116",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2011-4116 Package: perl-base"
+              },
+              "fullDescription": {
+                "text": "perl: File::Temp insecure temporary file handling."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2011-4116\nSeverity: LOW\nPackage: perl-base\nInstalled Version: 5.28.1-6\nFixed Version: \nLink: [CVE-2011-4116](https://avd.aquasec.com/nvd/cve-2011-4116)",
+                "markdown": "**Vulnerability CVE-2011-4116**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|perl-base|5.28.1-6||[CVE-2011-4116](https://avd.aquasec.com/nvd/cve-2011-4116)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "perl-base"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] TEMP-0517018-A83CE6",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "TEMP-0517018-A83CE6 Package: sysvinit-utils"
+              },
+              "fullDescription": {
+                "text": "."
+              },
+              "help": {
+                "text": "Vulnerability TEMP-0517018-A83CE6\nSeverity: LOW\nPackage: sysvinit-utils\nInstalled Version: 2.93-8\nFixed Version: \nLink: [TEMP-0517018-A83CE6]()",
+                "markdown": "**Vulnerability TEMP-0517018-A83CE6**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|sysvinit-utils|2.93-8||[TEMP-0517018-A83CE6]()|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "sysvinit-utils"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2005-2541",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2005-2541 Package: tar"
+              },
+              "fullDescription": {
+                "text": "."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2005-2541\nSeverity: LOW\nPackage: tar\nInstalled Version: 1.30+dfsg-6\nFixed Version: \nLink: [CVE-2005-2541](https://avd.aquasec.com/nvd/cve-2005-2541)",
+                "markdown": "**Vulnerability CVE-2005-2541**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|tar|1.30+dfsg-6||[CVE-2005-2541](https://avd.aquasec.com/nvd/cve-2005-2541)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "tar"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] CVE-2019-9923",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-2019-9923 Package: tar"
+              },
+              "fullDescription": {
+                "text": "tar: null-pointer dereference in pax_decode_header in sparse.c."
+              },
+              "help": {
+                "text": "Vulnerability CVE-2019-9923\nSeverity: LOW\nPackage: tar\nInstalled Version: 1.30+dfsg-6\nFixed Version: \nLink: [CVE-2019-9923](https://avd.aquasec.com/nvd/cve-2019-9923)",
+                "markdown": "**Vulnerability CVE-2019-9923**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|tar|1.30+dfsg-6||[CVE-2019-9923](https://avd.aquasec.com/nvd/cve-2019-9923)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "tar"
+                ],
+                "precision": "very-high"
+              }
+            },
+            {
+              "id": "[LOW] TEMP-0290435-0B57B5",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "TEMP-0290435-0B57B5 Package: tar"
+              },
+              "fullDescription": {
+                "text": "."
+              },
+              "help": {
+                "text": "Vulnerability TEMP-0290435-0B57B5\nSeverity: LOW\nPackage: tar\nInstalled Version: 1.30+dfsg-6\nFixed Version: \nLink: [TEMP-0290435-0B57B5]()",
+                "markdown": "**Vulnerability TEMP-0290435-0B57B5**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|tar|1.30+dfsg-6||[TEMP-0290435-0B57B5]()|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "LOW",
+                  "tar"
+                ],
+                "precision": "very-high"
+              }
+            }]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "[LOW] CVE-2011-3374",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "It was found that apt-key in apt, all versions, do not correctly validate gpg keys with the master keyring, leading to a potential man-in-the-middle attack."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-18276",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support &#34;saved UID&#34; functionality, the saved UID is not dropped. An attacker with command execution in the shell can use &#34;enable -f&#34; for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] TEMP-0841856-B18BAF",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2016-2781",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal&#39;s input buffer."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2017-18018",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "In GNU Coreutils through 8.29, chown-core.c in chown and chgrp does not prevent replacement of a plain file with a symlink during use of the POSIX &#34;-R -L&#34; options, which allows local users to modify the ownership of arbitrary files by leveraging a race condition."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-5094",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-5188",
+          "ruleIndex": 6,
+          "level": "error",
+          "message": {
+            "text": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2018-12886",
+          "ruleIndex": 7,
+          "level": "error",
+          "message": {
+            "text": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-15847",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "The POWER9 backend in GNU Compiler Collection (GCC) before version 10 could optimize multiple calls of the __builtin_darn intrinsic into a single call, thus reducing the entropy of the random number generator. This occurred because a volatile operation was not specified. For example, within a single execution of a program, the output of every __builtin_darn() call may be the same."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-14855",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "A flaw was found in the way certificate signatures could be forged using collisions found in the SHA-1 algorithm. An attacker could use this weakness to create forged certificate signatures. This issue affects GnuPG versions before 2.2.18."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2011-3374",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "It was found that apt-key in apt, all versions, do not correctly validate gpg keys with the master keyring, leading to a potential man-in-the-middle attack."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[HIGH] CVE-2020-1752",
+          "ruleIndex": 11,
+          "level": "error",
+          "message": {
+            "text": "A use-after-free vulnerability was found in glibc in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2020-1751",
+          "ruleIndex": 12,
+          "level": "error",
+          "message": {
+            "text": "No description is available for this CVE."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2010-4051",
+          "ruleIndex": 13,
+          "level": "error",
+          "message": {
+            "text": "The regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (application crash) via a regular expression containing adjacent bounded repetitions that bypass the intended RE_DUP_MAX limitation, as demonstrated by a {10,}{10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD, related to a &#34;RE_DUP_MAX overflow.&#34;."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2010-4052",
+          "ruleIndex": 14,
+          "level": "error",
+          "message": {
+            "text": "Stack consumption vulnerability in the regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (resource exhaustion) via a regular expression containing adjacent repetition operators, as demonstrated by a {10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2010-4756",
+          "ruleIndex": 15,
+          "level": "error",
+          "message": {
+            "text": "The glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2016-10228",
+          "ruleIndex": 16,
+          "level": "error",
+          "message": {
+            "text": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2018-20796",
+          "ruleIndex": 17,
+          "level": "error",
+          "message": {
+            "text": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by &#39;(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+&#39; in grep."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-1010022",
+          "ruleIndex": 18,
+          "level": "error",
+          "message": {
+            "text": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-1010023",
+          "ruleIndex": 19,
+          "level": "error",
+          "message": {
+            "text": "GNU Libc current is affected by: Re-mapping current loaded libray with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-1010024",
+          "ruleIndex": 20,
+          "level": "error",
+          "message": {
+            "text": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-1010025",
+          "ruleIndex": 21,
+          "level": "error",
+          "message": {
+            "text": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor&#39;s position is &#34;ASLR bypass itself is not a vulnerability.&#34;."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-19126",
+          "ruleIndex": 22,
+          "level": "error",
+          "message": {
+            "text": "On the x86-64 architecture, the GNU C Library (aka glibc) before 2.31 fails to ignore the LD_PREFER_MAP_32BIT_EXEC environment variable during program execution after a security transition, allowing local attackers to restrict the possible mapping addresses for loaded libraries and thus bypass ASLR for a setuid program."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-9192",
+          "ruleIndex": 23,
+          "level": "error",
+          "message": {
+            "text": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by &#39;(|)(\\\\1\\\\1)*&#39; in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2020-10029",
+          "ruleIndex": 24,
+          "level": "error",
+          "message": {
+            "text": "The GNU C Library (aka glibc or libc6) before 2.32 could overflow an on-stack buffer during range reduction if an input to an 80-bit long double function contains a non-canonical bit pattern, a seen when passing a 0x5d414141414141410000 value to sinl on x86 targets. This is related to sysdeps/ieee754/ldbl-96/e_rem_pio2l.c."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[HIGH] CVE-2020-1752",
+          "ruleIndex": 25,
+          "level": "error",
+          "message": {
+            "text": "A use-after-free vulnerability was found in glibc in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2020-1751",
+          "ruleIndex": 26,
+          "level": "error",
+          "message": {
+            "text": "No description is available for this CVE."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2010-4051",
+          "ruleIndex": 27,
+          "level": "error",
+          "message": {
+            "text": "The regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (application crash) via a regular expression containing adjacent bounded repetitions that bypass the intended RE_DUP_MAX limitation, as demonstrated by a {10,}{10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD, related to a &#34;RE_DUP_MAX overflow.&#34;."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2010-4052",
+          "ruleIndex": 28,
+          "level": "error",
+          "message": {
+            "text": "Stack consumption vulnerability in the regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (resource exhaustion) via a regular expression containing adjacent repetition operators, as demonstrated by a {10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2010-4756",
+          "ruleIndex": 29,
+          "level": "error",
+          "message": {
+            "text": "The glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2016-10228",
+          "ruleIndex": 30,
+          "level": "error",
+          "message": {
+            "text": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2018-20796",
+          "ruleIndex": 31,
+          "level": "error",
+          "message": {
+            "text": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by &#39;(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+&#39; in grep."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-1010022",
+          "ruleIndex": 32,
+          "level": "error",
+          "message": {
+            "text": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-1010023",
+          "ruleIndex": 33,
+          "level": "error",
+          "message": {
+            "text": "GNU Libc current is affected by: Re-mapping current loaded libray with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-1010024",
+          "ruleIndex": 34,
+          "level": "error",
+          "message": {
+            "text": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-1010025",
+          "ruleIndex": 35,
+          "level": "error",
+          "message": {
+            "text": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor&#39;s position is &#34;ASLR bypass itself is not a vulnerability.&#34;."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-19126",
+          "ruleIndex": 36,
+          "level": "error",
+          "message": {
+            "text": "On the x86-64 architecture, the GNU C Library (aka glibc) before 2.31 fails to ignore the LD_PREFER_MAP_32BIT_EXEC environment variable during program execution after a security transition, allowing local attackers to restrict the possible mapping addresses for loaded libraries and thus bypass ASLR for a setuid program."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-9192",
+          "ruleIndex": 37,
+          "level": "error",
+          "message": {
+            "text": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by &#39;(|)(\\\\1\\\\1)*&#39; in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2020-10029",
+          "ruleIndex": 38,
+          "level": "error",
+          "message": {
+            "text": "The GNU C Library (aka glibc or libc6) before 2.32 could overflow an on-stack buffer during range reduction if an input to an 80-bit long double function contains a non-canonical bit pattern, a seen when passing a 0x5d414141414141410000 value to sinl on x86 targets. This is related to sysdeps/ieee754/ldbl-96/e_rem_pio2l.c."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-5094",
+          "ruleIndex": 39,
+          "level": "error",
+          "message": {
+            "text": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-5188",
+          "ruleIndex": 40,
+          "level": "error",
+          "message": {
+            "text": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-5094",
+          "ruleIndex": 41,
+          "level": "error",
+          "message": {
+            "text": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-5188",
+          "ruleIndex": 42,
+          "level": "error",
+          "message": {
+            "text": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2018-12886",
+          "ruleIndex": 43,
+          "level": "error",
+          "message": {
+            "text": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-15847",
+          "ruleIndex": 44,
+          "level": "error",
+          "message": {
+            "text": "The POWER9 backend in GNU Compiler Collection (GCC) before version 10 could optimize multiple calls of the __builtin_darn intrinsic into a single call, thus reducing the entropy of the random number generator. This occurred because a volatile operation was not specified. For example, within a single execution of a program, the output of every __builtin_darn() call may be the same."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-12904",
+          "ruleIndex": 45,
+          "level": "error",
+          "message": {
+            "text": "In Libgcrypt 1.8.4, the C implementation of AES is vulnerable to a flush-and-reload side-channel attack because physical addresses are available to other processes. (The C implementation is used on platforms where an assembly-language implementation is unavailable.)."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-13627",
+          "ruleIndex": 46,
+          "level": "error",
+          "message": {
+            "text": "It was discovered that there was a ECDSA timing attack in the libgcrypt20 cryptographic library. Version affected: 1.8.4-5, 1.7.6-2+deb9u3, and 1.6.3-2+deb8u4. Versions fixed: 1.8.5-2 and 1.6.3-2+deb8u7."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2018-6829",
+          "ruleIndex": 47,
+          "level": "error",
+          "message": {
+            "text": "cipher/elgamal.c in Libgcrypt through 1.8.2, when used to encrypt messages directly, improperly encodes plaintexts, which allows attackers to obtain sensitive information by reading ciphertext data (i.e., it does not have semantic security in face of a ciphertext-only attack). The Decisional Diffie-Hellman (DDH) assumption does not hold for Libgcrypt&#39;s ElGamal implementation."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2011-3389",
+          "ruleIndex": 48,
+          "level": "error",
+          "message": {
+            "text": "The SSL protocol, as used in certain configurations in Microsoft Windows and Microsoft Internet Explorer, Mozilla Firefox, Google Chrome, Opera, and other products, encrypts data by using CBC mode with chained initialization vectors, which allows man-in-the-middle attackers to obtain plaintext HTTP headers via a blockwise chosen-boundary attack (BCBA) on an HTTPS session, in conjunction with JavaScript code that uses (1) the HTML5 WebSocket API, (2) the Java URLConnection API, or (3) the Silverlight WebClient API, aka a &#34;BEAST&#34; attack."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[HIGH] CVE-2019-18224",
+          "ruleIndex": 49,
+          "level": "error",
+          "message": {
+            "text": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-12290",
+          "ruleIndex": 50,
+          "level": "error",
+          "message": {
+            "text": "GNU libidn2 before 2.2.0 fails to perform the roundtrip checks specified in RFC3490 Section 4.2 when converting A-labels to U-labels. This makes it possible in some circumstances for one domain to impersonate another. By creating a malicious domain that matches a target domain except for the inclusion of certain punycoded Unicode characters (that would be discarded when converted first to a Unicode label and then back to an ASCII label), arbitrary domains can be impersonated."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-17543",
+          "ruleIndex": 51,
+          "level": "error",
+          "message": {
+            "text": "LZ4 before 1.9.2 has a heap-based buffer overflow in LZ4_write32 (related to LZ4_compress_destSize), affecting applications that call LZ4_compress_fast with a large input. (This issue can also lead to data corruption.) NOTE: the vendor states &#34;only a few specific / uncommon usages of the API are at risk.&#34;."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-17594",
+          "ruleIndex": 52,
+          "level": "error",
+          "message": {
+            "text": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-17595",
+          "ruleIndex": 53,
+          "level": "error",
+          "message": {
+            "text": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2017-11164",
+          "ruleIndex": 54,
+          "level": "error",
+          "message": {
+            "text": "In PCRE 8.41, the OP_KETRMAX feature in the match function in pcre_exec.c allows stack exhaustion (uncontrolled recursion) when processing a crafted regular expression."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2017-16231",
+          "ruleIndex": 55,
+          "level": "error",
+          "message": {
+            "text": "** DISPUTED ** In PCRE 8.41, after compiling, a pcretest load test PoC produces a crash overflow in the function match() in pcre_exec.c because of a self-recursive call. NOTE: third parties dispute the relevance of this report, noting that there are options that can be used to limit the amount of stack that is used."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2017-7245",
+          "ruleIndex": 56,
+          "level": "error",
+          "message": {
+            "text": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 4) or possibly have unspecified other impact via a crafted file."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2017-7246",
+          "ruleIndex": 57,
+          "level": "error",
+          "message": {
+            "text": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 268) or possibly have unspecified other impact via a crafted file."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-9893",
+          "ruleIndex": 58,
+          "level": "error",
+          "message": {
+            "text": "libseccomp before 2.4.0 did not correctly generate 64-bit syscall argument comparisons using the arithmetic operators (LT, GT, LE, GE), which might able to lead to bypassing seccomp filters and potential privilege escalations."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-5094",
+          "ruleIndex": 59,
+          "level": "error",
+          "message": {
+            "text": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-5188",
+          "ruleIndex": 60,
+          "level": "error",
+          "message": {
+            "text": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2018-12886",
+          "ruleIndex": 61,
+          "level": "error",
+          "message": {
+            "text": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-15847",
+          "ruleIndex": 62,
+          "level": "error",
+          "message": {
+            "text": "The POWER9 backend in GNU Compiler Collection (GCC) before version 10 could optimize multiple calls of the __builtin_darn intrinsic into a single call, thus reducing the entropy of the random number generator. This occurred because a volatile operation was not specified. For example, within a single execution of a program, the output of every __builtin_darn() call may be the same."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[HIGH] CVE-2020-1712",
+          "ruleIndex": 63,
+          "level": "error",
+          "message": {
+            "text": "A heap use-after-free vulnerability was found in systemd, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-3843",
+          "ruleIndex": 64,
+          "level": "error",
+          "message": {
+            "text": "It was discovered that a systemd service that uses DynamicUser property can create a SUID/SGID binary that would be allowed to run as the transient service UID/GID even after the service is terminated. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the UID/GID will be recycled."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-3844",
+          "ruleIndex": 65,
+          "level": "error",
+          "message": {
+            "text": "It was discovered that a systemd service that uses DynamicUser property can get new privileges through the execution of SUID binaries, which would allow to create binaries owned by the service transient group with the setgid bit set. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the GID will be recycled."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2013-4392",
+          "ruleIndex": 66,
+          "level": "error",
+          "message": {
+            "text": "systemd, when updating file permissions, allows local users to change the permissions and SELinux security contexts for arbitrary files via a symlink attack on unspecified files."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-15718",
+          "ruleIndex": 67,
+          "level": "error",
+          "message": {
+            "text": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system&#39;s DNS resolver settings."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-20386",
+          "ruleIndex": 68,
+          "level": "error",
+          "message": {
+            "text": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2018-1000654",
+          "ruleIndex": 69,
+          "level": "error",
+          "message": {
+            "text": "GNU Libtasn1-4.13 libtasn1-4.13 version libtasn1-4.13, libtasn1-4.12 contains a DoS, specifically CPU usage will reach 100% when running asn1Paser against the POC due to an issue in _asn1_expand_object_id(p_tree), after a long time, the program will be killed. This attack appears to be exploitable via parsing a crafted file."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-17594",
+          "ruleIndex": 70,
+          "level": "error",
+          "message": {
+            "text": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-17595",
+          "ruleIndex": 71,
+          "level": "error",
+          "message": {
+            "text": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[HIGH] CVE-2020-1712",
+          "ruleIndex": 72,
+          "level": "error",
+          "message": {
+            "text": "A heap use-after-free vulnerability was found in systemd, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-3843",
+          "ruleIndex": 73,
+          "level": "error",
+          "message": {
+            "text": "It was discovered that a systemd service that uses DynamicUser property can create a SUID/SGID binary that would be allowed to run as the transient service UID/GID even after the service is terminated. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the UID/GID will be recycled."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[MEDIUM] CVE-2019-3844",
+          "ruleIndex": 74,
+          "level": "error",
+          "message": {
+            "text": "It was discovered that a systemd service that uses DynamicUser property can get new privileges through the execution of SUID binaries, which would allow to create binaries owned by the service transient group with the setgid bit set. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the GID will be recycled."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2013-4392",
+          "ruleIndex": 75,
+          "level": "error",
+          "message": {
+            "text": "systemd, when updating file permissions, allows local users to change the permissions and SELinux security contexts for arbitrary files via a symlink attack on unspecified files."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-15718",
+          "ruleIndex": 76,
+          "level": "error",
+          "message": {
+            "text": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system&#39;s DNS resolver settings."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-20386",
+          "ruleIndex": 77,
+          "level": "error",
+          "message": {
+            "text": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2012-2663",
+          "ruleIndex": 78,
+          "level": "error",
+          "message": {
+            "text": "extensions/libxt_tcp.c in iptables through 1.4.21 does not match TCP SYN+FIN packets in --syn rules, which might allow remote attackers to bypass intended firewall restrictions via crafted packets.  NOTE: the CVE-2012-6638 fix makes this issue less relevant."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-11360",
+          "ruleIndex": 79,
+          "level": "error",
+          "message": {
+            "text": "A buffer overflow in iptables-restore in netfilter iptables 1.8.2 allows an attacker to (at least) crash the program or potentially gain code execution via a specially crafted iptables-save file. This is related to add_param_to_argv in xshared.c."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2007-5686",
+          "ruleIndex": 80,
+          "level": "error",
+          "message": {
+            "text": "initscripts in rPath Linux 1 sets insecure permissions for the /var/log/btmp file, which allows local users to obtain sensitive information regarding authentication attempts.  NOTE: because sshd detects the insecure permissions and does not log certain events, this also prevents sshd from logging failed authentication attempts by remote attackers."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2013-4235",
+          "ruleIndex": 81,
+          "level": "error",
+          "message": {
+            "text": "shadow: TOCTOU (time-of-check time-of-use) race condition when copying and removing directory trees."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2018-7169",
+          "ruleIndex": 82,
+          "level": "error",
+          "message": {
+            "text": "An issue was discovered in shadow 4.5. newgidmap (in shadow-utils) is setuid and allows an unprivileged user to be placed in a user namespace where setgroups(2) is permitted. This allows an attacker to remove themselves from a supplementary group, which may allow access to certain filesystem paths if the administrator has used &#34;group blacklisting&#34; (e.g., chmod g-rwx) to restrict access to paths. This flaw effectively reverts a security feature in the kernel (in particular, the /proc/self/setgroups knob) to prevent this sort of privilege escalation."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-19882",
+          "ruleIndex": 83,
+          "level": "error",
+          "message": {
+            "text": "shadow 4.8, in certain circumstances affecting at least Gentoo, Arch Linux, and Void Linux, allows local users to obtain root access because setuid programs are misconfigured. Specifically, this affects shadow 4.8 when compiled using --with-libpam but without explicitly passing --disable-account-tools-setuid, and without a PAM configuration suitable for use with setuid account management tools. This combination leads to account management tools (groupadd, groupdel, groupmod, useradd, userdel, usermod) that can easily be used by unprivileged local users to escalate privileges to root in multiple ways. This issue became much more relevant in approximately December 2019 when an unrelated bug was fixed (i.e., the chmod calls to suidusbins were fixed in the upstream Makefile which is now included in the release version 4.8)."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] TEMP-0628843-DBAD28",
+          "ruleIndex": 84,
+          "level": "error",
+          "message": {
+            "text": "."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-17594",
+          "ruleIndex": 85,
+          "level": "error",
+          "message": {
+            "text": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-17595",
+          "ruleIndex": 86,
+          "level": "error",
+          "message": {
+            "text": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-17594",
+          "ruleIndex": 87,
+          "level": "error",
+          "message": {
+            "text": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-17595",
+          "ruleIndex": 88,
+          "level": "error",
+          "message": {
+            "text": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2007-5686",
+          "ruleIndex": 89,
+          "level": "error",
+          "message": {
+            "text": "initscripts in rPath Linux 1 sets insecure permissions for the /var/log/btmp file, which allows local users to obtain sensitive information regarding authentication attempts.  NOTE: because sshd detects the insecure permissions and does not log certain events, this also prevents sshd from logging failed authentication attempts by remote attackers."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2013-4235",
+          "ruleIndex": 90,
+          "level": "error",
+          "message": {
+            "text": "shadow: TOCTOU (time-of-check time-of-use) race condition when copying and removing directory trees."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2018-7169",
+          "ruleIndex": 91,
+          "level": "error",
+          "message": {
+            "text": "An issue was discovered in shadow 4.5. newgidmap (in shadow-utils) is setuid and allows an unprivileged user to be placed in a user namespace where setgroups(2) is permitted. This allows an attacker to remove themselves from a supplementary group, which may allow access to certain filesystem paths if the administrator has used &#34;group blacklisting&#34; (e.g., chmod g-rwx) to restrict access to paths. This flaw effectively reverts a security feature in the kernel (in particular, the /proc/self/setgroups knob) to prevent this sort of privilege escalation."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-19882",
+          "ruleIndex": 92,
+          "level": "error",
+          "message": {
+            "text": "shadow 4.8, in certain circumstances affecting at least Gentoo, Arch Linux, and Void Linux, allows local users to obtain root access because setuid programs are misconfigured. Specifically, this affects shadow 4.8 when compiled using --with-libpam but without explicitly passing --disable-account-tools-setuid, and without a PAM configuration suitable for use with setuid account management tools. This combination leads to account management tools (groupadd, groupdel, groupmod, useradd, userdel, usermod) that can easily be used by unprivileged local users to escalate privileges to root in multiple ways. This issue became much more relevant in approximately December 2019 when an unrelated bug was fixed (i.e., the chmod calls to suidusbins were fixed in the upstream Makefile which is now included in the release version 4.8)."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] TEMP-0628843-DBAD28",
+          "ruleIndex": 93,
+          "level": "error",
+          "message": {
+            "text": "."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2011-4116",
+          "ruleIndex": 94,
+          "level": "error",
+          "message": {
+            "text": "_is_safe in the File::Temp module for Perl does not properly handle symlinks."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] TEMP-0517018-A83CE6",
+          "ruleIndex": 95,
+          "level": "error",
+          "message": {
+            "text": "."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2005-2541",
+          "ruleIndex": 96,
+          "level": "error",
+          "message": {
+            "text": "Tar 1.15.1 does not properly warn the user when extracting setuid or setgid files, which may allow local users or remote attackers to gain privileges."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] CVE-2019-9923",
+          "ruleIndex": 97,
+          "level": "error",
+          "message": {
+            "text": "pax_decode_header in sparse.c in GNU Tar before 1.32 had a NULL pointer dereference when parsing certain archives that have malformed extended headers."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        },
+        {
+          "ruleId": "[LOW] TEMP-0290435-0B57B5",
+          "ruleIndex": 98,
+          "level": "error",
+          "message": {
+            "text": "."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        }],
+      "columnKind": "utf16CodeUnits"
+    }
+  ]
+}

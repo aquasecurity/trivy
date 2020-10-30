@@ -45,7 +45,7 @@
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "https://avd.aquasec.com/nvd/{{ .VulnerabilityID | toLower }}"
+                "Url": "{{ filterForCVE .VulnerabilityID }}"
             }
         },
         "ProductFields": { "Product Name": "Trivy" },
