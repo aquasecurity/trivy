@@ -1,0 +1,8 @@
+- bucket: "python::GitHub Security Advisory Pip"
+  pairs:
+    - bucket: django-cors-headers/django-cors-headers
+      pairs:
+        - key: pyup.io-37132
+          value:
+            PatchedVersions:
+              - ">=3.0.0"
