@@ -1602,11 +1602,10 @@ But, I can't recommend using ENV vars in your local machine to you.
 
 ### Docker Hub
 
-Docker Hub needs `TRIVY_AUTH_URL`, `TRIVY_USERNAME` and `TRIVY_PASSWORD`.
+Docker Hub needs `TRIVY_USERNAME` and `TRIVY_PASSWORD`.
 You don't need to set ENV vars when download from public repository.
 
 ```bash
-export TRIVY_AUTH_URL=https://registry.hub.docker.com
 export TRIVY_USERNAME={DOCKERHUB_USERNAME}
 export TRIVY_PASSWORD={DOCKERHUB_PASSWORD}
 ```
