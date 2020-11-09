@@ -1,0 +1,8 @@
+- bucket: nodejs-security-wg
+  pairs:
+    - bucket: electron
+      pairs:
+        - key: CVE-2019-5786
+          value:
+            PatchedVersions: "^2.0.18 || ^3.0.16 || ^3.1.6 || ^4.0.8 || ^5.0.0-beta.5"
+            VulnerableVersions: "<2.0.18 || <3.0.16 || <3.1.6 || <4.0.8 || <5.0.0-beta.5"
