@@ -8,12 +8,15 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 )
 
+// NpmComparer represents a comparer for npm
 type NpmComparer struct{}
 
+// IsVulnerable checks if the package version is vulnerable to the advisory.
 func (n NpmComparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
 	return comparer.IsVulnerable(ver, advisory, n.MatchVersion)
 }
 
+// MatchVersion checks if the package version satisfies the given constraint.
 func (n NpmComparer) MatchVersion(currentVersion, constraint string) (bool, error) {
 	v, err := npm.NewVersion(currentVersion)
 	if err != nil {

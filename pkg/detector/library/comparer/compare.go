@@ -18,6 +18,7 @@ type Comparer interface {
 
 type matchVersion func(currentVersion, constraint string) (bool, error)
 
+// IsVulnerable checks if the package version is vulnerable to the advisory.
 func IsVulnerable(pkgVer string, advisory dbTypes.Advisory, match matchVersion) bool {
 	if len(advisory.VulnerableVersions) != 0 {
 		matched, err := match(pkgVer, strings.Join(advisory.VulnerableVersions, " || "))
@@ -37,12 +38,15 @@ func IsVulnerable(pkgVer string, advisory dbTypes.Advisory, match matchVersion) 
 	return !matched
 }
 
+// GenericComparer represents a comparer for semver-like versioning
 type GenericComparer struct{}
 
+// IsVulnerable checks if the package version is vulnerable to the advisory.
 func (v GenericComparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
 	return IsVulnerable(ver, advisory, v.MatchVersion)
 }
 
+// MatchVersion checks if the package version satisfies the given constraint.
 func (v GenericComparer) MatchVersion(currentVersion, constraint string) (bool, error) {
 	ver, err := version.Parse(currentVersion)
 	if err != nil {

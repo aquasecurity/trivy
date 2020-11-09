@@ -9,12 +9,15 @@ import (
 	"github.com/aquasecurity/go-gem-version"
 )
 
+// RubyGemsComparer represents a comparer for RubyGems
 type RubyGemsComparer struct{}
 
+// IsVulnerable checks if the package version is vulnerable to the advisory.
 func (r RubyGemsComparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
 	return comparer.IsVulnerable(ver, advisory, r.MatchVersion)
 }
 
+// MatchVersion checks if the package version satisfies the given constraint.
 func (r RubyGemsComparer) MatchVersion(currentVersion, constraint string) (bool, error) {
 	v, err := gem.NewVersion(currentVersion)
 	if err != nil {
