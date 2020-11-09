@@ -3,10 +3,9 @@ package cargo
 import (
 	"strings"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
 	"golang.org/x/xerrors"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	cargoSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/cargo"
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -39,6 +38,11 @@ func (s *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detect
 			UnaffectedVersions: advisory.UnaffectedVersions,
 			PatchedVersions:    advisory.PatchedVersions,
 		}
+		if len(adv.UnaffectedVersions) == 0 && len(adv.PatchedVersions) == 0 {
+			// No patched version
+			adv.VulnerableVersions = []string{">=0.0.0"}
+		}
+
 		if !s.comparer.IsVulnerable(pkgVer, adv) {
 			continue
 		}
