@@ -1,0 +1,7 @@
+- bucket: python-safety-db
+  pairs:
+    - bucket: django
+      pairs:
+        - key: CVE-2020-9402
+          value:
+            Specs: foo

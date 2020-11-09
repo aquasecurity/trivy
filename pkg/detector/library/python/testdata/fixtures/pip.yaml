@@ -1,0 +1,14 @@
+- bucket: python-safety-db
+  pairs:
+    - bucket: django
+      pairs:
+        - key: CVE-2019-19844
+          value:
+            Specs:
+              - "==3.0"
+        - key: CVE-2020-9402
+          value:
+            Specs:
+              - ">=1.11.0,<1.11.29"
+              - ">=2.2.0,<2.2.11"
+              - ">=3.0.0,<3.0.4"
