@@ -1,0 +1,7 @@
+- bucket: ruby-advisory-db
+  pairs:
+    - bucket: activesupport
+      pairs:
+        - key: CVE-2015-3226
+          value:
+            PatchedVersions: dummy
