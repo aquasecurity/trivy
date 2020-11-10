@@ -83,7 +83,7 @@ func (tw TableWriter) Write(results Results) error {
 // TODO: refactror and fix cyclometic complexity
 func (tw TableWriter) write(result Result) {
 	table := tablewriter.NewWriter(tw.Output)
-	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version", "AVD"}
+	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version", "URL"}
 	if !tw.Light {
 		header = append(header, "Title")
 	}

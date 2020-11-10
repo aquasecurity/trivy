@@ -38,7 +38,7 @@ func TestReportWriter_Table(t *testing.T) {
 				},
 			},
 			expectedOutput: `+---------+------------------+----------+-------------------+---------------+----------------------------------+--------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |               AVD                | TITLE  |
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |               URL                | TITLE  |
 +---------+------------------+----------+-------------------+---------------+----------------------------------+--------+
 | foo     | CVE-2020-123     | HIGH     | 1.2.3             | 3.4.5         | avd.aquasec.com/nvd/cve-2020-123 | foobar |
 +---------+------------------+----------+-------------------+---------------+----------------------------------+--------+
@@ -62,7 +62,7 @@ func TestReportWriter_Table(t *testing.T) {
 				},
 			},
 			expectedOutput: `+---------+------------------+----------+-------------------+---------------+----------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |               AVD                |
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |               URL                |
 +---------+------------------+----------+-------------------+---------------+----------------------------------+
 | foo     | CVE-2020-123     | HIGH     | 1.2.3             | 3.4.5         | avd.aquasec.com/nvd/cve-2020-123 |
 +---------+------------------+----------+-------------------+---------------+----------------------------------+
@@ -83,7 +83,7 @@ func TestReportWriter_Table(t *testing.T) {
 				},
 			},
 			expectedOutput: `+---------+------------------+----------+-------------------+---------------+-----+--------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION | AVD | TITLE  |
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION | URL | TITLE  |
 +---------+------------------+----------+-------------------+---------------+-----+--------+
 | foo     |              123 | HIGH     | 1.2.3             | 3.4.5         |     | foobar |
 +---------+------------------+----------+-------------------+---------------+-----+--------+
@@ -104,7 +104,7 @@ func TestReportWriter_Table(t *testing.T) {
 				},
 			},
 			expectedOutput: `+---------+------------------+----------+-------------------+---------------+-----+----------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION | AVD |           TITLE            |
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION | URL |           TITLE            |
 +---------+------------------+----------+-------------------+---------------+-----+----------------------------+
 | foo     |              123 | HIGH     | 1.2.3             | 3.4.5         |     | a b c d e f g h i j k l... |
 +---------+------------------+----------+-------------------+---------------+-----+----------------------------+
