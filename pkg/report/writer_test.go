@@ -34,6 +34,7 @@ func TestReportWriter_Table(t *testing.T) {
 						Description: "baz",
 						Severity:    "HIGH",
 					},
+					URL: "https://avd.aquasec.com/nvd/cve-2020-123",
 				},
 			},
 			expectedOutput: `+---------+------------------+----------+-------------------+---------------+----------------------------------+--------+
@@ -57,6 +58,7 @@ func TestReportWriter_Table(t *testing.T) {
 						Description: "baz",
 						Severity:    "HIGH",
 					},
+					URL: "https://avd.aquasec.com/nvd/cve-2020-123",
 				},
 			},
 			expectedOutput: `+---------+------------------+----------+-------------------+---------------+----------------------------------+

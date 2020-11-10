@@ -109,7 +109,7 @@ func (tw TableWriter) write(result Result) {
 		}
 
 		if strings.HasPrefix(strings.ToLower(v.VulnerabilityID), "cve") {
-			row = append(row, fmt.Sprintf("avd.aquasec.com/nvd/%s", strings.ToLower(v.VulnerabilityID)))
+			row = append(row, strings.TrimPrefix(v.URL, "https://"))
 		} else {
 			row = append(row, "")
 		}

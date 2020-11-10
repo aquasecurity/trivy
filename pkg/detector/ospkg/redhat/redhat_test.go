@@ -96,7 +96,6 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
-					URL: "https://avd.aquasec.com/nvd/cve-2017-5953",
 				},
 				{
 					VulnerabilityID:  "CVE-2017-6350",
@@ -105,7 +104,6 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
-					URL: "https://avd.aquasec.com/nvd/cve-2017-6350",
 				},
 				{
 					VulnerabilityID:  "CVE-2019-12735",
@@ -115,7 +113,6 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
-					URL: "https://avd.aquasec.com/nvd/cve-2019-12735",
 				},
 			},
 		},
@@ -166,20 +163,17 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2015-2808",
 					PkgName:          "nss",
 					InstalledVersion: "3.36.0-7.1.el7_6",
-					URL:              "https://avd.aquasec.com/nvd/cve-2015-2808",
 				},
 				{
 					VulnerabilityID:  "CVE-2016-2183",
 					PkgName:          "nss",
 					InstalledVersion: "3.36.0-7.1.el7_6",
-					URL:              "https://avd.aquasec.com/nvd/cve-2016-2183",
 				},
 				{
 					VulnerabilityID:  "CVE-2018-12404",
 					PkgName:          "nss",
 					InstalledVersion: "3.36.0-7.1.el7_6",
 					FixedVersion:     "3.44.0-4.el7",
-					URL:              "https://avd.aquasec.com/nvd/cve-2018-12404",
 				},
 			},
 		},

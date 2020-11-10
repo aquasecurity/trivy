@@ -163,7 +163,6 @@ func TestScanner_Detect(t *testing.T) {
 				Layer: ftypes.Layer{
 					DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 				},
-				URL: "https://avd.aquasec.com/nvd/cve-2020-123",
 			},
 		}, vuls)
 	})

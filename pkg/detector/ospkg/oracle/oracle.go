@@ -1,7 +1,6 @@
 package oracle
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -73,7 +72,6 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				Layer:            pkg.Layer,
-				URL:              fmt.Sprintf("https://avd.aquasec.com/nvd/%s", strings.ToLower(adv.VulnerabilityID)),
 			}
 			if installedVersion.LessThan(fixedVersion) {
 				vuln.FixedVersion = adv.FixedVersion

@@ -1,7 +1,6 @@
 package redhat
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -86,7 +85,6 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				Layer:            pkg.Layer,
-				URL:              fmt.Sprintf("https://avd.aquasec.com/nvd/%s", strings.ToLower(adv.VulnerabilityID)),
 			}
 			vulns = append(vulns, vuln)
 		}
@@ -106,7 +104,6 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 					InstalledVersion: installed,
 					FixedVersion:     fixedVersion.String(),
 					Layer:            pkg.Layer,
-					URL:              fmt.Sprintf("https://avd.aquasec.com/nvd/%s", strings.ToLower(adv.VulnerabilityID)),
 				}
 				vulns = append(vulns, vuln)
 			}

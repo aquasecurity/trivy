@@ -1,7 +1,6 @@
 package amazon
 
 import (
-	"fmt"
 	"strings"
 
 	version "github.com/knqyf263/go-deb-version"
@@ -73,7 +72,6 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 					InstalledVersion: installed,
 					FixedVersion:     adv.FixedVersion,
 					Layer:            pkg.Layer,
-					URL:              fmt.Sprintf("https://avd.aquasec.com/nvd/%s", strings.ToLower(adv.VulnerabilityID)),
 				}
 				vulns = append(vulns, vuln)
 			}
