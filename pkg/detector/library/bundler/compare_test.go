@@ -4,92 +4,100 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-func TestRubyGemsComparer_MatchVersion(t *testing.T) {
+func TestRubyGemsComparer_IsVulnerable(t *testing.T) {
 	type args struct {
 		currentVersion string
-		constraint     string
+		advisory       types.Advisory
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    bool
-		wantErr string
+		name string
+		args args
+		want bool
 	}{
 		{
 			name: "happy path",
 			args: args{
 				currentVersion: "1.2.3",
-				constraint:     ">1.2.0",
+				advisory: types.Advisory{
+					PatchedVersions: []string{">=1.2.0"},
+				},
 			},
-			want: true,
+			want: false,
 		},
 		{
 			name: "pre-release",
 			args: args{
 				currentVersion: "1.2.3.a",
-				constraint:     ">1.2.3",
+				advisory: types.Advisory{
+					PatchedVersions: []string{">=1.2.3"},
+				},
 			},
-			want: false,
+			want: true,
 		},
 		{
 			name: "pre-release without dot",
 			args: args{
 				currentVersion: "4.1a",
-				constraint:     "< 4.2b1",
+				advisory: types.Advisory{
+					UnaffectedVersions: []string{"< 4.2b1"},
+				},
 			},
-			want: true,
+			want: false,
 		},
 		{
 			// https://github.com/aquasecurity/trivy/issues/108
 			name: "hyphen",
 			args: args{
 				currentVersion: "1.9.25-x86-mingw32",
-				constraint:     ">=1.9.24",
+				advisory: types.Advisory{
+					PatchedVersions: []string{">=1.9.24"},
+				},
 			},
-			want: true,
+			want: false,
 		},
 		{
 			// https://github.com/aquasecurity/trivy/issues/108
 			name: "pessimistic",
 			args: args{
 				currentVersion: "1.8.6-java",
-				constraint:     "~> 1.5.5 || ~> 1.6.8 || >= 1.7.7",
+				advisory: types.Advisory{
+					PatchedVersions: []string{"~> 1.5.5", "~> 1.6.8", ">= 1.7.7"},
+				},
 			},
-			want: true,
+			want: false,
 		},
 		{
 			name: "invalid version",
 			args: args{
 				currentVersion: "1.2..4",
-				constraint:     ">1.2.0",
+				advisory: types.Advisory{
+					PatchedVersions: []string{">=1.2.3"},
+				},
 			},
-			wantErr: "invalid gem version",
+			want: false,
 		},
 		{
 			name: "invalid constraint",
 			args: args{
 				currentVersion: "1.2.4",
-				constraint:     "!1.2.0",
+				advisory: types.Advisory{
+					PatchedVersions: []string{"!1.2.0"},
+				},
 			},
-			wantErr: "improper constraint",
+			want: false,
 		},
 	}
+	log.InitLogger(false, false)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := bundler.RubyGemsComparer{}
-			got, err := r.MatchVersion(tt.args.currentVersion, tt.args.constraint)
-			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
-			} else {
-				require.NoError(t, err)
-			}
+			got := r.IsVulnerable(tt.args.currentVersion, tt.args.advisory)
 			assert.Equal(t, tt.want, got)
 		})
 	}

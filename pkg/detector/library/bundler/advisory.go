@@ -7,7 +7,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	bundlerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/bundler"
-	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -19,7 +18,7 @@ type VulnSrc interface {
 // Advisory implements the bundler VulnSrc
 type Advisory struct {
 	vs       VulnSrc
-	comparer comparer.Comparer
+	comparer RubyGemsComparer
 }
 
 // NewAdvisory is the factory method to return bundler.Advisory

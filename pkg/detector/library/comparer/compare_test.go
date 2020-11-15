@@ -3,74 +3,93 @@ package comparer_test
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-func TestVersionComparer_MatchVersion(t *testing.T) {
+func TestGenericComparer_IsVulnerable(t *testing.T) {
 	type args struct {
-		currentVersion string
-		constraints    string
+		ver      string
+		advisory types.Advisory
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    bool
-		wantErr string
+		name string
+		args args
+		want bool
 	}{
 		{
 			name: "happy path",
 			args: args{
-				currentVersion: "1.2.3",
-				constraints:    ">1.2.0",
+				ver: "1.2.3",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<=1.0"},
+					PatchedVersions:    []string{">=1.1"},
+				},
+			},
+		},
+		{
+			name: "no patch",
+			args: args{
+				ver: "1.2.3",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<=99.999.99999"},
+					PatchedVersions:    []string{"<0.0.0"},
+				},
 			},
 			want: true,
 		},
 		{
 			name: "pre-release",
 			args: args{
-				currentVersion: "1.2.3-alpha",
-				constraints:    ">1.2.3",
+				ver: "1.2.2-alpha",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<=1.2.2"},
+					PatchedVersions:    []string{">=1.2.2"},
+				},
 			},
-			want: false,
+			want: true,
 		},
 		{
-			name: "build metadata",
+			name: "multiple constraints",
 			args: args{
-				currentVersion: "1.2.3+alpha",
-				constraints:    "< 1.0.0 || >=1.2.3",
+				ver: "2.0.0",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{">=1.7.0 <1.7.16", ">=1.8.0 <1.8.8", ">=2.0.0 <2.0.8", ">=3.0.0-beta.1 <3.0.0-beta.7"},
+					PatchedVersions:    []string{">=3.0.0-beta.7", ">=2.0.8 <3.0.0-beta.1", ">=1.8.8 <2.0.0", ">=1.7.16 <1.8.0"},
+				},
 			},
 			want: true,
 		},
 		{
 			name: "invalid version",
 			args: args{
-				currentVersion: "1.2..4",
-				constraints:    ">1.2.0",
+				ver: "1.2..4",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<1.0.0"},
+				},
 			},
-			wantErr: "malformed version",
+			want: false,
 		},
 		{
-			name: "invalid constraint",
+			name: "improper constraint",
 			args: args{
-				currentVersion: "1.2.4",
-				constraints:    "!1.2.0",
+				ver: "1.2.3",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"*"},
+					PatchedVersions:    nil,
+				},
 			},
-			wantErr: "improper constraint",
+			want: false,
 		},
 	}
+	log.InitLogger(false, false)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := comparer.GenericComparer{}
-			got, err := r.MatchVersion(tt.args.currentVersion, tt.args.constraints)
-			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
-			} else {
-				require.NoError(t, err)
-			}
+			v := comparer.GenericComparer{}
+			got := v.IsVulnerable(tt.args.ver, tt.args.advisory)
 			assert.Equal(t, tt.want, got)
 		})
 	}

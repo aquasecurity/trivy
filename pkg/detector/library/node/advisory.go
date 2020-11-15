@@ -5,16 +5,15 @@ import (
 
 	"golang.org/x/xerrors"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/node"
-	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // Advisory encapsulate Node vulnerability source
 type Advisory struct {
 	vs       node.VulnSrc
-	comparer comparer.Comparer
+	comparer NpmComparer
 }
 
 // NewAdvisory is the factory method for Node Advisory
@@ -34,19 +33,11 @@ func (a *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detect
 
 	var vulns []types.DetectedVulnerability
 	for _, advisory := range advisories {
-		matched, err := a.comparer.MatchVersion(pkgVer, advisory.VulnerableVersions)
-		if err != nil {
-			log.Logger.Warn(err)
-			continue
-		} else if !matched {
-			continue
+		adv := dbTypes.Advisory{
+			UnaffectedVersions: strings.Split(advisory.PatchedVersions, "||"),
+			PatchedVersions:    strings.Split(advisory.PatchedVersions, "||"),
 		}
-
-		matched, err = a.comparer.MatchVersion(pkgVer, advisory.PatchedVersions)
-		if err != nil {
-			log.Logger.Warn(err)
-			continue
-		} else if matched {
+		if !a.comparer.IsVulnerable(pkgVer, adv) {
 			continue
 		}
 

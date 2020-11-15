@@ -13,11 +13,11 @@ type NpmComparer struct{}
 
 // IsVulnerable checks if the package version is vulnerable to the advisory.
 func (n NpmComparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
-	return comparer.IsVulnerable(ver, advisory, n.MatchVersion)
+	return comparer.IsVulnerable(ver, advisory, n.matchVersion)
 }
 
-// MatchVersion checks if the package version satisfies the given constraint.
-func (n NpmComparer) MatchVersion(currentVersion, constraint string) (bool, error) {
+// matchVersion checks if the package version satisfies the given constraint.
+func (n NpmComparer) matchVersion(currentVersion, constraint string) (bool, error) {
 	v, err := npm.NewVersion(currentVersion)
 	if err != nil {
 		return false, xerrors.Errorf(" npm version error (%s): %s", currentVersion, err)
