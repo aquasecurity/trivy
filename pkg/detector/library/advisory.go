@@ -26,12 +26,12 @@ func NewAdvisory(ecosystem string, comparer comparer.Comparer) *Advisory {
 	}
 }
 
-// DetectVulnerabilities scans buckets with the prefix according to the programming language in "Advisory".
-// If "lang" is python, it looks for buckets with "python::" and gets security advisories from those buckets.
-// It allows us to add a new data source with the lang prefix (e.g. python::new-data-source)
+// DetectVulnerabilities scans buckets with the prefix according to the ecosystem in "Advisory".
+// If "ecosystem" is pip, it looks for buckets with "pip::" and gets security advisories from those buckets.
+// It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
 func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer string) ([]types.DetectedVulnerability, error) {
-	// e.g. "python::"
+	// e.g. "pip::", "npm::"
 	prefix := fmt.Sprintf("%s::", s.ecosystem)
 	advisories, err := db.Config{}.GetAdvisories(prefix, pkgName)
 	if err != nil {
