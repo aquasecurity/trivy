@@ -52,6 +52,21 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 			want:     nil,
 		},
 		{
+			name: "no patched version",
+			args: args{
+				pkgName: "bumpalo",
+				pkgVer:  "3.2.0",
+			},
+			fixtures: []string{"testdata/fixtures/no-patched-version.yaml"},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "bumpalo",
+					InstalledVersion: "3.2.0",
+					VulnerabilityID:  "RUSTSEC-2020-0006",
+				},
+			},
+		},
+		{
 			name: "invalid JSON",
 			args: args{
 				pkgName: "bumpalo",
