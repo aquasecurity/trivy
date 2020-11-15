@@ -6,9 +6,9 @@ require (
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
 	github.com/aquasecurity/fanal v0.0.0-20200820074632-6de62ef86882
 	github.com/aquasecurity/go-dep-parser v0.0.0-20190819075924-ea223f0ef24b
-	github.com/aquasecurity/go-gem-version v0.0.0-20201108080756-a8bcc33a2bf7
-	github.com/aquasecurity/go-npm-version v0.0.0-20201108091321-8ff739e48a3b
-	github.com/aquasecurity/go-version v0.0.0-20201107203531-5e48ac5d022a
+	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
+	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
+	github.com/aquasecurity/go-version v0.0.0-20201115065329-578079e4ab05
 	github.com/aquasecurity/trivy-db v0.0.0-20201108184602-656348265c98
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
