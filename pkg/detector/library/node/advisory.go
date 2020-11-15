@@ -26,15 +26,15 @@ func NewAdvisory() *Advisory {
 }
 
 // DetectVulnerabilities scans and return vulnerability using Node package scanner
-func (s *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
-	advisories, err := s.vs.Get(pkgName)
+func (a *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
+	advisories, err := a.vs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get node advisories: %w", err)
 	}
 
 	var vulns []types.DetectedVulnerability
 	for _, advisory := range advisories {
-		matched, err := s.comparer.MatchVersion(pkgVer, advisory.VulnerableVersions)
+		matched, err := a.comparer.MatchVersion(pkgVer, advisory.VulnerableVersions)
 		if err != nil {
 			log.Logger.Warn(err)
 			continue
@@ -42,7 +42,7 @@ func (s *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detect
 			continue
 		}
 
-		matched, err = s.comparer.MatchVersion(pkgVer, advisory.PatchedVersions)
+		matched, err = a.comparer.MatchVersion(pkgVer, advisory.PatchedVersions)
 		if err != nil {
 			log.Logger.Warn(err)
 			continue
