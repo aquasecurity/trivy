@@ -33,10 +33,7 @@ func (a *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detect
 
 	var vulns []types.DetectedVulnerability
 	for _, advisory := range advisories {
-		adv := dbTypes.Advisory{
-			UnaffectedVersions: strings.Split(advisory.PatchedVersions, "||"),
-			PatchedVersions:    strings.Split(advisory.PatchedVersions, "||"),
-		}
+		adv := convertToGenericAdvisory(advisory)
 		if !a.comparer.IsVulnerable(pkgVer, adv) {
 			continue
 		}
@@ -50,6 +47,21 @@ func (a *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detect
 		vulns = append(vulns, vuln)
 	}
 	return vulns, nil
+}
+
+func convertToGenericAdvisory(advisory node.Advisory) dbTypes.Advisory {
+	var vulnerable, patched []string
+	if advisory.VulnerableVersions != "" {
+		vulnerable = strings.Split(advisory.VulnerableVersions, "||")
+	}
+	if advisory.PatchedVersions != "" {
+		patched = strings.Split(advisory.PatchedVersions, "||")
+	}
+
+	return dbTypes.Advisory{
+		VulnerableVersions: vulnerable,
+		PatchedVersions:    patched,
+	}
 }
 
 func createFixedVersions(patchedVersions string) string {

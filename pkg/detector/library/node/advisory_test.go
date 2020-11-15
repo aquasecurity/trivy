@@ -52,7 +52,15 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 			want:     nil,
 		},
 		{
-			name: "malformed JSON",
+			name: "empty value",
+			args: args{
+				pkgName: "electron",
+				pkgVer:  "2.0.18",
+			},
+			fixtures: []string{"testdata/fixtures/no-value.yaml"},
+			want:     nil,
+		},
+		{name: "malformed JSON",
 			args: args{
 				pkgName: "electron",
 				pkgVer:  "2.0.18",
