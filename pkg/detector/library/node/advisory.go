@@ -12,8 +12,8 @@ import (
 
 // Advisory encapsulate Node vulnerability source
 type Advisory struct {
-	vs       node.VulnSrc
 	comparer NpmComparer
+	vs       node.VulnSrc
 }
 
 // NewAdvisory is the factory method for Node Advisory

@@ -17,8 +17,8 @@ type VulnSrc interface {
 
 // Advisory implements the bundler VulnSrc
 type Advisory struct {
-	vs       VulnSrc
 	comparer RubyGemsComparer
+	vs       VulnSrc
 }
 
 // NewAdvisory is the factory method to return bundler.Advisory
