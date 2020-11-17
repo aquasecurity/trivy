@@ -4,30 +4,30 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/types"
-
 	"golang.org/x/xerrors"
 
-	"github.com/Masterminds/semver/v3"
-
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	composerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/composer"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // Advisory encapsulates composer.VulnSrc
 type Advisory struct {
-	vs composerSrc.VulnSrc
+	vs       composerSrc.VulnSrc
+	comparer comparer.Comparer // TODO: implement a comparer for Composer
 }
 
 // NewAdvisory is the factory method of Advisory
 func NewAdvisory() *Advisory {
 	return &Advisory{
-		vs: composerSrc.NewVulnSrc(),
+		vs:       composerSrc.NewVulnSrc(),
+		comparer: comparer.GenericComparer{},
 	}
 }
 
 // DetectVulnerabilities returns the vulnerabilities in a package
-func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
+func (s *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
 	ref := fmt.Sprintf("composer://%s", pkgName)
 	advisories, err := s.vs.Get(ref)
 	if err != nil {
@@ -47,14 +47,15 @@ func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version)
 			affectedVersions = append(affectedVersions, strings.Join(branch.Versions, ", "))
 		}
 
-		if !utils.MatchVersions(pkgVer, affectedVersions) {
+		adv := dbTypes.Advisory{VulnerableVersions: affectedVersions}
+		if !s.comparer.IsVulnerable(pkgVer, adv) {
 			continue
 		}
 
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  advisory.VulnerabilityID,
 			PkgName:          pkgName,
-			InstalledVersion: pkgVer.String(),
+			InstalledVersion: pkgVer,
 			FixedVersion:     strings.Join(patchedVersions, ", "),
 		}
 		vulns = append(vulns, vuln)

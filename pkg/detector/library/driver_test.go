@@ -4,7 +4,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -20,7 +19,7 @@ func TestDriver_Detect(t *testing.T) {
 	}
 	type args struct {
 		pkgName string
-		pkgVer  *semver.Version
+		pkgVer  string
 	}
 	tests := []struct {
 		name     string
@@ -36,7 +35,7 @@ func TestDriver_Detect(t *testing.T) {
 			fields:   fields{fileName: "composer.lock"},
 			args: args{
 				pkgName: "symfony/symfony",
-				pkgVer:  semver.MustParse("4.2.6"),
+				pkgVer:  "4.2.6",
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -53,7 +52,7 @@ func TestDriver_Detect(t *testing.T) {
 			fields:   fields{fileName: "composer.lock"},
 			args: args{
 				pkgName: "symfony/symfony",
-				pkgVer:  semver.MustParse("4.2.6"),
+				pkgVer:  "4.2.6",
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -70,7 +69,7 @@ func TestDriver_Detect(t *testing.T) {
 			fields:   fields{fileName: "composer.lock"},
 			args: args{
 				pkgName: "symfony/symfony",
-				pkgVer:  semver.MustParse("4.4.6"),
+				pkgVer:  "4.4.6",
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -87,7 +86,7 @@ func TestDriver_Detect(t *testing.T) {
 			fields:   fields{fileName: "Gemfile.lock"},
 			args: args{
 				pkgName: "activesupport",
-				pkgVer:  semver.MustParse("4.1.1"),
+				pkgVer:  "4.1.1",
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -104,7 +103,7 @@ func TestDriver_Detect(t *testing.T) {
 			fields:   fields{fileName: "composer.lock"},
 			args: args{
 				pkgName: "symfony/symfony",
-				pkgVer:  semver.MustParse("4.4.7"),
+				pkgVer:  "4.4.7",
 			},
 		},
 	}

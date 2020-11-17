@@ -4,51 +4,50 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Masterminds/semver/v3"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // Advisory represents security advisories for each programming language
 type Advisory struct {
-	lang     string
-	comparer comparer
+	ecosystem string
+	comparer  comparer.Comparer
 }
 
 // NewAdvisory is the factory method of Advisory
-func NewAdvisory(lang string) *Advisory {
+func NewAdvisory(ecosystem string, comparer comparer.Comparer) *Advisory {
 	return &Advisory{
-		lang:     lang,
-		comparer: newComparer(lang),
+		ecosystem: ecosystem,
+		comparer:  comparer,
 	}
 }
 
-// DetectVulnerabilities scans buckets with the prefix according to the programming language in "Advisory".
-// If "lang" is python, it looks for buckets with "python::" and gets security advisories from those buckets.
-// It allows us to add a new data source with the lang prefix (e.g. python::new-data-source)
+// DetectVulnerabilities scans buckets with the prefix according to the ecosystem in "Advisory".
+// If "ecosystem" is pip, it looks for buckets with "pip::" and gets security advisories from those buckets.
+// It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
-func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
-	// e.g. "python::"
-	prefix := fmt.Sprintf("%s::", s.lang)
+func (s *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
+	// e.g. "pip::", "npm::"
+	prefix := fmt.Sprintf("%s::", s.ecosystem)
 	advisories, err := db.Config{}.GetAdvisories(prefix, pkgName)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.lang, err)
+		return nil, xerrors.Errorf("failed to get %s advisories: %w", s.ecosystem, err)
 	}
 
 	var vulns []types.DetectedVulnerability
 	for _, advisory := range advisories {
-		if !s.comparer.isVulnerable(pkgVer, advisory) {
+		if !s.comparer.IsVulnerable(pkgVer, advisory) {
 			continue
 		}
 
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  advisory.VulnerabilityID,
 			PkgName:          pkgName,
-			InstalledVersion: pkgVer.String(),
+			InstalledVersion: pkgVer,
 			FixedVersion:     s.createFixedVersions(advisory),
 		}
 		vulns = append(vulns, vuln)
@@ -73,30 +72,4 @@ func (s *Advisory) createFixedVersions(advisory dbTypes.Advisory) string {
 		}
 	}
 	return strings.Join(fixedVersions, ", ")
-}
-
-type comparer interface {
-	isVulnerable(pkgVer *semver.Version, advisory dbTypes.Advisory) bool
-}
-
-func newComparer(lang string) comparer {
-	switch lang {
-	// When another library is needed for version comparison, it can be added here.
-	}
-	return generalComparer{}
-}
-
-type generalComparer struct{}
-
-func (c generalComparer) isVulnerable(pkgVer *semver.Version, advisory dbTypes.Advisory) bool {
-	if len(advisory.VulnerableVersions) != 0 {
-		return utils.MatchVersions(pkgVer, advisory.VulnerableVersions)
-	}
-
-	if utils.MatchVersions(pkgVer, advisory.PatchedVersions) ||
-		utils.MatchVersions(pkgVer, advisory.UnaffectedVersions) {
-		return false
-	}
-
-	return true
 }

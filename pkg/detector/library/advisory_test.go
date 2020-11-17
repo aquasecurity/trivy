@@ -4,40 +4,40 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
+	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
+	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 func TestAdvisory_DetectVulnerabilities(t *testing.T) {
-	type fields struct {
-		lang string
-	}
 	type args struct {
 		pkgName string
-		pkgVer  *semver.Version
+		pkgVer  string
 	}
 	tests := []struct {
-		name     string
-		fixtures []string
-		fields   fields
-		args     args
-		want     []types.DetectedVulnerability
-		wantErr  string
+		name      string
+		fixtures  []string
+		ecosystem string
+		comparer  comparer.Comparer
+		args      args
+		want      []types.DetectedVulnerability
+		wantErr   string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/php.yaml"},
-			fields:   fields{lang: vulnerability.PHP},
+			name:      "happy path",
+			fixtures:  []string{"testdata/fixtures/php.yaml"},
+			ecosystem: vulnerability.Composer,
+			comparer:  comparer.GenericComparer{},
 			args: args{
 				pkgName: "symfony/symfony",
-				pkgVer:  semver.MustParse("4.2.6"),
+				pkgVer:  "4.2.6",
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -49,12 +49,13 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 			},
 		},
 		{
-			name:     "no patched versions in the advisory",
-			fixtures: []string{"testdata/fixtures/php.yaml"},
-			fields:   fields{lang: vulnerability.PHP},
+			name:      "no patched versions in the advisory",
+			fixtures:  []string{"testdata/fixtures/php.yaml"},
+			ecosystem: vulnerability.Composer,
+			comparer:  comparer.GenericComparer{},
 			args: args{
 				pkgName: "symfony/symfony",
-				pkgVer:  semver.MustParse("4.4.6"),
+				pkgVer:  "4.4.6",
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -66,12 +67,13 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 			},
 		},
 		{
-			name:     "no vulnerable versions in the advisory",
-			fixtures: []string{"testdata/fixtures/ruby.yaml"},
-			fields:   fields{lang: vulnerability.Ruby},
+			name:      "no vulnerable versions in the advisory",
+			fixtures:  []string{"testdata/fixtures/ruby.yaml"},
+			ecosystem: vulnerability.RubyGems,
+			comparer:  bundler.RubyGemsComparer{},
 			args: args{
 				pkgName: "activesupport",
-				pkgVer:  semver.MustParse("4.1.1"),
+				pkgVer:  "4.1.1",
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -83,12 +85,13 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 			},
 		},
 		{
-			name:     "no vulnerability",
-			fixtures: []string{"testdata/fixtures/php.yaml"},
-			fields:   fields{lang: vulnerability.PHP},
+			name:      "no vulnerability",
+			fixtures:  []string{"testdata/fixtures/php.yaml"},
+			ecosystem: vulnerability.Composer,
+			comparer:  comparer.GenericComparer{},
 			args: args{
 				pkgName: "symfony/symfony",
-				pkgVer:  semver.MustParse("4.4.7"),
+				pkgVer:  "4.4.7",
 			},
 		},
 	}
@@ -99,7 +102,7 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 			defer os.RemoveAll(dir)
 			defer db.Close()
 
-			adv := library.NewAdvisory(tt.fields.lang)
+			adv := library.NewAdvisory(tt.ecosystem, tt.comparer)
 			got, err := adv.DetectVulnerabilities(tt.args.pkgName, tt.args.pkgVer)
 
 			switch {

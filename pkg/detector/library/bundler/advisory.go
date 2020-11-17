@@ -3,11 +3,10 @@ package bundler
 import (
 	"strings"
 
-	"github.com/Masterminds/semver/v3"
 	"golang.org/x/xerrors"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	bundlerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/bundler"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -18,18 +17,20 @@ type VulnSrc interface {
 
 // Advisory implements the bundler VulnSrc
 type Advisory struct {
-	vs VulnSrc
+	comparer RubyGemsComparer
+	vs       VulnSrc
 }
 
 // NewAdvisory is the factory method to return bundler.Advisory
 func NewAdvisory() *Advisory {
 	return &Advisory{
-		vs: bundlerSrc.NewVulnSrc(),
+		vs:       bundlerSrc.NewVulnSrc(),
+		comparer: RubyGemsComparer{},
 	}
 }
 
 // DetectVulnerabilities scans and returns Vulnerability in bundler
-func (a *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version) ([]types.DetectedVulnerability, error) {
+func (a *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
 	advisories, err := a.vs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get bundler advisories: %w", err)
@@ -37,17 +38,18 @@ func (a *Advisory) DetectVulnerabilities(pkgName string, pkgVer *semver.Version)
 
 	var vulns []types.DetectedVulnerability
 	for _, advisory := range advisories {
-		if utils.MatchVersions(pkgVer, advisory.PatchedVersions) {
-			continue
+		adv := dbTypes.Advisory{
+			UnaffectedVersions: advisory.UnaffectedVersions,
+			PatchedVersions:    advisory.PatchedVersions,
 		}
-		if utils.MatchVersions(pkgVer, advisory.UnaffectedVersions) {
+		if !a.comparer.IsVulnerable(pkgVer, adv) {
 			continue
 		}
 
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  advisory.VulnerabilityID,
 			PkgName:          strings.TrimSpace(pkgName),
-			InstalledVersion: pkgVer.String(),
+			InstalledVersion: pkgVer,
 			FixedVersion:     strings.Join(advisory.PatchedVersions, ", "),
 		}
 		vulns = append(vulns, vuln)
