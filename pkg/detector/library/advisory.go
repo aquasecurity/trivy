@@ -30,7 +30,7 @@ func NewAdvisory(ecosystem string, comparer comparer.Comparer) *Advisory {
 // If "ecosystem" is pip, it looks for buckets with "pip::" and gets security advisories from those buckets.
 // It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
-func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer string) ([]types.DetectedVulnerability, error) {
+func (s *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
 	// e.g. "pip::", "npm::"
 	prefix := fmt.Sprintf("%s::", s.ecosystem)
 	advisories, err := db.Config{}.GetAdvisories(prefix, pkgName)

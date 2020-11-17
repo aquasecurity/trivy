@@ -31,7 +31,7 @@ func NewAdvisory(ecosystem ghsa.Ecosystem, comparer comparer.Comparer) *Advisory
 }
 
 // DetectVulnerabilities scans package for vulnerabilities
-func (s *Advisory) DetectVulnerabilities(pkgName string, pkgVer string) ([]types.DetectedVulnerability, error) {
+func (s *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
 	advisories, err := s.vs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get ghsa advisories: %w", err)
