@@ -4,15 +4,14 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
-	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
+	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
+	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )

@@ -3,8 +3,9 @@ package utils
 import (
 	"testing"
 
-	"github.com/aquasecurity/fanal/types"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/fanal/types"
 )
 
 func TestFormatSrcVersion(t *testing.T) {

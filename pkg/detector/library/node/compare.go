@@ -20,7 +20,7 @@ func (n NpmComparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
 func (n NpmComparer) matchVersion(currentVersion, constraint string) (bool, error) {
 	v, err := npm.NewVersion(currentVersion)
 	if err != nil {
-		return false, xerrors.Errorf(" npm version error (%s): %s", currentVersion, err)
+		return false, xerrors.Errorf("npm version error (%s): %s", currentVersion, err)
 	}
 
 	c, err := npm.NewConstraints(constraint)

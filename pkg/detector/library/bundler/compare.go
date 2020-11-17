@@ -1,12 +1,11 @@
 package bundler
 
 import (
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
-
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-gem-version"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 )
 
 // RubyGemsComparer represents a comparer for RubyGems
