@@ -6,9 +6,10 @@ import (
 	"time"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -16,25 +17,6 @@ import (
 	"k8s.io/utils/clock"
 	clocktesting "k8s.io/utils/clock/testing"
 )
-
-type MockOracleConfig struct {
-	update func(string) error
-	get    func(string, string) ([]dbTypes.Advisory, error)
-}
-
-func (moc MockOracleConfig) Update(a string) error {
-	if moc.update != nil {
-		return moc.update(a)
-	}
-	return nil
-}
-
-func (moc MockOracleConfig) Get(a string, b string) ([]dbTypes.Advisory, error) {
-	if moc.get != nil {
-		return moc.get(a, b)
-	}
-	return []dbTypes.Advisory{}, nil
-}
 
 func TestMain(m *testing.M) {
 	log.InitLogger(false, false)
@@ -120,45 +102,127 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 }
 
 func TestScanner_Detect(t *testing.T) {
-	t.Run("happy path", func(t *testing.T) {
-		s := &Scanner{
-			vs: MockOracleConfig{
-				get: func(s string, s2 string) (advisories []dbTypes.Advisory, err error) {
-					return []dbTypes.Advisory{
-						{
-							VulnerabilityID: "oracle-123",
-							FixedVersion:    "3.0.0",
-						},
-					}, nil
+	type args struct {
+		osVer string
+		pkgs  []ftypes.Package
+	}
+	tests := []struct {
+		name     string
+		args     args
+		fixtures []string
+		want     []types.DetectedVulnerability
+		wantErr  string
+	}{
+		{
+			name:     "detected",
+			fixtures: []string{"testdata/fixtures/oracle7.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.29.0",
+						Release:    "59.0.1.el7",
+						Arch:       "x86_64",
+						SrcName:    "curl",
+						SrcVersion: "7.29.0",
+						SrcRelease: "59.0.1.el7",
+					},
 				},
 			},
-		}
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2020-8177",
+					PkgName:          "curl",
+					InstalledVersion: "7.29.0-59.0.1.el7",
+					FixedVersion:     "7.29.0-59.0.1.el7_9.1",
+				},
+			},
+		},
+		{
+			name:     "without ksplice",
+			fixtures: []string{"testdata/fixtures/oracle7.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "glibc",
+						Version:    "2.17",
+						Release:    "317.0.1.el7",
+						Arch:       "x86_64",
+						SrcName:    "glibc",
+						SrcVersion: "2.17",
+						SrcRelease: "317.0.1.el7",
+					},
+				},
+			},
+			want: nil,
+		},
+		{
+			name:     "with ksplice",
+			fixtures: []string{"testdata/fixtures/oracle7.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "glibc",
+						Epoch:      2,
+						Version:    "2.17",
+						Release:    "156.ksplice1.el7",
+						Arch:       "x86_64",
+						SrcEpoch:   2,
+						SrcName:    "glibc",
+						SrcVersion: "2.17",
+						SrcRelease: "156.ksplice1.el7",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2017-1000364",
+					PkgName:          "glibc",
+					InstalledVersion: "2:2.17-156.ksplice1.el7",
+					FixedVersion:     "2:2.17-157.ksplice1.el7_3.4",
+				},
+			},
+		},
+		{
+			name:     "malformed",
+			fixtures: []string{"testdata/fixtures/invalid-type.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.29.0",
+						Release:    "59.0.1.el7",
+						Arch:       "x86_64",
+						SrcName:    "curl",
+						SrcVersion: "7.29.0",
+						SrcRelease: "59.0.1.el7",
+					},
+				},
+			},
+			wantErr: "failed to unmarshal advisory JSON",
+		},
+	}
 
-		vuls, err := s.Detect("3.1.0", []ftypes.Package{
-			{
-				Name:       "testpkg",
-				Version:    "2.1.0",
-				Release:    "hotfix",
-				SrcRelease: "test-hotfix",
-				SrcVersion: "2.1.0",
-				Layer: ftypes.Layer{
-					DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-				},
-			},
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dir := utils.InitTestDB(t, tt.fixtures)
+			defer os.RemoveAll(dir)
+
+			s := NewScanner()
+			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)
+			if tt.wantErr != "" {
+				require.NotNil(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
+			} else {
+				assert.NoError(t, err)
+			}
+
+			assert.Equal(t, tt.want, got)
 		})
-		assert.NoError(t, err)
-		assert.Equal(t, []types.DetectedVulnerability{
-			{
-				VulnerabilityID:  "oracle-123",
-				PkgName:          "testpkg",
-				InstalledVersion: "2.1.0-hotfix",
-				FixedVersion:     "3.0.0",
-				Layer: ftypes.Layer{
-					DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-				},
-			},
-		}, vuls)
-	})
-
-	// TODO: Add unhappy paths
+	}
 }
