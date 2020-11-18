@@ -83,10 +83,11 @@ func (tw TableWriter) Write(results Results) error {
 // TODO: refactror and fix cyclometic complexity
 func (tw TableWriter) write(result Result) {
 	table := tablewriter.NewWriter(tw.Output)
-	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version", "URL"}
+	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version"}
 	if !tw.Light {
 		header = append(header, "Title")
 	}
+	header = append(header, "URL")
 	table.SetHeader(header)
 
 	severityCount := map[string]int{}
@@ -108,15 +109,16 @@ func (tw TableWriter) write(result Result) {
 			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion}
 		}
 
+		if !tw.Light {
+			row = append(row, title)
+		}
+
 		if strings.HasPrefix(strings.ToLower(v.VulnerabilityID), "cve") {
 			row = append(row, strings.TrimPrefix(v.URL, "https://"))
 		} else {
 			row = append(row, "")
 		}
 
-		if !tw.Light {
-			row = append(row, title)
-		}
 		table.Append(row)
 	}
 
