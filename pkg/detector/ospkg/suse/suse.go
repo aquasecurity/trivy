@@ -110,7 +110,6 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				Layer:            pkg.Layer,
-				// URL is skipped because opensuse has it's own VulnerabilityID scheme (e.g. openSUSE-SU-2020:0022-1)
 			}
 			if installedVersion.LessThan(fixedVersion) {
 				vuln.FixedVersion = adv.FixedVersion
