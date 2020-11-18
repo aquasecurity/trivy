@@ -47,23 +47,6 @@ func TestDriver_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "happy path, python with custom vulnerability ID",
-			fixtures: []string{"testdata/fixtures/python.yaml"},
-			fields:   fields{fileName: "Pipfile.lock"},
-			args: args{
-				pkgName: "django-cors-headers/django-cors-headers",
-				pkgVer:  semver.MustParse("2.5.2"),
-			},
-			want: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "pyup.io-37132",
-					PkgName:          "django-cors-headers/django-cors-headers",
-					InstalledVersion: "2.5.2",
-					FixedVersion:     ">=3.0.0",
-				},
-			},
-		},
-		{
 			name:     "non-prefix buckets",
 			fixtures: []string{"testdata/fixtures/php-without-prefix.yaml"},
 			fields:   fields{fileName: "composer.lock"},
