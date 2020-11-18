@@ -1,0 +1,9 @@
+- bucket: Oracle Linux 7
+  pairs:
+    - bucket: curl
+      pairs:
+        - key: CVE-2020-8177
+          value:
+            FixedVersion:
+              - foo
+              - bar

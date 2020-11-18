@@ -65,7 +65,10 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 		installed := utils.FormatVersion(pkg)
 		installedVersion := version.NewVersion(installed)
 		for _, adv := range advisories {
-			// TODO: We don't seem to ignore advisories with no FixedVersion like we do elsewhere, expected?
+			// Skip if only one of them contains .ksplice1.
+			if strings.Contains(adv.FixedVersion, ".ksplice1.") != strings.Contains(pkg.Release, ".ksplice1.") {
+				continue
+			}
 			fixedVersion := version.NewVersion(adv.FixedVersion)
 			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
