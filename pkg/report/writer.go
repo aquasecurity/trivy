@@ -215,7 +215,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 			if !strings.Contains(strings.ToLower(input), "cve") {
 				return ""
 			}
-			return strings.ToLower(fmt.Sprintf("https://avd.aquasec.com/nvd/%s", input))
+			return utils.GenerateAVDLink(input)
 		},
 	}).Parse(outputTemplate)
 	if err != nil {

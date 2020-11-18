@@ -1,8 +1,9 @@
 package rpc
 
 import (
-	"fmt"
 	"strings"
+
+	"github.com/aquasecurity/trivy/pkg/utils"
 
 	"github.com/golang/protobuf/ptypes"
 
@@ -160,7 +161,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 
 			var avdURL string
 			if strings.Contains(strings.ToLower(vuln.VulnerabilityId), "cve") {
-				avdURL = strings.ToLower(fmt.Sprintf("https://avd.aquasec.com/nvd/%s", vuln.VulnerabilityId))
+				avdURL = utils.GenerateAVDLink(vuln.VulnerabilityId)
 			}
 
 			vulns = append(vulns, types.DetectedVulnerability{

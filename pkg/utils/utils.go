@@ -155,3 +155,7 @@ func InitTestDB(t *testing.T, fixtureFiles []string) string {
 
 	return dir
 }
+
+func GenerateAVDLink(cveID string) string {
+	return strings.ToLower(fmt.Sprintf("https://avd.aquasec.com/nvd/%s", cveID))
+}

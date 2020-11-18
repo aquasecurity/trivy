@@ -192,3 +192,7 @@ func TestCopyFile(t *testing.T) {
 		})
 	}
 }
+
+func TestGenerateAVDLink(t *testing.T) {
+	assert.Equal(t, "https://avd.aquasec.com/nvd/cve-2020-1234", GenerateAVDLink("CVE-2020-1234"))
+}
