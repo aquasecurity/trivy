@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+      * {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      h1 {
+        text-align: center;
+      }
+      .group-header th {
+        font-size: 200%;
+      }
+      .sub-header th {
+        font-size: 150%;
+      }
+      table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        white-space: nowrap;
+        padding: .3em;
+      }
+      table {
+        margin: 0 auto;
+      }
+      .severity {
+        text-align: center;
+        font-weight: bold;
+        color: #fafafa;
+      }
+      .severity-LOW .severity { background-color: #5fbb31; }
+      .severity-MEDIUM .severity { background-color: #e9c600; }
+      .severity-HIGH .severity { background-color: #ff8800; }
+      .severity-CRITICAL .severity { background-color: #e40000; }
+      .severity-UNKNOWN .severity { background-color: #747474; }
+      .severity-LOW { background-color: #5fbb3160; }
+      .severity-MEDIUM { background-color: #e9c60060; }
+      .severity-HIGH { background-color: #ff880060; }
+      .severity-CRITICAL { background-color: #e4000060; }
+      .severity-UNKNOWN { background-color: #74747460; }
+      table tr td:first-of-type {
+        font-weight: bold;
+      }
+      .links a,
+      .links[data-more-links=on] a {
+        display: block;
+      }
+      .links[data-more-links=off] a:nth-of-type(1n+5) {
+        display: none;
+      }
+      a.toggle-more-links { cursor: pointer; }
+    </style>
+    <title>testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2) - Trivy Report - 2020-08-10T07:28:17.000958601Z</title>
+    <script>
+      window.onload = function() {
+        document.querySelectorAll('td.links').forEach(function(linkCell) {
+          var links = [].concat.apply([], linkCell.querySelectorAll('a'));
+          [].sort.apply(links, function(a, b) {
+            return a.href > b.href ? 1 : -1;
+          });
+          links.forEach(function(link, idx) {
+            if (links.length > 3 && 3 === idx) {
+              var toggleLink = document.createElement('a');
+              toggleLink.innerText = "Toggle more links";
+              toggleLink.href = "#toggleMore";
+              toggleLink.setAttribute("class", "toggle-more-links");
+              linkCell.appendChild(toggleLink);
+            }
+            linkCell.appendChild(link);
+          });
+        });
+        document.querySelectorAll('a.toggle-more-links').forEach(function(toggleLink) {
+          toggleLink.onclick = function() {
+            var expanded = toggleLink.parentElement.getAttribute("data-more-links");
+            toggleLink.parentElement.setAttribute("data-more-links", "on" === expanded ? "off" : "on");
+            return false;
+          };
+        });
+      };
+    </script>
+  </head>
+  <body>
+    <h1>testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2) - Trivy Report - 2020-08-10T07:28:17.000958601Z</h1>
+    <table>
+      <tr class="group-header"><th colspan="6">alpine</th></tr>
+      <tr class="sub-header">
+        <th>Package</th>
+        <th>Vulnerability ID</th>
+        <th>Severity</th>
+        <th>Installed Version</th>
+        <th>Fixed Version</th>
+        <th>Links</th>
+      </tr>
+      <tr class="severity-MEDIUM">
+        <td class="pkg-name">libcrypto1.1</td>
+        <td>CVE-2019-1549</td>
+        <td class="severity">MEDIUM</td>
+        <td class="pkg-version">1.1.1c-r0</td>
+        <td>1.1.1d-r0</td>
+        <td class="links" data-more-links="off">
+          <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1b0fe00e2704b5e20334a16d3c9099d1ba2ef1be">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1b0fe00e2704b5e20334a16d3c9099d1ba2ef1be</a>
+          <a href="https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/">https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/</a>
+          <a href="https://security.netapp.com/advisory/ntap-20190919-0002/">https://security.netapp.com/advisory/ntap-20190919-0002/</a>
+          <a href="https://support.f5.com/csp/article/K44070243">https://support.f5.com/csp/article/K44070243</a>
+          <a href="https://www.openssl.org/news/secadv/20190910.txt">https://www.openssl.org/news/secadv/20190910.txt</a>
+        </td>
+      </tr>
+      <tr class="severity-MEDIUM">
+        <td class="pkg-name">libcrypto1.1</td>
+        <td>CVE-2019-1551</td>
+        <td class="severity">MEDIUM</td>
+        <td class="pkg-version">1.1.1c-r0</td>
+        <td>1.1.1d-r2</td>
+        <td class="links" data-more-links="off">
+          <a href="http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html">http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html</a>
+          <a href="http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html">http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html</a>
+          <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f1c5eea8a817075d31e43f5876993c6710238c98">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f1c5eea8a817075d31e43f5876993c6710238c98</a>
+          <a href="https://github.com/openssl/openssl/pull/10575">https://github.com/openssl/openssl/pull/10575</a>
+          <a href="https://seclists.org/bugtraq/2019/Dec/39">https://seclists.org/bugtraq/2019/Dec/39</a>
+          <a href="https://seclists.org/bugtraq/2019/Dec/46">https://seclists.org/bugtraq/2019/Dec/46</a>
+          <a href="https://security.netapp.com/advisory/ntap-20191210-0001/">https://security.netapp.com/advisory/ntap-20191210-0001/</a>
+          <a href="https://www.debian.org/security/2019/dsa-4594">https://www.debian.org/security/2019/dsa-4594</a>
+          <a href="https://www.openssl.org/news/secadv/20191206.txt">https://www.openssl.org/news/secadv/20191206.txt</a>
+          <a href="https://www.tenable.com/security/tns-2019-09">https://www.tenable.com/security/tns-2019-09</a>
+        </td>
+      </tr>
+      <tr class="severity-MEDIUM">
+        <td class="pkg-name">libcrypto1.1</td>
+        <td>CVE-2019-1563</td>
+        <td class="severity">MEDIUM</td>
+        <td class="pkg-version">1.1.1c-r0</td>
+        <td>1.1.1d-r0</td>
+        <td class="links" data-more-links="off">
+          <a href="http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html">http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html</a>
+          <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=08229ad838c50f644d7e928e2eef147b4308ad64">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=08229ad838c50f644d7e928e2eef147b4308ad64</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=631f94db0065c78181ca9ba5546ebc8bb3884b97">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=631f94db0065c78181ca9ba5546ebc8bb3884b97</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f</a>
+          <a href="https://seclists.org/bugtraq/2019/Sep/25">https://seclists.org/bugtraq/2019/Sep/25</a>
+          <a href="https://security.netapp.com/advisory/ntap-20190919-0002/">https://security.netapp.com/advisory/ntap-20190919-0002/</a>
+          <a href="https://www.openssl.org/news/secadv/20190910.txt">https://www.openssl.org/news/secadv/20190910.txt</a>
+        </td>
+      </tr>
+      <tr class="severity-LOW">
+        <td class="pkg-name">libcrypto1.1</td>
+        <td>CVE-2019-1547</td>
+        <td class="severity">LOW</td>
+        <td class="pkg-version">1.1.1c-r0</td>
+        <td>1.1.1d-r0</td>
+        <td class="links" data-more-links="off">
+          <a href="http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html">http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html</a>
+          <a href="https://arxiv.org/abs/1909.01785">https://arxiv.org/abs/1909.01785</a>
+          <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1547">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1547</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=21c856b75d81eff61aa63b4f036bb64a85bf6d46">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=21c856b75d81eff61aa63b4f036bb64a85bf6d46</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=30c22fa8b1d840036b8e203585738df62a03cec8">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=30c22fa8b1d840036b8e203585738df62a03cec8</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=7c1709c2da5414f5b6133d00a03fc8c5bf996c7a">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=7c1709c2da5414f5b6133d00a03fc8c5bf996c7a</a>
+          <a href="https://seclists.org/bugtraq/2019/Sep/25">https://seclists.org/bugtraq/2019/Sep/25</a>
+          <a href="https://security.netapp.com/advisory/ntap-20190919-0002/">https://security.netapp.com/advisory/ntap-20190919-0002/</a>
+          <a href="https://www.openssl.org/news/secadv/20190910.txt">https://www.openssl.org/news/secadv/20190910.txt</a>
+        </td>
+      </tr>
+      <tr class="severity-MEDIUM">
+        <td class="pkg-name">libssl1.1</td>
+        <td>CVE-2019-1549</td>
+        <td class="severity">MEDIUM</td>
+        <td class="pkg-version">1.1.1c-r0</td>
+        <td>1.1.1d-r0</td>
+        <td class="links" data-more-links="off">
+          <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1b0fe00e2704b5e20334a16d3c9099d1ba2ef1be">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1b0fe00e2704b5e20334a16d3c9099d1ba2ef1be</a>
+          <a href="https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/">https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/</a>
+          <a href="https://security.netapp.com/advisory/ntap-20190919-0002/">https://security.netapp.com/advisory/ntap-20190919-0002/</a>
+          <a href="https://support.f5.com/csp/article/K44070243">https://support.f5.com/csp/article/K44070243</a>
+          <a href="https://www.openssl.org/news/secadv/20190910.txt">https://www.openssl.org/news/secadv/20190910.txt</a>
+        </td>
+      </tr>
+      <tr class="severity-MEDIUM">
+        <td class="pkg-name">libssl1.1</td>
+        <td>CVE-2019-1551</td>
+        <td class="severity">MEDIUM</td>
+        <td class="pkg-version">1.1.1c-r0</td>
+        <td>1.1.1d-r2</td>
+        <td class="links" data-more-links="off">
+          <a href="http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html">http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html</a>
+          <a href="http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html">http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html</a>
+          <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f1c5eea8a817075d31e43f5876993c6710238c98">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f1c5eea8a817075d31e43f5876993c6710238c98</a>
+          <a href="https://github.com/openssl/openssl/pull/10575">https://github.com/openssl/openssl/pull/10575</a>
+          <a href="https://seclists.org/bugtraq/2019/Dec/39">https://seclists.org/bugtraq/2019/Dec/39</a>
+          <a href="https://seclists.org/bugtraq/2019/Dec/46">https://seclists.org/bugtraq/2019/Dec/46</a>
+          <a href="https://security.netapp.com/advisory/ntap-20191210-0001/">https://security.netapp.com/advisory/ntap-20191210-0001/</a>
+          <a href="https://www.debian.org/security/2019/dsa-4594">https://www.debian.org/security/2019/dsa-4594</a>
+          <a href="https://www.openssl.org/news/secadv/20191206.txt">https://www.openssl.org/news/secadv/20191206.txt</a>
+          <a href="https://www.tenable.com/security/tns-2019-09">https://www.tenable.com/security/tns-2019-09</a>
+        </td>
+      </tr>
+      <tr class="severity-MEDIUM">
+        <td class="pkg-name">libssl1.1</td>
+        <td>CVE-2019-1563</td>
+        <td class="severity">MEDIUM</td>
+        <td class="pkg-version">1.1.1c-r0</td>
+        <td>1.1.1d-r0</td>
+        <td class="links" data-more-links="off">
+          <a href="http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html">http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html</a>
+          <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=08229ad838c50f644d7e928e2eef147b4308ad64">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=08229ad838c50f644d7e928e2eef147b4308ad64</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=631f94db0065c78181ca9ba5546ebc8bb3884b97">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=631f94db0065c78181ca9ba5546ebc8bb3884b97</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f</a>
+          <a href="https://seclists.org/bugtraq/2019/Sep/25">https://seclists.org/bugtraq/2019/Sep/25</a>
+          <a href="https://security.netapp.com/advisory/ntap-20190919-0002/">https://security.netapp.com/advisory/ntap-20190919-0002/</a>
+          <a href="https://www.openssl.org/news/secadv/20190910.txt">https://www.openssl.org/news/secadv/20190910.txt</a>
+        </td>
+      </tr>
+      <tr class="severity-LOW">
+        <td class="pkg-name">libssl1.1</td>
+        <td>CVE-2019-1547</td>
+        <td class="severity">LOW</td>
+        <td class="pkg-version">1.1.1c-r0</td>
+        <td>1.1.1d-r0</td>
+        <td class="links" data-more-links="off">
+          <a href="http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html">http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html</a>
+          <a href="https://arxiv.org/abs/1909.01785">https://arxiv.org/abs/1909.01785</a>
+          <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1547">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1547</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=21c856b75d81eff61aa63b4f036bb64a85bf6d46">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=21c856b75d81eff61aa63b4f036bb64a85bf6d46</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=30c22fa8b1d840036b8e203585738df62a03cec8">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=30c22fa8b1d840036b8e203585738df62a03cec8</a>
+          <a href="https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=7c1709c2da5414f5b6133d00a03fc8c5bf996c7a">https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=7c1709c2da5414f5b6133d00a03fc8c5bf996c7a</a>
+          <a href="https://seclists.org/bugtraq/2019/Sep/25">https://seclists.org/bugtraq/2019/Sep/25</a>
+          <a href="https://security.netapp.com/advisory/ntap-20190919-0002/">https://security.netapp.com/advisory/ntap-20190919-0002/</a>
+          <a href="https://www.openssl.org/news/secadv/20190910.txt">https://www.openssl.org/news/secadv/20190910.txt</a>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
