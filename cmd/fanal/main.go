@@ -29,7 +29,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpmcmd"
+	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpm"
 	"github.com/aquasecurity/fanal/applier"
 	"github.com/aquasecurity/fanal/artifact"
 	aimage "github.com/aquasecurity/fanal/artifact/image"

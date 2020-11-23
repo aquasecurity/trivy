@@ -5,13 +5,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/aquasecurity/fanal/utils"
-
+	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/types"
-	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
+	"github.com/aquasecurity/fanal/utils"
 )
 
 func init() {
@@ -50,8 +49,8 @@ func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []types.Package,
 
 	// rpm-python 4.11.3 rpm-4.11.3-35.el7.src.rpm
 	// Extract binary package names because RHSA refers to binary package names.
-	db := rpmdb.DB{}
-	if err = db.Open(filename); err != nil {
+	db, err := rpmdb.Open(filename)
+	if err != nil {
 		return nil, xerrors.Errorf("failed to open RPM DB: %w", err)
 	}
 
