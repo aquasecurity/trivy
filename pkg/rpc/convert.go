@@ -78,27 +78,6 @@ func ConvertToRPCLibraries(libs []deptypes.Library) []*common.Library {
 	return rpcLibs
 }
 
-// ConvertFromRPCVulns returns converted vulnerability from common vulnerability format
-func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulnerability {
-	var vulns []types.DetectedVulnerability
-	for _, vuln := range rpcVulns {
-		severity := dbTypes.Severity(vuln.Severity)
-		vulns = append(vulns, types.DetectedVulnerability{
-			VulnerabilityID:  vuln.VulnerabilityId,
-			PkgName:          vuln.PkgName,
-			InstalledVersion: vuln.InstalledVersion,
-			FixedVersion:     vuln.FixedVersion,
-			Vulnerability: dbTypes.Vulnerability{
-				Title:       vuln.Title,
-				Description: vuln.Description,
-				Severity:    severity.String(),
-				References:  vuln.References,
-			},
-		})
-	}
-	return vulns
-}
-
 // ConvertToRPCVulns returns common.Vulnerability
 func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerability {
 	var rpcVulns []*common.Vulnerability

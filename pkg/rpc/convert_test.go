@@ -181,55 +181,6 @@ func TestConvertToRpcLibraries(t *testing.T) {
 	}
 }
 
-func TestConvertFromRpcVulns(t *testing.T) {
-	type args struct {
-		rpcVulns []*common.Vulnerability
-	}
-	tests := []struct {
-		name string
-		args args
-		want []types.DetectedVulnerability
-	}{
-		{
-			name: "happy path",
-			args: args{
-				rpcVulns: []*common.Vulnerability{
-					{
-						VulnerabilityId:  "CVE-2019-0001",
-						PkgName:          "foo",
-						InstalledVersion: "1.2.3",
-						FixedVersion:     "1.2.4",
-						Title:            "DoS",
-						Description:      "Denial of Service",
-						Severity:         common.Severity_CRITICAL,
-						References:       []string{"http://example.com"},
-					},
-				},
-			},
-			want: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-2019-0001",
-					PkgName:          "foo",
-					InstalledVersion: "1.2.3",
-					FixedVersion:     "1.2.4",
-					Vulnerability: dbTypes.Vulnerability{
-						Title:       "DoS",
-						Description: "Denial of Service",
-						Severity:    "CRITICAL",
-						References:  []string{"http://example.com"},
-					},
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertFromRPCVulns(tt.args.rpcVulns)
-			assert.Equal(t, got, tt.want, tt.name)
-		})
-	}
-}
-
 func TestConvertToRpcVulns(t *testing.T) {
 	type args struct {
 		vulns []types.DetectedVulnerability
