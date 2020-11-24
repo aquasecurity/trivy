@@ -112,12 +112,13 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			Cvss:           cvssMap,
 			SeveritySource: vuln.SeveritySource,
 			CweIds:         vuln.CweIDs,
+			PrimaryUrl:     vuln.PrimaryURL,
 		})
 	}
 	return rpcVulns
 }
 
-// ConvertFromRPCResults converts scannel.Result to report.Result
+// ConvertFromRPCResults converts scanner.Result to report.Result
 func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 	var results []report.Result
 	for _, result := range rpcResults {
@@ -152,6 +153,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 					DiffID: vuln.Layer.DiffId,
 				},
 				SeveritySource: vuln.SeveritySource,
+				PrimaryURL:     vuln.PrimaryUrl,
 			})
 		}
 		results = append(results, report.Result{
