@@ -12,6 +12,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "MEDIUM",
@@ -33,6 +34,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5482",
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "MEDIUM",
@@ -56,6 +58,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5435",
         "Title": "curl: Integer overflows in curl_url_set() function",
         "Description": "An integer overflow in curl's URL API results in a buffer overflow in libcurl 7.62.0 to and including 7.64.1.",
         "Severity": "LOW",
@@ -75,6 +78,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5436",
         "Title": "curl: TFTP receive heap buffer overflow in tftp_receive_packet() function",
         "Description": "A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution in libcurl versions 7.19.4 through 7.64.1.",
         "Severity": "LOW",
@@ -96,6 +100,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-16062",
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getaranges.c:dwarf_getaranges() via crafted file",
         "Description": "dwarf_getaranges in dwarf_getaranges.c in libdw in elfutils before 2018-08-18 allows remote attackers to cause a denial of service (heap-based buffer over-read) via a crafted file.",
         "Severity": "LOW",
@@ -120,6 +125,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-16402",
         "Title": "elfutils: Double-free due to double decompression of sections in crafted ELF causes crash",
         "Description": "libelf/elf_end.c in elfutils 0.173 allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact because it tries to decompress twice.",
         "Severity": "LOW",
@@ -140,6 +146,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-16403",
         "Title": "elfutils: Heap-based buffer over-read in libdw/dwarf_getabbrev.c and libwd/dwarf_hasattr.c causes crash",
         "Description": "libdw in elfutils 0.173 checks the end of the attributes list incorrectly in dwarf_getabbrev in dwarf_getabbrev.c and dwarf_hasattr in dwarf_hasattr.c, leading to a heap-based buffer over-read and an application crash.",
         "Severity": "LOW",
@@ -163,6 +170,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-18310",
         "Title": "elfutils: invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl",
         "Description": "An invalid memory address dereference was discovered in dwfl_segment_report_module.c in libdwfl in elfutils through v0.174. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by consider_notes.",
         "Severity": "LOW",
@@ -185,6 +193,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-18520",
         "Title": "elfutils: eu-size cannot handle recursive ar files",
         "Description": "An Invalid Memory Address Dereference exists in the function elf_end in libelf in elfutils through v0.174. Although eu-size is intended to support ar files inside ar files, handle_ar in size.c closes the outer ar file before handling all inner entries. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file.",
         "Severity": "LOW",
@@ -207,6 +216,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-18521",
         "Title": "elfutils: Divide-by-zero in arlib_add_symbols function in arlib.c",
         "Description": "Divide-by-zero vulnerabilities in the function arlib_add_symbols() in arlib.c in elfutils 0.174 allow remote attackers to cause a denial of service (application crash) with a crafted ELF file, as demonstrated by eu-ranlib, because a zero sh_entsize is mishandled.",
         "Severity": "LOW",
@@ -229,6 +239,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7149",
         "Title": "elfutils: heap-based buffer over-read in read_srclines in dwarf_getsrclines.c in libdw",
         "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
         "Severity": "LOW",
@@ -251,6 +262,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7150",
         "Title": "elfutils: segmentation fault in elf64_xlatetom in libelf/elf32_xlatetom.c",
         "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
         "Severity": "LOW",
@@ -273,6 +285,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7664",
         "Title": "elfutils: out of bound write in elf_cvt_note in libelf/note_xlate.h",
         "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
         "Severity": "LOW",
@@ -293,6 +306,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7665",
         "Title": "elfutils: heap-based buffer over-read in function elf32_xlatetom in elf32_xlatetom.c",
         "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
         "Severity": "LOW",
@@ -315,6 +329,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18218",
         "Title": "file: heap-based buffer overflow in cdf_read_property_info in cdf.c",
         "Description": "cdf_read_property_info in cdf.c in file through 5.37 does not restrict the number of CDF_VECTOR elements, which allows a heap-based buffer overflow (4-byte out-of-bounds write).",
         "Severity": "MEDIUM",
@@ -339,6 +354,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-12450",
         "Title": "glib2: file_copy_fallback in gio/gfile.c in GNOME GLib does not properly restrict file permissions while a copy operation is in progress",
         "Description": "file_copy_fallback in gio/gfile.c in GNOME GLib 2.15.0 through 2.61.1 does not properly restrict file permissions while a copy operation is in progress. Instead, default permissions are used.",
         "Severity": "MEDIUM",
@@ -363,6 +379,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "MEDIUM",
@@ -384,6 +401,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5482",
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "MEDIUM",
@@ -407,6 +425,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5435",
         "Title": "curl: Integer overflows in curl_url_set() function",
         "Description": "An integer overflow in curl's URL API results in a buffer overflow in libcurl 7.62.0 to and including 7.64.1.",
         "Severity": "LOW",
@@ -426,6 +445,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5436",
         "Title": "curl: TFTP receive heap buffer overflow in tftp_receive_packet() function",
         "Description": "A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution in libcurl versions 7.19.4 through 7.64.1.",
         "Severity": "LOW",
@@ -447,6 +467,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-12290",
         "Description": "GNU libidn2 before 2.2.0 fails to perform the roundtrip checks specified in RFC3490 Section 4.2 when converting A-labels to U-labels. This makes it possible in some circumstances for one domain to impersonate another. By creating a malicious domain that matches a target domain except for the inclusion of certain punycoded Unicode characters (that would be discarded when converted first to a Unicode label and then back to an ASCII label), arbitrary domains can be impersonated.",
         "Severity": "MEDIUM",
         "References": [
@@ -465,6 +486,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
         "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
         "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
         "Severity": "MEDIUM",
@@ -487,6 +509,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9511",
         "Title": "HTTP/2: large amount of data requests leads to denial of service",
         "Description": "Some HTTP/2 implementations are vulnerable to window size manipulation and stream prioritization manipulation, potentially leading to a denial of service. The attacker requests a large amount of data from a specified resource over multiple streams. They manipulate window size and stream priority to force the server to queue the data in 1-byte chunks. Depending on how efficiently this data is queued, this can consume excess CPU, memory, or both.",
         "Severity": "HIGH",
@@ -521,6 +544,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9513",
         "Title": "HTTP/2: flood using PRIORITY frames results in excessive resource consumption",
         "Description": "Some HTTP/2 implementations are vulnerable to resource loops, potentially leading to a denial of service. The attacker creates multiple request streams and continually shuffles the priority of the streams in a way that causes substantial churn to the priority tree. This can consume excess CPU.",
         "Severity": "HIGH",
@@ -556,6 +580,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3858",
         "Title": "libssh2: Zero-byte allocation with a specially crafted SFTP packed leading to an out-of-bounds read",
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 when a specially crafted SFTP packet is received from the server. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
@@ -589,6 +614,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3861",
         "Title": "libssh2: Out-of-bounds reads with specially crafted SSH packets",
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH packets with a padding length value greater than the packet length are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
@@ -616,6 +642,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3862",
         "Title": "libssh2: Out-of-bounds memory comparison with specially crafted message channel request",
         "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit status message and no payload are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
         "Severity": "MEDIUM",
@@ -649,6 +676,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-4658",
         "Title": "libxml2: Use after free via namespace node in XPointer ranges",
         "Description": "xpointer.c in libxml2 before 2.9.5 (as used in Apple iOS before 10, OS X before 10.12, tvOS before 10, and watchOS before 3, and other products) does not forbid namespace nodes in XPointer ranges, which allows remote attackers to execute arbitrary code or cause a denial of service (use-after-free and memory corruption) via a crafted XML document.",
         "Severity": "MEDIUM",
@@ -679,6 +707,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-16931",
         "Title": "libxml2: Mishandling parameter-entity references",
         "Description": "parser.c in libxml2 before 2.9.5 mishandles parameter-entity references because the NEXTL macro calls the xmlParserHandlePEReference function in the case of a '%' character in a DTD name.",
         "Severity": "MEDIUM",
@@ -699,6 +728,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-10684",
         "Title": "ncurses: Stack-based buffer overflow in fmt_entry function in dump_entry.c",
         "Description": "In ncurses 6.0, there is a stack-based buffer overflow in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "MEDIUM",
@@ -717,6 +747,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-10685",
         "Title": "ncurses: Stack-based buffer overflow caused by format string vulnerability in fmt_entry function",
         "Description": "In ncurses 6.0, there is a format string vulnerability in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "MEDIUM",
@@ -735,6 +766,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-11112",
         "Title": "ncurses: Illegal address access in append_acs function",
         "Description": "In ncurses 6.0, there is an attempted 0xffffffffffffffff access in the append_acs function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "MEDIUM",
@@ -753,6 +785,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-11113",
         "Title": "ncurses: Null pointer dereference vulnerability in _nc_parse_entry function",
         "Description": "In ncurses 6.0, there is a NULL Pointer Dereference in the _nc_parse_entry function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "MEDIUM",
@@ -771,6 +804,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-10684",
         "Title": "ncurses: Stack-based buffer overflow in fmt_entry function in dump_entry.c",
         "Description": "In ncurses 6.0, there is a stack-based buffer overflow in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "MEDIUM",
@@ -789,6 +823,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-10685",
         "Title": "ncurses: Stack-based buffer overflow caused by format string vulnerability in fmt_entry function",
         "Description": "In ncurses 6.0, there is a format string vulnerability in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "MEDIUM",
@@ -807,6 +842,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-11112",
         "Title": "ncurses: Illegal address access in append_acs function",
         "Description": "In ncurses 6.0, there is an attempted 0xffffffffffffffff access in the append_acs function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "MEDIUM",
@@ -825,6 +861,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-11113",
         "Title": "ncurses: Null pointer dereference vulnerability in _nc_parse_entry function",
         "Description": "In ncurses 6.0, there is a NULL Pointer Dereference in the _nc_parse_entry function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "MEDIUM",
@@ -843,6 +880,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-10684",
         "Title": "ncurses: Stack-based buffer overflow in fmt_entry function in dump_entry.c",
         "Description": "In ncurses 6.0, there is a stack-based buffer overflow in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "MEDIUM",
@@ -861,6 +899,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-10685",
         "Title": "ncurses: Stack-based buffer overflow caused by format string vulnerability in fmt_entry function",
         "Description": "In ncurses 6.0, there is a format string vulnerability in the fmt_entry function. A crafted input will lead to a remote arbitrary code execution attack.",
         "Severity": "MEDIUM",
@@ -879,6 +918,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-11112",
         "Title": "ncurses: Illegal address access in append_acs function",
         "Description": "In ncurses 6.0, there is an attempted 0xffffffffffffffff access in the append_acs function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "MEDIUM",
@@ -897,6 +937,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-11113",
         "Title": "ncurses: Null pointer dereference vulnerability in _nc_parse_entry function",
         "Description": "In ncurses 6.0, there is a NULL Pointer Dereference in the _nc_parse_entry function of tinfo/parse_entry.c. It could lead to a remote denial of service attack if the terminfo library code is used to process untrusted terminfo data.",
         "Severity": "MEDIUM",
@@ -915,6 +956,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11729",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
@@ -941,6 +983,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11745",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
@@ -969,6 +1012,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0495",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
@@ -1006,6 +1050,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-12404",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -1027,6 +1072,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11729",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
@@ -1053,6 +1099,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11745",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
@@ -1081,6 +1128,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11729",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
@@ -1107,6 +1155,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11745",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
@@ -1135,6 +1184,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11729",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
@@ -1161,6 +1211,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11745",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
@@ -1189,6 +1240,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0495",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
@@ -1226,6 +1278,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-12404",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -1247,6 +1300,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11729",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
@@ -1273,6 +1327,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11745",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
@@ -1301,6 +1356,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0495",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
@@ -1338,6 +1394,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-12404",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -1359,6 +1416,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1547",
         "Title": "openssl: side-channel weak encryption vulnerability",
         "Description": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "HIGH",
@@ -1383,6 +1441,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1563",
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "HIGH",
@@ -1406,6 +1465,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0734",
         "Title": "openssl: timing side channel attack in the DSA signature algorithm",
         "Description": "The OpenSSL DSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.1a (Affected 1.1.1). Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.0.2q (Affected 1.0.2-1.0.2p).",
         "Severity": "MEDIUM",
@@ -1441,6 +1501,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1559",
         "Title": "openssl: 0-byte record padding oracle",
         "Description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
         "Severity": "MEDIUM",
@@ -1480,6 +1541,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-1060",
         "Title": "python: DOS via regular expression catastrophic backtracking in apop() method in pop3lib",
         "Description": "python before versions 2.7.15, 3.4.9, 3.5.6rc1, 3.6.5rc1 and 3.7.0 is vulnerable to catastrophic backtracking in pop3lib's apop() method. An attacker could use this flaw to cause denial of service.",
         "Severity": "HIGH",
@@ -1521,6 +1583,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-1061",
         "Title": "python: DOS via regular expression backtracking in difflib.IS_LINE_JUNK method in difflib",
         "Description": "python before versions 2.7.15, 3.4.9, 3.5.6rc1, 3.6.5rc1 and 3.7.0 is vulnerable to catastrophic backtracking in the difflib.IS_LINE_JUNK method.  An attacker could use this flaw to cause denial of service.",
         "Severity": "HIGH",
@@ -1559,6 +1622,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20406",
         "Title": "python: Integer overflow in Modules/_pickle.c allows for memory exhaustion if serializing gigabytes of data",
         "Description": "Modules/_pickle.c in Python before 3.7.1 has an integer overflow via a large LONG_BINPUT value that is mishandled during a \"resize to twice the size\" attempt. This issue might cause memory exhaustion, but is only relevant if the pickle format is used for serializing tens or hundreds of gigabytes of data.",
         "Severity": "HIGH",
@@ -1586,6 +1650,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-10160",
         "Title": "python: regression of CVE-2019-9636 due to functional fix to allow port numbers in netloc",
         "Description": "A security regression of CVE-2019-9636 was discovered in python since commit d537ab0ff9767ef024f26246899728f0116b1ec3 affecting versions 2.7, 3.5, 3.6, 3.7 and from v3.8.0a4 through v3.8.0b1, which still allows an attacker to exploit CVE-2019-9636 by abusing the user and password parts of a URL. When an application parses user-supplied URLs to store cookies, authentication credentials, or other kind of information, it is possible for an attacker to provide specially crafted URLs to make the application locate host-related information (e.g. cookies, authentication data) and send them to a different host than where it should, unlike if the URLs had been correctly parsed. The result of an attack may vary based on the application.",
         "Severity": "HIGH",
@@ -1625,6 +1690,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5010",
         "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
         "Description": "An exploitable denial-of-service vulnerability exists in the X509 certificate parser of Python.org Python 2.7.11 / 3.6.6. A specially crafted X509 certificate can cause a NULL pointer dereference, resulting in a denial of service. An attacker can initiate or accept TLS connections using crafted certificates to trigger this vulnerability.",
         "Severity": "HIGH",
@@ -1647,6 +1713,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9636",
         "Title": "python: Information Disclosure due to urlsplit improper NFKC normalization",
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "HIGH",
@@ -1693,6 +1760,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16056",
         "Title": "python: email.utils.parseaddr wrongly parses email addresses",
         "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
         "Severity": "MEDIUM",
@@ -1717,6 +1785,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9948",
         "Title": "python: Undocumented local_file protocol allows remote attackers to bypass protection mechanisms",
         "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
         "Severity": "MEDIUM",
@@ -1742,6 +1811,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-1060",
         "Title": "python: DOS via regular expression catastrophic backtracking in apop() method in pop3lib",
         "Description": "python before versions 2.7.15, 3.4.9, 3.5.6rc1, 3.6.5rc1 and 3.7.0 is vulnerable to catastrophic backtracking in pop3lib's apop() method. An attacker could use this flaw to cause denial of service.",
         "Severity": "HIGH",
@@ -1783,6 +1853,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-1061",
         "Title": "python: DOS via regular expression backtracking in difflib.IS_LINE_JUNK method in difflib",
         "Description": "python before versions 2.7.15, 3.4.9, 3.5.6rc1, 3.6.5rc1 and 3.7.0 is vulnerable to catastrophic backtracking in the difflib.IS_LINE_JUNK method.  An attacker could use this flaw to cause denial of service.",
         "Severity": "HIGH",
@@ -1821,6 +1892,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20406",
         "Title": "python: Integer overflow in Modules/_pickle.c allows for memory exhaustion if serializing gigabytes of data",
         "Description": "Modules/_pickle.c in Python before 3.7.1 has an integer overflow via a large LONG_BINPUT value that is mishandled during a \"resize to twice the size\" attempt. This issue might cause memory exhaustion, but is only relevant if the pickle format is used for serializing tens or hundreds of gigabytes of data.",
         "Severity": "HIGH",
@@ -1848,6 +1920,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-10160",
         "Title": "python: regression of CVE-2019-9636 due to functional fix to allow port numbers in netloc",
         "Description": "A security regression of CVE-2019-9636 was discovered in python since commit d537ab0ff9767ef024f26246899728f0116b1ec3 affecting versions 2.7, 3.5, 3.6, 3.7 and from v3.8.0a4 through v3.8.0b1, which still allows an attacker to exploit CVE-2019-9636 by abusing the user and password parts of a URL. When an application parses user-supplied URLs to store cookies, authentication credentials, or other kind of information, it is possible for an attacker to provide specially crafted URLs to make the application locate host-related information (e.g. cookies, authentication data) and send them to a different host than where it should, unlike if the URLs had been correctly parsed. The result of an attack may vary based on the application.",
         "Severity": "HIGH",
@@ -1887,6 +1960,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5010",
         "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
         "Description": "An exploitable denial-of-service vulnerability exists in the X509 certificate parser of Python.org Python 2.7.11 / 3.6.6. A specially crafted X509 certificate can cause a NULL pointer dereference, resulting in a denial of service. An attacker can initiate or accept TLS connections using crafted certificates to trigger this vulnerability.",
         "Severity": "HIGH",
@@ -1909,6 +1983,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9636",
         "Title": "python: Information Disclosure due to urlsplit improper NFKC normalization",
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "HIGH",
@@ -1955,6 +2030,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16056",
         "Title": "python: email.utils.parseaddr wrongly parses email addresses",
         "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
         "Severity": "MEDIUM",
@@ -1979,6 +2055,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9948",
         "Title": "python: Undocumented local_file protocol allows remote attackers to bypass protection mechanisms",
         "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
         "Severity": "MEDIUM",
@@ -2004,6 +2081,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-13734",
         "Title": "sqlite: fts3: improve shadow table corruption detection",
         "Description": "Out of bounds write in SQLite in Google Chrome prior to 79.0.3945.79 allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
         "Severity": "HIGH",
@@ -2028,6 +2106,7 @@
           "DiffID": "sha256:f387c8b346c85cae37abd1f1a63015acb69f593dc425d0269f57d1012c3a81f6"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-12735",
         "Title": "vim/neovim: ':source!' command allows arbitrary command execution via modelines",
         "Description": "getchar.c in Vim before 8.1.1365 and Neovim before 0.3.6 allows remote attackers to execute arbitrary OS commands via the :source! command in a modeline, as demonstrated by execute in Vim, and assert_fails or nvim_input in Neovim.",
         "Severity": "HIGH",

@@ -17,7 +17,7 @@
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549"
+                "Url": "https://avd.aquasec.com/nvd/cve-2019-1549"
             }
         },
         "ProductFields": { "Product Name": "Trivy" },
@@ -63,7 +63,7 @@
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html"
+                "Url": "https://avd.aquasec.com/nvd/cve-2019-1551"
             }
         },
         "ProductFields": { "Product Name": "Trivy" },
@@ -109,7 +109,7 @@
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html"
+                "Url": "https://avd.aquasec.com/nvd/cve-2019-1563"
             }
         },
         "ProductFields": { "Product Name": "Trivy" },
@@ -155,7 +155,7 @@
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html"
+                "Url": "https://avd.aquasec.com/nvd/cve-2019-1547"
             }
         },
         "ProductFields": { "Product Name": "Trivy" },
@@ -201,7 +201,7 @@
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549"
+                "Url": "https://avd.aquasec.com/nvd/cve-2019-1549"
             }
         },
         "ProductFields": { "Product Name": "Trivy" },
@@ -247,7 +247,7 @@
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html"
+                "Url": "https://avd.aquasec.com/nvd/cve-2019-1551"
             }
         },
         "ProductFields": { "Product Name": "Trivy" },
@@ -293,7 +293,7 @@
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html"
+                "Url": "https://avd.aquasec.com/nvd/cve-2019-1563"
             }
         },
         "ProductFields": { "Product Name": "Trivy" },
@@ -339,7 +339,7 @@
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html"
+                "Url": "https://avd.aquasec.com/nvd/cve-2019-1547"
             }
         },
         "ProductFields": { "Product Name": "Trivy" },
