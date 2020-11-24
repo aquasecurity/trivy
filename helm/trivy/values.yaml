@@ -1,0 +1,77 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  registry: docker.io
+  repository: aquasec/trivy
+  tag: 0.13.0
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 5Gi
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+    cpu: 1
+    memory: 1Gi
+
+rbac:
+  create: true
+  pspEnabled: true
+
+podSecurityContext:
+  runAsUser: 65534
+  runAsNonRoot: true
+  fsGroup: 65534
+
+securityContext:
+  privileged: false
+  readOnlyRootFilesystem: true
+
+trivy:
+  ## debugMode the flag to enable Trivy debug mode
+  debugMode: false
+  ## vulnType a comma-separated list of vulnerability types. Possible values are `os` and `library`.
+  vulnType: "os,library"
+  ## severity a comma-separated list of vulnerabilities severities to be displayed
+  severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
+  ## ignoreUnfixed the flag to display only fixed vulnerabilities
+  ignoreUnfixed: false
+  ## skipUpdate the flag to enable or disable Trivy DB downloads from GitHub
+  ##
+  ## You might want to enable this flag in test or CI/CD environments to avoid GitHub rate limiting issues.
+  ## If the flag is enabled you have to manually download the `trivy.db` file and mount it in the
+  ## `/home/scanner/.cache/trivy/db/trivy.db` path (see `cacheDir`).
+  skipUpdate: false
+
+service:
+  ## type Kubernetes service type
+  type: ClusterIP
+  ## port Kubernetes service port
+  port: 4954
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: trivy.example.com
+  tls: []
+  #  - secretName: trivy-example-tls
+  #    hosts:
+  #      - trivy.example.com
+
+# httpProxy the URL of the HTTP proxy server
+httpProxy:
+# httpsProxy the URL of the HTTPS proxy server
+httpsProxy:
+# noProxy the URLs that the proxy settings do not apply to
+noProxy:
