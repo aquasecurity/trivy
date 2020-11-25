@@ -31,8 +31,6 @@ nfpms:
     formats:
       - deb
       - rpm
-    dependencies:
-      - rpm
     vendor: "aquasecurity"
     homepage: "https://github.com/aquasecurity"
     maintainer: "Teppei Fukuda <knqyf263@gmail.com>"
@@ -79,8 +77,6 @@ brews:
     github:
       owner: aquasecurity
       name: homebrew-trivy
-    dependencies:
-      - rpm
     homepage: "https://github.com/aquasecurity/trivy"
     description: ""
     test: |
