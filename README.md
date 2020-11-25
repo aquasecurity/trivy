@@ -109,7 +109,7 @@ See [here](#continuous-integration-ci) for details.
   - Unlike other scanners that take long to fetch vulnerability information (~10 minutes) on the first run, and encourage you to maintain a durable vulnerability database, Trivy is stateless and requires no maintenance or preparation.
 - Easy installation
   - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](#installation))
-  - **No pre-requisites** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
+  - **No pre-requisites** such as installation of DB, libraries, etc.
 - High accuracy
   - **Especially Alpine Linux and RHEL/CentOS**
   - Other OSes are also high
@@ -167,7 +167,6 @@ $ sudo apt-get install trivy
 or
 
 ```
-$ sudo apt-get install rpm
 $ wget https://github.com/aquasecurity/trivy/releases/download/{TRIVY_VERSION}/trivy_{TRIVY_VERSION}_Linux-64bit.deb
 $ sudo dpkg -i trivy_{TRIVY_VERSION}_Linux-64bit.deb
 ```
@@ -203,8 +202,6 @@ $ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/
 
 Get the latest version from [this page](https://github.com/aquasecurity/trivy/releases/latest), and download the archive file for your operating system/architecture. Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
 
-You also need to install `rpm` command for scanning images based on RHEL/CentOS.
-
 ## From source
 
 ```sh
@@ -215,8 +212,6 @@ $ cd trivy/cmd/trivy/
 $ export GO111MODULE=on
 $ go install
 ```
-
-You also need to install `rpm` command for scanning images based on RHEL/CentOS.
 
 # Quick Start
 
@@ -1513,7 +1508,7 @@ jobs:
       - run:
           name: Install trivy
           command: |
-            apk add --update-cache --upgrade curl rpm
+            apk add --update-cache --upgrade curl
             VERSION=$(
                 curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | \
                 grep '"tag_name":' | \
@@ -1657,8 +1652,6 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 | Debian GNU/Linux             | wheezy, jessie, stretch, buster          | Installed by apt/apt-get/dpkg |                 YES                  |
 | Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg |                 YES                  |
 | Distroless                   | Any                                      | Installed by apt/apt-get/dpkg |                 YES                  |
-
-RHEL, CentOS, Oracle Linux, SUSE, Amazon Linux and Photon OS package information is stored in a binary format, and Trivy uses the `rpm` executable to parse this information when scanning an image based on RHEL or CentOS. The Trivy container image includes `rpm`, and the installers include it as a dependency. If you installed the `trivy` binary using `wget` or `curl`, or if you build it from source, you will also need to ensure that `rpm` is available.
 
 Distroless: https://github.com/GoogleContainerTools/distroless
 
