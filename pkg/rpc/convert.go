@@ -78,27 +78,6 @@ func ConvertToRPCLibraries(libs []deptypes.Library) []*common.Library {
 	return rpcLibs
 }
 
-// ConvertFromRPCVulns returns converted vulnerability from common vulnerability format
-func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulnerability {
-	var vulns []types.DetectedVulnerability
-	for _, vuln := range rpcVulns {
-		severity := dbTypes.Severity(vuln.Severity)
-		vulns = append(vulns, types.DetectedVulnerability{
-			VulnerabilityID:  vuln.VulnerabilityId,
-			PkgName:          vuln.PkgName,
-			InstalledVersion: vuln.InstalledVersion,
-			FixedVersion:     vuln.FixedVersion,
-			Vulnerability: dbTypes.Vulnerability{
-				Title:       vuln.Title,
-				Description: vuln.Description,
-				Severity:    severity.String(),
-				References:  vuln.References,
-			},
-		})
-	}
-	return vulns
-}
-
 // ConvertToRPCVulns returns common.Vulnerability
 func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerability {
 	var rpcVulns []*common.Vulnerability
@@ -133,12 +112,13 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			Cvss:           cvssMap,
 			SeveritySource: vuln.SeveritySource,
 			CweIds:         vuln.CweIDs,
+			PrimaryUrl:     vuln.PrimaryURL,
 		})
 	}
 	return rpcVulns
 }
 
-// ConvertFromRPCResults converts scannel.Result to report.Result
+// ConvertFromRPCResults converts scanner.Result to report.Result
 func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 	var results []report.Result
 	for _, result := range rpcResults {
@@ -173,6 +153,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 					DiffID: vuln.Layer.DiffId,
 				},
 				SeveritySource: vuln.SeveritySource,
+				PrimaryURL:     vuln.PrimaryUrl,
 			})
 		}
 		results = append(results, report.Result{

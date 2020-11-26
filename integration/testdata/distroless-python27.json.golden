@@ -11,6 +11,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-12900",
         "Title": "bzip2: out-of-bounds write in function BZ2_decompress",
         "Description": "BZ2_decompress in decompress.c in bzip2 through 1.0.6 has an out-of-bounds write when there are many selectors.",
         "Severity": "HIGH",
@@ -30,6 +31,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-1000001",
         "Title": "glibc: realpath() buffer underflow when getcwd() returns relative path allows privilege escalation",
         "Description": "In glibc 2.26 and earlier there is confusion in the usage of getcwd() by realpath() which can be used to write before the destination buffer leading to a buffer underflow and potential code execution.",
         "Severity": "HIGH",
@@ -57,6 +59,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-6485",
         "Title": "glibc: Integer overflow in posix_memalign in memalign functions",
         "Description": "An integer overflow in the implementation of the posix_memalign in memalign functions in the GNU C Library (aka glibc or libc6) 2.26 and earlier could cause these functions to return a pointer to a heap area that is too small, potentially leading to heap corruption.",
         "Severity": "HIGH",
@@ -82,6 +85,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-6551",
         "Title": "glibc: integer overflow in malloc functions",
         "Description": "The malloc implementation in the GNU C Library (aka glibc or libc6), from version 2.24 to 2.26 on powerpc, and only in version 2.26 on i386, did not properly handle malloc calls with arguments close to SIZE_MAX and could return a pointer to a heap region that is smaller than requested, eventually leading to heap corruption.",
         "Severity": "HIGH",
@@ -100,6 +104,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9169",
         "Title": "glibc: regular-expression match via proceed_next_node in posix/regexec.c leads to heap-based buffer over-read",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, proceed_next_node in posix/regexec.c has a heap-based buffer over-read via an attempted case-insensitive regular-expression match.",
         "Severity": "HIGH",
@@ -122,6 +127,7 @@
         "Layer": {
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1752",
         "Title": "glibc: use-after-free in glob() function when expanding ~user",
         "Description": "A use-after-free vulnerability was found in glibc in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution.",
         "Severity": "HIGH"
@@ -134,6 +140,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2009-5155",
         "Title": "glibc: parse_reg_exp in posix/regcomp.c misparses alternatives leading to denial of service or trigger incorrect result",
         "Description": "In the GNU C Library (aka glibc or libc6) before 2.28, parse_reg_exp in posix/regcomp.c misparses alternatives, which allows attackers to cause a denial of service (assertion failure and application exit) or trigger an incorrect result by attempting a regular-expression match.",
         "Severity": "MEDIUM",
@@ -158,6 +165,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10739",
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
@@ -180,6 +188,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-12132",
         "Title": "glibc: Fragmentation attacks possible when EDNS0 is enabled",
         "Description": "The DNS stub resolver in the GNU C Library (aka glibc or libc6) before version 2.26, when EDNS support is enabled, will solicit large UDP responses from name servers, potentially simplifying off-path DNS spoofing attacks due to IP fragmentation.",
         "Severity": "MEDIUM",
@@ -200,6 +209,7 @@
         "Layer": {
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1751",
         "Title": "glibc: array overflow in backtrace on powerpc",
         "Description": "No description is available for this CVE.",
         "Severity": "MEDIUM"
@@ -212,6 +222,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2010-4051",
         "Title": "CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "The regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (application crash) via a regular expression containing adjacent bounded repetitions that bypass the intended RE_DUP_MAX limitation, as demonstrated by a {10,}{10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD, related to a \"RE_DUP_MAX overflow.\"",
         "Severity": "LOW",
@@ -237,6 +248,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2010-4052",
         "Title": "CVE-2010-4051 CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "Stack consumption vulnerability in the regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (resource exhaustion) via a regular expression containing adjacent repetition operators, as demonstrated by a {10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD.",
         "Severity": "LOW",
@@ -262,6 +274,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2010-4756",
         "Title": "glibc: glob implementation can cause excessive CPU and memory consumption due to crafted glob expressions",
         "Description": "The glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632.",
         "Severity": "LOW",
@@ -279,6 +292,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2015-8985",
         "Title": "glibc: potential denial of service in pop_fail_stack()",
         "Description": "The pop_fail_stack function in the GNU C Library (aka glibc or libc6) allows context-dependent attackers to cause a denial of service (assertion failure and application crash) via vectors related to extended regular expression processing.",
         "Severity": "LOW",
@@ -298,6 +312,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10228",
         "Title": "glibc: iconv program can hang when invoked with the -c option",
         "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
         "Severity": "LOW",
@@ -315,6 +330,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20796",
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
         "Severity": "LOW",
@@ -334,6 +350,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1010022",
         "Title": "glibc: stack guard protection bypass",
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard.",
         "Severity": "LOW",
@@ -349,6 +366,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1010023",
         "Title": "glibc: running ldd on malicious ELF leads to code execution because of wrong size computation",
         "Description": "GNU Libc current is affected by: Re-mapping current loaded libray with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code.",
         "Severity": "LOW",
@@ -366,6 +384,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1010024",
         "Title": "glibc: ASLR bypass using cache of thread stack and heap",
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc.",
         "Severity": "LOW",
@@ -383,6 +402,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1010025",
         "Title": "glibc: information disclosure of heap addresses of pthread_created thread",
         "Description": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor's position is \"ASLR bypass itself is not a vulnerability.\"",
         "Severity": "LOW",
@@ -398,6 +418,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-19126",
         "Title": "glibc: LD_PREFER_MAP_32BIT_EXEC not ignored in setuid binaries",
         "Description": "On the x86-64 architecture, the GNU C Library (aka glibc) before 2.31 fails to ignore the LD_PREFER_MAP_32BIT_EXEC environment variable during program execution after a security transition, allowing local attackers to restrict the possible mapping addresses for loaded libraries and thus bypass ASLR for a setuid program.",
         "Severity": "LOW",
@@ -414,6 +435,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-6488",
         "Title": "glibc: Incorrect attempt to use a 64-bit register for size_t in assembly codes results in segmentation fault",
         "Description": "The string component in the GNU C Library (aka glibc or libc6) through 2.28, when running on the x32 architecture, incorrectly attempts to use a 64-bit register for size_t in assembly codes, which can lead to a segmentation fault or possibly unspecified other impact, as demonstrated by a crash in __memmove_avx_unaligned_erms in sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S during a memcpy.",
         "Severity": "LOW",
@@ -431,6 +453,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7309",
         "Title": "glibc: memcmp function incorrectly returns zero",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, the memcmp function for the x32 architecture can incorrectly return zero (indicating that the inputs are equal) because the RDX most significant bit is mishandled.",
         "Severity": "LOW",
@@ -449,6 +472,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9192",
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
         "Severity": "LOW",
@@ -465,6 +489,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10029",
         "Title": "glibc: stack corruption from crafted input in cosl, sinl, sincosl, and tanl functions",
         "Description": "The GNU C Library (aka glibc or libc6) before 2.32 could overflow an on-stack buffer during range reduction if an input to an 80-bit long double function contains a non-canonical bit pattern, a seen when passing a 0x5d414141414141410000 value to sinl on x86 targets. This is related to sysdeps/ieee754/ldbl-96/e_rem_pio2l.c.",
         "Severity": "LOW",
@@ -482,6 +507,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-1000001",
         "Title": "glibc: realpath() buffer underflow when getcwd() returns relative path allows privilege escalation",
         "Description": "In glibc 2.26 and earlier there is confusion in the usage of getcwd() by realpath() which can be used to write before the destination buffer leading to a buffer underflow and potential code execution.",
         "Severity": "HIGH",
@@ -509,6 +535,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-6485",
         "Title": "glibc: Integer overflow in posix_memalign in memalign functions",
         "Description": "An integer overflow in the implementation of the posix_memalign in memalign functions in the GNU C Library (aka glibc or libc6) 2.26 and earlier could cause these functions to return a pointer to a heap area that is too small, potentially leading to heap corruption.",
         "Severity": "HIGH",
@@ -534,6 +561,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-6551",
         "Title": "glibc: integer overflow in malloc functions",
         "Description": "The malloc implementation in the GNU C Library (aka glibc or libc6), from version 2.24 to 2.26 on powerpc, and only in version 2.26 on i386, did not properly handle malloc calls with arguments close to SIZE_MAX and could return a pointer to a heap region that is smaller than requested, eventually leading to heap corruption.",
         "Severity": "HIGH",
@@ -552,6 +580,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9169",
         "Title": "glibc: regular-expression match via proceed_next_node in posix/regexec.c leads to heap-based buffer over-read",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, proceed_next_node in posix/regexec.c has a heap-based buffer over-read via an attempted case-insensitive regular-expression match.",
         "Severity": "HIGH",
@@ -574,6 +603,7 @@
         "Layer": {
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1752",
         "Title": "glibc: use-after-free in glob() function when expanding ~user",
         "Description": "A use-after-free vulnerability was found in glibc in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution.",
         "Severity": "HIGH"
@@ -586,6 +616,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2009-5155",
         "Title": "glibc: parse_reg_exp in posix/regcomp.c misparses alternatives leading to denial of service or trigger incorrect result",
         "Description": "In the GNU C Library (aka glibc or libc6) before 2.28, parse_reg_exp in posix/regcomp.c misparses alternatives, which allows attackers to cause a denial of service (assertion failure and application exit) or trigger an incorrect result by attempting a regular-expression match.",
         "Severity": "MEDIUM",
@@ -610,6 +641,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10739",
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
@@ -632,6 +664,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-12132",
         "Title": "glibc: Fragmentation attacks possible when EDNS0 is enabled",
         "Description": "The DNS stub resolver in the GNU C Library (aka glibc or libc6) before version 2.26, when EDNS support is enabled, will solicit large UDP responses from name servers, potentially simplifying off-path DNS spoofing attacks due to IP fragmentation.",
         "Severity": "MEDIUM",
@@ -652,6 +685,7 @@
         "Layer": {
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1751",
         "Title": "glibc: array overflow in backtrace on powerpc",
         "Description": "No description is available for this CVE.",
         "Severity": "MEDIUM"
@@ -664,6 +698,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2010-4051",
         "Title": "CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "The regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (application crash) via a regular expression containing adjacent bounded repetitions that bypass the intended RE_DUP_MAX limitation, as demonstrated by a {10,}{10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD, related to a \"RE_DUP_MAX overflow.\"",
         "Severity": "LOW",
@@ -689,6 +724,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2010-4052",
         "Title": "CVE-2010-4051 CVE-2010-4052 glibc: De-recursivise regular expression engine",
         "Description": "Stack consumption vulnerability in the regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (resource exhaustion) via a regular expression containing adjacent repetition operators, as demonstrated by a {10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD.",
         "Severity": "LOW",
@@ -714,6 +750,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2010-4756",
         "Title": "glibc: glob implementation can cause excessive CPU and memory consumption due to crafted glob expressions",
         "Description": "The glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632.",
         "Severity": "LOW",
@@ -731,6 +768,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2015-8985",
         "Title": "glibc: potential denial of service in pop_fail_stack()",
         "Description": "The pop_fail_stack function in the GNU C Library (aka glibc or libc6) allows context-dependent attackers to cause a denial of service (assertion failure and application crash) via vectors related to extended regular expression processing.",
         "Severity": "LOW",
@@ -750,6 +788,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10228",
         "Title": "glibc: iconv program can hang when invoked with the -c option",
         "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
         "Severity": "LOW",
@@ -767,6 +806,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20796",
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
         "Severity": "LOW",
@@ -786,6 +826,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1010022",
         "Title": "glibc: stack guard protection bypass",
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard.",
         "Severity": "LOW",
@@ -801,6 +842,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1010023",
         "Title": "glibc: running ldd on malicious ELF leads to code execution because of wrong size computation",
         "Description": "GNU Libc current is affected by: Re-mapping current loaded libray with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code.",
         "Severity": "LOW",
@@ -818,6 +860,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1010024",
         "Title": "glibc: ASLR bypass using cache of thread stack and heap",
         "Description": "GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc.",
         "Severity": "LOW",
@@ -835,6 +878,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1010025",
         "Title": "glibc: information disclosure of heap addresses of pthread_created thread",
         "Description": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor's position is \"ASLR bypass itself is not a vulnerability.\"",
         "Severity": "LOW",
@@ -850,6 +894,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-19126",
         "Title": "glibc: LD_PREFER_MAP_32BIT_EXEC not ignored in setuid binaries",
         "Description": "On the x86-64 architecture, the GNU C Library (aka glibc) before 2.31 fails to ignore the LD_PREFER_MAP_32BIT_EXEC environment variable during program execution after a security transition, allowing local attackers to restrict the possible mapping addresses for loaded libraries and thus bypass ASLR for a setuid program.",
         "Severity": "LOW",
@@ -866,6 +911,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-6488",
         "Title": "glibc: Incorrect attempt to use a 64-bit register for size_t in assembly codes results in segmentation fault",
         "Description": "The string component in the GNU C Library (aka glibc or libc6) through 2.28, when running on the x32 architecture, incorrectly attempts to use a 64-bit register for size_t in assembly codes, which can lead to a segmentation fault or possibly unspecified other impact, as demonstrated by a crash in __memmove_avx_unaligned_erms in sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S during a memcpy.",
         "Severity": "LOW",
@@ -883,6 +929,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7309",
         "Title": "glibc: memcmp function incorrectly returns zero",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, the memcmp function for the x32 architecture can incorrectly return zero (indicating that the inputs are equal) because the RDX most significant bit is mishandled.",
         "Severity": "LOW",
@@ -901,6 +948,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9192",
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
         "Severity": "LOW",
@@ -917,6 +965,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10029",
         "Title": "glibc: stack corruption from crafted input in cosl, sinl, sincosl, and tanl functions",
         "Description": "The GNU C Library (aka glibc or libc6) before 2.32 could overflow an on-stack buffer during range reduction if an input to an 80-bit long double function contains a non-canonical bit pattern, a seen when passing a 0x5d414141414141410000 value to sinl on x86 targets. This is related to sysdeps/ieee754/ldbl-96/e_rem_pio2l.c.",
         "Severity": "LOW",
@@ -934,6 +983,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2013-0340",
         "Title": "expat: internal entity expansion",
         "Description": "expat 2.1.0 and earlier does not properly handle entities expansion unless an application developer uses the XML_SetEntityDeclHandler function, which allows remote attackers to cause a denial of service (resource consumption), send HTTP requests to intranet servers, or read arbitrary files via a crafted XML document, aka an XML External Entity (XXE) issue.  NOTE: it could be argued that because expat already provides the ability to disable external entity expansion, the responsibility for resolving this issue lies with application developers; according to this argument, this entry should be REJECTed, and each affected application would need its own CVE.",
         "Severity": "LOW",
@@ -954,6 +1004,7 @@
           "DiffID": "sha256:6189abe095d53c1c9f2bfc8f50128ee876b9a5d10f9eda1564e5f5357d6ffe61"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-12886",
         "Title": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
         "Description": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against.",
         "Severity": "MEDIUM",
@@ -970,6 +1021,7 @@
           "DiffID": "sha256:6189abe095d53c1c9f2bfc8f50128ee876b9a5d10f9eda1564e5f5357d6ffe61"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-12886",
         "Title": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
         "Description": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against.",
         "Severity": "MEDIUM",
@@ -986,6 +1038,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-19211",
         "Title": "ncurses: Null pointer dereference at function _nc_parse_entry in parse_entry.c",
         "Description": "In ncurses 6.1, there is a NULL pointer dereference at function _nc_parse_entry in parse_entry.c that will lead to a denial of service attack. The product proceeds to the dereference code path even after a \"dubious character `*' in name or alias field\" detection.",
         "Severity": "LOW",
@@ -1002,6 +1055,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -1021,6 +1075,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -1040,6 +1095,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-8492",
         "Title": "python: wrong backtracking in urllib.request.AbstractBasicAuthHandler allows for a ReDoS",
         "Description": "Python 2.7 through 2.7.17, 3.5 through 3.5.9, 3.6 through 3.6.10, 3.7 through 3.7.6, and 3.8 through 3.8.1 allows an HTTP server to conduct Regular Expression Denial of Service (ReDoS) attacks against a client because of urllib.request.AbstractBasicAuthHandler catastrophic backtracking.",
         "Severity": "HIGH",
@@ -1059,6 +1115,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20852",
         "Title": "python: Cookie domain check returns incorrect results",
         "Description": "http.cookiejar.DefaultPolicy.domain_return_ok in Lib/http/cookiejar.py in Python before 3.7.3 does not correctly validate the domain: it can be tricked into sending existing cookies to the wrong server. An attacker may abuse this flaw by using a server with a hostname that has another valid hostname as a suffix (e.g., pythonicexample.com to steal cookies for example.com). When a program uses http.cookiejar.DefaultPolicy and tries to do an HTTP connection to an attacker-controlled server, existing cookies can be leaked to the attacker. This affects 2.x through 2.7.16, 3.x before 3.4.10, 3.5.x before 3.5.7, 3.6.x before 3.6.9, and 3.7.x before 3.7.3.",
         "Severity": "MEDIUM",
@@ -1081,6 +1138,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16056",
         "Title": "python: email.utils.parseaddr wrongly parses email addresses",
         "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
         "Severity": "MEDIUM",
@@ -1104,6 +1162,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16935",
         "Title": "python: XSS vulnerability in the documentation XML-RPC server in server_title field",
         "Description": "The documentation XML-RPC server in Python through 2.7.16, 3.x through 3.6.9, and 3.7.x through 3.7.4 has XSS via the server_title field. This occurs in Lib/DocXMLRPCServer.py in Python 2.x, and in Lib/xmlrpc/server.py in Python 3.x. If set_server_title is called with untrusted input, arbitrary JavaScript can be delivered to clients that visit the http URL for this server.",
         "Severity": "MEDIUM",
@@ -1125,6 +1184,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5010",
         "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
         "Description": "An exploitable denial-of-service vulnerability exists in the X509 certificate parser of Python.org Python 2.7.11 / 3.6.6. A specially crafted X509 certificate can cause a NULL pointer dereference, resulting in a denial of service. An attacker can initiate or accept TLS connections using crafted certificates to trigger this vulnerability.",
         "Severity": "MEDIUM",
@@ -1146,6 +1206,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9636",
         "Title": "python: Information Disclosure due to urlsplit improper NFKC normalization",
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "MEDIUM",
@@ -1191,6 +1252,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9740",
         "Title": "python: CRLF injection via the query part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the query string after a ? character) followed by an HTTP header or a Redis command.",
         "Severity": "MEDIUM",
@@ -1213,6 +1275,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9947",
         "Title": "python: CRLF injection via the path part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the path component of a URL that lacks a ? character) followed by an HTTP header or a Redis command. This is similar to the CVE-2019-9740 query string issue.",
         "Severity": "MEDIUM",
@@ -1235,6 +1298,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9948",
         "Title": "python: Undocumented local_file protocol allows remote attackers to bypass protection mechanisms",
         "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
         "Severity": "MEDIUM",
@@ -1259,6 +1323,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2013-7040",
         "Title": "python: hash secret can be recovered remotely",
         "Description": "Python 2.7 before 3.4 only uses the last eight bits of the prefix to randomize hash values, which causes it to compute hash values without restricting the ability to trigger hash collisions predictably and makes it easier for context-dependent attackers to cause a denial of service (CPU consumption) via crafted input to an application that maintains a hash table.  NOTE: this vulnerability exists because of an incomplete fix for CVE-2012-1150.",
         "Severity": "LOW",
@@ -1279,6 +1344,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-17522",
         "Title": "python: Command injection in Lib/webbrowser.py",
         "Description": "** DISPUTED ** Lib/webbrowser.py in Python through 3.6.3 does not validate strings before launching the program specified by the BROWSER environment variable, which might allow remote attackers to conduct argument-injection attacks via a crafted URL. NOTE: a software maintainer indicates that exploitation is impossible because the code relies on subprocess.Popen and the default shell=False setting.",
         "Severity": "LOW",
@@ -1296,6 +1362,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-1000030",
         "Title": "python: Heap-Buffer-Overflow and Heap-Use-After-Free in Objects/fileobject.c",
         "Description": "Python 2.7.14 is vulnerable to a Heap-Buffer-Overflow as well as a Heap-Use-After-Free. Python versions prior to 2.7.14 may also be vulnerable and it appears that Python 2.7.17 and prior may also be vulnerable however this has not been confirmed. The vulnerability lies when multiply threads are handling large amounts of data. In both cases there is essentially a race condition that occurs. For the Heap-Buffer-Overflow, Thread 2 is creating the size for a buffer, but Thread1 is already writing to the buffer without knowing how much to write. So when a large amount of data is being processed, it is very easy to cause memory corruption using a Heap-Buffer-Overflow. As for the Use-After-Free, Thread3-\u003eMalloc-\u003eThread1-\u003eFree's-\u003eThread2-Re-uses-Free'd Memory. The PSRT has stated that this is not a security vulnerability due to the fact that the attacker must be able to run code, however in some situations, such as function as a service, this vulnerability can potentially be used by an attacker to violate a trust boundary, as such the DWF feels this issue deserves a CVE.",
         "Severity": "LOW",
@@ -1318,6 +1385,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18348",
         "Title": "python: CRLF injection via the host part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.17 and urllib in Python 3.x through 3.8.0. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the host component of a URL) followed by an HTTP header. This is similar to the CVE-2019-9740 query string issue and the CVE-2019-9947 path string issue. (This is not exploitable when glibc has CVE-2016-10739 fixed.)",
         "Severity": "LOW",
@@ -1338,6 +1406,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9674",
         "Title": "python: Nested zip file (Zip bomb) vulnerability in Lib/zipfile.py",
         "Description": "Lib/zipfile.py in Python through 3.7.2 allows remote attackers to cause a denial of service (resource consumption) via a ZIP bomb.",
         "Severity": "LOW",
@@ -1359,6 +1428,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-8457",
         "Title": "sqlite: heap out-of-bound read in function rtreenode()",
         "Description": "SQLite3 from 3.6.0 to and including 3.27.2 is vulnerable to heap out-of-bound read in the rtreenode() function when handling invalid rtree tables.",
         "Severity": "HIGH",
@@ -1386,6 +1456,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20346",
         "Title": "CVE-2018-20505 CVE-2018-20506 sqlite: Multiple flaws in sqlite which can be triggered via corrupted internal databases (Magellan)",
         "Description": "SQLite before 3.25.3, when the FTS3 extension is enabled, encounters an integer overflow (and resultant buffer overflow) for FTS3 queries that occur after crafted changes to FTS3 shadow tables, allowing remote attackers to execute arbitrary code by leveraging the ability to run arbitrary SQL statements (such as in certain WebSQL use cases), aka Magellan.",
         "Severity": "MEDIUM",
@@ -1431,6 +1502,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20505",
         "Title": "CVE-2018-20346 CVE-2018-20505 CVE-2018-20506 sqlite: Multiple flaws in sqlite which can be triggered via corrupted internal databases (Magellan)",
         "Description": "SQLite 3.25.2, when queries are run on a table with a malformed PRIMARY KEY, allows remote attackers to cause a denial of service (application crash) by leveraging the ability to run arbitrary SQL statements (such as in certain WebSQL use cases).",
         "Severity": "MEDIUM",
@@ -1471,6 +1543,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20506",
         "Title": "CVE-2018-20346 CVE-2018-20505 CVE-2018-20506 sqlite: Multiple flaws in sqlite which can be triggered via corrupted internal databases (Magellan)",
         "Description": "SQLite before 3.25.3, when the FTS3 extension is enabled, encounters an integer overflow (and resultant buffer overflow) for FTS3 queries in a \"merge\" operation that occurs after crafted changes to FTS3 shadow tables, allowing remote attackers to execute arbitrary code by leveraging the ability to run arbitrary SQL statements (such as in certain WebSQL use cases). This is a different vulnerability than CVE-2018-20346.",
         "Severity": "MEDIUM",
@@ -1513,6 +1586,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-8740",
         "Title": "sqlite: NULL pointer dereference with databases with schema corrupted with CREATE TABLE AS allows for denial of service",
         "Description": "In SQLite through 3.22.0, databases whose schema is corrupted using a CREATE TABLE AS statement could cause a NULL pointer dereference, related to build.c and prepare.c.",
         "Severity": "MEDIUM",
@@ -1535,6 +1609,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16168",
         "Title": "sqlite: division by zero in whereLoopAddBtreeIndex in sqlite3.c",
         "Description": "In SQLite through 3.29.0, whereLoopAddBtreeIndex in sqlite3.c can crash a browser or other application because of missing validation of a sqlite_stat1 sz field, aka a \"severe division by zero in the query planner.\"",
         "Severity": "MEDIUM",
@@ -1559,6 +1634,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-19603",
         "Title": "sqlite: mishandles certain SELECT statements with a nonexistent VIEW, leading to DoS",
         "Description": "SQLite 3.30.1 mishandles certain SELECT statements with a nonexistent VIEW, leading to an application crash.",
         "Severity": "MEDIUM",
@@ -1576,6 +1652,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-20218",
         "Title": "sqlite: selectExpander in select.c proceeds with WITH stack unwinding even after a parsing error",
         "Description": "selectExpander in select.c in SQLite 3.30.1 proceeds with WITH stack unwinding even after a parsing error.",
         "Severity": "MEDIUM",
@@ -1592,6 +1669,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5827",
         "Title": "chromium-browser: out-of-bounds access in SQLite",
         "Description": "Integer overflow in SQLite via WebSQL in Google Chrome prior to 74.0.3729.131 allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
         "Severity": "MEDIUM",
@@ -1612,6 +1690,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-9327",
         "Title": "sqlite: NULL pointer dereference and segmentation fault because of generated column optimizations",
         "Description": "In SQLite 3.31.1, isAuxiliaryVtabOperator allows attackers to trigger a NULL pointer dereference and segmentation fault because of generated column optimizations.",
         "Severity": "MEDIUM",
@@ -1632,6 +1711,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-13685",
         "Title": "sqlite: Local DoS via dump_callback function",
         "Description": "The dump_callback function in SQLite 3.20.0 allows remote attackers to cause a denial of service (EXC_BAD_ACCESS and application crash) via a crafted file.",
         "Severity": "LOW",
@@ -1649,6 +1729,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-19645",
         "Title": "sqlite: infinite recursion via certain types of self-referential views in conjunction with ALTER TABLE statements",
         "Description": "alter.c in SQLite through 3.30.1 allows attackers to trigger infinite recursion via certain types of self-referential views in conjunction with ALTER TABLE statements.",
         "Severity": "LOW",
@@ -1665,6 +1746,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9936",
         "Title": "sqlite: heap-based buffer over-read in function fts5HashEntrySort in sqlite3.c",
         "Description": "In SQLite 3.27.2, running fts5 prefix queries inside a transaction could trigger a heap-based buffer over-read in fts5HashEntrySort in sqlite3.c, which may lead to an information leak. This is related to ext/fts5/fts5_hash.c.",
         "Severity": "LOW",
@@ -1688,6 +1770,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9937",
         "Title": "sqlite: null-pointer dereference in function fts5ChunkIterate in sqlite3.c",
         "Description": "In SQLite 3.27.2, interleaving reads and writes in a single transaction with an fts5 virtual table will lead to a NULL Pointer Dereference in fts5ChunkIterate in sqlite3.c. This is related to ext/fts5/fts5_hash.c and ext/fts5/fts5_index.c.",
         "Severity": "LOW",
@@ -1712,6 +1795,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1563",
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "MEDIUM",
@@ -1734,6 +1818,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2007-6755",
         "Title": "Dual_EC_DRBG: weak pseudo random number generator",
         "Description": "The NIST SP 800-90A default statement of the Dual Elliptic Curve Deterministic Random Bit Generation (Dual_EC_DRBG) algorithm contains point Q constants with a possible relationship to certain \"skeleton key\" values, which might allow context-dependent attackers to defeat cryptographic protection mechanisms by leveraging knowledge of those values.  NOTE: this is a preliminary CVE for Dual_EC_DRBG; future research may provide additional details about point Q and associated attacks, and could potentially lead to a RECAST or REJECT of this CVE.",
         "Severity": "LOW",
@@ -1756,6 +1841,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2010-0928",
         "Title": "openssl: RSA authentication weakness",
         "Description": "OpenSSL 0.9.8i on the Gaisler Research LEON3 SoC on the Xilinx Virtex-II Pro FPGA uses a Fixed Width Exponentiation (FWE) algorithm for certain signature calculations, and does not verify the signature before providing it to a caller, which makes it easier for physically proximate attackers to determine the private key via a modified supply voltage for the microprocessor, related to a \"fault-based attack.\"",
         "Severity": "LOW",
@@ -1776,6 +1862,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1551",
         "Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
         "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
         "Severity": "LOW",
@@ -1802,6 +1889,7 @@
           "DiffID": "sha256:6189abe095d53c1c9f2bfc8f50128ee876b9a5d10f9eda1564e5f5357d6ffe61"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-12886",
         "Title": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
         "Description": "stack_protect_prologue in cfgexpand.c and stack_protect_epilogue in function.c in GNU Compiler Collection (GCC) 4.1 through 8 (under certain circumstances) generate instruction sequences when targeting ARM targets that spill the address of the stack protector guard, which allows an attacker to bypass the protection of -fstack-protector, -fstack-protector-all, -fstack-protector-strong, and -fstack-protector-explicit against stack overflow by controlling what the stack canary is compared against.",
         "Severity": "MEDIUM",
@@ -1818,6 +1906,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-19211",
         "Title": "ncurses: Null pointer dereference at function _nc_parse_entry in parse_entry.c",
         "Description": "In ncurses 6.1, there is a NULL pointer dereference at function _nc_parse_entry in parse_entry.c that will lead to a denial of service attack. The product proceeds to the dereference code path even after a \"dubious character `*' in name or alias field\" detection.",
         "Severity": "LOW",
@@ -1834,6 +1923,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -1853,6 +1943,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -1873,6 +1964,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1563",
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "MEDIUM",
@@ -1895,6 +1987,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2007-6755",
         "Title": "Dual_EC_DRBG: weak pseudo random number generator",
         "Description": "The NIST SP 800-90A default statement of the Dual Elliptic Curve Deterministic Random Bit Generation (Dual_EC_DRBG) algorithm contains point Q constants with a possible relationship to certain \"skeleton key\" values, which might allow context-dependent attackers to defeat cryptographic protection mechanisms by leveraging knowledge of those values.  NOTE: this is a preliminary CVE for Dual_EC_DRBG; future research may provide additional details about point Q and associated attacks, and could potentially lead to a RECAST or REJECT of this CVE.",
         "Severity": "LOW",
@@ -1917,6 +2010,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2010-0928",
         "Title": "openssl: RSA authentication weakness",
         "Description": "OpenSSL 0.9.8i on the Gaisler Research LEON3 SoC on the Xilinx Virtex-II Pro FPGA uses a Fixed Width Exponentiation (FWE) algorithm for certain signature calculations, and does not verify the signature before providing it to a caller, which makes it easier for physically proximate attackers to determine the private key via a modified supply voltage for the microprocessor, related to a \"fault-based attack.\"",
         "Severity": "LOW",
@@ -1937,6 +2031,7 @@
           "DiffID": "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1551",
         "Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
         "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
         "Severity": "LOW",
@@ -1963,6 +2058,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-8492",
         "Title": "python: wrong backtracking in urllib.request.AbstractBasicAuthHandler allows for a ReDoS",
         "Description": "Python 2.7 through 2.7.17, 3.5 through 3.5.9, 3.6 through 3.6.10, 3.7 through 3.7.6, and 3.8 through 3.8.1 allows an HTTP server to conduct Regular Expression Denial of Service (ReDoS) attacks against a client because of urllib.request.AbstractBasicAuthHandler catastrophic backtracking.",
         "Severity": "HIGH",
@@ -1982,6 +2078,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20852",
         "Title": "python: Cookie domain check returns incorrect results",
         "Description": "http.cookiejar.DefaultPolicy.domain_return_ok in Lib/http/cookiejar.py in Python before 3.7.3 does not correctly validate the domain: it can be tricked into sending existing cookies to the wrong server. An attacker may abuse this flaw by using a server with a hostname that has another valid hostname as a suffix (e.g., pythonicexample.com to steal cookies for example.com). When a program uses http.cookiejar.DefaultPolicy and tries to do an HTTP connection to an attacker-controlled server, existing cookies can be leaked to the attacker. This affects 2.x through 2.7.16, 3.x before 3.4.10, 3.5.x before 3.5.7, 3.6.x before 3.6.9, and 3.7.x before 3.7.3.",
         "Severity": "MEDIUM",
@@ -2004,6 +2101,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16056",
         "Title": "python: email.utils.parseaddr wrongly parses email addresses",
         "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
         "Severity": "MEDIUM",
@@ -2027,6 +2125,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16935",
         "Title": "python: XSS vulnerability in the documentation XML-RPC server in server_title field",
         "Description": "The documentation XML-RPC server in Python through 2.7.16, 3.x through 3.6.9, and 3.7.x through 3.7.4 has XSS via the server_title field. This occurs in Lib/DocXMLRPCServer.py in Python 2.x, and in Lib/xmlrpc/server.py in Python 3.x. If set_server_title is called with untrusted input, arbitrary JavaScript can be delivered to clients that visit the http URL for this server.",
         "Severity": "MEDIUM",
@@ -2048,6 +2147,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5010",
         "Title": "python: NULL pointer dereference using a specially crafted X509 certificate",
         "Description": "An exploitable denial-of-service vulnerability exists in the X509 certificate parser of Python.org Python 2.7.11 / 3.6.6. A specially crafted X509 certificate can cause a NULL pointer dereference, resulting in a denial of service. An attacker can initiate or accept TLS connections using crafted certificates to trigger this vulnerability.",
         "Severity": "MEDIUM",
@@ -2069,6 +2169,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9636",
         "Title": "python: Information Disclosure due to urlsplit improper NFKC normalization",
         "Description": "Python 2.7.x through 2.7.16 and 3.x through 3.7.2 is affected by: Improper Handling of Unicode Encoding (with an incorrect netloc) during NFKC normalization. The impact is: Information disclosure (credentials, cookies, etc. that are cached against a given hostname). The components are: urllib.parse.urlsplit, urllib.parse.urlparse. The attack vector is: A specially crafted URL could be incorrectly parsed to locate cookies or authentication data and send that information to a different host than when parsed correctly.",
         "Severity": "MEDIUM",
@@ -2114,6 +2215,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9740",
         "Title": "python: CRLF injection via the query part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the query string after a ? character) followed by an HTTP header or a Redis command.",
         "Severity": "MEDIUM",
@@ -2136,6 +2238,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9947",
         "Title": "python: CRLF injection via the path part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.16 and urllib in Python 3.x through 3.7.3. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the path component of a URL that lacks a ? character) followed by an HTTP header or a Redis command. This is similar to the CVE-2019-9740 query string issue.",
         "Severity": "MEDIUM",
@@ -2158,6 +2261,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9948",
         "Title": "python: Undocumented local_file protocol allows remote attackers to bypass protection mechanisms",
         "Description": "urllib in Python 2.x through 2.7.16 supports the local_file: scheme, which makes it easier for remote attackers to bypass protection mechanisms that blacklist file: URIs, as demonstrated by triggering a urllib.urlopen('local_file:///etc/passwd') call.",
         "Severity": "MEDIUM",
@@ -2182,6 +2286,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2013-7040",
         "Title": "python: hash secret can be recovered remotely",
         "Description": "Python 2.7 before 3.4 only uses the last eight bits of the prefix to randomize hash values, which causes it to compute hash values without restricting the ability to trigger hash collisions predictably and makes it easier for context-dependent attackers to cause a denial of service (CPU consumption) via crafted input to an application that maintains a hash table.  NOTE: this vulnerability exists because of an incomplete fix for CVE-2012-1150.",
         "Severity": "LOW",
@@ -2202,6 +2307,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-17522",
         "Title": "python: Command injection in Lib/webbrowser.py",
         "Description": "** DISPUTED ** Lib/webbrowser.py in Python through 3.6.3 does not validate strings before launching the program specified by the BROWSER environment variable, which might allow remote attackers to conduct argument-injection attacks via a crafted URL. NOTE: a software maintainer indicates that exploitation is impossible because the code relies on subprocess.Popen and the default shell=False setting.",
         "Severity": "LOW",
@@ -2219,6 +2325,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-1000030",
         "Title": "python: Heap-Buffer-Overflow and Heap-Use-After-Free in Objects/fileobject.c",
         "Description": "Python 2.7.14 is vulnerable to a Heap-Buffer-Overflow as well as a Heap-Use-After-Free. Python versions prior to 2.7.14 may also be vulnerable and it appears that Python 2.7.17 and prior may also be vulnerable however this has not been confirmed. The vulnerability lies when multiply threads are handling large amounts of data. In both cases there is essentially a race condition that occurs. For the Heap-Buffer-Overflow, Thread 2 is creating the size for a buffer, but Thread1 is already writing to the buffer without knowing how much to write. So when a large amount of data is being processed, it is very easy to cause memory corruption using a Heap-Buffer-Overflow. As for the Use-After-Free, Thread3-\u003eMalloc-\u003eThread1-\u003eFree's-\u003eThread2-Re-uses-Free'd Memory. The PSRT has stated that this is not a security vulnerability due to the fact that the attacker must be able to run code, however in some situations, such as function as a service, this vulnerability can potentially be used by an attacker to violate a trust boundary, as such the DWF feels this issue deserves a CVE.",
         "Severity": "LOW",
@@ -2241,6 +2348,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18348",
         "Title": "python: CRLF injection via the host part of the url passed to urlopen()",
         "Description": "An issue was discovered in urllib2 in Python 2.x through 2.7.17 and urllib in Python 3.x through 3.8.0. CRLF injection is possible if the attacker controls a url parameter, as demonstrated by the first argument to urllib.request.urlopen with \\r\\n (specifically in the host component of a URL) followed by an HTTP header. This is similar to the CVE-2019-9740 query string issue and the CVE-2019-9947 path string issue. (This is not exploitable when glibc has CVE-2016-10739 fixed.)",
         "Severity": "LOW",
@@ -2261,6 +2369,7 @@
           "DiffID": "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
         },
         "SeveritySource": "debian",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9674",
         "Title": "python: Nested zip file (Zip bomb) vulnerability in Lib/zipfile.py",
         "Description": "Lib/zipfile.py in Python through 3.7.2 allows remote attackers to cause a denial of service (resource consumption) via a ZIP bomb.",
         "Severity": "LOW",

@@ -25,10 +25,11 @@ func TestReportWriter_Table(t *testing.T) {
 			name: "happy path full",
 			detectedVulns: []types.DetectedVulnerability{
 				{
-					VulnerabilityID:  "123",
+					VulnerabilityID:  "CVE-2020-0001",
 					PkgName:          "foo",
 					InstalledVersion: "1.2.3",
 					FixedVersion:     "3.4.5",
+					PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
 					Vulnerability: dbTypes.Vulnerability{
 						Title:       "foobar",
 						Description: "baz",
@@ -36,11 +37,11 @@ func TestReportWriter_Table(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: `+---------+------------------+----------+-------------------+---------------+--------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION | TITLE  |
-+---------+------------------+----------+-------------------+---------------+--------+
-| foo     |              123 | HIGH     | 1.2.3             | 3.4.5         | foobar |
-+---------+------------------+----------+-------------------+---------------+--------+
+			expectedOutput: `+---------+------------------+----------+-------------------+---------------+--------+-----------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION | TITLE  |                URL                |
++---------+------------------+----------+-------------------+---------------+--------+-----------------------------------+
+| foo     | CVE-2020-0001    | HIGH     | 1.2.3             | 3.4.5         | foobar | avd.aquasec.com/nvd/cve-2020-0001 |
++---------+------------------+----------+-------------------+---------------+--------+-----------------------------------+
 `,
 		},
 		{
@@ -80,32 +81,33 @@ func TestReportWriter_Table(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: `+---------+------------------+----------+-------------------+---------------+--------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION | TITLE  |
-+---------+------------------+----------+-------------------+---------------+--------+
-| foo     |              123 | HIGH     | 1.2.3             | 3.4.5         | foobar |
-+---------+------------------+----------+-------------------+---------------+--------+
+			expectedOutput: `+---------+------------------+----------+-------------------+---------------+--------+-----+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION | TITLE  | URL |
++---------+------------------+----------+-------------------+---------------+--------+-----+
+| foo     |              123 | HIGH     | 1.2.3             | 3.4.5         | foobar |     |
++---------+------------------+----------+-------------------+---------------+--------+-----+
 `,
 		},
 		{
 			name: "long title for vuln",
 			detectedVulns: []types.DetectedVulnerability{
 				{
-					VulnerabilityID:  "123",
+					VulnerabilityID:  "CVE-2020-1234",
 					PkgName:          "foo",
 					InstalledVersion: "1.2.3",
 					FixedVersion:     "3.4.5",
+					PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
 					Vulnerability: dbTypes.Vulnerability{
 						Title:    "a b c d e f g h i j k l m n o p q r s t u v",
 						Severity: "HIGH",
 					},
 				},
 			},
-			expectedOutput: `+---------+------------------+----------+-------------------+---------------+----------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |           TITLE            |
-+---------+------------------+----------+-------------------+---------------+----------------------------+
-| foo     |              123 | HIGH     | 1.2.3             | 3.4.5         | a b c d e f g h i j k l... |
-+---------+------------------+----------+-------------------+---------------+----------------------------+
+			expectedOutput: `+---------+------------------+----------+-------------------+---------------+----------------------------+-----------------------------------+
+| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |           TITLE            |                URL                |
++---------+------------------+----------+-------------------+---------------+----------------------------+-----------------------------------+
+| foo     | CVE-2020-1234    | HIGH     | 1.2.3             | 3.4.5         | a b c d e f g h i j k l... | avd.aquasec.com/nvd/cve-2020-0001 |
++---------+------------------+----------+-------------------+---------------+----------------------------+-----------------------------------+
 `,
 		},
 		{
@@ -140,10 +142,11 @@ func TestReportWriter_JSON(t *testing.T) {
 			name: "happy path",
 			detectedVulns: []types.DetectedVulnerability{
 				{
-					VulnerabilityID:  "123",
+					VulnerabilityID:  "CVE-2020-0001",
 					PkgName:          "foo",
 					InstalledVersion: "1.2.3",
 					FixedVersion:     "3.4.5",
+					PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
 					Vulnerability: dbTypes.Vulnerability{
 						Title:       "foobar",
 						Description: "baz",
@@ -156,10 +159,11 @@ func TestReportWriter_JSON(t *testing.T) {
 					Target: "foojson",
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
-							VulnerabilityID:  "123",
+							VulnerabilityID:  "CVE-2020-0001",
 							PkgName:          "foo",
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "3.4.5",
+							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
 							Vulnerability: dbTypes.Vulnerability{
 								Title:       "foobar",
 								Description: "baz",
