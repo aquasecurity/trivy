@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
 	"golang.org/x/xerrors"
@@ -54,6 +55,9 @@ func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []types.Package,
 		return nil, xerrors.Errorf("failed to open RPM DB: %w", err)
 	}
 
+	// equivalent:
+	//   new version: rpm -qa --qf "%{NAME} %{EPOCHNUM} %{VERSION} %{RELEASE} %{SOURCERPM} %{ARCH}\n"
+	//   old version: rpm -qa --qf "%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{SOURCERPM} %{ARCH}\n"
 	pkgList, err := db.ListPackages()
 	if err != nil {
 		return nil, xerrors.Errorf("failed to list packages", err)
@@ -62,19 +66,53 @@ func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []types.Package,
 	for _, pkg := range pkgList {
 		arch := pkg.Arch
 		if arch == "" {
-			arch = "(none)"
+			arch = "None"
 		}
+
+		// parse source rpm
+		var srcName, srcVer, srcRel string
+		if pkg.SourceRpm != "(none)" && pkg.SourceRpm != "" {
+			// source epoch is not included in SOURCERPM
+			srcName, srcVer, srcRel = splitFileName(pkg.SourceRpm)
+		}
+
 		p := types.Package{
-			Name:    pkg.Name,
-			Epoch:   pkg.Epoch,
-			Version: pkg.Version,
-			Release: pkg.Release,
-			Arch:    arch,
+			Name:       pkg.Name,
+			Epoch:      pkg.Epoch,
+			Version:    pkg.Version,
+			Release:    pkg.Release,
+			Arch:       arch,
+			SrcName:    srcName,
+			SrcEpoch:   pkg.Epoch, // NOTE: use epoch of binary package as epoch of src package
+			SrcVersion: srcVer,
+			SrcRelease: srcRel,
 		}
 		pkgs = append(pkgs, p)
 	}
 
 	return pkgs, nil
+}
+
+// splitFileName returns a name, version, release, epoch, arch
+// e.g.
+//    foo-1.0-1.i386.rpm returns foo, 1.0, 1, i386
+//    1:bar-9-123a.ia64.rpm returns bar, 9, 123a, 1, ia64
+// https://github.com/rpm-software-management/yum/blob/043e869b08126c1b24e392f809c9f6871344c60d/rpmUtils/miscutils.py#L301
+func splitFileName(filename string) (name, ver, rel string) {
+	if strings.HasSuffix(filename, ".rpm") {
+		filename = filename[:len(filename)-4]
+	}
+
+	archIndex := strings.LastIndex(filename, ".")
+
+	relIndex := strings.LastIndex(filename[:archIndex], "-")
+	rel = filename[relIndex+1 : archIndex]
+
+	verIndex := strings.LastIndex(filename[:relIndex], "-")
+	ver = filename[verIndex+1 : relIndex]
+
+	name = filename[:verIndex]
+	return name, ver, rel
 }
 
 func (a rpmPkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
