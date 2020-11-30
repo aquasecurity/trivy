@@ -1974,6 +1974,13 @@ $ brew unlink trivy && brew uninstall trivy
 $ brew install aquasecurity/trivy/trivy
 ```
 
+### Error: x509: certificate signed by unknown authority
+`TRIVY_INSECURE` can be used to allow insecure connections to a container registry when using SSL.
+
+```
+$ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
+```
+
 ### Running in parallel takes same time as series run 
 When running trivy on multiple images simultaneously, it will take same time as running trivy in series.  
 This is because of a limitation of boltdb.  
