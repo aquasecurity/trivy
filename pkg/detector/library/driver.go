@@ -44,7 +44,7 @@ func (d DriverFactory) NewDriver(filename string) (Driver, error) {
 	case "Pipfile.lock", "poetry.lock":
 		driver = newPipDriver()
 	case "packages.lock.json":
-		driver = newCSharpDriver()
+		driver = newNugetDriver()
 	default:
 		return Driver{}, xerrors.New(fmt.Sprintf("unsupport filename %s", filename))
 	}
@@ -117,6 +117,7 @@ func newPipDriver() Driver {
 		NewAdvisory(vulnerability.Pip, c))
 }
 
-func newCSharpDriver() Driver {
-	return NewDriver(vulnerability.CSharp, ghsa.NewAdvisory(ecosystem.Nuget))
+func newNugetDriver() Driver {
+	c := comparer.GenericComparer{}
+	return NewDriver(ghsa.NewAdvisory(ecosystem.Nuget, c))
 }
