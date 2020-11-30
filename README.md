@@ -1975,7 +1975,7 @@ $ brew install aquasecurity/trivy/trivy
 ```
 
 ### Error: x509: certificate signed by unknown authority
-`TRIVY_INSECURE` can be used to allow insecure server connections when using SSL.
+`TRIVY_INSECURE` can be used to allow insecure connections to a container registry when using SSL.
 
 ```
 $ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
