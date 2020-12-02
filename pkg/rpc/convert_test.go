@@ -291,7 +291,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := ConvertToRPCVulns(tt.args.vulns)
-			assert.Equal(t, got, tt.want, tt.name)
+			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
 }

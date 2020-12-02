@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/trivy-db/pkg/utils"
+
 	"github.com/golang/protobuf/ptypes"
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
 	"github.com/golang/protobuf/ptypes/timestamp"
@@ -69,8 +71,11 @@ func TestScanServer_Scan(t *testing.T) {
 									PkgName:          "musl",
 									InstalledVersion: "1.2.3",
 									FixedVersion:     "1.2.4",
-									Vulnerability:    dbTypes.Vulnerability{},
 									SeveritySource:   "nvd",
+									Vulnerability: dbTypes.Vulnerability{
+										LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
+										PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
+									},
 								},
 							},
 							Type: "alpine",
@@ -90,8 +95,11 @@ func TestScanServer_Scan(t *testing.T) {
 							PkgName:          "musl",
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "1.2.4",
-							Vulnerability:    dbTypes.Vulnerability{},
-							SeveritySource:   "nvd",
+							Vulnerability: dbTypes.Vulnerability{
+								LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
+								PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
+							},
+							SeveritySource: "nvd",
 						},
 					},
 					ReportType: "alpine",
@@ -115,6 +123,12 @@ func TestScanServer_Scan(t *testing.T) {
 								SeveritySource:   "nvd",
 								Layer:            &common.Layer{},
 								Cvss:             make(map[string]*common.CVSS),
+								LastModifiedDate: &timestamp.Timestamp{
+									Seconds: 1577840460,
+								},
+								PublishedDate: &timestamp.Timestamp{
+									Seconds: 978310860,
+								},
 							},
 						},
 						Type: "alpine",
