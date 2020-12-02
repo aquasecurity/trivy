@@ -320,6 +320,16 @@ func TestClientServer(t *testing.T) {
 			},
 			golden: "testdata/alpine-310.asff.golden",
 		},
+		{
+			name: "alpine 3.10 integration with html template",
+			testArgs: args{
+				Format:       "template",
+				TemplatePath: "@../contrib/html.tpl",
+				Version:      "dev",
+				Input:        "testdata/fixtures/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.html.golden",
+		},
 	}
 
 	app, addr, cacheDir := setup(t, "", "")
@@ -517,5 +527,9 @@ func compare(t *testing.T, wantFile, gotFile string) {
 	got, err := ioutil.ReadFile(gotFile)
 	assert.NoError(t, err)
 
-	assert.JSONEq(t, string(want), string(got))
+	if strings.HasSuffix(wantFile, ".json.golden") {
+		assert.JSONEq(t, string(want), string(got))
+	} else {
+		assert.EqualValues(t, string(want), string(got))
+	}
 }
