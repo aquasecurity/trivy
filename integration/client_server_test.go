@@ -527,5 +527,9 @@ func compare(t *testing.T, wantFile, gotFile string) {
 	got, err := ioutil.ReadFile(gotFile)
 	assert.NoError(t, err)
 
-	assert.EqualValues(t, string(want), string(got))
+	if strings.HasSuffix(wantFile, ".json.golden") {
+		assert.JSONEq(t, string(want), string(got))
+	} else {
+		assert.EqualValues(t, string(want), string(got))
+	}
 }
