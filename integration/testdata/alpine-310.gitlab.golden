@@ -33,17 +33,41 @@
         }
       ],
       "links": [{
+          "url": "http://linux.oracle.com/cve/CVE-2019-1549.html"
+        },{
+          "url": "http://linux.oracle.com/errata/ELSA-2020-1840.html"
+        },{
           "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549"
         },{
           "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1b0fe00e2704b5e20334a16d3c9099d1ba2ef1be"
         },{
           "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/"
         },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZN4VVQJ3JDCHGIHV4Y2YTXBYQZ6PWQ7E/"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/1"
+        },{
           "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
         },{
           "url": "https://support.f5.com/csp/article/K44070243"
         },{
+          "url": "https://support.f5.com/csp/article/K44070243?utm_source=f5support&amp;utm_medium=RSS"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://usn.ubuntu.com/usn/usn-4376-1"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4539"
+        },{
           "url": "https://www.openssl.org/news/secadv/20190910.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuapr2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
         }
       ]
     },
@@ -91,17 +115,33 @@
         },{
           "url": "https://github.com/openssl/openssl/pull/10575"
         },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DDHOAATPWJCXRNFMJ2SASDBBNU5RJONY/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EXDDAOWSAIEFQNBHWYE6PPYFV4QXGMCD/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XVEP3LAK4JSPRXFO4QF4GG2IVXADV3SO/"
+        },{
           "url": "https://seclists.org/bugtraq/2019/Dec/39"
         },{
           "url": "https://seclists.org/bugtraq/2019/Dec/46"
         },{
+          "url": "https://security.gentoo.org/glsa/202004-10"
+        },{
           "url": "https://security.netapp.com/advisory/ntap-20191210-0001/"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://usn.ubuntu.com/usn/usn-4376-1"
         },{
           "url": "https://www.debian.org/security/2019/dsa-4594"
         },{
           "url": "https://www.openssl.org/news/secadv/20191206.txt"
         },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
           "url": "https://www.tenable.com/security/tns-2019-09"
+        },{
+          "url": "https://www.tenable.com/security/tns-2020-03"
         }
       ]
     },
@@ -137,6 +177,18 @@
         }
       ],
       "links": [{
+          "url": "http://linux.oracle.com/cve/CVE-2019-1563.html"
+        },{
+          "url": "http://linux.oracle.com/errata/ELSA-2020-1840.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00054.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00072.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00012.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00016.html"
+        },{
           "url": "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html"
         },{
           "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563"
@@ -147,11 +199,133 @@
         },{
           "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f"
         },{
+          "url": "https://lists.debian.org/debian-lts-announce/2019/09/msg00026.html"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZN4VVQJ3JDCHGIHV4Y2YTXBYQZ6PWQ7E/"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/0"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/1"
+        },{
           "url": "https://seclists.org/bugtraq/2019/Sep/25"
+        },{
+          "url": "https://security.gentoo.org/glsa/201911-04"
         },{
           "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
         },{
+          "url": "https://support.f5.com/csp/article/K97324400?utm_source=f5support&amp;utm_medium=RSS"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://usn.ubuntu.com/4376-2/"
+        },{
+          "url": "https://usn.ubuntu.com/usn/usn-4376-1"
+        },{
+          "url": "https://usn.ubuntu.com/usn/usn-4376-2"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4539"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4540"
+        },{
           "url": "https://www.openssl.org/news/secadv/20190910.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuapr2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
+        },{
+          "url": "https://www.tenable.com/security/tns-2019-09"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2020-1967",
+      "category": "container_scanning",
+      "message": "openssl: Segmentation fault in SSL_check_chain causes denial of service",
+      "description": "Server or client applications that call the SSL_check_chain() function during or after a TLS 1.3 handshake may crash due to a NULL pointer dereference as a result of incorrect handling of the \"signature_algorithms_cert\" TLS extension. The crash occurs if an invalid or unrecognised signature algorithm is received from the peer. This could be exploited by a malicious peer in a Denial of Service attack. OpenSSL version 1.1.1d, 1.1.1e, and 1.1.1f are affected by this issue. This issue did not affect OpenSSL versions prior to 1.1.1d. Fixed in OpenSSL 1.1.1g (Affected 1.1.1d-1.1.1f).",
+      "cve": "CVE-2020-1967",
+      "severity": "Medium",
+      "confidence": "Unknown",
+      "solution": "Upgrade libcrypto1.1 to 1.1.1g-r0",
+      "scanner": {
+        "id": "trivy",
+        "name": "trivy"
+      },
+      "location": {
+        "dependency": {
+          "package": {
+            "name": "libcrypto1.1"
+          },
+          "version": "1.1.1c-r0"
+        },
+        "operating_system": "Unknown",
+        "image": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)"
+      },
+      "identifiers": [
+        {
+          "type": "cve",
+          "name": "CVE-2020-1967",
+          "value": "CVE-2020-1967",
+          "url": "https://avd.aquasec.com/nvd/cve-2020-1967"
+        }
+      ],
+      "links": [{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2020-07/msg00004.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2020-07/msg00011.html"
+        },{
+          "url": "http://packetstormsecurity.com/files/157527/OpenSSL-signature_algorithms_cert-Denial-Of-Service.html"
+        },{
+          "url": "http://seclists.org/fulldisclosure/2020/May/5"
+        },{
+          "url": "http://www.openwall.com/lists/oss-security/2020/04/22/2"
+        },{
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1967"
+        },{
+          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=eb563247aef3e83dda7679c43f9649270462e5b1"
+        },{
+          "url": "https://github.com/irsl/CVE-2020-1967"
+        },{
+          "url": "https://kb.pulsesecure.net/articles/Pulse_Security_Advisories/SA44440"
+        },{
+          "url": "https://lists.apache.org/thread.html/r66ea9c436da150683432db5fbc8beb8ae01886c6459ac30c2cea7345@%3Cdev.tomcat.apache.org%3E"
+        },{
+          "url": "https://lists.apache.org/thread.html/r94d6ac3f010a38fccf4f432b12180a13fa1cf303559bd805648c9064@%3Cdev.tomcat.apache.org%3E"
+        },{
+          "url": "https://lists.apache.org/thread.html/r9a41e304992ce6aec6585a87842b4f2e692604f5c892c37e3b0587ee@%3Cdev.tomcat.apache.org%3E"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DDHOAATPWJCXRNFMJ2SASDBBNU5RJONY/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EXDDAOWSAIEFQNBHWYE6PPYFV4QXGMCD/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XVEP3LAK4JSPRXFO4QF4GG2IVXADV3SO/"
+        },{
+          "url": "https://security.FreeBSD.org/advisories/FreeBSD-SA-20:11.openssl.asc"
+        },{
+          "url": "https://security.gentoo.org/glsa/202004-10"
+        },{
+          "url": "https://security.netapp.com/advisory/ntap-20200424-0003/"
+        },{
+          "url": "https://security.netapp.com/advisory/ntap-20200717-0004/"
+        },{
+          "url": "https://www.debian.org/security/2020/dsa-4661"
+        },{
+          "url": "https://www.openssl.org/news/secadv/20200421.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.synology.com/security/advisory/Synology_SA_20_05"
+        },{
+          "url": "https://www.synology.com/security/advisory/Synology_SA_20_05_OpenSSL"
+        },{
+          "url": "https://www.tenable.com/security/tns-2020-03"
+        },{
+          "url": "https://www.tenable.com/security/tns-2020-04"
         }
       ]
     },
@@ -187,6 +361,18 @@
         }
       ],
       "links": [{
+          "url": "http://linux.oracle.com/cve/CVE-2019-1547.html"
+        },{
+          "url": "http://linux.oracle.com/errata/ELSA-2020-1840.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00054.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00072.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00012.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00016.html"
+        },{
           "url": "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html"
         },{
           "url": "https://arxiv.org/abs/1909.01785"
@@ -199,11 +385,53 @@
         },{
           "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=7c1709c2da5414f5b6133d00a03fc8c5bf996c7a"
         },{
+          "url": "https://lists.debian.org/debian-lts-announce/2019/09/msg00026.html"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZN4VVQJ3JDCHGIHV4Y2YTXBYQZ6PWQ7E/"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/0"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/1"
+        },{
           "url": "https://seclists.org/bugtraq/2019/Sep/25"
+        },{
+          "url": "https://security.gentoo.org/glsa/201911-04"
         },{
           "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
         },{
+          "url": "https://security.netapp.com/advisory/ntap-20200122-0002/"
+        },{
+          "url": "https://security.netapp.com/advisory/ntap-20200416-0003/"
+        },{
+          "url": "https://support.f5.com/csp/article/K73422160?utm_source=f5support&amp;utm_medium=RSS"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://usn.ubuntu.com/4376-2/"
+        },{
+          "url": "https://usn.ubuntu.com/usn/usn-4376-1"
+        },{
+          "url": "https://usn.ubuntu.com/usn/usn-4376-2"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4539"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4540"
+        },{
           "url": "https://www.openssl.org/news/secadv/20190910.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuapr2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
+        },{
+          "url": "https://www.tenable.com/security/tns-2019-08"
+        },{
+          "url": "https://www.tenable.com/security/tns-2019-09"
         }
       ]
     },
@@ -239,17 +467,41 @@
         }
       ],
       "links": [{
+          "url": "http://linux.oracle.com/cve/CVE-2019-1549.html"
+        },{
+          "url": "http://linux.oracle.com/errata/ELSA-2020-1840.html"
+        },{
           "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549"
         },{
           "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1b0fe00e2704b5e20334a16d3c9099d1ba2ef1be"
         },{
           "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/"
         },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZN4VVQJ3JDCHGIHV4Y2YTXBYQZ6PWQ7E/"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/1"
+        },{
           "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
         },{
           "url": "https://support.f5.com/csp/article/K44070243"
         },{
+          "url": "https://support.f5.com/csp/article/K44070243?utm_source=f5support&amp;utm_medium=RSS"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://usn.ubuntu.com/usn/usn-4376-1"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4539"
+        },{
           "url": "https://www.openssl.org/news/secadv/20190910.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuapr2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
         }
       ]
     },
@@ -297,17 +549,33 @@
         },{
           "url": "https://github.com/openssl/openssl/pull/10575"
         },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DDHOAATPWJCXRNFMJ2SASDBBNU5RJONY/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EXDDAOWSAIEFQNBHWYE6PPYFV4QXGMCD/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XVEP3LAK4JSPRXFO4QF4GG2IVXADV3SO/"
+        },{
           "url": "https://seclists.org/bugtraq/2019/Dec/39"
         },{
           "url": "https://seclists.org/bugtraq/2019/Dec/46"
         },{
+          "url": "https://security.gentoo.org/glsa/202004-10"
+        },{
           "url": "https://security.netapp.com/advisory/ntap-20191210-0001/"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://usn.ubuntu.com/usn/usn-4376-1"
         },{
           "url": "https://www.debian.org/security/2019/dsa-4594"
         },{
           "url": "https://www.openssl.org/news/secadv/20191206.txt"
         },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
           "url": "https://www.tenable.com/security/tns-2019-09"
+        },{
+          "url": "https://www.tenable.com/security/tns-2020-03"
         }
       ]
     },
@@ -343,6 +611,18 @@
         }
       ],
       "links": [{
+          "url": "http://linux.oracle.com/cve/CVE-2019-1563.html"
+        },{
+          "url": "http://linux.oracle.com/errata/ELSA-2020-1840.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00054.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00072.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00012.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00016.html"
+        },{
           "url": "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html"
         },{
           "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563"
@@ -353,11 +633,133 @@
         },{
           "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f"
         },{
+          "url": "https://lists.debian.org/debian-lts-announce/2019/09/msg00026.html"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZN4VVQJ3JDCHGIHV4Y2YTXBYQZ6PWQ7E/"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/0"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/1"
+        },{
           "url": "https://seclists.org/bugtraq/2019/Sep/25"
+        },{
+          "url": "https://security.gentoo.org/glsa/201911-04"
         },{
           "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
         },{
+          "url": "https://support.f5.com/csp/article/K97324400?utm_source=f5support&amp;utm_medium=RSS"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://usn.ubuntu.com/4376-2/"
+        },{
+          "url": "https://usn.ubuntu.com/usn/usn-4376-1"
+        },{
+          "url": "https://usn.ubuntu.com/usn/usn-4376-2"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4539"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4540"
+        },{
           "url": "https://www.openssl.org/news/secadv/20190910.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuapr2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
+        },{
+          "url": "https://www.tenable.com/security/tns-2019-09"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2020-1967",
+      "category": "container_scanning",
+      "message": "openssl: Segmentation fault in SSL_check_chain causes denial of service",
+      "description": "Server or client applications that call the SSL_check_chain() function during or after a TLS 1.3 handshake may crash due to a NULL pointer dereference as a result of incorrect handling of the \"signature_algorithms_cert\" TLS extension. The crash occurs if an invalid or unrecognised signature algorithm is received from the peer. This could be exploited by a malicious peer in a Denial of Service attack. OpenSSL version 1.1.1d, 1.1.1e, and 1.1.1f are affected by this issue. This issue did not affect OpenSSL versions prior to 1.1.1d. Fixed in OpenSSL 1.1.1g (Affected 1.1.1d-1.1.1f).",
+      "cve": "CVE-2020-1967",
+      "severity": "Medium",
+      "confidence": "Unknown",
+      "solution": "Upgrade libssl1.1 to 1.1.1g-r0",
+      "scanner": {
+        "id": "trivy",
+        "name": "trivy"
+      },
+      "location": {
+        "dependency": {
+          "package": {
+            "name": "libssl1.1"
+          },
+          "version": "1.1.1c-r0"
+        },
+        "operating_system": "Unknown",
+        "image": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)"
+      },
+      "identifiers": [
+        {
+          "type": "cve",
+          "name": "CVE-2020-1967",
+          "value": "CVE-2020-1967",
+          "url": "https://avd.aquasec.com/nvd/cve-2020-1967"
+        }
+      ],
+      "links": [{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2020-07/msg00004.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2020-07/msg00011.html"
+        },{
+          "url": "http://packetstormsecurity.com/files/157527/OpenSSL-signature_algorithms_cert-Denial-Of-Service.html"
+        },{
+          "url": "http://seclists.org/fulldisclosure/2020/May/5"
+        },{
+          "url": "http://www.openwall.com/lists/oss-security/2020/04/22/2"
+        },{
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1967"
+        },{
+          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=eb563247aef3e83dda7679c43f9649270462e5b1"
+        },{
+          "url": "https://github.com/irsl/CVE-2020-1967"
+        },{
+          "url": "https://kb.pulsesecure.net/articles/Pulse_Security_Advisories/SA44440"
+        },{
+          "url": "https://lists.apache.org/thread.html/r66ea9c436da150683432db5fbc8beb8ae01886c6459ac30c2cea7345@%3Cdev.tomcat.apache.org%3E"
+        },{
+          "url": "https://lists.apache.org/thread.html/r94d6ac3f010a38fccf4f432b12180a13fa1cf303559bd805648c9064@%3Cdev.tomcat.apache.org%3E"
+        },{
+          "url": "https://lists.apache.org/thread.html/r9a41e304992ce6aec6585a87842b4f2e692604f5c892c37e3b0587ee@%3Cdev.tomcat.apache.org%3E"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DDHOAATPWJCXRNFMJ2SASDBBNU5RJONY/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EXDDAOWSAIEFQNBHWYE6PPYFV4QXGMCD/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XVEP3LAK4JSPRXFO4QF4GG2IVXADV3SO/"
+        },{
+          "url": "https://security.FreeBSD.org/advisories/FreeBSD-SA-20:11.openssl.asc"
+        },{
+          "url": "https://security.gentoo.org/glsa/202004-10"
+        },{
+          "url": "https://security.netapp.com/advisory/ntap-20200424-0003/"
+        },{
+          "url": "https://security.netapp.com/advisory/ntap-20200717-0004/"
+        },{
+          "url": "https://www.debian.org/security/2020/dsa-4661"
+        },{
+          "url": "https://www.openssl.org/news/secadv/20200421.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.synology.com/security/advisory/Synology_SA_20_05"
+        },{
+          "url": "https://www.synology.com/security/advisory/Synology_SA_20_05_OpenSSL"
+        },{
+          "url": "https://www.tenable.com/security/tns-2020-03"
+        },{
+          "url": "https://www.tenable.com/security/tns-2020-04"
         }
       ]
     },
@@ -393,6 +795,18 @@
         }
       ],
       "links": [{
+          "url": "http://linux.oracle.com/cve/CVE-2019-1547.html"
+        },{
+          "url": "http://linux.oracle.com/errata/ELSA-2020-1840.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00054.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00072.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00012.html"
+        },{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00016.html"
+        },{
           "url": "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html"
         },{
           "url": "https://arxiv.org/abs/1909.01785"
@@ -405,11 +819,53 @@
         },{
           "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=7c1709c2da5414f5b6133d00a03fc8c5bf996c7a"
         },{
+          "url": "https://lists.debian.org/debian-lts-announce/2019/09/msg00026.html"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZN4VVQJ3JDCHGIHV4Y2YTXBYQZ6PWQ7E/"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/0"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/1"
+        },{
           "url": "https://seclists.org/bugtraq/2019/Sep/25"
+        },{
+          "url": "https://security.gentoo.org/glsa/201911-04"
         },{
           "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
         },{
+          "url": "https://security.netapp.com/advisory/ntap-20200122-0002/"
+        },{
+          "url": "https://security.netapp.com/advisory/ntap-20200416-0003/"
+        },{
+          "url": "https://support.f5.com/csp/article/K73422160?utm_source=f5support&amp;utm_medium=RSS"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://usn.ubuntu.com/4376-2/"
+        },{
+          "url": "https://usn.ubuntu.com/usn/usn-4376-1"
+        },{
+          "url": "https://usn.ubuntu.com/usn/usn-4376-2"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4539"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4540"
+        },{
           "url": "https://www.openssl.org/news/secadv/20190910.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuapr2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
+        },{
+          "url": "https://www.tenable.com/security/tns-2019-08"
+        },{
+          "url": "https://www.tenable.com/security/tns-2019-09"
         }
       ]
     }

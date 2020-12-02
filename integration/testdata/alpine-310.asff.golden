@@ -35,10 +35,10 @@
                         "PkgName": "libcrypto1.1",
                         "Installed Package": "1.1.1c-r0",
                         "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV3": "5.3",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                        "NvdCvssScoreV2": "5",
+                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
@@ -81,10 +81,10 @@
                         "PkgName": "libcrypto1.1",
                         "Installed Package": "1.1.1c-r0",
                         "Patched Package": "1.1.1d-r2",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV3": "5.3",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                        "NvdCvssScoreV2": "5",
+                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
@@ -127,10 +127,56 @@
                         "PkgName": "libcrypto1.1",
                         "Installed Package": "1.1.1c-r0",
                         "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV3": "3.7",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                        "NvdCvssScoreV2": "4.3",
+                        "NvdCvssVectorV2": "AV:N/AC:M/Au:N/C:P/I:N/A:N"
+                    }
+                }
+            }
+        ],
+        "RecordState": "ACTIVE"
+    },
+    {
+        "SchemaVersion": "2018-10-08",
+        "Id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)/CVE-2020-1967",
+        "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
+        "GeneratorId": "Trivy",
+        "AwsAccountId": "123456789012",
+        "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
+        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
+        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
+        "Severity": {
+            "Product": 4,
+            "Normalized": 40
+        },
+        "Title": "Trivy found a vulnerability to CVE-2020-1967 in container testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+        "Description": "Server or client applications that call the SSL_check_chain() function during or after a TLS 1.3 handshake may crash due to a NULL pointer dereference as a result of incorrect handling of the &#34;signature_algorithms_cert&#34; TLS extension. The crash occurs if an invalid or unrecognised signature algorithm is received from the peer. This could be exploited by a malicious peer in a Denial of Service attack. OpenSSL version 1.1.1d, 1.1.1e, and 1.1.1f are affected by this issue. This issue did not affect OpenSSL versions prior to 1.1.1d. Fixed in OpenSSL 1.1.1g (Affected 1.1.1d-1.1.1f).",
+        "Remediation": {
+            "Recommendation": {
+                "Text": "More information on this vulnerability is provided in the hyperlink",
+                "Url": "https://avd.aquasec.com/nvd/cve-2020-1967"
+            }
+        },
+        "ProductFields": { "Product Name": "Trivy" },
+        "Resources": [
+            {
+                "Type": "Container",
+                "Id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+                "Partition": "aws",
+                "Region": "test-region",
+                "Details": {
+                    "Container": { "ImageName": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)" },
+                    "Other": {
+                        "CVE ID": "CVE-2020-1967",
+                        "CVE Title": "openssl: Segmentation fault in SSL_check_chain causes denial of service",
+                        "PkgName": "libcrypto1.1",
+                        "Installed Package": "1.1.1c-r0",
+                        "Patched Package": "1.1.1g-r0",
+                        "NvdCvssScoreV3": "7.5",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                        "NvdCvssScoreV2": "5",
+                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:N/I:N/A:P"
                     }
                 }
             }
@@ -173,10 +219,10 @@
                         "PkgName": "libcrypto1.1",
                         "Installed Package": "1.1.1c-r0",
                         "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV3": "4.7",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+                        "NvdCvssScoreV2": "1.9",
+                        "NvdCvssVectorV2": "AV:L/AC:M/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
@@ -219,10 +265,10 @@
                         "PkgName": "libssl1.1",
                         "Installed Package": "1.1.1c-r0",
                         "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV3": "5.3",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                        "NvdCvssScoreV2": "5",
+                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
@@ -265,10 +311,10 @@
                         "PkgName": "libssl1.1",
                         "Installed Package": "1.1.1c-r0",
                         "Patched Package": "1.1.1d-r2",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV3": "5.3",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                        "NvdCvssScoreV2": "5",
+                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
@@ -311,10 +357,56 @@
                         "PkgName": "libssl1.1",
                         "Installed Package": "1.1.1c-r0",
                         "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV3": "3.7",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                        "NvdCvssScoreV2": "4.3",
+                        "NvdCvssVectorV2": "AV:N/AC:M/Au:N/C:P/I:N/A:N"
+                    }
+                }
+            }
+        ],
+        "RecordState": "ACTIVE"
+    },
+    {
+        "SchemaVersion": "2018-10-08",
+        "Id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)/CVE-2020-1967",
+        "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
+        "GeneratorId": "Trivy",
+        "AwsAccountId": "123456789012",
+        "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
+        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
+        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
+        "Severity": {
+            "Product": 4,
+            "Normalized": 40
+        },
+        "Title": "Trivy found a vulnerability to CVE-2020-1967 in container testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+        "Description": "Server or client applications that call the SSL_check_chain() function during or after a TLS 1.3 handshake may crash due to a NULL pointer dereference as a result of incorrect handling of the &#34;signature_algorithms_cert&#34; TLS extension. The crash occurs if an invalid or unrecognised signature algorithm is received from the peer. This could be exploited by a malicious peer in a Denial of Service attack. OpenSSL version 1.1.1d, 1.1.1e, and 1.1.1f are affected by this issue. This issue did not affect OpenSSL versions prior to 1.1.1d. Fixed in OpenSSL 1.1.1g (Affected 1.1.1d-1.1.1f).",
+        "Remediation": {
+            "Recommendation": {
+                "Text": "More information on this vulnerability is provided in the hyperlink",
+                "Url": "https://avd.aquasec.com/nvd/cve-2020-1967"
+            }
+        },
+        "ProductFields": { "Product Name": "Trivy" },
+        "Resources": [
+            {
+                "Type": "Container",
+                "Id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+                "Partition": "aws",
+                "Region": "test-region",
+                "Details": {
+                    "Container": { "ImageName": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)" },
+                    "Other": {
+                        "CVE ID": "CVE-2020-1967",
+                        "CVE Title": "openssl: Segmentation fault in SSL_check_chain causes denial of service",
+                        "PkgName": "libssl1.1",
+                        "Installed Package": "1.1.1c-r0",
+                        "Patched Package": "1.1.1g-r0",
+                        "NvdCvssScoreV3": "7.5",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                        "NvdCvssScoreV2": "5",
+                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:N/I:N/A:P"
                     }
                 }
             }
@@ -357,10 +449,10 @@
                         "PkgName": "libssl1.1",
                         "Installed Package": "1.1.1c-r0",
                         "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV3": "4.7",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:N/A:N",
+                        "NvdCvssScoreV2": "1.9",
+                        "NvdCvssVectorV2": "AV:L/AC:M/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
