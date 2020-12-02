@@ -85,7 +85,7 @@ func (tw TableWriter) write(result Result) {
 	table := tablewriter.NewWriter(tw.Output)
 	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version"}
 	if !tw.Light {
-		header = append(header, "Title")
+		header = append(header, "Title", "URL")
 	}
 	table.SetHeader(header)
 
@@ -110,7 +110,7 @@ func (tw TableWriter) write(result Result) {
 		}
 
 		if !tw.Light {
-			row = append(row, title)
+			row = append(row, title, strings.TrimPrefix(v.PrimaryURL, "https://"))
 		}
 		table.Append(row)
 	}

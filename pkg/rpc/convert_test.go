@@ -181,55 +181,6 @@ func TestConvertToRpcLibraries(t *testing.T) {
 	}
 }
 
-func TestConvertFromRpcVulns(t *testing.T) {
-	type args struct {
-		rpcVulns []*common.Vulnerability
-	}
-	tests := []struct {
-		name string
-		args args
-		want []types.DetectedVulnerability
-	}{
-		{
-			name: "happy path",
-			args: args{
-				rpcVulns: []*common.Vulnerability{
-					{
-						VulnerabilityId:  "CVE-2019-0001",
-						PkgName:          "foo",
-						InstalledVersion: "1.2.3",
-						FixedVersion:     "1.2.4",
-						Title:            "DoS",
-						Description:      "Denial of Service",
-						Severity:         common.Severity_CRITICAL,
-						References:       []string{"http://example.com"},
-					},
-				},
-			},
-			want: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-2019-0001",
-					PkgName:          "foo",
-					InstalledVersion: "1.2.3",
-					FixedVersion:     "1.2.4",
-					Vulnerability: dbTypes.Vulnerability{
-						Title:       "DoS",
-						Description: "Denial of Service",
-						Severity:    "CRITICAL",
-						References:  []string{"http://example.com"},
-					},
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertFromRPCVulns(tt.args.rpcVulns)
-			assert.Equal(t, got, tt.want, tt.name)
-		})
-	}
-}
-
 func TestConvertToRpcVulns(t *testing.T) {
 	type args struct {
 		vulns []types.DetectedVulnerability
@@ -266,6 +217,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 							Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 							DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 						},
+						PrimaryURL: "https://avd.aquasec.com/nvd/CVE-2019-0001",
 					},
 				},
 			},
@@ -291,6 +243,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 					},
+					PrimaryUrl: "https://avd.aquasec.com/nvd/CVE-2019-0001",
 				},
 			},
 		},

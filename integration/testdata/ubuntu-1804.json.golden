@@ -11,6 +11,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18276",
         "Title": "bash: when effective UID is not equal to its real UID the saved UID is not dropped",
         "Description": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support \"saved UID\" functionality, the saved UID is not dropped. An attacker with command execution in the shell can use \"enable -f\" for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected.",
         "Severity": "LOW",
@@ -28,6 +29,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-7738",
         "Title": "util-linux: Shell command injection in unescaped bash-completed mount point names",
         "Description": "In util-linux before 2.32-rc1, bash-completion/umount allows local users to gain privileges by embedding shell commands in a mountpoint name, which is mishandled during a umount command (within Bash) by a different user, as demonstrated by logging in as root and entering umount followed by a tab character for autocompletion.",
         "Severity": "LOW",
@@ -48,6 +50,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-2781",
         "Title": "coreutils: Non-privileged session can escape to the parent session in chroot",
         "Description": "chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal's input buffer.",
         "Severity": "LOW",
@@ -64,6 +67,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-8283",
         "Description": "dpkg-source in dpkg 1.3.0 through 1.18.23 is able to use a non-GNU patch program and does not offer a protection mechanism for blank-indented diff hunks, which allows remote attackers to conduct directory traversal attacks via a crafted Debian source package, as demonstrated by use of dpkg-source on NetBSD.",
         "Severity": "LOW",
         "References": [
@@ -81,6 +85,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
         "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
@@ -102,6 +107,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
         "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
@@ -122,6 +128,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-7738",
         "Title": "util-linux: Shell command injection in unescaped bash-completed mount point names",
         "Description": "In util-linux before 2.32-rc1, bash-completion/umount allows local users to gain privileges by embedding shell commands in a mountpoint name, which is mishandled during a umount command (within Bash) by a different user, as demonstrated by logging in as root and entering umount followed by a tab character for autocompletion.",
         "Severity": "LOW",
@@ -142,6 +149,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-13050",
         "Title": "GnuPG: interaction between the sks-keyserver code and GnuPG allows for a Certificate Spamming Attack which leads to persistent DoS",
         "Description": "Interaction between the sks-keyserver code through 1.2.0 of the SKS keyserver network, and GnuPG through 2.2.16, makes it risky to have a GnuPG keyserver configuration line referring to a host on the SKS keyserver network. Retrieving data from this network may cause a persistent denial of service, because of a Certificate Spamming Attack.",
         "Severity": "LOW",
@@ -160,6 +168,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14855",
         "Title": "gnupg2: OpenPGP Key Certification Forgeries with SHA-1",
         "Description": "A flaw was found in the way certificate signatures could be forged using collisions found in the SHA-1 algorithm. An attacker could use this weakness to create forged certificate signatures. This issue affects GnuPG versions before 2.2.18.",
         "Severity": "LOW",
@@ -178,6 +187,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-7738",
         "Title": "util-linux: Shell command injection in unescaped bash-completed mount point names",
         "Description": "In util-linux before 2.32-rc1, bash-completion/umount allows local users to gain privileges by embedding shell commands in a mountpoint name, which is mishandled during a umount command (within Bash) by a different user, as demonstrated by logging in as root and entering umount followed by a tab character for autocompletion.",
         "Severity": "LOW",
@@ -198,6 +208,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-11236",
         "Title": "glibc: Integer overflow in stdlib/canonicalize.c on 32-bit architectures leading to stack-based buffer overflow",
         "Description": "stdlib/canonicalize.c in the GNU C Library (aka glibc or libc6) 2.27 and earlier, when processing very long pathname arguments to the realpath function, could encounter an integer overflow on 32-bit architectures, leading to a stack-based buffer overflow and, potentially, arbitrary code execution.",
         "Severity": "MEDIUM",
@@ -223,6 +234,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-11237",
         "Title": "glibc: Buffer overflow in __mempcpy_avx512_no_vzeroupper",
         "Description": "An AVX-512-optimized implementation of the mempcpy function in the GNU C Library (aka glibc or libc6) 2.27 and earlier may write data beyond the target buffer, leading to a buffer overflow in __mempcpy_avx512_no_vzeroupper.",
         "Severity": "MEDIUM",
@@ -248,6 +260,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-19591",
         "Title": "glibc: file descriptor leak in if_nametoindex() in sysdeps/unix/sysv/linux/if_index.c",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, attempting to resolve a crafted hostname via getaddrinfo() leads to the allocation of a socket descriptor that is not closed. This is related to the if_nametoindex() function.",
         "Severity": "MEDIUM",
@@ -272,6 +285,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2009-5155",
         "Title": "glibc: parse_reg_exp in posix/regcomp.c misparses alternatives leading to denial of service or trigger incorrect result",
         "Description": "In the GNU C Library (aka glibc or libc6) before 2.28, parse_reg_exp in posix/regcomp.c misparses alternatives, which allows attackers to cause a denial of service (assertion failure and application exit) or trigger an incorrect result by attempting a regular-expression match.",
         "Severity": "LOW",
@@ -296,6 +310,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2015-8985",
         "Title": "glibc: potential denial of service in pop_fail_stack()",
         "Description": "The pop_fail_stack function in the GNU C Library (aka glibc or libc6) allows context-dependent attackers to cause a denial of service (assertion failure and application crash) via vectors related to extended regular expression processing.",
         "Severity": "LOW",
@@ -315,6 +330,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10228",
         "Title": "glibc: iconv program can hang when invoked with the -c option",
         "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
         "Severity": "LOW",
@@ -332,6 +348,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10739",
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "LOW",
@@ -354,6 +371,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20796",
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
         "Severity": "LOW",
@@ -373,6 +391,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7309",
         "Title": "glibc: memcmp function incorrectly returns zero",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, the memcmp function for the x32 architecture can incorrectly return zero (indicating that the inputs are equal) because the RDX most significant bit is mishandled.",
         "Severity": "LOW",
@@ -391,6 +410,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9169",
         "Title": "glibc: regular-expression match via proceed_next_node in posix/regexec.c leads to heap-based buffer over-read",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, proceed_next_node in posix/regexec.c has a heap-based buffer over-read via an attempted case-insensitive regular-expression match.",
         "Severity": "LOW",
@@ -414,6 +434,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9192",
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
         "Severity": "LOW",
@@ -430,6 +451,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-11236",
         "Title": "glibc: Integer overflow in stdlib/canonicalize.c on 32-bit architectures leading to stack-based buffer overflow",
         "Description": "stdlib/canonicalize.c in the GNU C Library (aka glibc or libc6) 2.27 and earlier, when processing very long pathname arguments to the realpath function, could encounter an integer overflow on 32-bit architectures, leading to a stack-based buffer overflow and, potentially, arbitrary code execution.",
         "Severity": "MEDIUM",
@@ -455,6 +477,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-11237",
         "Title": "glibc: Buffer overflow in __mempcpy_avx512_no_vzeroupper",
         "Description": "An AVX-512-optimized implementation of the mempcpy function in the GNU C Library (aka glibc or libc6) 2.27 and earlier may write data beyond the target buffer, leading to a buffer overflow in __mempcpy_avx512_no_vzeroupper.",
         "Severity": "MEDIUM",
@@ -480,6 +503,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-19591",
         "Title": "glibc: file descriptor leak in if_nametoindex() in sysdeps/unix/sysv/linux/if_index.c",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, attempting to resolve a crafted hostname via getaddrinfo() leads to the allocation of a socket descriptor that is not closed. This is related to the if_nametoindex() function.",
         "Severity": "MEDIUM",
@@ -504,6 +528,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2009-5155",
         "Title": "glibc: parse_reg_exp in posix/regcomp.c misparses alternatives leading to denial of service or trigger incorrect result",
         "Description": "In the GNU C Library (aka glibc or libc6) before 2.28, parse_reg_exp in posix/regcomp.c misparses alternatives, which allows attackers to cause a denial of service (assertion failure and application exit) or trigger an incorrect result by attempting a regular-expression match.",
         "Severity": "LOW",
@@ -528,6 +553,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2015-8985",
         "Title": "glibc: potential denial of service in pop_fail_stack()",
         "Description": "The pop_fail_stack function in the GNU C Library (aka glibc or libc6) allows context-dependent attackers to cause a denial of service (assertion failure and application crash) via vectors related to extended regular expression processing.",
         "Severity": "LOW",
@@ -547,6 +573,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10228",
         "Title": "glibc: iconv program can hang when invoked with the -c option",
         "Description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
         "Severity": "LOW",
@@ -564,6 +591,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10739",
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "LOW",
@@ -586,6 +614,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20796",
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
         "Severity": "LOW",
@@ -605,6 +634,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7309",
         "Title": "glibc: memcmp function incorrectly returns zero",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, the memcmp function for the x32 architecture can incorrectly return zero (indicating that the inputs are equal) because the RDX most significant bit is mishandled.",
         "Severity": "LOW",
@@ -623,6 +653,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9169",
         "Title": "glibc: regular-expression match via proceed_next_node in posix/regexec.c leads to heap-based buffer over-read",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, proceed_next_node in posix/regexec.c has a heap-based buffer over-read via an attempted case-insensitive regular-expression match.",
         "Severity": "LOW",
@@ -646,6 +677,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9192",
         "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
         "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
         "Severity": "LOW",
@@ -663,6 +695,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
         "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
@@ -684,6 +717,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
         "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
@@ -705,6 +739,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
         "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
@@ -726,6 +761,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
         "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
@@ -746,6 +782,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-7738",
         "Title": "util-linux: Shell command injection in unescaped bash-completed mount point names",
         "Description": "In util-linux before 2.32-rc1, bash-completion/umount allows local users to gain privileges by embedding shell commands in a mountpoint name, which is mishandled during a umount command (within Bash) by a different user, as demonstrated by logging in as root and entering umount followed by a tab character for autocompletion.",
         "Severity": "LOW",
@@ -767,6 +804,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-13627",
         "Title": "libgcrypt: ECDSA timing attack in the libgcrypt20 cryptographic library",
         "Description": "It was discovered that there was a ECDSA timing attack in the libgcrypt20 cryptographic library. Version affected: 1.8.4-5, 1.7.6-2+deb9u3, and 1.6.3-2+deb8u4. Versions fixed: 1.8.5-2 and 1.6.3-2+deb8u7.",
         "Severity": "MEDIUM",
@@ -789,6 +827,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-12904",
         "Title": "Libgcrypt: physical addresses being available to other processes leads to a flush-and-reload side-channel attack",
         "Description": "In Libgcrypt 1.8.4, the C implementation of AES is vulnerable to a flush-and-reload side-channel attack because physical addresses are available to other processes. (The C implementation is used on platforms where an assembly-language implementation is unavailable.)",
         "Severity": "LOW",
@@ -808,6 +847,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-16868",
         "Title": "gnutls: Bleichenbacher-like side channel leakage in PKCS#1 v1.5 verification and padding oracle verification",
         "Description": "A Bleichenbacher type side-channel based padding oracle attack was found in the way gnutls handles verification of RSA decrypted PKCS#1 v1.5 data. An attacker who is able to run process on the same physical core as the victim process, could use this to extract plaintext or in some cases downgrade any TLS connections to a vulnerable server.",
         "Severity": "LOW",
@@ -828,6 +868,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-16869",
         "Title": "nettle: Leaky data conversion exposing a manager oracle",
         "Description": "A Bleichenbacher type side-channel based padding oracle attack was found in the way nettle handles endian conversion of RSA decrypted PKCS#1 v1.5 data. An attacker who is able to run a process on the same physical core as the victim process, could use this flaw extract plaintext or in some cases downgrade any TLS connections to a vulnerable server.",
         "Severity": "LOW",
@@ -847,6 +888,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-12290",
         "Description": "GNU libidn2 before 2.2.0 fails to perform the roundtrip checks specified in RFC3490 Section 4.2 when converting A-labels to U-labels. This makes it possible in some circumstances for one domain to impersonate another. By creating a malicious domain that matches a target domain except for the inclusion of certain punycoded Unicode characters (that would be discarded when converted first to a Unicode label and then back to an ASCII label), arbitrary domains can be impersonated.",
         "Severity": "MEDIUM",
         "References": [
@@ -865,6 +907,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
         "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
         "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
         "Severity": "MEDIUM",
@@ -886,6 +929,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17543",
         "Title": "lz4: heap-based buffer overflow in LZ4_write32",
         "Description": "LZ4 before 1.9.2 has a heap-based buffer overflow in LZ4_write32 (related to LZ4_compress_destSize), affecting applications that call LZ4_compress_fast with a large input. (This issue can also lead to data corruption.) NOTE: the vendor states \"only a few specific / uncommon usages of the API are at risk.\"",
         "Severity": "LOW",
@@ -912,6 +956,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-7738",
         "Title": "util-linux: Shell command injection in unescaped bash-completed mount point names",
         "Description": "In util-linux before 2.32-rc1, bash-completion/umount allows local users to gain privileges by embedding shell commands in a mountpoint name, which is mishandled during a umount command (within Bash) by a different user, as demonstrated by logging in as root and entering umount followed by a tab character for autocompletion.",
         "Severity": "LOW",
@@ -932,6 +977,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -951,6 +997,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -970,6 +1017,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -989,6 +1037,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -1008,6 +1057,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-16869",
         "Title": "nettle: Leaky data conversion exposing a manager oracle",
         "Description": "A Bleichenbacher type side-channel based padding oracle attack was found in the way nettle handles endian conversion of RSA decrypted PKCS#1 v1.5 data. An attacker who is able to run a process on the same physical core as the victim process, could use this flaw extract plaintext or in some cases downgrade any TLS connections to a vulnerable server.",
         "Severity": "LOW",
@@ -1026,6 +1076,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-11164",
         "Title": "pcre: OP_KETRMAX feature in the match function in pcre_exec.c",
         "Description": "In PCRE 8.41, the OP_KETRMAX feature in the match function in pcre_exec.c allows stack exhaustion (uncontrolled recursion) when processing a crafted regular expression.",
         "Severity": "LOW",
@@ -1042,6 +1093,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-7245",
         "Title": "pcre: stack-based buffer overflow write in pcre32_copy_substring",
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 4) or possibly have unspecified other impact via a crafted file.",
         "Severity": "LOW",
@@ -1060,6 +1112,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-7246",
         "Title": "pcre: stack-based buffer overflow write in pcre32_copy_substring",
         "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 268) or possibly have unspecified other impact via a crafted file.",
         "Severity": "LOW",
@@ -1078,6 +1131,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-7738",
         "Title": "util-linux: Shell command injection in unescaped bash-completed mount point names",
         "Description": "In util-linux before 2.32-rc1, bash-completion/umount allows local users to gain privileges by embedding shell commands in a mountpoint name, which is mishandled during a umount command (within Bash) by a different user, as demonstrated by logging in as root and entering umount followed by a tab character for autocompletion.",
         "Severity": "LOW",
@@ -1099,6 +1153,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
         "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
@@ -1120,6 +1175,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
         "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
@@ -1140,6 +1196,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20839",
         "Title": "systemd: mishandling of the current keyboard mode check leading to passwords being disclosed in cleartext to attacker",
         "Description": "systemd 242 changes the VT1 mode upon a logout, which allows attackers to read cleartext passwords in certain circumstances, such as watching a shutdown, or using Ctrl-Alt-F1 and Ctrl-Alt-F2. This occurs because the KDGKBMODE (aka current keyboard mode) check is mishandled.",
         "Severity": "MEDIUM",
@@ -1160,6 +1217,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-15718",
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
         "Severity": "MEDIUM",
@@ -1183,6 +1241,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1712",
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
         "Description": "A heap use-after-free vulnerability was found in systemd, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
@@ -1200,6 +1259,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-20386",
         "Title": "systemd: a memory leak was discovered in button_open in login/logind-button.c when udev events are received",
         "Description": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur.",
         "Severity": "LOW",
@@ -1219,6 +1279,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3843",
         "Title": "systemd: services with DynamicUser can create SUID/SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can create a SUID/SGID binary that would be allowed to run as the transient service UID/GID even after the service is terminated. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the UID/GID will be recycled.",
         "Severity": "LOW",
@@ -1238,6 +1299,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3844",
         "Title": "systemd: services with DynamicUser can get new privileges and create SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can get new privileges through the execution of SUID binaries, which would allow to create binaries owned by the service transient group with the setgid bit set. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the GID will be recycled.",
         "Severity": "LOW",
@@ -1255,6 +1317,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-1000654",
         "Title": "libtasn1: Infinite loop in _asn1_expand_object_id(ptree) leads to memory exhaustion",
         "Description": "GNU Libtasn1-4.13 libtasn1-4.13 version libtasn1-4.13, libtasn1-4.12 contains a DoS, specifically CPU usage will reach 100% when running asn1Paser against the POC due to an issue in _asn1_expand_object_id(p_tree), after a long time, the program will be killed. This attack appears to be exploitable via parsing a crafted file.",
         "Severity": "LOW",
@@ -1273,6 +1336,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -1292,6 +1356,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -1311,6 +1376,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20839",
         "Title": "systemd: mishandling of the current keyboard mode check leading to passwords being disclosed in cleartext to attacker",
         "Description": "systemd 242 changes the VT1 mode upon a logout, which allows attackers to read cleartext passwords in certain circumstances, such as watching a shutdown, or using Ctrl-Alt-F1 and Ctrl-Alt-F2. This occurs because the KDGKBMODE (aka current keyboard mode) check is mishandled.",
         "Severity": "MEDIUM",
@@ -1331,6 +1397,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-15718",
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
         "Severity": "MEDIUM",
@@ -1354,6 +1421,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1712",
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
         "Description": "A heap use-after-free vulnerability was found in systemd, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
@@ -1371,6 +1439,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-20386",
         "Title": "systemd: a memory leak was discovered in button_open in login/logind-button.c when udev events are received",
         "Description": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur.",
         "Severity": "LOW",
@@ -1390,6 +1459,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3843",
         "Title": "systemd: services with DynamicUser can create SUID/SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can create a SUID/SGID binary that would be allowed to run as the transient service UID/GID even after the service is terminated. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the UID/GID will be recycled.",
         "Severity": "LOW",
@@ -1409,6 +1479,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3844",
         "Title": "systemd: services with DynamicUser can get new privileges and create SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can get new privileges through the execution of SUID binaries, which would allow to create binaries owned by the service transient group with the setgid bit set. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the GID will be recycled.",
         "Severity": "LOW",
@@ -1426,6 +1497,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-7738",
         "Title": "util-linux: Shell command injection in unescaped bash-completed mount point names",
         "Description": "In util-linux before 2.32-rc1, bash-completion/umount allows local users to gain privileges by embedding shell commands in a mountpoint name, which is mishandled during a umount command (within Bash) by a different user, as demonstrated by logging in as root and entering umount followed by a tab character for autocompletion.",
         "Severity": "LOW",
@@ -1447,6 +1519,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11922",
         "Description": "A race condition in the one-pass compression functions of Zstandard prior to version 1.3.8 could allow an attacker to write bytes out of bounds if an output buffer smaller than the recommended size was used.",
         "Severity": "MEDIUM",
         "References": [
@@ -1465,6 +1538,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2013-4235",
         "Title": "shadow-utils: TOCTOU race conditions by copying and removing directory trees",
         "Description": "shadow: TOCTOU (time-of-check time-of-use) race condition when copying and removing directory trees",
         "Severity": "LOW",
@@ -1482,6 +1556,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-7169",
         "Title": "shadow-utils: newgidmap allows unprivileged user to drop supplementary groups potentially allowing privilege escalation",
         "Description": "An issue was discovered in shadow 4.5. newgidmap (in shadow-utils) is setuid and allows an unprivileged user to be placed in a user namespace where setgroups(2) is permitted. This allows an attacker to remove themselves from a supplementary group, which may allow access to certain filesystem paths if the administrator has used \"group blacklisting\" (e.g., chmod g-rwx) to restrict access to paths. This flaw effectively reverts a security feature in the kernel (in particular, the /proc/self/setgroups knob) to prevent this sort of privilege escalation.",
         "Severity": "LOW",
@@ -1498,6 +1573,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-7738",
         "Title": "util-linux: Shell command injection in unescaped bash-completed mount point names",
         "Description": "In util-linux before 2.32-rc1, bash-completion/umount allows local users to gain privileges by embedding shell commands in a mountpoint name, which is mishandled during a umount command (within Bash) by a different user, as demonstrated by logging in as root and entering umount followed by a tab character for autocompletion.",
         "Severity": "LOW",
@@ -1518,6 +1594,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -1537,6 +1614,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -1556,6 +1634,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
         "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -1575,6 +1654,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
         "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
         "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
         "Severity": "LOW",
@@ -1594,6 +1674,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2013-4235",
         "Title": "shadow-utils: TOCTOU race conditions by copying and removing directory trees",
         "Description": "shadow: TOCTOU (time-of-check time-of-use) race condition when copying and removing directory trees",
         "Severity": "LOW",
@@ -1611,6 +1692,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-7169",
         "Title": "shadow-utils: newgidmap allows unprivileged user to drop supplementary groups potentially allowing privilege escalation",
         "Description": "An issue was discovered in shadow 4.5. newgidmap (in shadow-utils) is setuid and allows an unprivileged user to be placed in a user namespace where setgroups(2) is permitted. This allows an attacker to remove themselves from a supplementary group, which may allow access to certain filesystem paths if the administrator has used \"group blacklisting\" (e.g., chmod g-rwx) to restrict access to paths. This flaw effectively reverts a security feature in the kernel (in particular, the /proc/self/setgroups knob) to prevent this sort of privilege escalation.",
         "Severity": "LOW",
@@ -1627,6 +1709,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20482",
         "Title": "tar: Infinite read loop in sparse_dump_region function in sparse.c",
         "Description": "GNU Tar through 1.30, when --sparse is used, mishandles file shrinkage during read access, which allows local users to cause a denial of service (infinite read loop in sparse_dump_region in sparse.c) by modifying a file that is supposed to be archived by a different user's process (e.g., a system backup running as root).",
         "Severity": "LOW",
@@ -1651,6 +1734,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9923",
         "Title": "tar: null-pointer dereference in pax_decode_header in sparse.c",
         "Description": "pax_decode_header in sparse.c in GNU Tar before 1.32 had a NULL pointer dereference when parsing certain archives that have malformed extended headers.",
         "Severity": "LOW",
@@ -1669,6 +1753,7 @@
           "DiffID": "sha256:6cebf3abed5fac58d2e792ce8461454e92c245d5312c42118f02e231a73b317f"
         },
         "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-7738",
         "Title": "util-linux: Shell command injection in unescaped bash-completed mount point names",
         "Description": "In util-linux before 2.32-rc1, bash-completion/umount allows local users to gain privileges by embedding shell commands in a mountpoint name, which is mishandled during a umount command (within Bash) by a different user, as demonstrated by logging in as root and entering umount followed by a tab character for autocompletion.",
         "Severity": "LOW",

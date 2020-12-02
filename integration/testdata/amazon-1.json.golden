@@ -12,6 +12,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "MEDIUM",
@@ -33,6 +34,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5482",
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "MEDIUM",
@@ -56,6 +58,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18218",
         "Title": "file: heap-based buffer overflow in cdf_read_property_info in cdf.c",
         "Description": "cdf_read_property_info in cdf.c in file through 5.37 does not restrict the number of CDF_VECTOR elements, which allows a heap-based buffer overflow (4-byte out-of-bounds write).",
         "Severity": "MEDIUM",
@@ -80,6 +83,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10739",
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
@@ -103,6 +107,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10739",
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
@@ -126,6 +131,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "MEDIUM",
@@ -147,6 +153,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5482",
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "MEDIUM",
@@ -170,6 +177,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-12290",
         "Description": "GNU libidn2 before 2.2.0 fails to perform the roundtrip checks specified in RFC3490 Section 4.2 when converting A-labels to U-labels. This makes it possible in some circumstances for one domain to impersonate another. By creating a malicious domain that matches a target domain except for the inclusion of certain punycoded Unicode characters (that would be discarded when converted first to a Unicode label and then back to an ASCII label), arbitrary domains can be impersonated.",
         "Severity": "MEDIUM",
         "References": [
@@ -188,6 +196,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
         "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
         "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
         "Severity": "MEDIUM",
@@ -210,6 +219,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9511",
         "Title": "HTTP/2: large amount of data requests leads to denial of service",
         "Description": "Some HTTP/2 implementations are vulnerable to window size manipulation and stream prioritization manipulation, potentially leading to a denial of service. The attacker requests a large amount of data from a specified resource over multiple streams. They manipulate window size and stream priority to force the server to queue the data in 1-byte chunks. Depending on how efficiently this data is queued, this can consume excess CPU, memory, or both.",
         "Severity": "HIGH",
@@ -244,6 +254,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9513",
         "Title": "HTTP/2: flood using PRIORITY frames results in excessive resource consumption",
         "Description": "Some HTTP/2 implementations are vulnerable to resource loops, potentially leading to a denial of service. The attacker creates multiple request streams and continually shuffles the priority of the streams in a way that causes substantial churn to the priority tree. This can consume excess CPU.",
         "Severity": "HIGH",
@@ -279,6 +290,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11729",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
@@ -305,6 +317,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11745",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
@@ -333,6 +346,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0495",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
@@ -370,6 +384,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-12404",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -391,6 +406,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11729",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
@@ -417,6 +433,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11745",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
@@ -445,6 +462,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0495",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
@@ -482,6 +500,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-12404",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -503,6 +522,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11729",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
@@ -529,6 +549,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11745",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
@@ -557,6 +578,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0495",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
@@ -594,6 +616,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-12404",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -615,6 +638,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11729",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
@@ -641,6 +665,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11745",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
@@ -669,6 +694,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0495",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
@@ -706,6 +732,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-12404",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -727,6 +754,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11729",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
@@ -753,6 +781,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11745",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
@@ -781,6 +810,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0495",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
@@ -818,6 +848,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-12404",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -839,6 +870,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11729",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
@@ -865,6 +897,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11745",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
@@ -893,6 +926,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0495",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
@@ -930,6 +964,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-12404",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -951,6 +986,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11729",
         "Title": "nss: Empty or malformed p256-ECDH public keys may trigger a segmentation fault",
         "Description": "Empty or malformed p256-ECDH public keys may trigger a segmentation fault due values being improperly sanitized before being copied into memory and used. This vulnerability affects Firefox ESR \u003c 60.8, Firefox \u003c 68, and Thunderbird \u003c 60.8.",
         "Severity": "HIGH",
@@ -977,6 +1013,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11745",
         "Title": "nss: Out-of-bounds write when passing an output buffer smaller than the block size to NSC_EncryptUpdate",
         "Description": "When encrypting with a block cipher, if a call to NSC_EncryptUpdate was made with data smaller than the block size, a small out of bounds write could occur. This could have caused heap corruption and a potentially exploitable crash. This vulnerability affects Thunderbird \u003c 68.3, Firefox ESR \u003c 68.3, and Firefox \u003c 71.",
         "Severity": "HIGH",
@@ -1005,6 +1042,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0495",
         "Title": "ROHNP: Key Extraction Side Channel in Multiple Crypto Libraries",
         "Description": "Libgcrypt before 1.7.10 and 1.8.x before 1.8.3 allows a memory-cache side-channel attack on ECDSA signatures that can be mitigated through the use of blinding during the signing process in the _gcry_ecc_ecdsa_sign function in cipher/ecc-ecdsa.c, aka the Return Of the Hidden Number Problem or ROHNP. To discover an ECDSA key, the attacker needs access to either the local machine or a different virtual machine on the same physical host.",
         "Severity": "MEDIUM",
@@ -1042,6 +1080,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-12404",
         "Title": "nss: Cache side-channel variant of the Bleichenbacher attack",
         "Description": "A cached side channel attack during handshakes using RSA encryption could allow for the decryption of encrypted content. This is a variant of the Adaptive Chosen Ciphertext attack (AKA Bleichenbacher attack) and affects all NSS versions prior to NSS 3.41.",
         "Severity": "MEDIUM",
@@ -1063,6 +1102,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1563",
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "HIGH",
@@ -1086,6 +1126,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16056",
         "Title": "python: email.utils.parseaddr wrongly parses email addresses",
         "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
         "Severity": "MEDIUM",
@@ -1110,6 +1151,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16935",
         "Title": "python: XSS vulnerability in the documentation XML-RPC server in server_title field",
         "Description": "The documentation XML-RPC server in Python through 2.7.16, 3.x through 3.6.9, and 3.7.x through 3.7.4 has XSS via the server_title field. This occurs in Lib/DocXMLRPCServer.py in Python 2.x, and in Lib/xmlrpc/server.py in Python 3.x. If set_server_title is called with untrusted input, arbitrary JavaScript can be delivered to clients that visit the http URL for this server.",
         "Severity": "MEDIUM",
@@ -1132,6 +1174,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16056",
         "Title": "python: email.utils.parseaddr wrongly parses email addresses",
         "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
         "Severity": "MEDIUM",
@@ -1156,6 +1199,7 @@
           "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
         },
         "SeveritySource": "amazon",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16935",
         "Title": "python: XSS vulnerability in the documentation XML-RPC server in server_title field",
         "Description": "The documentation XML-RPC server in Python through 2.7.16, 3.x through 3.6.9, and 3.7.x through 3.7.4 has XSS via the server_title field. This occurs in Lib/DocXMLRPCServer.py in Python 2.x, and in Lib/xmlrpc/server.py in Python 3.x. If set_server_title is called with untrusted input, arbitrary JavaScript can be delivered to clients that visit the http URL for this server.",
         "Severity": "MEDIUM",

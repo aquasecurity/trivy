@@ -11,6 +11,7 @@
         "Layer": {
           "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
         },
+        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0001",
         "Title": "Uncontrolled recursion leads to abort in HTML serialization",
         "Description": "Affected versions of this crate did use recursion for serialization of HTML\nDOM trees.\n\nThis allows an attacker to cause abort due to stack overflow by providing\na pathologically nested input.\n\nThe flaw was corrected by serializing the DOM tree iteratively instead.",
         "Severity": "UNKNOWN",
@@ -26,6 +27,7 @@
         "Layer": {
           "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
         },
+        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2016-0001",
         "Title": "SSL/TLS MitM vulnerability due to insecure defaults",
         "Description": "All versions of rust-openssl prior to 0.9.0 contained numerous insecure defaults\nincluding off-by-default certificate verification and no API to perform hostname\nverification.\n\nUnless configured correctly by a developer, these defaults could allow an attacker\nto perform man-in-the-middle attacks.\n\nThe problem was addressed in newer versions by enabling certificate verification\nby default and exposing APIs to perform hostname verification. Use the\n`SslConnector` and `SslAcceptor` types to take advantage of these new features\n(as opposed to the lower-level `SslContext` type).",
         "Severity": "UNKNOWN",
@@ -41,6 +43,7 @@
         "Layer": {
           "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
         },
+        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0035",
         "Title": "Unaligned memory access",
         "Description": "Affected versions of this crate violated alignment when casting byte slices to\ninteger slices, resulting in undefined behavior.\n\nThe flaw was corrected by Ralf Jung and Diggory Hardy.",
         "Severity": "UNKNOWN",
@@ -56,6 +59,7 @@
         "Layer": {
           "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
         },
+        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0035",
         "Title": "Unaligned memory access",
         "Description": "Affected versions of this crate violated alignment when casting byte slices to\ninteger slices, resulting in undefined behavior.\n\nThe flaw was corrected by Ralf Jung and Diggory Hardy.",
         "Severity": "UNKNOWN",
@@ -71,6 +75,7 @@
         "Layer": {
           "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
         },
+        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2018-0018",
         "Title": "smallvec creates uninitialized value of any type",
         "Description": "Affected versions of this crate called `mem::uninitialized()` to create values of a user-supplied type `T`.\nThis is unsound e.g. if `T` is a reference type (which must be non-null and thus may not remain uninitialized).\n \nThe flaw was corrected by avoiding the use of `mem::uninitialized()`, using `MaybeUninit` instead.",
         "Severity": "UNKNOWN",
@@ -86,6 +91,7 @@
         "Layer": {
           "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
         },
+        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0009",
         "Title": "Double-free and use-after-free in SmallVec::grow()",
         "Description": "Attempting to call `grow` on a spilled SmallVec with a value equal to the current capacity causes it to free the existing data. This performs a double free immediately and may lead to use-after-free on subsequent accesses to the SmallVec contents.\n\nAn attacker that controls the value passed to `grow` may exploit this flaw to obtain memory contents or gain remote code execution.\n\nCredits to @ehuss for discovering, reporting and fixing the bug.",
         "Severity": "UNKNOWN",
@@ -101,6 +107,7 @@
         "Layer": {
           "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
         },
+        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0012",
         "Title": "Memory corruption in SmallVec::grow()",
         "Description": "Attempting to call `grow` on a spilled SmallVec with a value less than the current capacity causes corruption of memory allocator data structures.\n\nAn attacker that controls the value passed to `grow` may exploit this flaw to obtain memory contents or gain remote code execution.\n\nCredits to @ehuss for discovering, reporting and fixing the bug.",
         "Severity": "UNKNOWN",
@@ -115,6 +122,7 @@
         "Layer": {
           "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
         },
+        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2018-0017",
         "Title": "`tempdir` crate has been deprecated; use `tempfile` instead",
         "Description": "The [`tempdir`](https://crates.io/crates/tempdir) crate has been deprecated\nand the functionality is merged into [`tempfile`](https://crates.io/crates/tempfile).",
         "Severity": "UNKNOWN",

@@ -12,6 +12,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3822",
         "Title": "curl: NTLMv2 type-3 header stack buffer overflow",
         "Description": "libcurl versions from 7.36.0 to before 7.64.0 are vulnerable to a stack-based buffer overflow. The function creating an outgoing NTLM type-3 header (`lib/vauth/ntlm.c:Curl_auth_create_ntlm_type3_message()`), generates the request HTTP header contents based on previously received data. The check that exists to prevent the local buffer from getting overflowed is implemented wrongly (using unsigned math) and as such it does not prevent the overflow from happening. This output data can grow larger than the local buffer if very large 'nt response' data is extracted from a previous NTLMv2 header provided by the malicious or broken HTTP server. Such a 'large value' needs to be around 1000 bytes or more. The actual payload data copied to the target buffer comes from the NTLMv2 type-2 response header.",
         "Severity": "HIGH",
@@ -42,6 +43,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-16890",
         "Title": "curl: NTLM type-2 heap out-of-bounds buffer read",
         "Description": "libcurl versions from 7.36.0 to before 7.64.0 is vulnerable to a heap buffer out-of-bounds read. The function handling incoming NTLM type-2 messages (`lib/vauth/ntlm.c:ntlm_decode_type2_target`) does not validate incoming data correctly and is subject to an integer overflow vulnerability. Using that overflow, a malicious or broken NTLM server could trick libcurl to accept a bad length + offset combination that would lead to a buffer read out-of-bounds.",
         "Severity": "MEDIUM",
@@ -70,6 +72,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3823",
         "Title": "curl: SMTP end-of-response out-of-bounds read",
         "Description": "libcurl versions from 7.34.0 to before 7.64.0 are vulnerable to a heap out-of-bounds read in the code handling the end-of-response for SMTP. If the buffer passed to `smtp_endofresp()` isn't NUL terminated and contains no character ending the parsed number, and `len` is set to 5, then the `strtol()` call reads beyond the allocated buffer. The read contents will not be returned to the caller.",
         "Severity": "MEDIUM",
@@ -98,6 +101,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20483",
         "Title": "wget: Information exposure in set_file_metadata function in xattr.c",
         "Description": "set_file_metadata in xattr.c in GNU Wget before 1.20.1 stores a file's origin URL in the user.xdg.origin.url metadata attribute of the extended attributes of the downloaded file, which allows local users to obtain sensitive information (e.g., credentials contained in the URL) by reading this attribute, as demonstrated by getfattr. This also applies to Referer information in the user.xdg.referrer.url metadata attribute. According to 2016-07-22 in the Wget ChangeLog, user.xdg.origin.url was partially based on the behavior of fwrite_xattr in tool_xattr.c in curl.",
         "Severity": "LOW",
@@ -122,6 +126,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7146",
         "Title": "elfutils: buffer over-read in the ebl_object_note function in eblobjnote.c in libebl",
         "Description": "In elfutils 0.175, there is a buffer over-read in the ebl_object_note function in eblobjnote.c in libebl. Remote attackers could leverage this vulnerability to cause a denial-of-service via a crafted elf file, as demonstrated by eu-readelf.",
         "Severity": "MEDIUM",
@@ -143,6 +148,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7149",
         "Title": "elfutils: heap-based buffer over-read in read_srclines in dwarf_getsrclines.c in libdw",
         "Description": "A heap-based buffer over-read was discovered in the function read_srclines in dwarf_getsrclines.c in libdw in elfutils 0.175. A crafted input can cause segmentation faults, leading to denial-of-service, as demonstrated by eu-nm.",
         "Severity": "MEDIUM",
@@ -165,6 +171,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7150",
         "Title": "elfutils: segmentation fault in elf64_xlatetom in libelf/elf32_xlatetom.c",
         "Description": "An issue was discovered in elfutils 0.175. A segmentation fault can occur in the function elf64_xlatetom in libelf/elf32_xlatetom.c, due to dwfl_segment_report_module not checking whether the dyn data read from a core file is truncated. A crafted input can cause a program crash, leading to denial-of-service, as demonstrated by eu-stack.",
         "Severity": "MEDIUM",
@@ -187,6 +194,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7664",
         "Title": "elfutils: out of bound write in elf_cvt_note in libelf/note_xlate.h",
         "Description": "In elfutils 0.175, a negative-sized memcpy is attempted in elf_cvt_note in libelf/note_xlate.h because of an incorrect overflow check. Crafted elf input causes a segmentation fault, leading to denial of service (program crash).",
         "Severity": "MEDIUM",
@@ -207,6 +215,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7665",
         "Title": "elfutils: heap-based buffer over-read in function elf32_xlatetom in elf32_xlatetom.c",
         "Description": "In elfutils 0.175, a heap-based buffer over-read was discovered in the function elf32_xlatetom in elf32_xlatetom.c in libelf. A crafted ELF input can cause a segmentation fault leading to denial of service (program crash) because ebl_core_note does not reject malformed core file notes.",
         "Severity": "MEDIUM",
@@ -229,6 +238,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-12450",
         "Title": "glib2: file_copy_fallback in gio/gfile.c in GNOME GLib does not properly restrict file permissions while a copy operation is in progress",
         "Description": "file_copy_fallback in gio/gfile.c in GNOME GLib 2.15.0 through 2.61.1 does not properly restrict file permissions while a copy operation is in progress. Instead, default permissions are used.",
         "Severity": "HIGH",
@@ -253,6 +263,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10739",
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
@@ -276,6 +287,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10739",
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
@@ -299,6 +311,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10739",
         "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
         "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
         "Severity": "MEDIUM",
@@ -322,6 +335,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3829",
         "Title": "gnutls: use-after-free/double-free in certificate verification",
         "Description": "A vulnerability was found in gnutls versions from 3.5.8 before 3.6.7. A memory corruption (double free) vulnerability in the certificate verification API. Any client or server application that verifies X.509 certificates with GnuTLS 3.5.8 or later is affected.",
         "Severity": "MEDIUM",
@@ -349,6 +363,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3836",
         "Title": "gnutls: invalid pointer access upon receiving async handshake messages",
         "Description": "It was discovered in gnutls before version 3.6.7 upstream that there is an uninitialized pointer access in gnutls versions 3.6.3 or later which can be triggered by certain post-handshake messages.",
         "Severity": "MEDIUM",
@@ -375,6 +390,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-14503",
         "Title": "libarchive: Out-of-bounds read in lha_read_data_none",
         "Description": "libarchive 3.3.2 suffers from an out-of-bounds read within lha_read_data_none() in archive_read_support_format_lha.c when extracting a specially crafted lha archive, related to lha_crc16.",
         "Severity": "MEDIUM",
@@ -398,6 +414,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-1000877",
         "Title": "libarchive: Double free in RAR decoder resulting in a denial of service",
         "Description": "libarchive version commit 416694915449219d505531b1096384f3237dd6cc onwards (release v3.1.0 onwards) contains a CWE-415: Double Free vulnerability in RAR decoder - libarchive/archive_read_support_format_rar.c, parse_codes(), realloc(rar-\u003elzss.window, new_size) with new_size = 0 that can result in Crash/DoS. This attack appear to be exploitable via the victim must open a specially crafted RAR archive.",
         "Severity": "MEDIUM",
@@ -429,6 +446,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-1000878",
         "Title": "libarchive: Use after free in RAR decoder resulting in a denial of service",
         "Description": "libarchive version commit 416694915449219d505531b1096384f3237dd6cc onwards (release v3.1.0 onwards) contains a CWE-416: Use After Free vulnerability in RAR decoder - libarchive/archive_read_support_format_rar.c that can result in Crash/DoS - it is unknown if RCE is possible. This attack appear to be exploitable via the victim must open a specially crafted RAR archive.",
         "Severity": "MEDIUM",
@@ -460,6 +478,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1000019",
         "Title": "libarchive: Out of bounds read in archive_read_support_format_7zip.c resulting in a denial of service",
         "Description": "libarchive version commit bf9aec176c6748f0ee7a678c5f9f9555b9a757c1 onwards (release v3.0.2 onwards) contains a CWE-125: Out-of-bounds Read vulnerability in 7zip decompression, archive_read_support_format_7zip.c, header_bytes() that can result in a crash (denial of service). This attack appears to be exploitable via the victim opening a specially crafted 7zip file.",
         "Severity": "MEDIUM",
@@ -487,6 +506,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1000020",
         "Title": "libarchive: Infinite recursion in archive_read_support_format_iso9660.c resulting in denial of service",
         "Description": "libarchive version commit 5a98dcf8a86364b3c2c469c85b93647dfb139961 onwards (version v2.8.0 onwards) contains a CWE-835: Loop with Unreachable Exit Condition ('Infinite Loop') vulnerability in ISO9660 parser, archive_read_support_format_iso9660.c, read_CE()/parse_rockridge() that can result in DoS by infinite loop. This attack appears to be exploitable via the victim opening a specially crafted ISO9660 file.",
         "Severity": "MEDIUM",
@@ -514,6 +534,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18408",
         "Title": "libarchive: use-after-free in archive_read_format_rar_read_data when there is an error in the decompression of an archive entry",
         "Description": "archive_read_format_rar_read_data in archive_read_support_format_rar.c in libarchive before 3.4.0 has a use-after-free in a certain ARCHIVE_FAILED situation, related to Ppmd7_DecodeSymbol.",
         "Severity": "MEDIUM",
@@ -539,6 +560,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3822",
         "Title": "curl: NTLMv2 type-3 header stack buffer overflow",
         "Description": "libcurl versions from 7.36.0 to before 7.64.0 are vulnerable to a stack-based buffer overflow. The function creating an outgoing NTLM type-3 header (`lib/vauth/ntlm.c:Curl_auth_create_ntlm_type3_message()`), generates the request HTTP header contents based on previously received data. The check that exists to prevent the local buffer from getting overflowed is implemented wrongly (using unsigned math) and as such it does not prevent the overflow from happening. This output data can grow larger than the local buffer if very large 'nt response' data is extracted from a previous NTLMv2 header provided by the malicious or broken HTTP server. Such a 'large value' needs to be around 1000 bytes or more. The actual payload data copied to the target buffer comes from the NTLMv2 type-2 response header.",
         "Severity": "HIGH",
@@ -569,6 +591,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-16890",
         "Title": "curl: NTLM type-2 heap out-of-bounds buffer read",
         "Description": "libcurl versions from 7.36.0 to before 7.64.0 is vulnerable to a heap buffer out-of-bounds read. The function handling incoming NTLM type-2 messages (`lib/vauth/ntlm.c:ntlm_decode_type2_target`) does not validate incoming data correctly and is subject to an integer overflow vulnerability. Using that overflow, a malicious or broken NTLM server could trick libcurl to accept a bad length + offset combination that would lead to a buffer read out-of-bounds.",
         "Severity": "MEDIUM",
@@ -597,6 +620,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3823",
         "Title": "curl: SMTP end-of-response out-of-bounds read",
         "Description": "libcurl versions from 7.34.0 to before 7.64.0 are vulnerable to a heap out-of-bounds read in the code handling the end-of-response for SMTP. If the buffer passed to `smtp_endofresp()` isn't NUL terminated and contains no character ending the parsed number, and `len` is set to 5, then the `strtol()` call reads beyond the allocated buffer. The read contents will not be returned to the caller.",
         "Severity": "MEDIUM",
@@ -625,6 +649,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20483",
         "Title": "wget: Information exposure in set_file_metadata function in xattr.c",
         "Description": "set_file_metadata in xattr.c in GNU Wget before 1.20.1 stores a file's origin URL in the user.xdg.origin.url metadata attribute of the extended attributes of the downloaded file, which allows local users to obtain sensitive information (e.g., credentials contained in the URL) by reading this attribute, as demonstrated by getfattr. This also applies to Referer information in the user.xdg.referrer.url metadata attribute. According to 2016-07-22 in the Wget ChangeLog, user.xdg.origin.url was partially based on the behavior of fwrite_xattr in tool_xattr.c in curl.",
         "Severity": "LOW",
@@ -649,6 +674,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20534",
         "Title": "libsolv: illegal address access in pool_whatprovides in src/pool.h",
         "Description": "** DISPUTED ** There is an illegal address access at ext/testcase.c in libsolv.a in libsolv through 0.7.2 that will cause a denial of service. NOTE: third parties dispute this issue stating that the issue affects the test suite and not the underlying library. It cannot be exploited in any real-world application.",
         "Severity": "MEDIUM",
@@ -672,6 +698,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3817",
         "Title": "libcomps: use after free when merging two objmrtrees",
         "Description": "A use-after-free flaw has been discovered in libcomps before version 0.1.10 in the way ObjMRTrees are merged. An attacker, who is able to make an application read a crafted comps XML file, may be able to crash the application or execute malicious code.",
         "Severity": "MEDIUM",
@@ -692,6 +719,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20534",
         "Title": "libsolv: illegal address access in pool_whatprovides in src/pool.h",
         "Description": "** DISPUTED ** There is an illegal address access at ext/testcase.c in libsolv.a in libsolv through 0.7.2 that will cause a denial of service. NOTE: third parties dispute this issue stating that the issue affects the test suite and not the underlying library. It cannot be exploited in any real-world application.",
         "Severity": "MEDIUM",
@@ -715,6 +743,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3817",
         "Title": "libcomps: use after free when merging two objmrtrees",
         "Description": "A use-after-free flaw has been discovered in libcomps before version 0.1.10 in the way ObjMRTrees are merged. An attacker, who is able to make an application read a crafted comps XML file, may be able to crash the application or execute malicious code.",
         "Severity": "MEDIUM",
@@ -735,6 +764,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20534",
         "Title": "libsolv: illegal address access in pool_whatprovides in src/pool.h",
         "Description": "** DISPUTED ** There is an illegal address access at ext/testcase.c in libsolv.a in libsolv through 0.7.2 that will cause a denial of service. NOTE: third parties dispute this issue stating that the issue affects the test suite and not the underlying library. It cannot be exploited in any real-world application.",
         "Severity": "MEDIUM",
@@ -758,6 +788,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3817",
         "Title": "libcomps: use after free when merging two objmrtrees",
         "Description": "A use-after-free flaw has been discovered in libcomps before version 0.1.10 in the way ObjMRTrees are merged. An attacker, who is able to make an application read a crafted comps XML file, may be able to crash the application or execute malicious code.",
         "Severity": "MEDIUM",
@@ -778,6 +809,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-6706",
         "Title": "lua: use-after-free in lua_upvaluejoin in lapi.c resulting in denial of service",
         "Description": "Lua 5.3.5 has a use-after-free in lua_upvaluejoin in lapi.c. For example, a crash outcome might be achieved by an attacker who is able to trigger a debug.upvaluejoin call in which the arguments have certain relationships.",
         "Severity": "MEDIUM",
@@ -799,6 +831,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20534",
         "Title": "libsolv: illegal address access in pool_whatprovides in src/pool.h",
         "Description": "** DISPUTED ** There is an illegal address access at ext/testcase.c in libsolv.a in libsolv through 0.7.2 that will cause a denial of service. NOTE: third parties dispute this issue stating that the issue affects the test suite and not the underlying library. It cannot be exploited in any real-world application.",
         "Severity": "MEDIUM",
@@ -822,6 +855,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3817",
         "Title": "libcomps: use after free when merging two objmrtrees",
         "Description": "A use-after-free flaw has been discovered in libcomps before version 0.1.10 in the way ObjMRTrees are merged. An attacker, who is able to make an application read a crafted comps XML file, may be able to crash the application or execute malicious code.",
         "Severity": "MEDIUM",
@@ -842,6 +876,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0734",
         "Title": "openssl: timing side channel attack in the DSA signature algorithm",
         "Description": "The OpenSSL DSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.1a (Affected 1.1.1). Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.0.2q (Affected 1.0.2-1.0.2p).",
         "Severity": "MEDIUM",
@@ -877,6 +912,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0735",
         "Title": "openssl: timing side channel attack in the ECDSA signature generation",
         "Description": "The OpenSSL ECDSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.1.1a (Affected 1.1.1).",
         "Severity": "MEDIUM",
@@ -908,6 +944,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1543",
         "Title": "openssl: ChaCha20-Poly1305 with long nonces",
         "Description": "ChaCha20-Poly1305 is an AEAD cipher, and requires a unique nonce input for every encryption operation. RFC 7539 specifies that the nonce value (IV) should be 96 bits (12 bytes). OpenSSL allows a variable nonce length and front pads the nonce with 0 bytes if it is less than 12 bytes. However it also incorrectly allows a nonce to be set of up to 16 bytes. In this case only the last 12 bytes are significant and any additional leading bytes are ignored. It is a requirement of using this cipher that nonce values are unique. Messages encrypted using a reused nonce value are susceptible to serious confidentiality and integrity attacks. If an application changes the default nonce length to be longer than 12 bytes and then makes a change to the leading bytes of the nonce expecting the new value to be a new unique nonce then such an application could inadvertently encrypt messages with a reused nonce. Additionally the ignored bytes in a long nonce are not covered by the integrity guarantee of this cipher. Any application that relies on the integrity of these ignored leading bytes of a long nonce may be further affected. Any OpenSSL internal use of this cipher, including in SSL/TLS, is safe because no such use sets such a long nonce value. However user applications that use this cipher directly and set a non-default nonce length to be longer than 12 bytes may be vulnerable. OpenSSL versions 1.1.1 and 1.1.0 are affected by this issue. Due to the limited scope of affected deployments this has been assessed as low severity and therefore we are not creating new releases at this time. Fixed in OpenSSL 1.1.1c (Affected 1.1.1-1.1.1b). Fixed in OpenSSL 1.1.0k (Affected 1.1.0-1.1.0j).",
         "Severity": "MEDIUM",
@@ -929,6 +966,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-13734",
         "Title": "sqlite: fts3: improve shadow table corruption detection",
         "Description": "Out of bounds write in SQLite in Google Chrome prior to 79.0.3945.79 allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
         "Severity": "MEDIUM",
@@ -952,6 +990,7 @@
         "Layer": {
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1712",
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
         "Description": "A heap use-after-free vulnerability was found in systemd, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "HIGH",
@@ -969,6 +1008,7 @@
           "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
         },
         "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-15718",
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
         "Severity": "LOW",
