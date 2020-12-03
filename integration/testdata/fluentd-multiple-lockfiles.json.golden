@@ -4,6 +4,47 @@
     "Type": "debian",
     "Vulnerabilities": [
       {
+        "VulnerabilityID": "CVE-2020-3810",
+        "PkgName": "apt",
+        "InstalledVersion": "1.8.2",
+        "FixedVersion": "1.8.2.1",
+        "Layer": {
+          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-3810",
+        "Description": "Missing input validation in the ar/tar implementations of APT before version 2.1.2 could result in denial of service when processing specially crafted deb files.",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V2Score": 4.3,
+            "V3Score": 5.5
+          }
+        },
+        "References": [
+          "https://bugs.launchpad.net/bugs/1878177",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-3810",
+          "https://github.com/Debian/apt/issues/111",
+          "https://github.com/julian-klode/apt/commit/de4efadc3c92e26d37272fd310be148ec61dcf36",
+          "https://lists.debian.org/debian-security-announce/2020/msg00089.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U4PEH357MZM2SUGKETMEHMSGQS652QHH/",
+          "https://salsa.debian.org/apt-team/apt/-/commit/dceb1e49e4b8e4dadaf056be34088b415939cda6",
+          "https://salsa.debian.org/jak/apt/-/commit/dceb1e49e4b8e4dadaf056be34088b415939cda6",
+          "https://tracker.debian.org/news/1144109/accepted-apt-212-source-into-unstable/",
+          "https://usn.ubuntu.com/4359-1/",
+          "https://usn.ubuntu.com/4359-2/",
+          "https://usn.ubuntu.com/usn/usn-4359-1",
+          "https://usn.ubuntu.com/usn/usn-4359-2"
+        ],
+        "PublishedDate": "2020-05-15T14:15:00Z",
+        "LastModifiedDate": "2020-07-19T03:15:00Z"
+      },
+      {
         "VulnerabilityID": "CVE-2019-5188",
         "PkgName": "e2fsprogs",
         "InstalledVersion": "1.44.5-1+deb10u2",
@@ -13,17 +54,78 @@
         },
         "SeveritySource": "nvd",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+        "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+          "https://lists.debian.org/debian-lts-announce/2020/03/msg00030.html",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00021.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/"
-        ]
+          "https://usn.ubuntu.com/4249-1/",
+          "https://usn.ubuntu.com/usn/usn-4249-1"
+        ],
+        "PublishedDate": "2020-01-08T16:15:00Z",
+        "LastModifiedDate": "2020-07-26T18:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-3810",
+        "PkgName": "libapt-pkg5.0",
+        "InstalledVersion": "1.8.2",
+        "FixedVersion": "1.8.2.1",
+        "Layer": {
+          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-3810",
+        "Description": "Missing input validation in the ar/tar implementations of APT before version 2.1.2 could result in denial of service when processing specially crafted deb files.",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+            "V2Score": 4.3,
+            "V3Score": 5.5
+          }
+        },
+        "References": [
+          "https://bugs.launchpad.net/bugs/1878177",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-3810",
+          "https://github.com/Debian/apt/issues/111",
+          "https://github.com/julian-klode/apt/commit/de4efadc3c92e26d37272fd310be148ec61dcf36",
+          "https://lists.debian.org/debian-security-announce/2020/msg00089.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U4PEH357MZM2SUGKETMEHMSGQS652QHH/",
+          "https://salsa.debian.org/apt-team/apt/-/commit/dceb1e49e4b8e4dadaf056be34088b415939cda6",
+          "https://salsa.debian.org/jak/apt/-/commit/dceb1e49e4b8e4dadaf056be34088b415939cda6",
+          "https://tracker.debian.org/news/1144109/accepted-apt-212-source-into-unstable/",
+          "https://usn.ubuntu.com/4359-1/",
+          "https://usn.ubuntu.com/4359-2/",
+          "https://usn.ubuntu.com/usn/usn-4359-1",
+          "https://usn.ubuntu.com/usn/usn-4359-2"
+        ],
+        "PublishedDate": "2020-05-15T14:15:00Z",
+        "LastModifiedDate": "2020-07-19T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -35,17 +137,37 @@
         },
         "SeveritySource": "nvd",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+        "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+          "https://lists.debian.org/debian-lts-announce/2020/03/msg00030.html",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00021.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/"
-        ]
+          "https://usn.ubuntu.com/4249-1/",
+          "https://usn.ubuntu.com/usn/usn-4249-1"
+        ],
+        "PublishedDate": "2020-01-08T16:15:00Z",
+        "LastModifiedDate": "2020-07-26T18:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -57,17 +179,133 @@
         },
         "SeveritySource": "nvd",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+        "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+          "https://lists.debian.org/debian-lts-announce/2020/03/msg00030.html",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00021.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/"
-        ]
+          "https://usn.ubuntu.com/4249-1/",
+          "https://usn.ubuntu.com/usn/usn-4249-1"
+        ],
+        "PublishedDate": "2020-01-08T16:15:00Z",
+        "LastModifiedDate": "2020-07-26T18:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-11501",
+        "PkgName": "libgnutls30",
+        "InstalledVersion": "3.6.7-4",
+        "FixedVersion": "3.6.7-4+deb10u3",
+        "Layer": {
+          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-11501",
+        "Title": "gnutls: DTLS client hello contains a random value of all zeroes",
+        "Description": "GnuTLS 3.6.x before 3.6.13 uses incorrect cryptography for DTLS. The earliest affected version is 3.6.3 (2018-07-16) because of an error in a 2017-10-06 commit. The DTLS client always uses 32 '\\0' bytes instead of a random value, and thus contributes no randomness to a DTLS negotiation. This breaks the security guarantees of the DTLS protocol.",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-327"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+            "V2Score": 5.8,
+            "V3Score": 7.4
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+            "V3Score": 7.4
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2020-11501.html",
+          "http://linux.oracle.com/errata/ELSA-2020-1998.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-04/msg00015.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-11501",
+          "https://gitlab.com/gnutls/gnutls/-/commit/5b595e8e52653f6c5726a4cdd8fddeb6e83804d2",
+          "https://gitlab.com/gnutls/gnutls/-/issues/960",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ILMOWPKMTZAIMK5F32TUMO34XCABUCFJ/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/WDYY3R4F5CUTFAMXH2C5NKYFVDEJLTT7/",
+          "https://security.gentoo.org/glsa/202004-06",
+          "https://security.netapp.com/advisory/ntap-20200416-0002/",
+          "https://usn.ubuntu.com/4322-1/",
+          "https://usn.ubuntu.com/usn/usn-4322-1",
+          "https://www.debian.org/security/2020/dsa-4652",
+          "https://www.gnutls.org/security-new.html#GNUTLS-SA-2020-03-31",
+          "https://www.redhat.com/en/blog/understanding-dtls-all-zero-clienthellorandom-vulnerability"
+        ],
+        "PublishedDate": "2020-04-03T13:15:00Z",
+        "LastModifiedDate": "2020-06-12T23:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-13777",
+        "PkgName": "libgnutls30",
+        "InstalledVersion": "3.6.7-4",
+        "FixedVersion": "3.6.7-4+deb10u4",
+        "Layer": {
+          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-13777",
+        "Title": "gnutls: session resumption works without master key allowing MITM",
+        "Description": "GnuTLS 3.6.x before 3.6.14 uses incorrect cryptography for encrypting a session ticket (a loss of confidentiality in TLS 1.2, and an authentication bypass in TLS 1.3). The earliest affected version is 3.6.4 (2018-09-24) because of an error in a 2018-09-18 commit. Until the first key rotation, the TLS server always uses wrong data in place of an encryption key derived from an application.",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-327"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+            "V2Score": 5.8,
+            "V3Score": 7.4
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+            "V3Score": 7.4
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2020-13777.html",
+          "http://linux.oracle.com/errata/ELSA-2020-2637.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00015.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13777",
+          "https://gnutls.org/security-new.html#GNUTLS-SA-2020-06-03",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6C4DHUKV6M6SJ5CV6KVHZNHNF7HCUE5P/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6RTXZOXC4MHTFE2HKY6IAZMF2WHD2WMV/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RRQBFK3UZ7SV76IYDTS4PS6ABS2DSJHK/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VMB3UGI5H5RCFRU6OGRPMNUCNLJGEN7Y/",
+          "https://security.gentoo.org/glsa/202006-01",
+          "https://security.netapp.com/advisory/ntap-20200619-0004/",
+          "https://usn.ubuntu.com/4384-1/",
+          "https://usn.ubuntu.com/usn/usn-4384-1",
+          "https://www.debian.org/security/2020/dsa-4697",
+          "https://www.gnutls.org/security-new.html#GNUTLS-SA-2020-06-03"
+        ],
+        "PublishedDate": "2020-06-04T07:15:00Z",
+        "LastModifiedDate": "2020-06-19T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-18224",
@@ -82,15 +320,124 @@
         "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
         "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 7.5,
+            "V3Score": 9.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 5.6
+          }
+        },
         "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00008.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00009.html",
           "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
           "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c",
           "https://github.com/libidn/libidn2/compare/libidn2-2.1.0...libidn2-2.1.1",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
-          "https://usn.ubuntu.com/4168-1/"
-        ]
+          "https://seclists.org/bugtraq/2020/Feb/4",
+          "https://security.gentoo.org/glsa/202003-63",
+          "https://usn.ubuntu.com/4168-1/",
+          "https://usn.ubuntu.com/usn/usn-4168-1",
+          "https://www.debian.org/security/2020/dsa-4613"
+        ],
+        "PublishedDate": "2019-10-21T17:15:00Z",
+        "LastModifiedDate": "2019-10-29T19:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-10663",
+        "PkgName": "libruby2.5",
+        "InstalledVersion": "2.5.5-3+deb10u1",
+        "FixedVersion": "2.5.5-3+deb10u2",
+        "Layer": {
+          "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10663",
+        "Title": "rubygem-json: Unsafe Object Creation Vulnerability in JSON",
+        "Description": "The JSON gem through 2.2.0 for Ruby, as used in Ruby 2.4 through 2.4.9, 2.5 through 2.5.7, and 2.6 through 2.6.5, has an Unsafe Object Creation Vulnerability. This is quite similar to CVE-2013-0269, but does not rely on poor garbage-collection behavior within Ruby. Specifically, use of JSON parsing methods can lead to creation of a malicious object within the interpreter, with adverse effects that are application-dependent.",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 7.3
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2020-10663.html",
+          "http://linux.oracle.com/errata/ELSA-2020-5724.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-05/msg00004.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10663",
+          "https://github.com/advisories/GHSA-jphg-qwrw-7w9g",
+          "https://groups.google.com/forum/#!topic/ruby-security-ann/ermX1eQqqKA",
+          "https://lists.debian.org/debian-lts-announce/2020/04/msg00030.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/7QL6MJD2BO4IRJ5CJFNMCDYMQQFT24BJ/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/F4TNVTT66VPRMX5UZYSDGSVRXKKDDDU5/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/NK2PBXWMFRUD7U7Q7LHV4KYLYID77RI4/",
+          "https://nvd.nist.gov/vuln/detail/CVE-2020-10663",
+          "https://www.debian.org/security/2020/dsa-4721",
+          "https://www.ruby-lang.org/en/news/2020/03/19/json-dos-cve-2020-10663",
+          "https://www.ruby-lang.org/en/news/2020/03/19/json-dos-cve-2020-10663/"
+        ],
+        "PublishedDate": "2020-04-28T21:15:00Z",
+        "LastModifiedDate": "2020-07-09T00:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-10933",
+        "PkgName": "libruby2.5",
+        "InstalledVersion": "2.5.5-3+deb10u1",
+        "FixedVersion": "2.5.5-3+deb10u2",
+        "Layer": {
+          "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10933",
+        "Title": "ruby: BasicSocket#read_nonblock method leads to information disclosure",
+        "Description": "An issue was discovered in Ruby 2.5.x through 2.5.7, 2.6.x through 2.6.5, and 2.7.0. If a victim calls BasicSocket#read_nonblock(requested_size, buffer, exception: false), the method resizes the buffer to fit the requested size, but no data is copied. Thus, the buffer string provides the previous value of the heap. This may expose possibly sensitive data from the interpreter.",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+            "V2Score": 5,
+            "V3Score": 5.3
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+            "V3Score": 5.3
+          }
+        },
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10933",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/F4TNVTT66VPRMX5UZYSDGSVRXKKDDDU5/",
+          "https://security.netapp.com/advisory/ntap-20200625-0001/",
+          "https://www.debian.org/security/2020/dsa-4721",
+          "https://www.ruby-lang.org/en/news/2020/03/31/heap-exposure-in-socket-cve-2020-10933",
+          "https://www.ruby-lang.org/en/news/2020/03/31/heap-exposure-in-socket-cve-2020-10933/"
+        ],
+        "PublishedDate": "2020-05-04T15:15:00Z",
+        "LastModifiedDate": "2020-07-09T00:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -102,17 +449,502 @@
         },
         "SeveritySource": "nvd",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+        "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 6.7
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+          "https://lists.debian.org/debian-lts-announce/2020/03/msg00030.html",
+          "https://lists.debian.org/debian-lts-announce/2020/07/msg00021.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/"
-        ]
+          "https://usn.ubuntu.com/4249-1/",
+          "https://usn.ubuntu.com/usn/usn-4249-1"
+        ],
+        "PublishedDate": "2020-01-08T16:15:00Z",
+        "LastModifiedDate": "2020-07-26T18:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-1967",
+        "PkgName": "libssl1.1",
+        "InstalledVersion": "1.1.1d-0+deb10u2",
+        "FixedVersion": "1.1.1d-0+deb10u3",
+        "Layer": {
+          "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1967",
+        "Title": "openssl: Segmentation fault in SSL_check_chain causes denial of service",
+        "Description": "Server or client applications that call the SSL_check_chain() function during or after a TLS 1.3 handshake may crash due to a NULL pointer dereference as a result of incorrect handling of the \"signature_algorithms_cert\" TLS extension. The crash occurs if an invalid or unrecognised signature algorithm is received from the peer. This could be exploited by a malicious peer in a Denial of Service attack. OpenSSL version 1.1.1d, 1.1.1e, and 1.1.1f are affected by this issue. This issue did not affect OpenSSL versions prior to 1.1.1d. Fixed in OpenSSL 1.1.1g (Affected 1.1.1d-1.1.1f).",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-476"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-07/msg00004.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-07/msg00011.html",
+          "http://packetstormsecurity.com/files/157527/OpenSSL-signature_algorithms_cert-Denial-Of-Service.html",
+          "http://seclists.org/fulldisclosure/2020/May/5",
+          "http://www.openwall.com/lists/oss-security/2020/04/22/2",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1967",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=eb563247aef3e83dda7679c43f9649270462e5b1",
+          "https://github.com/irsl/CVE-2020-1967",
+          "https://kb.pulsesecure.net/articles/Pulse_Security_Advisories/SA44440",
+          "https://lists.apache.org/thread.html/r66ea9c436da150683432db5fbc8beb8ae01886c6459ac30c2cea7345@%3Cdev.tomcat.apache.org%3E",
+          "https://lists.apache.org/thread.html/r94d6ac3f010a38fccf4f432b12180a13fa1cf303559bd805648c9064@%3Cdev.tomcat.apache.org%3E",
+          "https://lists.apache.org/thread.html/r9a41e304992ce6aec6585a87842b4f2e692604f5c892c37e3b0587ee@%3Cdev.tomcat.apache.org%3E",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DDHOAATPWJCXRNFMJ2SASDBBNU5RJONY/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EXDDAOWSAIEFQNBHWYE6PPYFV4QXGMCD/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XVEP3LAK4JSPRXFO4QF4GG2IVXADV3SO/",
+          "https://security.FreeBSD.org/advisories/FreeBSD-SA-20:11.openssl.asc",
+          "https://security.gentoo.org/glsa/202004-10",
+          "https://security.netapp.com/advisory/ntap-20200424-0003/",
+          "https://security.netapp.com/advisory/ntap-20200717-0004/",
+          "https://www.debian.org/security/2020/dsa-4661",
+          "https://www.openssl.org/news/secadv/20200421.txt",
+          "https://www.oracle.com/security-alerts/cpujul2020.html",
+          "https://www.synology.com/security/advisory/Synology_SA_20_05",
+          "https://www.synology.com/security/advisory/Synology_SA_20_05_OpenSSL",
+          "https://www.tenable.com/security/tns-2020-03",
+          "https://www.tenable.com/security/tns-2020-04"
+        ],
+        "PublishedDate": "2020-04-21T14:15:00Z",
+        "LastModifiedDate": "2020-07-17T12:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-1712",
+        "PkgName": "libsystemd0",
+        "InstalledVersion": "241-7~deb10u2",
+        "FixedVersion": "241-7~deb10u4",
+        "Layer": {
+          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1712",
+        "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
+        "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 7.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 7.8
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2020-1712.html",
+          "http://linux.oracle.com/errata/ELSA-2020-0575.html",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1712",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1712",
+          "https://github.com/systemd/systemd/commit/1068447e6954dc6ce52f099ed174c442cb89ed54",
+          "https://github.com/systemd/systemd/commit/637486261528e8aa3da9f26a4487dc254f4b7abb",
+          "https://github.com/systemd/systemd/commit/bc130b6858327b382b07b3985cf48e2aa9016b2d",
+          "https://github.com/systemd/systemd/commit/ea0d0ede03c6f18dbc5036c5e9cccf97e415ccc2",
+          "https://usn.ubuntu.com/usn/usn-4269-1",
+          "https://www.openwall.com/lists/oss-security/2020/02/05/1"
+        ],
+        "PublishedDate": "2020-03-31T17:15:00Z",
+        "LastModifiedDate": "2020-04-10T15:42:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-1712",
+        "PkgName": "libudev1",
+        "InstalledVersion": "241-7~deb10u2",
+        "FixedVersion": "241-7~deb10u4",
+        "Layer": {
+          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1712",
+        "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
+        "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-416"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 7.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 7.8
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2020-1712.html",
+          "http://linux.oracle.com/errata/ELSA-2020-0575.html",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1712",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1712",
+          "https://github.com/systemd/systemd/commit/1068447e6954dc6ce52f099ed174c442cb89ed54",
+          "https://github.com/systemd/systemd/commit/637486261528e8aa3da9f26a4487dc254f4b7abb",
+          "https://github.com/systemd/systemd/commit/bc130b6858327b382b07b3985cf48e2aa9016b2d",
+          "https://github.com/systemd/systemd/commit/ea0d0ede03c6f18dbc5036c5e9cccf97e415ccc2",
+          "https://usn.ubuntu.com/usn/usn-4269-1",
+          "https://www.openwall.com/lists/oss-security/2020/02/05/1"
+        ],
+        "PublishedDate": "2020-03-31T17:15:00Z",
+        "LastModifiedDate": "2020-04-10T15:42:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-1967",
+        "PkgName": "openssl",
+        "InstalledVersion": "1.1.1d-0+deb10u2",
+        "FixedVersion": "1.1.1d-0+deb10u3",
+        "Layer": {
+          "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1967",
+        "Title": "openssl: Segmentation fault in SSL_check_chain causes denial of service",
+        "Description": "Server or client applications that call the SSL_check_chain() function during or after a TLS 1.3 handshake may crash due to a NULL pointer dereference as a result of incorrect handling of the \"signature_algorithms_cert\" TLS extension. The crash occurs if an invalid or unrecognised signature algorithm is received from the peer. This could be exploited by a malicious peer in a Denial of Service attack. OpenSSL version 1.1.1d, 1.1.1e, and 1.1.1f are affected by this issue. This issue did not affect OpenSSL versions prior to 1.1.1d. Fixed in OpenSSL 1.1.1g (Affected 1.1.1d-1.1.1f).",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-476"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-07/msg00004.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-07/msg00011.html",
+          "http://packetstormsecurity.com/files/157527/OpenSSL-signature_algorithms_cert-Denial-Of-Service.html",
+          "http://seclists.org/fulldisclosure/2020/May/5",
+          "http://www.openwall.com/lists/oss-security/2020/04/22/2",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1967",
+          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=eb563247aef3e83dda7679c43f9649270462e5b1",
+          "https://github.com/irsl/CVE-2020-1967",
+          "https://kb.pulsesecure.net/articles/Pulse_Security_Advisories/SA44440",
+          "https://lists.apache.org/thread.html/r66ea9c436da150683432db5fbc8beb8ae01886c6459ac30c2cea7345@%3Cdev.tomcat.apache.org%3E",
+          "https://lists.apache.org/thread.html/r94d6ac3f010a38fccf4f432b12180a13fa1cf303559bd805648c9064@%3Cdev.tomcat.apache.org%3E",
+          "https://lists.apache.org/thread.html/r9a41e304992ce6aec6585a87842b4f2e692604f5c892c37e3b0587ee@%3Cdev.tomcat.apache.org%3E",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DDHOAATPWJCXRNFMJ2SASDBBNU5RJONY/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EXDDAOWSAIEFQNBHWYE6PPYFV4QXGMCD/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XVEP3LAK4JSPRXFO4QF4GG2IVXADV3SO/",
+          "https://security.FreeBSD.org/advisories/FreeBSD-SA-20:11.openssl.asc",
+          "https://security.gentoo.org/glsa/202004-10",
+          "https://security.netapp.com/advisory/ntap-20200424-0003/",
+          "https://security.netapp.com/advisory/ntap-20200717-0004/",
+          "https://www.debian.org/security/2020/dsa-4661",
+          "https://www.openssl.org/news/secadv/20200421.txt",
+          "https://www.oracle.com/security-alerts/cpujul2020.html",
+          "https://www.synology.com/security/advisory/Synology_SA_20_05",
+          "https://www.synology.com/security/advisory/Synology_SA_20_05_OpenSSL",
+          "https://www.tenable.com/security/tns-2020-03",
+          "https://www.tenable.com/security/tns-2020-04"
+        ],
+        "PublishedDate": "2020-04-21T14:15:00Z",
+        "LastModifiedDate": "2020-07-17T12:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-10878",
+        "PkgName": "perl-base",
+        "InstalledVersion": "5.28.1-6",
+        "FixedVersion": "5.28.1-6+deb10u1",
+        "Layer": {
+          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10878",
+        "Title": "perl: corruption of intermediate language state of compiled regular expression due to integer overflow leads to DoS",
+        "Description": "Perl before 5.30.3 has an integer overflow related to mishandling of a \"PL_regkind[OP(n)] == NOTHING\" situation. A crafted regular expression could lead to malformed bytecode with a possibility of instruction injection.",
+        "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-190"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:H",
+            "V2Score": 7.5,
+            "V3Score": 8.6
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:H",
+            "V3Score": 8.6
+          }
+        },
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00044.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10878",
+          "https://github.com/Perl/perl5/blob/blead/pod/perl5303delta.pod",
+          "https://github.com/Perl/perl5/compare/v5.30.2...v5.30.3",
+          "https://github.com/perl/perl5/commit/0a320d753fe7fca03df259a4dfd8e641e51edaa8",
+          "https://github.com/perl/perl5/commit/3295b48defa0f8570114877b063fe546dd348b3c",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IN3TTBO5KSGWE5IRIKDJ5JSQRH7ANNXE/",
+          "https://metacpan.org/pod/release/XSAWYERX/perl-5.28.3/pod/perldelta.pod",
+          "https://metacpan.org/pod/release/XSAWYERX/perl-5.30.3/pod/perldelta.pod",
+          "https://security.gentoo.org/glsa/202006-03",
+          "https://security.netapp.com/advisory/ntap-20200611-0001/"
+        ],
+        "PublishedDate": "2020-06-05T14:15:00Z",
+        "LastModifiedDate": "2020-06-23T02:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-10543",
+        "PkgName": "perl-base",
+        "InstalledVersion": "5.28.1-6",
+        "FixedVersion": "5.28.1-6+deb10u1",
+        "Layer": {
+          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10543",
+        "Title": "perl: heap-based buffer overflow in regular expression compiler leads to DoS",
+        "Description": "Perl before 5.30.3 on 32-bit platforms allows a heap-based buffer overflow because nested regular expression quantifiers have an integer overflow.",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:H",
+            "V2Score": 6.4,
+            "V3Score": 8.2
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:H",
+            "V3Score": 8.2
+          }
+        },
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00044.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10543",
+          "https://github.com/Perl/perl5/blob/blead/pod/perl5303delta.pod",
+          "https://github.com/Perl/perl5/compare/v5.30.2...v5.30.3",
+          "https://github.com/perl/perl5/commit/897d1f7fd515b828e4b198d8b8bef76c6faf03ed",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IN3TTBO5KSGWE5IRIKDJ5JSQRH7ANNXE/",
+          "https://metacpan.org/pod/release/XSAWYERX/perl-5.28.3/pod/perldelta.pod",
+          "https://metacpan.org/pod/release/XSAWYERX/perl-5.30.3/pod/perldelta.pod",
+          "https://security.gentoo.org/glsa/202006-03",
+          "https://security.netapp.com/advisory/ntap-20200611-0001/"
+        ],
+        "PublishedDate": "2020-06-05T14:15:00Z",
+        "LastModifiedDate": "2020-06-23T02:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-12723",
+        "PkgName": "perl-base",
+        "InstalledVersion": "5.28.1-6",
+        "FixedVersion": "5.28.1-6+deb10u1",
+        "Layer": {
+          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-12723",
+        "Title": "perl: corruption of intermediate language state of compiled regular expression due to recursive S_study_chunk() calls leads to DoS",
+        "Description": "regcomp.c in Perl before 5.30.3 allows a buffer overflow via a crafted regular expression because of recursive S_study_chunk calls.",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-120"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00044.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-12723",
+          "https://github.com/Perl/perl5/blob/blead/pod/perl5303delta.pod",
+          "https://github.com/Perl/perl5/compare/v5.30.2...v5.30.3",
+          "https://github.com/Perl/perl5/issues/16947",
+          "https://github.com/Perl/perl5/issues/17743",
+          "https://github.com/perl/perl5/commit/66bbb51b93253a3f87d11c2695cfb7bdb782184a",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IN3TTBO5KSGWE5IRIKDJ5JSQRH7ANNXE/",
+          "https://metacpan.org/pod/release/XSAWYERX/perl-5.28.3/pod/perldelta.pod",
+          "https://metacpan.org/pod/release/XSAWYERX/perl-5.30.3/pod/perldelta.pod",
+          "https://security.gentoo.org/glsa/202006-03",
+          "https://security.netapp.com/advisory/ntap-20200611-0001/"
+        ],
+        "PublishedDate": "2020-06-05T15:15:00Z",
+        "LastModifiedDate": "2020-06-23T02:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-8130",
+        "PkgName": "rake",
+        "InstalledVersion": "12.3.1-3",
+        "FixedVersion": "12.3.1-3+deb10u1",
+        "Layer": {
+          "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-8130",
+        "Title": "rake: OS Command Injection via egrep in Rake::FileList",
+        "Description": "There is an OS command injection vulnerability in Ruby Rake \u003c 12.3.3 in Rake::FileList when supplying a filename that begins with the pipe character `|`.",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-78"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:M/Au:N/C:C/I:C/A:C",
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 6.9,
+            "V3Score": 6.4
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 6.4
+          }
+        },
+        "References": [
+          "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00041.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-8130",
+          "https://github.com/advisories/GHSA-jppv-gw3r-w3q8",
+          "https://hackerone.com/reports/651518",
+          "https://lists.debian.org/debian-lts-announce/2020/02/msg00026.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/523CLQ62VRN3VVC52KMPTROCCKY4Z36B/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VXMX4ARNX2JLRJMSH4N3J3UBMUT5CI44/",
+          "https://nvd.nist.gov/vuln/detail/CVE-2020-8130",
+          "https://usn.ubuntu.com/4295-1/",
+          "https://usn.ubuntu.com/usn/usn-4295-1"
+        ],
+        "PublishedDate": "2020-02-24T15:15:00Z",
+        "LastModifiedDate": "2020-06-30T14:00:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-10663",
+        "PkgName": "ruby2.5",
+        "InstalledVersion": "2.5.5-3+deb10u1",
+        "FixedVersion": "2.5.5-3+deb10u2",
+        "Layer": {
+          "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10663",
+        "Title": "rubygem-json: Unsafe Object Creation Vulnerability in JSON",
+        "Description": "The JSON gem through 2.2.0 for Ruby, as used in Ruby 2.4 through 2.4.9, 2.5 through 2.5.7, and 2.6 through 2.6.5, has an Unsafe Object Creation Vulnerability. This is quite similar to CVE-2013-0269, but does not rely on poor garbage-collection behavior within Ruby. Specifically, use of JSON parsing methods can lead to creation of a malicious object within the interpreter, with adverse effects that are application-dependent.",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 7.3
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2020-10663.html",
+          "http://linux.oracle.com/errata/ELSA-2020-5724.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2020-05/msg00004.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10663",
+          "https://github.com/advisories/GHSA-jphg-qwrw-7w9g",
+          "https://groups.google.com/forum/#!topic/ruby-security-ann/ermX1eQqqKA",
+          "https://lists.debian.org/debian-lts-announce/2020/04/msg00030.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/7QL6MJD2BO4IRJ5CJFNMCDYMQQFT24BJ/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/F4TNVTT66VPRMX5UZYSDGSVRXKKDDDU5/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/NK2PBXWMFRUD7U7Q7LHV4KYLYID77RI4/",
+          "https://nvd.nist.gov/vuln/detail/CVE-2020-10663",
+          "https://www.debian.org/security/2020/dsa-4721",
+          "https://www.ruby-lang.org/en/news/2020/03/19/json-dos-cve-2020-10663",
+          "https://www.ruby-lang.org/en/news/2020/03/19/json-dos-cve-2020-10663/"
+        ],
+        "PublishedDate": "2020-04-28T21:15:00Z",
+        "LastModifiedDate": "2020-07-09T00:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2020-10933",
+        "PkgName": "ruby2.5",
+        "InstalledVersion": "2.5.5-3+deb10u1",
+        "FixedVersion": "2.5.5-3+deb10u2",
+        "Layer": {
+          "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        "SeveritySource": "nvd",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10933",
+        "Title": "ruby: BasicSocket#read_nonblock method leads to information disclosure",
+        "Description": "An issue was discovered in Ruby 2.5.x through 2.5.7, 2.6.x through 2.6.5, and 2.7.0. If a victim calls BasicSocket#read_nonblock(requested_size, buffer, exception: false), the method resizes the buffer to fit the requested size, but no data is copied. Thus, the buffer string provides the previous value of the heap. This may expose possibly sensitive data from the interpreter.",
+        "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+            "V2Score": 5,
+            "V3Score": 5.3
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+            "V3Score": 5.3
+          }
+        },
+        "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10933",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/F4TNVTT66VPRMX5UZYSDGSVRXKKDDDU5/",
+          "https://security.netapp.com/advisory/ntap-20200625-0001/",
+          "https://www.debian.org/security/2020/dsa-4721",
+          "https://www.ruby-lang.org/en/news/2020/03/31/heap-exposure-in-socket-cve-2020-10933",
+          "https://www.ruby-lang.org/en/news/2020/03/31/heap-exposure-in-socket-cve-2020-10933/"
+        ],
+        "PublishedDate": "2020-05-04T15:15:00Z",
+        "LastModifiedDate": "2020-07-09T00:15:00Z"
       }
     ]
   }
