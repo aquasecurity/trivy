@@ -23,6 +23,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
   * [Debian/Ubuntu](#debianubuntu)
   * [Arch Linux](#arch-linux)
   * [Homebrew](#homebrew)
+  * [Nix/NixOS](#nixnixos)
   * [Install Script](#install-script)
   * [Binary](#binary)
   * [From source](#from-source)
@@ -190,6 +191,19 @@ You can use homebrew on macOS and Linux.
 ```
 $ brew install aquasecurity/trivy/trivy
 ```
+
+## Nix/NixOS
+
+You can use nix on Linux or macOS and on others unofficially.
+
+Note that trivy is currently only in the unstable channels.
+
+```
+$ nix-env --install trivy
+```
+
+Or through your configuration on NixOS or with home-manager as usual
+
 
 ## Install Script
 This script downloads Trivy binary based on your OS and architecture.
