@@ -1,6 +1,8 @@
 package rpc
 
 import (
+	"time"
+
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
 
@@ -147,8 +149,15 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 				}
 			}
 
-			lastModifiedDate, _ := ptypes.Timestamp(vuln.LastModifiedDate) // nolint: errcheck
-			publishedDate, _ := ptypes.Timestamp(vuln.PublishedDate)       // nolint: errcheck
+			var lastModifiedDate, publishedDate *time.Time
+			if vuln.LastModifiedDate != nil {
+				t, _ := ptypes.Timestamp(vuln.LastModifiedDate) // nolint: errcheck
+				lastModifiedDate = &t
+			}
+			if vuln.PublishedDate != nil {
+				t, _ := ptypes.Timestamp(vuln.PublishedDate) // nolint: errcheck
+				publishedDate = &t
+			}
 
 			vulns = append(vulns, types.DetectedVulnerability{
 				VulnerabilityID:  vuln.VulnerabilityId,
@@ -162,8 +171,8 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 					CVSS:             cvssMap,
 					References:       vuln.References,
 					CweIDs:           vuln.CweIds,
-					LastModifiedDate: &lastModifiedDate,
-					PublishedDate:    &publishedDate,
+					LastModifiedDate: lastModifiedDate,
+					PublishedDate:    publishedDate,
 				},
 				Layer: ftypes.Layer{
 					Digest: vuln.Layer.Digest,
