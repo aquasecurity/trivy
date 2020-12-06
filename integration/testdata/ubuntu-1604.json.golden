@@ -4,47 +4,6 @@
     "Type": "ubuntu",
     "Vulnerabilities": [
       {
-        "VulnerabilityID": "CVE-2020-3810",
-        "PkgName": "apt",
-        "InstalledVersion": "1.2.32",
-        "FixedVersion": "1.2.32ubuntu0.1",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-3810",
-        "Description": "Missing input validation in the ar/tar implementations of APT before version 2.1.2 could result in denial of service when processing specially crafted deb files.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-20"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
-            "V2Score": 4.3,
-            "V3Score": 5.5
-          }
-        },
-        "References": [
-          "https://bugs.launchpad.net/bugs/1878177",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-3810",
-          "https://github.com/Debian/apt/issues/111",
-          "https://github.com/julian-klode/apt/commit/de4efadc3c92e26d37272fd310be148ec61dcf36",
-          "https://lists.debian.org/debian-security-announce/2020/msg00089.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U4PEH357MZM2SUGKETMEHMSGQS652QHH/",
-          "https://salsa.debian.org/apt-team/apt/-/commit/dceb1e49e4b8e4dadaf056be34088b415939cda6",
-          "https://salsa.debian.org/jak/apt/-/commit/dceb1e49e4b8e4dadaf056be34088b415939cda6",
-          "https://tracker.debian.org/news/1144109/accepted-apt-212-source-into-unstable/",
-          "https://usn.ubuntu.com/4359-1/",
-          "https://usn.ubuntu.com/4359-2/",
-          "https://usn.ubuntu.com/usn/usn-4359-1",
-          "https://usn.ubuntu.com/usn/usn-4359-2"
-        ],
-        "PublishedDate": "2020-05-15T14:15:00Z",
-        "LastModifiedDate": "2020-07-19T03:15:00Z"
-      },
-      {
         "VulnerabilityID": "CVE-2019-18276",
         "PkgName": "bash",
         "InstalledVersion": "4.3-14ubuntu1.4",
@@ -62,9 +21,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 7.2,
-            "V3Score": 7.8
+            "V2Score": 7.2
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
@@ -75,11 +32,10 @@
           "http://packetstormsecurity.com/files/155498/Bash-5.0-Patch-11-Privilege-Escalation.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18276",
           "https://github.com/bminor/bash/commit/951bdaad7a18cc0dc1036bba86b18b90874d39ff",
-          "https://security.netapp.com/advisory/ntap-20200430-0003/",
           "https://www.youtube.com/watch?v=-wGtxJ8opa8"
         ],
         "PublishedDate": "2019-11-28T01:15:00Z",
-        "LastModifiedDate": "2020-04-30T19:15:00Z"
+        "LastModifiedDate": "2020-01-22T14:27:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-2779",
@@ -242,7 +198,7 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
-        "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
+        "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "CweIDs": [
@@ -251,9 +207,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 4.6,
-            "V3Score": 6.7
+            "V2Score": 4.6
           },
           "redhat": {
             "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
@@ -261,17 +215,10 @@
           }
         },
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-5094.html",
-          "http://linux.oracle.com/errata/ELSA-2020-1913.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://seclists.org/bugtraq/2019/Sep/58",
-          "https://security.gentoo.org/glsa/202003-05",
-          "https://security.netapp.com/advisory/ntap-20200115-0002/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
-          "https://usn.ubuntu.com/4142-1/",
           "https://usn.ubuntu.com/4142-2/",
           "https://usn.ubuntu.com/usn/usn-4142-1",
           "https://usn.ubuntu.com/usn/usn-4142-2",
@@ -290,7 +237,7 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
+        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "CweIDs": [
@@ -299,9 +246,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 4.6,
-            "V3Score": 6.7
+            "V2Score": 4.6
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
@@ -311,8 +256,6 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
-          "https://lists.debian.org/debian-lts-announce/2020/03/msg00030.html",
-          "https://lists.debian.org/debian-lts-announce/2020/07/msg00021.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
@@ -320,7 +263,7 @@
           "https://usn.ubuntu.com/usn/usn-4249-1"
         ],
         "PublishedDate": "2020-01-08T16:15:00Z",
-        "LastModifiedDate": "2020-07-26T18:15:00Z"
+        "LastModifiedDate": "2020-01-28T06:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -332,7 +275,7 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
-        "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
+        "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "CweIDs": [
@@ -341,9 +284,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 4.6,
-            "V3Score": 6.7
+            "V2Score": 4.6
           },
           "redhat": {
             "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
@@ -351,17 +292,10 @@
           }
         },
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-5094.html",
-          "http://linux.oracle.com/errata/ELSA-2020-1913.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://seclists.org/bugtraq/2019/Sep/58",
-          "https://security.gentoo.org/glsa/202003-05",
-          "https://security.netapp.com/advisory/ntap-20200115-0002/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
-          "https://usn.ubuntu.com/4142-1/",
           "https://usn.ubuntu.com/4142-2/",
           "https://usn.ubuntu.com/usn/usn-4142-1",
           "https://usn.ubuntu.com/usn/usn-4142-2",
@@ -380,7 +314,7 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
+        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "CweIDs": [
@@ -389,9 +323,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 4.6,
-            "V3Score": 6.7
+            "V2Score": 4.6
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
@@ -401,8 +333,6 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
-          "https://lists.debian.org/debian-lts-announce/2020/03/msg00030.html",
-          "https://lists.debian.org/debian-lts-announce/2020/07/msg00021.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
@@ -410,85 +340,7 @@
           "https://usn.ubuntu.com/usn/usn-4249-1"
         ],
         "PublishedDate": "2020-01-08T16:15:00Z",
-        "LastModifiedDate": "2020-07-26T18:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-13844",
-        "PkgName": "gcc-5-base",
-        "InstalledVersion": "5.4.0-6ubuntu1~16.04.11",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-13844",
-        "Title": "kernel: ARM straight-line speculation vulnerability",
-        "Description": "Arm Armv8-A core implementations utilizing speculative execution past unconditional changes in control flow may allow unauthorized disclosure of information to an attacker with local user access via a side-channel analysis, aka \"straight-line speculation.\"",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-200"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
-            "V2Score": 2.1,
-            "V3Score": 5.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
-            "V3Score": 5.5
-          }
-        },
-        "References": [
-          "http://lists.llvm.org/pipermail/llvm-dev/2020-June/142109.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13844",
-          "https://developer.arm.com/support/arm-security-updates/speculative-processor-vulnerability",
-          "https://developer.arm.com/support/arm-security-updates/speculative-processor-vulnerability/downloads/straight-line-speculation",
-          "https://developer.arm.com/support/arm-security-updates/speculative-processor-vulnerability/frequently-asked-questions",
-          "https://gcc.gnu.org/pipermail/gcc-patches/2020-June/547520.html",
-          "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=679db70801da9fda91d26caf13bf5b5ccc74e8e8"
-        ],
-        "PublishedDate": "2020-06-08T23:15:00Z",
-        "LastModifiedDate": "2020-06-11T20:35:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-13844",
-        "PkgName": "gcc-6-base",
-        "InstalledVersion": "6.0.1-0ubuntu1",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-13844",
-        "Title": "kernel: ARM straight-line speculation vulnerability",
-        "Description": "Arm Armv8-A core implementations utilizing speculative execution past unconditional changes in control flow may allow unauthorized disclosure of information to an attacker with local user access via a side-channel analysis, aka \"straight-line speculation.\"",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-200"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
-            "V2Score": 2.1,
-            "V3Score": 5.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
-            "V3Score": 5.5
-          }
-        },
-        "References": [
-          "http://lists.llvm.org/pipermail/llvm-dev/2020-June/142109.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13844",
-          "https://developer.arm.com/support/arm-security-updates/speculative-processor-vulnerability",
-          "https://developer.arm.com/support/arm-security-updates/speculative-processor-vulnerability/downloads/straight-line-speculation",
-          "https://developer.arm.com/support/arm-security-updates/speculative-processor-vulnerability/frequently-asked-questions",
-          "https://gcc.gnu.org/pipermail/gcc-patches/2020-June/547520.html",
-          "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=679db70801da9fda91d26caf13bf5b5ccc74e8e8"
-        ],
-        "PublishedDate": "2020-06-08T23:15:00Z",
-        "LastModifiedDate": "2020-06-11T20:35:00Z"
+        "LastModifiedDate": "2020-01-28T06:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-13050",
@@ -518,15 +370,10 @@
           }
         },
         "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00039.html",
           "https://access.redhat.com/articles/4264021",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-13050",
           "https://gist.github.com/rjhansen/67ab921ffb4084c865b3618d6955275f",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/AUK2YRO6QIH64WP2LRA5D4LACTXQPPU4/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CP4ON34YEXEZDZOXXWV43KVGGO6WZLJ5/",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2019q3/000439.html",
-          "https://support.f5.com/csp/article/K08654551",
-          "https://support.f5.com/csp/article/K08654551?utm_source=f5support\u0026amp;utm_medium=RSS",
           "https://twitter.com/lambdafu/status/1147162583969009664"
         ],
         "PublishedDate": "2019-06-29T17:15:00Z",
@@ -541,34 +388,12 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14855",
-        "Title": "gnupg2: OpenPGP Key Certification Forgeries with SHA-1",
-        "Description": "A flaw was found in the way certificate signatures could be forged using collisions found in the SHA-1 algorithm. An attacker could use this weakness to create forged certificate signatures. This issue affects GnuPG versions before 2.2.18.",
+        "Description": "Web of Trust forgeries using collisions in SHA-1 signatures.",
         "Severity": "LOW",
-        "CweIDs": [
-          "CWE-327"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
-            "V2Score": 5,
-            "V3Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N",
-            "V3Score": 5.3
-          }
-        },
         "References": [
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-14855",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14855",
-          "https://dev.gnupg.org/T4755",
-          "https://eprint.iacr.org/2020/014.pdf",
-          "https://lists.gnupg.org/pipermail/gnupg-announce/2019q4/000442.html",
-          "https://rwc.iacr.org/2020/slides/Leurent.pdf"
-        ],
-        "PublishedDate": "2020-03-20T16:15:00Z",
-        "LastModifiedDate": "2020-03-24T20:14:00Z"
+          "https://eprint.iacr.org/2020/014.pdf"
+        ]
       },
       {
         "VulnerabilityID": "CVE-2019-13050",
@@ -598,15 +423,10 @@
           }
         },
         "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00039.html",
           "https://access.redhat.com/articles/4264021",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-13050",
           "https://gist.github.com/rjhansen/67ab921ffb4084c865b3618d6955275f",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/AUK2YRO6QIH64WP2LRA5D4LACTXQPPU4/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CP4ON34YEXEZDZOXXWV43KVGGO6WZLJ5/",
           "https://lists.gnupg.org/pipermail/gnupg-announce/2019q3/000439.html",
-          "https://support.f5.com/csp/article/K08654551",
-          "https://support.f5.com/csp/article/K08654551?utm_source=f5support\u0026amp;utm_medium=RSS",
           "https://twitter.com/lambdafu/status/1147162583969009664"
         ],
         "PublishedDate": "2019-06-29T17:15:00Z",
@@ -621,34 +441,12 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14855",
-        "Title": "gnupg2: OpenPGP Key Certification Forgeries with SHA-1",
-        "Description": "A flaw was found in the way certificate signatures could be forged using collisions found in the SHA-1 algorithm. An attacker could use this weakness to create forged certificate signatures. This issue affects GnuPG versions before 2.2.18.",
+        "Description": "Web of Trust forgeries using collisions in SHA-1 signatures.",
         "Severity": "LOW",
-        "CweIDs": [
-          "CWE-327"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
-            "V2Score": 5,
-            "V3Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N",
-            "V3Score": 5.3
-          }
-        },
         "References": [
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-14855",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14855",
-          "https://dev.gnupg.org/T4755",
-          "https://eprint.iacr.org/2020/014.pdf",
-          "https://lists.gnupg.org/pipermail/gnupg-announce/2019q4/000442.html",
-          "https://rwc.iacr.org/2020/slides/Leurent.pdf"
-        ],
-        "PublishedDate": "2020-03-20T16:15:00Z",
-        "LastModifiedDate": "2020-03-24T20:14:00Z"
+          "https://eprint.iacr.org/2020/014.pdf"
+        ]
       },
       {
         "VulnerabilityID": "CVE-2016-1585",
@@ -678,47 +476,6 @@
         ],
         "PublishedDate": "2019-04-22T16:29:00Z",
         "LastModifiedDate": "2019-10-09T23:17:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-3810",
-        "PkgName": "libapt-pkg5.0",
-        "InstalledVersion": "1.2.32",
-        "FixedVersion": "1.2.32ubuntu0.1",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-3810",
-        "Description": "Missing input validation in the ar/tar implementations of APT before version 2.1.2 could result in denial of service when processing specially crafted deb files.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-20"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
-            "V2Score": 4.3,
-            "V3Score": 5.5
-          }
-        },
-        "References": [
-          "https://bugs.launchpad.net/bugs/1878177",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-3810",
-          "https://github.com/Debian/apt/issues/111",
-          "https://github.com/julian-klode/apt/commit/de4efadc3c92e26d37272fd310be148ec61dcf36",
-          "https://lists.debian.org/debian-security-announce/2020/msg00089.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U4PEH357MZM2SUGKETMEHMSGQS652QHH/",
-          "https://salsa.debian.org/apt-team/apt/-/commit/dceb1e49e4b8e4dadaf056be34088b415939cda6",
-          "https://salsa.debian.org/jak/apt/-/commit/dceb1e49e4b8e4dadaf056be34088b415939cda6",
-          "https://tracker.debian.org/news/1144109/accepted-apt-212-source-into-unstable/",
-          "https://usn.ubuntu.com/4359-1/",
-          "https://usn.ubuntu.com/4359-2/",
-          "https://usn.ubuntu.com/usn/usn-4359-1",
-          "https://usn.ubuntu.com/usn/usn-4359-2"
-        ],
-        "PublishedDate": "2020-05-15T14:15:00Z",
-        "LastModifiedDate": "2020-07-19T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-2779",
@@ -807,7 +564,6 @@
         "VulnerabilityID": "CVE-2017-18269",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -837,18 +593,15 @@
           "https://security.netapp.com/advisory/ntap-20190329-0001/",
           "https://security.netapp.com/advisory/ntap-20190401-0001/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22644",
-          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=cd66c0e584c6d692bc8347b5e72723d02b8a8ada",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
+          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=cd66c0e584c6d692bc8347b5e72723d02b8a8ada"
         ],
         "PublishedDate": "2018-05-18T16:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-04-01T08:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-11236",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -883,18 +636,15 @@
           "https://security.netapp.com/advisory/ntap-20190401-0001/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22786",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=5460617d1567657621107d895ee2dd83bc1f88f2",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
         "PublishedDate": "2018-05-18T16:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-04-25T18:43:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-11237",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -928,19 +678,16 @@
           "https://security.netapp.com/advisory/ntap-20190329-0001/",
           "https://security.netapp.com/advisory/ntap-20190401-0001/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23196",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1",
           "https://www.exploit-db.com/exploits/44750/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
         "PublishedDate": "2018-05-18T16:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-04-25T18:44:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-6485",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -975,53 +722,11 @@
           "https://security.netapp.com/advisory/ntap-20190404-0003/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22343",
           "https://usn.ubuntu.com/4218-1/",
-          "https://usn.ubuntu.com/4416-1/",
           "https://usn.ubuntu.com/usn/usn-4218-1",
-          "https://usn.ubuntu.com/usn/usn-4416-1",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
         "PublishedDate": "2018-02-01T14:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-1751",
-        "PkgName": "libc-bin",
-        "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1751",
-        "Title": "glibc: array overflow in backtrace functions for powerpc",
-        "Description": "An out-of-bounds write vulnerability was found in glibc before 2.31 when handling signal trampolines on PowerPC. Specifically, the backtrace function did not properly check the array bounds when storing the frame address, resulting in a denial of service or potential code execution. The highest threat from this vulnerability is to system availability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:M/Au:N/C:P/I:P/A:C",
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 5.9,
-            "V3Score": 7
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
-            "V3Score": 7
-          }
-        },
-        "References": [
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1751",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1751",
-          "https://security.gentoo.org/glsa/202006-04",
-          "https://security.netapp.com/advisory/ntap-20200430-0002/",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25423",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
-        ],
-        "PublishedDate": "2020-04-17T19:15:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-12-10T17:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2009-5155",
@@ -1060,11 +765,57 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=11053",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=18986",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=eb04c21373e2a2885f3d52ff192b0499afe3c672",
-          "https://support.f5.com/csp/article/K64119434",
-          "https://support.f5.com/csp/article/K64119434?utm_source=f5support\u0026amp;utm_medium=RSS"
+          "https://support.f5.com/csp/article/K64119434"
         ],
         "PublishedDate": "2019-02-26T02:29:00Z",
         "LastModifiedDate": "2019-03-25T17:29:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2015-5180",
+        "PkgName": "libc-bin",
+        "InstalledVersion": "2.23-0ubuntu11",
+        "Layer": {
+          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
+        },
+        "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2015-5180",
+        "Title": "glibc: DNS resolver NULL pointer dereference with crafted record type",
+        "Description": "res_query in libresolv in glibc before 2.25 allows remote attackers to cause a denial of service (NULL pointer dereference and process crash).",
+        "Severity": "LOW",
+        "CweIDs": [
+          "CWE-476"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V2Vector": "AV:L/AC:H/Au:N/C:N/I:N/A:P",
+            "V2Score": 1.2
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2015-5180.html",
+          "http://linux.oracle.com/errata/ELSA-2018-0805.html",
+          "http://www.securityfocus.com/bid/99324",
+          "http://www.ubuntu.com/usn/USN-3239-1",
+          "http://www.ubuntu.com/usn/USN-3239-2",
+          "https://access.redhat.com/errata/RHSA-2018:0805",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1249603",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-5180",
+          "https://security.gentoo.org/glsa/201706-19",
+          "https://sourceware.org/bugzilla/attachment.cgi?id=8492",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=18784",
+          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=fc82b0a2dfe7dbd35671c10510a8da1043d746a5",
+          "https://sourceware.org/ml/libc-alpha/2017-02/msg00079.html",
+          "https://usn.ubuntu.com/usn/usn-3239-1",
+          "https://usn.ubuntu.com/usn/usn-3239-2"
+        ],
+        "PublishedDate": "2017-06-27T20:29:00Z",
+        "LastModifiedDate": "2018-04-12T01:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2015-8985",
@@ -1084,7 +835,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
             "V2Score": 4.3,
             "V3Score": 5.9
           },
@@ -1101,7 +852,7 @@
           "https://security.gentoo.org/glsa/201908-06"
         ],
         "PublishedDate": "2017-03-20T16:59:00Z",
-        "LastModifiedDate": "2020-03-31T14:47:00Z"
+        "LastModifiedDate": "2019-08-15T18:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-10228",
@@ -1172,7 +923,6 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
           "http://www.securityfocus.com/bid/106672",
           "https://access.redhat.com/errata/RHSA-2019:2118",
-          "https://access.redhat.com/errata/RHSA-2019:3513",
           "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
@@ -1223,7 +973,6 @@
         "VulnerabilityID": "CVE-2017-12133",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -1252,60 +1001,90 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SYZL6PAKI73XYRJYL5VLDGA4FFGWMB7A/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=21115",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=d42eed4a044e5e10dfb885cf9891c2518a72a491",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1",
           "https://www.securityfocus.com/bid/100679"
         ],
         "PublishedDate": "2017-09-07T13:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-10-03T00:03:00Z"
       },
       {
-        "VulnerabilityID": "CVE-2019-19126",
+        "VulnerabilityID": "CVE-2018-20796",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
         "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-19126",
-        "Title": "glibc: LD_PREFER_MAP_32BIT_EXEC not ignored in setuid binaries",
-        "Description": "On the x86-64 architecture, the GNU C Library (aka glibc) before 2.31 fails to ignore the LD_PREFER_MAP_32BIT_EXEC environment variable during program execution after a security transition, allowing local attackers to restrict the possible mapping addresses for loaded libraries and thus bypass ASLR for a setuid program.",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20796",
+        "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
         "Severity": "LOW",
         "CweIDs": [
-          "CWE-200"
+          "CWE-674"
         ],
         "CVSS": {
           "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N",
-            "V2Score": 2.1,
-            "V3Score": 3.3
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
           },
           "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
-            "V3Score": 2.9
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "V3Score": 5.3
           }
         },
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-19126.html",
-          "http://linux.oracle.com/errata/ELSA-2020-1828.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19126",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4FQ5LC6JOYSOYFPRUZ4S45KL6IP3RPPZ/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZFJ5E7NWOL6ROE5QVICHKIOUGCPFJVUH/",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25204",
-          "https://sourceware.org/ml/libc-alpha/2019-11/msg00649.html",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
+          "http://www.securityfocus.com/bid/107160",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20796",
+          "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34141",
+          "https://lists.gnu.org/archive/html/bug-gnulib/2019-01/msg00108.html",
+          "https://security.netapp.com/advisory/ntap-20190315-0002/",
+          "https://support.f5.com/csp/article/K26346590?utm_source=f5support\u0026amp;utm_medium=RSS"
         ],
-        "PublishedDate": "2019-11-19T22:15:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "PublishedDate": "2019-02-26T02:29:00Z",
+        "LastModifiedDate": "2019-11-05T21:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7309",
+        "PkgName": "libc-bin",
+        "InstalledVersion": "2.23-0ubuntu11",
+        "Layer": {
+          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
+        },
+        "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7309",
+        "Title": "glibc: memcmp function incorrectly returns zero",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, the memcmp function for the x32 architecture can incorrectly return zero (indicating that the inputs are equal) because the RDX most significant bit is mishandled.",
+        "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L",
+            "V3Score": 3.3
+          }
+        },
+        "References": [
+          "http://www.securityfocus.com/bid/106835",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7309",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24155",
+          "https://sourceware.org/ml/libc-alpha/2019-02/msg00041.html",
+          "https://sourceware.org/ml/libc-alpha/2019-02/msg00063.html"
+        ],
+        "PublishedDate": "2019-02-03T02:29:00Z",
+        "LastModifiedDate": "2019-02-27T18:07:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9169",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -1335,145 +1114,53 @@
           "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34140",
           "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34142",
           "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10278",
-          "https://security.gentoo.org/glsa/202006-04",
           "https://security.netapp.com/advisory/ntap-20190315-0002/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24114",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;a=commit;h=583dd860d5b833037175247230a328f0050dbfe9",
-          "https://support.f5.com/csp/article/K54823184",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
+          "https://support.f5.com/csp/article/K54823184"
         ],
         "PublishedDate": "2019-02-26T02:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-04-16T05:29:00Z"
       },
       {
-        "VulnerabilityID": "CVE-2020-10029",
-        "PkgName": "libc-bin",
-        "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10029",
-        "Title": "glibc: stack corruption from crafted input in cosl, sinl, sincosl, and tanl functions",
-        "Description": "The GNU C Library (aka glibc or libc6) before 2.32 could overflow an on-stack buffer during range reduction if an input to an 80-bit long double function contains a non-canonical bit pattern, a seen when passing a 0x5d414141414141410000 value to sinl on x86 targets. This is related to sysdeps/ieee754/ldbl-96/e_rem_pio2l.c.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-119"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
-            "V2Score": 2.1,
-            "V3Score": 5.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:H",
-            "V3Score": 6.2
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00033.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10029",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/23N76M3EDP2GIW4GOIQRYTKRE7PPBRB2/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JZTFUD5VH2GU3YOXA2KBQSBIDZRDWNZ3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VU5JJGENOK7K4X5RYAA5PL647C6HD22E/",
-          "https://security.gentoo.org/glsa/202006-04",
-          "https://security.netapp.com/advisory/ntap-20200327-0003/",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25487",
-          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;a=commit;h=9333498794cde1d5cca518badf79533a24114b6f",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
-        ],
-        "PublishedDate": "2020-03-04T15:15:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-1752",
-        "PkgName": "libc-bin",
-        "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1752",
-        "Title": "glibc: use-after-free in glob() function when expanding ~user",
-        "Description": "A use-after-free vulnerability introduced in glibc upstream version 2.14 was found in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution. This was fixed in version 2.32.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-416"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:H/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
-            "V2Score": 3.7,
-            "V3Score": 7
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
-            "V3Score": 7
-          }
-        },
-        "References": [
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1752",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1752",
-          "https://security.netapp.com/advisory/ntap-20200511-0005/",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25414",
-          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=ddc650e9b3dc916eab417ce9f79e67337b05035c",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
-        ],
-        "PublishedDate": "2020-04-30T17:15:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-6096",
+        "VulnerabilityID": "CVE-2019-9192",
         "PkgName": "libc-bin",
         "InstalledVersion": "2.23-0ubuntu11",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
         "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-6096",
-        "Title": "glibc: signed comparison vulnerability in the ARMv7 memcpy function",
-        "Description": "An exploitable signed comparison vulnerability exists in the ARMv7 memcpy() implementation of GNU glibc 2.30.9000. Calling memcpy() (on ARMv7 targets that utilize the GNU glibc implementation) with a negative value for the 'num' parameter results in a signed comparison vulnerability. If an attacker underflows the 'num' parameter to memcpy(), this vulnerability could lead to undefined behavior such as writing to out-of-bounds memory and potentially remote code execution. Furthermore, this memcpy() implementation allows for program execution to continue in scenarios where a segmentation fault or crash should have occurred. The dangers occur in that subsequent execution and iterations of this code will be executed with this corrupted data.",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9192",
+        "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
+        "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
         "Severity": "LOW",
         "CweIDs": [
-          "CWE-191"
+          "CWE-399"
         ],
         "CVSS": {
           "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 6.8,
-            "V3Score": 8.1
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
           },
           "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
-            "V3Score": 8.1
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:L",
+            "V3Score": 2.8
           }
         },
         "References": [
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-6096",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SPYXTDOOB4PQGTYAMZAZNJIB3FF6YQXI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/URXOIA2LDUKHQXK4BE55BQBRI6ZZG3Y6/",
-          "https://sourceware.org/bugzilla/attachment.cgi?id=12334",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25620",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2020-1019",
-          "https://www.talosintelligence.com/vulnerability_reports/TALOS-2020-1019"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9192",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24269",
+          "https://support.f5.com/csp/article/K26346590?utm_source=f5support\u0026amp;utm_medium=RSS"
         ],
-        "PublishedDate": "2020-04-01T22:15:00Z",
-        "LastModifiedDate": "2020-08-02T03:15:00Z"
+        "PublishedDate": "2019-02-26T18:29:00Z",
+        "LastModifiedDate": "2019-11-05T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2017-18269",
         "PkgName": "libc6",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -1503,18 +1190,15 @@
           "https://security.netapp.com/advisory/ntap-20190329-0001/",
           "https://security.netapp.com/advisory/ntap-20190401-0001/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22644",
-          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=cd66c0e584c6d692bc8347b5e72723d02b8a8ada",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
+          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=cd66c0e584c6d692bc8347b5e72723d02b8a8ada"
         ],
         "PublishedDate": "2018-05-18T16:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-04-01T08:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-11236",
         "PkgName": "libc6",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -1549,18 +1233,15 @@
           "https://security.netapp.com/advisory/ntap-20190401-0001/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22786",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=5460617d1567657621107d895ee2dd83bc1f88f2",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
         "PublishedDate": "2018-05-18T16:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-04-25T18:43:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-11237",
         "PkgName": "libc6",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -1594,19 +1275,16 @@
           "https://security.netapp.com/advisory/ntap-20190329-0001/",
           "https://security.netapp.com/advisory/ntap-20190401-0001/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23196",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1",
           "https://www.exploit-db.com/exploits/44750/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
         "PublishedDate": "2018-05-18T16:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-04-25T18:44:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-6485",
         "PkgName": "libc6",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -1641,53 +1319,11 @@
           "https://security.netapp.com/advisory/ntap-20190404-0003/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22343",
           "https://usn.ubuntu.com/4218-1/",
-          "https://usn.ubuntu.com/4416-1/",
           "https://usn.ubuntu.com/usn/usn-4218-1",
-          "https://usn.ubuntu.com/usn/usn-4416-1",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
         "PublishedDate": "2018-02-01T14:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-1751",
-        "PkgName": "libc6",
-        "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1751",
-        "Title": "glibc: array overflow in backtrace functions for powerpc",
-        "Description": "An out-of-bounds write vulnerability was found in glibc before 2.31 when handling signal trampolines on PowerPC. Specifically, the backtrace function did not properly check the array bounds when storing the frame address, resulting in a denial of service or potential code execution. The highest threat from this vulnerability is to system availability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:M/Au:N/C:P/I:P/A:C",
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 5.9,
-            "V3Score": 7
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
-            "V3Score": 7
-          }
-        },
-        "References": [
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1751",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1751",
-          "https://security.gentoo.org/glsa/202006-04",
-          "https://security.netapp.com/advisory/ntap-20200430-0002/",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25423",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
-        ],
-        "PublishedDate": "2020-04-17T19:15:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-12-10T17:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2009-5155",
@@ -1726,11 +1362,57 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=11053",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=18986",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=eb04c21373e2a2885f3d52ff192b0499afe3c672",
-          "https://support.f5.com/csp/article/K64119434",
-          "https://support.f5.com/csp/article/K64119434?utm_source=f5support\u0026amp;utm_medium=RSS"
+          "https://support.f5.com/csp/article/K64119434"
         ],
         "PublishedDate": "2019-02-26T02:29:00Z",
         "LastModifiedDate": "2019-03-25T17:29:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2015-5180",
+        "PkgName": "libc6",
+        "InstalledVersion": "2.23-0ubuntu11",
+        "Layer": {
+          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
+        },
+        "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2015-5180",
+        "Title": "glibc: DNS resolver NULL pointer dereference with crafted record type",
+        "Description": "res_query in libresolv in glibc before 2.25 allows remote attackers to cause a denial of service (NULL pointer dereference and process crash).",
+        "Severity": "LOW",
+        "CweIDs": [
+          "CWE-476"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V2Vector": "AV:L/AC:H/Au:N/C:N/I:N/A:P",
+            "V2Score": 1.2
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2015-5180.html",
+          "http://linux.oracle.com/errata/ELSA-2018-0805.html",
+          "http://www.securityfocus.com/bid/99324",
+          "http://www.ubuntu.com/usn/USN-3239-1",
+          "http://www.ubuntu.com/usn/USN-3239-2",
+          "https://access.redhat.com/errata/RHSA-2018:0805",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1249603",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-5180",
+          "https://security.gentoo.org/glsa/201706-19",
+          "https://sourceware.org/bugzilla/attachment.cgi?id=8492",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=18784",
+          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=fc82b0a2dfe7dbd35671c10510a8da1043d746a5",
+          "https://sourceware.org/ml/libc-alpha/2017-02/msg00079.html",
+          "https://usn.ubuntu.com/usn/usn-3239-1",
+          "https://usn.ubuntu.com/usn/usn-3239-2"
+        ],
+        "PublishedDate": "2017-06-27T20:29:00Z",
+        "LastModifiedDate": "2018-04-12T01:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2015-8985",
@@ -1750,7 +1432,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
             "V2Score": 4.3,
             "V3Score": 5.9
           },
@@ -1767,7 +1449,7 @@
           "https://security.gentoo.org/glsa/201908-06"
         ],
         "PublishedDate": "2017-03-20T16:59:00Z",
-        "LastModifiedDate": "2020-03-31T14:47:00Z"
+        "LastModifiedDate": "2019-08-15T18:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-10228",
@@ -1838,7 +1520,6 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
           "http://www.securityfocus.com/bid/106672",
           "https://access.redhat.com/errata/RHSA-2019:2118",
-          "https://access.redhat.com/errata/RHSA-2019:3513",
           "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
@@ -1889,7 +1570,6 @@
         "VulnerabilityID": "CVE-2017-12133",
         "PkgName": "libc6",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -1918,60 +1598,90 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SYZL6PAKI73XYRJYL5VLDGA4FFGWMB7A/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=21115",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=d42eed4a044e5e10dfb885cf9891c2518a72a491",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1",
           "https://www.securityfocus.com/bid/100679"
         ],
         "PublishedDate": "2017-09-07T13:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-10-03T00:03:00Z"
       },
       {
-        "VulnerabilityID": "CVE-2019-19126",
+        "VulnerabilityID": "CVE-2018-20796",
         "PkgName": "libc6",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
         "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-19126",
-        "Title": "glibc: LD_PREFER_MAP_32BIT_EXEC not ignored in setuid binaries",
-        "Description": "On the x86-64 architecture, the GNU C Library (aka glibc) before 2.31 fails to ignore the LD_PREFER_MAP_32BIT_EXEC environment variable during program execution after a security transition, allowing local attackers to restrict the possible mapping addresses for loaded libraries and thus bypass ASLR for a setuid program.",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20796",
+        "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
         "Severity": "LOW",
         "CweIDs": [
-          "CWE-200"
+          "CWE-674"
         ],
         "CVSS": {
           "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N",
-            "V2Score": 2.1,
-            "V3Score": 3.3
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
           },
           "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
-            "V3Score": 2.9
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "V3Score": 5.3
           }
         },
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-19126.html",
-          "http://linux.oracle.com/errata/ELSA-2020-1828.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19126",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4FQ5LC6JOYSOYFPRUZ4S45KL6IP3RPPZ/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZFJ5E7NWOL6ROE5QVICHKIOUGCPFJVUH/",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25204",
-          "https://sourceware.org/ml/libc-alpha/2019-11/msg00649.html",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
+          "http://www.securityfocus.com/bid/107160",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20796",
+          "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34141",
+          "https://lists.gnu.org/archive/html/bug-gnulib/2019-01/msg00108.html",
+          "https://security.netapp.com/advisory/ntap-20190315-0002/",
+          "https://support.f5.com/csp/article/K26346590?utm_source=f5support\u0026amp;utm_medium=RSS"
         ],
-        "PublishedDate": "2019-11-19T22:15:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "PublishedDate": "2019-02-26T02:29:00Z",
+        "LastModifiedDate": "2019-11-05T21:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7309",
+        "PkgName": "libc6",
+        "InstalledVersion": "2.23-0ubuntu11",
+        "Layer": {
+          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
+        },
+        "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7309",
+        "Title": "glibc: memcmp function incorrectly returns zero",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, the memcmp function for the x32 architecture can incorrectly return zero (indicating that the inputs are equal) because the RDX most significant bit is mishandled.",
+        "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L",
+            "V3Score": 3.3
+          }
+        },
+        "References": [
+          "http://www.securityfocus.com/bid/106835",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7309",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24155",
+          "https://sourceware.org/ml/libc-alpha/2019-02/msg00041.html",
+          "https://sourceware.org/ml/libc-alpha/2019-02/msg00063.html"
+        ],
+        "PublishedDate": "2019-02-03T02:29:00Z",
+        "LastModifiedDate": "2019-02-27T18:07:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9169",
         "PkgName": "libc6",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -2001,139 +1711,48 @@
           "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34140",
           "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34142",
           "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10278",
-          "https://security.gentoo.org/glsa/202006-04",
           "https://security.netapp.com/advisory/ntap-20190315-0002/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24114",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;a=commit;h=583dd860d5b833037175247230a328f0050dbfe9",
-          "https://support.f5.com/csp/article/K54823184",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
+          "https://support.f5.com/csp/article/K54823184"
         ],
         "PublishedDate": "2019-02-26T02:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-04-16T05:29:00Z"
       },
       {
-        "VulnerabilityID": "CVE-2020-10029",
-        "PkgName": "libc6",
-        "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10029",
-        "Title": "glibc: stack corruption from crafted input in cosl, sinl, sincosl, and tanl functions",
-        "Description": "The GNU C Library (aka glibc or libc6) before 2.32 could overflow an on-stack buffer during range reduction if an input to an 80-bit long double function contains a non-canonical bit pattern, a seen when passing a 0x5d414141414141410000 value to sinl on x86 targets. This is related to sysdeps/ieee754/ldbl-96/e_rem_pio2l.c.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-119"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
-            "V2Score": 2.1,
-            "V3Score": 5.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:H",
-            "V3Score": 6.2
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00033.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10029",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/23N76M3EDP2GIW4GOIQRYTKRE7PPBRB2/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JZTFUD5VH2GU3YOXA2KBQSBIDZRDWNZ3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VU5JJGENOK7K4X5RYAA5PL647C6HD22E/",
-          "https://security.gentoo.org/glsa/202006-04",
-          "https://security.netapp.com/advisory/ntap-20200327-0003/",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25487",
-          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;a=commit;h=9333498794cde1d5cca518badf79533a24114b6f",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
-        ],
-        "PublishedDate": "2020-03-04T15:15:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-1752",
-        "PkgName": "libc6",
-        "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1752",
-        "Title": "glibc: use-after-free in glob() function when expanding ~user",
-        "Description": "A use-after-free vulnerability introduced in glibc upstream version 2.14 was found in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution. This was fixed in version 2.32.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-416"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:H/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
-            "V2Score": 3.7,
-            "V3Score": 7
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
-            "V3Score": 7
-          }
-        },
-        "References": [
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1752",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1752",
-          "https://security.netapp.com/advisory/ntap-20200511-0005/",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25414",
-          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=ddc650e9b3dc916eab417ce9f79e67337b05035c",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
-        ],
-        "PublishedDate": "2020-04-30T17:15:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-6096",
+        "VulnerabilityID": "CVE-2019-9192",
         "PkgName": "libc6",
         "InstalledVersion": "2.23-0ubuntu11",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
         "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-6096",
-        "Title": "glibc: signed comparison vulnerability in the ARMv7 memcpy function",
-        "Description": "An exploitable signed comparison vulnerability exists in the ARMv7 memcpy() implementation of GNU glibc 2.30.9000. Calling memcpy() (on ARMv7 targets that utilize the GNU glibc implementation) with a negative value for the 'num' parameter results in a signed comparison vulnerability. If an attacker underflows the 'num' parameter to memcpy(), this vulnerability could lead to undefined behavior such as writing to out-of-bounds memory and potentially remote code execution. Furthermore, this memcpy() implementation allows for program execution to continue in scenarios where a segmentation fault or crash should have occurred. The dangers occur in that subsequent execution and iterations of this code will be executed with this corrupted data.",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9192",
+        "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
+        "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
         "Severity": "LOW",
         "CweIDs": [
-          "CWE-191"
+          "CWE-399"
         ],
         "CVSS": {
           "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 6.8,
-            "V3Score": 8.1
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
           },
           "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
-            "V3Score": 8.1
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:L",
+            "V3Score": 2.8
           }
         },
         "References": [
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-6096",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SPYXTDOOB4PQGTYAMZAZNJIB3FF6YQXI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/URXOIA2LDUKHQXK4BE55BQBRI6ZZG3Y6/",
-          "https://sourceware.org/bugzilla/attachment.cgi?id=12334",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25620",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2020-1019",
-          "https://www.talosintelligence.com/vulnerability_reports/TALOS-2020-1019"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9192",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24269",
+          "https://support.f5.com/csp/article/K26346590?utm_source=f5support\u0026amp;utm_medium=RSS"
         ],
-        "PublishedDate": "2020-04-01T22:15:00Z",
-        "LastModifiedDate": "2020-08-02T03:15:00Z"
+        "PublishedDate": "2019-02-26T18:29:00Z",
+        "LastModifiedDate": "2019-11-05T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -2145,7 +1764,7 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
-        "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
+        "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "CweIDs": [
@@ -2154,9 +1773,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 4.6,
-            "V3Score": 6.7
+            "V2Score": 4.6
           },
           "redhat": {
             "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
@@ -2164,17 +1781,10 @@
           }
         },
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-5094.html",
-          "http://linux.oracle.com/errata/ELSA-2020-1913.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://seclists.org/bugtraq/2019/Sep/58",
-          "https://security.gentoo.org/glsa/202003-05",
-          "https://security.netapp.com/advisory/ntap-20200115-0002/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
-          "https://usn.ubuntu.com/4142-1/",
           "https://usn.ubuntu.com/4142-2/",
           "https://usn.ubuntu.com/usn/usn-4142-1",
           "https://usn.ubuntu.com/usn/usn-4142-2",
@@ -2193,7 +1803,7 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
+        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "CweIDs": [
@@ -2202,9 +1812,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 4.6,
-            "V3Score": 6.7
+            "V2Score": 4.6
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
@@ -2214,8 +1822,6 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
-          "https://lists.debian.org/debian-lts-announce/2020/03/msg00030.html",
-          "https://lists.debian.org/debian-lts-announce/2020/07/msg00021.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
@@ -2223,7 +1829,7 @@
           "https://usn.ubuntu.com/usn/usn-4249-1"
         ],
         "PublishedDate": "2020-01-08T16:15:00Z",
-        "LastModifiedDate": "2020-07-26T18:15:00Z"
+        "LastModifiedDate": "2020-01-28T06:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-4484",
@@ -2352,45 +1958,6 @@
         "LastModifiedDate": "2017-04-17T16:50:00Z"
       },
       {
-        "VulnerabilityID": "CVE-2020-13844",
-        "PkgName": "libgcc1",
-        "InstalledVersion": "6.0.1-0ubuntu1",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-13844",
-        "Title": "kernel: ARM straight-line speculation vulnerability",
-        "Description": "Arm Armv8-A core implementations utilizing speculative execution past unconditional changes in control flow may allow unauthorized disclosure of information to an attacker with local user access via a side-channel analysis, aka \"straight-line speculation.\"",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-200"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
-            "V2Score": 2.1,
-            "V3Score": 5.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
-            "V3Score": 5.5
-          }
-        },
-        "References": [
-          "http://lists.llvm.org/pipermail/llvm-dev/2020-June/142109.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13844",
-          "https://developer.arm.com/support/arm-security-updates/speculative-processor-vulnerability",
-          "https://developer.arm.com/support/arm-security-updates/speculative-processor-vulnerability/downloads/straight-line-speculation",
-          "https://developer.arm.com/support/arm-security-updates/speculative-processor-vulnerability/frequently-asked-questions",
-          "https://gcc.gnu.org/pipermail/gcc-patches/2020-June/547520.html",
-          "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=679db70801da9fda91d26caf13bf5b5ccc74e8e8"
-        ],
-        "PublishedDate": "2020-06-08T23:15:00Z",
-        "LastModifiedDate": "2020-06-11T20:35:00Z"
-      },
-      {
         "VulnerabilityID": "CVE-2019-13627",
         "PkgName": "libgcrypt20",
         "InstalledVersion": "1.6.5-2ubuntu0.5",
@@ -2408,10 +1975,8 @@
         ],
         "CVSS": {
           "nvd": {
-            "V2Vector": "AV:L/AC:H/Au:N/C:P/I:P/A:N",
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:N",
-            "V2Score": 2.6,
-            "V3Score": 6.3
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V2Score": 6.8
           },
           "redhat": {
             "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:N",
@@ -2420,25 +1985,19 @@
         },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00060.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00018.html",
           "http://www.openwall.com/lists/oss-security/2019/10/02/2",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-13627",
           "https://dev.gnupg.org/T4683",
           "https://github.com/gpg/libgcrypt/releases/tag/libgcrypt-1.8.5",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00024.html",
-          "https://lists.debian.org/debian-lts-announce/2020/01/msg00001.html",
           "https://minerva.crocs.fi.muni.cz/",
           "https://security-tracker.debian.org/tracker/CVE-2019-13627",
-          "https://security.gentoo.org/glsa/202003-32",
-          "https://usn.ubuntu.com/4236-1/",
-          "https://usn.ubuntu.com/4236-2/",
-          "https://usn.ubuntu.com/4236-3/",
           "https://usn.ubuntu.com/usn/usn-4236-1",
           "https://usn.ubuntu.com/usn/usn-4236-2",
           "https://usn.ubuntu.com/usn/usn-4236-3"
         ],
         "PublishedDate": "2019-09-25T15:15:00Z",
-        "LastModifiedDate": "2020-04-01T13:25:00Z"
+        "LastModifiedDate": "2019-10-03T00:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17543",
@@ -2458,13 +2017,11 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 6.8,
-            "V3Score": 8.1
+            "V2Score": 6.8
           },
           "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
-            "V3Score": 8.1
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V3Score": 7
           }
         },
         "References": [
@@ -2477,17 +2034,13 @@
           "https://github.com/lz4/lz4/pull/756",
           "https://github.com/lz4/lz4/pull/760",
           "https://lists.apache.org/thread.html/25015588b770d67470b7ba7ea49a305d6735dd7f00eabe7d50ec1e17@%3Cissues.arrow.apache.org%3E",
-          "https://lists.apache.org/thread.html/543302d55e2d2da4311994e9b0debdc676bf3fd05e1a2be3407aa2d6@%3Cissues.arrow.apache.org%3E",
           "https://lists.apache.org/thread.html/793012683dc0fa6819b7c2560e6cf990811014c40c7d75412099c357@%3Cissues.arrow.apache.org%3E",
           "https://lists.apache.org/thread.html/9ff0606d16be2ab6a81619e1c9e23c3e251756638e36272c8c8b7fa3@%3Cissues.arrow.apache.org%3E",
           "https://lists.apache.org/thread.html/f0038c4fab2ee25aee849ebeff6b33b3aa89e07ccfb06b5c87b36316@%3Cissues.arrow.apache.org%3E",
-          "https://lists.apache.org/thread.html/f506bc371d4a068d5d84d7361293568f61167d3a1c3e91f0def2d7d3@%3Cdev.arrow.apache.org%3E",
-          "https://lists.apache.org/thread.html/r0fb226357e7988a241b06b93bab065bcea2eb38658b382e485960e26@%3Cissues.kudu.apache.org%3E",
-          "https://lists.apache.org/thread.html/r4068ba81066792f2b4d208b39c4c4713c5d4c79bd8cb6c1904af5720@%3Cissues.kudu.apache.org%3E",
-          "https://lists.apache.org/thread.html/r7bc72200f94298bc9a0e35637f388deb53467ca4b2e2ad1ff66d8960@%3Cissues.kudu.apache.org%3E"
+          "https://lists.apache.org/thread.html/f506bc371d4a068d5d84d7361293568f61167d3a1c3e91f0def2d7d3@%3Cdev.arrow.apache.org%3E"
         ],
         "PublishedDate": "2019-10-14T02:15:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-10-24T15:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-2779",
@@ -3012,9 +2565,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-            "V2Score": 4.6,
-            "V3Score": 5.3
+            "V2Score": 4.6
           },
           "redhat": {
             "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
@@ -3049,9 +2600,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:L",
-            "V2Score": 5.8,
-            "V3Score": 5.4
+            "V2Score": 5.8
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
@@ -3508,9 +3057,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-            "V2Score": 4.6,
-            "V3Score": 5.3
+            "V2Score": 4.6
           },
           "redhat": {
             "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
@@ -3545,9 +3092,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:L",
-            "V2Score": 5.8,
-            "V3Score": 5.4
+            "V2Score": 5.8
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
@@ -3719,75 +3264,78 @@
         "LastModifiedDate": "2018-08-17T10:29:00Z"
       },
       {
-        "VulnerabilityID": "CVE-2019-20838",
+        "VulnerabilityID": "CVE-2017-7245",
         "PkgName": "libpcre3",
         "InstalledVersion": "2:8.38-3.1",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
         "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-20838",
-        "Title": "pcre: buffer over-read in JIT when UTF is disabled",
-        "Description": "libpcre in PCRE before 8.43 allows a subject buffer over-read in JIT when UTF is disabled, and \\X or \\R has more than one fixed quantifier, a related issue to CVE-2019-20454.",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-7245",
+        "Title": "pcre: stack-based buffer overflow write in pcre32_copy_substring",
+        "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 4) or possibly have unspecified other impact via a crafted file.",
         "Severity": "LOW",
         "CweIDs": [
-          "CWE-125"
+          "CWE-119"
         ],
         "CVSS": {
           "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-            "V2Score": 4.3,
-            "V3Score": 7.5
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 7.8
           },
           "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-            "V3Score": 7.5
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "V3Score": 3.7
           }
         },
         "References": [
-          "https://bugs.gentoo.org/717920",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-20838",
-          "https://www.pcre.org/original/changelog.txt"
+          "http://www.securityfocus.com/bid/97067",
+          "https://access.redhat.com/errata/RHSA-2018:2486",
+          "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7245",
+          "https://security.gentoo.org/glsa/201710-25"
         ],
-        "PublishedDate": "2020-06-15T17:15:00Z",
-        "LastModifiedDate": "2020-06-30T17:28:00Z"
+        "PublishedDate": "2017-03-23T21:59:00Z",
+        "LastModifiedDate": "2018-08-17T10:29:00Z"
       },
       {
-        "VulnerabilityID": "CVE-2020-14155",
+        "VulnerabilityID": "CVE-2017-7246",
         "PkgName": "libpcre3",
         "InstalledVersion": "2:8.38-3.1",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
         "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-14155",
-        "Title": "pcre: integer overflow in libpcre",
-        "Description": "libpcre in PCRE before 8.44 allows an integer overflow via a large number after a (?C substring.",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-7246",
+        "Title": "pcre: stack-based buffer overflow write in pcre32_copy_substring",
+        "Description": "Stack-based buffer overflow in the pcre32_copy_substring function in pcre_get.c in libpcre1 in PCRE 8.40 allows remote attackers to cause a denial of service (WRITE of size 268) or possibly have unspecified other impact via a crafted file.",
         "Severity": "LOW",
         "CweIDs": [
-          "CWE-190"
+          "CWE-119"
         ],
         "CVSS": {
           "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
-            "V2Score": 5,
-            "V3Score": 5.3
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 7.8
           },
           "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
-            "V3Score": 5.3
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "V3Score": 3.7
           }
         },
         "References": [
-          "https://about.gitlab.com/releases/2020/07/01/security-release-13-1-2-release/",
-          "https://bugs.gentoo.org/717920",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-14155",
-          "https://www.pcre.org/original/changelog.txt"
+          "http://www.securityfocus.com/bid/97067",
+          "https://access.redhat.com/errata/RHSA-2018:2486",
+          "https://blogs.gentoo.org/ago/2017/03/20/libpcre-two-stack-based-buffer-overflow-write-in-pcre32_copy_substring-pcre_get-c/",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-7246",
+          "https://security.gentoo.org/glsa/201710-25"
         ],
-        "PublishedDate": "2020-06-15T17:15:00Z",
-        "LastModifiedDate": "2020-07-07T12:15:00Z"
+        "PublishedDate": "2017-03-23T21:59:00Z",
+        "LastModifiedDate": "2018-08-17T10:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-2779",
@@ -3882,7 +3430,7 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
-        "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
+        "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "CweIDs": [
@@ -3891,9 +3439,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 4.6,
-            "V3Score": 6.7
+            "V2Score": 4.6
           },
           "redhat": {
             "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
@@ -3901,17 +3447,10 @@
           }
         },
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-5094.html",
-          "http://linux.oracle.com/errata/ELSA-2020-1913.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://seclists.org/bugtraq/2019/Sep/58",
-          "https://security.gentoo.org/glsa/202003-05",
-          "https://security.netapp.com/advisory/ntap-20200115-0002/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
-          "https://usn.ubuntu.com/4142-1/",
           "https://usn.ubuntu.com/4142-2/",
           "https://usn.ubuntu.com/usn/usn-4142-1",
           "https://usn.ubuntu.com/usn/usn-4142-2",
@@ -3930,7 +3469,7 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
+        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
         "CweIDs": [
@@ -3939,9 +3478,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 4.6,
-            "V3Score": 6.7
+            "V2Score": 4.6
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
@@ -3951,8 +3488,6 @@
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
-          "https://lists.debian.org/debian-lts-announce/2020/03/msg00030.html",
-          "https://lists.debian.org/debian-lts-announce/2020/07/msg00021.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
@@ -3960,46 +3495,7 @@
           "https://usn.ubuntu.com/usn/usn-4249-1"
         ],
         "PublishedDate": "2020-01-08T16:15:00Z",
-        "LastModifiedDate": "2020-07-26T18:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-13844",
-        "PkgName": "libstdc++6",
-        "InstalledVersion": "5.4.0-6ubuntu1~16.04.11",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-13844",
-        "Title": "kernel: ARM straight-line speculation vulnerability",
-        "Description": "Arm Armv8-A core implementations utilizing speculative execution past unconditional changes in control flow may allow unauthorized disclosure of information to an attacker with local user access via a side-channel analysis, aka \"straight-line speculation.\"",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-200"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
-            "V2Score": 2.1,
-            "V3Score": 5.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
-            "V3Score": 5.5
-          }
-        },
-        "References": [
-          "http://lists.llvm.org/pipermail/llvm-dev/2020-June/142109.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13844",
-          "https://developer.arm.com/support/arm-security-updates/speculative-processor-vulnerability",
-          "https://developer.arm.com/support/arm-security-updates/speculative-processor-vulnerability/downloads/straight-line-speculation",
-          "https://developer.arm.com/support/arm-security-updates/speculative-processor-vulnerability/frequently-asked-questions",
-          "https://gcc.gnu.org/pipermail/gcc-patches/2020-June/547520.html",
-          "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=679db70801da9fda91d26caf13bf5b5ccc74e8e8"
-        ],
-        "PublishedDate": "2020-06-08T23:15:00Z",
-        "LastModifiedDate": "2020-06-11T20:35:00Z"
+        "LastModifiedDate": "2020-01-28T06:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-20839",
@@ -4051,18 +3547,9 @@
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1712",
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
-        "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
+        "Description": "A heap use-after-free vulnerability was found in systemd, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-416"
-        ],
         "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 4.6,
-            "V3Score": 7.8
-          },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
             "V3Score": 7.8
@@ -4071,17 +3558,9 @@
         "References": [
           "http://linux.oracle.com/cve/CVE-2020-1712.html",
           "http://linux.oracle.com/errata/ELSA-2020-0575.html",
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1712",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1712",
-          "https://github.com/systemd/systemd/commit/1068447e6954dc6ce52f099ed174c442cb89ed54",
-          "https://github.com/systemd/systemd/commit/637486261528e8aa3da9f26a4487dc254f4b7abb",
-          "https://github.com/systemd/systemd/commit/bc130b6858327b382b07b3985cf48e2aa9016b2d",
-          "https://github.com/systemd/systemd/commit/ea0d0ede03c6f18dbc5036c5e9cccf97e415ccc2",
-          "https://usn.ubuntu.com/usn/usn-4269-1",
-          "https://www.openwall.com/lists/oss-security/2020/02/05/1"
-        ],
-        "PublishedDate": "2020-03-31T17:15:00Z",
-        "LastModifiedDate": "2020-04-10T15:42:00Z"
+          "https://usn.ubuntu.com/usn/usn-4269-1"
+        ]
       },
       {
         "VulnerabilityID": "CVE-2018-16888",
@@ -4120,7 +3599,6 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16888",
           "https://lists.apache.org/thread.html/5960a34a524848cd722fd7ab7e2227eac10107b0f90d9d1e9c3caa74@%3Cuser.cassandra.apache.org%3E",
           "https://security.netapp.com/advisory/ntap-20190307-0007/",
-          "https://usn.ubuntu.com/4269-1/",
           "https://usn.ubuntu.com/usn/usn-4269-1"
         ],
         "PublishedDate": "2019-01-14T22:29:00Z",
@@ -4136,7 +3614,7 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-20386",
-        "Title": "systemd: memory leak in button_open() in login/logind-button.c when udev events are received",
+        "Title": "systemd: a memory leak was discovered in button_open in login/logind-button.c when udev events are received",
         "Description": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur.",
         "Severity": "LOW",
         "CweIDs": [
@@ -4145,9 +3623,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
-            "V2Score": 2.1,
-            "V3Score": 2.4
+            "V2Score": 2.1
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
@@ -4158,49 +3634,12 @@
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00014.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-20386",
           "https://github.com/systemd/systemd/commit/b2774a3ae692113e1f47a336a6c09bac9cfb49ad",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HZPCOMW5X6IZZXASCDD2CNW2DLF3YADC/",
           "https://security.netapp.com/advisory/ntap-20200210-0002/",
           "https://usn.ubuntu.com/4269-1/",
           "https://usn.ubuntu.com/usn/usn-4269-1"
         ],
         "PublishedDate": "2020-01-21T06:15:00Z",
         "LastModifiedDate": "2020-02-10T11:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-13776",
-        "PkgName": "libsystemd0",
-        "InstalledVersion": "229-4ubuntu21.22",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-13776",
-        "Title": "systemd: mishandles numerical usernames beginning with decimal digits or 0x followed by hexadecimal digits",
-        "Description": "systemd through v245 mishandles numerical usernames such as ones composed of decimal digits or 0x followed by hex digits, as demonstrated by use of root privileges when privileges of the 0x0 user account were intended. NOTE: this issue exists because of an incomplete fix for CVE-2017-1000082.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-20"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:H/Au:N/C:C/I:C/A:C",
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:H/I:H/A:H",
-            "V2Score": 6.2,
-            "V3Score": 6.7
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:H/I:H/A:H",
-            "V3Score": 6.7
-          }
-        },
-        "References": [
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13776",
-          "https://github.com/systemd/systemd/issues/15985",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IYGLFEKG45EYBJ7TPQMLWROWPTZBEU63/",
-          "https://security.netapp.com/advisory/ntap-20200611-0003/"
-        ],
-        "PublishedDate": "2020-06-03T03:15:00Z",
-        "LastModifiedDate": "2020-07-30T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2017-10684",
@@ -4642,9 +4081,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-            "V2Score": 4.6,
-            "V3Score": 5.3
+            "V2Score": 4.6
           },
           "redhat": {
             "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
@@ -4679,9 +4116,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:L",
-            "V2Score": 5.8,
-            "V3Score": 5.4
+            "V2Score": 5.8
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
@@ -4748,18 +4183,9 @@
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1712",
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
-        "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
+        "Description": "A heap use-after-free vulnerability was found in systemd, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-416"
-        ],
         "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 4.6,
-            "V3Score": 7.8
-          },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
             "V3Score": 7.8
@@ -4768,17 +4194,9 @@
         "References": [
           "http://linux.oracle.com/cve/CVE-2020-1712.html",
           "http://linux.oracle.com/errata/ELSA-2020-0575.html",
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1712",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1712",
-          "https://github.com/systemd/systemd/commit/1068447e6954dc6ce52f099ed174c442cb89ed54",
-          "https://github.com/systemd/systemd/commit/637486261528e8aa3da9f26a4487dc254f4b7abb",
-          "https://github.com/systemd/systemd/commit/bc130b6858327b382b07b3985cf48e2aa9016b2d",
-          "https://github.com/systemd/systemd/commit/ea0d0ede03c6f18dbc5036c5e9cccf97e415ccc2",
-          "https://usn.ubuntu.com/usn/usn-4269-1",
-          "https://www.openwall.com/lists/oss-security/2020/02/05/1"
-        ],
-        "PublishedDate": "2020-03-31T17:15:00Z",
-        "LastModifiedDate": "2020-04-10T15:42:00Z"
+          "https://usn.ubuntu.com/usn/usn-4269-1"
+        ]
       },
       {
         "VulnerabilityID": "CVE-2018-16888",
@@ -4817,7 +4235,6 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16888",
           "https://lists.apache.org/thread.html/5960a34a524848cd722fd7ab7e2227eac10107b0f90d9d1e9c3caa74@%3Cuser.cassandra.apache.org%3E",
           "https://security.netapp.com/advisory/ntap-20190307-0007/",
-          "https://usn.ubuntu.com/4269-1/",
           "https://usn.ubuntu.com/usn/usn-4269-1"
         ],
         "PublishedDate": "2019-01-14T22:29:00Z",
@@ -4833,7 +4250,7 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-20386",
-        "Title": "systemd: memory leak in button_open() in login/logind-button.c when udev events are received",
+        "Title": "systemd: a memory leak was discovered in button_open in login/logind-button.c when udev events are received",
         "Description": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur.",
         "Severity": "LOW",
         "CweIDs": [
@@ -4842,9 +4259,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
-            "V2Score": 2.1,
-            "V3Score": 2.4
+            "V2Score": 2.1
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
@@ -4855,49 +4270,12 @@
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00014.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-20386",
           "https://github.com/systemd/systemd/commit/b2774a3ae692113e1f47a336a6c09bac9cfb49ad",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HZPCOMW5X6IZZXASCDD2CNW2DLF3YADC/",
           "https://security.netapp.com/advisory/ntap-20200210-0002/",
           "https://usn.ubuntu.com/4269-1/",
           "https://usn.ubuntu.com/usn/usn-4269-1"
         ],
         "PublishedDate": "2020-01-21T06:15:00Z",
         "LastModifiedDate": "2020-02-10T11:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-13776",
-        "PkgName": "libudev1",
-        "InstalledVersion": "229-4ubuntu21.22",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-13776",
-        "Title": "systemd: mishandles numerical usernames beginning with decimal digits or 0x followed by hexadecimal digits",
-        "Description": "systemd through v245 mishandles numerical usernames such as ones composed of decimal digits or 0x followed by hex digits, as demonstrated by use of root privileges when privileges of the 0x0 user account were intended. NOTE: this issue exists because of an incomplete fix for CVE-2017-1000082.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-20"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:H/Au:N/C:C/I:C/A:C",
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:H/I:H/A:H",
-            "V2Score": 6.2,
-            "V3Score": 6.7
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:H/I:H/A:H",
-            "V3Score": 6.7
-          }
-        },
-        "References": [
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13776",
-          "https://github.com/systemd/systemd/issues/15985",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IYGLFEKG45EYBJ7TPQMLWROWPTZBEU63/",
-          "https://security.netapp.com/advisory/ntap-20200611-0003/"
-        ],
-        "PublishedDate": "2020-06-03T03:15:00Z",
-        "LastModifiedDate": "2020-07-30T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-2779",
@@ -5000,9 +4378,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:N/I:H/A:N",
-            "V2Score": 3.3,
-            "V3Score": 4.7
+            "V2Score": 3.3
           },
           "redhat": {
             "V2Vector": "AV:L/AC:H/Au:N/C:P/I:P/A:P",
@@ -5180,7 +4556,6 @@
         "VulnerabilityID": "CVE-2017-18269",
         "PkgName": "multiarch-support",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -5210,18 +4585,15 @@
           "https://security.netapp.com/advisory/ntap-20190329-0001/",
           "https://security.netapp.com/advisory/ntap-20190401-0001/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22644",
-          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=cd66c0e584c6d692bc8347b5e72723d02b8a8ada",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
+          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=cd66c0e584c6d692bc8347b5e72723d02b8a8ada"
         ],
         "PublishedDate": "2018-05-18T16:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-04-01T08:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-11236",
         "PkgName": "multiarch-support",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -5256,18 +4628,15 @@
           "https://security.netapp.com/advisory/ntap-20190401-0001/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22786",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=5460617d1567657621107d895ee2dd83bc1f88f2",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
         "PublishedDate": "2018-05-18T16:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-04-25T18:43:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-11237",
         "PkgName": "multiarch-support",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -5301,19 +4670,16 @@
           "https://security.netapp.com/advisory/ntap-20190329-0001/",
           "https://security.netapp.com/advisory/ntap-20190401-0001/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=23196",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1",
           "https://www.exploit-db.com/exploits/44750/",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
         "PublishedDate": "2018-05-18T16:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-04-25T18:44:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-6485",
         "PkgName": "multiarch-support",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -5348,53 +4714,11 @@
           "https://security.netapp.com/advisory/ntap-20190404-0003/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=22343",
           "https://usn.ubuntu.com/4218-1/",
-          "https://usn.ubuntu.com/4416-1/",
           "https://usn.ubuntu.com/usn/usn-4218-1",
-          "https://usn.ubuntu.com/usn/usn-4416-1",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html"
         ],
         "PublishedDate": "2018-02-01T14:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-1751",
-        "PkgName": "multiarch-support",
-        "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1751",
-        "Title": "glibc: array overflow in backtrace functions for powerpc",
-        "Description": "An out-of-bounds write vulnerability was found in glibc before 2.31 when handling signal trampolines on PowerPC. Specifically, the backtrace function did not properly check the array bounds when storing the frame address, resulting in a denial of service or potential code execution. The highest threat from this vulnerability is to system availability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:M/Au:N/C:P/I:P/A:C",
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 5.9,
-            "V3Score": 7
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
-            "V3Score": 7
-          }
-        },
-        "References": [
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1751",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1751",
-          "https://security.gentoo.org/glsa/202006-04",
-          "https://security.netapp.com/advisory/ntap-20200430-0002/",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25423",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
-        ],
-        "PublishedDate": "2020-04-17T19:15:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-12-10T17:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2009-5155",
@@ -5433,11 +4757,57 @@
           "https://sourceware.org/bugzilla/show_bug.cgi?id=11053",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=18986",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=eb04c21373e2a2885f3d52ff192b0499afe3c672",
-          "https://support.f5.com/csp/article/K64119434",
-          "https://support.f5.com/csp/article/K64119434?utm_source=f5support\u0026amp;utm_medium=RSS"
+          "https://support.f5.com/csp/article/K64119434"
         ],
         "PublishedDate": "2019-02-26T02:29:00Z",
         "LastModifiedDate": "2019-03-25T17:29:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2015-5180",
+        "PkgName": "multiarch-support",
+        "InstalledVersion": "2.23-0ubuntu11",
+        "Layer": {
+          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
+        },
+        "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2015-5180",
+        "Title": "glibc: DNS resolver NULL pointer dereference with crafted record type",
+        "Description": "res_query in libresolv in glibc before 2.25 allows remote attackers to cause a denial of service (NULL pointer dereference and process crash).",
+        "Severity": "LOW",
+        "CweIDs": [
+          "CWE-476"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
+          },
+          "redhat": {
+            "V2Vector": "AV:L/AC:H/Au:N/C:N/I:N/A:P",
+            "V2Score": 1.2
+          }
+        },
+        "References": [
+          "http://linux.oracle.com/cve/CVE-2015-5180.html",
+          "http://linux.oracle.com/errata/ELSA-2018-0805.html",
+          "http://www.securityfocus.com/bid/99324",
+          "http://www.ubuntu.com/usn/USN-3239-1",
+          "http://www.ubuntu.com/usn/USN-3239-2",
+          "https://access.redhat.com/errata/RHSA-2018:0805",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=1249603",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-5180",
+          "https://security.gentoo.org/glsa/201706-19",
+          "https://sourceware.org/bugzilla/attachment.cgi?id=8492",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=18784",
+          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=fc82b0a2dfe7dbd35671c10510a8da1043d746a5",
+          "https://sourceware.org/ml/libc-alpha/2017-02/msg00079.html",
+          "https://usn.ubuntu.com/usn/usn-3239-1",
+          "https://usn.ubuntu.com/usn/usn-3239-2"
+        ],
+        "PublishedDate": "2017-06-27T20:29:00Z",
+        "LastModifiedDate": "2018-04-12T01:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2015-8985",
@@ -5457,7 +4827,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
             "V2Score": 4.3,
             "V3Score": 5.9
           },
@@ -5474,7 +4844,7 @@
           "https://security.gentoo.org/glsa/201908-06"
         ],
         "PublishedDate": "2017-03-20T16:59:00Z",
-        "LastModifiedDate": "2020-03-31T14:47:00Z"
+        "LastModifiedDate": "2019-08-15T18:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-10228",
@@ -5545,7 +4915,6 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
           "http://www.securityfocus.com/bid/106672",
           "https://access.redhat.com/errata/RHSA-2019:2118",
-          "https://access.redhat.com/errata/RHSA-2019:3513",
           "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
@@ -5596,7 +4965,6 @@
         "VulnerabilityID": "CVE-2017-12133",
         "PkgName": "multiarch-support",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -5625,60 +4993,90 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SYZL6PAKI73XYRJYL5VLDGA4FFGWMB7A/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=21115",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=d42eed4a044e5e10dfb885cf9891c2518a72a491",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1",
           "https://www.securityfocus.com/bid/100679"
         ],
         "PublishedDate": "2017-09-07T13:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-10-03T00:03:00Z"
       },
       {
-        "VulnerabilityID": "CVE-2019-19126",
+        "VulnerabilityID": "CVE-2018-20796",
         "PkgName": "multiarch-support",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
         "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-19126",
-        "Title": "glibc: LD_PREFER_MAP_32BIT_EXEC not ignored in setuid binaries",
-        "Description": "On the x86-64 architecture, the GNU C Library (aka glibc) before 2.31 fails to ignore the LD_PREFER_MAP_32BIT_EXEC environment variable during program execution after a security transition, allowing local attackers to restrict the possible mapping addresses for loaded libraries and thus bypass ASLR for a setuid program.",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-20796",
+        "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
         "Severity": "LOW",
         "CweIDs": [
-          "CWE-200"
+          "CWE-674"
         ],
         "CVSS": {
           "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N",
-            "V2Score": 2.1,
-            "V3Score": 3.3
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
           },
           "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
-            "V3Score": 2.9
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "V3Score": 5.3
           }
         },
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-19126.html",
-          "http://linux.oracle.com/errata/ELSA-2020-1828.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19126",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4FQ5LC6JOYSOYFPRUZ4S45KL6IP3RPPZ/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZFJ5E7NWOL6ROE5QVICHKIOUGCPFJVUH/",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25204",
-          "https://sourceware.org/ml/libc-alpha/2019-11/msg00649.html",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
+          "http://www.securityfocus.com/bid/107160",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20796",
+          "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34141",
+          "https://lists.gnu.org/archive/html/bug-gnulib/2019-01/msg00108.html",
+          "https://security.netapp.com/advisory/ntap-20190315-0002/",
+          "https://support.f5.com/csp/article/K26346590?utm_source=f5support\u0026amp;utm_medium=RSS"
         ],
-        "PublishedDate": "2019-11-19T22:15:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "PublishedDate": "2019-02-26T02:29:00Z",
+        "LastModifiedDate": "2019-11-05T21:15:00Z"
+      },
+      {
+        "VulnerabilityID": "CVE-2019-7309",
+        "PkgName": "multiarch-support",
+        "InstalledVersion": "2.23-0ubuntu11",
+        "Layer": {
+          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
+        },
+        "SeveritySource": "ubuntu",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-7309",
+        "Title": "glibc: memcmp function incorrectly returns zero",
+        "Description": "In the GNU C Library (aka glibc or libc6) through 2.29, the memcmp function for the x32 architecture can incorrectly return zero (indicating that the inputs are equal) because the RDX most significant bit is mishandled.",
+        "Severity": "LOW",
+        "CweIDs": [
+          "CWE-119"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L",
+            "V3Score": 3.3
+          }
+        },
+        "References": [
+          "http://www.securityfocus.com/bid/106835",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7309",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24155",
+          "https://sourceware.org/ml/libc-alpha/2019-02/msg00041.html",
+          "https://sourceware.org/ml/libc-alpha/2019-02/msg00063.html"
+        ],
+        "PublishedDate": "2019-02-03T02:29:00Z",
+        "LastModifiedDate": "2019-02-27T18:07:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-9169",
         "PkgName": "multiarch-support",
         "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
@@ -5708,139 +5106,48 @@
           "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34140",
           "https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34142",
           "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10278",
-          "https://security.gentoo.org/glsa/202006-04",
           "https://security.netapp.com/advisory/ntap-20190315-0002/",
           "https://sourceware.org/bugzilla/show_bug.cgi?id=24114",
           "https://sourceware.org/git/gitweb.cgi?p=glibc.git;a=commit;h=583dd860d5b833037175247230a328f0050dbfe9",
-          "https://support.f5.com/csp/article/K54823184",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
+          "https://support.f5.com/csp/article/K54823184"
         ],
         "PublishedDate": "2019-02-26T02:29:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
+        "LastModifiedDate": "2019-04-16T05:29:00Z"
       },
       {
-        "VulnerabilityID": "CVE-2020-10029",
-        "PkgName": "multiarch-support",
-        "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10029",
-        "Title": "glibc: stack corruption from crafted input in cosl, sinl, sincosl, and tanl functions",
-        "Description": "The GNU C Library (aka glibc or libc6) before 2.32 could overflow an on-stack buffer during range reduction if an input to an 80-bit long double function contains a non-canonical bit pattern, a seen when passing a 0x5d414141414141410000 value to sinl on x86 targets. This is related to sysdeps/ieee754/ldbl-96/e_rem_pio2l.c.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-119"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
-            "V2Score": 2.1,
-            "V3Score": 5.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:H",
-            "V3Score": 6.2
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00033.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10029",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/23N76M3EDP2GIW4GOIQRYTKRE7PPBRB2/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JZTFUD5VH2GU3YOXA2KBQSBIDZRDWNZ3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VU5JJGENOK7K4X5RYAA5PL647C6HD22E/",
-          "https://security.gentoo.org/glsa/202006-04",
-          "https://security.netapp.com/advisory/ntap-20200327-0003/",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25487",
-          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;a=commit;h=9333498794cde1d5cca518badf79533a24114b6f",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
-        ],
-        "PublishedDate": "2020-03-04T15:15:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-1752",
-        "PkgName": "multiarch-support",
-        "InstalledVersion": "2.23-0ubuntu11",
-        "FixedVersion": "2.23-0ubuntu11.2",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1752",
-        "Title": "glibc: use-after-free in glob() function when expanding ~user",
-        "Description": "A use-after-free vulnerability introduced in glibc upstream version 2.14 was found in the way the tilde expansion was carried out. Directory paths containing an initial tilde followed by a valid username were affected by this issue. A local attacker could exploit this flaw by creating a specially crafted path that, when processed by the glob function, would potentially lead to arbitrary code execution. This was fixed in version 2.32.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-416"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:H/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
-            "V2Score": 3.7,
-            "V3Score": 7
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
-            "V3Score": 7
-          }
-        },
-        "References": [
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1752",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1752",
-          "https://security.netapp.com/advisory/ntap-20200511-0005/",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25414",
-          "https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=ddc650e9b3dc916eab417ce9f79e67337b05035c",
-          "https://usn.ubuntu.com/4416-1/",
-          "https://usn.ubuntu.com/usn/usn-4416-1"
-        ],
-        "PublishedDate": "2020-04-30T17:15:00Z",
-        "LastModifiedDate": "2020-07-09T20:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-6096",
+        "VulnerabilityID": "CVE-2019-9192",
         "PkgName": "multiarch-support",
         "InstalledVersion": "2.23-0ubuntu11",
         "Layer": {
           "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
         },
         "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-6096",
-        "Title": "glibc: signed comparison vulnerability in the ARMv7 memcpy function",
-        "Description": "An exploitable signed comparison vulnerability exists in the ARMv7 memcpy() implementation of GNU glibc 2.30.9000. Calling memcpy() (on ARMv7 targets that utilize the GNU glibc implementation) with a negative value for the 'num' parameter results in a signed comparison vulnerability. If an attacker underflows the 'num' parameter to memcpy(), this vulnerability could lead to undefined behavior such as writing to out-of-bounds memory and potentially remote code execution. Furthermore, this memcpy() implementation allows for program execution to continue in scenarios where a segmentation fault or crash should have occurred. The dangers occur in that subsequent execution and iterations of this code will be executed with this corrupted data.",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9192",
+        "Title": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c",
+        "Description": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
         "Severity": "LOW",
         "CweIDs": [
-          "CWE-191"
+          "CWE-399"
         ],
         "CVSS": {
           "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 6.8,
-            "V3Score": 8.1
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V2Score": 5,
+            "V3Score": 7.5
           },
           "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
-            "V3Score": 8.1
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:L",
+            "V3Score": 2.8
           }
         },
         "References": [
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-6096",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SPYXTDOOB4PQGTYAMZAZNJIB3FF6YQXI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/URXOIA2LDUKHQXK4BE55BQBRI6ZZG3Y6/",
-          "https://sourceware.org/bugzilla/attachment.cgi?id=12334",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=25620",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2020-1019",
-          "https://www.talosintelligence.com/vulnerability_reports/TALOS-2020-1019"
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9192",
+          "https://sourceware.org/bugzilla/show_bug.cgi?id=24269",
+          "https://support.f5.com/csp/article/K26346590?utm_source=f5support\u0026amp;utm_medium=RSS"
         ],
-        "PublishedDate": "2020-04-01T22:15:00Z",
-        "LastModifiedDate": "2020-08-02T03:15:00Z"
+        "PublishedDate": "2019-02-26T18:29:00Z",
+        "LastModifiedDate": "2019-11-05T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2017-10684",
@@ -6282,9 +5589,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-            "V2Score": 4.6,
-            "V3Score": 5.3
+            "V2Score": 4.6
           },
           "redhat": {
             "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
@@ -6319,9 +5624,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:L",
-            "V2Score": 5.8,
-            "V3Score": 5.4
+            "V2Score": 5.8
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
@@ -6778,9 +6081,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-            "V2Score": 4.6,
-            "V3Score": 5.3
+            "V2Score": 4.6
           },
           "redhat": {
             "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
@@ -6815,9 +6116,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:L",
-            "V2Score": 5.8,
-            "V3Score": 5.4
+            "V2Score": 5.8
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
@@ -6852,9 +6151,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:M/Au:N/C:N/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:N/I:H/A:N",
-            "V2Score": 3.3,
-            "V3Score": 4.7
+            "V2Score": 3.3
           },
           "redhat": {
             "V2Vector": "AV:L/AC:H/Au:N/C:P/I:P/A:P",
@@ -6946,135 +6243,6 @@
         "LastModifiedDate": "2019-10-03T00:03:00Z"
       },
       {
-        "VulnerabilityID": "CVE-2020-10543",
-        "PkgName": "perl-base",
-        "InstalledVersion": "5.22.1-9ubuntu0.6",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10543",
-        "Title": "perl: heap-based buffer overflow in regular expression compiler leads to DoS",
-        "Description": "Perl before 5.30.3 on 32-bit platforms allows a heap-based buffer overflow because nested regular expression quantifiers have an integer overflow.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:H",
-            "V2Score": 6.4,
-            "V3Score": 8.2
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:H",
-            "V3Score": 8.2
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00044.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10543",
-          "https://github.com/Perl/perl5/blob/blead/pod/perl5303delta.pod",
-          "https://github.com/Perl/perl5/compare/v5.30.2...v5.30.3",
-          "https://github.com/perl/perl5/commit/897d1f7fd515b828e4b198d8b8bef76c6faf03ed",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IN3TTBO5KSGWE5IRIKDJ5JSQRH7ANNXE/",
-          "https://metacpan.org/pod/release/XSAWYERX/perl-5.28.3/pod/perldelta.pod",
-          "https://metacpan.org/pod/release/XSAWYERX/perl-5.30.3/pod/perldelta.pod",
-          "https://security.gentoo.org/glsa/202006-03",
-          "https://security.netapp.com/advisory/ntap-20200611-0001/"
-        ],
-        "PublishedDate": "2020-06-05T14:15:00Z",
-        "LastModifiedDate": "2020-06-23T02:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-10878",
-        "PkgName": "perl-base",
-        "InstalledVersion": "5.22.1-9ubuntu0.6",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10878",
-        "Title": "perl: corruption of intermediate language state of compiled regular expression due to integer overflow leads to DoS",
-        "Description": "Perl before 5.30.3 has an integer overflow related to mishandling of a \"PL_regkind[OP(n)] == NOTHING\" situation. A crafted regular expression could lead to malformed bytecode with a possibility of instruction injection.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-190"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:H",
-            "V2Score": 7.5,
-            "V3Score": 8.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:H",
-            "V3Score": 8.6
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00044.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10878",
-          "https://github.com/Perl/perl5/blob/blead/pod/perl5303delta.pod",
-          "https://github.com/Perl/perl5/compare/v5.30.2...v5.30.3",
-          "https://github.com/perl/perl5/commit/0a320d753fe7fca03df259a4dfd8e641e51edaa8",
-          "https://github.com/perl/perl5/commit/3295b48defa0f8570114877b063fe546dd348b3c",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IN3TTBO5KSGWE5IRIKDJ5JSQRH7ANNXE/",
-          "https://metacpan.org/pod/release/XSAWYERX/perl-5.28.3/pod/perldelta.pod",
-          "https://metacpan.org/pod/release/XSAWYERX/perl-5.30.3/pod/perldelta.pod",
-          "https://security.gentoo.org/glsa/202006-03",
-          "https://security.netapp.com/advisory/ntap-20200611-0001/"
-        ],
-        "PublishedDate": "2020-06-05T14:15:00Z",
-        "LastModifiedDate": "2020-06-23T02:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-12723",
-        "PkgName": "perl-base",
-        "InstalledVersion": "5.22.1-9ubuntu0.6",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-12723",
-        "Title": "perl: corruption of intermediate language state of compiled regular expression due to recursive S_study_chunk() calls leads to DoS",
-        "Description": "regcomp.c in Perl before 5.30.3 allows a buffer overflow via a crafted regular expression because of recursive S_study_chunk calls.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-120"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-            "V2Score": 5,
-            "V3Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-            "V3Score": 7.5
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-06/msg00044.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-12723",
-          "https://github.com/Perl/perl5/blob/blead/pod/perl5303delta.pod",
-          "https://github.com/Perl/perl5/compare/v5.30.2...v5.30.3",
-          "https://github.com/Perl/perl5/issues/16947",
-          "https://github.com/Perl/perl5/issues/17743",
-          "https://github.com/perl/perl5/commit/66bbb51b93253a3f87d11c2695cfb7bdb782184a",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IN3TTBO5KSGWE5IRIKDJ5JSQRH7ANNXE/",
-          "https://metacpan.org/pod/release/XSAWYERX/perl-5.28.3/pod/perldelta.pod",
-          "https://metacpan.org/pod/release/XSAWYERX/perl-5.30.3/pod/perldelta.pod",
-          "https://security.gentoo.org/glsa/202006-03",
-          "https://security.netapp.com/advisory/ntap-20200611-0001/"
-        ],
-        "PublishedDate": "2020-06-05T15:15:00Z",
-        "LastModifiedDate": "2020-06-23T02:15:00Z"
-      },
-      {
         "VulnerabilityID": "CVE-2018-20839",
         "PkgName": "systemd",
         "InstalledVersion": "229-4ubuntu21.22",
@@ -7124,18 +6292,9 @@
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1712",
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
-        "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
+        "Description": "A heap use-after-free vulnerability was found in systemd, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-416"
-        ],
         "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 4.6,
-            "V3Score": 7.8
-          },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
             "V3Score": 7.8
@@ -7144,17 +6303,9 @@
         "References": [
           "http://linux.oracle.com/cve/CVE-2020-1712.html",
           "http://linux.oracle.com/errata/ELSA-2020-0575.html",
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1712",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1712",
-          "https://github.com/systemd/systemd/commit/1068447e6954dc6ce52f099ed174c442cb89ed54",
-          "https://github.com/systemd/systemd/commit/637486261528e8aa3da9f26a4487dc254f4b7abb",
-          "https://github.com/systemd/systemd/commit/bc130b6858327b382b07b3985cf48e2aa9016b2d",
-          "https://github.com/systemd/systemd/commit/ea0d0ede03c6f18dbc5036c5e9cccf97e415ccc2",
-          "https://usn.ubuntu.com/usn/usn-4269-1",
-          "https://www.openwall.com/lists/oss-security/2020/02/05/1"
-        ],
-        "PublishedDate": "2020-03-31T17:15:00Z",
-        "LastModifiedDate": "2020-04-10T15:42:00Z"
+          "https://usn.ubuntu.com/usn/usn-4269-1"
+        ]
       },
       {
         "VulnerabilityID": "CVE-2018-16888",
@@ -7193,7 +6344,6 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16888",
           "https://lists.apache.org/thread.html/5960a34a524848cd722fd7ab7e2227eac10107b0f90d9d1e9c3caa74@%3Cuser.cassandra.apache.org%3E",
           "https://security.netapp.com/advisory/ntap-20190307-0007/",
-          "https://usn.ubuntu.com/4269-1/",
           "https://usn.ubuntu.com/usn/usn-4269-1"
         ],
         "PublishedDate": "2019-01-14T22:29:00Z",
@@ -7209,7 +6359,7 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-20386",
-        "Title": "systemd: memory leak in button_open() in login/logind-button.c when udev events are received",
+        "Title": "systemd: a memory leak was discovered in button_open in login/logind-button.c when udev events are received",
         "Description": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur.",
         "Severity": "LOW",
         "CweIDs": [
@@ -7218,9 +6368,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
-            "V2Score": 2.1,
-            "V3Score": 2.4
+            "V2Score": 2.1
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
@@ -7231,49 +6379,12 @@
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00014.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-20386",
           "https://github.com/systemd/systemd/commit/b2774a3ae692113e1f47a336a6c09bac9cfb49ad",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HZPCOMW5X6IZZXASCDD2CNW2DLF3YADC/",
           "https://security.netapp.com/advisory/ntap-20200210-0002/",
           "https://usn.ubuntu.com/4269-1/",
           "https://usn.ubuntu.com/usn/usn-4269-1"
         ],
         "PublishedDate": "2020-01-21T06:15:00Z",
         "LastModifiedDate": "2020-02-10T11:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-13776",
-        "PkgName": "systemd",
-        "InstalledVersion": "229-4ubuntu21.22",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-13776",
-        "Title": "systemd: mishandles numerical usernames beginning with decimal digits or 0x followed by hexadecimal digits",
-        "Description": "systemd through v245 mishandles numerical usernames such as ones composed of decimal digits or 0x followed by hex digits, as demonstrated by use of root privileges when privileges of the 0x0 user account were intended. NOTE: this issue exists because of an incomplete fix for CVE-2017-1000082.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-20"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:H/Au:N/C:C/I:C/A:C",
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:H/I:H/A:H",
-            "V2Score": 6.2,
-            "V3Score": 6.7
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:H/I:H/A:H",
-            "V3Score": 6.7
-          }
-        },
-        "References": [
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13776",
-          "https://github.com/systemd/systemd/issues/15985",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IYGLFEKG45EYBJ7TPQMLWROWPTZBEU63/",
-          "https://security.netapp.com/advisory/ntap-20200611-0003/"
-        ],
-        "PublishedDate": "2020-06-03T03:15:00Z",
-        "LastModifiedDate": "2020-07-30T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-20839",
@@ -7325,18 +6436,9 @@
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-1712",
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
-        "Description": "A heap use-after-free vulnerability was found in systemd before version v245-rc1, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
+        "Description": "A heap use-after-free vulnerability was found in systemd, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-416"
-        ],
         "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 4.6,
-            "V3Score": 7.8
-          },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
             "V3Score": 7.8
@@ -7345,17 +6447,9 @@
         "References": [
           "http://linux.oracle.com/cve/CVE-2020-1712.html",
           "http://linux.oracle.com/errata/ELSA-2020-0575.html",
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2020-1712",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1712",
-          "https://github.com/systemd/systemd/commit/1068447e6954dc6ce52f099ed174c442cb89ed54",
-          "https://github.com/systemd/systemd/commit/637486261528e8aa3da9f26a4487dc254f4b7abb",
-          "https://github.com/systemd/systemd/commit/bc130b6858327b382b07b3985cf48e2aa9016b2d",
-          "https://github.com/systemd/systemd/commit/ea0d0ede03c6f18dbc5036c5e9cccf97e415ccc2",
-          "https://usn.ubuntu.com/usn/usn-4269-1",
-          "https://www.openwall.com/lists/oss-security/2020/02/05/1"
-        ],
-        "PublishedDate": "2020-03-31T17:15:00Z",
-        "LastModifiedDate": "2020-04-10T15:42:00Z"
+          "https://usn.ubuntu.com/usn/usn-4269-1"
+        ]
       },
       {
         "VulnerabilityID": "CVE-2018-16888",
@@ -7394,7 +6488,6 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16888",
           "https://lists.apache.org/thread.html/5960a34a524848cd722fd7ab7e2227eac10107b0f90d9d1e9c3caa74@%3Cuser.cassandra.apache.org%3E",
           "https://security.netapp.com/advisory/ntap-20190307-0007/",
-          "https://usn.ubuntu.com/4269-1/",
           "https://usn.ubuntu.com/usn/usn-4269-1"
         ],
         "PublishedDate": "2019-01-14T22:29:00Z",
@@ -7410,7 +6503,7 @@
         },
         "SeveritySource": "ubuntu",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-20386",
-        "Title": "systemd: memory leak in button_open() in login/logind-button.c when udev events are received",
+        "Title": "systemd: a memory leak was discovered in button_open in login/logind-button.c when udev events are received",
         "Description": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur.",
         "Severity": "LOW",
         "CweIDs": [
@@ -7419,9 +6512,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
-            "V2Score": 2.1,
-            "V3Score": 2.4
+            "V2Score": 2.1
           },
           "redhat": {
             "V3Vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
@@ -7432,49 +6523,12 @@
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00014.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-20386",
           "https://github.com/systemd/systemd/commit/b2774a3ae692113e1f47a336a6c09bac9cfb49ad",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HZPCOMW5X6IZZXASCDD2CNW2DLF3YADC/",
           "https://security.netapp.com/advisory/ntap-20200210-0002/",
           "https://usn.ubuntu.com/4269-1/",
           "https://usn.ubuntu.com/usn/usn-4269-1"
         ],
         "PublishedDate": "2020-01-21T06:15:00Z",
         "LastModifiedDate": "2020-02-10T11:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-13776",
-        "PkgName": "systemd-sysv",
-        "InstalledVersion": "229-4ubuntu21.22",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-13776",
-        "Title": "systemd: mishandles numerical usernames beginning with decimal digits or 0x followed by hexadecimal digits",
-        "Description": "systemd through v245 mishandles numerical usernames such as ones composed of decimal digits or 0x followed by hex digits, as demonstrated by use of root privileges when privileges of the 0x0 user account were intended. NOTE: this issue exists because of an incomplete fix for CVE-2017-1000082.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-20"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:H/Au:N/C:C/I:C/A:C",
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:H/I:H/A:H",
-            "V2Score": 6.2,
-            "V3Score": 6.7
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:H/I:H/A:H",
-            "V3Score": 6.7
-          }
-        },
-        "References": [
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13776",
-          "https://github.com/systemd/systemd/issues/15985",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IYGLFEKG45EYBJ7TPQMLWROWPTZBEU63/",
-          "https://security.netapp.com/advisory/ntap-20200611-0003/"
-        ],
-        "PublishedDate": "2020-06-03T03:15:00Z",
-        "LastModifiedDate": "2020-07-30T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-20482",
@@ -7517,43 +6571,6 @@
         ],
         "PublishedDate": "2018-12-26T18:29:00Z",
         "LastModifiedDate": "2019-10-03T00:03:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-9923",
-        "PkgName": "tar",
-        "InstalledVersion": "1.28-2.1ubuntu0.1",
-        "Layer": {
-          "DiffID": "sha256:f749b9b0fb213e9897417a985aaa9753d41bff474e1d0c0d1d266c4512eaf031"
-        },
-        "SeveritySource": "ubuntu",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9923",
-        "Title": "tar: null-pointer dereference in pax_decode_header in sparse.c",
-        "Description": "pax_decode_header in sparse.c in GNU Tar before 1.32 had a NULL pointer dereference when parsing certain archives that have malformed extended headers.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-476"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
-            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-            "V2Score": 5,
-            "V3Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:L",
-            "V3Score": 3.3
-          }
-        },
-        "References": [
-          "http://git.savannah.gnu.org/cgit/tar.git/commit/?id=cb07844454d8cc9fb21f53ace75975f91185a120",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00077.html",
-          "http://savannah.gnu.org/bugs/?55369",
-          "https://bugs.launchpad.net/ubuntu/+source/tar/+bug/1810241",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9923"
-        ],
-        "PublishedDate": "2019-03-22T08:29:00Z",
-        "LastModifiedDate": "2019-04-24T19:02:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-2779",
@@ -7690,23 +6707,18 @@
           "https://docs.google.com/document/d/10i1KZS5so8xDqH2rplRa2xet0tyTvvJlLbQQmZIUIKE/edit#heading=h.t13tvnx4loq7",
           "https://github.com/madler/zlib/commit/6a043145ca6e9c55184013841a67b2fef87e44c0",
           "https://lists.debian.org/debian-lts-announce/2019/03/msg00027.html",
-          "https://lists.debian.org/debian-lts-announce/2020/01/msg00030.html",
           "https://security.gentoo.org/glsa/201701-56",
-          "https://security.gentoo.org/glsa/202007-54",
           "https://support.apple.com/HT208112",
           "https://support.apple.com/HT208113",
           "https://support.apple.com/HT208115",
           "https://support.apple.com/HT208144",
-          "https://usn.ubuntu.com/4246-1/",
-          "https://usn.ubuntu.com/4292-1/",
           "https://usn.ubuntu.com/usn/usn-4246-1",
           "https://usn.ubuntu.com/usn/usn-4292-1",
           "https://wiki.mozilla.org/MOSS/Secure_Open_Source/Completed#zlib",
-          "https://wiki.mozilla.org/images/0/09/Zlib-report.pdf",
-          "https://www.oracle.com/security-alerts/cpujul2020.html"
+          "https://wiki.mozilla.org/images/0/09/Zlib-report.pdf"
         ],
         "PublishedDate": "2017-05-23T04:29:00Z",
-        "LastModifiedDate": "2020-07-28T21:15:00Z"
+        "LastModifiedDate": "2019-03-25T00:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-9841",
@@ -7761,24 +6773,19 @@
           "https://docs.google.com/document/d/10i1KZS5so8xDqH2rplRa2xet0tyTvvJlLbQQmZIUIKE/edit#heading=h.t13tvnx4loq7",
           "https://github.com/madler/zlib/commit/9aaec95e82117c1cb0f9624264c3618fc380cecb",
           "https://lists.debian.org/debian-lts-announce/2019/03/msg00027.html",
-          "https://lists.debian.org/debian-lts-announce/2020/01/msg00030.html",
           "https://security.gentoo.org/glsa/201701-56",
-          "https://security.gentoo.org/glsa/202007-54",
           "https://security.netapp.com/advisory/ntap-20171019-0001/",
           "https://support.apple.com/HT208112",
           "https://support.apple.com/HT208113",
           "https://support.apple.com/HT208115",
           "https://support.apple.com/HT208144",
-          "https://usn.ubuntu.com/4246-1/",
-          "https://usn.ubuntu.com/4292-1/",
           "https://usn.ubuntu.com/usn/usn-4246-1",
           "https://usn.ubuntu.com/usn/usn-4292-1",
           "https://wiki.mozilla.org/MOSS/Secure_Open_Source/Completed#zlib",
-          "https://wiki.mozilla.org/images/0/09/Zlib-report.pdf",
-          "https://www.oracle.com/security-alerts/cpujul2020.html"
+          "https://wiki.mozilla.org/images/0/09/Zlib-report.pdf"
         ],
         "PublishedDate": "2017-05-23T04:29:00Z",
-        "LastModifiedDate": "2020-07-28T21:15:00Z"
+        "LastModifiedDate": "2019-03-25T00:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-9842",
@@ -7832,23 +6839,18 @@
           "https://docs.google.com/document/d/10i1KZS5so8xDqH2rplRa2xet0tyTvvJlLbQQmZIUIKE/edit#heading=h.t13tvnx4loq7",
           "https://github.com/madler/zlib/commit/e54e1299404101a5a9d0cf5e45512b543967f958",
           "https://lists.debian.org/debian-lts-announce/2019/03/msg00027.html",
-          "https://lists.debian.org/debian-lts-announce/2020/01/msg00030.html",
           "https://security.gentoo.org/glsa/201701-56",
-          "https://security.gentoo.org/glsa/202007-54",
           "https://support.apple.com/HT208112",
           "https://support.apple.com/HT208113",
           "https://support.apple.com/HT208115",
           "https://support.apple.com/HT208144",
-          "https://usn.ubuntu.com/4246-1/",
-          "https://usn.ubuntu.com/4292-1/",
           "https://usn.ubuntu.com/usn/usn-4246-1",
           "https://usn.ubuntu.com/usn/usn-4292-1",
           "https://wiki.mozilla.org/MOSS/Secure_Open_Source/Completed#zlib",
-          "https://wiki.mozilla.org/images/0/09/Zlib-report.pdf",
-          "https://www.oracle.com/security-alerts/cpujul2020.html"
+          "https://wiki.mozilla.org/images/0/09/Zlib-report.pdf"
         ],
         "PublishedDate": "2017-05-23T04:29:00Z",
-        "LastModifiedDate": "2020-07-28T21:15:00Z"
+        "LastModifiedDate": "2019-03-25T00:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2016-9843",
@@ -7903,24 +6905,19 @@
           "https://docs.google.com/document/d/10i1KZS5so8xDqH2rplRa2xet0tyTvvJlLbQQmZIUIKE/edit#heading=h.t13tvnx4loq7",
           "https://github.com/madler/zlib/commit/d1d577490c15a0c6862473d7576352a9f18ef811",
           "https://lists.debian.org/debian-lts-announce/2019/03/msg00027.html",
-          "https://lists.debian.org/debian-lts-announce/2020/01/msg00030.html",
           "https://security.gentoo.org/glsa/201701-56",
-          "https://security.gentoo.org/glsa/202007-54",
           "https://security.netapp.com/advisory/ntap-20181018-0002/",
           "https://support.apple.com/HT208112",
           "https://support.apple.com/HT208113",
           "https://support.apple.com/HT208115",
           "https://support.apple.com/HT208144",
-          "https://usn.ubuntu.com/4246-1/",
-          "https://usn.ubuntu.com/4292-1/",
           "https://usn.ubuntu.com/usn/usn-4246-1",
           "https://usn.ubuntu.com/usn/usn-4292-1",
           "https://wiki.mozilla.org/MOSS/Secure_Open_Source/Completed#zlib",
-          "https://wiki.mozilla.org/images/0/09/Zlib-report.pdf",
-          "https://www.oracle.com/security-alerts/cpujul2020.html"
+          "https://wiki.mozilla.org/images/0/09/Zlib-report.pdf"
         ],
         "PublishedDate": "2017-05-23T04:29:00Z",
-        "LastModifiedDate": "2020-07-28T21:15:00Z"
+        "LastModifiedDate": "2019-03-25T00:29:00Z"
       }
     ]
   }

@@ -4,106 +4,57 @@
     "Type": "oracle",
     "Vulnerabilities": [
       {
-        "VulnerabilityID": "CVE-2019-5482",
-        "PkgName": "curl",
-        "InstalledVersion": "7.19.7-53.0.2.el6_9",
-        "FixedVersion": "7.19.7-54.0.2.el6_10",
+        "VulnerabilityID": "CVE-2019-3862",
+        "PkgName": "libssh2",
+        "InstalledVersion": "1.4.2-2.el6_7.1",
+        "FixedVersion": "1.4.2-2.0.1.el6_7.1",
         "Layer": {
           "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
         },
         "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5482",
-        "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
-        "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
-        "Severity": "HIGH",
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3862",
+        "Title": "libssh2: Out-of-bounds memory comparison with specially crafted message channel request",
+        "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit status message and no payload are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
+        "Severity": "CRITICAL",
         "CweIDs": [
-          "CWE-120"
+          "CWE-125"
         ],
         "CVSS": {
           "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 7.5,
-            "V3Score": 9.8
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:H",
+            "V2Score": 6.4,
+            "V3Score": 9.1
           },
           "redhat": {
-            "V3Vector": "CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 6.3
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 7.3
           }
         },
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-5482.html",
-          "http://linux.oracle.com/errata/ELSA-2020-5562.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
-          "https://curl.haxx.se/docs/CVE-2019-5482.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6CI4QQ2RSZX4VCFM76SIWGKY6BY7UWIC/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
-          "https://seclists.org/bugtraq/2020/Feb/36",
-          "https://security.gentoo.org/glsa/202003-29",
-          "https://security.netapp.com/advisory/ntap-20191004-0003/",
-          "https://security.netapp.com/advisory/ntap-20200416-0003/",
-          "https://usn.ubuntu.com/usn/usn-4129-1",
-          "https://usn.ubuntu.com/usn/usn-4129-2",
-          "https://www.debian.org/security/2020/dsa-4633",
-          "https://www.oracle.com/security-alerts/cpuapr2020.html",
-          "https://www.oracle.com/security-alerts/cpujan2020.html"
+          "http://linux.oracle.com/cve/CVE-2019-3862.html",
+          "http://linux.oracle.com/errata/ELSA-2019-4693.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
+          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
+          "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
+          "http://www.openwall.com/lists/oss-security/2019/03/18/3",
+          "http://www.securityfocus.com/bid/107485",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3862",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3862",
+          "https://github.com/libssh2/libssh2/pull/316",
+          "https://libssh2.org/CVE-2019-3862.html",
+          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XCWEA5ZCLKRDUK62QVVYMFWLWKOPX3LO/",
+          "https://seclists.org/bugtraq/2019/Apr/25",
+          "https://seclists.org/bugtraq/2019/Mar/25",
+          "https://security.netapp.com/advisory/ntap-20190327-0005/",
+          "https://www.broadcom.com/support/fibre-channel-networking/security-advisories/brocade-security-advisory-2019-767",
+          "https://www.debian.org/security/2019/dsa-4431",
+          "https://www.libssh2.org/CVE-2019-3862.html"
         ],
-        "PublishedDate": "2019-09-16T19:15:00Z",
-        "LastModifiedDate": "2019-09-18T00:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-5482",
-        "PkgName": "libcurl",
-        "InstalledVersion": "7.19.7-53.0.2.el6_9",
-        "FixedVersion": "7.19.7-54.0.2.el6_10",
-        "Layer": {
-          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
-        },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5482",
-        "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
-        "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
-        "Severity": "HIGH",
-        "CweIDs": [
-          "CWE-120"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-            "V2Score": 7.5,
-            "V3Score": 9.8
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 6.3
-          }
-        },
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2019-5482.html",
-          "http://linux.oracle.com/errata/ELSA-2020-5562.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
-          "https://curl.haxx.se/docs/CVE-2019-5482.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6CI4QQ2RSZX4VCFM76SIWGKY6BY7UWIC/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
-          "https://seclists.org/bugtraq/2020/Feb/36",
-          "https://security.gentoo.org/glsa/202003-29",
-          "https://security.netapp.com/advisory/ntap-20191004-0003/",
-          "https://security.netapp.com/advisory/ntap-20200416-0003/",
-          "https://usn.ubuntu.com/usn/usn-4129-1",
-          "https://usn.ubuntu.com/usn/usn-4129-2",
-          "https://www.debian.org/security/2020/dsa-4633",
-          "https://www.oracle.com/security-alerts/cpuapr2020.html",
-          "https://www.oracle.com/security-alerts/cpujan2020.html"
-        ],
-        "PublishedDate": "2019-09-16T19:15:00Z",
-        "LastModifiedDate": "2019-09-18T00:15:00Z"
+        "PublishedDate": "2019-03-21T16:01:00Z",
+        "LastModifiedDate": "2019-04-15T12:31:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3855",
@@ -139,32 +90,22 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
-          "http://seclists.org/fulldisclosure/2019/Sep/42",
           "http://www.openwall.com/lists/oss-security/2019/03/18/3",
           "http://www.securityfocus.com/bid/107485",
           "https://access.redhat.com/errata/RHSA-2019:0679",
           "https://access.redhat.com/errata/RHSA-2019:1175",
-          "https://access.redhat.com/errata/RHSA-2019:1652",
-          "https://access.redhat.com/errata/RHSA-2019:1791",
-          "https://access.redhat.com/errata/RHSA-2019:1943",
-          "https://access.redhat.com/errata/RHSA-2019:2399",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3855",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3855",
           "https://github.com/libssh2/libssh2/pull/315",
           "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6LUNHPW64IGCASZ4JQ2J5KDXNZN53DWW/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/M7IF3LNHOA75O4WZWIHJLIRMA5LJUED3/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XCWEA5ZCLKRDUK62QVVYMFWLWKOPX3LO/",
           "https://seclists.org/bugtraq/2019/Apr/25",
           "https://seclists.org/bugtraq/2019/Mar/25",
-          "https://seclists.org/bugtraq/2019/Sep/49",
           "https://security.netapp.com/advisory/ntap-20190327-0005/",
-          "https://support.apple.com/kb/HT210609",
           "https://www.broadcom.com/support/fibre-channel-networking/security-advisories/brocade-security-advisory-2019-767",
           "https://www.debian.org/security/2019/dsa-4431",
-          "https://www.libssh2.org/CVE-2019-3855.html",
-          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
+          "https://www.libssh2.org/CVE-2019-3855.html"
         ],
         "PublishedDate": "2019-03-21T21:29:00Z",
         "LastModifiedDate": "2019-05-14T21:29:00Z"
@@ -181,7 +122,7 @@
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3856",
         "Title": "libssh2: Integer overflow in keyboard interactive handling resulting in out of bounds write",
         "Description": "An integer overflow flaw, which could lead to an out of bounds write, was discovered in libssh2 before 1.8.1 in the way keyboard prompt requests are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "CweIDs": [
           "CWE-190"
         ],
@@ -204,10 +145,6 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
           "https://access.redhat.com/errata/RHSA-2019:1175",
-          "https://access.redhat.com/errata/RHSA-2019:1652",
-          "https://access.redhat.com/errata/RHSA-2019:1791",
-          "https://access.redhat.com/errata/RHSA-2019:1943",
-          "https://access.redhat.com/errata/RHSA-2019:2399",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3856",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3856",
           "https://github.com/libssh2/libssh2/pull/315",
@@ -216,8 +153,7 @@
           "https://seclists.org/bugtraq/2019/Apr/25",
           "https://security.netapp.com/advisory/ntap-20190327-0005/",
           "https://www.debian.org/security/2019/dsa-4431",
-          "https://www.libssh2.org/CVE-2019-3856.html",
-          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
+          "https://www.libssh2.org/CVE-2019-3856.html"
         ],
         "PublishedDate": "2019-03-25T19:29:00Z",
         "LastModifiedDate": "2019-05-14T21:29:00Z"
@@ -234,7 +170,7 @@
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3857",
         "Title": "libssh2: Integer overflow in SSH packet processing channel resulting in out of bounds write",
         "Description": "An integer overflow flaw which could lead to an out of bounds write was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit signal are parsed. A remote attacker who compromises a SSH server may be able to execute code on the client system when a user connects to the server.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "CweIDs": [
           "CWE-190"
         ],
@@ -257,10 +193,6 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
           "https://access.redhat.com/errata/RHSA-2019:1175",
-          "https://access.redhat.com/errata/RHSA-2019:1652",
-          "https://access.redhat.com/errata/RHSA-2019:1791",
-          "https://access.redhat.com/errata/RHSA-2019:1943",
-          "https://access.redhat.com/errata/RHSA-2019:2399",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3857",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3857",
           "https://github.com/libssh2/libssh2/pull/315",
@@ -269,67 +201,10 @@
           "https://seclists.org/bugtraq/2019/Apr/25",
           "https://security.netapp.com/advisory/ntap-20190327-0005/",
           "https://www.debian.org/security/2019/dsa-4431",
-          "https://www.libssh2.org/CVE-2019-3857.html",
-          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
+          "https://www.libssh2.org/CVE-2019-3857.html"
         ],
         "PublishedDate": "2019-03-25T19:29:00Z",
         "LastModifiedDate": "2019-05-14T21:29:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-3862",
-        "PkgName": "libssh2",
-        "InstalledVersion": "1.4.2-2.el6_7.1",
-        "FixedVersion": "1.4.2-2.0.1.el6_7.1",
-        "Layer": {
-          "DiffID": "sha256:a6f189f69066d36aff8efe2602482d28c02de433aef44ee9087b291df7e8fd08"
-        },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3862",
-        "Title": "libssh2: Out-of-bounds memory comparison with specially crafted message channel request",
-        "Description": "An out of bounds read flaw was discovered in libssh2 before 1.8.1 in the way SSH_MSG_CHANNEL_REQUEST packets with an exit status message and no payload are parsed. A remote attacker who compromises a SSH server may be able to cause a Denial of Service or read data in the client memory.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-125"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:P",
-            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:H",
-            "V2Score": 6.4,
-            "V3Score": 9.1
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 7.3
-          }
-        },
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2019-3862.html",
-          "http://linux.oracle.com/errata/ELSA-2019-4693.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00040.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
-          "http://packetstormsecurity.com/files/152136/Slackware-Security-Advisory-libssh2-Updates.html",
-          "http://www.openwall.com/lists/oss-security/2019/03/18/3",
-          "http://www.securityfocus.com/bid/107485",
-          "https://access.redhat.com/errata/RHSA-2019:1884",
-          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3862",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3862",
-          "https://github.com/libssh2/libssh2/pull/316",
-          "https://libssh2.org/CVE-2019-3862.html",
-          "https://lists.debian.org/debian-lts-announce/2019/03/msg00032.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5DK6VO2CEUTAJFYIKWNZKEKYMYR3NO2O/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XCWEA5ZCLKRDUK62QVVYMFWLWKOPX3LO/",
-          "https://seclists.org/bugtraq/2019/Apr/25",
-          "https://seclists.org/bugtraq/2019/Mar/25",
-          "https://security.netapp.com/advisory/ntap-20190327-0005/",
-          "https://www.broadcom.com/support/fibre-channel-networking/security-advisories/brocade-security-advisory-2019-767",
-          "https://www.debian.org/security/2019/dsa-4431",
-          "https://www.libssh2.org/CVE-2019-3862.html",
-          "https://www.oracle.com/security-alerts/cpujan2020.html",
-          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
-        ],
-        "PublishedDate": "2019-03-21T16:01:00Z",
-        "LastModifiedDate": "2019-04-15T12:31:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3863",
@@ -343,7 +218,7 @@
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3863",
         "Title": "libssh2: Integer overflow in user authenticate keyboard interactive allows out-of-bounds writes",
         "Description": "A flaw was found in libssh2 before 1.8.1. A server could send a multiple keyboard interactive response messages whose total length are greater than unsigned char max characters. This value is used as an index to copy memory causing in an out of bounds memory write error.",
-        "Severity": "MEDIUM",
+        "Severity": "HIGH",
         "CweIDs": [
           "CWE-787"
         ],
@@ -366,10 +241,6 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00003.html",
           "https://access.redhat.com/errata/RHSA-2019:0679",
           "https://access.redhat.com/errata/RHSA-2019:1175",
-          "https://access.redhat.com/errata/RHSA-2019:1652",
-          "https://access.redhat.com/errata/RHSA-2019:1791",
-          "https://access.redhat.com/errata/RHSA-2019:1943",
-          "https://access.redhat.com/errata/RHSA-2019:2399",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3863",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3863",
           "https://github.com/libssh2/libssh2/pull/315",
@@ -378,8 +249,7 @@
           "https://seclists.org/bugtraq/2019/Apr/25",
           "https://security.netapp.com/advisory/ntap-20190327-0005/",
           "https://www.debian.org/security/2019/dsa-4431",
-          "https://www.libssh2.org/CVE-2019-3863.html",
-          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
+          "https://www.libssh2.org/CVE-2019-3863.html"
         ],
         "PublishedDate": "2019-03-25T18:29:00Z",
         "LastModifiedDate": "2019-05-14T21:29:00Z"
@@ -403,9 +273,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
-            "V2Score": 6.8,
-            "V3Score": 8.8
+            "V2Score": 6.8
           },
           "redhat": {
             "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
@@ -418,23 +286,16 @@
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
-          "https://access.redhat.com/errata/RHSA-2020:0243",
-          "https://access.redhat.com/errata/RHSA-2020:0466",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
-          "https://security.gentoo.org/glsa/202003-02",
-          "https://security.gentoo.org/glsa/202003-10",
-          "https://security.gentoo.org/glsa/202003-37",
           "https://usn.ubuntu.com/4241-1/",
-          "https://usn.ubuntu.com/4335-1/",
           "https://usn.ubuntu.com/usn/usn-4203-1",
           "https://usn.ubuntu.com/usn/usn-4203-2",
           "https://usn.ubuntu.com/usn/usn-4216-1",
           "https://usn.ubuntu.com/usn/usn-4216-2",
           "https://usn.ubuntu.com/usn/usn-4241-1",
-          "https://usn.ubuntu.com/usn/usn-4335-1",
           "https://www.mozilla.org/en-US/security/advisories/mfsa2019-38/#CVE-2019-11745",
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
@@ -462,9 +323,7 @@
         "CVSS": {
           "nvd": {
             "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
-            "V2Score": 6.8,
-            "V3Score": 8.8
+            "V2Score": 6.8
           },
           "redhat": {
             "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
@@ -477,23 +336,16 @@
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00000.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00001.html",
           "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00006.html",
-          "https://access.redhat.com/errata/RHSA-2020:0243",
-          "https://access.redhat.com/errata/RHSA-2020:0466",
           "https://bugzilla.mozilla.org/show_bug.cgi?id=1586176",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11745",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.44.3_release_notes",
           "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/NSS_3.47.1_release_notes",
-          "https://security.gentoo.org/glsa/202003-02",
-          "https://security.gentoo.org/glsa/202003-10",
-          "https://security.gentoo.org/glsa/202003-37",
           "https://usn.ubuntu.com/4241-1/",
-          "https://usn.ubuntu.com/4335-1/",
           "https://usn.ubuntu.com/usn/usn-4203-1",
           "https://usn.ubuntu.com/usn/usn-4203-2",
           "https://usn.ubuntu.com/usn/usn-4216-1",
           "https://usn.ubuntu.com/usn/usn-4216-2",
           "https://usn.ubuntu.com/usn/usn-4241-1",
-          "https://usn.ubuntu.com/usn/usn-4335-1",
           "https://www.mozilla.org/en-US/security/advisories/mfsa2019-38/#CVE-2019-11745",
           "https://www.mozilla.org/security/advisories/mfsa2019-36/",
           "https://www.mozilla.org/security/advisories/mfsa2019-37/",
@@ -526,8 +378,8 @@
             "V3Score": 5.9
           },
           "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
-            "V3Score": 5.9
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:C/C:H/I:N/A:N",
+            "V3Score": 6.8
           }
         },
         "References": [
@@ -538,43 +390,27 @@
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00046.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00047.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-05/msg00049.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00080.html",
           "http://www.securityfocus.com/bid/107174",
-          "https://access.redhat.com/errata/RHSA-2019:2304",
-          "https://access.redhat.com/errata/RHSA-2019:2437",
-          "https://access.redhat.com/errata/RHSA-2019:2439",
-          "https://access.redhat.com/errata/RHSA-2019:2471",
-          "https://access.redhat.com/errata/RHSA-2019:3929",
-          "https://access.redhat.com/errata/RHSA-2019:3931",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1559",
           "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e9bbefbf0f24c57645e7ad6a5a71ae649d18ac8e",
           "https://github.com/RUB-NDS/TLS-Padding-Oracles",
           "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10282",
           "https://lists.debian.org/debian-lts-announce/2019/03/msg00003.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EWC42UXL5GHTU5G77VKBF6JYUUNGSHOM/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/Y3IVFGSERAZLNJCK35TEM2R4726XIH3Z/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZBEV5QGDRFUZDMNECFXUSN5FMYOZDE4V/",
           "https://security.gentoo.org/glsa/201903-10",
           "https://security.netapp.com/advisory/ntap-20190301-0001/",
           "https://security.netapp.com/advisory/ntap-20190301-0002/",
           "https://security.netapp.com/advisory/ntap-20190423-0002/",
           "https://support.f5.com/csp/article/K18549143",
-          "https://support.f5.com/csp/article/K18549143?utm_source=f5support\u0026amp;utm_medium=RSS",
           "https://usn.ubuntu.com/3899-1/",
-          "https://usn.ubuntu.com/4376-2/",
           "https://usn.ubuntu.com/usn/usn-3899-1",
-          "https://usn.ubuntu.com/usn/usn-4376-2",
           "https://www.debian.org/security/2019/dsa-4400",
           "https://www.openssl.org/news/secadv/20190226.txt",
-          "https://www.oracle.com/security-alerts/cpujan2020.html",
           "https://www.oracle.com/technetwork/security-advisory/cpuapr2019-5072813.html",
-          "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html",
-          "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html",
           "https://www.tenable.com/security/tns-2019-02",
           "https://www.tenable.com/security/tns-2019-03"
         ],
         "PublishedDate": "2019-02-27T23:29:00Z",
-        "LastModifiedDate": "2020-07-22T17:15:00Z"
+        "LastModifiedDate": "2019-05-22T00:29:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-20852",
@@ -606,30 +442,18 @@
         },
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-20852.html",
-          "http://linux.oracle.com/errata/ELSA-2020-1764.html",
+          "http://linux.oracle.com/errata/ELSA-2019-4884.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00071.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00074.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00040.html",
-          "https://access.redhat.com/errata/RHSA-2019:3725",
-          "https://access.redhat.com/errata/RHSA-2019:3948",
           "https://bugs.python.org/issue35121",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20852",
           "https://lists.debian.org/debian-lts-announce/2019/08/msg00022.html",
-          "https://lists.debian.org/debian-lts-announce/2019/08/msg00040.html",
-          "https://lists.debian.org/debian-lts-announce/2020/07/msg00011.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/COATURTCY7G67AYI6UDV5B2JZTBCKIDX/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K7HNVIFMETMFWWWUNTB72KYJYXCZOS5V/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZBTGPBUABGXZ7WH7677OEM3NSP6ZEA76/",
           "https://python-security.readthedocs.io/vuln/cookie-domain-check.html",
-          "https://security.gentoo.org/glsa/202003-26",
-          "https://usn.ubuntu.com/4127-1/",
-          "https://usn.ubuntu.com/4127-2/",
           "https://usn.ubuntu.com/usn/usn-4127-1",
-          "https://usn.ubuntu.com/usn/usn-4127-2",
-          "https://www.oracle.com/security-alerts/cpuapr2020.html"
+          "https://usn.ubuntu.com/usn/usn-4127-2"
         ],
         "PublishedDate": "2019-07-13T21:15:00Z",
-        "LastModifiedDate": "2020-07-15T12:15:00Z"
+        "LastModifiedDate": "2019-08-17T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2018-20852",
@@ -661,30 +485,18 @@
         },
         "References": [
           "http://linux.oracle.com/cve/CVE-2018-20852.html",
-          "http://linux.oracle.com/errata/ELSA-2020-1764.html",
+          "http://linux.oracle.com/errata/ELSA-2019-4884.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00071.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00074.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00040.html",
-          "https://access.redhat.com/errata/RHSA-2019:3725",
-          "https://access.redhat.com/errata/RHSA-2019:3948",
           "https://bugs.python.org/issue35121",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20852",
           "https://lists.debian.org/debian-lts-announce/2019/08/msg00022.html",
-          "https://lists.debian.org/debian-lts-announce/2019/08/msg00040.html",
-          "https://lists.debian.org/debian-lts-announce/2020/07/msg00011.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/COATURTCY7G67AYI6UDV5B2JZTBCKIDX/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K7HNVIFMETMFWWWUNTB72KYJYXCZOS5V/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZBTGPBUABGXZ7WH7677OEM3NSP6ZEA76/",
           "https://python-security.readthedocs.io/vuln/cookie-domain-check.html",
-          "https://security.gentoo.org/glsa/202003-26",
-          "https://usn.ubuntu.com/4127-1/",
-          "https://usn.ubuntu.com/4127-2/",
           "https://usn.ubuntu.com/usn/usn-4127-1",
-          "https://usn.ubuntu.com/usn/usn-4127-2",
-          "https://www.oracle.com/security-alerts/cpuapr2020.html"
+          "https://usn.ubuntu.com/usn/usn-4127-2"
         ],
         "PublishedDate": "2019-07-13T21:15:00Z",
-        "LastModifiedDate": "2020-07-15T12:15:00Z"
+        "LastModifiedDate": "2019-08-17T21:15:00Z"
       }
     ]
   }
