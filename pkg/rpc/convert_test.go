@@ -3,6 +3,7 @@ package rpc
 import (
 	"os"
 	"testing"
+	"time"
 
 	"github.com/aquasecurity/trivy/rpc/common"
 
@@ -14,6 +15,8 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestMain(m *testing.M) {
@@ -182,6 +185,9 @@ func TestConvertToRpcLibraries(t *testing.T) {
 }
 
 func TestConvertToRpcVulns(t *testing.T) {
+	fixedPublishedDate := time.Unix(1257894000, 0)
+	fixedLastModifiedDate := time.Unix(1257894010, 0)
+
 	type args struct {
 		vulns []types.DetectedVulnerability
 	}
@@ -211,7 +217,9 @@ func TestConvertToRpcVulns(t *testing.T) {
 									V3Score:  7.8,
 								},
 							},
-							References: []string{"http://example.com"},
+							References:       []string{"http://example.com"},
+							PublishedDate:    &fixedPublishedDate,
+							LastModifiedDate: &fixedLastModifiedDate,
 						},
 						Layer: ftypes.Layer{
 							Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
@@ -243,7 +251,9 @@ func TestConvertToRpcVulns(t *testing.T) {
 						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 					},
-					PrimaryUrl: "https://avd.aquasec.com/nvd/CVE-2019-0001",
+					PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
+					PublishedDate:    timestamppb.New(fixedPublishedDate),
+					LastModifiedDate: timestamppb.New(fixedLastModifiedDate),
 				},
 			},
 		},
