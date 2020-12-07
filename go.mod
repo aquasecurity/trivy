@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20201129085323-d57dde147ddc
+	github.com/aquasecurity/fanal v0.0.0-20201206082753-c5458c1b727f
 	github.com/aquasecurity/go-dep-parser v0.0.0-20201028043324-889d4a92b8e0
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -15,6 +15,7 @@ require (
 	github.com/cheggaaa/pb/v3 v3.0.3
 	github.com/docker/docker v1.4.2-0.20190924003213-a8608b5b67c7
 	github.com/docker/go-connections v0.4.0
+	github.com/go-redis/redis/v8 v8.4.0
 	github.com/golang/protobuf v1.4.2
 	github.com/google/go-containerregistry v0.0.0-20200331213917-3d03ed9b1ca2
 	github.com/google/go-github/v28 v28.1.1
