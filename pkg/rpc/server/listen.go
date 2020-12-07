@@ -31,7 +31,7 @@ var DBWorkerSuperSet = wire.NewSet(
 )
 
 // ListenAndServe starts Trivy server
-func ListenAndServe(c config.Config, fsCache cache.FSCache) error {
+func ListenAndServe(c config.Config, serverCache cache.Cache) error {
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
 
@@ -46,13 +46,13 @@ func ListenAndServe(c config.Config, fsCache cache.FSCache) error {
 		}
 	}()
 
-	mux := newServeMux(fsCache, dbUpdateWg, requestWg, c.Token, c.TokenHeader)
+	mux := newServeMux(serverCache, dbUpdateWg, requestWg, c.Token, c.TokenHeader)
 	log.Logger.Infof("Listening %s...", c.Listen)
 
 	return http.ListenAndServe(c.Listen, mux)
 }
 
-func newServeMux(fsCache cache.FSCache, dbUpdateWg, requestWg *sync.WaitGroup, token, tokenHeader string) *http.ServeMux {
+func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup, token, tokenHeader string) *http.ServeMux {
 	withWaitGroup := func(base http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Stop processing requests during DB update
@@ -69,10 +69,10 @@ func newServeMux(fsCache cache.FSCache, dbUpdateWg, requestWg *sync.WaitGroup, t
 
 	mux := http.NewServeMux()
 
-	scanHandler := rpcScanner.NewScannerServer(initializeScanServer(fsCache), nil)
+	scanHandler := rpcScanner.NewScannerServer(initializeScanServer(serverCache), nil)
 	mux.Handle(rpcScanner.ScannerPathPrefix, withToken(withWaitGroup(scanHandler), token, tokenHeader))
 
-	layerHandler := rpcCache.NewCacheServer(NewCacheServer(fsCache), nil)
+	layerHandler := rpcCache.NewCacheServer(NewCacheServer(serverCache), nil)
 	mux.Handle(rpcCache.CachePathPrefix, withToken(withWaitGroup(layerHandler), token, tokenHeader))
 
 	// osHandler is for backward compatibility

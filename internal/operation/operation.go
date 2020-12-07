@@ -24,7 +24,7 @@ var SuperSet = wire.NewSet(
 
 // Cache implements the local cache
 type Cache struct {
-	client cache.LocalArtifactCache
+	cache.Cache
 }
 
 // NewCache is the factory method for Cache
@@ -55,7 +55,7 @@ func (c Cache) ClearDB() (err error) {
 // ClearImages clears the cache images
 func (c Cache) ClearImages() error {
 	log.Logger.Info("Removing image caches...")
-	if err := c.client.Clear(); err != nil {
+	if err := c.Clear(); err != nil {
 		return xerrors.Errorf("failed to remove the cache: %w", err)
 	}
 	return nil

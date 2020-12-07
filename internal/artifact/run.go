@@ -32,20 +32,18 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
-	cacheClient, err := cache.NewFSCache(c.CacheDir)
+	cache, err := operation.NewCache(c.CacheBackend)
 	if err != nil {
 		return xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
-	defer cacheClient.Close()
-
-	cacheOperation := operation.NewCache(cacheClient)
+	defer cache.Close()
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
 	if c.Reset {
-		return cacheOperation.Reset()
+		return cache.Reset()
 	}
 	if c.ClearCache {
-		return cacheOperation.ClearImages()
+		return cache.ClearImages()
 	}
 
 	// download the database file
@@ -70,7 +68,7 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
-	scanner, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, c.Timeout)
+	scanner, cleanup, err := initializeScanner(ctx, target, cache, cache, c.Timeout)
 	if err != nil {
 		return xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
