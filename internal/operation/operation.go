@@ -3,10 +3,11 @@ package operation
 import (
 	"context"
 	"os"
+	"strings"
 
-	"github.com/spf13/afero"
-
+	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
+	"github.com/spf13/afero"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
@@ -28,8 +29,19 @@ type Cache struct {
 }
 
 // NewCache is the factory method for Cache
-func NewCache(client cache.LocalArtifactCache) Cache {
-	return Cache{client: client}
+func NewCache(backend string) (Cache, error) {
+	if strings.HasPrefix(backend, "redis://") {
+		log.Logger.Info("Redis cache: %s", backend)
+		redisCache := cache.NewRedisCache(&redis.Options{
+			Addr: strings.TrimPrefix(backend, "redis://"),
+		})
+		return Cache{Cache: redisCache}, nil
+	}
+	fsCache, err := cache.NewFSCache(utils.CacheDir())
+	if err != nil {
+		return Cache{}, xerrors.Errorf("unable to initialize fs cache: %w", err)
+	}
+	return Cache{Cache: fsCache}, nil
 }
 
 // Reset resets the cache
