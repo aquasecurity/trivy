@@ -48,19 +48,18 @@ spec:
             - server
           env:
             - name: "TRIVY_LISTEN"
-              value: ":{{ .Values.service.port | default 4954 }}"
+              value: "0.0.0.0:{{ .Values.service.port | default 4954 }}"
             - name: "TRIVY_CACHE_DIR"
               value: "/home/scanner/.cache/trivy"
             - name: "TRIVY_DEBUG"
               value: {{ .Values.trivy.debugMode | default false | quote }}
-            - name: "TRIVY_VULN_TYPE"
-              value: {{ .Values.trivy.vulnType | default "os,library" | quote }}
-            - name: "TRIVY_SEVERITY"
-              value: {{ .Values.trivy.severity | default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL" | quote }}
-            - name: "TRIVY_IGNORE_UNFIXED"
-              value: {{ .Values.trivy.ignoreUnfixed | default false | quote }}
             - name: "TRIVY_SKIP_UPDATE"
               value: {{ .Values.trivy.skipUpdate | default false | quote }}
+            - name: "TRIVY_GITHUB_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "trivy.fullname" . }}
+                  key: gitHubToken
             - name: "HTTP_PROXY"
               value: {{ .Values.httpProxy | quote }}
             - name: "HTTPS_PROXY"
