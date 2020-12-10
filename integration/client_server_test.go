@@ -504,7 +504,7 @@ func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 }
 
 func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []string {
-	osArgs := []string{"trivy", "server", "--skip-update", "--cache-dir", cacheDir, "--listen", addr}
+	osArgs := []string{"trivy", "--cache-dir", cacheDir, "server", "--skip-update", "--listen", addr}
 	if token != "" {
 		osArgs = append(osArgs, []string{"--token", token, "--token-header", tokenHeader}...)
 	}
@@ -516,7 +516,7 @@ func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []stri
 
 func setupClient(t *testing.T, c args, addr string, cacheDir string, golden string) ([]string, string, func()) {
 	t.Helper()
-	osArgs := []string{"trivy", "client", "--cache-dir", cacheDir, "--remote", "http://" + addr}
+	osArgs := []string{"trivy", "--cache-dir", cacheDir, "client", "--remote", "http://" + addr}
 
 	if c.Format != "" {
 		osArgs = append(osArgs, "--format", c.Format)
