@@ -399,6 +399,80 @@ func TestConvertFromRPCResults(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "happy path - with nil dates",
+			args: args{rpcResults: []*scanner.Result{
+				{
+					Target: "alpine:3.10",
+					Type:   vulnerability.Alpine,
+					Vulnerabilities: []*common.Vulnerability{
+						{
+							VulnerabilityId:  "CVE-2019-0001",
+							PkgName:          "musl",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Title:            "DoS",
+							Description:      "Denial of Service",
+							Severity:         common.Severity_MEDIUM,
+							SeveritySource:   vulnerability.Nvd,
+							CweIds:           []string{"CWE-123", "CWE-456"},
+							Cvss: map[string]*common.CVSS{
+								"redhat": {
+									V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+									V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+									V2Score:  7.2,
+									V3Score:  7.8,
+								},
+							},
+							References: []string{"http://example.com"},
+							Layer: &common.Layer{
+								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+								DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+							},
+							PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
+							PublishedDate:    nil,
+							LastModifiedDate: nil,
+						},
+					},
+				}},
+			},
+			want: []report.Result{
+				{
+					Target: "alpine:3.10",
+					Type:   vulnerability.Alpine,
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2019-0001",
+							PkgName:          "musl",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Layer: ftypes.Layer{
+								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+								DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+							},
+							SeveritySource: vulnerability.Nvd,
+							PrimaryURL:     "https://avd.aquasec.com/nvd/CVE-2019-0001",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:          "DoS",
+								Description:    "Denial of Service",
+								Severity:       common.Severity_MEDIUM.String(),
+								CweIDs:         []string{"CWE-123", "CWE-456"},
+								VendorSeverity: nil,
+								CVSS: dbTypes.VendorCVSS{
+									"redhat": {
+										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+										V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+										V2Score:  7.2,
+										V3Score:  7.8,
+									},
+								},
+								References: []string{"http://example.com"},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
