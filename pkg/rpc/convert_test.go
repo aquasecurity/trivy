@@ -5,23 +5,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-
-	"github.com/aquasecurity/trivy/pkg/report"
-	"github.com/aquasecurity/trivy/rpc/scanner"
-
-	"github.com/aquasecurity/trivy/rpc/common"
+	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-
-	"github.com/aquasecurity/trivy/pkg/log"
-
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/stretchr/testify/assert"
-
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"github.com/aquasecurity/trivy/rpc/common"
+	"github.com/aquasecurity/trivy/rpc/scanner"
 )
 
 func TestMain(m *testing.M) {

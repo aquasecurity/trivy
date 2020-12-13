@@ -5,22 +5,17 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/aquasecurity/trivy-db/pkg/utils"
-
 	"github.com/golang/protobuf/ptypes/timestamp"
-
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
-	"github.com/aquasecurity/trivy/rpc/common"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/stretchr/testify/mock"
-
 	ftypes "github.com/aquasecurity/fanal/types"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/rpc/common"
 	"github.com/aquasecurity/trivy/rpc/scanner"
 )
 
