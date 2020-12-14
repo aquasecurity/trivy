@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
@@ -49,11 +51,6 @@ func main() {
 
 func run() (err error) {
 	ctx := context.Background()
-	fsCache, err := cache.NewFSCache(utils.CacheDir())
-	if err != nil {
-		return err
-	}
-
 	app := &cli.App{
 		Name:  "fanal",
 		Usage: "A library to analyze a container image, local filesystem and remote repository",
@@ -62,46 +59,71 @@ func run() (err error) {
 				Name:    "image",
 				Aliases: []string{"img"},
 				Usage:   "inspect a container image",
-				Action:  globalOption(ctx, fsCache, imageAction),
+				Action:  globalOption(ctx, imageAction),
 			},
 			{
 				Name:    "archive",
 				Aliases: []string{"ar"},
 				Usage:   "inspect an image archive",
-				Action:  globalOption(ctx, fsCache, archiveAction),
+				Action:  globalOption(ctx, archiveAction),
 			},
 			{
 				Name:    "filesystem",
 				Aliases: []string{"fs"},
 				Usage:   "inspect a local directory",
-				Action:  globalOption(ctx, fsCache, fsAction),
+				Action:  globalOption(ctx, fsAction),
 			},
 			{
 				Name:    "repository",
 				Aliases: []string{"repo"},
 				Usage:   "inspect a remote repository",
-				Action:  globalOption(ctx, fsCache, repoAction),
+				Action:  globalOption(ctx, repoAction),
 			},
 		},
 		Flags: []cli.Flag{
 			&cli.BoolFlag{Name: "clear", Aliases: []string{"s"}},
+			&cli.StringFlag{
+				Name:    "cache",
+				Aliases: []string{"c"},
+				Usage:   "cache backend (e.g. redis://localhost:6379)",
+			},
 		},
 	}
 
 	return app.Run(os.Args)
 }
 
-func globalOption(ctx context.Context, fsCache cache.Cache, f func(context.Context, *cli.Context, cache.Cache) error) func(c *cli.Context) error {
+func globalOption(ctx context.Context, f func(context.Context, *cli.Context, cache.Cache) error) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
+		cacheClient, err := initializeCache(c.String("cache"))
+		if err != nil {
+			return err
+		}
+		defer cacheClient.Close()
+
 		clearCache := c.Bool("clear")
 		if clearCache {
-			if err := fsCache.Clear(); err != nil {
+			if err := cacheClient.Clear(); err != nil {
 				return xerrors.Errorf("%w", err)
 			}
 			return nil
 		}
-		return f(ctx, c, fsCache)
+		return f(ctx, c, cacheClient)
 	}
+}
+
+func initializeCache(backend string) (cache.Cache, error) {
+	var cacheClient cache.Cache
+	var err error
+
+	if strings.HasPrefix(backend, "redis://") {
+		cacheClient = cache.NewRedisCache(&redis.Options{
+			Addr: strings.TrimPrefix(backend, "redis://"),
+		})
+	} else {
+		cacheClient, err = cache.NewFSCache(utils.CacheDir())
+	}
+	return cacheClient, err
 }
 
 func imageAction(ctx context.Context, c *cli.Context, fsCache cache.Cache) error {
@@ -170,7 +192,6 @@ func imageArtifact(ctx context.Context, imageName string, c cache.ArtifactCache)
 	if err != nil {
 		return nil, func() {}, err
 	}
-
 	return aimage.NewArtifact(img, c), cleanup, nil
 }
 
