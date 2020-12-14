@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 package trivy.common;
 option  go_package = "common";
 
@@ -41,19 +43,21 @@ message Library {
 }
 
 message Vulnerability {
-  string            vulnerability_id  = 1;
-  string            pkg_name          = 2;
-  string            installed_version = 3;
-  string            fixed_version     = 4;
-  string            title             = 5;
-  string            description       = 6;
-  Severity          severity          = 7;
-  repeated string   references        = 8;
-  Layer             layer             = 10;
-  string            severity_source   = 11;
-  map<string, CVSS> cvss              = 12;
-  repeated string   cwe_ids           = 13;
-  string            primary_url       = 14;
+  string                    vulnerability_id   = 1;
+  string                    pkg_name           = 2;
+  string                    installed_version  = 3;
+  string                    fixed_version      = 4;
+  string                    title              = 5;
+  string                    description        = 6;
+  Severity                  severity           = 7;
+  repeated string           references         = 8;
+  Layer                     layer              = 10;
+  string                    severity_source    = 11;
+  map<string, CVSS>         cvss               = 12;
+  repeated string           cwe_ids            = 13;
+  string                    primary_url        = 14;
+  google.protobuf.Timestamp published_date     = 15;
+  google.protobuf.Timestamp last_modified_date = 16;
 }
 
 message Layer {
