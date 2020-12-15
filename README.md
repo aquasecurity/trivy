@@ -1473,7 +1473,7 @@ Since in automated scenarios such as CI/CD you are only interested in the end re
 
 ## GitHub Actions
 
-- Here is the [Trivy Github Action](https://github.com/aquasecurity/trivy-action) (currently Experimental)
+- Here is the [Trivy Github Action](https://github.com/aquasecurity/trivy-action)
 - The Microsoft Azure team have written a [container-scan action](https://github.com/Azure/container-scan) that uses Trivy and Dockle
 - For full control over the options specified to Trivy, this [blog post](https://blog.aquasec.com/devsecops-with-trivy-github-actions) describes adding Trivy into your own GitHub action workflows 
 
