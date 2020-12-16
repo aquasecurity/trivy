@@ -69,6 +69,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 		// Skip modular packages
 		if pkg.Modularitylabel != "" {
+			log.Logger.Debugf("Skipping %s: unsupported modular", pkg.Modularitylabel)
 			continue
 		}
 
