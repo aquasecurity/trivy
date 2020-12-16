@@ -272,7 +272,7 @@ func TestScanner_Detect(t *testing.T) {
 			get: []dbTypes.GetExpectation{
 				{
 					Args: dbTypes.GetArgs{
-						Release: "7",
+						Release: "8",
 						PkgName: "php",
 					},
 					Returns: dbTypes.GetReturns{
