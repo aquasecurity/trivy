@@ -67,6 +67,11 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 			continue
 		}
 
+		// Skip modular packages
+		if pkg.Modularitylabel != "" {
+			continue
+		}
+
 		// For Red Hat Security Data API containing only source package names
 		advisories, err := s.vs.Get(osVer, pkg.SrcName)
 		if err != nil {
