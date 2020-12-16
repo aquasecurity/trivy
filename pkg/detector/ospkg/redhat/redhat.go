@@ -142,9 +142,9 @@ func (s *Scanner) isIgnorePackage(pkg ftypes.Package) bool {
 		return true
 	}
 
-	// Skip modular packages
+	// Skip modular packages until OVALv2 is supported
 	if pkg.Modularitylabel != "" {
-		log.Logger.Debugf("Skipping %s: unsupported modular", pkg.Modularitylabel)
+		log.Logger.Debugf("Skipping %s modular: workarounds until OVALv2 is supported", pkg.Modularitylabel)
 		return true
 	}
 	return false
