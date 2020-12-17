@@ -2,10 +2,10 @@
 Static Analysis Library for Containers
 
 [![GoDoc](https://godoc.org/github.com/aquasecurity/fanal?status.svg)](https://godoc.org/github.com/aquasecurity/fanal)
-[![Build Status](https://travis-ci.org/aquasecurity/fanal.svg?branch=master)](https://travis-ci.org/aquasecurity/fanal)
-<!-- [![Coverage Status](https://coveralls.io/repos/github/aquasecurity/fanal/badge.svg?branch=master)](https://coveralls.io/github/aquasecurity/fanal?branch=master) -->
+[![Build Status](https://travis-ci.org/aquasecurity/fanal.svg?branch=main)](https://travis-ci.org/aquasecurity/fanal)
+<!-- [![Coverage Status](https://coveralls.io/repos/github/aquasecurity/fanal/badge.svg?branch=main)](https://coveralls.io/github/aquasecurity/fanal?branch=main) -->
 [![Go Report Card](https://goreportcard.com/badge/github.com/aquasecurity/fanal)](https://goreportcard.com/report/github.com/aquasecurity/fanal)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/aquasecurity/fanal/blob/master/LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/aquasecurity/fanal/blob/main/LICENSE)
 
 ## Feature
 - Detect OS
