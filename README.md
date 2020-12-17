@@ -4,9 +4,9 @@
 [![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
 [![CircleCI](https://circleci.com/gh/aquasecurity/trivy.svg?style=svg)](https://circleci.com/gh/aquasecurity/trivy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/aquasecurity/trivy)](https://goreportcard.com/report/github.com/aquasecurity/trivy)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/aquasecurity/trivy/blob/main/LICENSE)
 [![Docker image](https://images.microbadger.com/badges/version/aquasec/trivy.svg)](https://microbadger.com/images/aquasec/trivy "Get your own version badge on microbadger.com")
-[![codecov](https://codecov.io/gh/aquasecurity/trivy/branch/master/graph/badge.svg)](https://codecov.io/gh/aquasecurity/trivy)
+[![codecov](https://codecov.io/gh/aquasecurity/trivy/branch/main/graph/badge.svg)](https://codecov.io/gh/aquasecurity/trivy)
 
 A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifacts, Suitable for CI.
 
@@ -126,7 +126,7 @@ See [here](#continuous-integration-ci) for details.
   - local filesystem
   - remote git repository
 
-Please see [LICENSE](https://github.com/aquasecurity/trivy/blob/master/LICENSE) for Trivy licensing information. Note that Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only.
+Please see [LICENSE](https://github.com/aquasecurity/trivy/blob/main/LICENSE) for Trivy licensing information. Note that Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only.
 
 # Installation
 
@@ -209,7 +209,7 @@ Or through your configuration on NixOS or with home-manager as usual
 This script downloads Trivy binary based on your OS and architecture.
 
 ```
-$ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
+$ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 ```
 
 ## Binary
@@ -333,7 +333,7 @@ Scan your container from inside the container.
 
 ```
 $ docker run --rm -it alpine:3.11
-/ # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
+/ # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 / # trivy fs /
 ```
 
@@ -345,7 +345,7 @@ $ cat Dockerfile
 FROM alpine:3.7
 
 RUN apk add curl \
-    && curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin \
+    && curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin \
     && trivy filesystem --exit-code 1 --no-progress /
 
 $ docker build -t vulnerable-image .
@@ -644,7 +644,7 @@ $ trivy image --input /path/to/alpine
 
 ```
 $ docker run --rm -it alpine:3.10.2
-/ # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
+/ # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 / # trivy fs /
 ```
 
@@ -729,7 +729,7 @@ $ cat Dockerfile
 FROM alpine:3.7
 
 RUN apk add curl \
-    && curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin \
+    && curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin \
     && trivy filesystem --exit-code 1 --no-progress /
 
 $ docker build -t vulnerable-image .
@@ -742,7 +742,7 @@ $ docker build -t vulnerable-image .
 Sending build context to Docker daemon  31.14MB
 Step 1/2 : FROM alpine:3.7
  ---> 6d1ef012b567
-Step 2/2 : RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin && trivy filesystem --exit-code 1 --no-progress /
+Step 2/2 : RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin && trivy filesystem --exit-code 1 --no-progress /
  ---> Running in 27b004205da0
 2020-06-01T14:10:41.261Z        INFO    Need to update DB
 2020-06-01T14:10:41.262Z        INFO    Downloading DB...
@@ -1688,7 +1688,7 @@ Distroless: https://github.com/GoogleContainerTools/distroless
 
 The path of these files does not matter.
 
-Example: https://github.com/aquasecurity/trivy-ci-test/blob/master/Dockerfile
+Example: https://github.com/aquasecurity/trivy-ci-test/blob/main/Dockerfile
 
 ## Image Tar format
 Trivy scans a tar image with the following format.
@@ -1856,7 +1856,7 @@ However, the purpose of this database is to make it possible to know what packag
 As README says, it is not a complete database of all security issues in Alpine.
 
 `Trivy` collects vulnerability information in Alpine Linux from [Alpine Linux aports repository](https://gitlab.alpinelinux.org/alpine/aports).
-Then, those vulnerabilities will be saved on [vuln-list](https://github.com/aquasecurity/vuln-list/tree/master/alpine).
+Then, those vulnerabilities will be saved on [vuln-list](https://github.com/aquasecurity/vuln-list/tree/main/alpine).
 
 `alpine-secdb` has 6959 vulnerabilities (as of 2019/05/12).
 `vuln-list` has 11101 vulnerabilities related to Alpine Linux (as of 2019/05/12).

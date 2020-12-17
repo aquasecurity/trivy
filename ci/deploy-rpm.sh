@@ -23,5 +23,5 @@ done
 
 git add .
 git commit -m "Update rpm packages"
-git push origin master
+git push origin main
 
