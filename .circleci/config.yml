@@ -14,16 +14,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Check if there's anything to fix with gofmt
-          command: |
-            if test -z "$(gofmt -l .)"; then
-              echo "Congrats! There is nothing to fix."
-            else
-              echo "The following lines should be fixed."
-              gofmt -s -d .
-              exit 1
-            fi
-      - run:
           name: Test
           command: make test
       - codecov/upload:

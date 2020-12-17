@@ -19,4 +19,4 @@ done
 
 git add .
 git commit -m "Update deb packages"
-git push origin master
+git push origin main
