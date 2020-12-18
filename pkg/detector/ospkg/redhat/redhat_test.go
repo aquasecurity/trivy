@@ -178,37 +178,6 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name: "sad path: Get returns an error",
-			args: args{
-				osVer: "5",
-				pkgs: []ftypes.Package{
-					{
-						Name:       "nss",
-						Version:    "3.36.0",
-						Release:    "7.1.el7_6",
-						Epoch:      0,
-						Arch:       "x86_64",
-						SrcName:    "nss",
-						SrcVersion: "3.36.0",
-						SrcRelease: "7.4.160",
-						SrcEpoch:   0,
-					},
-				},
-			},
-			get: []dbTypes.GetExpectation{
-				{
-					Args: dbTypes.GetArgs{
-						Release: "5",
-						PkgName: "nss",
-					},
-					Returns: dbTypes.GetReturns{
-						Err: xerrors.New("error"),
-					},
-				},
-			},
-			wantErr: true,
-		},
-		{
 			name: "happy path: packages from remi repository are skipped",
 			args: args{
 				osVer: "7.6",
@@ -248,7 +217,7 @@ func TestScanner_Detect(t *testing.T) {
 			want: []types.DetectedVulnerability(nil),
 		},
 		{
-			name: "happy path: packages from modular are skipped",
+			name: "happy path: modular packages are skipped",
 			args: args{
 				osVer: "8.3",
 				pkgs: []ftypes.Package{
@@ -286,6 +255,37 @@ func TestScanner_Detect(t *testing.T) {
 				},
 			},
 			want: []types.DetectedVulnerability(nil),
+		},
+		{
+			name: "sad path: Get returns an error",
+			args: args{
+				osVer: "5",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "nss",
+						Version:    "3.36.0",
+						Release:    "7.1.el7_6",
+						Epoch:      0,
+						Arch:       "x86_64",
+						SrcName:    "nss",
+						SrcVersion: "3.36.0",
+						SrcRelease: "7.4.160",
+						SrcEpoch:   0,
+					},
+				},
+			},
+			get: []dbTypes.GetExpectation{
+				{
+					Args: dbTypes.GetArgs{
+						Release: "5",
+						PkgName: "nss",
+					},
+					Returns: dbTypes.GetReturns{
+						Err: xerrors.New("error"),
+					},
+				},
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
