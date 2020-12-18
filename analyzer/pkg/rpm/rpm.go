@@ -77,15 +77,16 @@ func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []types.Package,
 		}
 
 		p := types.Package{
-			Name:       pkg.Name,
-			Epoch:      pkg.Epoch,
-			Version:    pkg.Version,
-			Release:    pkg.Release,
-			Arch:       arch,
-			SrcName:    srcName,
-			SrcEpoch:   pkg.Epoch, // NOTE: use epoch of binary package as epoch of src package
-			SrcVersion: srcVer,
-			SrcRelease: srcRel,
+			Name:            pkg.Name,
+			Epoch:           pkg.Epoch,
+			Version:         pkg.Version,
+			Release:         pkg.Release,
+			Arch:            arch,
+			SrcName:         srcName,
+			SrcEpoch:        pkg.Epoch, // NOTE: use epoch of binary package as epoch of src package
+			SrcVersion:      srcVer,
+			SrcRelease:      srcRel,
+			Modularitylabel: pkg.Modularitylabel,
 		}
 		pkgs = append(pkgs, p)
 	}

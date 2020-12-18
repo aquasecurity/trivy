@@ -19,7 +19,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.0
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
-	github.com/knqyf263/go-rpmdb v0.0.0-20201028125045-8b9bad79f21b
+	github.com/knqyf263/go-rpmdb v0.0.0-20201215100354-a9e3110d8ee1
 	github.com/knqyf263/nested v0.0.1
 	github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348
 	github.com/opencontainers/go-digest v1.0.0-rc1
