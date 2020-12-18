@@ -62,8 +62,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		if !s.isFromSupportedVendor(pkg) {
-			log.Logger.Debugf("Skipping %s: unsupported vendor", pkg.SrcName)
+		if !s.isSupported(pkg) {
 			continue
 		}
 
@@ -135,6 +134,20 @@ func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool
 		return false
 	}
 	return now.Before(eolDate)
+}
+
+func (s *Scanner) isSupported(pkg ftypes.Package) bool {
+	if !s.isFromSupportedVendor(pkg) {
+		log.Logger.Debugf("Skipping %s: unsupported vendor", pkg.Name)
+		return false
+	}
+
+	// Skip modular packages until OVALv2 is supported
+	if pkg.Modularitylabel != "" {
+		log.Logger.Debugf("Skipping modular package %s (%s) as temporary workaround", pkg.Name, pkg.Modularitylabel)
+		return false
+	}
+	return true
 }
 
 func (s *Scanner) isFromSupportedVendor(pkg ftypes.Package) bool {
