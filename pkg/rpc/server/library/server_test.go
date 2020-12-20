@@ -5,14 +5,15 @@ import (
 	"os"
 	"testing"
 
-	ftypes "github.com/aquasecurity/fanal/types"
-
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/fanal/types"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -67,11 +68,13 @@ func TestServer_Detect(t *testing.T) {
 							InstalledVersion: "1",
 							FixedVersion:     "2",
 							Vulnerability: dbTypes.Vulnerability{
-								Title:       "title",
-								Description: "description",
-								Severity:    "MEDIUM",
-								References:  []string{"http://example.com"},
-								CweIDs:      []string{"CWE-78"},
+								Title:            "title",
+								Description:      "description",
+								Severity:         "MEDIUM",
+								References:       []string{"http://example.com"},
+								LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
+								PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
+								CweIDs:           []string{"CWE-78"},
 							},
 							Layer: ftypes.Layer{
 								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
@@ -90,11 +93,13 @@ func TestServer_Detect(t *testing.T) {
 							InstalledVersion: "1",
 							FixedVersion:     "2",
 							Vulnerability: dbTypes.Vulnerability{
-								Title:       "title",
-								Description: "description",
-								Severity:    "MEDIUM",
-								References:  []string{"http://example.com"},
-								CweIDs:      []string{"CWE-78"},
+								Title:            "title",
+								Description:      "description",
+								Severity:         "MEDIUM",
+								References:       []string{"http://example.com"},
+								LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
+								PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
+								CweIDs:           []string{"CWE-78"},
 							},
 							Layer: ftypes.Layer{
 								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
@@ -116,7 +121,13 @@ func TestServer_Detect(t *testing.T) {
 						Severity:         common.Severity_MEDIUM,
 						Cvss:             make(map[string]*common.CVSS),
 						References:       []string{"http://example.com"},
-						CweIds:           []string{"CWE-78"},
+						LastModifiedDate: &timestamp.Timestamp{
+							Seconds: 1577840460,
+						},
+						PublishedDate: &timestamp.Timestamp{
+							Seconds: 978310860,
+						},
+						CweIds: []string{"CWE-78"},
 						Layer: &common.Layer{
 							Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 							DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",

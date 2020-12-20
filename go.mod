@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20201206082753-c5458c1b727f
+	github.com/aquasecurity/fanal v0.0.0-20201218050947-981a0510f9cb
 	github.com/aquasecurity/go-dep-parser v0.0.0-20201028043324-889d4a92b8e0
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -36,5 +36,6 @@ require (
 	go.uber.org/zap v1.13.0
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
+	google.golang.org/protobuf v1.25.0
 	k8s.io/utils v0.0.0-20201005171033-6301aaf42dc7
 )

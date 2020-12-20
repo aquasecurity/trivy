@@ -16,14 +16,31 @@
         "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 4.6
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 6.4
+          }
+        },
         "References": [
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
           "https://seclists.org/bugtraq/2019/Sep/58",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
           "https://usn.ubuntu.com/4142-2/",
+          "https://usn.ubuntu.com/usn/usn-4142-1",
+          "https://usn.ubuntu.com/usn/usn-4142-2",
           "https://www.debian.org/security/2019/dsa-4535"
-        ]
+        ],
+        "PublishedDate": "2019-09-24T22:15:00Z",
+        "LastModifiedDate": "2019-09-28T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -38,14 +55,30 @@
         "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 4.6
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/"
-        ]
+          "https://usn.ubuntu.com/4249-1/",
+          "https://usn.ubuntu.com/usn/usn-4249-1"
+        ],
+        "PublishedDate": "2020-01-08T16:15:00Z",
+        "LastModifiedDate": "2020-01-28T06:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -60,14 +93,31 @@
         "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 4.6
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 6.4
+          }
+        },
         "References": [
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
           "https://seclists.org/bugtraq/2019/Sep/58",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
           "https://usn.ubuntu.com/4142-2/",
+          "https://usn.ubuntu.com/usn/usn-4142-1",
+          "https://usn.ubuntu.com/usn/usn-4142-2",
           "https://www.debian.org/security/2019/dsa-4535"
-        ]
+        ],
+        "PublishedDate": "2019-09-24T22:15:00Z",
+        "LastModifiedDate": "2019-09-28T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -82,14 +132,30 @@
         "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 4.6
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/"
-        ]
+          "https://usn.ubuntu.com/4249-1/",
+          "https://usn.ubuntu.com/usn/usn-4249-1"
+        ],
+        "PublishedDate": "2020-01-08T16:15:00Z",
+        "LastModifiedDate": "2020-01-28T06:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -104,14 +170,31 @@
         "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 4.6
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 6.4
+          }
+        },
         "References": [
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
           "https://seclists.org/bugtraq/2019/Sep/58",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
           "https://usn.ubuntu.com/4142-2/",
+          "https://usn.ubuntu.com/usn/usn-4142-1",
+          "https://usn.ubuntu.com/usn/usn-4142-2",
           "https://www.debian.org/security/2019/dsa-4535"
-        ]
+        ],
+        "PublishedDate": "2019-09-24T22:15:00Z",
+        "LastModifiedDate": "2019-09-28T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -126,14 +209,30 @@
         "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 4.6
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/"
-        ]
+          "https://usn.ubuntu.com/4249-1/",
+          "https://usn.ubuntu.com/usn/usn-4249-1"
+        ],
+        "PublishedDate": "2020-01-08T16:15:00Z",
+        "LastModifiedDate": "2020-01-28T06:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-13627",
@@ -148,6 +247,19 @@
         "Title": "libgcrypt: ECDSA timing attack in the libgcrypt20 cryptographic library",
         "Description": "It was discovered that there was a ECDSA timing attack in the libgcrypt20 cryptographic library. Version affected: 1.8.4-5, 1.7.6-2+deb9u3, and 1.6.3-2+deb8u4. Versions fixed: 1.8.5-2 and 1.6.3-2+deb8u7.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-362"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V2Score": 6.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:N",
+            "V3Score": 6.3
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00060.html",
           "http://www.openwall.com/lists/oss-security/2019/10/02/2",
@@ -156,8 +268,13 @@
           "https://github.com/gpg/libgcrypt/releases/tag/libgcrypt-1.8.5",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00024.html",
           "https://minerva.crocs.fi.muni.cz/",
-          "https://security-tracker.debian.org/tracker/CVE-2019-13627"
-        ]
+          "https://security-tracker.debian.org/tracker/CVE-2019-13627",
+          "https://usn.ubuntu.com/usn/usn-4236-1",
+          "https://usn.ubuntu.com/usn/usn-4236-2",
+          "https://usn.ubuntu.com/usn/usn-4236-3"
+        ],
+        "PublishedDate": "2019-09-25T15:15:00Z",
+        "LastModifiedDate": "2019-10-03T00:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-12290",
@@ -171,12 +288,25 @@
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-12290",
         "Description": "GNU libidn2 before 2.2.0 fails to perform the roundtrip checks specified in RFC3490 Section 4.2 when converting A-labels to U-labels. This makes it possible in some circumstances for one domain to impersonate another. By creating a malicious domain that matches a target domain except for the inclusion of certain punycoded Unicode characters (that would be discarded when converted first to a Unicode label and then back to an ASCII label), arbitrary domains can be impersonated.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-20"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:N",
+            "V2Score": 5
+          }
+        },
         "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12290",
           "https://gitlab.com/libidn/libidn2/commit/241e8f486134793cb0f4a5b0e5817a97883401f5",
           "https://gitlab.com/libidn/libidn2/commit/614117ef6e4c60e1950d742e3edf0a0ef8d389de",
           "https://gitlab.com/libidn/libidn2/merge_requests/71",
-          "https://usn.ubuntu.com/4168-1/"
-        ]
+          "https://usn.ubuntu.com/4168-1/",
+          "https://usn.ubuntu.com/usn/usn-4168-1"
+        ],
+        "PublishedDate": "2019-10-22T16:15:00Z",
+        "LastModifiedDate": "2019-10-29T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-18224",
@@ -191,6 +321,19 @@
         "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
         "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 5.6
+          }
+        },
         "References": [
           "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
@@ -198,8 +341,11 @@
           "https://github.com/libidn/libidn2/compare/libidn2-2.1.0...libidn2-2.1.1",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
-          "https://usn.ubuntu.com/4168-1/"
-        ]
+          "https://usn.ubuntu.com/4168-1/",
+          "https://usn.ubuntu.com/usn/usn-4168-1"
+        ],
+        "PublishedDate": "2019-10-21T17:15:00Z",
+        "LastModifiedDate": "2019-10-29T19:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5094",
@@ -214,14 +360,31 @@
         "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
         "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 4.6
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 6.4
+          }
+        },
         "References": [
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
           "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
           "https://seclists.org/bugtraq/2019/Sep/58",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
           "https://usn.ubuntu.com/4142-2/",
+          "https://usn.ubuntu.com/usn/usn-4142-1",
+          "https://usn.ubuntu.com/usn/usn-4142-2",
           "https://www.debian.org/security/2019/dsa-4535"
-        ]
+        ],
+        "PublishedDate": "2019-09-24T22:15:00Z",
+        "LastModifiedDate": "2019-09-28T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5188",
@@ -236,14 +399,30 @@
         "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
         "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 4.6
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
           "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/"
-        ]
+          "https://usn.ubuntu.com/4249-1/",
+          "https://usn.ubuntu.com/usn/usn-4249-1"
+        ],
+        "PublishedDate": "2020-01-08T16:15:00Z",
+        "LastModifiedDate": "2020-01-28T06:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-15718",
@@ -258,6 +437,21 @@
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-284"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 5.3
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-15718.html",
           "http://linux.oracle.com/errata/ELSA-2019-3592.html",
@@ -266,8 +460,11 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15718",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/"
-        ]
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/",
+          "https://usn.ubuntu.com/usn/usn-4120-1"
+        ],
+        "PublishedDate": "2019-09-04T12:15:00Z",
+        "LastModifiedDate": "2019-09-19T04:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2020-1712",
@@ -282,9 +479,17 @@
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
         "Description": "A heap use-after-free vulnerability was found in systemd, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 7.8
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2020-1712.html",
-          "http://linux.oracle.com/errata/ELSA-2020-0575.html"
+          "http://linux.oracle.com/errata/ELSA-2020-0575.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1712",
+          "https://usn.ubuntu.com/usn/usn-4269-1"
         ]
       },
       {
@@ -300,12 +505,29 @@
         "Title": "systemd: a memory leak was discovered in button_open in login/logind-button.c when udev events are received",
         "Description": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-772"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
+            "V2Score": 2.1
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "V3Score": 2.4
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00014.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-20386",
           "https://github.com/systemd/systemd/commit/b2774a3ae692113e1f47a336a6c09bac9cfb49ad",
           "https://security.netapp.com/advisory/ntap-20200210-0002/",
-          "https://usn.ubuntu.com/4269-1/"
-        ]
+          "https://usn.ubuntu.com/4269-1/",
+          "https://usn.ubuntu.com/usn/usn-4269-1"
+        ],
+        "PublishedDate": "2020-01-21T06:15:00Z",
+        "LastModifiedDate": "2020-02-10T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3843",
@@ -320,12 +542,32 @@
         "Title": "systemd: services with DynamicUser can create SUID/SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can create a SUID/SGID binary that would be allowed to run as the transient service UID/GID even after the service is terminated. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the UID/GID will be recycled.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-264"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 7.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 4.5
+          }
+        },
         "References": [
           "http://www.securityfocus.com/bid/108116",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3843",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3843",
+          "https://github.com/systemd/systemd-stable/pull/54 (backport for v241-stable)",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5JXQAKSTMABZ46EVCRMW62DHWYHTTFES/",
-          "https://security.netapp.com/advisory/ntap-20190619-0002/"
-        ]
+          "https://security.netapp.com/advisory/ntap-20190619-0002/",
+          "https://usn.ubuntu.com/usn/usn-4269-1"
+        ],
+        "PublishedDate": "2019-04-26T21:29:00Z",
+        "LastModifiedDate": "2019-06-19T10:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3844",
@@ -340,11 +582,30 @@
         "Title": "systemd: services with DynamicUser can get new privileges and create SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can get new privileges through the execution of SUID binaries, which would allow to create binaries owned by the service transient group with the setgid bit set. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the GID will be recycled.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-264"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 7.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 4.5
+          }
+        },
         "References": [
           "http://www.securityfocus.com/bid/108096",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3844",
-          "https://security.netapp.com/advisory/ntap-20190619-0002/"
-        ]
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3844",
+          "https://security.netapp.com/advisory/ntap-20190619-0002/",
+          "https://usn.ubuntu.com/usn/usn-4269-1"
+        ],
+        "PublishedDate": "2019-04-26T21:29:00Z",
+        "LastModifiedDate": "2019-06-19T10:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-15718",
@@ -359,6 +620,21 @@
         "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
         "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-284"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+            "V2Score": 2.1,
+            "V3Score": 5.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 5.3
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2019-15718.html",
           "http://linux.oracle.com/errata/ELSA-2019-3592.html",
@@ -367,8 +643,11 @@
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15718",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/"
-        ]
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/",
+          "https://usn.ubuntu.com/usn/usn-4120-1"
+        ],
+        "PublishedDate": "2019-09-04T12:15:00Z",
+        "LastModifiedDate": "2019-09-19T04:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2020-1712",
@@ -383,9 +662,17 @@
         "Title": "systemd: use-after-free when asynchronous polkit queries are performed",
         "Description": "A heap use-after-free vulnerability was found in systemd, where asynchronous Polkit queries are performed while handling dbus messages. A local unprivileged attacker can abuse this flaw to crash systemd services or potentially execute code and elevate their privileges, by sending specially crafted dbus messages.",
         "Severity": "MEDIUM",
+        "CVSS": {
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 7.8
+          }
+        },
         "References": [
           "http://linux.oracle.com/cve/CVE-2020-1712.html",
-          "http://linux.oracle.com/errata/ELSA-2020-0575.html"
+          "http://linux.oracle.com/errata/ELSA-2020-0575.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1712",
+          "https://usn.ubuntu.com/usn/usn-4269-1"
         ]
       },
       {
@@ -401,12 +688,29 @@
         "Title": "systemd: a memory leak was discovered in button_open in login/logind-button.c when udev events are received",
         "Description": "An issue was discovered in button_open in login/logind-button.c in systemd before 243. When executing the udevadm trigger command, a memory leak may occur.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-772"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
+            "V2Score": 2.1
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "V3Score": 2.4
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00014.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-20386",
           "https://github.com/systemd/systemd/commit/b2774a3ae692113e1f47a336a6c09bac9cfb49ad",
           "https://security.netapp.com/advisory/ntap-20200210-0002/",
-          "https://usn.ubuntu.com/4269-1/"
-        ]
+          "https://usn.ubuntu.com/4269-1/",
+          "https://usn.ubuntu.com/usn/usn-4269-1"
+        ],
+        "PublishedDate": "2020-01-21T06:15:00Z",
+        "LastModifiedDate": "2020-02-10T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3843",
@@ -421,12 +725,32 @@
         "Title": "systemd: services with DynamicUser can create SUID/SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can create a SUID/SGID binary that would be allowed to run as the transient service UID/GID even after the service is terminated. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the UID/GID will be recycled.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-264"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 7.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 4.5
+          }
+        },
         "References": [
           "http://www.securityfocus.com/bid/108116",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3843",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3843",
+          "https://github.com/systemd/systemd-stable/pull/54 (backport for v241-stable)",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5JXQAKSTMABZ46EVCRMW62DHWYHTTFES/",
-          "https://security.netapp.com/advisory/ntap-20190619-0002/"
-        ]
+          "https://security.netapp.com/advisory/ntap-20190619-0002/",
+          "https://usn.ubuntu.com/usn/usn-4269-1"
+        ],
+        "PublishedDate": "2019-04-26T21:29:00Z",
+        "LastModifiedDate": "2019-06-19T10:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-3844",
@@ -441,11 +765,30 @@
         "Title": "systemd: services with DynamicUser can get new privileges and create SGID binaries",
         "Description": "It was discovered that a systemd service that uses DynamicUser property can get new privileges through the execution of SUID binaries, which would allow to create binaries owned by the service transient group with the setgid bit set. A local attacker may use this flaw to access resources that will be owned by a potentially different service in the future, when the GID will be recycled.",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-264"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 7.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 4.5
+          }
+        },
         "References": [
           "http://www.securityfocus.com/bid/108096",
           "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3844",
-          "https://security.netapp.com/advisory/ntap-20190619-0002/"
-        ]
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-3844",
+          "https://security.netapp.com/advisory/ntap-20190619-0002/",
+          "https://usn.ubuntu.com/usn/usn-4269-1"
+        ],
+        "PublishedDate": "2019-04-26T21:29:00Z",
+        "LastModifiedDate": "2019-06-19T10:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-11922",
@@ -459,13 +802,28 @@
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11922",
         "Description": "A race condition in the one-pass compression functions of Zstandard prior to version 1.3.8 could allow an attacker to write bytes out of bounds if an output buffer smaller than the recommended size was used.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-362"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 6.8,
+            "V3Score": 8.1
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00008.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00062.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11922",
+          "https://github.com/facebook/zstd/commit/3e5cdf1b6a85843e991d7d10f6a2567c15580da0",
           "https://github.com/facebook/zstd/pull/1404/commits/3e5cdf1b6a85843e991d7d10f6a2567c15580da0",
+          "https://usn.ubuntu.com/usn/usn-4108-1",
           "https://www.facebook.com/security/advisories/cve-2019-11922"
-        ]
+        ],
+        "PublishedDate": "2019-07-25T21:15:00Z",
+        "LastModifiedDate": "2019-08-12T21:15:00Z"
       }
     ]
   }
