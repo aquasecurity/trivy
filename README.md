@@ -1333,6 +1333,8 @@ $ trivy --cache-dir /tmp/trivy/ image python:3.4-alpine3.9
 ```
 
 ### Specify cache backend
+[EXPERIMENTAL] This feature might change without preserving backwards compatibility.
+
 Trivy supports local filesystem and Redis as the cache backend. This option is useful especially for client/server mode.
 
 Two options:
