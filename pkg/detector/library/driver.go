@@ -119,5 +119,5 @@ func newPipDriver() Driver {
 
 func newNugetDriver() Driver {
 	c := comparer.GenericComparer{}
-	return NewDriver(ghsa.NewAdvisory(ecosystem.Nuget, c))
+	return NewDriver(ghsa.NewAdvisory(ecosystem.Nuget, c), NewAdvisory(vulnerability.NuGet, c))
 }
