@@ -33,7 +33,7 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name: "detected",
+			name: "composer detected",
 			fields: fields{
 				ecosystem: ghsaSrc.Composer,
 				comparer:  comparer.GenericComparer{},
@@ -49,6 +49,26 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 					InstalledVersion: "5.1.5-alpha",
 					VulnerabilityID:  "CVE-2020-15094",
 					FixedVersion:     "5.1.5, 4.4.13",
+				},
+			},
+		},
+		{
+			name: "nuget detected",
+			fields: fields{
+				ecosystem: ghsaSrc.Nuget,
+				comparer:  comparer.GenericComparer{},
+			},
+			args: args{
+				pkgName: "AWSSDK.Core",
+				pkgVer:  "3.5.1.30",
+			},
+			fixtures: []string{"testdata/fixtures/ghsa.yaml"},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "AWSSDK.Core",
+					InstalledVersion: "3.5.1.30",
+					VulnerabilityID:  "CVE-2020-99999",
+					FixedVersion:     "3.5.1.31",
 				},
 			},
 		},
