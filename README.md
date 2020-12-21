@@ -102,7 +102,7 @@ See [here](#continuous-integration-ci) for details.
 
 - Detect comprehensive vulnerabilities
   - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
-  - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn and Cargo)
+  - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo and NuGet)
 - Simple
   - Specify only an image name or artifact name
   - See [Quick Start](#quick-start) and [Examples](#examples)
@@ -1701,6 +1701,8 @@ Distroless: https://github.com/GoogleContainerTools/distroless
   - yarn.lock
 - Rust
   - Cargo.lock
+- .NET
+  - packages.lock.json
 
 The path of these files does not matter.
 
@@ -1732,6 +1734,8 @@ Trivy scans a tar image with the following format.
   - https://github.com/advisories?query=ecosystem%3Anpm
 - Rust
   - https://github.com/RustSec/advisory-db
+- .NET
+  - https://github.com/advisories?query=ecosystem%3Anuget
 
 # Usage
 Trivy has several sub commands, image, fs, repo, client and server.

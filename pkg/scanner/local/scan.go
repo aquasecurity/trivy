@@ -17,6 +17,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
 	_ "github.com/aquasecurity/fanal/analyzer/library/composer"
 	_ "github.com/aquasecurity/fanal/analyzer/library/npm"
+	_ "github.com/aquasecurity/fanal/analyzer/library/nuget"
 	_ "github.com/aquasecurity/fanal/analyzer/library/pipenv"
 	_ "github.com/aquasecurity/fanal/analyzer/library/poetry"
 	_ "github.com/aquasecurity/fanal/analyzer/library/yarn"
