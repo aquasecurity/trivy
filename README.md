@@ -55,6 +55,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
     + [Specify exit code](#specify-exit-code)
     + [Ignore the specified vulnerabilities](#ignore-the-specified-vulnerabilities)
     + [Specify cache directory](#specify-cache-directory)
+    + [Specify cache backend](#specify-cache-backend)
     + [Clear caches](#clear-caches)
     + [Reset](#reset)
     + [Use lightweight DB](#use-lightweight-db)
@@ -1329,6 +1330,21 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 ```
 $ trivy --cache-dir /tmp/trivy/ image python:3.4-alpine3.9
+```
+
+### Specify cache backend
+[EXPERIMENTAL] This feature might change without preserving backwards compatibility.
+
+Trivy supports local filesystem and Redis as the cache backend. This option is useful especially for client/server mode.
+
+Two options:
+- `fs` 
+  - the cache path can be specified by `--cache-dir`
+- `redis://`
+  - `redis://[HOST]:[PORT]`
+
+```
+$ trivy server --cache-backend redis://localhost:6379
 ```
 
 ### Clear caches

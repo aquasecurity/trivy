@@ -6,23 +6,25 @@ import (
 	"github.com/aquasecurity/trivy/internal/config"
 )
 
-// Config holds the  Trivy config
+// Config holds the Trivy config
 type Config struct {
 	config.GlobalConfig
 	config.DBConfig
+	config.CacheConfig
 
 	Listen      string
 	Token       string
 	TokenHeader string
 }
 
-// New is the factory method to return cofig
+// New is the factory method to return config
 func New(c *cli.Context) Config {
 	// the error is ignored because logger is unnecessary
 	gc, _ := config.NewGlobalConfig(c) // nolint: errcheck
 	return Config{
 		GlobalConfig: gc,
 		DBConfig:     config.NewDBConfig(c),
+		CacheConfig:  config.NewCacheConfig(c),
 
 		Listen:      c.String("listen"),
 		Token:       c.String("token"),
@@ -30,9 +32,12 @@ func New(c *cli.Context) Config {
 	}
 }
 
-// Init initializes the DB config
+// Init initializes the config
 func (c *Config) Init() (err error) {
 	if err := c.DBConfig.Init(); err != nil {
+		return err
+	}
+	if err := c.CacheConfig.Init(); err != nil {
 		return err
 	}
 

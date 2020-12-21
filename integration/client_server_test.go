@@ -12,8 +12,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	testcontainers "github.com/testcontainers/testcontainers-go"
 	"github.com/urfave/cli/v2"
 
 	"github.com/aquasecurity/trivy/internal"
@@ -332,7 +334,7 @@ func TestClientServer(t *testing.T) {
 		},
 	}
 
-	app, addr, cacheDir := setup(t, "", "")
+	app, addr, cacheDir := setup(t, setupOptions{})
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -394,7 +396,10 @@ func TestClientServerWithToken(t *testing.T) {
 
 	serverToken := "token"
 	serverTokenHeader := "Trivy-Token"
-	app, addr, cacheDir := setup(t, serverToken, serverTokenHeader)
+	app, addr, cacheDir := setup(t, setupOptions{
+		token:       serverToken,
+		tokenHeader: serverTokenHeader,
+	})
 	defer os.RemoveAll(cacheDir)
 
 	for _, c := range cases {
@@ -418,7 +423,54 @@ func TestClientServerWithToken(t *testing.T) {
 	}
 }
 
-func setup(t *testing.T, token, tokenHeader string) (*cli.App, string, string) {
+func TestClientServerWithRedis(t *testing.T) {
+	// Set up a Redis container
+	ctx := context.Background()
+	redisC, addr := setupRedis(t, ctx)
+
+	// Set up Trivy server
+	app, addr, cacheDir := setup(t, setupOptions{cacheBackend: addr})
+	defer os.RemoveAll(cacheDir)
+
+	// Test parameters
+	testArgs := args{
+		Version: "dev",
+		Input:   "testdata/fixtures/centos-7.tar.gz",
+	}
+	golden := "testdata/centos-7.json.golden"
+
+	t.Run("centos 7", func(t *testing.T) {
+		osArgs, outputFile, cleanup := setupClient(t, testArgs, addr, cacheDir, golden)
+		defer cleanup()
+
+		// Run Trivy client
+		err := app.Run(osArgs)
+		require.NoError(t, err)
+
+		compare(t, golden, outputFile)
+	})
+
+	// Terminate the Redis container
+	require.NoError(t, redisC.Terminate(ctx))
+
+	t.Run("sad path", func(t *testing.T) {
+		osArgs, _, cleanup := setupClient(t, testArgs, addr, cacheDir, golden)
+		defer cleanup()
+
+		// Run Trivy client
+		err := app.Run(osArgs)
+		require.NotNil(t, err)
+		assert.Contains(t, err.Error(), "connect: connection refused")
+	})
+}
+
+type setupOptions struct {
+	token        string
+	tokenHeader  string
+	cacheBackend string
+}
+
+func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 	t.Helper()
 	version := "dev"
 
@@ -434,7 +486,7 @@ func setup(t *testing.T, token, tokenHeader string) (*cli.App, string, string) {
 		// Setup CLI App
 		app := internal.NewApp(version)
 		app.Writer = ioutil.Discard
-		osArgs := setupServer(addr, token, tokenHeader, cacheDir)
+		osArgs := setupServer(addr, options.token, options.tokenHeader, cacheDir, options.cacheBackend)
 
 		// Run Trivy server
 		app.Run(osArgs)
@@ -451,10 +503,13 @@ func setup(t *testing.T, token, tokenHeader string) (*cli.App, string, string) {
 	return app, addr, cacheDir
 }
 
-func setupServer(addr, token, tokenHeader, cacheDir string) []string {
+func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []string {
 	osArgs := []string{"trivy", "server", "--skip-update", "--cache-dir", cacheDir, "--listen", addr}
 	if token != "" {
 		osArgs = append(osArgs, []string{"--token", token, "--token-header", tokenHeader}...)
+	}
+	if cacheBackend != "" {
+		osArgs = append(osArgs, "--cache-backend", cacheBackend)
 	}
 	return osArgs
 }
@@ -517,6 +572,32 @@ func setupClient(t *testing.T, c args, addr string, cacheDir string, golden stri
 
 	osArgs = append(osArgs, []string{"--output", outputFile}...)
 	return osArgs, outputFile, cleanup
+}
+
+func setupRedis(t *testing.T, ctx context.Context) (testcontainers.Container, string) {
+	t.Helper()
+	imageName := "redis:5.0"
+	port := "6379/tcp"
+	req := testcontainers.ContainerRequest{
+		Name:         "redis",
+		Image:        imageName,
+		ExposedPorts: []string{port},
+	}
+
+	redis, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+		ContainerRequest: req,
+		Started:          true,
+	})
+	require.NoError(t, err)
+
+	ip, err := redis.Host(ctx)
+	require.NoError(t, err)
+
+	p, err := redis.MappedPort(ctx, nat.Port(port))
+	require.NoError(t, err)
+
+	addr := fmt.Sprintf("redis://%s:%s", ip, p.Port())
+	return redis, addr
 }
 
 func compare(t *testing.T, wantFile, gotFile string) {
