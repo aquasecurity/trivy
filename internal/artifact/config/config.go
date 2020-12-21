@@ -14,6 +14,7 @@ type Config struct {
 	config.DBConfig
 	config.ImageConfig
 	config.ReportConfig
+	config.CacheConfig
 
 	// deprecated
 	onlyUpdate string
@@ -36,6 +37,7 @@ func New(c *cli.Context) (Config, error) {
 		DBConfig:       config.NewDBConfig(c),
 		ImageConfig:    config.NewImageConfig(c),
 		ReportConfig:   config.NewReportConfig(c),
+		CacheConfig:    config.NewCacheConfig(c),
 
 		onlyUpdate:  c.String("only-update"),
 		refresh:     c.Bool("refresh"),
@@ -45,13 +47,11 @@ func New(c *cli.Context) (Config, error) {
 
 // Init initializes the artifact config
 func (c *Config) Init(image bool) error {
-	if err := c.ReportConfig.Init(c.Logger); err != nil {
-		return err
-	}
 	if c.onlyUpdate != "" || c.refresh || c.autoRefresh {
 		c.Logger.Warn("--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.")
 	}
-	if err := c.DBConfig.Init(); err != nil {
+
+	if err := c.initPreScanConfigs(); err != nil {
 		return err
 	}
 
@@ -70,6 +70,19 @@ func (c *Config) Init(image bool) error {
 		}
 	}
 
+	return nil
+}
+
+func (c *Config) initPreScanConfigs() error {
+	if err := c.ReportConfig.Init(c.Logger); err != nil {
+		return err
+	}
+	if err := c.DBConfig.Init(); err != nil {
+		return err
+	}
+	if err := c.CacheConfig.Init(); err != nil {
+		return err
+	}
 	return nil
 }
 

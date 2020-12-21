@@ -20,22 +20,6 @@
         ]
       },
       {
-        "VulnerabilityID": "openSUSE-SU-2020:0381-1",
-        "PkgName": "glibc",
-        "InstalledVersion": "2.26-lp151.18.7",
-        "FixedVersion": "2.26-lp151.19.3.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for glibc",
-        "Description": "This update for glibc fixes the following issues:\n\n- CVE-2020-10029: Fixed a potential overflow in  on-stack buffer \n  during range reduction (bsc#1165784).\t  \n- Fixed an issue where pthread were not always locked correctly (bsc#1164505).\n- Document mprotect and introduce section on memory protection (bsc#1163184).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
-        "Severity": "LOW",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00033.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
         "VulnerabilityID": "openSUSE-SU-2020:0166-1",
         "PkgName": "libcom_err2",
         "InstalledVersion": "1.43.8-lp151.5.6.1",
@@ -96,22 +80,6 @@
         "Severity": "MEDIUM",
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2020:0379-1",
-        "PkgName": "libnghttp2-14",
-        "InstalledVersion": "1.39.2-lp151.3.3.1",
-        "FixedVersion": "1.40.0-lp151.3.6.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for nghttp2",
-        "Description": "This update for nghttp2 fixes the following issues:\n\nnghttp2 was update to version 1.40.0 (bsc#1166481)\n\n- lib: Add nghttp2_check_authority as public API\n- lib: Fix the bug that stream is closed with wrong error code\n- lib: Faster huffman encoding and decoding\n- build: Avoid filename collision of static and dynamic lib\n- build: Add new flag ENABLE_STATIC_CRT for Windows\n- build: cmake: Support building nghttpx with systemd\n- third-party: Update neverbleed to fix memory leak\n- nghttpx: Fix bug that mruby is incorrectly shared between backends\n- nghttpx: Reconnect h1 backend if it lost connection before sending headers\n- nghttpx: Returns 408 if backend timed out before sending headers\n- nghttpx: Fix request stal\n\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
-        "Severity": "HIGH",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00034.html",
           "https://www.suse.com/support/security/rating/"
         ]
       },
@@ -288,22 +256,6 @@
         "Severity": "MEDIUM",
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00024.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2020:0302-1",
-        "PkgName": "permissions",
-        "InstalledVersion": "20181116-lp151.4.6.1",
-        "FixedVersion": "20181116-lp151.4.12.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for permissions",
-        "Description": "This update for permissions fixes the following issues:\n\nSecurity issues fixed:\n\n- CVE-2019-3687: Fixed a privilege escalation which could allow a local user to read network traffic if wireshark is installed (bsc#1148788)\n- CVE-2020-8013: Fixed an issue where chkstat set unintended setuid/capabilities for mrsh and wodim (bsc#1163922).\n\nNon-security issues fixed:\n\n- Fixed a regression where chkstat breaks without /proc available (bsc#1160764, bsc#1160594).\n- Fixed capability handling when doing multiple permission changes at once (bsc#1161779).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00010.html",
           "https://www.suse.com/support/security/rating/"
         ]
       },

@@ -16,11 +16,27 @@
         "Title": "bash: when effective UID is not equal to its real UID the saved UID is not dropped",
         "Description": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support \"saved UID\" functionality, the saved UID is not dropped. An attacker with command execution in the shell can use \"enable -f\" for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-273"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+            "V2Score": 7.2
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 7.8
+          }
+        },
         "References": [
           "http://packetstormsecurity.com/files/155498/Bash-5.0-Patch-11-Privilege-Escalation.html",
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18276",
           "https://github.com/bminor/bash/commit/951bdaad7a18cc0dc1036bba86b18b90874d39ff",
           "https://www.youtube.com/watch?v=-wGtxJ8opa8"
-        ]
+        ],
+        "PublishedDate": "2019-11-28T01:15:00Z",
+        "LastModifiedDate": "2020-01-22T14:27:00Z"
       },
       {
         "VulnerabilityID": "CVE-2012-6711",
@@ -35,12 +51,29 @@
         "Title": "bash: heap-based buffer overflow during echo of unsupported characters",
         "Description": "A heap-based buffer overflow exists in GNU Bash before 4.3 when wide characters, not supported by the current locale set in the LC_CTYPE environment variable, are printed through the echo built-in function. A local attacker, who can provide data to print through the \"echo -e\" built-in function, may use this flaw to crash a script or execute code with the privileges of the bash process. This occurs because ansicstr() in lib/sh/strtrans.c mishandles u32cconv().",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-119"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V2Score": 4.6,
+            "V3Score": 7.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 7
+          }
+        },
         "References": [
           "http://git.savannah.gnu.org/cgit/bash.git/commit/?h=devel\u0026id=863d31ae775d56b785dc5b0105b6d251515d81d5",
           "http://www.securityfocus.com/bid/108824",
           "https://bugzilla.redhat.com/show_bug.cgi?id=1721071",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-6711"
-        ]
+        ],
+        "PublishedDate": "2019-06-18T18:15:00Z",
+        "LastModifiedDate": "2019-06-20T09:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5481",
@@ -55,14 +88,30 @@
         "Title": "curl: double free due to subsequent call of realloc()",
         "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-415"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:H",
+            "V3Score": 5.7
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
           "https://curl.haxx.se/docs/CVE-2019-5481.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
-        ]
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+          "https://usn.ubuntu.com/usn/usn-4129-1"
+        ],
+        "PublishedDate": "2019-09-16T19:15:00Z",
+        "LastModifiedDate": "2019-09-18T00:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-5482",
@@ -77,16 +126,31 @@
         "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
         "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-120"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 6.3
+          }
+        },
         "References": [
-          "http://linux.oracle.com/cve/CVE-2019-5482.html",
-          "http://linux.oracle.com/errata/ELSA-2020-5562.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
           "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
           "https://curl.haxx.se/docs/CVE-2019-5482.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/"
-        ]
+          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+          "https://usn.ubuntu.com/usn/usn-4129-1",
+          "https://usn.ubuntu.com/usn/usn-4129-2"
+        ],
+        "PublishedDate": "2019-09-16T19:15:00Z",
+        "LastModifiedDate": "2019-09-18T00:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-18218",
@@ -101,6 +165,19 @@
         "Title": "file: heap-based buffer overflow in cdf_read_property_info in cdf.c",
         "Description": "cdf_read_property_info in cdf.c in file through 5.37 does not restrict the number of CDF_VECTOR elements, which allows a heap-based buffer overflow (4-byte out-of-bounds write).",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-787"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+            "V3Score": 7.8
+          }
+        },
         "References": [
           "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=16780",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18218",
@@ -110,8 +187,12 @@
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VBK6XOJR6OVWT2FUEBO7V7KCOSSLAP52/",
           "https://usn.ubuntu.com/4172-1/",
           "https://usn.ubuntu.com/4172-2/",
+          "https://usn.ubuntu.com/usn/usn-4172-1",
+          "https://usn.ubuntu.com/usn/usn-4172-2",
           "https://www.debian.org/security/2019/dsa-4550"
-        ]
+        ],
+        "PublishedDate": "2019-10-21T05:15:00Z",
+        "LastModifiedDate": "2019-10-26T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-20387",
@@ -126,12 +207,28 @@
         "Title": "libsolv: out-of-bounds read in repodata_schema2id in repodata.c",
         "Description": "repodata_schema2id in repodata.c in libsolv before 0.7.6 has a heap-based buffer over-read via a last schema whose length is less than the length of the input schema.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-125"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V2Score": 5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-20387",
           "https://github.com/openSUSE/libsolv/commit/fdb9c9c03508990e4583046b590c30d958f272da",
+          "https://github.com/openSUSE/libsolv/commit/fdb9c9c03508990e4583046b590c30d958f272da (0.7.6)",
           "https://github.com/openSUSE/libsolv/compare/0.7.5...0.7.6",
           "https://lists.debian.org/debian-lts-announce/2020/01/msg00034.html"
-        ]
+        ],
+        "PublishedDate": "2020-01-21T23:15:00Z",
+        "LastModifiedDate": "2020-01-30T21:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-17498",
@@ -146,6 +243,19 @@
         "Title": "libssh2: integer overflow in SSH_MSG_DISCONNECT logic in packet.c",
         "Description": "In libssh2 v1.9.0 and earlier versions, the SSH_MSG_DISCONNECT logic in packet.c has an integer overflow in a bounds check, enabling an attacker to specify an arbitrary (out-of-bounds) offset for a subsequent memory read. A crafted SSH server may be able to disclose sensitive information or cause a denial of service condition on the client system when a user connects to the server.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-190"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
+            "V2Score": 5.8
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:N/A:N",
+            "V3Score": 6.5
+          }
+        },
         "References": [
           "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00026.html",
           "https://blog.semmle.com/libssh2-integer-overflow-CVE-2019-17498/",
@@ -155,49 +265,9 @@
           "https://github.com/libssh2/libssh2/pull/402/commits/1c6fa92b77e34d089493fe6d3e2c6c8775858b94",
           "https://lists.debian.org/debian-lts-announce/2019/11/msg00010.html",
           "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TY7EEE34RFKCTXTMBQQWWSLXZWSCXNDB/"
-        ]
-      },
-      {
-        "VulnerabilityID": "CVE-2019-17594",
-        "PkgName": "ncurses",
-        "InstalledVersion": "6.0-9.ph1",
-        "FixedVersion": "6.0-10.ph1",
-        "Layer": {
-          "DiffID": "sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
-        },
-        "SeveritySource": "photon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
-        "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
-        "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
-        "Severity": "HIGH",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
-      },
-      {
-        "VulnerabilityID": "CVE-2019-17595",
-        "PkgName": "ncurses",
-        "InstalledVersion": "6.0-9.ph1",
-        "FixedVersion": "6.0-10.ph1",
-        "Layer": {
-          "DiffID": "sha256:9740df1ac227d21600b22524f869c9bec2d8c13446d1c8579a6195b6d855ae2b"
-        },
-        "SeveritySource": "photon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
-        "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
-        "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ]
+        ],
+        "PublishedDate": "2019-10-21T22:15:00Z",
+        "LastModifiedDate": "2019-11-07T03:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1547",
@@ -212,6 +282,19 @@
         "Title": "openssl: side-channel weak encryption vulnerability",
         "Description": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-311"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:M/Au:N/C:P/I:N/A:N",
+            "V2Score": 1.9
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+            "V3Score": 5.5
+          }
+        },
         "References": [
           "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html",
           "https://arxiv.org/abs/1909.01785",
@@ -222,7 +305,9 @@
           "https://seclists.org/bugtraq/2019/Sep/25",
           "https://security.netapp.com/advisory/ntap-20190919-0002/",
           "https://www.openssl.org/news/secadv/20190910.txt"
-        ]
+        ],
+        "PublishedDate": "2019-09-10T17:15:00Z",
+        "LastModifiedDate": "2019-09-12T16:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1551",
@@ -235,10 +320,22 @@
         "SeveritySource": "photon",
         "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1551",
         "Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
-        "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
+        "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e-dev (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u-dev (Affected 1.0.2-1.0.2t).",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-200"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+            "V2Score": 5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N",
+            "V3Score": 4.8
+          }
+        },
         "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
           "http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551",
           "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f",
@@ -250,7 +347,9 @@
           "https://www.debian.org/security/2019/dsa-4594",
           "https://www.openssl.org/news/secadv/20191206.txt",
           "https://www.tenable.com/security/tns-2019-09"
-        ]
+        ],
+        "PublishedDate": "2019-12-06T18:15:00Z",
+        "LastModifiedDate": "2019-12-25T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-1563",
@@ -265,6 +364,19 @@
         "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
         "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
         "Severity": "LOW",
+        "CweIDs": [
+          "CWE-311"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+            "V2Score": 4.3
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
+            "V3Score": 3.7
+          }
+        },
         "References": [
           "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html",
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563",
@@ -274,7 +386,9 @@
           "https://seclists.org/bugtraq/2019/Sep/25",
           "https://security.netapp.com/advisory/ntap-20190919-0002/",
           "https://www.openssl.org/news/secadv/20190910.txt"
-        ]
+        ],
+        "PublishedDate": "2019-09-10T17:15:00Z",
+        "LastModifiedDate": "2019-09-12T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19317",
@@ -289,11 +403,26 @@
         "Title": "sqlite: omits bits from the colUsed bitmask in the case of a generated column",
         "Description": "lookupName in resolve.c in SQLite 3.30.1 omits bits from the colUsed bitmask in the case of a generated column, which allows attackers to cause a denial of service or possibly have unspecified other impact.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-20"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "https://github.com/sqlite/sqlite/commit/522ebfa7cee96fb325a22ea3a2464a63485886a8",
           "https://github.com/sqlite/sqlite/commit/73bacb7f93eab9f4bd5a65cbc4ae242acf63c9e3",
           "https://security.netapp.com/advisory/ntap-20191223-0001/"
-        ]
+        ],
+        "PublishedDate": "2019-12-05T14:15:00Z",
+        "LastModifiedDate": "2020-01-07T21:36:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19603",
@@ -308,11 +437,24 @@
         "Title": "sqlite: mishandles certain SELECT statements with a nonexistent VIEW, leading to DoS",
         "Description": "SQLite 3.30.1 mishandles certain SELECT statements with a nonexistent VIEW, leading to an application crash.",
         "Severity": "CRITICAL",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V2Score": 5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19603",
           "https://github.com/sqlite/sqlite/commit/527cbd4a104cb93bf3994b3dd3619a6299a78b13",
           "https://security.netapp.com/advisory/ntap-20191223-0001/",
           "https://www.sqlite.org/"
-        ]
+        ],
+        "PublishedDate": "2019-12-09T19:15:00Z",
+        "LastModifiedDate": "2020-02-03T14:22:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19646",
@@ -327,12 +469,27 @@
         "Title": "sqlite: pragma.c mishandles NOT NULL in an integrity_check PRAGMA command in certain cases of generated columns",
         "Description": "pragma.c in SQLite through 3.30.1 mishandles NOT NULL in an integrity_check PRAGMA command in certain cases of generated columns.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-754"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+            "V2Score": 7.5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 6.3
+          }
+        },
         "References": [
           "https://github.com/sqlite/sqlite/commit/926f796e8feec15f3836aa0a060ed906f8ae04d3",
           "https://github.com/sqlite/sqlite/commit/ebd70eedd5d6e6a890a670b5ee874a5eae86b4dd",
           "https://security.netapp.com/advisory/ntap-20191223-0001/",
           "https://www.sqlite.org/"
-        ]
+        ],
+        "PublishedDate": "2019-12-09T19:15:00Z",
+        "LastModifiedDate": "2019-12-23T05:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-20218",
@@ -347,10 +504,25 @@
         "Title": "sqlite: selectExpander in select.c proceeds with WITH stack unwinding even after a parsing error",
         "Description": "selectExpander in select.c in SQLite 3.30.1 proceeds with WITH stack unwinding even after a parsing error.",
         "Severity": "CRITICAL",
+        "CweIDs": [
+          "CWE-755"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V2Score": 5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
-          "https://github.com/sqlite/sqlite/commit/a6c1a71cde082e09750465d5675699062922e387",
-          "https://usn.ubuntu.com/4298-1/"
-        ]
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-20218",
+          "https://github.com/sqlite/sqlite/commit/a6c1a71cde082e09750465d5675699062922e387"
+        ],
+        "PublishedDate": "2020-01-02T14:16:00Z",
+        "LastModifiedDate": "2020-01-16T20:35:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19244",
@@ -365,10 +537,27 @@
         "Title": "sqlite: allows a crash if a sub-select uses both DISTINCT and window functions and also has certain ORDER BY usage",
         "Description": "sqlite3Select in select.c in SQLite 3.30.1 allows a crash if a sub-select uses both DISTINCT and window functions, and also has certain ORDER BY usage.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-20"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V2Score": 5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19244",
           "https://github.com/sqlite/sqlite/commit/e59c562b3f6894f84c715772c4b116d7b5c01348",
-          "https://usn.ubuntu.com/4205-1/"
-        ]
+          "https://usn.ubuntu.com/4205-1/",
+          "https://usn.ubuntu.com/usn/usn-4205-1"
+        ],
+        "PublishedDate": "2019-11-25T20:15:00Z",
+        "LastModifiedDate": "2019-12-04T16:11:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19880",
@@ -383,11 +572,26 @@
         "Title": "sqlite: invalid pointer dereference in exprListAppendList in window.c",
         "Description": "exprListAppendList in window.c in SQLite 3.30.1 allows attackers to trigger an invalid pointer dereference because constant integer values in ORDER BY clauses of window definitions are mishandled.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-476"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V2Score": 5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19880",
           "https://github.com/sqlite/sqlite/commit/75e95e1fcd52d3ec8282edb75ac8cd0814095d54",
           "https://security.netapp.com/advisory/ntap-20200114-0001/"
-        ]
+        ],
+        "PublishedDate": "2019-12-18T06:15:00Z",
+        "LastModifiedDate": "2020-01-14T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19923",
@@ -402,11 +606,26 @@
         "Title": "sqlite: mishandling of certain uses of SELECT DISTINCT involving a LEFT JOIN in flattenSubquery in select.c leads to a NULL pointer dereference",
         "Description": "flattenSubquery in select.c in SQLite 3.30.1 mishandles certain uses of SELECT DISTINCT involving a LEFT JOIN in which the right-hand side is a view. This can cause a NULL pointer dereference (or incorrect results).",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-476"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V2Score": 5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19923",
           "https://github.com/sqlite/sqlite/commit/396afe6f6aa90a31303c183e11b2b2d4b7956b35",
           "https://security.netapp.com/advisory/ntap-20200114-0003/"
-        ]
+        ],
+        "PublishedDate": "2019-12-24T16:15:00Z",
+        "LastModifiedDate": "2020-01-14T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19925",
@@ -421,11 +640,26 @@
         "Title": "sqlite: zipfileUpdate in ext/misc/zipfile.c mishandles a NULL pathname during an update of a ZIP archive",
         "Description": "zipfileUpdate in ext/misc/zipfile.c in SQLite 3.30.1 mishandles a NULL pathname during an update of a ZIP archive.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-434"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V2Score": 5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19925",
           "https://github.com/sqlite/sqlite/commit/54d501092d88c0cf89bec4279951f548fb0b8618",
           "https://security.netapp.com/advisory/ntap-20200114-0003/"
-        ]
+        ],
+        "PublishedDate": "2019-12-24T17:15:00Z",
+        "LastModifiedDate": "2020-01-14T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19926",
@@ -440,11 +674,26 @@
         "Title": "sqlite: error mishandling because of incomplete fix of CVE-2019-19880",
         "Description": "multiSelect in select.c in SQLite 3.30.1 mishandles certain errors during parsing, as demonstrated by errors from sqlite3WindowRewrite() calls. NOTE: this vulnerability exists because of an incomplete fix for CVE-2019-19880.",
         "Severity": "HIGH",
+        "CweIDs": [
+          "CWE-476"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+            "V2Score": 5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 7.5
+          }
+        },
         "References": [
           "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19926",
           "https://github.com/sqlite/sqlite/commit/8428b3b437569338a9d1e10c4cd8154acbe33089",
           "https://security.netapp.com/advisory/ntap-20200114-0003/"
-        ]
+        ],
+        "PublishedDate": "2019-12-23T01:15:00Z",
+        "LastModifiedDate": "2020-01-14T11:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19959",
@@ -459,11 +708,24 @@
         "Title": "sqlite: mishandles certain uses of INSERT INTO in situations involving embedded '\\0' characters in filenames",
         "Description": "ext/misc/zipfile.c in SQLite 3.30.1 mishandles certain uses of INSERT INTO in situations involving embedded '\\0' characters in filenames, leading to a memory-management error that can be detected by (for example) valgrind.",
         "Severity": "HIGH",
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:N",
+            "V2Score": 5
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+            "V3Score": 7.3
+          }
+        },
         "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19959",
           "https://github.com/sqlite/sqlite/commit/1e490c4ca6b43a9cf8637d695907888349f69bec",
           "https://github.com/sqlite/sqlite/commit/d8f2d46cbc9925e034a68aaaf60aad788d9373c1",
           "https://security.netapp.com/advisory/ntap-20200204-0001/"
-        ]
+        ],
+        "PublishedDate": "2020-01-03T22:15:00Z",
+        "LastModifiedDate": "2020-02-04T12:15:00Z"
       },
       {
         "VulnerabilityID": "CVE-2019-19645",
@@ -478,10 +740,26 @@
         "Title": "sqlite: infinite recursion via certain types of self-referential views in conjunction with ALTER TABLE statements",
         "Description": "alter.c in SQLite through 3.30.1 allows attackers to trigger infinite recursion via certain types of self-referential views in conjunction with ALTER TABLE statements.",
         "Severity": "MEDIUM",
+        "CweIDs": [
+          "CWE-674"
+        ],
+        "CVSS": {
+          "nvd": {
+            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:N/A:P",
+            "V2Score": 2.1
+          },
+          "redhat": {
+            "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+            "V3Score": 5.5
+          }
+        },
         "References": [
+          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19645",
           "https://github.com/sqlite/sqlite/commit/38096961c7cd109110ac21d3ed7dad7e0cb0ae06",
           "https://security.netapp.com/advisory/ntap-20191223-0001/"
-        ]
+        ],
+        "PublishedDate": "2019-12-09T16:15:00Z",
+        "LastModifiedDate": "2019-12-23T05:15:00Z"
       }
     ]
   }

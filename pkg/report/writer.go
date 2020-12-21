@@ -85,7 +85,7 @@ func (tw TableWriter) write(result Result) {
 	table := tablewriter.NewWriter(tw.Output)
 	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version"}
 	if !tw.Light {
-		header = append(header, "Title", "URL")
+		header = append(header, "Title")
 	}
 	table.SetHeader(header)
 
@@ -101,6 +101,12 @@ func (tw TableWriter) write(result Result) {
 		if len(splittedTitle) >= 12 {
 			title = strings.Join(splittedTitle[:12], " ") + "..."
 		}
+
+		if len(v.PrimaryURL) > 0 {
+			r := strings.NewReplacer("https://", "", "http://", "")
+			title = fmt.Sprintf("%s -->%s", title, r.Replace(v.PrimaryURL))
+		}
+
 		var row []string
 		if tw.Output == os.Stdout {
 			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
@@ -110,7 +116,7 @@ func (tw TableWriter) write(result Result) {
 		}
 
 		if !tw.Light {
-			row = append(row, title, strings.TrimPrefix(v.PrimaryURL, "https://"))
+			row = append(row, strings.TrimSpace(title))
 		}
 		table.Append(row)
 	}

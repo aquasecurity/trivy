@@ -17,6 +17,7 @@ import (
 	ftypes "github.com/aquasecurity/fanal/types"
 	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -69,8 +70,11 @@ func TestScanServer_Scan(t *testing.T) {
 									PkgName:          "musl",
 									InstalledVersion: "1.2.3",
 									FixedVersion:     "1.2.4",
-									Vulnerability:    dbTypes.Vulnerability{},
 									SeveritySource:   "nvd",
+									Vulnerability: dbTypes.Vulnerability{
+										LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
+										PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
+									},
 								},
 							},
 							Type: "alpine",
@@ -90,8 +94,11 @@ func TestScanServer_Scan(t *testing.T) {
 							PkgName:          "musl",
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "1.2.4",
-							Vulnerability:    dbTypes.Vulnerability{},
-							SeveritySource:   "nvd",
+							Vulnerability: dbTypes.Vulnerability{
+								LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
+								PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
+							},
+							SeveritySource: "nvd",
 						},
 					},
 					ReportType: "alpine",
@@ -115,6 +122,12 @@ func TestScanServer_Scan(t *testing.T) {
 								SeveritySource:   "nvd",
 								Layer:            &common.Layer{},
 								Cvss:             make(map[string]*common.CVSS),
+								LastModifiedDate: &timestamp.Timestamp{
+									Seconds: 1577840460,
+								},
+								PublishedDate: &timestamp.Timestamp{
+									Seconds: 978310860,
+								},
 							},
 						},
 						Type: "alpine",

@@ -1,7 +1,10 @@
 package rpc
 
 import (
+	"time"
+
 	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
@@ -96,6 +99,15 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			}
 		}
 
+		var lastModifiedDate, publishedDate *timestamp.Timestamp
+		if vuln.LastModifiedDate != nil {
+			lastModifiedDate, _ = ptypes.TimestampProto(*vuln.LastModifiedDate) // nolint: errcheck
+		}
+
+		if vuln.PublishedDate != nil {
+			publishedDate, _ = ptypes.TimestampProto(*vuln.PublishedDate) // nolint: errcheck
+		}
+
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
 			VulnerabilityId:  vuln.VulnerabilityID,
 			PkgName:          vuln.PkgName,
@@ -109,10 +121,12 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 				Digest: vuln.Layer.Digest,
 				DiffId: vuln.Layer.DiffID,
 			},
-			Cvss:           cvssMap,
-			SeveritySource: vuln.SeveritySource,
-			CweIds:         vuln.CweIDs,
-			PrimaryUrl:     vuln.PrimaryURL,
+			Cvss:             cvssMap,
+			SeveritySource:   vuln.SeveritySource,
+			CweIds:           vuln.CweIDs,
+			PrimaryUrl:       vuln.PrimaryURL,
+			LastModifiedDate: lastModifiedDate,
+			PublishedDate:    publishedDate,
 		})
 	}
 	return rpcVulns
@@ -135,18 +149,30 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 				}
 			}
 
+			var lastModifiedDate, publishedDate *time.Time
+			if vuln.LastModifiedDate != nil {
+				t, _ := ptypes.Timestamp(vuln.LastModifiedDate) // nolint: errcheck
+				lastModifiedDate = &t
+			}
+			if vuln.PublishedDate != nil {
+				t, _ := ptypes.Timestamp(vuln.PublishedDate) // nolint: errcheck
+				publishedDate = &t
+			}
+
 			vulns = append(vulns, types.DetectedVulnerability{
 				VulnerabilityID:  vuln.VulnerabilityId,
 				PkgName:          vuln.PkgName,
 				InstalledVersion: vuln.InstalledVersion,
 				FixedVersion:     vuln.FixedVersion,
 				Vulnerability: dbTypes.Vulnerability{
-					Title:       vuln.Title,
-					Description: vuln.Description,
-					Severity:    severity.String(),
-					CVSS:        cvssMap,
-					References:  vuln.References,
-					CweIDs:      vuln.CweIds,
+					Title:            vuln.Title,
+					Description:      vuln.Description,
+					Severity:         severity.String(),
+					CVSS:             cvssMap,
+					References:       vuln.References,
+					CweIDs:           vuln.CweIds,
+					LastModifiedDate: lastModifiedDate,
+					PublishedDate:    publishedDate,
 				},
 				Layer: ftypes.Layer{
 					Digest: vuln.Layer.Digest,

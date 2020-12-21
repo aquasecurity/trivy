@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "trivy.fullname" . }}
+  labels:
+{{ include "trivy.labels" . | indent 4 }}
+spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  selector:
+    app.kubernetes.io/name: {{ include "trivy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: trivy-http
+      protocol: TCP
+      port: {{ .Values.service.port | default 4954 }}
+      targetPort: {{ .Values.service.port | default 4954 }}
+  sessionAffinity: ClientIP

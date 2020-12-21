@@ -37,8 +37,8 @@
                         "Patched Package": "1.1.1d-r0",
                         "NvdCvssScoreV3": "0",
                         "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV2": "5",
+                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
@@ -59,7 +59,7 @@
             "Normalized": 40
         },
         "Title": "Trivy found a vulnerability to CVE-2019-1551 in container testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
-        "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
+        "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e-dev (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u-dev (Affected 1.0.2-1.0.2t).",
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
@@ -83,8 +83,8 @@
                         "Patched Package": "1.1.1d-r2",
                         "NvdCvssScoreV3": "0",
                         "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV2": "5",
+                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
@@ -129,8 +129,8 @@
                         "Patched Package": "1.1.1d-r0",
                         "NvdCvssScoreV3": "0",
                         "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV2": "4.3",
+                        "NvdCvssVectorV2": "AV:N/AC:M/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
@@ -175,8 +175,8 @@
                         "Patched Package": "1.1.1d-r0",
                         "NvdCvssScoreV3": "0",
                         "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV2": "1.9",
+                        "NvdCvssVectorV2": "AV:L/AC:M/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
@@ -221,8 +221,8 @@
                         "Patched Package": "1.1.1d-r0",
                         "NvdCvssScoreV3": "0",
                         "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV2": "5",
+                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
@@ -243,7 +243,7 @@
             "Normalized": 40
         },
         "Title": "Trivy found a vulnerability to CVE-2019-1551 in container testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
-        "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
+        "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e-dev (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u-dev (Affected 1.0.2-1.0.2t).",
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
@@ -267,8 +267,8 @@
                         "Patched Package": "1.1.1d-r2",
                         "NvdCvssScoreV3": "0",
                         "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV2": "5",
+                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
@@ -313,8 +313,8 @@
                         "Patched Package": "1.1.1d-r0",
                         "NvdCvssScoreV3": "0",
                         "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV2": "4.3",
+                        "NvdCvssVectorV2": "AV:N/AC:M/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
@@ -359,8 +359,8 @@
                         "Patched Package": "1.1.1d-r0",
                         "NvdCvssScoreV3": "0",
                         "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "0",
-                        "NvdCvssVectorV2": ""
+                        "NvdCvssScoreV2": "1.9",
+                        "NvdCvssVectorV2": "AV:L/AC:M/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
