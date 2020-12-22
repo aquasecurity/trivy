@@ -2,14 +2,16 @@ package report_test
 
 import (
 	"bytes"
-	"encoding/json"
+	"io/ioutil"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -121,14 +123,17 @@ func TestReportWriter_Table(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			inputResults := report.Results{
-				{
-					Target:          "foo",
-					Vulnerabilities: tc.detectedVulns,
+			input := report.Report{
+				ImageID: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
+				Results: report.Results{
+					{
+						Target:          "foo",
+						Vulnerabilities: tc.detectedVulns,
+					},
 				},
 			}
 			tableWritten := bytes.Buffer{}
-			assert.NoError(t, report.WriteResults("table", &tableWritten, nil, inputResults, "", tc.light), tc.name)
+			assert.NoError(t, report.Write("table", &tableWritten, nil, input, "", tc.light), tc.name)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})
 	}
@@ -136,72 +141,87 @@ func TestReportWriter_Table(t *testing.T) {
 
 func TestReportWriter_JSON(t *testing.T) {
 	testCases := []struct {
-		name          string
-		detectedVulns []types.DetectedVulnerability
-		expectedJSON  report.Results
+		name             string
+		input            report.Report
+		newSchema        bool
+		expectedJSONFile string
 	}{
 		{
 			name: "happy path",
-			detectedVulns: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-2020-0001",
-					PkgName:          "foo",
-					InstalledVersion: "1.2.3",
-					FixedVersion:     "3.4.5",
-					PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
-					Vulnerability: dbTypes.Vulnerability{
-						Title:       "foobar",
-						Description: "baz",
-						Severity:    "HIGH",
-					},
-				},
-			},
-			expectedJSON: report.Results{
-				report.Result{
-					Target: "foojson",
-					Vulnerabilities: []types.DetectedVulnerability{
-						{
-							VulnerabilityID:  "CVE-2020-0001",
-							PkgName:          "foo",
-							InstalledVersion: "1.2.3",
-							FixedVersion:     "3.4.5",
-							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
-							Vulnerability: dbTypes.Vulnerability{
-								Title:       "foobar",
-								Description: "baz",
-								Severity:    "HIGH",
+			input: report.Report{
+				ImageID:     "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
+				RepoTags:    []string{"test:latest"},
+				RepoDigests: []string{"test@sha256:0bd0e9e03a022c3b0226667621da84fc9bf562a9056130424b5bfbd8bcb0397f"},
+				Results: report.Results{
+					{
+						Target: "foojson",
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2020-0001",
+								PkgName:          "foo",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "3.4.5",
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
+								Vulnerability: dbTypes.Vulnerability{
+									Title:       "foobar",
+									Description: "baz",
+									Severity:    "HIGH",
+								},
 							},
 						},
 					},
 				},
 			},
+			expectedJSONFile: "testdata/old.json.golden",
+		},
+		{
+			name:      "new schema",
+			newSchema: true,
+			input: report.Report{
+				ImageID:     "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
+				RepoTags:    []string{"test:latest"},
+				RepoDigests: []string{"test@sha256:0bd0e9e03a022c3b0226667621da84fc9bf562a9056130424b5bfbd8bcb0397f"},
+				Results: report.Results{
+					{
+						Target: "foojson",
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2020-0001",
+								PkgName:          "foo",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "3.4.5",
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
+								Vulnerability: dbTypes.Vulnerability{
+									Title:       "foobar",
+									Description: "baz",
+									Severity:    "HIGH",
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedJSONFile: "testdata/new.json.golden",
 		},
 	}
 
+	log.InitLogger(false, false)
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-
-			jw := report.JSONWriter{}
-			jsonWritten := bytes.Buffer{}
-			jw.Output = &jsonWritten
-
-			inputResults := report.Results{
-				{
-					Target:          "foojson",
-					Vulnerabilities: tc.detectedVulns,
-				},
+			if tc.newSchema {
+				os.Setenv("TRIVY_NEW_JSON_SCHEMA", "true")
 			}
+			output := &bytes.Buffer{}
 
-			assert.NoError(t, report.WriteResults("json", &jsonWritten, nil, inputResults, "", false), tc.name)
+			err := report.Write("json", output, nil, tc.input, "", false)
+			require.NoError(t, err, tc.name)
 
-			writtenResults := report.Results{}
-			errJson := json.Unmarshal([]byte(jsonWritten.String()), &writtenResults)
-			assert.NoError(t, errJson, "invalid json written", tc.name)
+			b, err := ioutil.ReadFile(tc.expectedJSONFile)
+			require.NoError(t, err, tc.name)
 
-			assert.Equal(t, tc.expectedJSON, writtenResults, tc.name)
+			assert.JSONEq(t, string(b), output.String())
 		})
 	}
-
 }
 
 func TestReportWriter_Template(t *testing.T) {
@@ -325,15 +345,18 @@ func TestReportWriter_Template(t *testing.T) {
 			}
 			os.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			tmplWritten := bytes.Buffer{}
-			inputResults := report.Results{
-				{
-					Target:          "foojunit",
-					Type:            "test",
-					Vulnerabilities: tc.detectedVulns,
+			input := report.Report{
+				ImageID: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
+				Results: report.Results{
+					{
+						Target:          "foojunit",
+						Type:            "test",
+						Vulnerabilities: tc.detectedVulns,
+					},
 				},
 			}
 
-			assert.NoError(t, report.WriteResults("template", &tmplWritten, nil, inputResults, tc.template, false))
+			assert.NoError(t, report.Write("template", &tmplWritten, nil, input, tc.template, false))
 			assert.Equal(t, tc.expected, tmplWritten.String())
 		})
 	}
