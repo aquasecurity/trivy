@@ -1,6 +1,4 @@
 version: 2.1
-orbs:
-  codecov: codecov/codecov@1.1.0
 
 defaults: &defaults
   docker :
@@ -9,16 +7,6 @@ defaults: &defaults
     CGO_ENABLED: "0"
 
 jobs:
-  unit-test:
-    <<: *defaults
-    steps:
-      - checkout
-      - run:
-          name: Test
-          command: make test
-      - codecov/upload:
-          file: ./coverage.txt
-
   release:
     <<: *defaults
     steps:
@@ -56,7 +44,6 @@ workflows:
   version: 2
   release:
     jobs:
-      - unit-test
       - release:
           filters:
             branches:

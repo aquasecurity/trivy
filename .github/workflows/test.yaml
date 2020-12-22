@@ -1,16 +1,25 @@
 name: Test
 on: pull_request
 jobs:
-  golangci:
-    name: lint
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: golangci-lint
+
+      - name: Lint
         uses: golangci/golangci-lint-action@v2
         with:
           version: v1.31
           args: --deadline=30m
+
+      - name: Run unit tests
+        run: make test
+
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v1
+        with:
+          files: ./coverage.txt
 
   integration:
     name: Integration Test
