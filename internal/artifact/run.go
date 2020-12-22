@@ -83,12 +83,13 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	results, err := scanner.ScanArtifact(ctx, scanOptions)
+	scanReport, err := scanner.ScanArtifact(ctx, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
 
 	vulnClient := initializeVulnerabilityClient()
+	results := scanReport.Results
 	for i := range results {
 		vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
 		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
@@ -99,7 +100,7 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 		results[i].Vulnerabilities = vulns
 	}
 
-	if err = report.WriteResults(c.Format, c.Output, c.Severities, results, c.Template, c.Light); err != nil {
+	if err = report.Write(c.Format, c.Output, c.Severities, scanReport, c.Template, c.Light); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 

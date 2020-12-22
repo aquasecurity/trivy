@@ -18,6 +18,7 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -25,10 +26,18 @@ import (
 // Now returns the current time
 var Now = time.Now
 
+// Report represents a scan result
+type Report struct {
+	ImageID     string
+	RepoTags    []string
+	RepoDigests []string
+	Results     Results
+}
+
 // Results to hold list of Result
 type Results []Result
 
-// Result to hold image scan results
+// Result holds a target and detected vulnerabilities
 type Result struct {
 	Target          string                        `json:"Target"`
 	Type            string                        `json:"Type,omitempty"`
@@ -36,8 +45,9 @@ type Result struct {
 	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities"`
 }
 
-// WriteResults writes the result to output, format as passed in argument
-func WriteResults(format string, output io.Writer, severities []dbTypes.Severity, results Results, outputTemplate string, light bool) error {
+// Write writes the result to output, format as passed in argument
+func Write(format string, output io.Writer, severities []dbTypes.Severity, report Report,
+	outputTemplate string, light bool) error {
 	var writer Writer
 	switch format {
 	case "table":
@@ -53,7 +63,7 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 		return xerrors.Errorf("unknown format: %v", format)
 	}
 
-	if err := writer.Write(results); err != nil {
+	if err := writer.Write(report); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
 	return nil
@@ -61,7 +71,7 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 
 // Writer defines the result write operation
 type Writer interface {
-	Write(Results) error
+	Write(Report) error
 }
 
 // TableWriter implements Writer and output in tabular form
@@ -72,8 +82,8 @@ type TableWriter struct {
 }
 
 // Write writes the result on standard output
-func (tw TableWriter) Write(results Results) error {
-	for _, result := range results {
+func (tw TableWriter) Write(report Report) error {
+	for _, result := range report.Results {
 		tw.write(result)
 	}
 	return nil
@@ -156,8 +166,14 @@ type JSONWriter struct {
 }
 
 // Write writes the results in JSON format
-func (jw JSONWriter) Write(results Results) error {
-	output, err := json.MarshalIndent(results, "", "  ")
+func (jw JSONWriter) Write(report Report) error {
+	var v interface{} = report
+	if os.Getenv("TRIVY_NEW_JSON_SCHEMA") == "" {
+		log.Logger.Warnf("DEPRECATED: the current JSON schema is deprecated, check %s for more info.",
+			"https://github.com/aquasecurity/trivy/discussions/[TODO]")
+		v = report.Results
+	}
+	output, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
 		return xerrors.Errorf("failed to marshal json: %w", err)
 	}
@@ -218,8 +234,8 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 }
 
 // Write writes result
-func (tw TemplateWriter) Write(results Results) error {
-	err := tw.Template.Execute(tw.Output, results)
+func (tw TemplateWriter) Write(report Report) error {
+	err := tw.Template.Execute(tw.Output, report.Results)
 	if err != nil {
 		return xerrors.Errorf("failed to write with template: %w", err)
 	}
