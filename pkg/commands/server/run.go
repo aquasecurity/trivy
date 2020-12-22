@@ -6,6 +6,8 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
+	"github.com/aquasecurity/trivy/pkg/commands/server/config"
+	"github.com/aquasecurity/trivy/pkg/commands/server/extendedconfig"
 	"github.com/aquasecurity/trivy/pkg/log"
 	rpcServer "github.com/aquasecurity/trivy/pkg/rpc/server"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -13,10 +15,10 @@ import (
 
 // Run runs the scan
 func Run(ctx *cli.Context) error {
-	return run(NewConfig(ctx))
+	return run(config.NewConfig(ctx))
 }
 
-func run(c Config) (err error) {
+func run(c config.Config) (err error) {
 	if err = log.InitLogger(c.Debug, c.Quiet); err != nil {
 		return xerrors.Errorf("failed to initialize a logger: %w", err)
 	}
@@ -51,7 +53,9 @@ func run(c Config) (err error) {
 	if err = db.Init(c.CacheDir); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
+	ec := extendedconfig.New(c)
+	ec.Init()
 
 	server := rpcServer.NewServer(c.AppVersion, c.Listen, c.CacheDir, c.Token, c.TokenHeader)
-	return server.ListenAndServe(cache)
+	return server.ListenAndServe(ec, cache)
 }
