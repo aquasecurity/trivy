@@ -4,7 +4,7 @@ fullnameOverride: ""
 image:
   registry: docker.io
   repository: aquasec/trivy
-  tag: 0.14.0
+  tag: 0.15.0
   pullPolicy: IfNotPresent
 
 replicaCount: 1
@@ -61,6 +61,18 @@ trivy:
   # If the flag is enabled you have to manually download the `trivy.db` file and mount it in the
   # `/home/scanner/.cache/trivy/db/trivy.db` path (see `cacheDir`).
   skipUpdate: false
+  # Trivy supports filesystem and redis as caching backend
+  # https://github.com/aquasecurity/trivy#specify-cache-backend
+  # This location is only used for the cache, not the db storage: https://github.com/aquasecurity/trivy/issues/765#issue-756010345
+  #
+  # In case you specify redis as backend, make sure you installed a redis server yourself, e.g.
+  # https://bitnami.com/stack/redis/helm
+  #
+  # In case redis is not enabled, the filesystem will be used
+  cache:
+    redis:
+      enabled: false
+      url: "" # e.g. redis://redis.redis.svc:6379
 
 service:
   # type Kubernetes service type
