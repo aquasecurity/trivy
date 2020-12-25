@@ -31,7 +31,7 @@ type Cache struct {
 // NewCache is the factory method for Cache
 func NewCache(backend string) (Cache, error) {
 	if strings.HasPrefix(backend, "redis://") {
-		log.Logger.Info("Redis cache: %s", backend)
+		log.Logger.Infof("Redis cache: %s", backend)
 		redisCache := cache.NewRedisCache(&redis.Options{
 			Addr: strings.TrimPrefix(backend, "redis://"),
 		})
