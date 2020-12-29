@@ -7,6 +7,9 @@ image:
   tag: 0.14.0
   pullPolicy: IfNotPresent
 
+imagePullSecrets: []
+# - name: pullsecret
+
 replicaCount: 1
 
 persistence:
