@@ -62,12 +62,14 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		if !s.isSupported(pkg) {
+		if !s.isFromSupportedVendor(pkg) {
+			log.Logger.Debugf("Skipping %s: unsupported vendor", pkg.Name)
 			continue
 		}
 
 		// For Red Hat Security Data API containing only source package names
-		advisories, err := s.vs.Get(osVer, pkg.SrcName)
+		pkgName := addModularNamespace(pkg.SrcName, pkg.Modularitylabel)
+		advisories, err := s.vs.Get(osVer, pkgName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
 		}
@@ -88,8 +90,9 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 			vulns = append(vulns, vuln)
 		}
 
-		// For Red Hat OVAL containing only binary package names
-		advisories, err = s.vs.Get(osVer, pkg.Name)
+		// For Red Hat OVAL v2 containing only binary package names
+		pkgName = addModularNamespace(pkg.Name, pkg.Modularitylabel)
+		advisories, err = s.vs.Get(osVer, pkgName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
 		}
@@ -136,20 +139,6 @@ func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool
 	return now.Before(eolDate)
 }
 
-func (s *Scanner) isSupported(pkg ftypes.Package) bool {
-	if !s.isFromSupportedVendor(pkg) {
-		log.Logger.Debugf("Skipping %s: unsupported vendor", pkg.Name)
-		return false
-	}
-
-	// Skip modular packages until OVALv2 is supported
-	if pkg.Modularitylabel != "" {
-		log.Logger.Debugf("Skipping modular package %s (%s) as temporary workaround", pkg.Name, pkg.Modularitylabel)
-		return false
-	}
-	return true
-}
-
 func (s *Scanner) isFromSupportedVendor(pkg ftypes.Package) bool {
 	for _, s := range excludedVendorsSuffix {
 		if strings.HasSuffix(pkg.Release, s) {
@@ -157,4 +146,18 @@ func (s *Scanner) isFromSupportedVendor(pkg ftypes.Package) bool {
 		}
 	}
 	return true
+}
+
+func addModularNamespace(name, label string) string {
+	// e.g. npm, nodejs:12:8030020201124152102:229f0a1c => nodejs:12::npm
+	var count int
+	for i, r := range label {
+		if r == ':' {
+			count++
+		}
+		if count == 2 {
+			return label[:i] + "::" + name
+		}
+	}
+	return name
 }

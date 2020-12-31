@@ -178,6 +178,56 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path: modular packages",
+			args: args{
+				osVer: "8.3",
+				pkgs: []ftypes.Package{
+					{
+						Name:            "php",
+						Version:         "7.2.24",
+						Release:         "1.module_el8.2.0+313+b04d0a66",
+						Arch:            "x86_64",
+						Epoch:           0,
+						SrcName:         "php",
+						SrcVersion:      "7.2.24",
+						SrcRelease:      "1.module_el8.2.0+313+b04d0a66",
+						SrcEpoch:        0,
+						Modularitylabel: "php:7.2:8020020200507003613:2c7ca891",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:3e968ecc016e1b9aa19023798229bf2d25c813d1bf092533f38b056aff820524",
+						},
+					},
+				},
+			},
+			get: []dbTypes.GetExpectation{
+				{
+					Args: dbTypes.GetArgs{
+						Release: "8",
+						PkgName: "php:7.2::php",
+					},
+					Returns: dbTypes.GetReturns{
+						Advisories: []dbTypes.Advisory{
+							{
+								VulnerabilityID: "CVE-2019-11043",
+								FixedVersion:    "7.3.5-5.module+el8.1.0+4560+e0eee7d6",
+							},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2019-11043",
+					PkgName:          "php",
+					InstalledVersion: "7.2.24-1.module_el8.2.0+313+b04d0a66",
+					FixedVersion:     "7.3.5-5.module+el8.1.0+4560+e0eee7d6",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:3e968ecc016e1b9aa19023798229bf2d25c813d1bf092533f38b056aff820524",
+					},
+				},
+			},
+		},
+		{
 			name: "happy path: packages from remi repository are skipped",
 			args: args{
 				osVer: "7.6",
@@ -209,46 +259,6 @@ func TestScanner_Detect(t *testing.T) {
 							{
 								VulnerabilityID: "CVE-2011-4718",
 								FixedVersion:    "",
-							},
-						},
-					},
-				},
-			},
-			want: []types.DetectedVulnerability(nil),
-		},
-		{
-			name: "happy path: modular packages are skipped",
-			args: args{
-				osVer: "8.3",
-				pkgs: []ftypes.Package{
-					{
-						Name:            "php",
-						Version:         "7.2.24",
-						Release:         "1.module_el8.2.0+313+b04d0a66",
-						Arch:            "x86_64",
-						Epoch:           0,
-						SrcName:         "php",
-						SrcVersion:      "7.2.24",
-						SrcRelease:      "1.module_el8.2.0+313+b04d0a66",
-						SrcEpoch:        0,
-						Modularitylabel: "php:7.2:8020020200507003613:2c7ca891",
-						Layer: ftypes.Layer{
-							DiffID: "sha256:3e968ecc016e1b9aa19023798229bf2d25c813d1bf092533f38b056aff820524",
-						},
-					},
-				},
-			},
-			get: []dbTypes.GetExpectation{
-				{
-					Args: dbTypes.GetArgs{
-						Release: "8",
-						PkgName: "php",
-					},
-					Returns: dbTypes.GetReturns{
-						Advisories: []dbTypes.Advisory{
-							{
-								VulnerabilityID: "CVE-2019-11043",
-								FixedVersion:    "7.3.5-5.module+el8.1.0+4560+e0eee7d6",
 							},
 						},
 					},
