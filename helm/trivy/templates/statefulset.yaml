@@ -51,6 +51,10 @@ spec:
               value: "0.0.0.0:{{ .Values.service.port | default 4954 }}"
             - name: "TRIVY_CACHE_DIR"
               value: "/home/scanner/.cache/trivy"
+            {{- if .Values.trivy.cache.redis.enabled }}
+            - name: "TRIVY_CACHE_BACKEND"
+              value: {{ .Values.trivy.cache.redis.url | quote }}
+            {{- end }}
             - name: "TRIVY_DEBUG"
               value: {{ .Values.trivy.debugMode | default false | quote }}
             - name: "TRIVY_SKIP_UPDATE"
