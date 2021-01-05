@@ -1745,10 +1745,10 @@ NAME:
    trivy - A simple and comprehensive vulnerability scanner for containers
 
 USAGE:
-   trivy [global options] command [command options] image_name
+   trivy [global options] command [command options] target
 
 VERSION:
-   v0.9.0
+   v0.15.0
 
 COMMANDS:
    image, i          scan an image
@@ -1764,7 +1764,6 @@ GLOBAL OPTIONS:
    --cache-dir value  cache directory (default: "/Users/teppei/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
    --help, -h         show help (default: false)
    --version, -v      print the version (default: false)
-
 ```
 
 ## Image
@@ -1775,30 +1774,32 @@ NAME:
    trivy image - scan an image
 
 USAGE:
-   trivy image [command options] [arguments...]
+   trivy image [command options] image_name
 
 OPTIONS:
-   --template value    output template [$TRIVY_TEMPLATE]
-   --format value      format (table, json, template) (default: "table") [$TRIVY_FORMAT]
-   --input value       input file path instead of image name [$TRIVY_INPUT]
-   --severity value    severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
-   --output value      output file name [$TRIVY_OUTPUT]
-   --exit-code value   Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
-   --skip-update       skip db update (default: false) [$TRIVY_SKIP_UPDATE]
-   --download-db-only  download/update vulnerability database but don't run a scan (default: false) [$TRIVY_DOWNLOAD_DB_ONLY]
-   --reset             remove all caches and database (default: false) [$TRIVY_RESET]
-   --clear-cache       clear image caches without scanning (default: false) [$TRIVY_CLEAR_CACHE]
-   --no-progress       suppress progress bar (default: false) [$TRIVY_NO_PROGRESS]
-   --ignore-unfixed    display only fixed vulnerabilities (default: false) [$TRIVY_IGNORE_UNFIXED]
-   --removed-pkgs      detect vulnerabilities of removed packages (only for Alpine) (default: false) [$TRIVY_REMOVED_PKGS]
-   --vuln-type value   comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
-   --ignorefile value  specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
-   --timeout value     docker timeout (default: 2m0s) [$TRIVY_TIMEOUT]
-   --light             light mode: it's faster, but vulnerability descriptions and references are not displayed (default: false) [$TRIVY_LIGHT]
-   --list-all-pkgs     enabling the option will output all packages regardless of vulnerability [$TRIVY_LIST_ALL_PKGS]
-   --skip-files value  specify the file path to skip traversal [$TRIVY_SKIP_FILES]
-   --skip-dirs value   specify the directory where the traversal is skipped [$TRIVY_SKIP_DIRS]
-   --help, -h          show help (default: false)
+   --template value, -t value  output template [$TRIVY_TEMPLATE]
+   --format value, -f value    format (table, json, template) (default: "table") [$TRIVY_FORMAT]
+   --input value, -i value     input file path instead of image name [$TRIVY_INPUT]
+   --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
+   --output value, -o value    output file name [$TRIVY_OUTPUT]
+   --exit-code value           Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
+   --skip-update               skip db update (default: false) [$TRIVY_SKIP_UPDATE]
+   --download-db-only          download/update vulnerability database but don't run a scan (default: false) [$TRIVY_DOWNLOAD_DB_ONLY]
+   --reset                     remove all caches and database (default: false) [$TRIVY_RESET]
+   --clear-cache, -c           clear image caches without scanning (default: false) [$TRIVY_CLEAR_CACHE]
+   --no-progress               suppress progress bar (default: false) [$TRIVY_NO_PROGRESS]
+   --ignore-unfixed            display only fixed vulnerabilities (default: false) [$TRIVY_IGNORE_UNFIXED]
+   --removed-pkgs              detect vulnerabilities of removed packages (only for Alpine) (default: false) [$TRIVY_REMOVED_PKGS]
+   --vuln-type value           comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
+   --ignorefile value          specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
+   --timeout value             docker timeout (default: 2m0s) [$TRIVY_TIMEOUT]
+   --light                     light mode: it's faster, but vulnerability descriptions and references are not displayed (default: false) [$TRIVY_LIGHT]
+   --ignore-policy value       specify the Rego file to evaluate each vulnerability [$TRIVY_IGNORE_POLICY]
+   --list-all-pkgs             enabling the option will output all packages regardless of vulnerability (default: false) [$TRIVY_LIST_ALL_PKGS]
+   --skip-files value          specify the file path to skip traversal [$TRIVY_SKIP_FILES]
+   --skip-dirs value           specify the directory where the traversal is skipped [$TRIVY_SKIP_DIRS]
+   --cache-backend value       cache backend (e.g. redis://localhost:6379) (default: "fs") [$TRIVY_CACHE_BACKEND]
+   --help, -h                  show help (default: false)
 ```
 
 ## Client
@@ -1808,7 +1809,7 @@ NAME:
    trivy client - client mode
 
 USAGE:
-   trivy client [command options] [arguments...]
+   trivy client [command options] image_name
 
 OPTIONS:
    --template value, -t value  output template [$TRIVY_TEMPLATE]
@@ -1817,16 +1818,18 @@ OPTIONS:
    --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
    --output value, -o value    output file name [$TRIVY_OUTPUT]
    --exit-code value           Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
-   --clear-cache, -c           clear image caches without scanning [$TRIVY_CLEAR_CACHE]
-   --quiet, -q                 suppress progress bar and log output [$TRIVY_QUIET]
-   --ignore-unfixed            display only fixed vulnerabilities [$TRIVY_IGNORE_UNFIXED]
-   --debug, -d                 debug mode [$TRIVY_DEBUG]
+   --clear-cache, -c           clear image caches without scanning (default: false) [$TRIVY_CLEAR_CACHE]
+   --ignore-unfixed            display only fixed vulnerabilities (default: false) [$TRIVY_IGNORE_UNFIXED]
+   --removed-pkgs              detect vulnerabilities of removed packages (only for Alpine) (default: false) [$TRIVY_REMOVED_PKGS]
    --vuln-type value           comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
    --ignorefile value          specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
-   --cache-dir value           use as cache directory, but image cache is stored in /path/to/cache/fanal (default: "/Users/teppei/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
-   --timeout value             docker timeout (default: 1m0s) [$TRIVY_TIMEOUT]
+   --timeout value             docker timeout (default: 2m0s) [$TRIVY_TIMEOUT]
+   --ignore-policy value       specify the Rego file to evaluate each vulnerability [$TRIVY_IGNORE_POLICY]
    --token value               for authentication [$TRIVY_TOKEN]
+   --token-header value        specify a header name for token (default: "Trivy-Token") [$TRIVY_TOKEN_HEADER]
    --remote value              server address (default: "http://localhost:4954") [$TRIVY_REMOTE]
+   --custom-headers value      custom headers [$TRIVY_CUSTOM_HEADERS]
+   --help, -h                  show help (default: false)
 ```
 
 ## Server
@@ -1839,14 +1842,14 @@ USAGE:
    trivy server [command options] [arguments...]
 
 OPTIONS:
-   --skip-update       skip db update [$TRIVY_SKIP_UPDATE]
-   --download-db-only  download/update vulnerability database but don't run a scan [$TRIVY_DOWNLOAD_DB_ONLY]
-   --reset             remove all caches and database [$TRIVY_RESET]
-   --quiet, -q         suppress progress bar and log output [$TRIVY_QUIET]
-   --debug, -d         debug mode [$TRIVY_DEBUG]
-   --cache-dir value   use as cache directory, but image cache is stored in /path/to/cache/fanal (default: "/Users/teppei/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
-   --token value       for authentication [$TRIVY_TOKEN]
-   --listen value      listen address (default: "localhost:4954") [$TRIVY_LISTEN]
+   --skip-update          skip db update (default: false) [$TRIVY_SKIP_UPDATE]
+   --download-db-only     download/update vulnerability database but don't run a scan (default: false) [$TRIVY_DOWNLOAD_DB_ONLY]
+   --reset                remove all caches and database (default: false) [$TRIVY_RESET]
+   --cache-backend value  cache backend (e.g. redis://localhost:6379) (default: "fs") [$TRIVY_CACHE_BACKEND]
+   --token value          for authentication [$TRIVY_TOKEN]
+   --token-header value   specify a header name for token (default: "Trivy-Token") [$TRIVY_TOKEN_HEADER]
+   --listen value         listen address (default: "localhost:4954") [$TRIVY_LISTEN]
+   --help, -h             show help (default: false)
 ```
 
 # Air-gapped environment
