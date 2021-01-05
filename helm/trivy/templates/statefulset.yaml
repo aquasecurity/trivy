@@ -38,7 +38,7 @@ spec:
       {{- end }}
       {{- if .Values.image.pullSecret }}
       imagePullSecrets:
-        - name: {{- if .Values.image.pullSecret }}
+        - name: {{ .Values.image.pullSecret }}
       {{- end }}
       containers:
         - name: main
