@@ -51,6 +51,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `image.repository`                    | Image name                                                              | `aquasec/trivy` |
 | `image.tag`                           | Image tag                                                               | `{TAG_NAME}`   |
 | `image.pullPolicy`                    | Image pull policy                                                       | `IfNotPresent` |
+| `image.pullSecret`                    | The name of an imagePullSecret used to pull trivy image from e.g. Docker Hub or a private registry  | |
 | `replicaCount`                        | Number of Trivy Pods to run                                   | `1`            |
 | `trivy.debugMode`             | The flag to enable or disable Trivy debug mode                          | `false` |
 | `trivy.gitHubToken`           | The GitHub access token to download Trivy DB                            |      |
