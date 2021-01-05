@@ -6,9 +6,7 @@ image:
   repository: aquasec/trivy
   tag: 0.14.0
   pullPolicy: IfNotPresent
-
-imagePullSecrets: []
-# - name: pullsecret
+  pullSecret: ""
 
 replicaCount: 1
 
