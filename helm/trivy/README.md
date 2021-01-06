@@ -54,7 +54,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `image.pullSecret`                    | The name of an imagePullSecret used to pull trivy image from e.g. Docker Hub or a private registry  | |
 | `replicaCount`                        | Number of Trivy Pods to run                                   | `1`            |
 | `trivy.debugMode`             | The flag to enable or disable Trivy debug mode                          | `false` |
-| `trivy.gitHubToken`           | The GitHub access token to download Trivy DB                            |      |
+| `trivy.gitHubToken`           | The GitHub access token to download Trivy DB. More info: https://github.com/aquasecurity/trivy#github-rate-limiting                          |      |
 | `trivy.skipUpdate`            | The flag to enable or disable Trivy DB downloads from GitHub            | `false`        |
 | `trivy.cache.redis.enabled`           | Enable Redis as caching backend                                         | `false` |
 | `trivy.cache.redis.url`               | Specify redis connection url, e.g. redis://redis.redis.svc:6379         | `` |
