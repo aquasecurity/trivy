@@ -174,6 +174,8 @@ func inspect(ctx context.Context, artifact artifact.Artifact, c cache.LocalArtif
 		}
 	}
 	fmt.Println(imageInfo.Name)
+	fmt.Printf("RepoTags: %v\n", imageInfo.RepoTags)
+	fmt.Printf("RepoDigests: %v\n", imageInfo.RepoDigests)
 	fmt.Printf("%+v\n", mergedLayer.OS)
 	fmt.Printf("via image Packages: %d\n", len(mergedLayer.Packages))
 	for _, app := range mergedLayer.Applications {

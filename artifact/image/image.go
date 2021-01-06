@@ -51,9 +51,11 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	}
 
 	return types.ArtifactReference{
-		Name:    a.image.Name(),
-		ID:      imageID,
-		BlobIDs: diffIDs,
+		Name:        a.image.Name(),
+		ID:          imageID,
+		BlobIDs:     diffIDs,
+		RepoTags:    a.image.RepoTags(),
+		RepoDigests: a.image.RepoDigests(),
 	}, nil
 
 }

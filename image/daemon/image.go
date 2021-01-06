@@ -31,12 +31,12 @@ type opener func() (v1.Image, error)
 
 // Image implements v1.Image by extending daemon.Image.
 // The caller must call cleanup() to remove a temporary file.
-func Image(ref name.Reference) (v1.Image, func(), error) {
+func Image(ref name.Reference) (v1.Image, *types.ImageInspect, func(), error) {
 	cleanup := func() {}
 
 	c, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("failed to initialize a docker client: %w", err)
+		return nil, nil, cleanup, xerrors.Errorf("failed to initialize a docker client: %w", err)
 	}
 	defer func() {
 		if err != nil {
@@ -46,12 +46,12 @@ func Image(ref name.Reference) (v1.Image, func(), error) {
 
 	inspect, _, err := c.ImageInspectWithRaw(context.Background(), ref.Name())
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", ref.Name(), err)
+		return nil, nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", ref.Name(), err)
 	}
 
 	f, err := ioutil.TempFile("", "fanal-*")
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("failed to create a temporary file")
+		return nil, nil, cleanup, xerrors.Errorf("failed to create a temporary file")
 	}
 
 	cleanup = func() {
@@ -63,7 +63,7 @@ func Image(ref name.Reference) (v1.Image, func(), error) {
 	return &image{
 		opener:  imageOpener(c, ref, f),
 		inspect: inspect,
-	}, cleanup, nil
+	}, &inspect, cleanup, nil
 }
 
 func imageOpener(c *client.Client, ref name.Reference, f *os.File) opener {
