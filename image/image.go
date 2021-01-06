@@ -1,36 +1,25 @@
 package image
 
 import (
-	"bufio"
-	"compress/gzip"
 	"context"
-	"crypto/tls"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"strings"
 
-	"github.com/aquasecurity/fanal/image/token"
-	ispec "github.com/opencontainers/image-spec/specs-go/v1"
-
-	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/layout"
-	"github.com/google/go-containerregistry/pkg/v1/remote"
-	"github.com/google/go-containerregistry/pkg/v1/tarball"
 	multierror "github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/image/daemon"
 	"github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/fanal/utils"
 )
+
+type extender interface {
+	RepoTags() []string
+	RepoDigests() []string
+}
 
 type Image struct {
 	name   string
 	client v1.Image
+	extender
 }
 
 func (img Image) Name() string {
@@ -67,18 +56,19 @@ func (img Image) LayerByDiffID(h v1.Hash) (v1.Layer, error) {
 }
 
 func NewDockerImage(ctx context.Context, imageName string, option types.DockerOption) (Image, func(), error) {
-	img, cleanup, err := newDockerImage(ctx, imageName, option)
+	img, ext, cleanup, err := newDockerImage(ctx, imageName, option)
 	if err != nil {
 		return Image{}, func() {}, err
 	}
 	return Image{
-		name:   imageName,
-		client: img,
+		name:     imageName,
+		client:   img,
+		extender: ext,
 	}, cleanup, nil
 }
 
-func newDockerImage(ctx context.Context, imageName string, option types.DockerOption) (v1.Image, func(), error) {
-	var result error
+func newDockerImage(ctx context.Context, imageName string, option types.DockerOption) (v1.Image, extender, func(), error) {
+	var errs error
 
 	var nameOpts []name.Option
 	if option.NonSSL {
@@ -86,46 +76,26 @@ func newDockerImage(ctx context.Context, imageName string, option types.DockerOp
 	}
 	ref, err := name.ParseReference(imageName, nameOpts...)
 	if err != nil {
-		return nil, func() {}, xerrors.Errorf("failed to parse the image name: %w", err)
+		return nil, nil, func() {}, xerrors.Errorf("failed to parse the image name: %w", err)
 	}
 
 	// Try accessing Docker Daemon
-	img, cleanup, err := daemon.Image(ref)
+	img, ext, cleanup, err := tryDaemon(ref)
 	if err == nil {
 		// Return v1.Image if the image is found in Docker Engine
-		return img, cleanup, nil
+		return img, ext, cleanup, nil
 	}
-	result = multierror.Append(result, err)
+	errs = multierror.Append(errs, err)
 
 	// Try accessing Docker Registry
-	var remoteOpts []remote.Option
-	if option.InsecureSkipTLSVerify {
-		t := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		remoteOpts = append(remoteOpts, remote.WithTransport(t))
-	}
-
-	domain := ref.Context().RegistryStr()
-	auth := token.GetToken(ctx, domain, option)
-
-	if auth.Username != "" && auth.Password != "" {
-		remoteOpts = append(remoteOpts, remote.WithAuth(&auth))
-	} else if option.RegistryToken != "" {
-		bearer := authn.Bearer{Token: option.RegistryToken}
-		remoteOpts = append(remoteOpts, remote.WithAuth(&bearer))
-	} else {
-		remoteOpts = append(remoteOpts, remote.WithAuthFromKeychain(authn.DefaultKeychain))
-	}
-
-	img, err = remote.Image(ref, remoteOpts...)
+	img, ext, err = tryRemote(ctx, ref, option)
 	if err == nil {
 		// Return v1.Image if the image is found in Docker Registry
-		return img, func() {}, nil
+		return img, ext, func() {}, nil
 	}
-	result = multierror.Append(result, err)
 
-	return nil, func() {}, result
+	errs = multierror.Append(errs, err)
+	return nil, nil, func() {}, errs
 }
 
 func NewArchiveImage(fileName string) (Image, error) {
@@ -134,8 +104,9 @@ func NewArchiveImage(fileName string) (Image, error) {
 		return Image{}, err
 	}
 	return Image{
-		name:   fileName,
-		client: img,
+		name:     fileName,
+		client:   img,
+		extender: archiveExtender{},
 	}, nil
 }
 
@@ -158,89 +129,14 @@ func newArchiveImage(fileName string) (v1.Image, error) {
 	return nil, result
 }
 
-func tryDockerArchive(fileName string) (v1.Image, error) {
-	img, err := tarball.Image(fileOpener(fileName), nil)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to open %s as a Docker image: %w", fileName, err)
-	}
-	return img, nil
+type archiveExtender struct{}
+
+// RepoTags returns empty as an archive doesn't support RepoTags
+func (archiveExtender) RepoTags() []string {
+	return nil
 }
 
-func fileOpener(fileName string) func() (io.ReadCloser, error) {
-	return func() (io.ReadCloser, error) {
-		f, err := os.Open(fileName)
-		if err != nil {
-			return nil, xerrors.Errorf("unable to open the file: %w", err)
-		}
-
-		var r io.Reader
-		br := bufio.NewReader(f)
-		r = br
-
-		if utils.IsGzip(br) {
-			r, err = gzip.NewReader(br)
-			if err != nil {
-				return nil, xerrors.Errorf("failed to open gzip: %w", err)
-			}
-		}
-		return ioutil.NopCloser(r), nil
-	}
-}
-
-func tryOCI(fileName string) (v1.Image, error) {
-	var inputTag, inputFileName string
-
-	// Check if tag is specified in input
-	// e.g. /path/to/oci:0.0.1
-	if strings.Contains(fileName, ":") {
-		splitFileName := strings.SplitN(fileName, ":", 2)
-		inputFileName = splitFileName[0]
-		inputTag = splitFileName[1]
-	} else {
-		inputFileName = fileName
-		inputTag = ""
-	}
-
-	lp, err := layout.FromPath(inputFileName)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to open %s as an OCI Image: %w", fileName, err)
-	}
-
-	index, err := lp.ImageIndex()
-	if err != nil {
-		return nil, xerrors.Errorf("unable to retrieve index.json: %w", err)
-	}
-
-	m, err := index.IndexManifest()
-	if err != nil {
-		return nil, xerrors.Errorf("invalid index.json: %w", err)
-	}
-
-	if len(m.Manifests) == 0 {
-		return nil, xerrors.New("no valid manifest")
-	}
-
-	// Support image having tag separated by : , otherwise support first image
-	return getOCIImage(m, index, inputTag)
-}
-
-func getOCIImage(m *v1.IndexManifest, index v1.ImageIndex, inputTag string) (v1.Image, error) {
-	for _, manifest := range m.Manifests {
-		annotation := manifest.Annotations
-
-		tag := annotation[ispec.AnnotationRefName]
-		if inputTag == "" || // always select the first digest
-			tag == inputTag {
-			h := manifest.Digest
-
-			img, err := index.Image(h)
-			if err != nil {
-				return nil, xerrors.Errorf("invalid OCI image: %w", err)
-			}
-
-			return img, nil
-		}
-	}
-
-	return nil, xerrors.New("invalid OCI image tag")
+// RepoDigests returns empty as an archive doesn't support RepoDigests
+func (archiveExtender) RepoDigests() []string {
+	return nil
 }

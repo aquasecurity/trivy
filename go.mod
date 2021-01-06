@@ -7,7 +7,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.15-0.20190919025122-fc70bd9a86b5 // indirect
 	github.com/alicebob/miniredis/v2 v2.14.1
 	github.com/aquasecurity/go-dep-parser v0.0.0-20201028043324-889d4a92b8e0
-	github.com/aquasecurity/testdocker v0.0.0-20200426142840-5f05bce6f12a
+	github.com/aquasecurity/testdocker v0.0.0-20201220111429-5278b43e3eba
 	github.com/aws/aws-sdk-go v1.27.1
 	github.com/deckarep/golang-set v1.7.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -32,3 +32,6 @@ require (
 	go.etcd.io/bbolt v1.3.3
 	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543
 )
+
+// https://github.com/moby/term/issues/15
+replace golang.org/x/sys => golang.org/x/sys v0.0.0-20200826173525-f9321e4c35a6

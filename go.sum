@@ -52,6 +52,8 @@ github.com/aquasecurity/go-dep-parser v0.0.0-20201028043324-889d4a92b8e0 h1:cLH3
 github.com/aquasecurity/go-dep-parser v0.0.0-20201028043324-889d4a92b8e0/go.mod h1:X42mTIRhgPalSm81Om2kD+3ydeunbC8TZtZj1bvgRo8=
 github.com/aquasecurity/testdocker v0.0.0-20200426142840-5f05bce6f12a h1:hsw7PpiymXP64evn/K7gsj3hWzMqLrdoeE6JkqDocVg=
 github.com/aquasecurity/testdocker v0.0.0-20200426142840-5f05bce6f12a/go.mod h1:psfu0MVaiTDLpNxCoNsTeILSKY2EICBwv345f3M+Ffs=
+github.com/aquasecurity/testdocker v0.0.0-20201220111429-5278b43e3eba h1:0Tp/eLlMRmBHJFjV3HZImdb//tEzxBGXbI0OXUn6exg=
+github.com/aquasecurity/testdocker v0.0.0-20201220111429-5278b43e3eba/go.mod h1:psfu0MVaiTDLpNxCoNsTeILSKY2EICBwv345f3M+Ffs=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 h1:0CwZNZbxp69SHPdPJAN/hZIm0C4OItdklCFmMRWYpio=
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5/go.mod h1:wHh0iHkYZB8zMSxRWpUBQtwG5a7fFgvEO+odwuTv2gs=
@@ -528,6 +530,8 @@ golang.org/x/sys v0.0.0-20200323222414-85ca7c5b95cd/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20200327173247-9dae0f8f5775 h1:TC0v2RSO1u2kn1ZugjrFXkRZAEaqMN/RW+OTZkBzmLE=
 golang.org/x/sys v0.0.0-20200327173247-9dae0f8f5775/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20200519105757-fe76b779f299/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20200826173525-f9321e4c35a6 h1:DvY3Zkh7KabQE/kfzMvYvKirSiguP9Q/veMtkYyf0o8=
+golang.org/x/sys v0.0.0-20200826173525-f9321e4c35a6/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f h1:+Nyd8tzPX9R7BWHguqsrbFdRx3WQ/1ib8I44HXV5yTA=
 golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/text v0.0.0-20160726164857-2910a502d2bf/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=

@@ -54,9 +54,11 @@ type Application struct {
 
 // ArtifactReference represents a reference of container image, local filesystem and repository
 type ArtifactReference struct {
-	Name    string // image name, tar file name, directory or repository name
-	ID      string
-	BlobIDs []string
+	Name        string // image name, tar file name, directory or repository name
+	ID          string
+	BlobIDs     []string
+	RepoTags    []string
+	RepoDigests []string
 }
 
 // ArtifactInfo is stored in cache

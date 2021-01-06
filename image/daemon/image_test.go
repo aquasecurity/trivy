@@ -63,7 +63,7 @@ func TestImage(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			_, cleanup, err := Image(ref)
+			_, _, cleanup, err := Image(ref)
 			assert.Equal(t, tt.wantErr, err != nil, err)
 			defer func() {
 				if cleanup != nil {
@@ -96,7 +96,7 @@ func Test_image_ConfigName(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, cleanup, err := Image(ref)
+			img, _, cleanup, err := Image(ref)
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -156,7 +156,7 @@ func Test_image_ConfigFile(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, cleanup, err := Image(ref)
+			img, _, cleanup, err := Image(ref)
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -201,7 +201,7 @@ func Test_image_LayerByDiffID(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, cleanup, err := Image(ref)
+			img, _, cleanup, err := Image(ref)
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -230,7 +230,7 @@ func Test_image_RawConfigFile(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, cleanup, err := Image(ref)
+			img, _, cleanup, err := Image(ref)
 			require.NoError(t, err)
 			defer cleanup()
 

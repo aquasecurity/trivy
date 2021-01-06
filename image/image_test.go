@@ -55,21 +55,33 @@ func TestNewDockerImage(t *testing.T) {
 		option    types.DockerOption
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    v1.Image
-		wantErr bool
+		name            string
+		args            args
+		wantID          string
+		wantLayerIDs    []string
+		wantRepoTags    []string
+		wantRepoDigests []string
+		wantErr         bool
 	}{
 		{
 			name: "happy path with Docker Engine",
 			args: args{
 				imageName: "alpine:3.11",
 			},
+			wantID:       "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+			wantLayerIDs: []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
+			wantRepoTags: []string{"alpine:3.11"},
 		},
 		{
 			name: "happy path with Docker Registry",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+			},
+			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
+			wantLayerIDs: []string{"sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"},
+			wantRepoTags: []string{serverAddr + "/library/alpine:3.10"},
+			wantRepoDigests: []string{
+				serverAddr + "/library/alpine@sha256:e10ea963554297215478627d985466ada334ed15c56d3d6bb808ceab98374d91",
 			},
 		},
 		{
@@ -82,6 +94,12 @@ func TestNewDockerImage(t *testing.T) {
 					NonSSL:                true,
 					InsecureSkipTLSVerify: true,
 				},
+			},
+			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
+			wantLayerIDs: []string{"sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"},
+			wantRepoTags: []string{serverAddr + "/library/alpine:3.10"},
+			wantRepoDigests: []string{
+				serverAddr + "/library/alpine@sha256:e10ea963554297215478627d985466ada334ed15c56d3d6bb808ceab98374d91",
 			},
 		},
 		{
@@ -101,10 +119,28 @@ func TestNewDockerImage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewDockerImage(context.Background(), tt.args.imageName, tt.args.option)
+			img, cleanup, err := NewDockerImage(context.Background(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
-			assert.Equal(t, tt.wantErr, err != nil, err)
+			if tt.wantErr {
+				assert.NotNil(t, err)
+				return
+			}
+			assert.NoError(t, err)
+
+			gotID, err := img.ID()
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantID, gotID)
+
+			gotLayerIDs, err := img.LayerIDs()
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLayerIDs, gotLayerIDs)
+
+			gotRepoTags := img.RepoTags()
+			assert.Equal(t, tt.wantRepoTags, gotRepoTags)
+
+			gotRepoDigests := img.RepoDigests()
+			assert.Equal(t, tt.wantRepoDigests, gotRepoDigests)
 		})
 	}
 }
@@ -283,13 +319,19 @@ func TestNewArchiveImage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := NewArchiveImage(tt.args.fileName)
+			img, err := NewArchiveImage(tt.args.fileName)
 			switch {
 			case tt.wantErr != "":
+				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				return
 			default:
 				assert.NoError(t, err, tt.name)
 			}
+
+			// archive doesn't support RepoTags and RepoDigests
+			assert.Empty(t, img.RepoTags())
+			assert.Empty(t, img.RepoDigests())
 		})
 	}
 }
