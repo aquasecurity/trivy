@@ -63,7 +63,7 @@ spec:
               value: {{ .Values.trivy.debugMode | default false | quote }}
             - name: "TRIVY_SKIP_UPDATE"
               value: {{ .Values.trivy.skipUpdate | default false | quote }}
-            - name: "TRIVY_GITHUB_TOKEN"
+            - name: "GITHUB_TOKEN"
               valueFrom:
                 secretKeyRef:
                   name: {{ include "trivy.fullname" . }}
