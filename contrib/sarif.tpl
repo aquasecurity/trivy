@@ -1,12 +1,14 @@
 {
-  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.4.json",
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
   "version": "2.1.0",
   "runs": [
     {
       "tool": {
         "driver": {
           "name": "Trivy",
+          "informationUri": "https://github.com/aquasecurity/trivy",
           "fullName": "Trivy Vulnerability Scanner",
+          "version": "v0.15.0",
           "rules": [
         {{- $t_first := true }}
         {{- range . }}
@@ -25,6 +27,7 @@
               "fullDescription": {
                 "text": {{ endWithPeriod (escapeString .Title) | printf "%q" }}
               },
+              "helpUri": "{{ .PrimaryURL }}",
               "help": {
                 "text": {{ printf "Vulnerability %v\nSeverity: %v\nPackage: %v\nInstalled Version: %v\nFixed Version: %v\nLink: [%v](%v)" .VulnerabilityID .Vulnerability.Severity .PkgName .InstalledVersion .FixedVersion .VulnerabilityID .PrimaryURL | printf "%q"}},
                 "markdown": {{ printf "**Vulnerability %v**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|%v|%v|%v|%v|[%v](%v)|\n" .VulnerabilityID .Vulnerability.Severity .PkgName .InstalledVersion .FixedVersion .VulnerabilityID .PrimaryURL | printf "%q"}}
