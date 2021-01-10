@@ -1,0 +1,69 @@
+{
+  "version": "1.0.0",
+  "lockfileVersion": 1,
+  "requires": true,
+  "dependencies": {
+    "debug": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-2.0.0.tgz",
+      "integrity": "sha1-ib2d9nMrUSVrxnBTQrugLtEhMe8=",
+      "requires": {
+        "ms": "0.6.2"
+      },
+      "dependencies": {
+        "ms": {
+          "version": "0.6.2",
+          "resolved": "https://registry.npmjs.org/ms/-/ms-0.6.2.tgz",
+          "integrity": "sha1-2JwhJMb9wTU9Zai3e/GqxLGTcIw="
+        }
+      }
+    },
+    "ms": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
+      "integrity": "sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g="
+    },
+    "send": {
+      "version": "0.17.1",
+      "resolved": "https://registry.npmjs.org/send/-/send-0.17.1.tgz",
+      "integrity": "sha512-BsVKsiGcQMFwT8UxypobUKyv7irCNRHk1T0G680vk88yf6LBByGcZJOTJCrTP2xVN6yI+XjPJcNuE3V4fT9sAg==",
+      "requires": {
+        "debug": "2.6.9",
+        "depd": "~1.1.2",
+        "destroy": "~1.0.4",
+        "encodeurl": "~1.0.2",
+        "escape-html": "~1.0.3",
+        "etag": "~1.8.1",
+        "fresh": "0.5.2",
+        "http-errors": "~1.7.2",
+        "mime": "1.6.0",
+        "ms": "2.1.1",
+        "on-finished": "~2.3.0",
+        "range-parser": "~1.2.1",
+        "statuses": "~1.5.0"
+      },
+      "dependencies": {
+        "debug": {
+          "version": "2.6.9",
+          "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
+          "integrity": "sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==",
+          "requires": {
+            "ms": "2.0.0"
+          },
+          "dependencies": {
+            "ms": {
+              "version": "2.0.0",
+              "resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
+              "integrity": "sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g="
+            }
+          }
+        },
+        "ms": {
+          "version": "2.1.1",
+          "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.1.tgz",
+          "integrity": "sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg=="
+        }
+      }
+    }
+  }
+}

@@ -179,4 +179,15 @@ var (
 		{"verror", "1.10.0"},
 		{"vue", "2.6.10"},
 	}
+
+	// manually created
+	NpmNested = []types.Library{
+		{"debug", "2.0.0"},
+		{"debug", "2.6.9"},
+		{"ms", "0.6.2"},
+		{"ms", "2.0.0"},
+		{"ms", "2.1.0"},
+		{"ms", "2.1.1"},
+		{"send", "0.17.1"},
+	}
 )

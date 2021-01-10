@@ -2,7 +2,6 @@ package npm
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
@@ -25,29 +24,38 @@ func Parse(r io.Reader) ([]types.Library, error) {
 		return nil, err
 	}
 
-	unique := map[string]struct{}{}
-	var libs []types.Library
-	for pkgName, dependency := range lockFile.Dependencies {
-		dependencies := dependency.Dependencies
-		if dependencies == nil {
-			dependencies = map[string]Dependency{}
-		}
-		dependencies[pkgName] = dependency
+	libs := parse(lockFile.Dependencies)
+	return unique(libs), nil
+}
 
-		for pkgName, dependency := range dependencies {
-			if dependency.Dev {
-				continue
-			}
-			symbol := fmt.Sprintf("%s@%s", pkgName, dependency.Version)
-			if _, ok := unique[symbol]; ok {
-				continue
-			}
-			libs = append(libs, types.Library{
-				Name:    pkgName,
-				Version: dependency.Version,
-			})
-			unique[symbol] = struct{}{}
+func parse(dependencies map[string]Dependency) []types.Library {
+	var libs []types.Library
+	for pkgName, dependency := range dependencies {
+		if dependency.Dev {
+			continue
+		}
+
+		libs = append(libs, types.Library{
+			Name:    pkgName,
+			Version: dependency.Version,
+		})
+
+		if dependency.Dependencies != nil {
+			// Recursion
+			libs = append(libs, parse(dependency.Dependencies)...)
 		}
 	}
-	return libs, nil
+	return libs
+}
+
+func unique(libs []types.Library) []types.Library {
+	var uniqLibs []types.Library
+	unique := map[types.Library]struct{}{}
+	for _, lib := range libs {
+		if _, ok := unique[lib]; !ok {
+			unique[lib] = struct{}{}
+			uniqLibs = append(uniqLibs, lib)
+		}
+	}
+	return uniqLibs
 }
