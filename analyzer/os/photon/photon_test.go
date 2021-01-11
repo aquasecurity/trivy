@@ -16,21 +16,21 @@ func Test_photonOSAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
-		want      analyzer.AnalyzeReturn
+		want      *analyzer.AnalysisResult
 		wantErr   string
 	}{
 		{
 			name:      "happy path with Photon OS 3.0",
 			inputFile: "testdata/photon_3/os-release",
-			want: analyzer.AnalyzeReturn{
-				OS: types.OS{Family: os.Photon, Name: "3.0"},
+			want: &analyzer.AnalysisResult{
+				OS: &types.OS{Family: os.Photon, Name: "3.0"},
 			},
 		},
 		{
 			name:      "sad path",
 			inputFile: "testdata/not_photon/os-release",
-			want: analyzer.AnalyzeReturn{
-				OS: types.OS{Family: os.Photon, Name: "3.0"},
+			want: &analyzer.AnalysisResult{
+				OS: &types.OS{Family: os.Photon, Name: "3.0"},
 			},
 			wantErr: "photon: unable to analyze OS information",
 		},
@@ -41,7 +41,10 @@ func Test_photonOSAnalyzer_Analyze(t *testing.T) {
 			b, err := ioutil.ReadFile(tt.inputFile)
 			require.NoError(t, err)
 
-			got, err := a.Analyze(b)
+			got, err := a.Analyze(analyzer.AnalysisTarget{
+				FilePath: "etc/os-release",
+				Content:  b,
+			})
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

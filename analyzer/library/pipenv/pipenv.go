@@ -21,12 +21,12 @@ var requiredFiles = []string{"Pipfile.lock"}
 
 type pipenvLibraryAnalyzer struct{}
 
-func (a pipenvLibraryAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
-	ret, err := library.Analyze(content, pipenv.Parse)
+func (a pipenvLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+	res, err := library.Analyze(library.Pipenv, target.FilePath, target.Content, pipenv.Parse)
 	if err != nil {
-		return analyzer.AnalyzeReturn{}, xerrors.Errorf("unable to parse Pipfile.lock: %w", err)
+		return nil, xerrors.Errorf("unable to parse Pipfile.lock: %w", err)
 	}
-	return ret, nil
+	return res, nil
 }
 
 func (a pipenvLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {

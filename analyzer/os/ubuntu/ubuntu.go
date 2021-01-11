@@ -22,9 +22,9 @@ var requiredFiles = []string{"etc/lsb-release"}
 
 type ubuntuOSAnalyzer struct{}
 
-func (a ubuntuOSAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
+func (a ubuntuOSAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	isUbuntu := false
-	scanner := bufio.NewScanner(bytes.NewBuffer(content))
+	scanner := bufio.NewScanner(bytes.NewBuffer(target.Content))
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "DISTRIB_ID=Ubuntu" {
@@ -33,15 +33,15 @@ func (a ubuntuOSAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error
 		}
 
 		if isUbuntu && strings.HasPrefix(line, "DISTRIB_RELEASE=") {
-			return analyzer.AnalyzeReturn{
-				OS: types.OS{
+			return &analyzer.AnalysisResult{
+				OS: &types.OS{
 					Family: aos.Ubuntu,
 					Name:   strings.TrimSpace(line[16:]),
 				},
 			}, nil
 		}
 	}
-	return analyzer.AnalyzeReturn{}, xerrors.Errorf("ubuntu: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("ubuntu: %w", aos.AnalyzeOSError)
 }
 
 func (a ubuntuOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

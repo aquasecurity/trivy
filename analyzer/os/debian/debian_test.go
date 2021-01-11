@@ -16,14 +16,14 @@ func Test_debianOSAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
-		want      analyzer.AnalyzeReturn
+		want      *analyzer.AnalysisResult
 		wantErr   string
 	}{
 		{
 			name:      "happy path with debian 9",
 			inputFile: "testdata/debian_9/etc/debian_version",
-			want: analyzer.AnalyzeReturn{
-				OS: types.OS{
+			want: &analyzer.AnalysisResult{
+				OS: &types.OS{
 					Family: aos.Debian,
 					Name:   "9.8",
 				},
@@ -32,8 +32,8 @@ func Test_debianOSAnalyzer_Analyze(t *testing.T) {
 		{
 			name:      "happy path with debian sid",
 			inputFile: "testdata/debian_sid/etc/debian_version",
-			want: analyzer.AnalyzeReturn{
-				OS: types.OS{
+			want: &analyzer.AnalysisResult{
+				OS: &types.OS{
 					Family: aos.Debian,
 					Name:   "buster/sid",
 				},
@@ -51,7 +51,10 @@ func Test_debianOSAnalyzer_Analyze(t *testing.T) {
 			b, err := ioutil.ReadFile(tt.inputFile)
 			require.NoError(t, err)
 
-			got, err := a.Analyze(b)
+			got, err := a.Analyze(analyzer.AnalysisTarget{
+				FilePath: "etc/debian_version",
+				Content:  b,
+			})
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

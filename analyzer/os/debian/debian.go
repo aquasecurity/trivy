@@ -21,15 +21,15 @@ var requiredFiles = []string{"etc/debian_version"}
 
 type debianOSAnalyzer struct{}
 
-func (a debianOSAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
-	scanner := bufio.NewScanner(bytes.NewBuffer(content))
+func (a debianOSAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+	scanner := bufio.NewScanner(bytes.NewBuffer(target.Content))
 	for scanner.Scan() {
 		line := scanner.Text()
-		return analyzer.AnalyzeReturn{
-			OS: types.OS{Family: aos.Debian, Name: line},
+		return &analyzer.AnalysisResult{
+			OS: &types.OS{Family: aos.Debian, Name: line},
 		}, nil
 	}
-	return analyzer.AnalyzeReturn{}, xerrors.Errorf("debian: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("debian: %w", aos.AnalyzeOSError)
 }
 
 func (a debianOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

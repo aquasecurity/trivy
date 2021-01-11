@@ -22,12 +22,12 @@ var requiredFiles = []string{"yarn.lock"}
 
 type yarnLibraryAnalyzer struct{}
 
-func (a yarnLibraryAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
-	ret, err := library.Analyze(content, yarn.Parse)
+func (a yarnLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+	res, err := library.Analyze(library.Yarn, target.FilePath, target.Content, yarn.Parse)
 	if err != nil {
-		return analyzer.AnalyzeReturn{}, xerrors.Errorf("unable to parse yarn.lock: %w", err)
+		return nil, xerrors.Errorf("unable to parse yarn.lock: %w", err)
 	}
-	return ret, nil
+	return res, nil
 }
 
 func (a yarnLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {

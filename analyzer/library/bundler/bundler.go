@@ -22,12 +22,12 @@ var (
 
 type bundlerLibraryAnalyzer struct{}
 
-func (a bundlerLibraryAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
-	ret, err := library.Analyze(content, bundler.Parse)
+func (a bundlerLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+	res, err := library.Analyze(library.Bundler, target.FilePath, target.Content, bundler.Parse)
 	if err != nil {
-		return analyzer.AnalyzeReturn{}, xerrors.Errorf("unable to parse Gemfile.lock: %w", err)
+		return nil, xerrors.Errorf("unable to parse Gemfile.lock: %w", err)
 	}
-	return ret, nil
+	return res, nil
 }
 
 func (a bundlerLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
