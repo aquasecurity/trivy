@@ -1136,7 +1136,7 @@ There is a built-in Rego library with helper functions that you can import into 
 To get started, see the [example policy](./contrib/example_policy).
 
 ```
-$ trivy image --policy contrib/example_filter/basic.rego centos:7
+$ trivy image --ignore-policy contrib/example_filter/basic.rego centos:7
 ```
 
 <details>
