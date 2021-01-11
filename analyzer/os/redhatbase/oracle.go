@@ -21,20 +21,20 @@ func init() {
 
 type oracleOSAnalyzer struct{}
 
-func (a oracleOSAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
-	scanner := bufio.NewScanner(bytes.NewBuffer(content))
+func (a oracleOSAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+	scanner := bufio.NewScanner(bytes.NewBuffer(target.Content))
 	for scanner.Scan() {
 		line := scanner.Text()
 		result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
 		if len(result) != 3 {
-			return analyzer.AnalyzeReturn{}, xerrors.New("oracle: invalid oracle-release")
+			return nil, xerrors.New("oracle: invalid oracle-release")
 		}
-		return analyzer.AnalyzeReturn{
-			OS: types.OS{Family: aos.Oracle, Name: result[2]},
+		return &analyzer.AnalysisResult{
+			OS: &types.OS{Family: aos.Oracle, Name: result[2]},
 		}, nil
 	}
 
-	return analyzer.AnalyzeReturn{}, xerrors.Errorf("oracle: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("oracle: %w", aos.AnalyzeOSError)
 }
 
 func (a oracleOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

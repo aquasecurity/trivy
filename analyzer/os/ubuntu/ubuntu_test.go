@@ -15,14 +15,14 @@ func Test_ubuntuOSAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
-		want      analyzer.AnalyzeReturn
+		want      *analyzer.AnalysisResult
 		wantErr   string
 	}{
 		{
 			name:      "happy path",
 			inputFile: "testdata/lsb-release",
-			want: analyzer.AnalyzeReturn{
-				OS: types.OS{Family: "ubuntu", Name: "18.04"},
+			want: &analyzer.AnalysisResult{
+				OS: &types.OS{Family: "ubuntu", Name: "18.04"},
 			},
 		},
 		{
@@ -37,7 +37,10 @@ func Test_ubuntuOSAnalyzer_Analyze(t *testing.T) {
 			b, err := ioutil.ReadFile(tt.inputFile)
 			require.NoError(t, err)
 
-			got, err := a.Analyze(b)
+			got, err := a.Analyze(analyzer.AnalysisTarget{
+				FilePath: "etc/lsb-release",
+				Content:  b,
+			})
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

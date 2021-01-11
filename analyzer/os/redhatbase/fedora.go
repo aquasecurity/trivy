@@ -20,23 +20,23 @@ func init() {
 
 type fedoraOSAnalyzer struct{}
 
-func (a fedoraOSAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
-	scanner := bufio.NewScanner(bytes.NewBuffer(content))
+func (a fedoraOSAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+	scanner := bufio.NewScanner(bytes.NewBuffer(target.Content))
 	for scanner.Scan() {
 		line := scanner.Text()
 		result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))
 		if len(result) != 3 {
-			return analyzer.AnalyzeReturn{}, xerrors.New("cent: Invalid fedora-release")
+			return nil, xerrors.New("cent: Invalid fedora-release")
 		}
 
 		switch strings.ToLower(result[1]) {
 		case "fedora", "fedora linux":
-			return analyzer.AnalyzeReturn{
-				OS: types.OS{Family: aos.Fedora, Name: result[2]},
+			return &analyzer.AnalysisResult{
+				OS: &types.OS{Family: aos.Fedora, Name: result[2]},
 			}, nil
 		}
 	}
-	return analyzer.AnalyzeReturn{}, xerrors.Errorf("fedora: %w", aos.AnalyzeOSError)
+	return nil, xerrors.Errorf("fedora: %w", aos.AnalyzeOSError)
 }
 
 func (a fedoraOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {

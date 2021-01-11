@@ -4,18 +4,34 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/types"
+	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
-func Analyze(content []byte, parse func(r io.Reader) ([]godeptypes.Library, error)) (analyzer.AnalyzeReturn, error) {
+func Analyze(analyzerType, filePath string, content []byte, parse func(r io.Reader) ([]godeptypes.Library, error)) (
+	*analyzer.AnalysisResult, error) {
 	r := bytes.NewBuffer(content)
-	libs, err := parse(r)
+	parsedLibs, err := parse(r)
 	if err != nil {
-		return analyzer.AnalyzeReturn{}, xerrors.Errorf("error with a lock file: %w", err)
+		return nil, xerrors.Errorf("error with a lock file: %w", err)
 	}
-	return analyzer.AnalyzeReturn{
+
+	var libs []types.LibraryInfo
+	for _, lib := range parsedLibs {
+		libs = append(libs, types.LibraryInfo{
+			Library: lib,
+		})
+	}
+	apps := []types.Application{{
+		Type:      analyzerType,
+		FilePath:  filePath,
 		Libraries: libs,
+	}}
+
+	return &analyzer.AnalysisResult{
+		Applications: apps,
 	}, nil
 }

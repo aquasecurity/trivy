@@ -19,12 +19,12 @@ var requiredFiles = []string{"Cargo.lock"}
 
 type cargoLibraryAnalyzer struct{}
 
-func (a cargoLibraryAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
-	ret, err := library.Analyze(content, cargo.Parse)
+func (a cargoLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+	res, err := library.Analyze(library.Cargo, target.FilePath, target.Content, cargo.Parse)
 	if err != nil {
-		return analyzer.AnalyzeReturn{}, xerrors.Errorf("error with Cargo.lock: %w", err)
+		return nil, xerrors.Errorf("error with Cargo.lock: %w", err)
 	}
-	return ret, nil
+	return res, nil
 }
 
 func (a cargoLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {

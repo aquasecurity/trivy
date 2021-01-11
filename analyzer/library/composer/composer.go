@@ -23,12 +23,12 @@ var (
 
 type composerLibraryAnalyzer struct{}
 
-func (a composerLibraryAnalyzer) Analyze(content []byte) (analyzer.AnalyzeReturn, error) {
-	ret, err := library.Analyze(content, composer.Parse)
+func (a composerLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+	res, err := library.Analyze(library.Composer, target.FilePath, target.Content, composer.Parse)
 	if err != nil {
-		return analyzer.AnalyzeReturn{}, xerrors.Errorf("error with composer.lock: %w", err)
+		return nil, xerrors.Errorf("error with composer.lock: %w", err)
 	}
-	return ret, nil
+	return res, nil
 }
 
 func (a composerLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
