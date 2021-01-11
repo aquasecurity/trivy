@@ -37,6 +37,18 @@ securityContext:
   privileged: false
   readOnlyRootFilesystem: true
 
+## Node labels for pod assignment
+## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+nodeSelector: {}
+
+## Affinity settings for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+affinity: {}
+
+## Tolerations for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+tolerations: []
+
 trivy:
   # debugMode the flag to enable Trivy debug mode
   debugMode: false

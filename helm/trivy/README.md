@@ -63,6 +63,9 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `httpProxy`                           | The URL of the HTTP proxy server                                        |     |
 | `httpsProxy`                          | The URL of the HTTPS proxy server                                       |     |
 | `noProxy`                             | The URLs that the proxy settings do not apply to                        |     |
+| `nodeSelector`                        | Node labels for pod assignment                                              |     |
+| `affinity`                        | Affinity settings for pod assignment                                              |     |
+| `tolerations`                        | Tolerations for pod assignment                                              |     |
 
 The above parameters map to the env variables defined in [trivy](https://github.com/aquasecurity/trivy#configuration).
 
