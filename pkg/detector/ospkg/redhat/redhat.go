@@ -9,8 +9,8 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat"
+	oval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat-oval"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -40,13 +40,15 @@ var (
 
 // Scanner implements the Redhat scanner
 type Scanner struct {
-	vs dbTypes.VulnSrc
+	api  redhat.VulnSrc
+	oval oval.VulnSrc
 }
 
 // NewScanner is the factory method for Scanner
 func NewScanner() *Scanner {
 	return &Scanner{
-		vs: redhat.NewVulnSrc(),
+		api:  redhat.NewVulnSrc(),
+		oval: oval.NewVulnSrc(),
 	}
 }
 
@@ -66,50 +68,68 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 			continue
 		}
 
-		// For Red Hat Security Data API containing only source package names
-		pkgName := addModularNamespace(pkg.SrcName, pkg.Modularitylabel)
-		advisories, err := s.vs.Get(osVer, pkgName)
+		detectedVulns, err := s.detectFixedVulnerabilities(osVer, pkg)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
+			return nil, err
 		}
+		vulns = append(vulns, detectedVulns...)
 
-		installed := utils.FormatVersion(pkg)
-		installedVersion := version.NewVersion(installed)
+		detectedVulns, err = s.detectUnfixedVulnerabilities(osVer, pkg)
+		if err != nil {
+			return nil, err
+		}
+		vulns = append(vulns, detectedVulns...)
+	}
+	return vulns, nil
+}
 
-		for _, adv := range advisories {
-			if adv.FixedVersion != "" {
-				continue
-			}
+func (s *Scanner) detectFixedVulnerabilities(osVer string, pkg ftypes.Package) ([]types.DetectedVulnerability, error) {
+	// For Red Hat OVAL v2 containing only binary package names
+	pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
+	advisories, err := s.oval.Get(osVer, pkgName, pkg.ContentSets)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
+	}
+
+	installed := utils.FormatVersion(pkg)
+	installedVersion := version.NewVersion(installed)
+
+	var vulns []types.DetectedVulnerability
+	for _, adv := range advisories {
+		fixedVersion := version.NewVersion(adv.FixedVersion)
+		if installedVersion.LessThan(fixedVersion) {
 			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
+				FixedVersion:     fixedVersion.String(),
 				Layer:            pkg.Layer,
 			}
 			vulns = append(vulns, vuln)
 		}
-
-		// For Red Hat OVAL v2 containing only binary package names
-		pkgName = addModularNamespace(pkg.Name, pkg.Modularitylabel)
-		advisories, err = s.vs.Get(osVer, pkgName)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
-		}
-
-		for _, adv := range advisories {
-			fixedVersion := version.NewVersion(adv.FixedVersion)
-			if installedVersion.LessThan(fixedVersion) {
-				vuln := types.DetectedVulnerability{
-					VulnerabilityID:  adv.VulnerabilityID,
-					PkgName:          pkg.Name,
-					InstalledVersion: installed,
-					FixedVersion:     fixedVersion.String(),
-					Layer:            pkg.Layer,
-				}
-				vulns = append(vulns, vuln)
-			}
-		}
 	}
+	return vulns, nil
+}
+
+func (s *Scanner) detectUnfixedVulnerabilities(osVer string, pkg ftypes.Package) ([]types.DetectedVulnerability, error) {
+	// For Red Hat Security Data API containing only source package names
+	pkgName := addModularNamespace(pkg.SrcName, pkg.Modularitylabel)
+	advisories, err := s.api.Get(osVer, pkgName)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
+	}
+
+	var vulns []types.DetectedVulnerability
+	for _, adv := range advisories {
+		vuln := types.DetectedVulnerability{
+			VulnerabilityID:  adv.VulnerabilityID,
+			PkgName:          pkg.Name,
+			InstalledVersion: utils.FormatVersion(pkg),
+			Layer:            pkg.Layer,
+		}
+		vulns = append(vulns, vuln)
+	}
+
 	return vulns, nil
 }
 
