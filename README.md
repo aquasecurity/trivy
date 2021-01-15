@@ -72,6 +72,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
   * [AWS CodePipeline](#aws-codepipeline)
   * [AWS Security Hub](#aws-security-hub)
   * [Authorization for Private Docker Registry](#authorization-for-private-docker-registry)
+  * [Jenkins](#jenkins)
 - [Vulnerability Detection](#vulnerability-detection)
   * [OS Packages](#os-packages)
   * [Application Dependencies](#application-dependencies)
@@ -1660,6 +1661,27 @@ export TRIVY_PASSWORD={PASSWORD}
 
 # if you want to use 80 port, use NonSSL
 export TRIVY_NON_SSL=true
+```
+## Jenkins
+Trivy reports (json) could be visualized with the Warnings_NG plugin. Theres is a simple parser for JSON reports:
+
+USAGE: 
+```
+pipelines {
+[..]
+  stages {
+    stage("SECURITY SCAN") {
+      steps {
+        sh "trivy image -f json -o results.json ${image}"
+      }
+    }
+  }
+  post {
+    always {
+      recordIssues(tools: [trivy(pattern: 'results.json')])
+    }
+  }
+}
 ```
 
 # Vulnerability Detection
