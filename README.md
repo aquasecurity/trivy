@@ -1176,7 +1176,7 @@ $ trivy image --skip-dirs "/usr/lib/ruby/gems,/etc" fluent/fluentd:edge
 
 ### Skip update of vulnerability DB
 
-`Trivy` always updates its vulnerability database when it starts operating. This is usually fast, as it is a different update. But if you want to skip even that, use the `--skip-update` option.
+`Trivy` downloads its vulnerability database every 12 hours when it starts operating. This is usually fast, as the size of the DB is only 10~30MB. But if you want to skip even that, use the `--skip-update` option.
 
 ```
 $ trivy image --skip-update python:3.4-alpine3.9
