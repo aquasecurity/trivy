@@ -100,6 +100,7 @@ func (s *Scanner) detectFixedVulnerabilities(osVer string, pkg ftypes.Package) (
 		if installedVersion.LessThan(fixedVersion) {
 			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
+				VendorID:         adv.VendorID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				FixedVersion:     fixedVersion.String(),
