@@ -9,7 +9,7 @@ require (
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-version v0.0.0-20201115065329-578079e4ab05
-	github.com/aquasecurity/trivy-db v0.0.0-20210114075349-8a08424245ca
+	github.com/aquasecurity/trivy-db v0.0.0-20210119091848-ad8d9065c76f
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.3
