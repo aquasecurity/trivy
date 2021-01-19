@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// InitDB loads fixtures and initializes the database
 func InitDB(t *testing.T, fixtureFiles []string) {
 	// Create a temp dir
 	dir := t.TempDir()
