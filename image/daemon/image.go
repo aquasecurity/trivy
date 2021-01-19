@@ -3,13 +3,10 @@ package daemon
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"os"
 	"sync"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
-	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
 	"golang.org/x/xerrors"
@@ -17,59 +14,14 @@ import (
 
 var mu sync.Mutex
 
-// image is a wrapper for github.com/google/go-containerregistry/pkg/v1/daemon.Image
-// daemon.Image loads the entire image into the memory at first,
-// but it doesn't need to load it if the information is already in the cache,
-// To avoid entire loading, this wrapper uses ImageInspectWithRaw and checks image ID and layer IDs.
-type image struct {
-	v1.Image
-	opener  opener
-	inspect types.ImageInspect
-}
-
 type opener func() (v1.Image, error)
 
-// Image implements v1.Image by extending daemon.Image.
-// The caller must call cleanup() to remove a temporary file.
-func Image(ref name.Reference) (v1.Image, *types.ImageInspect, func(), error) {
-	cleanup := func() {}
+type imageSave func(context.Context, []string) (io.ReadCloser, error)
 
-	c, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		return nil, nil, cleanup, xerrors.Errorf("failed to initialize a docker client: %w", err)
-	}
-	defer func() {
-		if err != nil {
-			c.Close()
-		}
-	}()
-
-	inspect, _, err := c.ImageInspectWithRaw(context.Background(), ref.Name())
-	if err != nil {
-		return nil, nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", ref.Name(), err)
-	}
-
-	f, err := ioutil.TempFile("", "fanal-*")
-	if err != nil {
-		return nil, nil, cleanup, xerrors.Errorf("failed to create a temporary file")
-	}
-
-	cleanup = func() {
-		c.Close()
-		f.Close()
-		_ = os.Remove(f.Name())
-	}
-
-	return &image{
-		opener:  imageOpener(c, ref, f),
-		inspect: inspect,
-	}, &inspect, cleanup, nil
-}
-
-func imageOpener(c *client.Client, ref name.Reference, f *os.File) opener {
+func imageOpener(ref string, f *os.File, imageSave imageSave) opener {
 	return func() (v1.Image, error) {
 		// Store the tarball in local filesystem and return a new reader into the bytes each time we need to access something.
-		rc, err := c.ImageSave(context.Background(), []string{ref.Name()})
+		rc, err := imageSave(context.Background(), []string{ref})
 		if err != nil {
 			return nil, xerrors.Errorf("unable to export the image: %w", err)
 		}
@@ -87,6 +39,16 @@ func imageOpener(c *client.Client, ref name.Reference, f *os.File) opener {
 
 		return image, nil
 	}
+}
+
+// image is a wrapper for github.com/google/go-containerregistry/pkg/v1/daemon.Image
+// daemon.Image loads the entire image into the memory at first,
+// but it doesn't need to load it if the information is already in the cache,
+// To avoid entire loading, this wrapper uses ImageInspectWithRaw and checks image ID and layer IDs.
+type image struct {
+	v1.Image
+	opener  opener
+	inspect types.ImageInspect
 }
 
 // populateImage initializes an "image" struct.
@@ -114,6 +76,13 @@ func (img *image) ConfigName() (v1.Hash, error) {
 }
 
 func (img *image) ConfigFile() (*v1.ConfigFile, error) {
+	if len(img.inspect.RootFS.Layers) == 0 {
+		// Podman doesn't return RootFS...
+		if err := img.populateImage(); err != nil {
+			return nil, xerrors.Errorf("unable to populate: %w", err)
+		}
+		return img.Image.ConfigFile()
+	}
 	var diffIDs []v1.Hash
 	for _, l := range img.inspect.RootFS.Layers {
 		h, err := v1.NewHash(l)

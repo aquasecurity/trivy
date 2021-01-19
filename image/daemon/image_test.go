@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/docker/docker/api/types"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 
@@ -22,6 +21,8 @@ func TestMain(m *testing.M) {
 		"index.docker.io/library/alpine:3.11": "../../test/testdata/alpine-311.tar.gz",
 		"gcr.io/distroless/base:latest":       "../../test/testdata/distroless.tar.gz",
 	}
+
+	// for Docker
 	opt := engine.Option{
 		APIVersion: "1.38",
 		ImagePaths: imagePaths,
@@ -32,46 +33,6 @@ func TestMain(m *testing.M) {
 	os.Setenv("DOCKER_HOST", fmt.Sprintf("tcp://%s", te.Listener.Addr().String()))
 
 	os.Exit(m.Run())
-}
-
-func TestImage(t *testing.T) {
-	type fields struct {
-		Image   v1.Image
-		opener  opener
-		inspect types.ImageInspect
-	}
-	tests := []struct {
-		name      string
-		imageName string
-		fields    fields
-		want      *v1.ConfigFile
-		wantErr   bool
-	}{
-		{
-			name:      "happy path",
-			imageName: "alpine:3.11",
-			wantErr:   false,
-		},
-		{
-			name:      "unknown image",
-			imageName: "alpine:unknown",
-			wantErr:   true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			ref, err := name.ParseReference(tt.imageName)
-			require.NoError(t, err)
-
-			_, _, cleanup, err := Image(ref)
-			assert.Equal(t, tt.wantErr, err != nil, err)
-			defer func() {
-				if cleanup != nil {
-					cleanup()
-				}
-			}()
-		})
-	}
 }
 
 func Test_image_ConfigName(t *testing.T) {
@@ -96,7 +57,7 @@ func Test_image_ConfigName(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, _, cleanup, err := Image(ref)
+			img, _, cleanup, err := DockerImage(ref)
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -156,7 +117,7 @@ func Test_image_ConfigFile(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, _, cleanup, err := Image(ref)
+			img, _, cleanup, err := DockerImage(ref)
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -201,7 +162,7 @@ func Test_image_LayerByDiffID(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, _, cleanup, err := Image(ref)
+			img, _, cleanup, err := DockerImage(ref)
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -230,7 +191,7 @@ func Test_image_RawConfigFile(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, _, cleanup, err := Image(ref)
+			img, _, cleanup, err := DockerImage(ref)
 			require.NoError(t, err)
 			defer cleanup()
 
