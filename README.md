@@ -1594,7 +1594,7 @@ trivy:
     - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE
     # Print report
     - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE
-    # Fail on high and critical vulnerabilities
+    # Fail on severe vulnerabilities
     - ./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE
   cache:
     paths:
