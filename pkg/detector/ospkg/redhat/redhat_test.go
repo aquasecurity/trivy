@@ -5,13 +5,11 @@ import (
 	"testing"
 	"time"
 
-	ftypes "github.com/aquasecurity/fanal/types"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/xerrors"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/db/dbtest"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -27,14 +25,17 @@ func TestScanner_Detect(t *testing.T) {
 		pkgs  []ftypes.Package
 	}
 	tests := []struct {
-		name    string
-		args    args
-		get     []dbTypes.GetExpectation
-		want    []types.DetectedVulnerability
-		wantErr bool
+		name     string
+		fixtures []string
+		args     args
+		want     []types.DetectedVulnerability
+		wantErr  bool
 	}{
 		{
 			name: "happy path: src pkg name is different from bin pkg name",
+			fixtures: []string{
+				"testdata/fixtures/rhel.yaml",
+			},
 			args: args{
 				osVer: "7.6",
 				pkgs: []ftypes.Package{
@@ -51,44 +52,20 @@ func TestScanner_Detect(t *testing.T) {
 						Layer: ftypes.Layer{
 							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						},
-					},
-				},
-			},
-			get: []dbTypes.GetExpectation{
-				{
-					Args: dbTypes.GetArgs{
-						Release: "7",
-						PkgName: "vim",
-					},
-					Returns: dbTypes.GetReturns{
-						Advisories: []dbTypes.Advisory{
-							{
-								VulnerabilityID: "CVE-2017-5953",
-								FixedVersion:    "",
-							},
-							{
-								VulnerabilityID: "CVE-2017-6350",
-								FixedVersion:    "",
-							},
-						},
-					},
-				},
-				{
-					Args: dbTypes.GetArgs{
-						Release: "7",
-						PkgName: "vim-minimal",
-					},
-					Returns: dbTypes.GetReturns{
-						Advisories: []dbTypes.Advisory{
-							{
-								VulnerabilityID: "CVE-2019-12735",
-								FixedVersion:    "2:7.4.160-6.el7_6",
-							},
-						},
-					},
+						ContentSets: []string{"rhel-7-server-rpms"}},
 				},
 			},
 			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2019-12735",
+					VendorID:         "RHSA-2019:1619",
+					PkgName:          "vim-minimal",
+					InstalledVersion: "2:7.4.160-5.el7",
+					FixedVersion:     "2:7.4.160-6.el7_6",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
 				{
 					VulnerabilityID:  "CVE-2017-5953",
 					PkgName:          "vim-minimal",
@@ -97,29 +74,15 @@ func TestScanner_Detect(t *testing.T) {
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 				},
-				{
-					VulnerabilityID:  "CVE-2017-6350",
-					PkgName:          "vim-minimal",
-					InstalledVersion: "2:7.4.160-5.el7",
-					Layer: ftypes.Layer{
-						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					},
-				},
-				{
-					VulnerabilityID:  "CVE-2019-12735",
-					PkgName:          "vim-minimal",
-					InstalledVersion: "2:7.4.160-5.el7",
-					FixedVersion:     "2:7.4.160-6.el7_6",
-					Layer: ftypes.Layer{
-						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					},
-				},
 			},
 		},
 		{
 			name: "happy path: src pkg name is the same as bin pkg name",
+			fixtures: []string{
+				"testdata/fixtures/rhel.yaml",
+			},
 			args: args{
-				osVer: "6.5",
+				osVer: "7.5",
 				pkgs: []ftypes.Package{
 					{
 						Name:       "nss",
@@ -131,54 +94,81 @@ func TestScanner_Detect(t *testing.T) {
 						SrcVersion: "3.36.0",
 						SrcRelease: "7.4.160",
 						SrcEpoch:   0,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+						ContentSets: []string{"rhel-7-server-rpms"},
 					},
 				},
 			},
-			get: []dbTypes.GetExpectation{
+			want: []types.DetectedVulnerability{
 				{
-					Args: dbTypes.GetArgs{
-						Release: "6",
-						PkgName: "nss",
+					VulnerabilityID:  "CVE-2018-12404",
+					VendorID:         "RHSA-2019:2237",
+					PkgName:          "nss",
+					InstalledVersion: "3.36.0-7.1.el7_6",
+					FixedVersion:     "3.44.0-4.el7",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
-					Returns: dbTypes.GetReturns{
-						Advisories: []dbTypes.Advisory{
-							{
-								VulnerabilityID: "CVE-2015-2808",
-								FixedVersion:    "",
-							},
-							{
-								VulnerabilityID: "CVE-2016-2183",
-								FixedVersion:    "",
-							},
-							{
-								VulnerabilityID: "CVE-2018-12404",
-								FixedVersion:    "3.44.0-4.el7",
-							},
+				},
+				{
+					VulnerabilityID:  "CVE-2015-2808",
+					PkgName:          "nss",
+					InstalledVersion: "3.36.0-7.1.el7_6",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
+			},
+		},
+		{
+			name:     "no content sets",
+			fixtures: []string{"testdata/fixtures/rhel.yaml"},
+			args: args{
+				osVer: "7.5",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "nss",
+						Version:    "3.36.0",
+						Release:    "7.1.el7_6",
+						Epoch:      0,
+						Arch:       "x86_64",
+						SrcName:    "nss",
+						SrcVersion: "3.36.0",
+						SrcRelease: "7.4.160",
+						SrcEpoch:   0,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						},
 					},
 				},
 			},
 			want: []types.DetectedVulnerability{
 				{
-					VulnerabilityID:  "CVE-2015-2808",
-					PkgName:          "nss",
-					InstalledVersion: "3.36.0-7.1.el7_6",
-				},
-				{
-					VulnerabilityID:  "CVE-2016-2183",
-					PkgName:          "nss",
-					InstalledVersion: "3.36.0-7.1.el7_6",
-				},
-				{
 					VulnerabilityID:  "CVE-2018-12404",
 					PkgName:          "nss",
 					InstalledVersion: "3.36.0-7.1.el7_6",
 					FixedVersion:     "3.44.0-4.el7",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2015-2808",
+					PkgName:          "nss",
+					InstalledVersion: "3.36.0-7.1.el7_6",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
 				},
 			},
 		},
 		{
-			name: "happy path: modular packages",
+			name: "modular packages",
+			fixtures: []string{
+				"testdata/fixtures/rhel.yaml",
+			},
 			args: args{
 				osVer: "8.3",
 				pkgs: []ftypes.Package{
@@ -196,28 +186,14 @@ func TestScanner_Detect(t *testing.T) {
 						Layer: ftypes.Layer{
 							DiffID: "sha256:3e968ecc016e1b9aa19023798229bf2d25c813d1bf092533f38b056aff820524",
 						},
-					},
-				},
-			},
-			get: []dbTypes.GetExpectation{
-				{
-					Args: dbTypes.GetArgs{
-						Release: "8",
-						PkgName: "php:7.2::php",
-					},
-					Returns: dbTypes.GetReturns{
-						Advisories: []dbTypes.Advisory{
-							{
-								VulnerabilityID: "CVE-2019-11043",
-								FixedVersion:    "7.3.5-5.module+el8.1.0+4560+e0eee7d6",
-							},
-						},
+						ContentSets: []string{"rhel-8-for-x86_64-appstream-rpms"},
 					},
 				},
 			},
 			want: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "CVE-2019-11043",
+					VendorID:         "RHSA-2019:3736",
 					PkgName:          "php",
 					InstalledVersion: "7.2.24-1.module_el8.2.0+313+b04d0a66",
 					FixedVersion:     "7.3.5-5.module+el8.1.0+4560+e0eee7d6",
@@ -228,7 +204,7 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path: packages from remi repository are skipped",
+			name: "packages from remi repository are skipped",
 			args: args{
 				osVer: "7.6",
 				pkgs: []ftypes.Package{
@@ -248,28 +224,15 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			get: []dbTypes.GetExpectation{
-				{
-					Args: dbTypes.GetArgs{
-						Release: "7",
-						PkgName: "php",
-					},
-					Returns: dbTypes.GetReturns{
-						Advisories: []dbTypes.Advisory{
-							{
-								VulnerabilityID: "CVE-2011-4718",
-								FixedVersion:    "",
-							},
-						},
-					},
-				},
-			},
 			want: []types.DetectedVulnerability(nil),
 		},
 		{
 			name: "sad path: Get returns an error",
+			fixtures: []string{
+				"testdata/fixtures/invalid-type.yaml",
+			},
 			args: args{
-				osVer: "5",
+				osVer: "7",
 				pkgs: []ftypes.Package{
 					{
 						Name:       "nss",
@@ -284,29 +247,16 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			get: []dbTypes.GetExpectation{
-				{
-					Args: dbTypes.GetArgs{
-						Release: "5",
-						PkgName: "nss",
-					},
-					Returns: dbTypes.GetReturns{
-						Err: xerrors.New("error"),
-					},
-				},
-			},
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockVs := new(dbTypes.MockVulnSrc)
-			mockVs.ApplyGetExpectations(tt.get)
-			s := &Scanner{
-				vs: mockVs,
-			}
+			dbtest.InitDB(t, tt.fixtures)
+
+			s := NewScanner()
 			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)
-			require.Equal(t, tt.wantErr, err != nil)
+			require.Equal(t, tt.wantErr, err != nil, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
