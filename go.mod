@@ -7,7 +7,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.15-0.20190919025122-fc70bd9a86b5 // indirect
 	github.com/alicebob/miniredis/v2 v2.14.1
 	github.com/aquasecurity/go-dep-parser v0.0.0-20201028043324-889d4a92b8e0
-	github.com/aquasecurity/testdocker v0.0.0-20201220111429-5278b43e3eba
+	github.com/aquasecurity/testdocker v0.0.0-20210106133225-0b17fe083674
 	github.com/aws/aws-sdk-go v1.27.1
 	github.com/deckarep/golang-set v1.7.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
