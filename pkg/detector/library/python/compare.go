@@ -3,7 +3,7 @@ package python
 import (
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-pep440-version"
+	version "github.com/aquasecurity/go-pep440-version"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 )
