@@ -29,13 +29,13 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 			name: "detected",
 			args: args{
 				pkgName: "django",
-				pkgVer:  "2.2.11-alpha",
+				pkgVer:  "2.2.11a1",
 			},
 			fixtures: []string{"testdata/fixtures/pip.yaml"},
 			want: []types.DetectedVulnerability{
 				{
 					PkgName:          "django",
-					InstalledVersion: "2.2.11-alpha",
+					InstalledVersion: "2.2.11a1",
 					VulnerabilityID:  "CVE-2020-9402",
 					FixedVersion:     "1.11.29, 2.2.11, 3.0.4",
 				},
