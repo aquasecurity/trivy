@@ -32,9 +32,11 @@ type Cache struct {
 func NewCache(backend string) (Cache, error) {
 	if strings.HasPrefix(backend, "redis://") {
 		log.Logger.Infof("Redis cache: %s", backend)
-		redisCache := cache.NewRedisCache(&redis.Options{
-			Addr: strings.TrimPrefix(backend, "redis://"),
-		})
+		options, err := redis.ParseURL(backend)
+		if err != nil {
+			return Cache{}, err
+		}
+		redisCache := cache.NewRedisCache(options)
 		return Cache{Cache: redisCache}, nil
 	}
 	fsCache, err := cache.NewFSCache(utils.CacheDir())
