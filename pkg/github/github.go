@@ -62,7 +62,7 @@ func NewClient() Client {
 	var client *http.Client
 	githubToken := os.Getenv("GITHUB_TOKEN")
 	if githubToken != "" {
-		log.Logger.Info("Use your github token")
+		log.Logger.Info("Using your github token")
 		ctx := context.Background()
 		ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: githubToken})
 		client = oauth2.NewClient(ctx, ts)
