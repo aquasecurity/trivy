@@ -2,7 +2,7 @@
 <testsuites>
 {{- range . -}}
 {{- $failures := len .Vulnerabilities }}
-    <testsuite tests="1" failures="{{ $failures }}" time="" name="{{  .Target }}">
+    <testsuite tests="1" failures="{{ $failures }}" time="" name="{{  .Target }}" errors="0" skipped="0">
     {{- if not (eq .Type "") }}
         <properties>
             <property name="type" value="{{ .Type }}"></property>
