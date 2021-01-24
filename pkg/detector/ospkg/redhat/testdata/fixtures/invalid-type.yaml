@@ -1,0 +1,9 @@
+- bucket: Red Hat Enterprise Linux 7
+  pairs:
+    - bucket: nss
+      pairs:
+        - key: CVE-2015-2808
+          value:
+            FixedVersion:
+              - foo
+              - bar
