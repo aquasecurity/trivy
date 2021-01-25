@@ -10,7 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-func TestPep440Comparer_MatchVersion(t *testing.T) {
+func TestPep440Comparer_IsVulnerable(t *testing.T) {
 	type args struct {
 		currentVersion string
 		advisory       dbTypes.Advisory
