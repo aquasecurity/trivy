@@ -21,7 +21,7 @@ type Advisory struct {
 func NewAdvisory() *Advisory {
 	return &Advisory{
 		vs:       python.NewVulnSrc(),
-		comparer: comparer.GenericComparer{},
+		comparer: Pep440Comparer{},
 	}
 }
 

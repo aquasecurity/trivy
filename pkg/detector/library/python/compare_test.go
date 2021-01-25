@@ -1,4 +1,4 @@
-package node_test
+package python_test
 
 import (
 	"testing"
@@ -6,11 +6,11 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/detector/library/node"
+	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-func TestNpmComparer_IsVulnerable(t *testing.T) {
+func TestPep440Comparer_IsVulnerable(t *testing.T) {
 	type args struct {
 		currentVersion string
 		advisory       dbTypes.Advisory
@@ -56,7 +56,7 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 		{
 			name: "pre-release",
 			args: args{
-				currentVersion: "1.2.3-alpha",
+				currentVersion: "1.2.3a1",
 				advisory: dbTypes.Advisory{
 					VulnerableVersions: []string{"<=1.2.2"},
 					PatchedVersions:    []string{">=1.2.2"},
@@ -69,19 +69,8 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 			args: args{
 				currentVersion: "2.0.0",
 				advisory: dbTypes.Advisory{
-					VulnerableVersions: []string{">=1.7.0 <1.7.16", ">=1.8.0 <1.8.8", ">=2.0.0 <2.0.8", ">=3.0.0-beta.1 <3.0.0-beta.7"},
-					PatchedVersions:    []string{">=3.0.0-beta.7", ">=2.0.8 <3.0.0-beta.1", ">=1.8.8 <2.0.0", ">=1.7.16 <1.8.0"},
-				},
-			},
-			want: true,
-		},
-		{
-			name: "x",
-			args: args{
-				currentVersion: "2.0.1",
-				advisory: dbTypes.Advisory{
-					VulnerableVersions: []string{"2.0.x", "2.1.x"},
-					PatchedVersions:    []string{">=2.2.x"},
+					VulnerableVersions: []string{">=1.7.0 <1.7.16", ">=1.8.0 <1.8.8", ">=2.0.0 <2.0.8", ">=3.0.0b1 <3.0.0b7"},
+					PatchedVersions:    []string{">=3.0.0b7", ">=2.0.8 <3.0.0b1", ">=1.8.8 <2.0.0", ">=1.7.16 <1.8.0"},
 				},
 			},
 			want: true,
@@ -89,24 +78,13 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 		{
 			name: "exact versions",
 			args: args{
-				currentVersion: "2.1.0-M1",
+				currentVersion: "2.1.0.post1",
 				advisory: dbTypes.Advisory{
-					VulnerableVersions: []string{"2.1.0-M1", "2.1.0-M2"},
-					PatchedVersions:    []string{">=2.1.0"},
+					VulnerableVersions: []string{"2.1.0.post1", "2.0.0"},
+					PatchedVersions:    []string{">=2.1.1"},
 				},
 			},
 			want: true,
-		},
-		{
-			name: "caret",
-			args: args{
-				currentVersion: "2.0.18",
-				advisory: dbTypes.Advisory{
-					VulnerableVersions: []string{"<2.0.18", "<3.0.16"},
-					PatchedVersions:    []string{"^2.0.18", "^3.0.16"},
-				},
-			},
-			want: false,
 		},
 		{
 			name: "invalid version",
@@ -132,7 +110,7 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 	log.InitLogger(false, false)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := node.NpmComparer{}
+			c := python.Pep440Comparer{}
 			got := c.IsVulnerable(tt.args.currentVersion, tt.args.advisory)
 			assert.Equal(t, tt.want, got)
 		})
