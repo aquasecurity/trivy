@@ -3,6 +3,7 @@ package amazon
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
@@ -171,4 +172,43 @@ func getAllLoggedLogs(recorder *observer.ObservedLogs) []string {
 		loggedMessages = append(loggedMessages, l.Message)
 	}
 	return loggedMessages
+}
+
+func TestScanner_IsSupportedVersion(t *testing.T) {
+	vectors := map[string]struct {
+		now       time.Time
+		osFamily  string
+		osVersion string
+		expected  bool
+	}{
+		"1": {
+			now:       time.Date(2022, 5, 31, 23, 59, 59, 0, time.UTC),
+			osFamily:  "amazon",
+			osVersion: "1",
+			expected:  true,
+		},
+		"1 (eol ends)": {
+			now:       time.Date(2024, 5, 31, 23, 59, 59, 0, time.UTC),
+			osFamily:  "amazon",
+			osVersion: "1",
+			expected:  false,
+		},
+		"2": {
+			now:       time.Date(2020, 12, 1, 0, 0, 0, 0, time.UTC),
+			osFamily:  "amazon",
+			osVersion: "2",
+			expected:  true,
+		},
+	}
+
+	for testName, v := range vectors {
+		s := NewScanner()
+		t.Run(testName, func(t *testing.T) {
+			actual := s.isSupportedVersion(v.now, v.osFamily, v.osVersion)
+			if actual != v.expected {
+				t.Errorf("[%s] got %v, want %v", testName, actual, v.expected)
+			}
+		})
+	}
+
 }
