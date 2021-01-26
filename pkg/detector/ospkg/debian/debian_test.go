@@ -87,6 +87,12 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			osVersion: "9",
 			expected:  true,
 		},
+		"unstable": {
+			now:       time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+			osFamily:  "debian",
+			osVersion: "bullseye/sid",
+			expected:  true,
+		},
 		"unknown": {
 			now:       time.Date(2020, 7, 31, 23, 59, 59, 0, time.UTC),
 			osFamily:  "debian",
