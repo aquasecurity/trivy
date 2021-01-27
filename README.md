@@ -34,6 +34,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
   * [Filesystem](#filesystem)
   * [Embed in Dockerfile](#embed-in-dockerfile)
   * [Git Repository](#git-repository)
+  * [Podman](#podman)
 - [Examples](#examples)
   * [Standalone](#standalone)
     + [Scan an image](#scan-an-image)
@@ -121,8 +122,9 @@ See [here](#continuous-integration-ci) for details.
 - Support multiple formats
   - container image
     - A local image in Docker Engine which is running as a daemon
+    - A local image in Podman (>=2.0) which is exposing a socket
     - A remote image in Docker Registry such as Docker Hub, ECR, GCR and ACR
-    - A tar archive stored in the `docker save` formatted file
+    - A tar archive stored in the `docker save` / `podman save` formatted file
     - An image directory compliant with [OCI Image Format](https://github.com/opencontainers/image-spec)
   - local filesystem
   - remote git repository
@@ -360,6 +362,26 @@ $ trivy repo https://github.com/knqyf263/trivy-ci-test
 ```
 
 Only public repositories are supported.
+
+## Podman
+[EXPERIMENTAL] This feature might change without preserving backwards compatibility.
+
+Scan your image in Podman (>=2.0) running locally. The remote Podman is not supported.
+Before performing Trivy commands, you must enable the podman.sock systemd service on your machine.
+For more details, see [here](https://www.redhat.com/sysadmin/podman-clients-macos-windows)
+
+```
+$ systemctl --user enable podman.socket
+```
+
+Then, you can scan your image in Podman.
+
+```
+$ podman images
+REPOSITORY                TAG     IMAGE ID      CREATED      SIZE
+localhost/test            latest  ed1b0762d815  3 weeks ago  5.85 MB
+$ trivy image localhost/test
+```
 
 # Examples
 
