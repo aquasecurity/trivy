@@ -91,8 +91,8 @@ github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239 h1:kFOfPq6dUM1hTo
 github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239/go.mod h1:2FmKhYUyUczH0OGQWaF5ceTx0UBShxjsH6f8oGKYe2c=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/fanal v0.0.0-20201218050947-981a0510f9cb h1:T48y/j2wvl/xPX2IyV0ogFq+GeCLY+3548awySrUaJU=
-github.com/aquasecurity/fanal v0.0.0-20201218050947-981a0510f9cb/go.mod h1:arUN1lJnuAWLL0PUQ/UYrkAomU/Mby+gCXJMU90GHlA=
+github.com/aquasecurity/fanal v0.0.0-20210119051230-28c249da7cfd h1:meqa2AA+7K1r/nfNB19K2AP/v8+nemuWeQoTSqZ2R9s=
+github.com/aquasecurity/fanal v0.0.0-20210119051230-28c249da7cfd/go.mod h1:kur6SaohYhsjQLzijAdtn+X8rkTtwxawE51WyVCXLKk=
 github.com/aquasecurity/go-dep-parser v0.0.0-20201028043324-889d4a92b8e0 h1:cLH3SebzhbJ+jU1GIad8A1N8p7m7OjHhtY6JePISiVc=
 github.com/aquasecurity/go-dep-parser v0.0.0-20201028043324-889d4a92b8e0/go.mod h1:X42mTIRhgPalSm81Om2kD+3ydeunbC8TZtZj1bvgRo8=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -105,8 +105,8 @@ github.com/aquasecurity/go-version v0.0.0-20201107203531-5e48ac5d022a h1:SMEtDBn
 github.com/aquasecurity/go-version v0.0.0-20201107203531-5e48ac5d022a/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
 github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492 h1:rcEG5HI490FF0a7zuvxOxen52ddygCfNVjP0XOCMl+M=
 github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
-github.com/aquasecurity/testdocker v0.0.0-20200426142840-5f05bce6f12a h1:hsw7PpiymXP64evn/K7gsj3hWzMqLrdoeE6JkqDocVg=
-github.com/aquasecurity/testdocker v0.0.0-20200426142840-5f05bce6f12a/go.mod h1:psfu0MVaiTDLpNxCoNsTeILSKY2EICBwv345f3M+Ffs=
+github.com/aquasecurity/testdocker v0.0.0-20210106133225-0b17fe083674 h1:Xq/HxWFGaB4G/prC6czH/F5woB91GMCCilJxs/5DnDk=
+github.com/aquasecurity/testdocker v0.0.0-20210106133225-0b17fe083674/go.mod h1:psfu0MVaiTDLpNxCoNsTeILSKY2EICBwv345f3M+Ffs=
 github.com/aquasecurity/trivy-db v0.0.0-20210105160501-c5bf4e153277 h1:lXN72H9uNM1exUArIsN++n7b67PIaqhZON2cVWxwmpg=
 github.com/aquasecurity/trivy-db v0.0.0-20210105160501-c5bf4e153277/go.mod h1:N7CWA/vjVw78GWAdCJGhFQVqNGEA4e47a6eIWm+C/Bc=
 github.com/aquasecurity/vuln-list-update v0.0.0-20191016075347-3d158c2bf9a2 h1:xbdUfr2KE4THsFx9CFWtWpU91lF+YhgP46moV94nYTA=
