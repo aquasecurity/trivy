@@ -31,8 +31,7 @@ var (
 		"5": time.Date(2017, 3, 31, 23, 59, 59, 0, time.UTC),
 		"6": time.Date(2020, 11, 30, 23, 59, 59, 0, time.UTC),
 		"7": time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
-		// N/A
-		"8": time.Date(3000, 6, 30, 23, 59, 59, 0, time.UTC),
+		"8": time.Date(2021, 12, 31, 23, 59, 59, 0, time.UTC),
 	}
 	excludedVendorsSuffix = []string{
 		".remi",

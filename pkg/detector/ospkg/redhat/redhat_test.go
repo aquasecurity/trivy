@@ -349,6 +349,12 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			osVersion: "8.0",
 			expected:  true,
 		},
+		"centos8 (eol ends)": {
+			now:       time.Date(2022, 12, 1, 0, 0, 0, 0, time.UTC),
+			osFamily:  "centos",
+			osVersion: "8.0",
+			expected:  false,
+		},
 		"two dots": {
 			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			osFamily:  "centos",

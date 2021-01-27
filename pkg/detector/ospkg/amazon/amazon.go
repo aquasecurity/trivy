@@ -2,6 +2,7 @@ package amazon
 
 import (
 	"strings"
+	"time"
 
 	version "github.com/knqyf263/go-deb-version"
 	"go.uber.org/zap"
@@ -13,6 +14,14 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
+)
+
+var (
+	eolDates = map[string]time.Time{
+		"1": time.Date(2023, 6, 30, 23, 59, 59, 0, time.UTC),
+		// N/A
+		"2": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+	}
 )
 
 // Scanner to scan amazon vulnerabilities
@@ -82,5 +91,19 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 // IsSupportedVersion checks if os can be scanned using amazon scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	return true
+	now := time.Now()
+	return s.isSupportedVersion(now, osFamily, osVer)
+}
+
+func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool {
+	osVer = strings.Fields(osVer)[0]
+	if osVer != "2" {
+		osVer = "1"
+	}
+	eol, ok := eolDates[osVer]
+	if !ok {
+		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
+		return false
+	}
+	return now.Before(eol)
 }
