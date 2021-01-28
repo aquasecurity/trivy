@@ -368,10 +368,10 @@ Only public repositories are supported.
 
 Scan your image in Podman (>=2.0) running locally. The remote Podman is not supported.
 Before performing Trivy commands, you must enable the podman.sock systemd service on your machine.
-For more details, see [here](https://www.redhat.com/sysadmin/podman-clients-macos-windows)
+For more details, see [here](https://github.com/containers/podman/blob/master/docs/tutorials/remote_client.md#enable-the-podman-service-on-the-server-machine)
 
 ```
-$ systemctl --user enable podman.socket
+$ systemctl --user enable --now podman.socket
 ```
 
 Then, you can scan your image in Podman.
