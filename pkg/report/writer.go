@@ -204,6 +204,9 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 		"escapeString": func(input string) string {
 			return html.EscapeString(input)
 		},
+		"replaceAll": func(input string, old string, new string) string {
+			return strings.ReplaceAll(input, old, new)
+		},
 		"getEnv": func(key string) string {
 			return os.Getenv(key)
 		},
