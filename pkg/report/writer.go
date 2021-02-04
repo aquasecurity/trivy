@@ -20,6 +20,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/Masterminds/sprig"
 )
 
 // Now returns the current time
@@ -49,6 +50,33 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 		if writer, err = NewTemplateWriter(output, outputTemplate); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
+		templateFuncMap := sprig.FuncMap()
+		templateFuncMap["escapeXML"] = func(input string) string {
+				escaped := &bytes.Buffer{}
+				if err := xml.EscapeText(escaped, []byte(input)); err != nil {
+					fmt.Printf("error while escapeString to XML: %v", err.Error())
+					return input
+				}
+				return escaped.String()
+			}
+
+			templateFuncMap["endWithPeriod"] = func(input string) string {
+				if !strings.HasSuffix(input, ".") {
+					input += "."
+				}
+				return input
+			}
+			templateFuncMap["toLower"] = func(input string) string {
+				return strings.ToLower(input)
+			}
+			templateFuncMap["escapeString"] = func(input string) string {
+				return html.EscapeString(input)
+			}
+		tmpl, err := template.New("output template").Funcs(template.FuncMap(templateFuncMap)).Parse(outputTemplate)
+		if err != nil {
+			return xerrors.Errorf("error parsing template: %w", err)
+		}
+		writer = &TemplateWriter{Output: output, Template: tmpl}
 	default:
 		return xerrors.Errorf("unknown format: %v", format)
 	}
