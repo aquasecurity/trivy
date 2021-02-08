@@ -72,6 +72,12 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 		templateFuncMap["escapeString"] = func(input string) string {
 			return html.EscapeString(input)
 		}
+		templateFuncMap["getEnv"] = func(key string) string {
+			return os.Getenv(key)
+		}
+		templateFuncMap["getCurrentTime"] = func() string {
+			return Now().UTC().Format(time.RFC3339Nano)
+		}
 		tmpl, err := template.New("output template").Funcs(template.FuncMap(templateFuncMap)).Parse(outputTemplate)
 		if err != nil {
 			return xerrors.Errorf("error parsing template: %w", err)
