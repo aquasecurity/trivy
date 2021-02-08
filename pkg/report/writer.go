@@ -15,8 +15,8 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"golang.org/x/xerrors"
-
 	"github.com/Masterminds/sprig"
+	
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
