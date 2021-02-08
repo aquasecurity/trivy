@@ -257,7 +257,7 @@ func TestReportWriter_Template(t *testing.T) {
 			template: `<testsuites>
 {{- range . -}}
 {{- $failures := len .Vulnerabilities }}
-    <testsuite tests="1" failures="{{ $failures }}" time="" name="{{  .Target }}">
+    <testsuite tests="1" failures="{{ $failures }}" time="" name="{{  .Target }}" errors="0" skipped="0">
 	{{- if not (eq .Type "") }}
         <properties>
             <property name="type" value="{{ .Type }}"></property>
@@ -273,7 +273,7 @@ func TestReportWriter_Template(t *testing.T) {
 </testsuites>`,
 
 			expected: `<testsuites>
-    <testsuite tests="1" failures="1" time="" name="foojunit">
+    <testsuite tests="1" failures="1" time="" name="foojunit" errors="0" skipped="0">
         <properties>
             <property name="type" value="test"></property>
         </properties>
