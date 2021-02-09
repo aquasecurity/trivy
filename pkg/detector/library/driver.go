@@ -38,6 +38,8 @@ func NewDriver(libType string) (Driver, error) {
 		driver = newPipDriver()
 	case library.NuGet:
 		driver = newNugetDriver()
+	case library.Jar:
+		driver = newMavenDriver()
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
 	}
@@ -114,4 +116,9 @@ func newNugetDriver() Driver {
 	c := comparer.GenericComparer{}
 	return Aggregate(ghsa.NewAdvisory(ecosystem.Nuget, c), NewAdvisory(vulnerability.NuGet, c))
 }
+
+func newMavenDriver() Driver {
+	c := maven.MavenComparer{}
+	// TODO: fix trivy-db
+	return Aggregate(ghsa.NewAdvisory(ecosystem.Maven, c), NewAdvisory("maven", c))
 }
