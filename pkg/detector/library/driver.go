@@ -1,7 +1,6 @@
 package library
 
 import (
-
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer/library"
@@ -22,7 +21,7 @@ type advisory interface {
 	DetectVulnerabilities(string, string) ([]types.DetectedVulnerability, error)
 }
 
-// NewDrive returns a driver according to the library type
+// NewDriver returns a driver according to the library type
 func NewDriver(libType string) (Driver, error) {
 	var driver Driver
 	switch libType {
@@ -107,8 +106,7 @@ func newNpmDriver() Driver {
 
 func newPipDriver() Driver {
 	c := comparer.GenericComparer{}
-	return Aggregate(ghsa.NewAdvisory(ecosystem.Pip, c), python.NewAdvisory(),
-		NewAdvisory(vulnerability.Pip, c))
+	return Aggregate(ghsa.NewAdvisory(ecosystem.Pip, c), python.NewAdvisory(), NewAdvisory(vulnerability.Pip, c))
 }
 
 func newNugetDriver() Driver {
@@ -117,7 +115,7 @@ func newNugetDriver() Driver {
 }
 
 func newMavenDriver() Driver {
-	c := maven.MavenComparer{}
+	c := maven.Comparer{}
 	// TODO: fix trivy-db
 	return Aggregate(ghsa.NewAdvisory(ecosystem.Maven, c), NewAdvisory("maven", c))
 }

@@ -8,16 +8,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 )
 
-// MavenComparer represents a comparer for maven
-type MavenComparer struct{}
+// Comparer represents a comparer for maven
+type Comparer struct{}
 
 // IsVulnerable checks if the package version is vulnerable to the advisory.
-func (n MavenComparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
+func (n Comparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
 	return comparer.IsVulnerable(ver, advisory, n.matchVersion)
 }
 
 // matchVersion checks if the package version satisfies the given constraint.
-func (n MavenComparer) matchVersion(currentVersion, constraint string) (bool, error) {
+func (n Comparer) matchVersion(currentVersion, constraint string) (bool, error) {
 	// TODO: use go-mvn-version
 	v, err := version.Parse(currentVersion)
 	if err != nil {
