@@ -1,11 +1,10 @@
 package library
 
 import (
-	"github.com/aquasecurity/fanal/analyzer/library"
-	"github.com/aquasecurity/trivy/pkg/detector/library/maven"
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer/library"
 	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
@@ -13,7 +12,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 	"github.com/aquasecurity/trivy/pkg/detector/library/composer"
 	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
-	"github.com/aquasecurity/trivy/pkg/detector/library/node"
+	"github.com/aquasecurity/trivy/pkg/detector/library/maven"
+	"github.com/aquasecurity/trivy/pkg/detector/library/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -101,9 +101,8 @@ func newCargoDriver() Driver {
 }
 
 func newNpmDriver() Driver {
-	c := node.NpmComparer{}
-	return Aggregate(ghsa.NewAdvisory(ecosystem.Npm, c), node.NewAdvisory(),
-		NewAdvisory(vulnerability.Npm, c))
+	c := npm.Comparer{}
+	return Aggregate(ghsa.NewAdvisory(ecosystem.Npm, c), npm.NewAdvisory(), NewAdvisory(vulnerability.Npm, c))
 }
 
 func newPipDriver() Driver {

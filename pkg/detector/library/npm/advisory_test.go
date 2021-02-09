@@ -1,4 +1,4 @@
-package node_test
+package npm_test
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
-	"github.com/aquasecurity/trivy/pkg/detector/library/node"
+	"github.com/aquasecurity/trivy/pkg/detector/library/npm"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -75,7 +75,7 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
-			a := node.NewAdvisory()
+			a := npm.NewAdvisory()
 			got, err := a.DetectVulnerabilities(tt.args.pkgName, tt.args.pkgVer)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)

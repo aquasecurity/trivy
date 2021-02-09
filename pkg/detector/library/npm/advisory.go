@@ -1,4 +1,4 @@
-package node
+package npm
 
 import (
 	"strings"
@@ -12,7 +12,7 @@ import (
 
 // Advisory encapsulate Node vulnerability source
 type Advisory struct {
-	comparer NpmComparer
+	comparer Comparer
 	vs       node.VulnSrc
 }
 
@@ -20,7 +20,7 @@ type Advisory struct {
 func NewAdvisory() *Advisory {
 	return &Advisory{
 		vs:       node.NewVulnSrc(),
-		comparer: NpmComparer{},
+		comparer: Comparer{},
 	}
 }
 

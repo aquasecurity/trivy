@@ -1,4 +1,4 @@
-package node_test
+package npm_test
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/detector/library/node"
+	"github.com/aquasecurity/trivy/pkg/detector/library/npm"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -132,7 +132,7 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 	log.InitLogger(false, false)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := node.NpmComparer{}
+			c := npm.Comparer{}
 			got := c.IsVulnerable(tt.args.currentVersion, tt.args.advisory)
 			assert.Equal(t, tt.want, got)
 		})
