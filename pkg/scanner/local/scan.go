@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/detector/library"
+
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
@@ -16,6 +18,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
 	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
 	_ "github.com/aquasecurity/fanal/analyzer/library/composer"
+	_ "github.com/aquasecurity/fanal/analyzer/library/jar"
 	_ "github.com/aquasecurity/fanal/analyzer/library/npm"
 	_ "github.com/aquasecurity/fanal/analyzer/library/nuget"
 	_ "github.com/aquasecurity/fanal/analyzer/library/pipenv"
@@ -33,7 +36,6 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpm"
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
-	libDetector "github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -47,8 +49,6 @@ var SuperSet = wire.NewSet(
 	wire.Bind(new(Applier), new(applier.Applier)),
 	ospkgDetector.SuperSet,
 	wire.Bind(new(OspkgDetector), new(ospkgDetector.Detector)),
-	libDetector.SuperSet,
-	wire.Bind(new(LibraryDetector), new(libDetector.Detector)),
 	NewScanner,
 )
 
@@ -62,21 +62,15 @@ type OspkgDetector interface {
 	Detect(imageName, osFamily, osName string, created time.Time, pkgs []ftypes.Package) (detectedVulns []types.DetectedVulnerability, eosl bool, err error)
 }
 
-// LibraryDetector defines operation to detect library vulnerabilities
-type LibraryDetector interface {
-	Detect(imageName, filePath string, created time.Time, pkgs []ftypes.LibraryInfo) (detectedVulns []types.DetectedVulnerability, err error)
-}
-
 // Scanner implements the OspkgDetector and LibraryDetector
 type Scanner struct {
 	applier       Applier
 	ospkgDetector OspkgDetector
-	libDetector   LibraryDetector
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(applier Applier, ospkgDetector OspkgDetector, libDetector LibraryDetector) Scanner {
-	return Scanner{applier: applier, ospkgDetector: ospkgDetector, libDetector: libDetector}
+func NewScanner(applier Applier, ospkgDetector OspkgDetector) Scanner {
+	return Scanner{applier: applier, ospkgDetector: ospkgDetector}
 }
 
 // Scan scans the local image and return results. TODO: fix cyclometic complexity
@@ -158,7 +152,12 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 	}
 	var results report.Results
 	for _, app := range apps {
-		vulns, err := s.libDetector.Detect("", app.FilePath, time.Time{}, app.Libraries)
+		if len(app.Libraries) == 0 {
+			continue
+		}
+
+		log.Logger.Debugf("Detecting library vulnerabilities, type: %s, path: %s", app.Type, app.FilePath)
+		vulns, err := library.Detect(app.Type, app.Libraries)
 		if err != nil {
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		}
