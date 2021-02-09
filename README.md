@@ -103,7 +103,7 @@ See [here](#continuous-integration-ci) for details.
 
 - Detect comprehensive vulnerabilities
   - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
-  - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo and NuGet)
+  - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, and Maven)
 - Simple
   - Specify only an image name or artifact name
   - See [Quick Start](#quick-start) and [Examples](#examples)
@@ -1761,6 +1761,8 @@ Distroless: https://github.com/GoogleContainerTools/distroless
   - Cargo.lock
 - .NET
   - packages.lock.json
+- Java
+  - JAR/WAR/EAR files
 
 The path of these files does not matter.
 
@@ -1919,7 +1921,7 @@ See [here](docs/air-gap.md)
 
 | Scanner        | OS<br>Packages  | Application<br>Dependencies | Easy to use  | Accuracy    | Suitable<br>for CI  |
 | -------------- | :-------------: | :-------------------------: | :----------: | :---------: | :-----------------: |
-| Trivy          |       ✅        |       ✅<br>(5 languages)   |    ⭐ ⭐ ⭐    |  ⭐ ⭐ ⭐    |      ⭐ ⭐ ⭐         |
+| Trivy          |       ✅        |       ✅<br>(6 languages)   |    ⭐ ⭐ ⭐    |  ⭐ ⭐ ⭐    |      ⭐ ⭐ ⭐         |
 | Clair          |       ✅        |              ×              |      ⭐       |   ⭐ ⭐      |      ⭐ ⭐           |
 | Anchore Engine |       ✅        |       ✅<br>(4 languages)   |     ⭐ ⭐      |   ⭐ ⭐      |     ⭐ ⭐ ⭐         |
 | Quay           |       ✅        |              ×              |    ⭐ ⭐ ⭐    |   ⭐ ⭐      |        ×            |
