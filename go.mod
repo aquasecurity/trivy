@@ -4,8 +4,8 @@ go 1.15
 
 require (
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20210119051230-28c249da7cfd
-	github.com/aquasecurity/go-dep-parser v0.0.0-20201028043324-889d4a92b8e0
+	github.com/aquasecurity/fanal v0.0.0-20210208160827-d0e233fe4b33
+	github.com/aquasecurity/go-dep-parser v0.0.0-20210128084932-812d18a99fa7
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
