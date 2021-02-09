@@ -44,17 +44,6 @@ func TestComparer_IsVulnerable(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "no patch with wildcard",
-			args: args{
-				currentVersion: "1.2.3",
-				advisory: dbTypes.Advisory{
-					VulnerableVersions: []string{"*"},
-					PatchedVersions:    nil,
-				},
-			},
-			want: true,
-		},
-		{
 			name: "pre-release",
 			args: args{
 				currentVersion: "1.2.3-alpha",
@@ -75,39 +64,6 @@ func TestComparer_IsVulnerable(t *testing.T) {
 				},
 			},
 			want: true,
-		},
-		{
-			name: "x",
-			args: args{
-				currentVersion: "2.0.1",
-				advisory: dbTypes.Advisory{
-					VulnerableVersions: []string{"2.0.x", "2.1.x"},
-					PatchedVersions:    []string{">=2.2.x"},
-				},
-			},
-			want: true,
-		},
-		{
-			name: "exact versions",
-			args: args{
-				currentVersion: "2.1.0-M1",
-				advisory: dbTypes.Advisory{
-					VulnerableVersions: []string{"2.1.0-M1", "2.1.0-M2"},
-					PatchedVersions:    []string{">=2.1.0"},
-				},
-			},
-			want: true,
-		},
-		{
-			name: "caret",
-			args: args{
-				currentVersion: "2.0.18",
-				advisory: dbTypes.Advisory{
-					VulnerableVersions: []string{"<2.0.18", "<3.0.16"},
-					PatchedVersions:    []string{"^2.0.18", "^3.0.16"},
-				},
-			},
-			want: false,
 		},
 		{
 			name: "invalid version",
