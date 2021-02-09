@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
+
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -18,7 +20,6 @@ import (
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
-	"github.com/aquasecurity/trivy/rpc/detector"
 )
 
 type mockCacheServer struct {
@@ -53,7 +54,7 @@ func (s *mockCacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBl
 func withToken(base http.Handler, token, tokenHeader string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if token != "" && token != r.Header.Get(tokenHeader) {
-			detector.WriteError(w, twirp.NewError(twirp.Unauthenticated, "invalid token"))
+			rpcScanner.WriteError(w, twirp.NewError(twirp.Unauthenticated, "invalid token"))
 			return
 		}
 		base.ServeHTTP(w, r)

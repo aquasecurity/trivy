@@ -19,8 +19,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
-	"github.com/aquasecurity/trivy/rpc/detector"
-	rpcDetector "github.com/aquasecurity/trivy/rpc/detector"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
@@ -75,14 +73,6 @@ func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 	layerHandler := rpcCache.NewCacheServer(NewCacheServer(serverCache), nil)
 	mux.Handle(rpcCache.CachePathPrefix, withToken(withWaitGroup(layerHandler), token, tokenHeader))
 
-	// osHandler is for backward compatibility
-	osHandler := rpcDetector.NewOSDetectorServer(initializeOspkgServer(), nil)
-	mux.Handle(rpcDetector.OSDetectorPathPrefix, withToken(withWaitGroup(osHandler), token, tokenHeader))
-
-	// libHandler is for backward compatibility
-	libHandler := rpcDetector.NewLibDetectorServer(initializeLibServer(), nil)
-	mux.Handle(rpcDetector.LibDetectorPathPrefix, withToken(withWaitGroup(libHandler), token, tokenHeader))
-
 	mux.HandleFunc("/healthz", func(rw http.ResponseWriter, r *http.Request) {
 		if _, err := rw.Write([]byte("ok")); err != nil {
 			log.Logger.Errorf("health check error: %s", err)
@@ -95,7 +85,7 @@ func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 func withToken(base http.Handler, token, tokenHeader string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if token != "" && token != r.Header.Get(tokenHeader) {
-			detector.WriteError(w, twirp.NewError(twirp.Unauthenticated, "invalid token"))
+			rpcScanner.WriteError(w, twirp.NewError(twirp.Unauthenticated, "invalid token"))
 			return
 		}
 		base.ServeHTTP(w, r)
