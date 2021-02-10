@@ -62,7 +62,7 @@ var (
 	outputFlag = cli.StringFlag{
 		Name:    "output",
 		Aliases: []string{"o"},
-		Usage:   "output file name",
+		Usage:   "output file name (use stdout or empty string to output to shell)",
 		EnvVars: []string{"TRIVY_OUTPUT"},
 	}
 

@@ -15,16 +15,16 @@ import (
 func TestReportReportConfig_Init(t *testing.T) {
 	type fields struct {
 		output        string
-		Format        string
-		Template      string
+		format        string
+		template      string
 		vulnType      string
 		severities    string
 		IgnoreFile    string
 		IgnoreUnfixed bool
 		ExitCode      int
 		VulnType      []string
-		Output        *os.File
 		Severities    []dbTypes.Severity
+		Formats       []MappedFormat
 	}
 	tests := []struct {
 		name    string
@@ -44,7 +44,13 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 				VulnType:   []string{"os"},
-				Output:     os.Stdout,
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "table",
+						Output:   os.Stdout,
+						Template: "",
+					},
+				},
 			},
 		},
 		{
@@ -60,13 +66,35 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
 				VulnType:   []string{"os", "library"},
-				Output:     os.Stdout,
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "table",
+						Output:   os.Stdout,
+						Template: "",
+					},
+				},
+			},
+		},
+		{
+			name: "invalid option combination: --format template without --template",
+			fields: fields{
+				format:     "template",
+				severities: "LOW",
+			},
+			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
+			logs: []string{
+				"--format template is ignored because --template is not specified. Specify --template option when you use --format template.",
+			},
+			want: ReportConfig{
+				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				VulnType:   []string{""},
+				Formats:    nil,
 			},
 		},
 		{
 			name: "invalid option combination: --template enabled without --format",
 			fields: fields{
-				Template:   "@contrib/gitlab.tpl",
+				template:   "@contrib/gitlab.tpl",
 				severities: "LOW",
 			},
 			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
@@ -74,46 +102,146 @@ func TestReportReportConfig_Init(t *testing.T) {
 				"--template is ignored because --format template is not specified. Use --template option with --format template option.",
 			},
 			want: ReportConfig{
-				Output:     os.Stdout,
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-				Template:   "@contrib/gitlab.tpl",
 				VulnType:   []string{""},
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "table",
+						Output:   os.Stdout,
+						Template: "",
+					},
+				},
 			},
 		},
 		{
 			name: "invalid option combination: --template and --format json",
 			fields: fields{
-				Format:     "json",
-				Template:   "@contrib/gitlab.tpl",
+				format:     "json",
+				template:   "@contrib/gitlab.tpl",
 				severities: "LOW",
 			},
 			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--template is ignored because --format json is specified. Use --template option with --format template option.",
+				"--template is ignored because --format [json] is specified. Use --template option with --format template option.",
 			},
 			want: ReportConfig{
-				Format:     "json",
-				Output:     os.Stdout,
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-				Template:   "@contrib/gitlab.tpl",
 				VulnType:   []string{""},
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "json",
+						Output:   os.Stdout,
+						Template: "",
+					},
+				},
 			},
 		},
 		{
-			name: "invalid option combination: --format template without --template",
+			name: "multi-format: invalid option combination: --template enabled without matching --format template",
 			fields: fields{
-				Format:     "template",
+				format:     "table,json",
+				template:   "@contrib/gitlab.tpl",
 				severities: "LOW",
 			},
 			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
+				"--template is ignored because --format [table json] is specified. Use --template option with --format template option.",
 			},
 			want: ReportConfig{
-				Format:     "template",
-				Output:     os.Stdout,
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:   []string{""},
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "table",
+						Output:   os.Stdout,
+						Template: "",
+					},
+					MappedFormat{
+						Format:   "json",
+						Output:   os.Stdout,
+						Template: "",
+					},
+				},
+			},
+		},
+		{
+			name: "multi-format: invalid option combination: --format template without --template",
+			fields: fields{
+				format:     "table,template",
+				severities: "LOW",
+			},
+			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
+			logs: []string{
+				"--format template is ignored because --template is not specified. Specify --template option when you use --format template.",
+			},
+			want: ReportConfig{
+				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				VulnType:   []string{""},
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "table",
+						Output:   os.Stdout,
+						Template: "",
+					},
+				},
+			},
+		},
+		{
+			name: "multi-format: invalid option combination: not enough matching --template",
+			fields: fields{
+				format:     "template,template",
+				template:   "@contrib/gitlab.tpl",
+				severities: "LOW",
+			},
+			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
+			logs: []string{
+				"--format template is ignored because --template is not specified. Specify --template option when you use --format template.",
+			},
+			want: ReportConfig{
+				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				VulnType:   []string{""},
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "template",
+						Output:   os.Stdout,
+						Template: "@contrib/gitlab.tpl",
+					},
+				},
+			},
+		},
+		{
+			name: "multi-format: valid option combination",
+			fields: fields{
+				format:     "table,template,json,template",
+				template:   "@contrib/gitlab.tpl,@contrib/junit.tpl",
+				severities: "LOW",
+			},
+			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
+			want: ReportConfig{
+				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				VulnType:   []string{""},
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "table",
+						Output:   os.Stdout,
+						Template: "",
+					},
+					MappedFormat{
+						Format:   "template",
+						Output:   os.Stdout,
+						Template: "@contrib/gitlab.tpl",
+					},
+					MappedFormat{
+						Format:   "json",
+						Output:   os.Stdout,
+						Template: "",
+					},
+					MappedFormat{
+						Format:   "template",
+						Output:   os.Stdout,
+						Template: "@contrib/junit.tpl",
+					},
+				},
 			},
 		},
 	}
@@ -126,15 +254,15 @@ func TestReportReportConfig_Init(t *testing.T) {
 			_ = set.Parse(tt.args)
 
 			c := &ReportConfig{
+				format:        tt.fields.format,
 				output:        tt.fields.output,
-				Format:        tt.fields.Format,
-				Template:      tt.fields.Template,
+				template:      tt.fields.template,
 				vulnType:      tt.fields.vulnType,
 				severities:    tt.fields.severities,
 				IgnoreFile:    tt.fields.IgnoreFile,
 				IgnoreUnfixed: tt.fields.IgnoreUnfixed,
 				ExitCode:      tt.fields.ExitCode,
-				Output:        tt.fields.Output,
+				Formats:       tt.fields.Formats,
 			}
 
 			err := c.Init(logger.Sugar())

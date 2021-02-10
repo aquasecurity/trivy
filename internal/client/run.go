@@ -91,8 +91,10 @@ func run(c config.Config) (err error) {
 		results[i].Vulnerabilities = vulns
 	}
 
-	if err = report.WriteResults(c.Format, c.Output, c.Severities, results, c.Template, false); err != nil {
-		return xerrors.Errorf("unable to write results: %w", err)
+	for _, f := range c.Formats {
+		if err = report.WriteResults(f.Format, f.Output, c.Severities, results, f.Template, false); err != nil {
+			return xerrors.Errorf("unable to write results: %w", err)
+		}
 	}
 
 	if c.ExitCode != 0 {

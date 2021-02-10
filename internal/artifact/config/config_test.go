@@ -44,7 +44,9 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os"},
-					Output:     os.Stdout,
+					Formats: []config.MappedFormat{
+						config.DefaultFormat,
+					},
 				},
 			},
 		},
@@ -57,8 +59,10 @@ func TestConfig_Init(t *testing.T) {
 				},
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
 					VulnType:   []string{"os", "library"},
+					Formats: []config.MappedFormat{
+						config.DefaultFormat,
+					},
 				},
 			},
 		},
@@ -71,8 +75,10 @@ func TestConfig_Init(t *testing.T) {
 			want: Config{
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
-					Output:     os.Stdout,
 					VulnType:   []string{"os", "library"},
+					Formats: []config.MappedFormat{
+						config.DefaultFormat,
+					},
 				},
 				ArtifactConfig: config.ArtifactConfig{
 					Target: "centos:7",
@@ -88,8 +94,10 @@ func TestConfig_Init(t *testing.T) {
 			want: Config{
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-					Output:     os.Stdout,
 					VulnType:   []string{"os", "library"},
+					Formats: []config.MappedFormat{
+						config.DefaultFormat,
+					},
 				},
 				ArtifactConfig: config.ArtifactConfig{
 					Target: "debian:buster",
@@ -106,9 +114,14 @@ func TestConfig_Init(t *testing.T) {
 			want: Config{
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
 					VulnType:   []string{"os", "library"},
-					Template:   "@contrib/gitlab.tpl",
+					Formats: []config.MappedFormat{
+						config.MappedFormat{
+							Format:   "table",
+							Output:   os.Stdout,
+							Template: "",
+						},
+					},
 				},
 				ArtifactConfig: config.ArtifactConfig{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
@@ -119,15 +132,19 @@ func TestConfig_Init(t *testing.T) {
 			name: "invalid option combination: --template and --format json",
 			args: []string{"--format", "json", "--template", "@contrib/gitlab.tpl", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--template is ignored because --format json is specified. Use --template option with --format template option.",
+				"--template is ignored because --format [json] is specified. Use --template option with --format template option.",
 			},
 			want: Config{
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
 					VulnType:   []string{"os", "library"},
-					Template:   "@contrib/gitlab.tpl",
-					Format:     "json",
+					Formats: []config.MappedFormat{
+						config.MappedFormat{
+							Format:   "json",
+							Output:   os.Stdout,
+							Template: "",
+						},
+					},
 				},
 				ArtifactConfig: config.ArtifactConfig{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
@@ -138,14 +155,122 @@ func TestConfig_Init(t *testing.T) {
 			name: "invalid option combination: --format template without --template",
 			args: []string{"--format", "template", "--severity", "MEDIUM", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
+				"--format template is ignored because --template is not specified. Specify --template option when you use --format template.",
 			},
 			want: Config{
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityMedium},
-					Output:     os.Stdout,
 					VulnType:   []string{"os", "library"},
-					Format:     "template",
+					Formats:    nil,
+				},
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
+				},
+			},
+		},
+		{
+			name: "multi-format: invalid option combination: --template enabled without matching --format template",
+			args: []string{"--format", "table,json", "--template", "@contrib/gitlab.tpl", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			logs: []string{
+				"--template is ignored because --format [table json] is specified. Use --template option with --format template option.",
+			},
+			want: Config{
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+					VulnType:   []string{"os", "library"},
+					Formats: []config.MappedFormat{
+						config.MappedFormat{
+							Format:   "table",
+							Output:   os.Stdout,
+							Template: "",
+						},
+						config.MappedFormat{
+							Format:   "json",
+							Output:   os.Stdout,
+							Template: "",
+						},
+					},
+				},
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
+				},
+			},
+		},
+		{
+			name: "multi-format: invalid option combination: --format template without --template",
+			args: []string{"--format", "table,template", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			logs: []string{
+				"--format template is ignored because --template is not specified. Specify --template option when you use --format template.",
+			},
+			want: Config{
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+					VulnType:   []string{"os", "library"},
+					Formats: []config.MappedFormat{
+						config.MappedFormat{
+							Format:   "table",
+							Output:   os.Stdout,
+							Template: "",
+						},
+					},
+				},
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
+				},
+			},
+		},
+		{
+			name: "multi-format: invalid option combination: not enough matching --template",
+			args: []string{"--format", "template,template", "--template", "@contrib/gitlab.tpl", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			logs: []string{
+				"--format template is ignored because --template is not specified. Specify --template option when you use --format template.",
+			},
+			want: Config{
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+					VulnType:   []string{"os", "library"},
+					Formats: []config.MappedFormat{
+						config.MappedFormat{
+							Format:   "template",
+							Output:   os.Stdout,
+							Template: "@contrib/gitlab.tpl",
+						},
+					},
+				},
+				ArtifactConfig: config.ArtifactConfig{
+					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
+				},
+			},
+		},
+		{
+			name: "multi-format: valid option combination",
+			args: []string{"--format", "table,template,json,template", "--template", "@contrib/gitlab.tpl,@contrib/junit.tpl", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			want: Config{
+				ReportConfig: config.ReportConfig{
+					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+					VulnType:   []string{"os", "library"},
+					Formats: []config.MappedFormat{
+						config.MappedFormat{
+							Format:   "table",
+							Output:   os.Stdout,
+							Template: "",
+						},
+						config.MappedFormat{
+							Format:   "template",
+							Output:   os.Stdout,
+							Template: "@contrib/gitlab.tpl",
+						},
+						config.MappedFormat{
+							Format:   "json",
+							Output:   os.Stdout,
+							Template: "",
+						},
+						config.MappedFormat{
+							Format:   "template",
+							Output:   os.Stdout,
+							Template: "@contrib/junit.tpl",
+						},
+					},
 				},
 				ArtifactConfig: config.ArtifactConfig{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
@@ -162,8 +287,10 @@ func TestConfig_Init(t *testing.T) {
 			want: Config{
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
 					VulnType:   []string{"os", "library"},
+					Formats: []config.MappedFormat{
+						config.DefaultFormat,
+					},
 				},
 				ArtifactConfig: config.ArtifactConfig{
 					Target: "gcr.io/distroless/base",
