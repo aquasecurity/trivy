@@ -919,6 +919,8 @@ $ trivy image -f json -o results.json golang:1.12-alpine
 
 </details>
 
+`VulnerabilityID`, `PkgName`, `InstalledVersion`, and `Severity` in `Vulnerabilities` are always filled with values, but other fields might be empty.
+
 ### Save the results using a template
 
 ```
