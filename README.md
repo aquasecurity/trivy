@@ -1923,7 +1923,7 @@ See [here](docs/air-gap.md)
 
 | Scanner        | OS<br>Packages  | Application<br>Dependencies | Easy to use  | Accuracy    | Suitable<br>for CI  |
 | -------------- | :-------------: | :-------------------------: | :----------: | :---------: | :-----------------: |
-| Trivy          |       ✅        |       ✅<br>(6 languages)   |    ⭐ ⭐ ⭐    |  ⭐ ⭐ ⭐    |      ⭐ ⭐ ⭐         |
+| Trivy          |       ✅        |       ✅<br>(7 languages)   |    ⭐ ⭐ ⭐    |  ⭐ ⭐ ⭐    |      ⭐ ⭐ ⭐         |
 | Clair          |       ✅        |              ×              |      ⭐       |   ⭐ ⭐      |      ⭐ ⭐           |
 | Anchore Engine |       ✅        |       ✅<br>(4 languages)   |     ⭐ ⭐      |   ⭐ ⭐      |     ⭐ ⭐ ⭐         |
 | Quay           |       ✅        |              ×              |    ⭐ ⭐ ⭐    |   ⭐ ⭐      |        ×            |
