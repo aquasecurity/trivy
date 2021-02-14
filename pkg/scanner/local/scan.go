@@ -150,7 +150,9 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		log.Logger.Info("Trivy skips scanning programming language libraries because no supported file was detected")
 		return nil, nil
 	}
+
 	var results report.Results
+	printedTypes := map[string]struct{}{}
 	for _, app := range apps {
 		if len(app.Libraries) == 0 {
 			continue
@@ -159,12 +161,17 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 			continue
 		}
 
+		// Prevent the same log messages from being displayed many times for the same type.
+		if _, ok := printedTypes[app.Type]; !ok {
+			log.Logger.Infof("Detecting %s vulnerabilities...", app.Type)
+			printedTypes[app.Type] = struct{}{}
+		}
+
 		log.Logger.Debugf("Detecting library vulnerabilities, type: %s, path: %s", app.Type, app.FilePath)
 		vulns, err := library.Detect(app.Type, app.Libraries)
 		if err != nil {
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		}
-
 
 		libReport := report.Result{
 			Target:          app.FilePath,

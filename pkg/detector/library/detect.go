@@ -4,7 +4,6 @@ import (
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -24,7 +23,6 @@ func Detect(libType string, pkgs []ftypes.LibraryInfo) ([]types.DetectedVulnerab
 }
 
 func detect(driver Driver, libs []ftypes.LibraryInfo) ([]types.DetectedVulnerability, error) {
-	log.Logger.Infof("Detecting %s vulnerabilities...", driver.Type())
 	var vulnerabilities []types.DetectedVulnerability
 	for _, lib := range libs {
 		vulns, err := driver.Detect(lib.Library.Name, lib.Library.Version)
