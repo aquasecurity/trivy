@@ -1,0 +1,25 @@
+plugins {
+    id 'application'
+    id 'war'
+}
+
+repositories {
+    // Use JCenter for resolving dependencies.
+    jcenter()
+}
+
+dependencies {
+    // Use JUnit test framework.
+    testImplementation 'junit:junit:4.13'
+
+    implementation 'commons-dbcp:commons-dbcp:1.4'
+    implementation 'commons-pool:commons-pool:1.6'
+    implementation 'log4j:log4j:1.2.17'
+    implementation 'org.apache.commons:commons-compress:1.19'
+}
+
+application {
+    // Define the main class for the application.
+    mainClass = 'gradle.App'
+}
+
