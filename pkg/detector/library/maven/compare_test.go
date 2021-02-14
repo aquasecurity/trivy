@@ -33,26 +33,26 @@ func TestComparer_IsVulnerable(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "no patch",
+			name: "final release",
 			args: args{
-				currentVersion: "1.2.3",
+				currentVersion: "1.2.3.final",
 				advisory: dbTypes.Advisory{
-					VulnerableVersions: []string{"<=99.999.99999"},
-					PatchedVersions:    []string{"<0.0.0"},
+					VulnerableVersions: []string{"<1.2.3"},
+					PatchedVersions:    []string{"1.2.3"},
 				},
 			},
-			want: true,
+			want: false,
 		},
 		{
 			name: "pre-release",
 			args: args{
-				currentVersion: "1.2.3-alpha",
+				currentVersion: "1.2.3-a1",
 				advisory: dbTypes.Advisory{
-					VulnerableVersions: []string{"<=1.2.2"},
-					PatchedVersions:    []string{">=1.2.2"},
+					VulnerableVersions: []string{"<1.2.3"},
+					PatchedVersions:    []string{">=1.2.3"},
 				},
 			},
-			want: false,
+			want: true,
 		},
 		{
 			name: "multiple constraints",
@@ -71,16 +71,6 @@ func TestComparer_IsVulnerable(t *testing.T) {
 				currentVersion: "1.2..4",
 				advisory: dbTypes.Advisory{
 					VulnerableVersions: []string{"<1.0.0"},
-				},
-			},
-			want: false,
-		},
-		{
-			name: "invalid constraint",
-			args: args{
-				currentVersion: "1.2.4",
-				advisory: dbTypes.Advisory{
-					VulnerableVersions: []string{"!1.0.0"},
 				},
 			},
 			want: false,
