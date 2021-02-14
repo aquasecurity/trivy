@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"reflect"
+	"sync"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/xerrors"
@@ -109,18 +110,23 @@ func (a Artifact) inspectLayer(diffID string) (types.BlobInfo, error) {
 		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", diffID, err)
 	}
 
+	var wg sync.WaitGroup
 	result := new(analyzer.AnalysisResult)
+
 	opqDirs, whFiles, err := walker.WalkLayerTar(r, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		r, err := analyzer.AnalyzeFile(filePath, info, opener)
-		if err != nil {
-			return err
+		if err = analyzer.AnalyzeFile(&wg, result, filePath, info, opener); err != nil {
+			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
-		result.Merge(r)
 		return nil
 	})
 	if err != nil {
-		return types.BlobInfo{}, err
+		return types.BlobInfo{}, xerrors.Errorf("walk error: %w", err)
 	}
+
+	// Wait for all the goroutine to finish.
+	wg.Wait()
+
+	result.Sort()
 
 	layerInfo := types.BlobInfo{
 		Digest:        layerDigest,

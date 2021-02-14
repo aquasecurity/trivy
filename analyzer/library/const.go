@@ -9,6 +9,7 @@ const (
 	Pipenv   = "pipenv"
 	Poetry   = "poetry"
 	Yarn     = "yarn"
+	Jar      = "jar"
 )
 
 var (

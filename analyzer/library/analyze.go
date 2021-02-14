@@ -11,27 +11,30 @@ import (
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
-func Analyze(analyzerType, filePath string, content []byte, parse func(r io.Reader) ([]godeptypes.Library, error)) (
-	*analyzer.AnalysisResult, error) {
-	r := bytes.NewBuffer(content)
+type parser func(r io.Reader) ([]godeptypes.Library, error)
+
+func Analyze(analyzerType, filePath string, content []byte, parse parser) (*analyzer.AnalysisResult, error) {
+	r := bytes.NewReader(content)
 	parsedLibs, err := parse(r)
 	if err != nil {
-		return nil, xerrors.Errorf("error with a lock file: %w", err)
+		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
 
-	var libs []types.LibraryInfo
-	for _, lib := range parsedLibs {
-		libs = append(libs, types.LibraryInfo{
+	return ToAnalysisResult(analyzerType, filePath, parsedLibs), nil
+}
+
+func ToAnalysisResult(analyzerType, filePath string, libs []godeptypes.Library) *analyzer.AnalysisResult {
+	var libInfos []types.LibraryInfo
+	for _, lib := range libs {
+		libInfos = append(libInfos, types.LibraryInfo{
 			Library: lib,
 		})
 	}
 	apps := []types.Application{{
 		Type:      analyzerType,
 		FilePath:  filePath,
-		Libraries: libs,
+		Libraries: libInfos,
 	}}
 
-	return &analyzer.AnalysisResult{
-		Applications: apps,
-	}, nil
+	return &analyzer.AnalysisResult{Applications: apps}
 }
