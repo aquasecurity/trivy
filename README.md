@@ -1798,6 +1798,8 @@ Trivy scans a tar image with the following format.
   - https://github.com/RustSec/advisory-db
 - .NET
   - https://github.com/advisories?query=ecosystem%3Anuget
+- Java
+  - https://github.com/advisories?query=ecosystem%3Amaven
 
 # Usage
 Trivy has several sub commands, image, fs, repo, client and server.
