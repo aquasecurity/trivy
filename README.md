@@ -1764,7 +1764,7 @@ Distroless: https://github.com/GoogleContainerTools/distroless
 - .NET
   - packages.lock.json
 - Java
-  - JAR/WAR/EAR files
+  - JAR/WAR/EAR files (*.jar, *.war, and *.ear)
 
 The path of these files does not matter.
 
