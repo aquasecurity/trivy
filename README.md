@@ -1639,19 +1639,35 @@ Repository: https://github.com/aquasecurity/trivy-ci-test
 
 ### GitLab CI using Trivy container
 
+To scan a previously built image that has already been pushed into the
+GitLab container registry the following CI job manifest can be used.
+Note that `entrypoint` needs to be unset for the `script` section to work.
+In case of a non-public GitLab project Trivy additionally needs to
+authenticate to the registry to be able to pull your application image.
+Finally, it is not necessary to clone the project repo as we only work
+with the container image.
+
 ```yaml
 container_scanning:
-  image:                           docker.io/aquasec/trivy:latest
+  image:
+    name: docker.io/aquasec/trivy:latest
+    entrypoint: [""]
   variables:
-    FULL_IMAGE_NAME:               $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+    # No need to clone the repo, we exclusively work on artifacts.  See
+    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    GIT_STRATEGY: none
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_AUTH_URL: "$CI_REGISTRY"
+    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   script:
-    - cd /
+    - trivy --version
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
     - time trivy image --clear-cache
     # update vulnerabilities db
     - time trivy --download-db-only --no-progress --cache-dir .trivycache/
     # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
-    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl"
+    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@/contrib/gitlab.tpl"
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$FULL_IMAGE_NAME"
     # Prints full report
     - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress "$FULL_IMAGE_NAME"
