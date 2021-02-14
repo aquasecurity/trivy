@@ -4,8 +4,8 @@ go 1.15
 
 require (
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20210208160827-d0e233fe4b33
-	github.com/aquasecurity/go-dep-parser v0.0.0-20210128084932-812d18a99fa7
+	github.com/aquasecurity/fanal v0.0.0-20210214122859-98d76e2b3b96
+	github.com/aquasecurity/go-dep-parser v0.0.0-20210214113128-b97635cfd627
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -42,9 +42,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.3.1
 	github.com/twitchtv/twirp v5.10.1+incompatible
 	github.com/urfave/cli/v2 v2.3.0
-	go.uber.org/atomic v1.5.1 // indirect
-	go.uber.org/multierr v1.4.0 // indirect
-	go.uber.org/zap v1.13.0
+	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 // indirect
 	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5
 	golang.org/x/sys v0.0.0-20201006155630-ac719f4daadf // indirect
