@@ -74,13 +74,14 @@ type TableWriter struct {
 // Write writes the result on standard output
 func (tw TableWriter) Write(results Results) error {
 	for _, result := range results {
+		if len(result.Vulnerabilities) == 0 {
+			continue
+		}
 		tw.write(result)
 	}
 	return nil
 }
 
-// nolint: gocyclo
-// TODO: refactror and fix cyclometic complexity
 func (tw TableWriter) write(result Result) {
 	table := tablewriter.NewWriter(tw.Output)
 	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version"}
@@ -88,38 +89,7 @@ func (tw TableWriter) write(result Result) {
 		header = append(header, "Title")
 	}
 	table.SetHeader(header)
-
-	severityCount := map[string]int{}
-	for _, v := range result.Vulnerabilities {
-		severityCount[v.Severity]++
-
-		title := v.Title
-		if title == "" {
-			title = v.Description
-		}
-		splittedTitle := strings.Split(title, " ")
-		if len(splittedTitle) >= 12 {
-			title = strings.Join(splittedTitle[:12], " ") + "..."
-		}
-
-		if len(v.PrimaryURL) > 0 {
-			r := strings.NewReplacer("https://", "", "http://", "")
-			title = fmt.Sprintf("%s -->%s", title, r.Replace(v.PrimaryURL))
-		}
-
-		var row []string
-		if tw.Output == os.Stdout {
-			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
-				v.InstalledVersion, v.FixedVersion}
-		} else {
-			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion}
-		}
-
-		if !tw.Light {
-			row = append(row, strings.TrimSpace(title))
-		}
-		table.Append(row)
-	}
+	severityCount := tw.setRows(table, result.Vulnerabilities)
 
 	var results []string
 
@@ -148,6 +118,41 @@ func (tw TableWriter) write(result Result) {
 	table.SetRowLine(true)
 	table.Render()
 	return
+}
+
+func (tw TableWriter) setRows(table *tablewriter.Table, vulns []types.DetectedVulnerability) map[string]int {
+	severityCount := map[string]int{}
+	for _, v := range vulns {
+		severityCount[v.Severity]++
+
+		title := v.Title
+		if title == "" {
+			title = v.Description
+		}
+		splitTitle := strings.Split(title, " ")
+		if len(splitTitle) >= 12 {
+			title = strings.Join(splitTitle[:12], " ") + "..."
+		}
+
+		if len(v.PrimaryURL) > 0 {
+			r := strings.NewReplacer("https://", "", "http://", "")
+			title = fmt.Sprintf("%s -->%s", title, r.Replace(v.PrimaryURL))
+		}
+
+		var row []string
+		if tw.Output == os.Stdout {
+			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
+				v.InstalledVersion, v.FixedVersion}
+		} else {
+			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion}
+		}
+
+		if !tw.Light {
+			row = append(row, strings.TrimSpace(title))
+		}
+		table.Append(row)
+	}
+	return severityCount
 }
 
 // JSONWriter implements result Writer

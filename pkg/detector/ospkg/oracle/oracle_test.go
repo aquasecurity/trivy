@@ -5,17 +5,17 @@ import (
 	"testing"
 	"time"
 
-	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
-	"github.com/aquasecurity/trivy/pkg/log"
-
 	"k8s.io/utils/clock"
 	clocktesting "k8s.io/utils/clock/testing"
+
+	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy-db/pkg/db"
+	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
+	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestMain(m *testing.M) {
@@ -209,8 +209,8 @@ func TestScanner_Detect(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dir := utils.InitTestDB(t, tt.fixtures)
-			defer os.RemoveAll(dir)
+			_ = dbtest.InitDB(t, tt.fixtures)
+			defer db.Close()
 
 			s := NewScanner()
 			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)

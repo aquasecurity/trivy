@@ -10,12 +10,9 @@ import (
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	db2 "github.com/aquasecurity/trivy/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/github"
 	"github.com/aquasecurity/trivy/pkg/indicator"
-	library2 "github.com/aquasecurity/trivy/pkg/rpc/server/library"
-	ospkg2 "github.com/aquasecurity/trivy/pkg/rpc/server/ospkg"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	"github.com/spf13/afero"
@@ -27,30 +24,11 @@ import (
 func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServer {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
-	driverFactory := library.DriverFactory{}
-	libraryDetector := library.NewDetector(driverFactory)
-	scanner := local.NewScanner(applierApplier, detector, libraryDetector)
+	scanner := local.NewScanner(applierApplier, detector)
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	scanServer := NewScanServer(scanner, client)
 	return scanServer
-}
-
-func initializeOspkgServer() *ospkg2.Server {
-	detector := ospkg.Detector{}
-	config := db.Config{}
-	client := vulnerability.NewClient(config)
-	server := ospkg2.NewServer(detector, client)
-	return server
-}
-
-func initializeLibServer() *library2.Server {
-	driverFactory := library.DriverFactory{}
-	detector := library.NewDetector(driverFactory)
-	config := db.Config{}
-	client := vulnerability.NewClient(config)
-	server := library2.NewServer(detector, client)
-	return server
 }
 
 func initializeDBWorker(cacheDir string, quiet bool) dbWorker {

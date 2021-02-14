@@ -6,6 +6,8 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/go-dep-parser/pkg/log"
 )
 
 var (
@@ -19,8 +21,12 @@ func InitLogger(debug, disable bool) (err error) {
 	debugOption = debug
 	Logger, err = NewLogger(debug, disable)
 	if err != nil {
-		return xerrors.Errorf("error in new logger: %w", err)
+		return xerrors.Errorf("failed to initialize a logger: %w", err)
 	}
+
+	// Set logger for go-dep-parser
+	log.SetLogger(Logger)
+
 	return nil
 
 }

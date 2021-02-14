@@ -1,10 +1,9 @@
 package library
 
 import (
-	"fmt"
-
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer/library"
 	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
@@ -12,41 +11,36 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 	"github.com/aquasecurity/trivy/pkg/detector/library/composer"
 	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
-	"github.com/aquasecurity/trivy/pkg/detector/library/node"
+	"github.com/aquasecurity/trivy/pkg/detector/library/maven"
+	"github.com/aquasecurity/trivy/pkg/detector/library/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
-
-// Factory defines library operations
-type Factory interface {
-	NewDriver(filename string) (Driver, error)
-}
 
 type advisory interface {
 	DetectVulnerabilities(string, string) ([]types.DetectedVulnerability, error)
 }
 
-// DriverFactory implements Factory
-type DriverFactory struct{}
-
-// NewDriver factory method for driver
-func (d DriverFactory) NewDriver(filename string) (Driver, error) {
+// NewDriver returns a driver according to the library type
+func NewDriver(libType string) (Driver, error) {
 	var driver Driver
-	switch filename {
-	case "Gemfile.lock":
+	switch libType {
+	case library.Bundler:
 		driver = newRubyGemsDriver()
-	case "Cargo.lock":
+	case library.Cargo:
 		driver = newCargoDriver()
-	case "composer.lock":
+	case library.Composer:
 		driver = newComposerDriver()
-	case "package-lock.json", "yarn.lock":
+	case library.Npm, library.Yarn:
 		driver = newNpmDriver()
-	case "Pipfile.lock", "poetry.lock":
+	case library.Pipenv, library.Poetry:
 		driver = newPipDriver()
-	case "packages.lock.json":
+	case library.NuGet:
 		driver = newNugetDriver()
+	case library.Jar:
+		driver = newMavenDriver()
 	default:
-		return Driver{}, xerrors.New(fmt.Sprintf("unsupport filename %s", filename))
+		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
 	}
 	return driver, nil
 }
@@ -57,17 +51,17 @@ type Driver struct {
 	advisories []advisory
 }
 
-// NewDriver is the factory method from drier
-func NewDriver(advisories ...advisory) Driver {
-	return Driver{advisories: advisories}
+// Aggregate aggregates drivers
+func Aggregate(ecosystem string, advisories ...advisory) Driver {
+	return Driver{ecosystem: ecosystem, advisories: advisories}
 }
 
 // Detect scans and returns vulnerabilities
 func (d *Driver) Detect(pkgName string, pkgVer string) ([]types.DetectedVulnerability, error) {
 	var detectedVulnerabilities []types.DetectedVulnerability
 	uniqVulnIDMap := make(map[string]struct{})
-	for _, d := range d.advisories {
-		vulns, err := d.DetectVulnerabilities(pkgName, pkgVer)
+	for _, adv := range d.advisories {
+		vulns, err := adv.DetectVulnerabilities(pkgName, pkgVer)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 		}
@@ -90,34 +84,41 @@ func (d *Driver) Type() string {
 
 func newRubyGemsDriver() Driver {
 	c := bundler.RubyGemsComparer{}
-	return NewDriver(ghsa.NewAdvisory(ecosystem.Rubygems, c), bundler.NewAdvisory(),
+	return Aggregate(vulnerability.RubyGems, ghsa.NewAdvisory(ecosystem.Rubygems, c), bundler.NewAdvisory(),
 		NewAdvisory(vulnerability.RubyGems, c))
 }
 
 func newComposerDriver() Driver {
 	c := comparer.GenericComparer{}
-	return NewDriver(
-		ghsa.NewAdvisory(ecosystem.Composer, c), composer.NewAdvisory(),
+	return Aggregate(vulnerability.Composer, ghsa.NewAdvisory(ecosystem.Composer, c), composer.NewAdvisory(),
 		NewAdvisory(vulnerability.Composer, c))
 }
 
 func newCargoDriver() Driver {
-	return NewDriver(cargo.NewAdvisory(), NewAdvisory(vulnerability.Cargo, comparer.GenericComparer{}))
+	return Aggregate(vulnerability.Cargo, cargo.NewAdvisory(),
+		NewAdvisory(vulnerability.Cargo, comparer.GenericComparer{}))
 }
 
 func newNpmDriver() Driver {
-	c := node.NpmComparer{}
-	return NewDriver(ghsa.NewAdvisory(ecosystem.Npm, c), node.NewAdvisory(),
-		NewAdvisory(vulnerability.Npm, c))
+	c := npm.Comparer{}
+	return Aggregate(vulnerability.Npm, ghsa.NewAdvisory(ecosystem.Npm, c),
+		npm.NewAdvisory(), NewAdvisory(vulnerability.Npm, c))
 }
 
 func newPipDriver() Driver {
 	c := comparer.GenericComparer{}
-	return NewDriver(ghsa.NewAdvisory(ecosystem.Pip, c), python.NewAdvisory(),
-		NewAdvisory(vulnerability.Pip, c))
+	return Aggregate(vulnerability.Pip, ghsa.NewAdvisory(ecosystem.Pip, c),
+		python.NewAdvisory(), NewAdvisory(vulnerability.Pip, c))
 }
 
 func newNugetDriver() Driver {
 	c := comparer.GenericComparer{}
-	return NewDriver(ghsa.NewAdvisory(ecosystem.Nuget, c), NewAdvisory(vulnerability.NuGet, c))
+	return Aggregate(vulnerability.NuGet, ghsa.NewAdvisory(ecosystem.Nuget, c),
+		NewAdvisory(vulnerability.NuGet, c))
+}
+
+func newMavenDriver() Driver {
+	c := maven.Comparer{}
+	return Aggregate(vulnerability.Maven, ghsa.NewAdvisory(ecosystem.Maven, c),
+		NewAdvisory(vulnerability.Maven, c))
 }
