@@ -66,11 +66,11 @@ func TestComparer_IsVulnerable(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "invalid version",
+			name: "invalid constraint",
 			args: args{
-				currentVersion: "1.2..4",
+				currentVersion: "1.2.3",
 				advisory: dbTypes.Advisory{
-					VulnerableVersions: []string{"<1.0.0"},
+					VulnerableVersions: []string{`<1.0\.0`},
 				},
 			},
 			want: false,
