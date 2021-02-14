@@ -3,9 +3,9 @@ package maven
 import (
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-version/pkg/version"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
+	version "github.com/masahiro331/go-mvn-version"
 )
 
 // Comparer represents a comparer for maven
@@ -18,8 +18,7 @@ func (n Comparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
 
 // matchVersion checks if the package version satisfies the given constraint.
 func (n Comparer) matchVersion(currentVersion, constraint string) (bool, error) {
-	// TODO: use go-mvn-version
-	v, err := version.Parse(currentVersion)
+	v, err := version.NewVersion(currentVersion)
 	if err != nil {
 		return false, xerrors.Errorf("maven version error (%s): %s", currentVersion, err)
 	}
