@@ -52,8 +52,8 @@ type Driver struct {
 }
 
 // Aggregate aggregates drivers
-func Aggregate(advisories ...advisory) Driver {
-	return Driver{advisories: advisories}
+func Aggregate(ecosystem string, advisories ...advisory) Driver {
+	return Driver{ecosystem: ecosystem, advisories: advisories}
 }
 
 // Detect scans and returns vulnerabilities
@@ -84,38 +84,41 @@ func (d *Driver) Type() string {
 
 func newRubyGemsDriver() Driver {
 	c := bundler.RubyGemsComparer{}
-	return Aggregate(ghsa.NewAdvisory(ecosystem.Rubygems, c), bundler.NewAdvisory(),
+	return Aggregate(vulnerability.RubyGems, ghsa.NewAdvisory(ecosystem.Rubygems, c), bundler.NewAdvisory(),
 		NewAdvisory(vulnerability.RubyGems, c))
 }
 
 func newComposerDriver() Driver {
 	c := comparer.GenericComparer{}
-	return Aggregate(
-		ghsa.NewAdvisory(ecosystem.Composer, c), composer.NewAdvisory(),
+	return Aggregate(vulnerability.Composer, ghsa.NewAdvisory(ecosystem.Composer, c), composer.NewAdvisory(),
 		NewAdvisory(vulnerability.Composer, c))
 }
 
 func newCargoDriver() Driver {
-	return Aggregate(cargo.NewAdvisory(), NewAdvisory(vulnerability.Cargo, comparer.GenericComparer{}))
+	return Aggregate(vulnerability.Cargo, cargo.NewAdvisory(),
+		NewAdvisory(vulnerability.Cargo, comparer.GenericComparer{}))
 }
 
 func newNpmDriver() Driver {
 	c := npm.Comparer{}
-	return Aggregate(ghsa.NewAdvisory(ecosystem.Npm, c), npm.NewAdvisory(), NewAdvisory(vulnerability.Npm, c))
+	return Aggregate(vulnerability.Npm, ghsa.NewAdvisory(ecosystem.Npm, c),
+		npm.NewAdvisory(), NewAdvisory(vulnerability.Npm, c))
 }
 
 func newPipDriver() Driver {
 	c := comparer.GenericComparer{}
-	return Aggregate(ghsa.NewAdvisory(ecosystem.Pip, c), python.NewAdvisory(), NewAdvisory(vulnerability.Pip, c))
+	return Aggregate(vulnerability.Pip, ghsa.NewAdvisory(ecosystem.Pip, c),
+		python.NewAdvisory(), NewAdvisory(vulnerability.Pip, c))
 }
 
 func newNugetDriver() Driver {
 	c := comparer.GenericComparer{}
-	return Aggregate(ghsa.NewAdvisory(ecosystem.Nuget, c), NewAdvisory(vulnerability.NuGet, c))
+	return Aggregate(vulnerability.NuGet, ghsa.NewAdvisory(ecosystem.Nuget, c),
+		NewAdvisory(vulnerability.NuGet, c))
 }
 
 func newMavenDriver() Driver {
 	c := maven.Comparer{}
-	// TODO: fix trivy-db
-	return Aggregate(ghsa.NewAdvisory(ecosystem.Maven, c), NewAdvisory("maven", c))
+	return Aggregate(vulnerability.Maven, ghsa.NewAdvisory(ecosystem.Maven, c),
+		NewAdvisory(vulnerability.Maven, c))
 }
