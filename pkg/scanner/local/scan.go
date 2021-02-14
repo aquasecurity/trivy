@@ -155,6 +155,9 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		if len(app.Libraries) == 0 {
 			continue
 		}
+		if skipped(app.FilePath, options.SkipFiles, options.SkipDirectories) {
+			continue
+		}
 
 		log.Logger.Debugf("Detecting library vulnerabilities, type: %s, path: %s", app.Type, app.FilePath)
 		vulns, err := library.Detect(app.Type, app.Libraries)
@@ -162,9 +165,6 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		}
 
-		if skipped(app.FilePath, options.SkipFiles, options.SkipDirectories) {
-			continue
-		}
 
 		libReport := report.Result{
 			Target:          app.FilePath,
