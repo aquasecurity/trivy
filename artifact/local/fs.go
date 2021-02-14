@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
@@ -34,22 +35,26 @@ func NewArtifact(dir string, c cache.ArtifactCache) artifact.Artifact {
 }
 
 func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
-	var result analyzer.AnalysisResult
+	var wg sync.WaitGroup
+	result := new(analyzer.AnalysisResult)
 	err := walker.WalkDir(a.dir, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		filePath, err := filepath.Rel(a.dir, filePath)
 		if err != nil {
 			return err
 		}
-		r, err := analyzer.AnalyzeFile(filePath, info, opener)
-		if err != nil {
+		if err = analyzer.AnalyzeFile(&wg, result, filePath, info, opener); err != nil {
 			return err
 		}
-		result.Merge(r)
 		return nil
 	})
 	if err != nil {
 		return types.ArtifactReference{}, err
 	}
+
+	// Wait for all the goroutine to finish.
+	wg.Wait()
+
+	result.Sort()
 
 	blobInfo := types.BlobInfo{
 		SchemaVersion: types.BlobJSONSchemaVersion,

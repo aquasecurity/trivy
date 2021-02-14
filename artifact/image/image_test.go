@@ -143,7 +143,39 @@ func TestArtifact_Inspect(t *testing.T) {
 							Digest:        "",
 							DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							OS:            &types.OS{Family: "debian", Name: "9.9"},
-							PackageInfos:  []types.PackageInfo{{FilePath: "var/lib/dpkg/status.d/base", Packages: []types.Package{{Name: "base-files", Version: "9.9+deb9u9", Release: "", Epoch: 0, Arch: "", SrcName: "base-files", SrcVersion: "9.9+deb9u9", SrcRelease: "", SrcEpoch: 0}}}, {FilePath: "var/lib/dpkg/status.d/netbase", Packages: []types.Package{{Name: "netbase", Version: "5.4", Release: "", Epoch: 0, Arch: "", SrcName: "netbase", SrcVersion: "5.4", SrcRelease: "", SrcEpoch: 0}}}, {FilePath: "var/lib/dpkg/status.d/tzdata", Packages: []types.Package{{Name: "tzdata", Version: "2019a-0+deb9u1", Release: "", Epoch: 0, Arch: "", SrcName: "tzdata", SrcVersion: "2019a-0+deb9u1", SrcRelease: "", SrcEpoch: 0}}}},
+							PackageInfos: []types.PackageInfo{
+								{
+									FilePath: "var/lib/dpkg/status.d/base",
+									Packages: []types.Package{
+										{
+											Name:       "base-files",
+											Version:    "9.9+deb9u9",
+											SrcName:    "base-files",
+											SrcVersion: "9.9+deb9u9",
+										},
+									},
+								}, {
+									FilePath: "var/lib/dpkg/status.d/netbase",
+									Packages: []types.Package{
+										{
+											Name:       "netbase",
+											Version:    "5.4",
+											SrcName:    "netbase",
+											SrcVersion: "5.4",
+										},
+									},
+								}, {
+									FilePath: "var/lib/dpkg/status.d/tzdata",
+									Packages: []types.Package{
+										{
+											Name:       "tzdata",
+											Version:    "2019a-0+deb9u1",
+											SrcName:    "tzdata",
+											SrcVersion: "2019a-0+deb9u1",
+										},
+									},
+								},
+							},
 						},
 					},
 				},
@@ -154,7 +186,26 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: 1,
 							Digest:        "",
 							DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-							PackageInfos:  []types.PackageInfo{{FilePath: "var/lib/dpkg/status.d/libc6", Packages: []types.Package{{Name: "libc6", Version: "2.24-11+deb9u4", Release: "", Epoch: 0, Arch: "", SrcName: "glibc", SrcVersion: "2.24-11+deb9u4", SrcRelease: "", SrcEpoch: 0}}}, {FilePath: "var/lib/dpkg/status.d/libssl1", Packages: []types.Package{{Name: "libssl1.1", Version: "1.1.0k-1~deb9u1", Release: "", Epoch: 0, Arch: "", SrcName: "openssl", SrcVersion: "1.1.0k-1~deb9u1", SrcRelease: "", SrcEpoch: 0}}}, {FilePath: "var/lib/dpkg/status.d/openssl", Packages: []types.Package{{Name: "openssl", Version: "1.1.0k-1~deb9u1", Release: "", Epoch: 0, Arch: "", SrcName: "openssl", SrcVersion: "1.1.0k-1~deb9u1", SrcRelease: "", SrcEpoch: 0}}}},
+							PackageInfos: []types.PackageInfo{
+								{
+									FilePath: "var/lib/dpkg/status.d/libc6",
+									Packages: []types.Package{
+										{Name: "libc6", Version: "2.24-11+deb9u4", SrcName: "glibc", SrcVersion: "2.24-11+deb9u4"},
+									},
+								},
+								{
+									FilePath: "var/lib/dpkg/status.d/libssl1",
+									Packages: []types.Package{
+										{Name: "libssl1.1", Version: "1.1.0k-1~deb9u1", SrcName: "openssl", SrcVersion: "1.1.0k-1~deb9u1"},
+									},
+								},
+								{
+									FilePath: "var/lib/dpkg/status.d/openssl",
+									Packages: []types.Package{
+										{Name: "openssl", Version: "1.1.0k-1~deb9u1", SrcName: "openssl", SrcVersion: "1.1.0k-1~deb9u1"},
+									},
+								},
+							},
 						},
 					},
 				},

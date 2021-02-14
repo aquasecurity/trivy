@@ -313,7 +313,11 @@ func TestAnalyzeFile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := analyzer.AnalyzeFile(tt.args.filePath, tt.args.info, tt.args.opener)
+			var wg sync.WaitGroup
+			got := new(analyzer.AnalysisResult)
+			err := analyzer.AnalyzeFile(&wg, got, tt.args.filePath, tt.args.info, tt.args.opener)
+
+			wg.Wait()
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
