@@ -74,6 +74,9 @@ type TableWriter struct {
 // Write writes the result on standard output
 func (tw TableWriter) Write(results Results) error {
 	for _, result := range results {
+		if len(result.Vulnerabilities) == 0 {
+			continue
+		}
 		tw.write(result)
 	}
 	return nil
