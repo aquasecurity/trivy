@@ -109,6 +109,8 @@ github.com/aquasecurity/testdocker v0.0.0-20210106133225-0b17fe083674 h1:Xq/HxWF
 github.com/aquasecurity/testdocker v0.0.0-20210106133225-0b17fe083674/go.mod h1:psfu0MVaiTDLpNxCoNsTeILSKY2EICBwv345f3M+Ffs=
 github.com/aquasecurity/trivy-db v0.0.0-20210105160501-c5bf4e153277 h1:lXN72H9uNM1exUArIsN++n7b67PIaqhZON2cVWxwmpg=
 github.com/aquasecurity/trivy-db v0.0.0-20210105160501-c5bf4e153277/go.mod h1:N7CWA/vjVw78GWAdCJGhFQVqNGEA4e47a6eIWm+C/Bc=
+github.com/aquasecurity/trivy-db v0.0.0-20210214043256-acc144af2228 h1:Hl1eKVUApdGdMUNiSYWekViWccauKxscorOV2bc1cJE=
+github.com/aquasecurity/trivy-db v0.0.0-20210214043256-acc144af2228/go.mod h1:N7CWA/vjVw78GWAdCJGhFQVqNGEA4e47a6eIWm+C/Bc=
 github.com/aquasecurity/vuln-list-update v0.0.0-20191016075347-3d158c2bf9a2 h1:xbdUfr2KE4THsFx9CFWtWpU91lF+YhgP46moV94nYTA=
 github.com/aquasecurity/vuln-list-update v0.0.0-20191016075347-3d158c2bf9a2/go.mod h1:6NhOP0CjZJL27bZZcaHECtzWdwDDm2g6yCY0QgXEGQQ=
 github.com/araddon/dateparse v0.0.0-20190426192744-0d74ffceef83/go.mod h1:SLqhdZcd+dF3TEVL2RMoob5bBP5R1P1qkox+HtCBgGI=
