@@ -949,9 +949,9 @@ In the following example using the template `sarif.tpl` [Sarif](https://docs.git
 $ trivy image --format template --template "@contrib/sarif.tpl" -o report.sarif  golang:1.12-alpine
 ```
 This SARIF format can be uploaded to GitHub code scanning results, and there is a [Trivy GitHub Action](https://github.com/aquasecurity/trivy-action) for automating this process.
-In the following example using multi formats, the template `junit.tpl` XML and `htmlt.tpl` HTML can be generated.
+In the following example using multi formats, reports with json and `junit.tpl` XML template can be generated.
 ```
-$ trivy image --format template,template --template "@contrib/junit.tpl,@contrib/html.tpl" -o junit-report.xml  golang:1.12-alpine
+$ trivy image --format json,template --template "@contrib/junit.tpl" -o junit-report.xml  golang:1.12-alpine
 ```
 
 Trivy also supports an [ASFF template for reporting findings to AWS Security Hub](docs/integration/security-hub.md)
