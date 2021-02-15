@@ -136,10 +136,6 @@ func (c *ReportConfig) splitSeverity(logger *zap.SugaredLogger, severity string)
 
 // mapFormat maps format and output for multi-format report
 func (c *ReportConfig) mapOutput(format []string, logger *zap.SugaredLogger) (output []*os.File, err error) {
-	if c.output == "" {
-		return []*os.File{os.Stdout}, nil
-	}
-
 	for _, v := range strings.Split(c.output, ",") {
 		var out *os.File
 		if v != "" && v != "stdout" {
