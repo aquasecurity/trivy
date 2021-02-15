@@ -24,7 +24,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 		ExitCode      int
 		VulnType      []string
 		Severities    []dbTypes.Severity
-		Formats       []MappedFormat
+		Formats       map[string]MappedFormat
 	}
 	tests := []struct {
 		name    string
@@ -44,9 +44,8 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 				VulnType:   []string{"os"},
-				Formats: []MappedFormat{
-					MappedFormat{
-						Format:   "table",
+				Formats: map[string]MappedFormat{
+					"table": MappedFormat{
 						Output:   os.Stdout,
 						Template: "",
 					},
@@ -66,9 +65,8 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
 				VulnType:   []string{"os", "library"},
-				Formats: []MappedFormat{
-					MappedFormat{
-						Format:   "table",
+				Formats: map[string]MappedFormat{
+					"table": MappedFormat{
 						Output:   os.Stdout,
 						Template: "",
 					},
@@ -104,9 +102,8 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:   []string{""},
-				Formats: []MappedFormat{
-					MappedFormat{
-						Format:   "table",
+				Formats: map[string]MappedFormat{
+					"table": MappedFormat{
 						Output:   os.Stdout,
 						Template: "",
 					},
@@ -127,9 +124,8 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:   []string{""},
-				Formats: []MappedFormat{
-					MappedFormat{
-						Format:   "json",
+				Formats: map[string]MappedFormat{
+					"json": MappedFormat{
 						Output:   os.Stdout,
 						Template: "",
 					},
@@ -150,14 +146,12 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:   []string{""},
-				Formats: []MappedFormat{
-					MappedFormat{
-						Format:   "table",
+				Formats: map[string]MappedFormat{
+					"table": MappedFormat{
 						Output:   os.Stdout,
 						Template: "",
 					},
-					MappedFormat{
-						Format:   "json",
+					"json": MappedFormat{
 						Output:   os.Stdout,
 						Template: "",
 					},
@@ -177,9 +171,8 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:   []string{""},
-				Formats: []MappedFormat{
-					MappedFormat{
-						Format:   "table",
+				Formats: map[string]MappedFormat{
+					"table": MappedFormat{
 						Output:   os.Stdout,
 						Template: "",
 					},
@@ -187,7 +180,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 			},
 		},
 		{
-			name: "multi-format: invalid option combination: not enough matching --template",
+			name: "multi-format: invalid option combination: more than one --format template",
 			fields: fields{
 				format:     "template,template",
 				template:   "@contrib/gitlab.tpl",
@@ -195,14 +188,13 @@ func TestReportReportConfig_Init(t *testing.T) {
 			},
 			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--format template is ignored because --template is not specified. Specify --template option when you use --format template.",
+				"--format template is ignored because it has been specified.",
 			},
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:   []string{""},
-				Formats: []MappedFormat{
-					MappedFormat{
-						Format:   "template",
+				Formats: map[string]MappedFormat{
+					"template": MappedFormat{
 						Output:   os.Stdout,
 						Template: "@contrib/gitlab.tpl",
 					},
@@ -212,7 +204,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 		{
 			name: "multi-format: valid option combination",
 			fields: fields{
-				format:     "table,template,json,template",
+				format:     "table,template,json",
 				template:   "@contrib/gitlab.tpl,@contrib/junit.tpl",
 				severities: "LOW",
 			},
@@ -220,26 +212,18 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:   []string{""},
-				Formats: []MappedFormat{
-					MappedFormat{
-						Format:   "table",
+				Formats: map[string]MappedFormat{
+					"table": MappedFormat{
 						Output:   os.Stdout,
 						Template: "",
 					},
-					MappedFormat{
-						Format:   "template",
+					"template": MappedFormat{
 						Output:   os.Stdout,
 						Template: "@contrib/gitlab.tpl",
 					},
-					MappedFormat{
-						Format:   "json",
+					"json": MappedFormat{
 						Output:   os.Stdout,
 						Template: "",
-					},
-					MappedFormat{
-						Format:   "template",
-						Output:   os.Stdout,
-						Template: "@contrib/junit.tpl",
 					},
 				},
 			},

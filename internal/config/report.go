@@ -28,21 +28,17 @@ type ReportConfig struct {
 	// these variables are populated by Init()
 	VulnType   []string
 	Severities []dbTypes.Severity
-	Formats    []MappedFormat
+	Formats    map[string]MappedFormat
 }
 
-// MappedFormat holds the mapped format, output, and template
-// for multi-format report
+// MappedFormat holds the mapped output and template for multi-format report
 type MappedFormat struct {
-	Format   string
 	Output   *os.File
 	Template string
 }
 
-// DefaultFormat holds the default mapped format, output, and template
-// for multi-format report
+// DefaultFormat holds the default mapped output and template for multi-format report
 var DefaultFormat = MappedFormat{
-	Format:   "table",
 	Output:   os.Stdout,
 	Template: "",
 }
@@ -65,41 +61,53 @@ func NewReportConfig(c *cli.Context) ReportConfig {
 
 // Init initializes the ReportConfig
 func (c *ReportConfig) Init(logger *zap.SugaredLogger) (err error) {
-	var format, output, template []string
+	formats := make(map[string]MappedFormat)
+	var format, template []string
+	var output []*os.File
 
 	if c.format == "" {
 		if c.template != "" {
 			logger.Warn("--template is ignored because --format template is not specified. Use --template option with --format template option.")
 		}
-		c.Formats = []MappedFormat{DefaultFormat}
+		formats["table"] = DefaultFormat
 	} else {
 		format = strings.Split(c.format, ",")
-		output = c.mapOutput(format, logger)
+		output, err = c.mapOutput(format, logger)
+		if err != nil {
+			return err
+		}
 		template = c.mapTemplate(format, logger)
 	}
 
-	for i := range format {
-		var out *os.File
-		if output[i] != "" && output[i] != "stdout" {
-			if out, err = os.Create(output[i]); err != nil {
-				return xerrors.Errorf("failed to create an output file: %w", err)
-			}
-		} else {
-			out = os.Stdout
+	for i, f := range format {
+		_, ok := formats[f]
+		if ok {
+			logger.Warnf("--format %s is ignored because it has been specified.", f)
+			continue
 		}
 
-		if format[i] == "template" && template[i] == "" {
-			logger.Warn("--format template is ignored because --template is not specified. Specify --template option when you use --format template.")
-			continue
+		if format[i] == "template" {
+			if template == nil {
+				logger.Warn("--format template is ignored because --template is not specified. Specify --template option when you use --format template.")
+				continue
+			} else {
+				formats[f] = MappedFormat{
+					Output:   output[i],
+					Template: template[0],
+				}
+			}
 		} else {
-			c.Formats = append(c.Formats, MappedFormat{
-				Format:   format[i],
-				Output:   out,
-				Template: template[i],
-			})
+			formats[f] = MappedFormat{
+				Output:   output[i],
+				Template: "",
+			}
 		}
 	}
 
+	if len(formats) == 0 {
+		formats = nil
+	}
+	c.Formats = formats
 	c.Severities = c.splitSeverity(logger, c.severities)
 	c.VulnType = strings.Split(c.vulnType, ",")
 
@@ -127,53 +135,42 @@ func (c *ReportConfig) splitSeverity(logger *zap.SugaredLogger, severity string)
 }
 
 // mapFormat maps format and output for multi-format report
-func (c *ReportConfig) mapOutput(format []string, logger *zap.SugaredLogger) (output []string) {
+func (c *ReportConfig) mapOutput(format []string, logger *zap.SugaredLogger) (output []*os.File, err error) {
 	if c.output != "" {
-		output = strings.Split(c.output, ",")
+		return []*os.File{os.Stdout}, nil
 	}
 
-	for {
-		if len(output) == len(format) {
-			break
+	for _, v := range strings.Split(c.output, ",") {
+		var out *os.File
+		if v != "" && v != "stdout" {
+			if out, err = os.Create(v); err != nil {
+				return output, xerrors.Errorf("failed to create an output file: %w", err)
+			}
+			output = append(output, out)
 		}
-		output = append(output, "")
 	}
 
-	return output
+	for i := len(output); i < len(format); i++ {
+		output = append(output, os.Stdout)
+	}
+
+	return output, nil
 }
 
 // mapFormat maps format and template for multi-format report
 func (c *ReportConfig) mapTemplate(format []string, logger *zap.SugaredLogger) (template []string) {
 	if c.template == "" {
-		for {
-			if len(template) == len(format) {
-				break
-			}
-			template = append(template, "")
-		}
 		return template
 	}
 
-	tmp := strings.Split(c.template, ",")
-	for i := range format {
-		if format[i] == "template" {
-			if tmp == nil {
-				template = append(template, "")
-				continue
-			}
-
-			template = append(template, tmp[0])
-			if len(tmp) == 1 {
-				tmp = nil
-			} else {
-				tmp = tmp[1:]
-			}
-		} else {
-			template = append(template, "")
+	template = strings.Split(c.template, ",")
+	var ok bool
+	for _, f := range format {
+		if f == "template" {
+			ok = true
 		}
 	}
-
-	if tmp != nil {
+	if !ok {
 		logger.Warnf("--template is ignored because --format %s is specified. Use --template option with --format template option.", format)
 	}
 

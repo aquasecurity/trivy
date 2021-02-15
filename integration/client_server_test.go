@@ -79,6 +79,26 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/alpine-310-ignore-cveids.json.golden",
 		},
 		{
+			name: "alpine 3.10 integration with gitlab template",
+			testArgs: args{
+				Format:       "template",
+				TemplatePath: "@../contrib/gitlab.tpl",
+				Version:      "dev",
+				Input:        "testdata/fixtures/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.gitlab.golden",
+		},
+		{
+			name: "alpine 3.10 integration with sarif template",
+			testArgs: args{
+				Format:       "template",
+				TemplatePath: "@../contrib/sarif.tpl",
+				Version:      "dev",
+				Input:        "testdata/fixtures/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.sarif.golden",
+		},
+		{
 			name: "alpine 3.9 integration",
 			testArgs: args{
 				Version: "dev",
@@ -291,26 +311,6 @@ func TestClientServer(t *testing.T) {
 				Input:   "testdata/fixtures/busybox-with-lockfile.tar.gz",
 			},
 			golden: "testdata/busybox-with-lockfile.json.golden",
-		},
-		{
-			name: "alpine 3.10 integration with gitlab template",
-			testArgs: args{
-				Format:       "template",
-				TemplatePath: "@../contrib/gitlab.tpl",
-				Version:      "dev",
-				Input:        "testdata/fixtures/alpine-310.tar.gz",
-			},
-			golden: "testdata/alpine-310.gitlab.golden",
-		},
-		{
-			name: "alpine 3.10 integration with sarif template",
-			testArgs: args{
-				Format:       "template",
-				TemplatePath: "@../contrib/sarif.tpl",
-				Version:      "dev",
-				Input:        "testdata/fixtures/alpine-310.tar.gz",
-			},
-			golden: "testdata/alpine-310.sarif.golden",
 		},
 		{
 			name: "alpine 3.10 integration with ASFF template",

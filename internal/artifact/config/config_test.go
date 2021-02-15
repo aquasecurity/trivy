@@ -44,8 +44,8 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os"},
-					Formats: []config.MappedFormat{
-						config.DefaultFormat,
+					Formats: map[string]config.MappedFormat{
+						"table": config.DefaultFormat,
 					},
 				},
 			},
@@ -60,8 +60,8 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: []config.MappedFormat{
-						config.DefaultFormat,
+					Formats: map[string]config.MappedFormat{
+						"table": config.DefaultFormat,
 					},
 				},
 			},
@@ -76,8 +76,8 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
 					VulnType:   []string{"os", "library"},
-					Formats: []config.MappedFormat{
-						config.DefaultFormat,
+					Formats: map[string]config.MappedFormat{
+						"table": config.DefaultFormat,
 					},
 				},
 				ArtifactConfig: config.ArtifactConfig{
@@ -95,8 +95,8 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 					VulnType:   []string{"os", "library"},
-					Formats: []config.MappedFormat{
-						config.DefaultFormat,
+					Formats: map[string]config.MappedFormat{
+						"table": config.DefaultFormat,
 					},
 				},
 				ArtifactConfig: config.ArtifactConfig{
@@ -115,9 +115,8 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: []config.MappedFormat{
-						config.MappedFormat{
-							Format:   "table",
+					Formats: map[string]config.MappedFormat{
+						"table": config.MappedFormat{
 							Output:   os.Stdout,
 							Template: "",
 						},
@@ -138,9 +137,8 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: []config.MappedFormat{
-						config.MappedFormat{
-							Format:   "json",
+					Formats: map[string]config.MappedFormat{
+						"json": config.MappedFormat{
 							Output:   os.Stdout,
 							Template: "",
 						},
@@ -178,14 +176,12 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: []config.MappedFormat{
-						config.MappedFormat{
-							Format:   "table",
+					Formats: map[string]config.MappedFormat{
+						"table": config.MappedFormat{
 							Output:   os.Stdout,
 							Template: "",
 						},
-						config.MappedFormat{
-							Format:   "json",
+						"json": config.MappedFormat{
 							Output:   os.Stdout,
 							Template: "",
 						},
@@ -206,9 +202,8 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: []config.MappedFormat{
-						config.MappedFormat{
-							Format:   "table",
+					Formats: map[string]config.MappedFormat{
+						"table": config.MappedFormat{
 							Output:   os.Stdout,
 							Template: "",
 						},
@@ -220,18 +215,17 @@ func TestConfig_Init(t *testing.T) {
 			},
 		},
 		{
-			name: "multi-format: invalid option combination: not enough matching --template",
+			name: "multi-format: invalid option combination: more than one --format template",
 			args: []string{"--format", "template,template", "--template", "@contrib/gitlab.tpl", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--format template is ignored because --template is not specified. Specify --template option when you use --format template.",
+				"--format template is ignored because it has been specified.",
 			},
 			want: Config{
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: []config.MappedFormat{
-						config.MappedFormat{
-							Format:   "template",
+					Formats: map[string]config.MappedFormat{
+						"template": config.MappedFormat{
 							Output:   os.Stdout,
 							Template: "@contrib/gitlab.tpl",
 						},
@@ -244,31 +238,23 @@ func TestConfig_Init(t *testing.T) {
 		},
 		{
 			name: "multi-format: valid option combination",
-			args: []string{"--format", "table,template,json,template", "--template", "@contrib/gitlab.tpl,@contrib/junit.tpl", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			args: []string{"--format", "table,template,json", "--template", "@contrib/gitlab.tpl", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			want: Config{
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: []config.MappedFormat{
-						config.MappedFormat{
-							Format:   "table",
+					Formats: map[string]config.MappedFormat{
+						"table": config.MappedFormat{
 							Output:   os.Stdout,
 							Template: "",
 						},
-						config.MappedFormat{
-							Format:   "template",
+						"template": config.MappedFormat{
 							Output:   os.Stdout,
 							Template: "@contrib/gitlab.tpl",
 						},
-						config.MappedFormat{
-							Format:   "json",
+						"json": config.MappedFormat{
 							Output:   os.Stdout,
 							Template: "",
-						},
-						config.MappedFormat{
-							Format:   "template",
-							Output:   os.Stdout,
-							Template: "@contrib/junit.tpl",
 						},
 					},
 				},
@@ -288,8 +274,8 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: []config.MappedFormat{
-						config.DefaultFormat,
+					Formats: map[string]config.MappedFormat{
+						"table": config.DefaultFormat,
 					},
 				},
 				ArtifactConfig: config.ArtifactConfig{
