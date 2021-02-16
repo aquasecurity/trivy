@@ -7,6 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/trivy/internal/client/config"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -26,47 +27,22 @@ func Run(cliCtx *cli.Context) error {
 	return run(c)
 }
 
-// nolint: gocyclo
-// TODO: refactror and fix cyclometic complexity
 func run(c config.Config) (err error) {
-	if err = log.InitLogger(c.Debug, c.Quiet); err != nil {
-		return xerrors.Errorf("failed to initialize a logger: %w", err)
+	if err = initialize(&c); err != nil {
+		return err
 	}
-
-	// initialize config
-	if err = c.Init(); err != nil {
-		return xerrors.Errorf("failed to initialize options: %w", err)
-	}
-
-	// configure cache dir
-	utils.SetCacheDir(c.CacheDir)
-	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
 	if c.ClearCache {
 		log.Logger.Warn("A client doesn't have image cache")
 		return nil
 	}
 
-	var scanner scanner.Scanner
 	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
-	remoteCache := cache.NewRemoteCache(cache.RemoteURL(c.RemoteAddr), c.CustomHeaders)
 
-	cleanup := func() {}
-	if c.Input != "" {
-		// scan tar file
-		scanner, err = initializeArchiveScanner(ctx, c.Input, remoteCache,
-			client.CustomHeaders(c.CustomHeaders), client.RemoteURL(c.RemoteAddr), c.Timeout)
-		if err != nil {
-			return xerrors.Errorf("unable to initialize the archive scanner: %w", err)
-		}
-	} else {
-		// scan an image in Docker Engine or Docker Registry
-		scanner, cleanup, err = initializeDockerScanner(ctx, c.Target, remoteCache,
-			client.CustomHeaders(c.CustomHeaders), client.RemoteURL(c.RemoteAddr), c.Timeout)
-		if err != nil {
-			return xerrors.Errorf("unable to initialize the docker scanner: %w", err)
-		}
+	s, cleanup, err := initializeScanner(ctx, c)
+	if err != nil {
+		return err
 	}
 	defer cleanup()
 
@@ -76,7 +52,7 @@ func run(c config.Config) (err error) {
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	results, err := scanner.ScanArtifact(ctx, scanOptions)
+	results, err := s.ScanArtifact(ctx, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
@@ -95,6 +71,53 @@ func run(c config.Config) (err error) {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
+	exit(c, results)
+
+	return nil
+}
+
+func initialize(c *config.Config) error {
+	// Initialize logger
+	if err := log.InitLogger(c.Debug, c.Quiet); err != nil {
+		return xerrors.Errorf("failed to initialize a logger: %w", err)
+	}
+
+	// Initialize config
+	if err := c.Init(); err != nil {
+		return xerrors.Errorf("failed to initialize options: %w", err)
+	}
+
+	// configure cache dir
+	utils.SetCacheDir(c.CacheDir)
+	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
+
+	return nil
+}
+
+func initializeScanner(ctx context.Context, c config.Config) (scanner.Scanner, func(), error) {
+	remoteCache := cache.NewRemoteCache(cache.RemoteURL(c.RemoteAddr), c.CustomHeaders)
+
+	if c.Input != "" {
+		// Scan tar file
+		s, err := initializeArchiveScanner(ctx, c.Input, remoteCache,
+			client.CustomHeaders(c.CustomHeaders), client.RemoteURL(c.RemoteAddr), c.Timeout, disabledAnalyzers)
+		if err != nil {
+			return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
+		}
+		return s, func() {}, nil
+	}
+
+	// Scan an image in Docker Engine or Docker Registry
+	s, cleanup, err := initializeDockerScanner(ctx, c.Target, remoteCache,
+		client.CustomHeaders(c.CustomHeaders), client.RemoteURL(c.RemoteAddr), c.Timeout, disabledAnalyzers)
+	if err != nil {
+		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the docker scanner: %w", err)
+	}
+
+	return s, cleanup, nil
+}
+
+func exit(c config.Config, results report.Results) {
 	if c.ExitCode != 0 {
 		for _, result := range results {
 			if len(result.Vulnerabilities) > 0 {
@@ -102,5 +125,4 @@ func run(c config.Config) (err error) {
 			}
 		}
 	}
-	return nil
 }
