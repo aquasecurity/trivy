@@ -44,8 +44,8 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os"},
-					Formats: map[string]config.MappedFormat{
-						"table": config.DefaultFormat,
+					Formats: []config.MappedFormat{
+						config.DefaultFormat,
 					},
 				},
 			},
@@ -60,8 +60,8 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: map[string]config.MappedFormat{
-						"table": config.DefaultFormat,
+					Formats: []config.MappedFormat{
+						config.DefaultFormat,
 					},
 				},
 			},
@@ -76,8 +76,8 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
 					VulnType:   []string{"os", "library"},
-					Formats: map[string]config.MappedFormat{
-						"table": config.DefaultFormat,
+					Formats: []config.MappedFormat{
+						config.DefaultFormat,
 					},
 				},
 				ArtifactConfig: config.ArtifactConfig{
@@ -95,8 +95,8 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 					VulnType:   []string{"os", "library"},
-					Formats: map[string]config.MappedFormat{
-						"table": config.DefaultFormat,
+					Formats: []config.MappedFormat{
+						config.DefaultFormat,
 					},
 				},
 				ArtifactConfig: config.ArtifactConfig{
@@ -115,8 +115,9 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: map[string]config.MappedFormat{
-						"table": config.MappedFormat{
+					Formats: []config.MappedFormat{
+						config.MappedFormat{
+							Format:   "table",
 							Output:   os.Stdout,
 							Template: "",
 						},
@@ -137,8 +138,9 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: map[string]config.MappedFormat{
-						"json": config.MappedFormat{
+					Formats: []config.MappedFormat{
+						config.MappedFormat{
+							Format:   "json",
 							Output:   os.Stdout,
 							Template: "",
 						},
@@ -176,12 +178,14 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: map[string]config.MappedFormat{
-						"table": config.MappedFormat{
+					Formats: []config.MappedFormat{
+						config.MappedFormat{
+							Format:   "table",
 							Output:   os.Stdout,
 							Template: "",
 						},
-						"json": config.MappedFormat{
+						config.MappedFormat{
+							Format:   "json",
 							Output:   os.Stdout,
 							Template: "",
 						},
@@ -202,8 +206,9 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: map[string]config.MappedFormat{
-						"table": config.MappedFormat{
+					Formats: []config.MappedFormat{
+						config.MappedFormat{
+							Format:   "table",
 							Output:   os.Stdout,
 							Template: "",
 						},
@@ -224,8 +229,9 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: map[string]config.MappedFormat{
-						"template": config.MappedFormat{
+					Formats: []config.MappedFormat{
+						config.MappedFormat{
+							Format:   "template",
 							Output:   os.Stdout,
 							Template: "@contrib/gitlab.tpl",
 						},
@@ -243,16 +249,19 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: map[string]config.MappedFormat{
-						"table": config.MappedFormat{
+					Formats: []config.MappedFormat{
+						config.MappedFormat{
+							Format:   "table",
 							Output:   os.Stdout,
 							Template: "",
 						},
-						"template": config.MappedFormat{
+						config.MappedFormat{
+							Format:   "template",
 							Output:   os.Stdout,
 							Template: "@contrib/gitlab.tpl",
 						},
-						"json": config.MappedFormat{
+						config.MappedFormat{
+							Format:   "json",
 							Output:   os.Stdout,
 							Template: "",
 						},
@@ -274,8 +283,8 @@ func TestConfig_Init(t *testing.T) {
 				ReportConfig: config.ReportConfig{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					VulnType:   []string{"os", "library"},
-					Formats: map[string]config.MappedFormat{
-						"table": config.DefaultFormat,
+					Formats: []config.MappedFormat{
+						config.DefaultFormat,
 					},
 				},
 				ArtifactConfig: config.ArtifactConfig{

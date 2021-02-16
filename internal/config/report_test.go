@@ -24,7 +24,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 		ExitCode      int
 		VulnType      []string
 		Severities    []dbTypes.Severity
-		Formats       map[string]MappedFormat
+		Formats       []MappedFormat
 	}
 	tests := []struct {
 		name    string
@@ -44,8 +44,9 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 				VulnType:   []string{"os"},
-				Formats: map[string]MappedFormat{
-					"table": MappedFormat{
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "table",
 						Output:   os.Stdout,
 						Template: "",
 					},
@@ -65,8 +66,9 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
 				VulnType:   []string{"os", "library"},
-				Formats: map[string]MappedFormat{
-					"table": MappedFormat{
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "table",
 						Output:   os.Stdout,
 						Template: "",
 					},
@@ -102,8 +104,9 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:   []string{""},
-				Formats: map[string]MappedFormat{
-					"table": MappedFormat{
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "table",
 						Output:   os.Stdout,
 						Template: "",
 					},
@@ -124,8 +127,9 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:   []string{""},
-				Formats: map[string]MappedFormat{
-					"json": MappedFormat{
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "json",
 						Output:   os.Stdout,
 						Template: "",
 					},
@@ -146,12 +150,14 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:   []string{""},
-				Formats: map[string]MappedFormat{
-					"table": MappedFormat{
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "table",
 						Output:   os.Stdout,
 						Template: "",
 					},
-					"json": MappedFormat{
+					MappedFormat{
+						Format:   "json",
 						Output:   os.Stdout,
 						Template: "",
 					},
@@ -171,8 +177,9 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:   []string{""},
-				Formats: map[string]MappedFormat{
-					"table": MappedFormat{
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "table",
 						Output:   os.Stdout,
 						Template: "",
 					},
@@ -193,8 +200,9 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:   []string{""},
-				Formats: map[string]MappedFormat{
-					"template": MappedFormat{
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "template",
 						Output:   os.Stdout,
 						Template: "@contrib/gitlab.tpl",
 					},
@@ -205,23 +213,26 @@ func TestReportReportConfig_Init(t *testing.T) {
 			name: "multi-format: valid option combination",
 			fields: fields{
 				format:     "table,template,json",
-				template:   "@contrib/gitlab.tpl,@contrib/junit.tpl",
+				template:   "@contrib/gitlab.tpl",
 				severities: "LOW",
 			},
 			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
 			want: ReportConfig{
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:   []string{""},
-				Formats: map[string]MappedFormat{
-					"table": MappedFormat{
+				Formats: []MappedFormat{
+					MappedFormat{
+						Format:   "table",
 						Output:   os.Stdout,
 						Template: "",
 					},
-					"template": MappedFormat{
+					MappedFormat{
+						Format:   "template",
 						Output:   os.Stdout,
 						Template: "@contrib/gitlab.tpl",
 					},
-					"json": MappedFormat{
+					MappedFormat{
+						Format:   "json",
 						Output:   os.Stdout,
 						Template: "",
 					},
