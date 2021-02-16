@@ -131,6 +131,12 @@ func scan(ctx context.Context, c config.Config, initializeScanner InitializeScan
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
+	// It doesn't analyze apk commands by default.
+	disabledAnalyzers := []analyzer.Type{analyzer.TypeApkCommand}
+	if c.ScanRemovedPkgs {
+		disabledAnalyzers = []analyzer.Type{}
+	}
+
 	s, cleanup, err := initializeScanner(ctx, target, cache, cache, c.Timeout, disabledAnalyzers)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to initialize a scanner: %w", err)

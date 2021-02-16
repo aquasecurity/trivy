@@ -97,6 +97,12 @@ func initialize(c *config.Config) error {
 func initializeScanner(ctx context.Context, c config.Config) (scanner.Scanner, func(), error) {
 	remoteCache := cache.NewRemoteCache(cache.RemoteURL(c.RemoteAddr), c.CustomHeaders)
 
+	// It doesn't analyze apk commands by default.
+	disabledAnalyzers := []analyzer.Type{analyzer.TypeApkCommand}
+	if c.ScanRemovedPkgs {
+		disabledAnalyzers = []analyzer.Type{}
+	}
+
 	if c.Input != "" {
 		// Scan tar file
 		s, err := initializeArchiveScanner(ctx, c.Input, remoteCache,
