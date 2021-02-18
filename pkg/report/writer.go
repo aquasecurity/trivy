@@ -13,6 +13,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/Masterminds/sprig"
 	"github.com/olekukonko/tablewriter"
 	"golang.org/x/xerrors"
 
@@ -188,34 +189,36 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 		}
 		outputTemplate = string(buf)
 	}
-	tmpl, err := template.New("output template").Funcs(template.FuncMap{
-		"escapeXML": func(input string) string {
-			escaped := &bytes.Buffer{}
-			if err := xml.EscapeText(escaped, []byte(input)); err != nil {
-				fmt.Printf("error while escapeString to XML: %v", err.Error())
-				return input
-			}
-			return escaped.String()
-		},
-		"endWithPeriod": func(input string) string {
-			if !strings.HasSuffix(input, ".") {
-				input += "."
-			}
+	var templateFuncMap template.FuncMap
+	templateFuncMap = sprig.GenericFuncMap()
+	templateFuncMap["escapeXML"] = func(input string) string {
+		escaped := &bytes.Buffer{}
+		if err := xml.EscapeText(escaped, []byte(input)); err != nil {
+			fmt.Printf("error while escapeString to XML: %v", err.Error())
 			return input
-		},
-		"toLower": func(input string) string {
-			return strings.ToLower(input)
-		},
-		"escapeString": func(input string) string {
-			return html.EscapeString(input)
-		},
-		"getEnv": func(key string) string {
-			return os.Getenv(key)
-		},
-		"getCurrentTime": func() string {
-			return Now().UTC().Format(time.RFC3339Nano)
-		},
-	}).Parse(outputTemplate)
+		}
+		return escaped.String()
+	}
+
+	templateFuncMap["endWithPeriod"] = func(input string) string {
+		if !strings.HasSuffix(input, ".") {
+			input += "."
+		}
+		return input
+	}
+	templateFuncMap["toLower"] = func(input string) string {
+		return strings.ToLower(input)
+	}
+	templateFuncMap["escapeString"] = func(input string) string {
+		return html.EscapeString(input)
+	}
+	templateFuncMap["getEnv"] = func(key string) string {
+		return os.Getenv(key)
+	}
+	templateFuncMap["getCurrentTime"] = func() string {
+		return Now().UTC().Format(time.RFC3339Nano)
+	}
+	tmpl, err := template.New("output template").Funcs(templateFuncMap).Parse(outputTemplate)
 	if err != nil {
 		return nil, xerrors.Errorf("error parsing template: %w", err)
 	}

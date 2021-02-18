@@ -935,6 +935,22 @@ $ trivy image --format template --template "{{ range . }} {{ .Target }} {{ end }
 ```
 </details>
 
+You can compute different figures within the template using [sprig](http://masterminds.github.io/sprig/) functions. 
+As an example you can summarize the different classes of issues:
+
+```
+$ trivy image --format template --template '{{- $critical := 0 }}{{- $high := 0 }}{{- range . }}{{- range .Vulnerabilities }}{{- if  eq .Severity "CRITICAL" }}{{- $critical = add $critical 1 }}{{- end }}{{- if  eq .Severity "HIGH" }}{{- $high = add $high 1 }}{{- end }}{{- end }}{{- end }}Critical: {{ $critical }}, High: {{ $high }}' golang:1.12-alpine
+```
+<details>
+<summary>Result</summary>
+
+```
+Critical: 0, High: 2
+```
+</details>
+
+For other features of sprig, see the official [sprig](http://masterminds.github.io/sprig/) documentation.
+
 You can load templates from a file prefixing the template path with an @.
 
 ```

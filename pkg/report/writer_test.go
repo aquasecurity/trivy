@@ -312,6 +312,37 @@ func TestReportWriter_Template(t *testing.T) {
 			expected: `CVE-2019-0000 "without period."CVE-2019-0000 "with period."CVE-2019-0000 "with period and unescaped string curl: Use-after-free when closing &#39;easy&#39; handle in Curl_close()."`,
 		},
 		{
+			name: "Calculate using sprig",
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2019-0000",
+					PkgName:         "foo",
+					Vulnerability: dbTypes.Vulnerability{
+						Description: "without period",
+						Severity: dbTypes.SeverityCritical.String(),
+					},
+				},
+				{
+					VulnerabilityID: "CVE-2019-0000",
+					PkgName:         "bar",
+					Vulnerability: dbTypes.Vulnerability{
+						Description: "with period.",
+						Severity: dbTypes.SeverityCritical.String(),
+					},
+				},
+				{
+					VulnerabilityID: "CVE-2019-0000",
+					PkgName:         "bar",
+					Vulnerability: dbTypes.Vulnerability{
+						Description: `with period and unescaped string curl: Use-after-free when closing 'easy' handle in Curl_close().`,
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+			},
+			template: `{{ $high := 0 }}{{ $critical := 0 }}{{ range . }}{{ range .Vulnerabilities}}{{ if eq .Severity "HIGH" }}{{ $high = add $high 1 }}{{ end }}{{ if eq .Severity "CRITICAL" }}{{ $critical = add $critical 1 }}{{ end }}{{ end }}Critical: {{ $critical }}, High: {{ $high }}{{ end }}`,
+			expected: `Critical: 2, High: 1`,
+		},
+		{
 			name:          "happy path: env var parsing and getCurrentTime",
 			detectedVulns: []types.DetectedVulnerability{},
 			template:      `{{ toLower (getEnv "AWS_ACCOUNT_ID") }} {{ getCurrentTime }}`,

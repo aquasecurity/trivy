@@ -3,6 +3,9 @@ module github.com/aquasecurity/trivy
 go 1.15
 
 require (
+	github.com/Masterminds/goutils v1.1.0 // indirect
+	github.com/Masterminds/semver v1.5.0 // indirect
+	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
 	github.com/aquasecurity/fanal v0.0.0-20210214122859-98d76e2b3b96
 	github.com/aquasecurity/go-dep-parser v0.0.0-20210214113128-b97635cfd627
@@ -26,12 +29,14 @@ require (
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/wire v0.3.0
 	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
+	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/kylelemons/godebug v1.1.0
 	github.com/masahiro331/go-mvn-version v0.0.0-20210214074851-415aa65db8c0
 	github.com/mattn/go-runewidth v0.0.9 // indirect
+	github.com/mitchellh/copystructure v1.1.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.2-0.20190607075207-195002e6e56a
 	github.com/open-policy-agent/opa v0.21.1
 	github.com/smartystreets/assertions v1.2.0 // indirect
