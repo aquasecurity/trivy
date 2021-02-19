@@ -3,11 +3,13 @@ package report_test
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -253,7 +255,6 @@ func TestReportWriter_Template(t *testing.T) {
 					},
 				},
 			},
-
 			template: `<testsuites>
 {{- range . -}}
 {{- $failures := len .Vulnerabilities }}
@@ -366,6 +367,193 @@ func TestReportWriter_Template(t *testing.T) {
 
 			assert.NoError(t, report.WriteResults("template", &tmplWritten, nil, inputResults, tc.template, false))
 			assert.Equal(t, tc.expected, tmplWritten.String())
+		})
+	}
+}
+
+func TestReportWriter_Template_SARIF(t *testing.T) {
+	testCases := []struct {
+		name          string
+		detectedVulns []types.DetectedVulnerability
+		want          string
+	}{
+		{
+			name: "no primary url",
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-1234-5678",
+					PkgName:          "foopackage",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "4.5.6",
+					SeveritySource:   "NVD",
+					PrimaryURL:       "",
+					Vulnerability: dbTypes.Vulnerability{
+						Title:       "foovuln",
+						Description: "foodesc",
+						Severity:    "CRITICAL",
+					},
+				},
+			},
+			want: `{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Trivy",
+          "informationUri": "https://github.com/aquasecurity/trivy",
+          "fullName": "Trivy Vulnerability Scanner",
+          "version": "v0.15.0",
+          "rules": [
+            {
+              "id": "[CRITICAL] CVE-1234-5678",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-1234-5678 Package: foopackage"
+              },
+              "fullDescription": {
+                "text": "foovuln."
+              },
+              "help": {
+                "text": "Vulnerability CVE-1234-5678\nSeverity: CRITICAL\nPackage: foopackage\nInstalled Version: 1.2.3\nFixed Version: 4.5.6\nLink: [CVE-1234-5678]()",
+                "markdown": "**Vulnerability CVE-1234-5678**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|CRITICAL|foopackage|1.2.3|4.5.6|[CVE-1234-5678]()|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "CRITICAL",
+                  "foopackage"
+                ],
+                "precision": "very-high"
+              }
+            }]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "[CRITICAL] CVE-1234-5678",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "foodesc."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        }],
+      "columnKind": "utf16CodeUnits"
+    }
+  ]
+}`,
+		},
+		{
+			name: "with primary url",
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-1234-5678",
+					PkgName:          "foopackage",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "4.5.6",
+					SeveritySource:   "NVD",
+					PrimaryURL:       "https://avd.aquasec.com/nvd/cve-1234-5678",
+					Vulnerability: dbTypes.Vulnerability{
+						Title:       "foovuln",
+						Description: "foodesc",
+						Severity:    "CRITICAL",
+					},
+				},
+			},
+			want: `{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Trivy",
+          "informationUri": "https://github.com/aquasecurity/trivy",
+          "fullName": "Trivy Vulnerability Scanner",
+          "version": "v0.15.0",
+          "rules": [
+            {
+              "id": "[CRITICAL] CVE-1234-5678",
+              "name": "dockerfile_scan",
+              "shortDescription": {
+                "text": "CVE-1234-5678 Package: foopackage"
+              },
+              "fullDescription": {
+                "text": "foovuln."
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-1234-5678",
+              "help": {
+                "text": "Vulnerability CVE-1234-5678\nSeverity: CRITICAL\nPackage: foopackage\nInstalled Version: 1.2.3\nFixed Version: 4.5.6\nLink: [CVE-1234-5678](https://avd.aquasec.com/nvd/cve-1234-5678)",
+                "markdown": "**Vulnerability CVE-1234-5678**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|CRITICAL|foopackage|1.2.3|4.5.6|[CVE-1234-5678](https://avd.aquasec.com/nvd/cve-1234-5678)|\n"
+              },
+              "properties": {
+                "tags": [
+                  "vulnerability",
+                  "CRITICAL",
+                  "foopackage"
+                ],
+                "precision": "very-high"
+              }
+            }]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "[CRITICAL] CVE-1234-5678",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "foodesc."
+          },
+          "locations": [{
+            "physicalLocation": {
+              "artifactLocation": {
+                "uri": "Dockerfile"
+              },
+              "region": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endColumn": 1
+              }
+            }
+          }]
+        }],
+      "columnKind": "utf16CodeUnits"
+    }
+  ]
+}`,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			templateFile := "../../contrib/sarif.tpl"
+			got := bytes.Buffer{}
+
+			template, err := ioutil.ReadFile(templateFile)
+			require.NoError(t, err, tc.name)
+
+			inputResults := report.Results{
+				report.Result{
+					Target:          "footarget",
+					Type:            "footype",
+					Vulnerabilities: tc.detectedVulns,
+				},
+			}
+			assert.NoError(t, report.WriteResults("template", &got, nil, inputResults, string(template), false), tc.name)
+			assert.JSONEq(t, tc.want, got.String(), tc.name)
 		})
 	}
 }
