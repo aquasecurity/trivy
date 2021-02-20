@@ -2,8 +2,10 @@ package composer
 
 import (
 	"encoding/json"
-	"github.com/aquasecurity/go-dep-parser/pkg/types"
 	"io"
+
+	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"golang.org/x/xerrors"
 )
 
 type lockFile struct {
@@ -19,7 +21,7 @@ func Parse(r io.Reader) ([]types.Library, error) {
 	decoder := json.NewDecoder(r)
 	err := decoder.Decode(&lockFile)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("decode error: %w", err)
 	}
 
 	var libs []types.Library

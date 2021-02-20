@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"golang.org/x/xerrors"
 )
 
 type LockFile struct {
@@ -21,7 +22,7 @@ func Parse(r io.Reader) ([]types.Library, error) {
 	decoder := json.NewDecoder(r)
 	err := decoder.Decode(&lockFile)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("decode error: %w", err)
 	}
 
 	libs := parse(lockFile.Dependencies)
