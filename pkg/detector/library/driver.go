@@ -33,7 +33,7 @@ func NewDriver(libType string) (Driver, error) {
 		driver = newComposerDriver()
 	case library.Npm, library.Yarn:
 		driver = newNpmDriver()
-	case library.Pipenv, library.Poetry, library.Wheel:
+	case library.Pipenv, library.Poetry, library.Wheel, library.Egg:
 		driver = newPipDriver()
 	case library.NuGet:
 		driver = newNugetDriver()
