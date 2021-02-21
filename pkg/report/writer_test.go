@@ -320,7 +320,7 @@ func TestReportWriter_Template(t *testing.T) {
 		{
 			name:          "happy path: replace colon with dash",
 			detectedVulns: []types.DetectedVulnerability{},
-			template:      `{{- $time := getCurrentTime -}} {{ toLower (getEnv "AWS_ACCOUNT_ID") }} {{ replaceAll $time ":" "-" }}`,
+			template:      `{{- $time := getCurrentTime -}} {{ replaceAll $time ":" "-" }}`,
 			expected:      `123456789012 2020-08-10T07-28-17.000958601Z`,
 		},
 	}
