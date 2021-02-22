@@ -41,6 +41,12 @@ jobs:
           registry: ghcr.io
           username: ${{ env.GH_USER }}
           password: ${{ secrets.ORG_GITHUB_TOKEN }}
+      - name: Login to ECR
+        uses: docker/login-action@v1
+        with:
+          registry: public.ecr.aws
+          username: ${{ secrets.ECR_ACCESS_KEY_ID }}
+          password: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
       - name: Release
         uses: goreleaser/goreleaser-action@v2
         with:
