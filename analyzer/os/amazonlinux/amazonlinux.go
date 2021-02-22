@@ -64,6 +64,6 @@ func (a amazonlinuxOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return utils.StringInSlice(filePath, requiredFiles)
 }
 
-func (a amazonlinuxOSAnalyzer) Name() string {
-	return aos.Amazon
+func (a amazonlinuxOSAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeAmazon
 }

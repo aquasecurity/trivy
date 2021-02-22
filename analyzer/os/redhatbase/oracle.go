@@ -45,6 +45,6 @@ func (a oracleOSAnalyzer) requiredFiles() []string {
 	return []string{"etc/oracle-release"}
 }
 
-func (a oracleOSAnalyzer) Name() string {
-	return aos.Oracle
+func (a oracleOSAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeOracle
 }

@@ -20,14 +20,16 @@ import (
 )
 
 type Artifact struct {
-	image image.Image
-	cache cache.ArtifactCache
+	image            image.Image
+	cache            cache.ArtifactCache
+	disableAnalyzers []analyzer.Type
 }
 
-func NewArtifact(img image.Image, c cache.ArtifactCache) artifact.Artifact {
+func NewArtifact(img image.Image, c cache.ArtifactCache, disabled []analyzer.Type) artifact.Artifact {
 	return Artifact{
-		image: img,
-		cache: c,
+		image:            img,
+		cache:            c,
+		disableAnalyzers: disabled,
 	}
 }
 
@@ -114,7 +116,7 @@ func (a Artifact) inspectLayer(diffID string) (types.BlobInfo, error) {
 	result := new(analyzer.AnalysisResult)
 
 	opqDirs, whFiles, err := walker.WalkLayerTar(r, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		if err = analyzer.AnalyzeFile(&wg, result, filePath, info, opener); err != nil {
+		if err = analyzer.AnalyzeFile(&wg, result, filePath, info, opener, a.disableAnalyzers); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
 		return nil
@@ -182,7 +184,7 @@ func (a Artifact) inspectConfig(imageID string, osFound types.OS) error {
 		return xerrors.Errorf("unable to get config blob: %w", err)
 	}
 
-	pkgs := analyzer.AnalyzeConfig(osFound, configBlob)
+	pkgs := analyzer.AnalyzeConfig(osFound, configBlob, a.disableAnalyzers)
 
 	var s1 v1.ConfigFile
 	if err := json.Unmarshal(configBlob, &s1); err != nil {

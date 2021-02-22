@@ -269,3 +269,7 @@ func (a alpineCmdAnalyzer) guessVersion(apkIndexArchive *apkIndex, originalPkgs 
 func (a alpineCmdAnalyzer) Required(targetOS types.OS) bool {
 	return targetOS.Family == os.Alpine
 }
+
+func (a alpineCmdAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeApkCommand
+}

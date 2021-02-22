@@ -6,13 +6,11 @@ import (
 	"testing"
 	"time"
 
-	depTypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 
-	image2 "github.com/aquasecurity/fanal/artifact/image"
-
-	"github.com/aquasecurity/fanal/image"
-
+	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/library/composer"
 	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
@@ -20,21 +18,18 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
+	image2 "github.com/aquasecurity/fanal/artifact/image"
 	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/fanal/image"
 	"github.com/aquasecurity/fanal/types"
+	depTypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 func TestArtifact_Inspect(t *testing.T) {
-	type args struct {
-		ctx context.Context
-	}
 	tests := []struct {
 		name                    string
 		imagePath               string
-		args                    args
+		disableAnalyzers        []analyzer.Type
 		missingBlobsExpectation cache.ArtifactCacheMissingBlobsExpectation
 		putBlobExpectations     []cache.ArtifactCachePutBlobExpectation
 		putArtifactExpectations []cache.ArtifactCachePutArtifactExpectation
@@ -251,6 +246,72 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
+			name:             "happy path: disable analyzers",
+			imagePath:        "../../test/testdata/vuln-image.tar.gz",
+			disableAnalyzers: []analyzer.Type{analyzer.TypeDebian, analyzer.TypeDpkg, analyzer.TypeComposer},
+			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
+				Args: cache.ArtifactCacheMissingBlobsArgs{
+					ArtifactID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
+					BlobIDs: []string{
+						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
+					},
+				},
+				Returns: cache.ArtifactCacheMissingBlobsReturns{
+					MissingBlobIDs: []string{
+						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					},
+				},
+			},
+			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
+				{
+					Args: cache.ArtifactCachePutBlobArgs{
+						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						BlobInfo: types.BlobInfo{
+							SchemaVersion: 1,
+							Digest:        "",
+							DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+					},
+				},
+				{
+					Args: cache.ArtifactCachePutBlobArgs{
+						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						BlobInfo: types.BlobInfo{
+							SchemaVersion: 1,
+							Digest:        "",
+							DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						},
+					},
+				},
+				{
+					Args: cache.ArtifactCachePutBlobArgs{
+						BlobID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						BlobInfo: types.BlobInfo{
+							SchemaVersion: 1,
+							Digest:        "",
+							DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+							OpaqueDirs:    []string{"php-app/"},
+						},
+					},
+				},
+			},
+			want: types.ArtifactReference{
+				Name: "../../test/testdata/vuln-image.tar.gz",
+				ID:   "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
+				BlobIDs: []string{
+					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
+				},
+			},
+		},
+		{
 			name:      "sad path, MissingBlobs returns an error",
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
@@ -401,7 +462,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			img, err := image.NewArchiveImage(tt.imagePath)
 			require.NoError(t, err)
 
-			a := image2.NewArtifact(img, mockCache)
+			a := image2.NewArtifact(img, mockCache, tt.disableAnalyzers)
 			got, err := a.Inspect(context.Background())
 			if tt.wantErr != "" {
 				require.NotNil(t, err)

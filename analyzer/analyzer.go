@@ -30,12 +30,13 @@ type AnalysisTarget struct {
 }
 
 type analyzer interface {
-	Name() string
+	Type() Type
 	Analyze(input AnalysisTarget) (*AnalysisResult, error)
 	Required(filePath string, info os.FileInfo) bool
 }
 
 type configAnalyzer interface {
+	Type() Type
 	Analyze(targetOS types.OS, content []byte) ([]types.Package, error)
 	Required(osFound types.OS) bool
 }
@@ -98,8 +99,13 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	}
 }
 
-func AnalyzeFile(wg *sync.WaitGroup, result *AnalysisResult, filePath string, info os.FileInfo, opener Opener) error {
+func AnalyzeFile(wg *sync.WaitGroup, result *AnalysisResult, filePath string, info os.FileInfo, opener Opener,
+	disabledAnalyzers []Type) error {
 	for _, a := range analyzers {
+		if isDisabled(a.Type(), disabledAnalyzers) {
+			continue
+		}
+
 		// filepath extracted from tar file doesn't have the prefix "/"
 		if !a.Required(strings.TrimLeft(filePath, "/"), info) {
 			continue
@@ -123,19 +129,32 @@ func AnalyzeFile(wg *sync.WaitGroup, result *AnalysisResult, filePath string, in
 	return nil
 }
 
-func AnalyzeConfig(targetOS types.OS, configBlob []byte) []types.Package {
-	for _, analyzer := range configAnalyzers {
-		if !analyzer.Required(targetOS) {
+func AnalyzeConfig(targetOS types.OS, configBlob []byte, disabledAnalyzers []Type) []types.Package {
+	for _, a := range configAnalyzers {
+		if isDisabled(a.Type(), disabledAnalyzers) {
 			continue
 		}
 
-		pkgs, err := analyzer.Analyze(targetOS, configBlob)
+		if !a.Required(targetOS) {
+			continue
+		}
+
+		pkgs, err := a.Analyze(targetOS, configBlob)
 		if err != nil {
 			continue
 		}
 		return pkgs
 	}
 	return nil
+}
+
+func isDisabled(t Type, disabled []Type) bool {
+	for _, d := range disabled {
+		if t == d {
+			return true
+		}
+	}
+	return false
 }
 
 func CheckPackage(pkg *types.Package) bool {

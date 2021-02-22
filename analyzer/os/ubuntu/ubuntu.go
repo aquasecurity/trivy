@@ -48,6 +48,6 @@ func (a ubuntuOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return utils.StringInSlice(filePath, requiredFiles)
 }
 
-func (a ubuntuOSAnalyzer) Name() string {
-	return aos.Ubuntu
+func (a ubuntuOSAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeUbuntu
 }

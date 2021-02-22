@@ -34,6 +34,6 @@ func (a npmLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return utils.StringInSlice(fileName, requiredFiles)
 }
 
-func (a npmLibraryAnalyzer) Name() string {
-	return library.Npm
+func (a npmLibraryAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeNpm
 }

@@ -36,6 +36,6 @@ func (a composerLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return utils.StringInSlice(fileName, requiredFiles)
 }
 
-func (a composerLibraryAnalyzer) Name() string {
-	return library.Composer
+func (a composerLibraryAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeComposer
 }

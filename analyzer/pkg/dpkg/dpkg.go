@@ -169,6 +169,6 @@ func (a debianPkgAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool 
 	return false
 }
 
-func (a debianPkgAnalyzer) Name() string {
-	return "dpkg"
+func (a debianPkgAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeDpkg
 }

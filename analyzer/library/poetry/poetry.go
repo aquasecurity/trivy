@@ -33,6 +33,6 @@ func (a poetryLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return utils.StringInSlice(fileName, requiredFiles)
 }
 
-func (a poetryLibraryAnalyzer) Name() string {
-	return library.Poetry
+func (a poetryLibraryAnalyzer) Type() analyzer.Type {
+	return analyzer.TypePoetry
 }
