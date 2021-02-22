@@ -34,6 +34,6 @@ func (a pipenvLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return utils.StringInSlice(fileName, requiredFiles)
 }
 
-func (a pipenvLibraryAnalyzer) Name() string {
-	return library.Pipenv
+func (a pipenvLibraryAnalyzer) Type() analyzer.Type {
+	return analyzer.TypePipenv
 }

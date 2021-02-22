@@ -5,6 +5,8 @@ import (
 	"net/url"
 	"os"
 
+	"github.com/aquasecurity/fanal/analyzer"
+
 	git "github.com/go-git/go-git/v5"
 
 	"github.com/aquasecurity/fanal/artifact"
@@ -12,7 +14,7 @@ import (
 	"github.com/aquasecurity/fanal/cache"
 )
 
-func NewArtifact(rawurl string, c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+func NewArtifact(rawurl string, c cache.ArtifactCache, disabled []analyzer.Type) (artifact.Artifact, func(), error) {
 	cleanup := func() {}
 
 	u, err := newURL(rawurl)
@@ -38,7 +40,10 @@ func NewArtifact(rawurl string, c cache.ArtifactCache) (artifact.Artifact, func(
 		_ = os.RemoveAll(tmpDir)
 	}
 
-	return local.NewArtifact(tmpDir, c), cleanup, nil
+	// JAR/WAR/EAR doesn't need to be analyzed in git repositories.
+	disabled = append(disabled, analyzer.TypeJar)
+
+	return local.NewArtifact(tmpDir, c, disabled), cleanup, nil
 }
 
 func newURL(rawurl string) (*url.URL, error) {

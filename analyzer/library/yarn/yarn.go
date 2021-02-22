@@ -35,6 +35,6 @@ func (a yarnLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return utils.StringInSlice(fileName, requiredFiles)
 }
 
-func (a yarnLibraryAnalyzer) Name() string {
-	return library.Yarn
+func (a yarnLibraryAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeYarn
 }

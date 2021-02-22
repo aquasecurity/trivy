@@ -1,13 +1,14 @@
 package local
 
 import (
+	"context"
 	"errors"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/stretchr/testify/assert"
-
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/types"
 )
@@ -19,6 +20,7 @@ func TestArtifact_Inspect(t *testing.T) {
 	tests := []struct {
 		name               string
 		fields             fields
+		disabledAnalyzers  []analyzer.Type
 		putBlobExpectation cache.ArtifactCachePutBlobExpectation
 		want               types.ArtifactReference
 		wantErr            string
@@ -55,6 +57,30 @@ func TestArtifact_Inspect(t *testing.T) {
 				ID:   "sha256:94a4586441ddd6599fb64cb407d8c43ffb273a8bd01cd933e525b08527f6296e",
 				BlobIDs: []string{
 					"sha256:94a4586441ddd6599fb64cb407d8c43ffb273a8bd01cd933e525b08527f6296e",
+				},
+			},
+		},
+		{
+			name: "disable analyzers",
+			fields: fields{
+				dir: "./testdata",
+			},
+			disabledAnalyzers: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeApk},
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobID: "sha256:3404e98968ad338dc60ef74c0dd5bdd893478415cd2296b0c265a5650b3ae4d6",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+						DiffID:        "sha256:3404e98968ad338dc60ef74c0dd5bdd893478415cd2296b0c265a5650b3ae4d6",
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: types.ArtifactReference{
+				Name: "host",
+				ID:   "sha256:3404e98968ad338dc60ef74c0dd5bdd893478415cd2296b0c265a5650b3ae4d6",
+				BlobIDs: []string{
+					"sha256:3404e98968ad338dc60ef74c0dd5bdd893478415cd2296b0c265a5650b3ae4d6",
 				},
 			},
 		},
@@ -102,8 +128,8 @@ func TestArtifact_Inspect(t *testing.T) {
 			c := new(cache.MockArtifactCache)
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 
-			a := NewArtifact(tt.fields.dir, c)
-			got, err := a.Inspect(nil)
+			a := NewArtifact(tt.fields.dir, c, tt.disabledAnalyzers)
+			got, err := a.Inspect(context.Background())
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

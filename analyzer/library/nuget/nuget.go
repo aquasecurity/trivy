@@ -33,6 +33,6 @@ func (a nugetLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return utils.StringInSlice(fileName, requiredFiles)
 }
 
-func (a nugetLibraryAnalyzer) Name() string {
-	return library.NuGet
+func (a nugetLibraryAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeNuget
 }

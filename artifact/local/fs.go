@@ -23,14 +23,16 @@ import (
 )
 
 type Artifact struct {
-	dir   string
-	cache cache.ArtifactCache
+	dir              string
+	cache            cache.ArtifactCache
+	disableAnalyzers []analyzer.Type
 }
 
-func NewArtifact(dir string, c cache.ArtifactCache) artifact.Artifact {
+func NewArtifact(dir string, c cache.ArtifactCache, disabled []analyzer.Type) artifact.Artifact {
 	return Artifact{
-		dir:   dir,
-		cache: c,
+		dir:              dir,
+		cache:            c,
+		disableAnalyzers: disabled,
 	}
 }
 
@@ -42,7 +44,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		if err != nil {
 			return err
 		}
-		if err = analyzer.AnalyzeFile(&wg, result, filePath, info, opener); err != nil {
+		if err = analyzer.AnalyzeFile(&wg, result, filePath, info, opener, a.disableAnalyzers); err != nil {
 			return err
 		}
 		return nil

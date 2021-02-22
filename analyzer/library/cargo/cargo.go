@@ -32,6 +32,6 @@ func (a cargoLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return utils.StringInSlice(fileName, requiredFiles)
 }
 
-func (a cargoLibraryAnalyzer) Name() string {
-	return library.Cargo
+func (a cargoLibraryAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeCargo
 }

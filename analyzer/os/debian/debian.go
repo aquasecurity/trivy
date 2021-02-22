@@ -36,6 +36,6 @@ func (a debianOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return utils.StringInSlice(filePath, requiredFiles)
 }
 
-func (a debianOSAnalyzer) Name() string {
-	return aos.Debian
+func (a debianOSAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeDebian
 }

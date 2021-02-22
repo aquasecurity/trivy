@@ -69,7 +69,7 @@ func TestNewArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c)
+			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, nil)
 			assert.Equal(t, tt.wantErr, err != nil)
 			defer cleanup()
 		})

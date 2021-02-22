@@ -44,6 +44,6 @@ func (a javaLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return false
 }
 
-func (a javaLibraryAnalyzer) Name() string {
-	return library.Jar
+func (a javaLibraryAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeJar
 }

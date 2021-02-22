@@ -50,6 +50,6 @@ func (a fedoraOSAnalyzer) requiredFiles() []string {
 	}
 }
 
-func (a fedoraOSAnalyzer) Name() string {
-	return aos.Fedora
+func (a fedoraOSAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeFedora
 }

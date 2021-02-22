@@ -68,6 +68,6 @@ func (a redhatOSAnalyzer) requiredFiles() []string {
 	return []string{"etc/redhat-release"}
 }
 
-func (a redhatOSAnalyzer) Name() string {
-	return aos.RedHat
+func (a redhatOSAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeRedHatBase
 }

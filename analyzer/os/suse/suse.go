@@ -61,6 +61,6 @@ func (a suseOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return utils.StringInSlice(filePath, requiredFiles)
 }
 
-func (a suseOSAnalyzer) Name() string {
-	return "suse"
+func (a suseOSAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeSUSE
 }

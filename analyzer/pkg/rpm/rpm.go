@@ -126,6 +126,6 @@ func (a rpmPkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return utils.StringInSlice(filePath, requiredFiles)
 }
 
-func (a rpmPkgAnalyzer) Name() string {
-	return "rpm"
+func (a rpmPkgAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeRpm
 }

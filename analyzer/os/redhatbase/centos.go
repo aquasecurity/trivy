@@ -52,6 +52,6 @@ func (a centOSAnalyzer) requiredFiles() []string {
 	return []string{"etc/centos-release"}
 }
 
-func (a centOSAnalyzer) Name() string {
-	return aos.CentOS
+func (a centOSAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeCentOS
 }
