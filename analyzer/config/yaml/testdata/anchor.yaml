@@ -1,0 +1,15 @@
+default: &default
+  line: single line
+
+john: &J
+  john_name: john
+fred: &F
+  fred_name: fred
+
+main:
+  <<: *default
+  name:
+    <<: [*J, *F]
+  comment: |
+    multi
+    line
