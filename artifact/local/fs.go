@@ -63,6 +63,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		OS:            result.OS,
 		PackageInfos:  result.PackageInfos,
 		Applications:  result.Applications,
+		Configs:       result.Configs,
 	}
 
 	// calculate hash of JSON and use it as pseudo artifactID and blobID

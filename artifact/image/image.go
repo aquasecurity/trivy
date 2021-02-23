@@ -137,6 +137,7 @@ func (a Artifact) inspectLayer(diffID string) (types.BlobInfo, error) {
 		OS:            result.OS,
 		PackageInfos:  result.PackageInfos,
 		Applications:  result.Applications,
+		Configs:       result.Configs,
 		OpaqueDirs:    opqDirs,
 		WhiteoutFiles: whFiles,
 	}

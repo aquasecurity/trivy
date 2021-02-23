@@ -41,6 +41,13 @@ type PackageInfo struct {
 	Packages []Package
 }
 
+type Config struct {
+	Type     string
+	FilePath string
+	Content  interface{} `json:",omitempty"`
+	Layer    Layer       `json:",omitempty"`
+}
+
 type LibraryInfo struct {
 	Library godeptypes.Library `json:",omitempty"`
 	Layer   Layer              `json:",omitempty"`
@@ -81,6 +88,7 @@ type BlobInfo struct {
 	OS            *OS           `json:",omitempty"`
 	PackageInfos  []PackageInfo `json:",omitempty"`
 	Applications  []Application `json:",omitempty"`
+	Configs       []Config      `json:",omitempty"`
 	OpaqueDirs    []string      `json:",omitempty"`
 	WhiteoutFiles []string      `json:",omitempty"`
 }
@@ -90,6 +98,7 @@ type ArtifactDetail struct {
 	OS           *OS           `json:",omitempty"`
 	Packages     []Package     `json:",omitempty"`
 	Applications []Application `json:",omitempty"`
+	Configs      []Config      `json:",omitempty"`
 
 	// HistoryPackages are packages extracted from RUN instructions
 	HistoryPackages []Package `json:",omitempty"`

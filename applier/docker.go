@@ -88,6 +88,13 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		for _, app := range layer.Applications {
 			nestedMap.SetByString(app.FilePath, sep, app)
 		}
+		for _, config := range layer.Configs {
+			config.Layer = types.Layer{
+				Digest: layer.Digest,
+				DiffID: layer.DiffID,
+			}
+			nestedMap.SetByString(config.FilePath, sep, config)
+		}
 	}
 
 	_ = nestedMap.Walk(func(keys []string, value interface{}) error {
@@ -96,6 +103,8 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			mergedLayer.Packages = append(mergedLayer.Packages, v.Packages...)
 		case types.Application:
 			mergedLayer.Applications = append(mergedLayer.Applications, v)
+		case types.Config:
+			mergedLayer.Configs = append(mergedLayer.Configs, v)
 		}
 		return nil
 	})

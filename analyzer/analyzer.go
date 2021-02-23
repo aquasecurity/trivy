@@ -56,10 +56,11 @@ type AnalysisResult struct {
 	OS           *types.OS
 	PackageInfos []types.PackageInfo
 	Applications []types.Application
+	Configs      []types.Config
 }
 
 func (r *AnalysisResult) isEmpty() bool {
-	return r.OS == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0
+	return r.OS == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 && len(r.Configs) == 0
 }
 
 func (r *AnalysisResult) Sort() {
@@ -69,6 +70,10 @@ func (r *AnalysisResult) Sort() {
 
 	sort.Slice(r.Applications, func(i, j int) bool {
 		return r.Applications[i].FilePath < r.Applications[j].FilePath
+	})
+
+	sort.Slice(r.Configs, func(i, j int) bool {
+		return r.Configs[i].FilePath < r.Configs[j].FilePath
 	})
 }
 
@@ -96,6 +101,10 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 
 	if len(new.Applications) > 0 {
 		r.Applications = append(r.Applications, new.Applications...)
+	}
+
+	if len(new.Configs) > 0 {
+		r.Configs = append(r.Configs, new.Configs...)
 	}
 }
 
