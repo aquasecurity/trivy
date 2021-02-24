@@ -17,6 +17,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&debianOSAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{"etc/debian_version"}
 
 type debianOSAnalyzer struct{}
@@ -38,4 +40,8 @@ func (a debianOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a debianOSAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeDebian
+}
+
+func (a debianOSAnalyzer) Version() int {
+	return version
 }

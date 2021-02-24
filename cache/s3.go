@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -119,7 +120,8 @@ func (c S3Cache) getIndex(key string, keyType string) error {
 	return nil
 }
 
-func (c S3Cache) MissingBlobs(artifactID string, blobIDs []string) (bool, []string, error) {
+func (c S3Cache) MissingBlobs(artifactID string, blobIDs []string,
+	analyzerVersions, configAnalyzerVersions map[string]int) (bool, []string, error) {
 	var missingArtifact bool
 	var missingBlobIDs []string
 	for _, blobID := range blobIDs {
@@ -133,7 +135,8 @@ func (c S3Cache) MissingBlobs(artifactID string, blobIDs []string) (bool, []stri
 		if err != nil {
 			return true, missingBlobIDs, xerrors.Errorf("the blob object (%s) doesn't exist in S3 even though the index file exists: %w", blobID, err)
 		}
-		if blobInfo.SchemaVersion != types.BlobJSONSchemaVersion {
+		if blobInfo.SchemaVersion != types.BlobJSONSchemaVersion ||
+			isStale(analyzerVersions, blobInfo.AnalyzerVersions) {
 			missingBlobIDs = append(missingBlobIDs, blobID)
 		}
 	}
@@ -147,7 +150,8 @@ func (c S3Cache) MissingBlobs(artifactID string, blobIDs []string) (bool, []stri
 	if err != nil {
 		return true, missingBlobIDs, xerrors.Errorf("the artifact object (%s) doesn't exist in S3 even though the index file exists: %w", artifactID, err)
 	}
-	if artifactInfo.SchemaVersion != types.ArtifactJSONSchemaVersion {
+	if artifactInfo.SchemaVersion != types.ArtifactJSONSchemaVersion ||
+		isStale(configAnalyzerVersions, artifactInfo.AnalyzerVersions) {
 		missingArtifact = true
 	}
 	return missingArtifact, missingBlobIDs, nil

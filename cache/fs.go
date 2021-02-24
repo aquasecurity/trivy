@@ -140,7 +140,8 @@ func (fs FSCache) PutArtifact(artifactID string, artifactInfo types.ArtifactInfo
 }
 
 // MissingBlobs returns missing blob IDs such as layer IDs
-func (fs FSCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []string, error) {
+func (fs FSCache) MissingBlobs(artifactID string, blobIDs []string,
+	analyzerVersions, configAnalyzerVersions map[string]int) (bool, []string, error) {
 	var missingArtifact bool
 	var missingBlobIDs []string
 	err := fs.db.View(func(tx *bolt.Tx) error {
@@ -152,7 +153,8 @@ func (fs FSCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []str
 				missingBlobIDs = append(missingBlobIDs, blobID)
 				continue
 			}
-			if blobInfo.SchemaVersion != types.BlobJSONSchemaVersion {
+			if blobInfo.SchemaVersion != types.BlobJSONSchemaVersion ||
+				isStale(analyzerVersions, blobInfo.AnalyzerVersions) {
 				missingBlobIDs = append(missingBlobIDs, blobID)
 			}
 		}
@@ -168,7 +170,8 @@ func (fs FSCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []str
 		// error means cache missed artifact info
 		return true, missingBlobIDs, nil
 	}
-	if artifactInfo.SchemaVersion != types.ArtifactJSONSchemaVersion {
+	if artifactInfo.SchemaVersion != types.ArtifactJSONSchemaVersion ||
+		isStale(configAnalyzerVersions, artifactInfo.AnalyzerVersions) {
 		missingArtifact = true
 	}
 	return missingArtifact, missingBlobIDs, nil

@@ -16,6 +16,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&bundlerLibraryAnalyzer{})
 }
 
+const version = 1
+
 var (
 	requiredFiles = []string{"Gemfile.lock"}
 )
@@ -37,4 +39,8 @@ func (a bundlerLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a bundlerLibraryAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeBundler
+}
+
+func (a bundlerLibraryAnalyzer) Version() int {
+	return version
 }

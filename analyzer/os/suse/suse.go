@@ -18,6 +18,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&suseOSAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{
 	"usr/lib/os-release",
 	"etc/os-release",
@@ -63,4 +65,8 @@ func (a suseOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a suseOSAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeSUSE
+}
+
+func (a suseOSAnalyzer) Version() int {
+	return version
 }

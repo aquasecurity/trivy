@@ -18,6 +18,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&rpmPkgAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{
 	"usr/lib/sysimage/rpm/Packages",
 	"var/lib/rpm/Packages",
@@ -128,4 +130,8 @@ func (a rpmPkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a rpmPkgAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeRpm
+}
+
+func (a rpmPkgAnalyzer) Version() int {
+	return version
 }

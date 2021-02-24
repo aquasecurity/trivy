@@ -16,6 +16,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&nugetLibraryAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{"packages.lock.json"}
 
 type nugetLibraryAnalyzer struct{}
@@ -35,4 +37,8 @@ func (a nugetLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a nugetLibraryAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeNuget
+}
+
+func (a nugetLibraryAnalyzer) Version() int {
+	return version
 }

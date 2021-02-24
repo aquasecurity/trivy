@@ -338,8 +338,8 @@ func TestAnalyzeFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var wg sync.WaitGroup
 			got := new(analyzer.AnalysisResult)
-			err := analyzer.AnalyzeFile(&wg, got, tt.args.filePath, tt.args.info, tt.args.opener,
-				tt.args.disabledAnalyzers)
+			a := analyzer.NewAnalyzer(tt.args.disabledAnalyzers)
+			err := a.AnalyzeFile(&wg, got, tt.args.filePath, tt.args.info, tt.args.opener)
 
 			wg.Wait()
 			if tt.wantErr != "" {
@@ -371,6 +371,10 @@ func (mockConfigAnalyzer) Analyze(targetOS types.OS, configBlob []byte) ([]types
 
 func (mockConfigAnalyzer) Type() analyzer.Type {
 	return "mock"
+}
+
+func (mockConfigAnalyzer) Version() int {
+	return 1
 }
 
 func TestAnalyzeConfig(t *testing.T) {
@@ -422,7 +426,8 @@ func TestAnalyzeConfig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := analyzer.AnalyzeConfig(tt.args.targetOS, tt.args.configBlob, tt.args.disabledAnalyzers)
+			a := analyzer.NewAnalyzer(tt.args.disabledAnalyzers)
+			got := a.AnalyzeImageConfig(tt.args.targetOS, tt.args.configBlob)
 			assert.Equal(t, tt.want, got)
 		})
 	}

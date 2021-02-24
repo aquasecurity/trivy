@@ -17,9 +17,9 @@ func init() {
 	analyzer.RegisterAnalyzer(&javaLibraryAnalyzer{})
 }
 
-var (
-	requiredExtensions = []string{".jar", ".war", ".ear"}
-)
+const version = 1
+
+var requiredExtensions = []string{".jar", ".war", ".ear"}
 
 // javaLibraryAnalyzer analyzes jar/war/ear files
 type javaLibraryAnalyzer struct{}
@@ -46,4 +46,8 @@ func (a javaLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a javaLibraryAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeJar
+}
+
+func (a javaLibraryAnalyzer) Version() int {
+	return version
 }

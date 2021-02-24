@@ -14,13 +14,11 @@ import (
 	"golang.org/x/xerrors"
 )
 
+const centosAnalyzerVersion = 1
+
 func init() {
 	analyzer.RegisterAnalyzer(&centOSAnalyzer{})
 }
-
-var (
-	requiredFiles = []string{"etc/centos-release"}
-)
 
 type centOSAnalyzer struct{}
 
@@ -45,7 +43,7 @@ func (a centOSAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.Analy
 }
 
 func (a centOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, requiredFiles)
+	return utils.StringInSlice(filePath, a.requiredFiles())
 }
 
 func (a centOSAnalyzer) requiredFiles() []string {
@@ -54,4 +52,8 @@ func (a centOSAnalyzer) requiredFiles() []string {
 
 func (a centOSAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeCentOS
+}
+
+func (a centOSAnalyzer) Version() int {
+	return centosAnalyzerVersion
 }
