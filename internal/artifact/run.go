@@ -2,12 +2,14 @@ package artifact
 
 import (
 	"context"
+	"errors"
 	l "log"
 	"os"
 	"time"
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/internal/artifact/config"
@@ -19,90 +21,152 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-// InitializeScanner type to define initialize function signature
-type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration) (
-	scanner.Scanner, func(), error)
+var errSkipScan = errors.New("skip subsequent processes")
 
-// nolint: gocyclo
-// TODO: refactror and fix cyclometic complexity
-func run(c config.Config, initializeScanner InitializeScanner) error {
-	if err := log.InitLogger(c.Debug, c.Quiet); err != nil {
+// InitializeScanner type to define initialize function signature
+type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration,
+	[]analyzer.Type) (scanner.Scanner, func(), error)
+
+func run(conf config.Config, initializeScanner InitializeScanner) error {
+	ctx, cancel := context.WithTimeout(context.Background(), conf.Timeout)
+	defer cancel()
+
+	return runWithContext(ctx, conf, initializeScanner)
+}
+
+func runWithContext(ctx context.Context, conf config.Config, initializeScanner InitializeScanner) error {
+	if err := log.InitLogger(conf.Debug, conf.Quiet); err != nil {
 		l.Fatal(err)
 	}
 
-	// configure cache dir
+	cacheClient, err := initCache(conf)
+	if err != nil {
+		if errors.Is(err, errSkipScan) {
+			return nil
+		}
+		return xerrors.Errorf("cache error: %w", err)
+	}
+	defer cacheClient.Close()
+
+	if err = initDB(conf); err != nil {
+		if errors.Is(err, errSkipScan) {
+			return nil
+		}
+		return xerrors.Errorf("DB error: %w", err)
+	}
+	defer db.Close()
+
+	results, err := scan(ctx, conf, initializeScanner, cacheClient)
+	if err != nil {
+		return xerrors.Errorf("scan error: %w", err)
+	}
+
+	results, err = filter(ctx, conf, results)
+	if err != nil {
+		return xerrors.Errorf("filter error: %w", err)
+	}
+
+	if err = report.WriteResults(conf.Format, conf.Output, conf.Severities, results, conf.Template, conf.Light); err != nil {
+		return xerrors.Errorf("unable to write results: %w", err)
+	}
+
+	exit(conf, results)
+
+	return nil
+}
+
+func initCache(c config.Config) (operation.Cache, error) {
 	utils.SetCacheDir(c.CacheDir)
 	cache, err := operation.NewCache(c.CacheBackend)
 	if err != nil {
-		return xerrors.Errorf("unable to initialize the cache: %w", err)
+		return operation.Cache{}, xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
-	defer cache.Close()
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
 	if c.Reset {
-		return cache.Reset()
+		defer cache.Close()
+		if err = cache.Reset(); err != nil {
+			return operation.Cache{}, xerrors.Errorf("cache reset error: %w", err)
+		}
+		return operation.Cache{}, errSkipScan
 	}
 	if c.ClearCache {
-		return cache.ClearImages()
+		defer cache.Close()
+		if err = cache.ClearImages(); err != nil {
+			return operation.Cache{}, xerrors.Errorf("cache clear error: %w", err)
+		}
+		return operation.Cache{}, errSkipScan
 	}
+	return cache, nil
+}
 
+func initDB(c config.Config) error {
 	// download the database file
 	noProgress := c.Quiet || c.NoProgress
-	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.Light, c.SkipUpdate); err != nil {
+	if err := operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.Light, c.SkipUpdate); err != nil {
 		return err
 	}
 
 	if c.DownloadDBOnly {
-		return nil
+		return errSkipScan
 	}
 
-	if err = db.Init(c.CacheDir); err != nil {
+	if err := db.Init(c.CacheDir); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
-	defer db.Close()
+	return nil
+}
 
-	target := c.Target
-	if c.Input != "" {
-		target = c.Input
+func scan(ctx context.Context, conf config.Config, initializeScanner InitializeScanner, cacheClient cache.Cache) (
+	report.Results, error) {
+	target := conf.Target
+	if conf.Input != "" {
+		target = conf.Input
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-	scanner, cleanup, err := initializeScanner(ctx, target, cache, cache, c.Timeout)
-	if err != nil {
-		return xerrors.Errorf("unable to initialize a scanner: %w", err)
-	}
-	defer cleanup()
 
 	scanOptions := types.ScanOptions{
-		VulnType:            c.VulnType,
-		ScanRemovedPackages: c.ScanRemovedPkgs, // this is valid only for image subcommand
-		ListAllPackages:     c.ListAllPkgs,
-		SkipFiles:           c.SkipFiles,
-		SkipDirectories:     c.SkipDirectories,
+		VulnType:            conf.VulnType,
+		ScanRemovedPackages: conf.ScanRemovedPkgs, // this is valid only for image subcommand
+		ListAllPackages:     conf.ListAllPkgs,
+		SkipFiles:           conf.SkipFiles,
+		SkipDirectories:     conf.SkipDirectories,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	results, err := scanner.ScanArtifact(ctx, scanOptions)
-	if err != nil {
-		return xerrors.Errorf("error in image scan: %w", err)
+	// It doesn't analyze apk commands by default.
+	disabledAnalyzers := []analyzer.Type{analyzer.TypeApkCommand}
+	if conf.ScanRemovedPkgs {
+		disabledAnalyzers = []analyzer.Type{}
 	}
 
+	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, conf.Timeout, disabledAnalyzers)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to initialize a scanner: %w", err)
+	}
+	defer cleanup()
+
+	results, err := s.ScanArtifact(ctx, scanOptions)
+	if err != nil {
+		return nil, xerrors.Errorf("image scan failed: %w", err)
+	}
+	return results, nil
+}
+
+func filter(ctx context.Context, conf config.Config, results report.Results) (report.Results, error) {
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
 		vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
 		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
-			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.IgnorePolicy)
+			conf.Severities, conf.IgnoreUnfixed, conf.IgnoreFile, conf.IgnorePolicy)
 		if err != nil {
-			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
+			return nil, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 		results[i].Vulnerabilities = vulns
 	}
+	return results, nil
+}
 
-	if err = report.WriteResults(c.Format, c.Output, c.Severities, results, c.Template, c.Light); err != nil {
-		return xerrors.Errorf("unable to write results: %w", err)
-	}
-
+func exit(c config.Config, results report.Results) {
 	if c.ExitCode != 0 {
 		for _, result := range results {
 			if len(result.Vulnerabilities) > 0 {
@@ -110,5 +174,4 @@ func run(c config.Config, initializeScanner InitializeScanner) error {
 			}
 		}
 	}
-	return nil
 }
