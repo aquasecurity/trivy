@@ -20,16 +20,16 @@ import (
 	debVersion "github.com/knqyf263/go-deb-version"
 )
 
-var (
-	dpkgSrcCaptureRegexp      = regexp.MustCompile(`Source: (?P<name>[^\s]*)( \((?P<version>.*)\))?`)
-	dpkgSrcCaptureRegexpNames = dpkgSrcCaptureRegexp.SubexpNames()
-)
-
 func init() {
 	analyzer.RegisterAnalyzer(&debianPkgAnalyzer{})
 }
 
+const version = 1
+
 var (
+	dpkgSrcCaptureRegexp      = regexp.MustCompile(`Source: (?P<name>[^\s]*)( \((?P<version>.*)\))?`)
+	dpkgSrcCaptureRegexpNames = dpkgSrcCaptureRegexp.SubexpNames()
+
 	requiredFiles = []string{"var/lib/dpkg/status"}
 	requiredDirs  = []string{"var/lib/dpkg/status.d/"}
 )
@@ -171,4 +171,8 @@ func (a debianPkgAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool 
 
 func (a debianPkgAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeDpkg
+}
+
+func (a debianPkgAnalyzer) Version() int {
+	return version
 }

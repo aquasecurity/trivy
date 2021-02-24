@@ -17,6 +17,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&npmLibraryAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{"package-lock.json"}
 
 type npmLibraryAnalyzer struct{}
@@ -36,4 +38,8 @@ func (a npmLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a npmLibraryAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeNpm
+}
+
+func (a npmLibraryAnalyzer) Version() int {
+	return version
 }

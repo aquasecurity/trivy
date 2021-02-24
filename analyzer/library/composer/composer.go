@@ -17,9 +17,9 @@ func init() {
 	analyzer.RegisterAnalyzer(&composerLibraryAnalyzer{})
 }
 
-var (
-	requiredFiles = []string{"composer.lock"}
-)
+const version = 1
+
+var requiredFiles = []string{"composer.lock"}
 
 type composerLibraryAnalyzer struct{}
 
@@ -38,4 +38,8 @@ func (a composerLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a composerLibraryAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeComposer
+}
+
+func (a composerLibraryAnalyzer) Version() int {
+	return version
 }

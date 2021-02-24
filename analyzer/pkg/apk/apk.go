@@ -17,6 +17,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&alpinePkgAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{"lib/apk/db/installed"}
 
 type alpinePkgAnalyzer struct{}
@@ -91,4 +93,8 @@ func (a alpinePkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a alpinePkgAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeApk
+}
+
+func (a alpinePkgAnalyzer) Version() int {
+	return version
 }

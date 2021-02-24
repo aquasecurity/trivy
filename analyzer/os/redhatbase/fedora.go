@@ -14,6 +14,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
+const fedoraAnalyzerVersion = 1
+
 func init() {
 	analyzer.RegisterAnalyzer(&fedoraOSAnalyzer{})
 }
@@ -52,4 +54,8 @@ func (a fedoraOSAnalyzer) requiredFiles() []string {
 
 func (a fedoraOSAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeFedora
+}
+
+func (a fedoraOSAnalyzer) Version() int {
+	return fedoraAnalyzerVersion
 }

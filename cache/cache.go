@@ -21,7 +21,8 @@ type Cache interface {
 // ArtifactCache uses local or remote cache
 type ArtifactCache interface {
 	// MissingBlobs returns missing blob IDs such as layer IDs in cache
-	MissingBlobs(artifactID string, blobIDs []string) (missingArtifact bool, missingBlobIDs []string, err error)
+	MissingBlobs(artifactID string, blobIDs []string, analyzerVersions, configAnalyzerVersions map[string]int) (
+		missingArtifact bool, missingBlobIDs []string, err error)
 
 	// PutArtifact stores artifact information such as image metadata in cache
 	PutArtifact(artifactID string, artifactInfo types.ArtifactInfo) (err error)
@@ -43,4 +44,20 @@ type LocalArtifactCache interface {
 
 	// Clear deletes the local database
 	Clear() (err error)
+}
+
+// isStale checks if the cache is stale or not.
+// e.g. When {"alpine": 1, "python": 2} is cached and {"alpine": 2, "python": 2} is sent, the cache is stale.
+// Also, {"python": 2} cache must be replaced by {"alpine": 1, "python": 2}.
+func isStale(current, cached map[string]int) bool {
+	for analyzerType, currentVersion := range current {
+		cachedVersion, ok := cached[analyzerType]
+		if !ok {
+			return true
+		}
+		if cachedVersion < currentVersion {
+			return true
+		}
+	}
+	return false
 }

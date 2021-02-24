@@ -17,6 +17,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&pipenvLibraryAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{"Pipfile.lock"}
 
 type pipenvLibraryAnalyzer struct{}
@@ -36,4 +38,8 @@ func (a pipenvLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a pipenvLibraryAnalyzer) Type() analyzer.Type {
 	return analyzer.TypePipenv
+}
+
+func (a pipenvLibraryAnalyzer) Version() int {
+	return version
 }

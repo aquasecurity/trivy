@@ -18,6 +18,8 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 )
 
+const redhatAnalyzerVersion = 1
+
 func init() {
 	analyzer.RegisterAnalyzer(&redhatOSAnalyzer{})
 }
@@ -70,4 +72,8 @@ func (a redhatOSAnalyzer) requiredFiles() []string {
 
 func (a redhatOSAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeRedHatBase
+}
+
+func (a redhatOSAnalyzer) Version() int {
+	return redhatAnalyzerVersion
 }

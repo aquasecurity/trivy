@@ -31,12 +31,14 @@ type AnalysisTarget struct {
 
 type analyzer interface {
 	Type() Type
+	Version() int
 	Analyze(input AnalysisTarget) (*AnalysisResult, error)
 	Required(filePath string, info os.FileInfo) bool
 }
 
 type configAnalyzer interface {
 	Type() Type
+	Version() int
 	Analyze(targetOS types.OS, content []byte) ([]types.Package, error)
 	Required(osFound types.OS) bool
 }
@@ -108,15 +110,55 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	}
 }
 
-func AnalyzeFile(wg *sync.WaitGroup, result *AnalysisResult, filePath string, info os.FileInfo, opener Opener,
-	disabledAnalyzers []Type) error {
+type Analyzer struct {
+	drivers       []analyzer
+	configDrivers []configAnalyzer
+}
+
+func NewAnalyzer(disabledAnalyzers []Type) Analyzer {
+	var drivers []analyzer
 	for _, a := range analyzers {
 		if isDisabled(a.Type(), disabledAnalyzers) {
 			continue
 		}
+		drivers = append(drivers, a)
+	}
 
+	var configDrivers []configAnalyzer
+	for _, a := range configAnalyzers {
+		if isDisabled(a.Type(), disabledAnalyzers) {
+			continue
+		}
+		configDrivers = append(configDrivers, a)
+	}
+
+	return Analyzer{
+		drivers:       drivers,
+		configDrivers: configDrivers,
+	}
+}
+
+func (a Analyzer) AnalyzerVersions() map[string]int {
+	versions := map[string]int{}
+	for _, d := range a.drivers {
+		versions[string(d.Type())] = d.Version()
+	}
+	return versions
+}
+
+func (a Analyzer) ImageConfigAnalyzerVersions() map[string]int {
+	versions := map[string]int{}
+	for _, d := range a.configDrivers {
+		versions[string(d.Type())] = d.Version()
+	}
+	return versions
+}
+
+func (a Analyzer) AnalyzeFile(wg *sync.WaitGroup, result *AnalysisResult, filePath string, info os.FileInfo,
+	opener Opener) error {
+	for _, d := range a.drivers {
 		// filepath extracted from tar file doesn't have the prefix "/"
-		if !a.Required(strings.TrimLeft(filePath, "/"), info) {
+		if !d.Required(strings.TrimLeft(filePath, "/"), info) {
 			continue
 		}
 		b, err := opener()
@@ -133,22 +175,18 @@ func AnalyzeFile(wg *sync.WaitGroup, result *AnalysisResult, filePath string, in
 				return
 			}
 			result.Merge(ret)
-		}(a, AnalysisTarget{FilePath: filePath, Content: b})
+		}(d, AnalysisTarget{FilePath: filePath, Content: b})
 	}
 	return nil
 }
 
-func AnalyzeConfig(targetOS types.OS, configBlob []byte, disabledAnalyzers []Type) []types.Package {
-	for _, a := range configAnalyzers {
-		if isDisabled(a.Type(), disabledAnalyzers) {
+func (a Analyzer) AnalyzeImageConfig(targetOS types.OS, configBlob []byte) []types.Package {
+	for _, d := range a.configDrivers {
+		if !d.Required(targetOS) {
 			continue
 		}
 
-		if !a.Required(targetOS) {
-			continue
-		}
-
-		pkgs, err := a.Analyze(targetOS, configBlob)
+		pkgs, err := d.Analyze(targetOS, configBlob)
 		if err != nil {
 			continue
 		}

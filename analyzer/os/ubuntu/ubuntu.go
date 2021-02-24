@@ -18,6 +18,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&ubuntuOSAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{"etc/lsb-release"}
 
 type ubuntuOSAnalyzer struct{}
@@ -50,4 +52,8 @@ func (a ubuntuOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a ubuntuOSAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeUbuntu
+}
+
+func (a ubuntuOSAnalyzer) Version() int {
+	return version
 }

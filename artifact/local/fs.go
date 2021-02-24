@@ -23,16 +23,16 @@ import (
 )
 
 type Artifact struct {
-	dir              string
-	cache            cache.ArtifactCache
-	disableAnalyzers []analyzer.Type
+	dir      string
+	cache    cache.ArtifactCache
+	analyzer analyzer.Analyzer
 }
 
 func NewArtifact(dir string, c cache.ArtifactCache, disabled []analyzer.Type) artifact.Artifact {
 	return Artifact{
-		dir:              dir,
-		cache:            c,
-		disableAnalyzers: disabled,
+		dir:      dir,
+		cache:    c,
+		analyzer: analyzer.NewAnalyzer(disabled),
 	}
 }
 
@@ -44,7 +44,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		if err != nil {
 			return err
 		}
-		if err = analyzer.AnalyzeFile(&wg, result, filePath, info, opener, a.disableAnalyzers); err != nil {
+		if err = a.analyzer.AnalyzeFile(&wg, result, filePath, info, opener); err != nil {
 			return err
 		}
 		return nil
@@ -59,11 +59,12 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	result.Sort()
 
 	blobInfo := types.BlobInfo{
-		SchemaVersion: types.BlobJSONSchemaVersion,
-		OS:            result.OS,
-		PackageInfos:  result.PackageInfos,
-		Applications:  result.Applications,
-		Configs:       result.Configs,
+		SchemaVersion:    types.BlobJSONSchemaVersion,
+		AnalyzerVersions: a.analyzer.AnalyzerVersions(),
+		OS:               result.OS,
+		PackageInfos:     result.PackageInfos,
+		Applications:     result.Applications,
+		Configs:          result.Configs,
 	}
 
 	// calculate hash of JSON and use it as pseudo artifactID and blobID

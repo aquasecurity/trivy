@@ -18,9 +18,9 @@ func init() {
 	})
 }
 
-var (
-	requiredExts = []string{".yaml", ".yml"}
-)
+const version = 1
+
+var requiredExts = []string{".yaml", ".yml"}
 
 type yamlConfigAnalyzer struct {
 	parser *yaml.Parser
@@ -52,4 +52,8 @@ func (a yamlConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a yamlConfigAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeYaml
+}
+
+func (a yamlConfigAnalyzer) Version() int {
+	return version
 }

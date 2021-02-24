@@ -15,6 +15,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&cargoLibraryAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{"Cargo.lock"}
 
 type cargoLibraryAnalyzer struct{}
@@ -34,4 +36,8 @@ func (a cargoLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a cargoLibraryAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeCargo
+}
+
+func (a cargoLibraryAnalyzer) Version() int {
+	return version
 }

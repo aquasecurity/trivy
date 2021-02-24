@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/types"
 )
@@ -361,8 +362,10 @@ func TestRedisCache_GetBlob(t *testing.T) {
 
 func TestRedisCache_MissingBlobs(t *testing.T) {
 	type args struct {
-		artifactID string
-		blobIDs    []string
+		artifactID             string
+		blobIDs                []string
+		analyzerVersions       map[string]int
+		configAnalyzerVersions map[string]int
 	}
 	tests := []struct {
 		name                string
@@ -388,6 +391,9 @@ func TestRedisCache_MissingBlobs(t *testing.T) {
 			args: args{
 				artifactID: "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
 				blobIDs:    []string{"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"},
+				analyzerVersions: map[string]int{
+					string(analyzer.TypeAlpine): 2,
+				},
 			},
 			wantMissingArtifact: true,
 		},
@@ -407,6 +413,9 @@ func TestRedisCache_MissingBlobs(t *testing.T) {
 			args: args{
 				artifactID: "sha256:be4e4bea2c2e15b403bb321562e78ea84b501fb41497472e91ecb41504e8a27c",
 				blobIDs:    []string{"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"},
+				analyzerVersions: map[string]int{
+					string(analyzer.TypeAlpine): 1,
+				},
 			},
 			wantMissingArtifact: true,
 		},
@@ -416,9 +425,54 @@ func TestRedisCache_MissingBlobs(t *testing.T) {
 			args: args{
 				artifactID: "sha256:8652b9f0cb4c0599575e5a003f5906876e10c1ceb2ab9fe1786712dac14a50cf",
 				blobIDs:    []string{"sha256:174f5685490326fc0a1c0f5570b8663732189b327007e47ff13d2ca59673db02"},
+				analyzerVersions: map[string]int{
+					string(analyzer.TypeAlpine): 2,
+				},
 			},
 			wantMissingArtifact: false,
 			wantMissingBlobIDs:  []string{"sha256:174f5685490326fc0a1c0f5570b8663732189b327007e47ff13d2ca59673db02"},
+		},
+		{
+			name:       "old analyzer versions",
+			setupRedis: true,
+			args: args{
+				artifactID: "sha256:8652b9f0cb4c0599575e5a003f5906876e10c1ceb2ab9fe1786712dac14a50cf",
+				blobIDs:    []string{"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"},
+				analyzerVersions: map[string]int{
+					string(analyzer.TypeAlpine): 1,
+				},
+			},
+			wantMissingArtifact: false,
+			wantMissingBlobIDs:  nil,
+		},
+		{
+			name:       "missing blobs with stale cache",
+			setupRedis: true,
+			args: args{
+				artifactID: "sha256:8652b9f0cb4c0599575e5a003f5906876e10c1ceb2ab9fe1786712dac14a50cf",
+				blobIDs:    []string{"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"},
+				analyzerVersions: map[string]int{
+					string(analyzer.TypeAlpine): 3,
+				},
+			},
+			wantMissingArtifact: false,
+			wantMissingBlobIDs:  []string{"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"},
+		},
+		{
+			name:       "missing artifact with newly enabled analyzers",
+			setupRedis: true,
+			args: args{
+				artifactID: "sha256:8652b9f0cb4c0599575e5a003f5906876e10c1ceb2ab9fe1786712dac14a50cf",
+				blobIDs:    []string{"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"},
+				analyzerVersions: map[string]int{
+					string(analyzer.TypeAlpine): 1,
+				},
+				configAnalyzerVersions: map[string]int{
+					string(analyzer.TypeApkCommand): 1,
+				},
+			},
+			wantMissingArtifact: true,
+			wantMissingBlobIDs:  nil,
 		},
 	}
 
@@ -429,7 +483,8 @@ func TestRedisCache_MissingBlobs(t *testing.T) {
 
 	s.Set("fanal::artifact::sha256:8652b9f0cb4c0599575e5a003f5906876e10c1ceb2ab9fe1786712dac14a50cf", `{"SchemaVersion": 1}`)
 	s.Set("fanal::artifact::sha256:be4e4bea2c2e15b403bb321562e78ea84b501fb41497472e91ecb41504e8a27c", `{"SchemaVersion": 2}`)
-	s.Set("fanal::blob::sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0", `{"SchemaVersion": 1}`)
+	s.Set("fanal::blob::sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
+		`{"SchemaVersion": 1, "AnalyzerVersions": {"alpine": 2}}`)
 	s.Set("fanal::blob::sha256:174f5685490326fc0a1c0f5570b8663732189b327007e47ff13d2ca59673db02", `{"SchemaVersion": 2}`)
 
 	for _, tt := range tests {
@@ -443,7 +498,8 @@ func TestRedisCache_MissingBlobs(t *testing.T) {
 				Addr: addr,
 			})
 
-			missingArtifact, missingBlobIDs, err := c.MissingBlobs(tt.args.artifactID, tt.args.blobIDs)
+			missingArtifact, missingBlobIDs, err := c.MissingBlobs(tt.args.artifactID, tt.args.blobIDs,
+				tt.args.analyzerVersions, tt.args.configAnalyzerVersions)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

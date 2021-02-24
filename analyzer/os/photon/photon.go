@@ -21,6 +21,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&photonOSAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{
 	"usr/lib/os-release",
 	"etc/os-release",
@@ -56,4 +58,8 @@ func (a photonOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a photonOSAnalyzer) Type() analyzer.Type {
 	return analyzer.TypePhoton
+}
+
+func (a photonOSAnalyzer) Version() int {
+	return version
 }

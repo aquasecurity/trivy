@@ -20,16 +20,16 @@ import (
 )
 
 type Artifact struct {
-	image            image.Image
-	cache            cache.ArtifactCache
-	disableAnalyzers []analyzer.Type
+	image    image.Image
+	cache    cache.ArtifactCache
+	analyzer analyzer.Analyzer
 }
 
 func NewArtifact(img image.Image, c cache.ArtifactCache, disabled []analyzer.Type) artifact.Artifact {
 	return Artifact{
-		image:            img,
-		cache:            c,
-		disableAnalyzers: disabled,
+		image:    img,
+		cache:    c,
+		analyzer: analyzer.NewAnalyzer(disabled),
 	}
 }
 
@@ -44,7 +44,8 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		return types.ArtifactReference{}, xerrors.Errorf("unable to get layer IDs: %w", err)
 	}
 
-	missingImage, missingLayers, err := a.cache.MissingBlobs(imageID, diffIDs)
+	missingImage, missingLayers, err := a.cache.MissingBlobs(imageID, diffIDs,
+		a.analyzer.AnalyzerVersions(), a.analyzer.ImageConfigAnalyzerVersions())
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("unable to get missing layers: %w", err)
 	}
@@ -116,7 +117,7 @@ func (a Artifact) inspectLayer(diffID string) (types.BlobInfo, error) {
 	result := new(analyzer.AnalysisResult)
 
 	opqDirs, whFiles, err := walker.WalkLayerTar(r, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		if err = analyzer.AnalyzeFile(&wg, result, filePath, info, opener, a.disableAnalyzers); err != nil {
+		if err = a.analyzer.AnalyzeFile(&wg, result, filePath, info, opener); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
 		return nil
@@ -131,15 +132,16 @@ func (a Artifact) inspectLayer(diffID string) (types.BlobInfo, error) {
 	result.Sort()
 
 	layerInfo := types.BlobInfo{
-		Digest:        layerDigest,
-		DiffID:        diffID,
-		SchemaVersion: types.BlobJSONSchemaVersion,
-		OS:            result.OS,
-		PackageInfos:  result.PackageInfos,
-		Applications:  result.Applications,
-		Configs:       result.Configs,
-		OpaqueDirs:    opqDirs,
-		WhiteoutFiles: whFiles,
+		SchemaVersion:    types.BlobJSONSchemaVersion,
+		AnalyzerVersions: a.analyzer.AnalyzerVersions(),
+		Digest:           layerDigest,
+		DiffID:           diffID,
+		OS:               result.OS,
+		PackageInfos:     result.PackageInfos,
+		Applications:     result.Applications,
+		Configs:          result.Configs,
+		OpaqueDirs:       opqDirs,
+		WhiteoutFiles:    whFiles,
 	}
 	return layerInfo, nil
 }
@@ -185,7 +187,7 @@ func (a Artifact) inspectConfig(imageID string, osFound types.OS) error {
 		return xerrors.Errorf("unable to get config blob: %w", err)
 	}
 
-	pkgs := analyzer.AnalyzeConfig(osFound, configBlob, a.disableAnalyzers)
+	pkgs := a.analyzer.AnalyzeImageConfig(osFound, configBlob)
 
 	var s1 v1.ConfigFile
 	if err := json.Unmarshal(configBlob, &s1); err != nil {
@@ -193,12 +195,13 @@ func (a Artifact) inspectConfig(imageID string, osFound types.OS) error {
 	}
 
 	info := types.ArtifactInfo{
-		SchemaVersion:   types.ArtifactJSONSchemaVersion,
-		Architecture:    s1.Architecture,
-		Created:         s1.Created.Time,
-		DockerVersion:   s1.DockerVersion,
-		OS:              s1.OS,
-		HistoryPackages: pkgs,
+		SchemaVersion:    types.ArtifactJSONSchemaVersion,
+		AnalyzerVersions: a.analyzer.ImageConfigAnalyzerVersions(),
+		Architecture:     s1.Architecture,
+		Created:          s1.Created.Time,
+		DockerVersion:    s1.DockerVersion,
+		OS:               s1.OS,
+		HistoryPackages:  pkgs,
 	}
 
 	if err := a.cache.PutArtifact(imageID, info); err != nil {

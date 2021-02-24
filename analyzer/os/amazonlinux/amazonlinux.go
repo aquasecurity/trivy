@@ -22,6 +22,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&amazonlinuxOSAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{"etc/system-release"}
 
 type amazonlinuxOSAnalyzer struct{}
@@ -66,4 +68,8 @@ func (a amazonlinuxOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a amazonlinuxOSAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeAmazon
+}
+
+func (a amazonlinuxOSAnalyzer) Version() int {
+	return version
 }

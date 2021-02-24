@@ -16,6 +16,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&poetryLibraryAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{"poetry.lock"}
 
 type poetryLibraryAnalyzer struct{}
@@ -35,4 +37,8 @@ func (a poetryLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a poetryLibraryAnalyzer) Type() analyzer.Type {
 	return analyzer.TypePoetry
+}
+
+func (a poetryLibraryAnalyzer) Version() int {
+	return version
 }

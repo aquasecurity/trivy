@@ -88,7 +88,8 @@ func (c RedisCache) GetBlob(blobID string) (types.BlobInfo, error) {
 	return blobInfo, nil
 }
 
-func (c RedisCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []string, error) {
+func (c RedisCache) MissingBlobs(artifactID string, blobIDs []string,
+	analyzerVersions, configAnalyzerVersions map[string]int) (bool, []string, error) {
 	var missingArtifact bool
 	var missingBlobIDs []string
 	for _, blobID := range blobIDs {
@@ -98,7 +99,8 @@ func (c RedisCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []s
 			missingBlobIDs = append(missingBlobIDs, blobID)
 			continue
 		}
-		if blobInfo.SchemaVersion != types.BlobJSONSchemaVersion {
+		if blobInfo.SchemaVersion != types.BlobJSONSchemaVersion ||
+			isStale(analyzerVersions, blobInfo.AnalyzerVersions) {
 			missingBlobIDs = append(missingBlobIDs, blobID)
 		}
 	}
@@ -108,7 +110,8 @@ func (c RedisCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []s
 	if err != nil {
 		return true, missingBlobIDs, nil
 	}
-	if artifactInfo.SchemaVersion != types.ArtifactJSONSchemaVersion {
+	if artifactInfo.SchemaVersion != types.ArtifactJSONSchemaVersion ||
+		isStale(configAnalyzerVersions, artifactInfo.AnalyzerVersions) {
 		missingArtifact = true
 	}
 	return missingArtifact, missingBlobIDs, nil

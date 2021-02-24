@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	bolt "go.etcd.io/bbolt"
 
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/types"
 	depTypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
@@ -82,6 +83,9 @@ func TestFSCache_GetLayer(t *testing.T) {
 			},
 			want: types.BlobInfo{
 				SchemaVersion: 2,
+				AnalyzerVersions: map[string]int{
+					string(analyzer.TypeAlpine): 2,
+				},
 				OS: &types.OS{
 					Family: "alpine",
 					Name:   "3.10",
@@ -370,8 +374,10 @@ func TestFSCache_PutImage(t *testing.T) {
 
 func TestFSCache_MissingLayers(t *testing.T) {
 	type args struct {
-		imageID  string
-		layerIDs []string
+		imageID                string
+		layerIDs               []string
+		analyzerVersions       map[string]int
+		configAnalyzerVersions map[string]int
 	}
 	tests := []struct {
 		name                string
@@ -391,6 +397,12 @@ func TestFSCache_MissingLayers(t *testing.T) {
 					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 					"sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
 				},
+				analyzerVersions: map[string]int{
+					string(analyzer.TypeAlpine): 2,
+				},
+				configAnalyzerVersions: map[string]int{
+					string(analyzer.TypeApkCommand): 1,
+				},
 			},
 			wantMissingImage: false,
 			wantMissingLayerIDs: []string{
@@ -407,6 +419,12 @@ func TestFSCache_MissingLayers(t *testing.T) {
 				layerIDs: []string{
 					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				},
+				analyzerVersions: map[string]int{
+					string(analyzer.TypeAlpine): 2,
+				},
+				configAnalyzerVersions: map[string]int{
+					string(analyzer.TypeApkCommand): 1,
+				},
 			},
 			wantMissingImage: true,
 			wantMissingLayerIDs: []string{
@@ -421,6 +439,12 @@ func TestFSCache_MissingLayers(t *testing.T) {
 				layerIDs: []string{
 					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				},
+				analyzerVersions: map[string]int{
+					string(analyzer.TypeAlpine): 2,
+				},
+				configAnalyzerVersions: map[string]int{
+					string(analyzer.TypeApkCommand): 1,
+				},
 			},
 			wantMissingImage: true,
 			wantMissingLayerIDs: []string{
@@ -434,6 +458,32 @@ func TestFSCache_MissingLayers(t *testing.T) {
 				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
 				layerIDs: []string{
 					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+				},
+				analyzerVersions: map[string]int{
+					string(analyzer.TypeAlpine): 2,
+				},
+				configAnalyzerVersions: map[string]int{
+					string(analyzer.TypeApkCommand): 1,
+				},
+			},
+			wantMissingImage: true,
+			wantMissingLayerIDs: []string{
+				"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+			},
+		},
+		{
+			name:   "happy path: new config analyzer",
+			dbPath: "testdata/fanal.db",
+			args: args{
+				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
+				layerIDs: []string{
+					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+				},
+				analyzerVersions: map[string]int{
+					string(analyzer.TypeAlpine): 1,
+				},
+				configAnalyzerVersions: map[string]int{
+					"something_new": 1,
 				},
 			},
 			wantMissingImage: true,
@@ -452,7 +502,8 @@ func TestFSCache_MissingLayers(t *testing.T) {
 			require.NoError(t, err)
 			defer fs.Clear()
 
-			gotMissingImage, gotMissingLayerIDs, err := fs.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
+			gotMissingImage, gotMissingLayerIDs, err := fs.MissingBlobs(tt.args.imageID, tt.args.layerIDs,
+				tt.args.analyzerVersions, tt.args.configAnalyzerVersions)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

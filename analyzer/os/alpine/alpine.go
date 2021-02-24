@@ -17,6 +17,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&alpineOSAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{"etc/alpine-release"}
 
 type alpineOSAnalyzer struct{}
@@ -38,4 +40,8 @@ func (a alpineOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a alpineOSAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeAlpine
+}
+
+func (a alpineOSAnalyzer) Version() int {
+	return version
 }

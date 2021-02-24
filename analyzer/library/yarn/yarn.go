@@ -18,6 +18,8 @@ func init() {
 	analyzer.RegisterAnalyzer(&yarnLibraryAnalyzer{})
 }
 
+const version = 1
+
 var requiredFiles = []string{"yarn.lock"}
 
 type yarnLibraryAnalyzer struct{}
@@ -37,4 +39,8 @@ func (a yarnLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a yarnLibraryAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeYarn
+}
+
+func (a yarnLibraryAnalyzer) Version() int {
+	return version
 }
