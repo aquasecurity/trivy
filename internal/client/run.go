@@ -27,28 +27,32 @@ func Run(cliCtx *cli.Context) error {
 	return run(c)
 }
 
-func run(c config.Config) (err error) {
-	if err = initialize(&c); err != nil {
-		return err
+func run(conf config.Config) error {
+	ctx, cancel := context.WithTimeout(context.Background(), conf.Timeout)
+	defer cancel()
+
+	return runWithContext(ctx, conf)
+}
+
+func runWithContext(ctx context.Context, conf config.Config) error {
+	if err := initialize(&conf); err != nil {
+		return xerrors.Errorf("initialize error: %w", err)
 	}
 
-	if c.ClearCache {
+	if conf.ClearCache {
 		log.Logger.Warn("A client doesn't have image cache")
 		return nil
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-
-	s, cleanup, err := initializeScanner(ctx, c)
+	s, cleanup, err := initializeScanner(ctx, conf)
 	if err != nil {
-		return err
+		return xerrors.Errorf("scanner initialize error: %w", err)
 	}
 	defer cleanup()
 
 	scanOptions := types.ScanOptions{
-		VulnType:            c.VulnType,
-		ScanRemovedPackages: c.ScanRemovedPkgs,
+		VulnType:            conf.VulnType,
+		ScanRemovedPackages: conf.ScanRemovedPkgs,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
@@ -60,53 +64,53 @@ func run(c config.Config) (err error) {
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
 		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
-			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.IgnorePolicy)
+			conf.Severities, conf.IgnoreUnfixed, conf.IgnoreFile, conf.IgnorePolicy)
 		if err != nil {
 			return err
 		}
 		results[i].Vulnerabilities = vulns
 	}
 
-	if err = report.WriteResults(c.Format, c.Output, c.Severities, results, c.Template, false); err != nil {
+	if err = report.WriteResults(conf.Format, conf.Output, conf.Severities, results, conf.Template, false); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	exit(c, results)
+	exit(conf, results)
 
 	return nil
 }
 
-func initialize(c *config.Config) error {
+func initialize(conf *config.Config) error {
 	// Initialize logger
-	if err := log.InitLogger(c.Debug, c.Quiet); err != nil {
+	if err := log.InitLogger(conf.Debug, conf.Quiet); err != nil {
 		return xerrors.Errorf("failed to initialize a logger: %w", err)
 	}
 
 	// Initialize config
-	if err := c.Init(); err != nil {
+	if err := conf.Init(); err != nil {
 		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
 
 	// configure cache dir
-	utils.SetCacheDir(c.CacheDir)
+	utils.SetCacheDir(conf.CacheDir)
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
 	return nil
 }
 
-func initializeScanner(ctx context.Context, c config.Config) (scanner.Scanner, func(), error) {
-	remoteCache := cache.NewRemoteCache(cache.RemoteURL(c.RemoteAddr), c.CustomHeaders)
+func initializeScanner(ctx context.Context, conf config.Config) (scanner.Scanner, func(), error) {
+	remoteCache := cache.NewRemoteCache(cache.RemoteURL(conf.RemoteAddr), conf.CustomHeaders)
 
-	// It doesn't analyze apk commands by default.
+	// By default, apk commands are not analyzed.
 	disabledAnalyzers := []analyzer.Type{analyzer.TypeApkCommand}
-	if c.ScanRemovedPkgs {
+	if conf.ScanRemovedPkgs {
 		disabledAnalyzers = []analyzer.Type{}
 	}
 
-	if c.Input != "" {
+	if conf.Input != "" {
 		// Scan tar file
-		s, err := initializeArchiveScanner(ctx, c.Input, remoteCache,
-			client.CustomHeaders(c.CustomHeaders), client.RemoteURL(c.RemoteAddr), c.Timeout, disabledAnalyzers)
+		s, err := initializeArchiveScanner(ctx, conf.Input, remoteCache,
+			client.CustomHeaders(conf.CustomHeaders), client.RemoteURL(conf.RemoteAddr), conf.Timeout, disabledAnalyzers)
 		if err != nil {
 			return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 		}
@@ -114,8 +118,8 @@ func initializeScanner(ctx context.Context, c config.Config) (scanner.Scanner, f
 	}
 
 	// Scan an image in Docker Engine or Docker Registry
-	s, cleanup, err := initializeDockerScanner(ctx, c.Target, remoteCache,
-		client.CustomHeaders(c.CustomHeaders), client.RemoteURL(c.RemoteAddr), c.Timeout, disabledAnalyzers)
+	s, cleanup, err := initializeDockerScanner(ctx, conf.Target, remoteCache,
+		client.CustomHeaders(conf.CustomHeaders), client.RemoteURL(conf.RemoteAddr), conf.Timeout, disabledAnalyzers)
 	if err != nil {
 		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the docker scanner: %w", err)
 	}

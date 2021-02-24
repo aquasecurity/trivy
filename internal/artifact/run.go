@@ -21,55 +21,56 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-var errEarlyReturn = errors.New("skip subsequent processes")
+var errSkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanner type to define initialize function signature
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration,
 	[]analyzer.Type) (scanner.Scanner, func(), error)
 
-func run(c config.Config, initializeScanner InitializeScanner) error {
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
+func run(conf config.Config, initializeScanner InitializeScanner) error {
+	ctx, cancel := context.WithTimeout(context.Background(), conf.Timeout)
 	defer cancel()
 
-	return runWithContext(ctx, c, initializeScanner)
+	return runWithContext(ctx, conf, initializeScanner)
 }
 
-func runWithContext(ctx context.Context, c config.Config, initializeScanner InitializeScanner) error {
-	if err := log.InitLogger(c.Debug, c.Quiet); err != nil {
+func runWithContext(ctx context.Context, conf config.Config, initializeScanner InitializeScanner) error {
+	if err := log.InitLogger(conf.Debug, conf.Quiet); err != nil {
 		l.Fatal(err)
 	}
 
-	cache, err := initCache(c)
-	if errors.Is(err, errEarlyReturn) {
-		return nil
-	} else if err != nil {
-		return err
-	}
-	defer cache.Close()
-
-	if err = initDB(c); err != nil {
-		if errors.Is(err, errEarlyReturn) {
+	cacheClient, err := initCache(conf)
+	if err != nil {
+		if errors.Is(err, errSkipScan) {
 			return nil
 		}
-		return err
+		return xerrors.Errorf("cache error: %w", err)
+	}
+	defer cacheClient.Close()
+
+	if err = initDB(conf); err != nil {
+		if errors.Is(err, errSkipScan) {
+			return nil
+		}
+		return xerrors.Errorf("DB error: %w", err)
 	}
 	defer db.Close()
 
-	results, err := scan(ctx, c, initializeScanner, cache)
+	results, err := scan(ctx, conf, initializeScanner, cacheClient)
 	if err != nil {
-		return err
+		return xerrors.Errorf("scan error: %w", err)
 	}
 
-	results, err = filter(ctx, c, results)
+	results, err = filter(ctx, conf, results)
 	if err != nil {
-		return err
+		return xerrors.Errorf("filter error: %w", err)
 	}
 
-	if err = report.WriteResults(c.Format, c.Output, c.Severities, results, c.Template, c.Light); err != nil {
+	if err = report.WriteResults(conf.Format, conf.Output, conf.Severities, results, conf.Template, conf.Light); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	exit(c, results)
+	exit(conf, results)
 
 	return nil
 }
@@ -87,14 +88,14 @@ func initCache(c config.Config) (operation.Cache, error) {
 		if err = cache.Reset(); err != nil {
 			return operation.Cache{}, xerrors.Errorf("cache reset error: %w", err)
 		}
-		return operation.Cache{}, errEarlyReturn
+		return operation.Cache{}, errSkipScan
 	}
 	if c.ClearCache {
 		defer cache.Close()
 		if err = cache.ClearImages(); err != nil {
 			return operation.Cache{}, xerrors.Errorf("cache clear error: %w", err)
 		}
-		return operation.Cache{}, errEarlyReturn
+		return operation.Cache{}, errSkipScan
 	}
 	return cache, nil
 }
@@ -107,7 +108,7 @@ func initDB(c config.Config) error {
 	}
 
 	if c.DownloadDBOnly {
-		return errEarlyReturn
+		return errSkipScan
 	}
 
 	if err := db.Init(c.CacheDir); err != nil {
@@ -116,28 +117,29 @@ func initDB(c config.Config) error {
 	return nil
 }
 
-func scan(ctx context.Context, c config.Config, initializeScanner InitializeScanner, cache cache.Cache) (report.Results, error) {
-	target := c.Target
-	if c.Input != "" {
-		target = c.Input
+func scan(ctx context.Context, conf config.Config, initializeScanner InitializeScanner, cacheClient cache.Cache) (
+	report.Results, error) {
+	target := conf.Target
+	if conf.Input != "" {
+		target = conf.Input
 	}
 
 	scanOptions := types.ScanOptions{
-		VulnType:            c.VulnType,
-		ScanRemovedPackages: c.ScanRemovedPkgs, // this is valid only for image subcommand
-		ListAllPackages:     c.ListAllPkgs,
-		SkipFiles:           c.SkipFiles,
-		SkipDirectories:     c.SkipDirectories,
+		VulnType:            conf.VulnType,
+		ScanRemovedPackages: conf.ScanRemovedPkgs, // this is valid only for image subcommand
+		ListAllPackages:     conf.ListAllPkgs,
+		SkipFiles:           conf.SkipFiles,
+		SkipDirectories:     conf.SkipDirectories,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
 	// It doesn't analyze apk commands by default.
 	disabledAnalyzers := []analyzer.Type{analyzer.TypeApkCommand}
-	if c.ScanRemovedPkgs {
+	if conf.ScanRemovedPkgs {
 		disabledAnalyzers = []analyzer.Type{}
 	}
 
-	s, cleanup, err := initializeScanner(ctx, target, cache, cache, c.Timeout, disabledAnalyzers)
+	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, conf.Timeout, disabledAnalyzers)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
@@ -145,17 +147,17 @@ func scan(ctx context.Context, c config.Config, initializeScanner InitializeScan
 
 	results, err := s.ScanArtifact(ctx, scanOptions)
 	if err != nil {
-		return nil, xerrors.Errorf("error in image scan: %w", err)
+		return nil, xerrors.Errorf("image scan failed: %w", err)
 	}
 	return results, nil
 }
 
-func filter(ctx context.Context, c config.Config, results report.Results) (report.Results, error) {
+func filter(ctx context.Context, conf config.Config, results report.Results) (report.Results, error) {
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
 		vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
 		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
-			c.Severities, c.IgnoreUnfixed, c.IgnoreFile, c.IgnorePolicy)
+			conf.Severities, conf.IgnoreUnfixed, conf.IgnoreFile, conf.IgnorePolicy)
 		if err != nil {
 			return nil, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
