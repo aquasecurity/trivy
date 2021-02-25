@@ -234,7 +234,7 @@ $ go install
 
 ## Image
 
-Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with the image cache.** See [Clear caches](#clear-caches).
+Simply specify an image name (and a tag).
 
 ### Basic
 
@@ -1405,7 +1405,7 @@ $ trivy server --cache-backend redis://localhost:6379
 
 ### Clear caches
 
-The `--clear-cache` option removes caches. This option is useful if the image which has the same tag is updated (such as when using `latest` tag).
+The `--clear-cache` option removes caches.
 
 **The scan is not performed.**
 
