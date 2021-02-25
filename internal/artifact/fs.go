@@ -30,7 +30,7 @@ func FilesystemRun(cliCtx *cli.Context) error {
 	}
 
 	// initialize config
-	if err = c.Init(false); err != nil {
+	if err = c.Init(); err != nil {
 		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
 

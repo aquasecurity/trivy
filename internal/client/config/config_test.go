@@ -199,35 +199,12 @@ func TestConfig_Init(t *testing.T) {
 			},
 		},
 		{
-			name: "with latest tag",
-			args: []string{"gcr.io/distroless/base"},
-			logs: []string{
-				"You should avoid using the :latest tag as it is cached. You need to specify '--clear-cache' option when :latest image is changed",
-			},
-			want: Config{
-				ReportConfig: config.ReportConfig{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
-				},
-				ArtifactConfig: config.ArtifactConfig{
-					Target: "gcr.io/distroless/base",
-				},
-				CustomHeaders: http.Header{},
-			},
-		},
-		{
 			name: "sad: multiple image names",
 			args: []string{"centos:7", "alpine:3.10"},
 			logs: []string{
 				"multiple targets cannot be specified",
 			},
 			wantErr: "arguments error",
-		},
-		{
-			name:    "sad: invalid image name",
-			args:    []string{`!"#$%&'()`},
-			wantErr: "could not parse reference",
 		},
 	}
 	for _, tt := range tests {
