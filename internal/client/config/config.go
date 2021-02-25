@@ -67,10 +67,6 @@ func (c *Config) Init() (err error) {
 		return err
 	}
 
-	if err := c.ImageConfig.Init(c.Context.Args(), c.Logger); err != nil {
-		return err
-	}
-
 	return nil
 }
 

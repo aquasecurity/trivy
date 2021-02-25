@@ -153,25 +153,6 @@ func TestConfig_Init(t *testing.T) {
 			},
 		},
 		{
-			name: "with latest tag",
-			args: []string{"--auto-refresh", "gcr.io/distroless/base"},
-			logs: []string{
-				"--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.",
-				"You should avoid using the :latest tag as it is cached. You need to specify '--clear-cache' option when :latest image is changed",
-			},
-			want: Config{
-				ReportConfig: config.ReportConfig{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
-				},
-				ArtifactConfig: config.ArtifactConfig{
-					Target: "gcr.io/distroless/base",
-				},
-				autoRefresh: true,
-			},
-		},
-		{
 			name:    "sad: skip and download db",
 			args:    []string{"--skip-update", "--download-db-only", "alpine:3.10"},
 			wantErr: "--skip-update and --download-db-only options can not be specified both",
@@ -183,11 +164,6 @@ func TestConfig_Init(t *testing.T) {
 				"multiple targets cannot be specified",
 			},
 			wantErr: "arguments error",
-		},
-		{
-			name:    "sad: invalid image name",
-			args:    []string{`!"#$%&'()`},
-			wantErr: "could not parse reference",
 		},
 	}
 	for _, tt := range tests {
@@ -216,7 +192,7 @@ func TestConfig_Init(t *testing.T) {
 			require.NoError(t, err, err)
 
 			c.GlobalConfig.Logger = logger.Sugar()
-			err = c.Init(true)
+			err = c.Init()
 
 			// tests log messages
 			var gotMessages []string
