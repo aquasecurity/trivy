@@ -8,8 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/detector/library"
-
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
@@ -36,6 +34,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpm"
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
