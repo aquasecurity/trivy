@@ -25,9 +25,6 @@ builds:
     ignore:
       - goos: darwin
         goarch: 386
-      # TODO: bump up Go to 1.16
-      - goos: darwin
-        goarch: arm64
 
 nfpms:
   -
