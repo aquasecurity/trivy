@@ -1,6 +1,7 @@
 package local
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -76,16 +77,14 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector) Scanner {
 func (s Scanner) Scan(target, versionedArtifactID string, versionedBlobIDs []string, options types.ScanOptions) (
 	report.Results, *ftypes.OS, bool, error) {
 	artifactDetail, err := s.applier.ApplyLayers(versionedArtifactID, versionedBlobIDs)
-	if err != nil {
-		switch err {
-		case analyzer.ErrUnknownOS:
-			log.Logger.Warn("OS is not detected and vulnerabilities in OS packages are not detected.")
-		case analyzer.ErrNoPkgsDetected:
-			log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
-			log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
-		default:
-			return nil, nil, false, xerrors.Errorf("failed to apply layers: %w", err)
-		}
+	switch {
+	case errors.Is(err, analyzer.ErrUnknownOS):
+		log.Logger.Warn("OS is not detected and vulnerabilities in OS packages are not detected.")
+	case errors.Is(err, analyzer.ErrNoPkgsDetected):
+		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
+		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
+	case err != nil:
+		return nil, nil, false, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
 	var eosl bool
