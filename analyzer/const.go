@@ -36,4 +36,5 @@ const (
 
 	// Structured Config
 	TypeYaml = Type("yaml")
+	TypeTOML = Type("toml")
 )
