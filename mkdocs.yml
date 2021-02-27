@@ -1,0 +1,121 @@
+site_name: Trivy
+site_url: https://aquasecurity.github.io/trivy/
+site_description: A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifacts, Suitable for CI
+docs_dir: docs/mkdocs/
+repo_name: GitHub
+repo_url: https://github.com/aquasecurity/starboard
+edit_uri: ""
+
+nav:
+  - Overview: index.md
+  - Abstract: abstract.md
+  - Features: feature.md
+  - Installation:
+      - Overview: installation/index.md
+      - Arch Linux: installation/arch-linux.md
+      - Binary: installation/binary.md
+      - Debian/Ubuntu: installation/debian_ubuntu.md
+      - From source: installation/from-source.md
+      - Homebrew: installation/homebrew.md
+      - Install Script: installation/install-script.md
+      - Nix/NixOS: installation/nix_nixos.md
+      - RHEL/CentOS: installation/rhel_centos.md
+  - Quick Start:
+      - Overview: quick-start/index.md
+      - Image:
+          - Overview: quick-start/image/index.md
+          - Docker Hub: quick-start/image/docker-hub.md
+          - GitHub Container Registry: quick-start/image/github.md
+      - Embed in Dockerfile: quick-start/embed-in-dockerfile.md
+      - Filesystem: quick-start/filesystem.md
+      - Git Repository: quick-start/git-repository.md
+      - Podman: quick-start/podman.md
+  - Examples:
+      - Overview: examples/index.md
+      - Standalone:
+          - Filtering Vulnerabilities:
+              - By Open Policy Agent: examples/standalone/filter/by-opa-policy.md
+              - By Severities: examples/standalone/filter/by-severities.md
+              - By Type: examples/standalone/filter/by-type.md
+          - Ignore:
+              - Ignore Specified Vulnerabilities: examples/standalone/ignore/specified-vulnerabilities.md
+              - Ignore Unfixed Vulnerabilities: examples/standalone/ignore/unfixed-vulnerabilities.md
+          - Save Scan Result:
+              - JSON: examples/standalone/save/json.md
+              - Using a Template: examples/standalone/save/template.md
+          - Scan:
+              - Container from Inside the Container: examples/standalone/scan/container-from-inside-the-container.md
+              - Image: examples/standalone/scan/image.md
+              - Image File: examples/standalone/scan/image-file.md
+              - OCI image: examples/standalone/scan/oci-image.md
+              - Project Including a Lock File: examples/standalone/scan/project-including-a-lock-file.md
+          - Skip:
+              - Skip Traversal in Specific Directory: examples/standalone/skip/directory.md
+              - Skip Traversal of Specific Files: examples/standalone/skip/files.md
+              - Skip Update of Vulnerability Database: examples/standalone/skip/update-vuln-db.md
+          - Specify:
+              - Specify Cache Backend: examples/standalone/specify/cache-backend.md
+              - Specify Cache Directory: examples/standalone/specify/cache-directory.md
+              - Specify Exit Code: examples/standalone/specify/exit-code.md
+          - Clear Caches: examples/standalone/clear-caches.md
+          - Embed in Dockerfile: examples/standalone/embed-in-dockerfile.md
+          - Only Download Vulnerability Database: examples/standalone/only-download-vuln-db.md
+          - Reset: examples/standalone/reset.md
+          - Use Lightweight Database: examples/standalone/lightweight-db.md
+      - Client/Server: examples/client-server.md
+  - Continuous Integration (CI):
+      - Overview: continuous-integration/index.md
+      - AWS CodePipeline: continuous-integration/aws-codepipeline.md
+      - AWS Security Hub: continuous-integration/aws-security-hub.md
+      - CircleCI: continuous-integration/circleci.md
+      - GitHub Actions: continuous-integration/github-actions.md
+      - GitLab CI: continuous-integration/gitlab-ci.md
+      - Travis CI: continuous-integration/travis-ci.md
+      - Authorization for Private Docker Registry:
+          - Overview: continuous-integration/private/index.md
+          - AWS ECR (Elastic Container Registry): continuous-integration/private/ecr.md
+          - Docker Hub: continuous-integration/private/docker-hub.md
+          - GCR (Google Container Registry): continuous-integration/private/gcr.md
+          - Self-Hosted: continuous-integration/private/self.md
+  - Vulnerability Detection:
+      - Overview: vuln-detection/index.md
+      - OS Packages: vuln-detection/os.md
+      - Application Dependencies: vuln-detection/library.md
+      - Image TAR Format: vuln-detection/image-tar-format.md
+      - Data Sources: vuln-detection/data-source.md
+  - Air-Gapped Environment: air-gap.md
+  - Comparison with Other Scanners:
+      - Overview: comparison/index.md
+      - Anchore Engine: comparison/anchore.md
+      - Clair: comparison/clair.md
+      - Quay, Docker Hub, GCR: comparison/quay_dockerhub_gcr.md
+  - Usage:
+      - Overview: usage/index.md
+      - Image: usage/image.md
+      - Client: usage/client.md
+      - Server: usage/server.md
+  - Migration:
+      - Overview: migration/index.md
+      - Binary: migration/binary.md
+      - Debian/Ubuntu: migration/debian_ubuntu.md
+      - Homebrew: migration/homebrew.md
+      - RHEL/CentOS: migration/rhel_centos.md
+  - FAQ:
+      - Overview: faq/index.md
+      - Homebrew: faq/homebrew.md
+      - Others: faq/others.md
+  - Credits: credit.md
+
+theme:
+    name: material
+    language: 'en'
+    logo: imgs/logo.png
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - admonition
+
+plugins:
+  - search
+  - macros
