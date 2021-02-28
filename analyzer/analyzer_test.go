@@ -11,15 +11,46 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 
+	// Change the order in which "init()" is called intentionally
+	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
+
 	"github.com/aquasecurity/fanal/analyzer"
+	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
 	aos "github.com/aquasecurity/fanal/analyzer/os"
 	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
-	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
 	"github.com/aquasecurity/fanal/types"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
+
+type mockConfigAnalyzer struct{}
+
+func (mockConfigAnalyzer) Required(targetOS types.OS) bool {
+	return targetOS.Family == "alpine"
+}
+
+func (mockConfigAnalyzer) Analyze(targetOS types.OS, configBlob []byte) ([]types.Package, error) {
+	if string(configBlob) != `foo` {
+		return nil, errors.New("error")
+	}
+	return []types.Package{
+		{Name: "musl", Version: "1.1.24-r2"},
+	}, nil
+}
+
+func (mockConfigAnalyzer) Type() analyzer.Type {
+	return analyzer.Type(999)
+}
+
+func (mockConfigAnalyzer) Version() int {
+	return 1
+}
+
+func TestMain(m *testing.M) {
+	analyzer.RegisterConfigAnalyzer(mockConfigAnalyzer{})
+	os.Exit(m.Run())
+}
 
 func TestAnalysisResult_Merge(t *testing.T) {
 	type fields struct {
@@ -354,31 +385,7 @@ func TestAnalyzeFile(t *testing.T) {
 	}
 }
 
-type mockConfigAnalyzer struct{}
-
-func (mockConfigAnalyzer) Required(targetOS types.OS) bool {
-	return targetOS.Family == "alpine"
-}
-
-func (mockConfigAnalyzer) Analyze(targetOS types.OS, configBlob []byte) ([]types.Package, error) {
-	if string(configBlob) != `foo` {
-		return nil, errors.New("error")
-	}
-	return []types.Package{
-		{Name: "musl", Version: "1.1.24-r2"},
-	}, nil
-}
-
-func (mockConfigAnalyzer) Type() analyzer.Type {
-	return "mock"
-}
-
-func (mockConfigAnalyzer) Version() int {
-	return 1
-}
-
 func TestAnalyzeConfig(t *testing.T) {
-	analyzer.RegisterConfigAnalyzer(mockConfigAnalyzer{})
 
 	type args struct {
 		targetOS          types.OS
@@ -467,6 +474,58 @@ func TestCheckPackage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := analyzer.CheckPackage(tt.pkg)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestAnalyzer_AnalyzerVersions(t *testing.T) {
+	tests := []struct {
+		name     string
+		disabled []analyzer.Type
+		want     string
+	}{
+		{
+			name:     "happy path",
+			disabled: []analyzer.Type{},
+			want:     "1111",
+		},
+		{
+			name:     "disable analyzers",
+			disabled: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeUbuntu},
+			want:     "0011",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := analyzer.NewAnalyzer(tt.disabled)
+			got := a.AnalyzerVersions()
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestAnalyzer_ImageConfigAnalyzerVersions(t *testing.T) {
+	tests := []struct {
+		name     string
+		disabled []analyzer.Type
+		want     string
+	}{
+		{
+			name:     "happy path",
+			disabled: []analyzer.Type{},
+			want:     "11", // mockConfigAnalyzer is added
+		},
+		{
+			name:     "disable analyzers",
+			disabled: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeApkCommand},
+			want:     "01", // mockConfigAnalyzer is added
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := analyzer.NewAnalyzer(tt.disabled)
+			got := a.ImageConfigAnalyzerVersions()
 			assert.Equal(t, tt.want, got)
 		})
 	}

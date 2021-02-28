@@ -209,18 +209,18 @@ func TestS3Cache_MissingBlobs(t *testing.T) {
 			Prefix:     "prefix",
 		},
 		args: args{
-			artifactID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
-			blobIDs:    []string{"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7"},
+			artifactID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4/1",
+			blobIDs:    []string{"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/10011"},
 		},
 		want:            true,
-		wantStringSlice: []string{"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7"},
+		wantStringSlice: []string{"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/10011"},
 		wantErr:         false,
 	},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := NewS3Cache(tt.fields.BucketName, tt.fields.Prefix, tt.fields.S3, tt.fields.Downloader)
-			got, got1, err := c.MissingBlobs(tt.args.artifactID, tt.args.blobIDs, nil, nil)
+			got, got1, err := c.MissingBlobs(tt.args.artifactID, tt.args.blobIDs)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("S3Cache.MissingBlobs() error = %v, wantErr %v", err, tt.wantErr)
 				return

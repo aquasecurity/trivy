@@ -1,6 +1,7 @@
 package analyzer
 
 import (
+	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -113,6 +114,7 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 type Analyzer struct {
 	drivers       []analyzer
 	configDrivers []configAnalyzer
+	disabled      []Type
 }
 
 func NewAnalyzer(disabledAnalyzers []Type) Analyzer {
@@ -135,21 +137,48 @@ func NewAnalyzer(disabledAnalyzers []Type) Analyzer {
 	return Analyzer{
 		drivers:       drivers,
 		configDrivers: configDrivers,
+		disabled:      disabledAnalyzers,
 	}
 }
 
-func (a Analyzer) AnalyzerVersions() map[string]int {
-	versions := map[string]int{}
-	for _, d := range a.drivers {
-		versions[string(d.Type())] = d.Version()
+// AnalyzerVersions returns analyzer version identifier used for cache suffixes.
+// e.g. alpine: 1, amazon: 3, debian: 2 => 132
+// When the amazon analyzer is disabled => 102
+func (a Analyzer) AnalyzerVersions() string {
+	// Sort analyzers for the consistent version identifier
+	sorted := make([]analyzer, len(analyzers))
+	copy(sorted, analyzers)
+	sort.Slice(sorted, func(i, j int) bool {
+		return sorted[i].Type() < sorted[j].Type()
+	})
+
+	var versions string
+	for _, s := range sorted {
+		if isDisabled(s.Type(), a.disabled) {
+			versions += "0"
+			continue
+		}
+		versions += fmt.Sprint(s.Version())
 	}
 	return versions
 }
 
-func (a Analyzer) ImageConfigAnalyzerVersions() map[string]int {
-	versions := map[string]int{}
-	for _, d := range a.configDrivers {
-		versions[string(d.Type())] = d.Version()
+// ImageConfigAnalyzerVersions returns analyzer version identifier used for cache suffixes.
+func (a Analyzer) ImageConfigAnalyzerVersions() string {
+	// Sort image config analyzers for the consistent version identifier.
+	sorted := make([]configAnalyzer, len(configAnalyzers))
+	copy(sorted, configAnalyzers)
+	sort.Slice(sorted, func(i, j int) bool {
+		return sorted[i].Type() < sorted[j].Type()
+	})
+
+	var versions string
+	for _, s := range sorted {
+		if isDisabled(s.Type(), a.disabled) {
+			versions += "0"
+			continue
+		}
+		versions += fmt.Sprint(s.Version())
 	}
 	return versions
 }

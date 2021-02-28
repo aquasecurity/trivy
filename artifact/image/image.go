@@ -44,24 +44,40 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		return types.ArtifactReference{}, xerrors.Errorf("unable to get layer IDs: %w", err)
 	}
 
-	missingImage, missingLayers, err := a.cache.MissingBlobs(imageID, diffIDs,
-		a.analyzer.AnalyzerVersions(), a.analyzer.ImageConfigAnalyzerVersions())
+	versionedImageID, versionedDiffIDs := a.withVersionSuffix(imageID, diffIDs)
+
+	missingImage, missingLayers, err := a.cache.MissingBlobs(versionedImageID, versionedDiffIDs)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("unable to get missing layers: %w", err)
 	}
 
-	if err := a.inspect(ctx, imageID, missingImage, missingLayers); err != nil {
+	if err := a.inspect(ctx, versionedImageID, missingImage, missingLayers); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
 	return types.ArtifactReference{
 		Name:        a.image.Name(),
-		ID:          imageID,
-		BlobIDs:     diffIDs,
+		ID:          versionedImageID,
+		BlobIDs:     versionedDiffIDs,
 		RepoTags:    a.image.RepoTags(),
 		RepoDigests: a.image.RepoDigests(),
 	}, nil
 
+}
+
+func (a Artifact) withVersionSuffix(imageID string, diffIDs []string) (string, []string) {
+	// e.g. sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e
+	//   => sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e/1
+	imageID = cache.WithVersionSuffix(imageID, a.analyzer.ImageConfigAnalyzerVersions())
+
+	var blobIDs []string
+	for _, diffID := range diffIDs {
+		// e.g. sha256:0fcbbeeeb0d7fc5c06362d7a6717b999e605574c7210eff4f7418f6e9be9fbfe
+		//   => sha256:0fcbbeeeb0d7fc5c06362d7a6717b999e605574c7210eff4f7418f6e9be9fbfe/121110111321
+		blobID := cache.WithVersionSuffix(diffID, a.analyzer.AnalyzerVersions())
+		blobIDs = append(blobIDs, blobID)
+	}
+	return imageID, blobIDs
 }
 
 func (a Artifact) inspect(ctx context.Context, imageID string, missingImage bool, diffIDs []string) error {
@@ -70,13 +86,14 @@ func (a Artifact) inspect(ctx context.Context, imageID string, missingImage bool
 
 	var osFound types.OS
 	for _, d := range diffIDs {
-		go func(diffID string) {
+		go func(versionedDiffID string) {
+			diffID := cache.TrimVersionSuffix(versionedDiffID)
 			layerInfo, err := a.inspectLayer(diffID)
 			if err != nil {
 				errCh <- xerrors.Errorf("failed to analyze layer: %s : %w", diffID, err)
 				return
 			}
-			if err = a.cache.PutBlob(diffID, layerInfo); err != nil {
+			if err = a.cache.PutBlob(versionedDiffID, layerInfo); err != nil {
 				errCh <- xerrors.Errorf("failed to store layer: %s in cache: %w", diffID, err)
 				return
 			}
@@ -132,16 +149,15 @@ func (a Artifact) inspectLayer(diffID string) (types.BlobInfo, error) {
 	result.Sort()
 
 	layerInfo := types.BlobInfo{
-		SchemaVersion:    types.BlobJSONSchemaVersion,
-		AnalyzerVersions: a.analyzer.AnalyzerVersions(),
-		Digest:           layerDigest,
-		DiffID:           diffID,
-		OS:               result.OS,
-		PackageInfos:     result.PackageInfos,
-		Applications:     result.Applications,
-		Configs:          result.Configs,
-		OpaqueDirs:       opqDirs,
-		WhiteoutFiles:    whFiles,
+		SchemaVersion: types.BlobJSONSchemaVersion,
+		Digest:        layerDigest,
+		DiffID:        diffID,
+		OS:            result.OS,
+		PackageInfos:  result.PackageInfos,
+		Applications:  result.Applications,
+		Configs:       result.Configs,
+		OpaqueDirs:    opqDirs,
+		WhiteoutFiles: whFiles,
 	}
 	return layerInfo, nil
 }
@@ -195,13 +211,12 @@ func (a Artifact) inspectConfig(imageID string, osFound types.OS) error {
 	}
 
 	info := types.ArtifactInfo{
-		SchemaVersion:    types.ArtifactJSONSchemaVersion,
-		AnalyzerVersions: a.analyzer.ImageConfigAnalyzerVersions(),
-		Architecture:     s1.Architecture,
-		Created:          s1.Created.Time,
-		DockerVersion:    s1.DockerVersion,
-		OS:               s1.OS,
-		HistoryPackages:  pkgs,
+		SchemaVersion:   types.ArtifactJSONSchemaVersion,
+		Architecture:    s1.Architecture,
+		Created:         s1.Created.Time,
+		DockerVersion:   s1.DockerVersion,
+		OS:              s1.OS,
+		HistoryPackages: pkgs,
 	}
 
 	if err := a.cache.PutArtifact(imageID, info); err != nil {

@@ -59,12 +59,11 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	result.Sort()
 
 	blobInfo := types.BlobInfo{
-		SchemaVersion:    types.BlobJSONSchemaVersion,
-		AnalyzerVersions: a.analyzer.AnalyzerVersions(),
-		OS:               result.OS,
-		PackageInfos:     result.PackageInfos,
-		Applications:     result.Applications,
-		Configs:          result.Configs,
+		SchemaVersion: types.BlobJSONSchemaVersion,
+		OS:            result.OS,
+		PackageInfos:  result.PackageInfos,
+		Applications:  result.Applications,
+		Configs:       result.Configs,
 	}
 
 	// calculate hash of JSON and use it as pseudo artifactID and blobID
@@ -76,8 +75,9 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	d := digest.NewDigest(digest.SHA256, h)
 	diffID := d.String()
 	blobInfo.DiffID = diffID
+	versionedDiffID := cache.WithVersionSuffix(diffID, a.analyzer.AnalyzerVersions())
 
-	if err = a.cache.PutBlob(diffID, blobInfo); err != nil {
+	if err = a.cache.PutBlob(versionedDiffID, blobInfo); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", diffID, err)
 	}
 
@@ -92,7 +92,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 
 	return types.ArtifactReference{
 		Name:    hostName,
-		ID:      diffID, // use diffID as pseudo artifactID
-		BlobIDs: []string{diffID},
+		ID:      versionedDiffID, // use diffID as pseudo artifactID
+		BlobIDs: []string{versionedDiffID},
 	}, nil
 }
