@@ -1,14 +1,13 @@
 package local
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 	"time"
-
-	"github.com/aquasecurity/trivy/pkg/detector/library"
 
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
@@ -36,6 +35,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpm"
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -73,59 +73,69 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector) Scanner {
 	return Scanner{applier: applier, ospkgDetector: ospkgDetector}
 }
 
-// Scan scans the local image and return results. TODO: fix cyclometic complexity
-// nolint: gocyclo
-func (s Scanner) Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (report.Results, *ftypes.OS, bool, error) {
-	imageDetail, err := s.applier.ApplyLayers(imageID, layerIDs)
-	if err != nil {
-		switch err {
-		case analyzer.ErrUnknownOS:
-			log.Logger.Warn("OS is not detected and vulnerabilities in OS packages are not detected.")
-		case analyzer.ErrNoPkgsDetected:
-			log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
-			log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
-		default:
-			return nil, nil, false, xerrors.Errorf("failed to apply layers: %w", err)
-		}
+// Scan scans the artifact and return results.
+func (s Scanner) Scan(target, versionedArtifactID string, versionedBlobIDs []string, options types.ScanOptions) (
+	report.Results, *ftypes.OS, bool, error) {
+	artifactDetail, err := s.applier.ApplyLayers(versionedArtifactID, versionedBlobIDs)
+	switch {
+	case errors.Is(err, analyzer.ErrUnknownOS):
+		log.Logger.Warn("OS is not detected and vulnerabilities in OS packages are not detected.")
+	case errors.Is(err, analyzer.ErrNoPkgsDetected):
+		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
+		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
+	case err != nil:
+		return nil, nil, false, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
 	var eosl bool
 	var results report.Results
 
-	if utils.StringInSlice("os", options.VulnType) && imageDetail.OS != nil {
-		pkgs := imageDetail.Packages
-		if options.ScanRemovedPackages {
-			pkgs = mergePkgs(pkgs, imageDetail.HistoryPackages)
-		}
-
+	if utils.StringInSlice("os", options.VulnType) && artifactDetail.OS != nil {
 		var result *report.Result
-		result, eosl, err = s.scanOSPkg(target, imageDetail.OS.Family, imageDetail.OS.Name, pkgs)
+		result, eosl, err = s.scanOSPkgs(target, artifactDetail, options)
 		if err != nil {
-			return nil, nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
-		}
-		if result != nil {
-			if options.ListAllPackages {
-				sort.Slice(pkgs, func(i, j int) bool {
-					return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
-				})
-				result.Packages = pkgs
-			}
+			return nil, nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
+		} else if result != nil {
 			results = append(results, *result)
 		}
 	}
 
 	if utils.StringInSlice("library", options.VulnType) {
-		libResults, err := s.scanLibrary(imageDetail.Applications, options)
+		libResults, err := s.scanLibrary(artifactDetail.Applications, options)
 		if err != nil {
 			return nil, nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
 		}
 		results = append(results, libResults...)
 	}
 
-	return results, imageDetail.OS, eosl, nil
+	return results, artifactDetail.OS, eosl, nil
 }
 
-func (s Scanner) scanOSPkg(target, osFamily, osName string, pkgs []ftypes.Package) (*report.Result, bool, error) {
+func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
+	*report.Result, bool, error) {
+	pkgs := detail.Packages
+	if options.ScanRemovedPackages {
+		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
+	}
+
+	result, eosl, err := s.detectVulnsInOSPkgs(target, detail.OS.Family, detail.OS.Name, pkgs)
+	if err != nil {
+		return nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
+	} else if result == nil {
+		return nil, eosl, nil
+	}
+
+	if options.ListAllPackages {
+		sort.Slice(pkgs, func(i, j int) bool {
+			return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
+		})
+		result.Packages = pkgs
+	}
+
+	return result, eosl, nil
+}
+
+func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []ftypes.Package) (*report.Result, bool, error) {
 	if osFamily == "" {
 		return nil, false, nil
 	}
@@ -136,9 +146,9 @@ func (s Scanner) scanOSPkg(target, osFamily, osName string, pkgs []ftypes.Packag
 		return nil, false, xerrors.Errorf("failed vulnerability detection of OS packages: %w", err)
 	}
 
-	imageDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osName)
+	artifactDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osName)
 	result := &report.Result{
-		Target:          imageDetail,
+		Target:          artifactDetail,
 		Vulnerabilities: vulns,
 		Type:            osFamily,
 	}
