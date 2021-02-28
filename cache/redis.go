@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/types"
@@ -41,9 +40,6 @@ func (c RedisCache) PutArtifact(artifactID string, artifactConfig types.Artifact
 }
 
 func (c RedisCache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
-	if _, err := v1.NewHash(blobID); err != nil {
-		return xerrors.Errorf("invalid diffID (%s): %w", blobID, err)
-	}
 	b, err := json.Marshal(blobInfo)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal blob JSON: %w", err)
@@ -88,8 +84,7 @@ func (c RedisCache) GetBlob(blobID string) (types.BlobInfo, error) {
 	return blobInfo, nil
 }
 
-func (c RedisCache) MissingBlobs(artifactID string, blobIDs []string,
-	analyzerVersions, configAnalyzerVersions map[string]int) (bool, []string, error) {
+func (c RedisCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []string, error) {
 	var missingArtifact bool
 	var missingBlobIDs []string
 	for _, blobID := range blobIDs {
@@ -99,8 +94,7 @@ func (c RedisCache) MissingBlobs(artifactID string, blobIDs []string,
 			missingBlobIDs = append(missingBlobIDs, blobID)
 			continue
 		}
-		if blobInfo.SchemaVersion != types.BlobJSONSchemaVersion ||
-			isStale(analyzerVersions, blobInfo.AnalyzerVersions) {
+		if blobInfo.SchemaVersion != types.BlobJSONSchemaVersion {
 			missingBlobIDs = append(missingBlobIDs, blobID)
 		}
 	}
@@ -110,8 +104,7 @@ func (c RedisCache) MissingBlobs(artifactID string, blobIDs []string,
 	if err != nil {
 		return true, missingBlobIDs, nil
 	}
-	if artifactInfo.SchemaVersion != types.ArtifactJSONSchemaVersion ||
-		isStale(configAnalyzerVersions, artifactInfo.AnalyzerVersions) {
+	if artifactInfo.SchemaVersion != types.ArtifactJSONSchemaVersion {
 		missingArtifact = true
 	}
 	return missingArtifact, missingBlobIDs, nil

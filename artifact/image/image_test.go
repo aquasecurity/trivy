@@ -41,41 +41,22 @@ func TestArtifact_Inspect(t *testing.T) {
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-					BlobIDs:    []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
-					AnalyzerVersions: map[string]int{
-						string(analyzer.TypeAlpine):   1,
-						string(analyzer.TypeApk):      1,
-						string(analyzer.TypeComposer): 1,
-						string(analyzer.TypeDebian):   1,
-						string(analyzer.TypeDpkg):     1,
-						string(analyzer.TypeUbuntu):   1,
-					},
-					ConfigAnalyzerVersions: map[string]int{
-						string(analyzer.TypeApkCommand): 1,
-					},
+					ArtifactID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72/1",
+					BlobIDs:    []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203/111111"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingArtifact: true,
-					MissingBlobIDs:  []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
+					MissingBlobIDs:  []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203/111111"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+						BlobID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203/111111",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
-							AnalyzerVersions: map[string]int{
-								string(analyzer.TypeAlpine):   1,
-								string(analyzer.TypeApk):      1,
-								string(analyzer.TypeComposer): 1,
-								string(analyzer.TypeDebian):   1,
-								string(analyzer.TypeDpkg):     1,
-								string(analyzer.TypeUbuntu):   1,
-							},
-							Digest: "",
-							DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+							Digest:        "",
+							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 							OS: &types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
@@ -110,12 +91,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+						ArtifactID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72/1",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: 1,
-							AnalyzerVersions: map[string]int{
-								string(analyzer.TypeApkCommand): 1,
-							},
 							Architecture:  "amd64",
 							Created:       time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC),
 							DockerVersion: "18.09.7",
@@ -126,8 +104,8 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: types.ArtifactReference{
 				Name:    "../../test/testdata/alpine-311.tar.gz",
-				ID:      "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-				BlobIDs: []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
+				ID:      "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72/1",
+				BlobIDs: []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203/111111"},
 			},
 		},
 		{
@@ -135,50 +113,31 @@ func TestArtifact_Inspect(t *testing.T) {
 			imagePath: "../../test/testdata/vuln-image.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
+					ArtifactID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4/1",
 					BlobIDs: []string{
-						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-						"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
-					},
-					AnalyzerVersions: map[string]int{
-						string(analyzer.TypeAlpine):   1,
-						string(analyzer.TypeApk):      1,
-						string(analyzer.TypeComposer): 1,
-						string(analyzer.TypeDebian):   1,
-						string(analyzer.TypeDpkg):     1,
-						string(analyzer.TypeUbuntu):   1,
-					},
-					ConfigAnalyzerVersions: map[string]int{
-						string(analyzer.TypeApkCommand): 1,
+						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02/111111",
+						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5/111111",
+						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/111111",
+						"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566/111111",
 					},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingBlobIDs: []string{
-						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02/111111",
+						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5/111111",
+						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/111111",
 					},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02/111111",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
-							AnalyzerVersions: map[string]int{
-								string(analyzer.TypeAlpine):   1,
-								string(analyzer.TypeApk):      1,
-								string(analyzer.TypeComposer): 1,
-								string(analyzer.TypeDebian):   1,
-								string(analyzer.TypeDpkg):     1,
-								string(analyzer.TypeUbuntu):   1,
-							},
-							Digest: "",
-							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							OS:     &types.OS{Family: "debian", Name: "9.9"},
+							Digest:        "",
+							DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							OS:            &types.OS{Family: "debian", Name: "9.9"},
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "var/lib/dpkg/status.d/base",
@@ -217,19 +176,11 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5/111111",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
-							AnalyzerVersions: map[string]int{
-								string(analyzer.TypeAlpine):   1,
-								string(analyzer.TypeApk):      1,
-								string(analyzer.TypeComposer): 1,
-								string(analyzer.TypeDebian):   1,
-								string(analyzer.TypeDpkg):     1,
-								string(analyzer.TypeUbuntu):   1,
-							},
-							Digest: "",
-							DiffID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+							Digest:        "",
+							DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "var/lib/dpkg/status.d/libc6",
@@ -255,19 +206,11 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						BlobID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/111111",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
-							AnalyzerVersions: map[string]int{
-								string(analyzer.TypeAlpine):   1,
-								string(analyzer.TypeApk):      1,
-								string(analyzer.TypeComposer): 1,
-								string(analyzer.TypeDebian):   1,
-								string(analyzer.TypeDpkg):     1,
-								string(analyzer.TypeUbuntu):   1,
-							},
-							Digest: "",
-							DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+							Digest:        "",
+							DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 							Applications: []types.Application{{Type: "composer", FilePath: "php-app/composer.lock",
 								Libraries: []types.LibraryInfo{
 									{Library: depTypes.Library{Name: "guzzlehttp/guzzle", Version: "6.2.0"}},
@@ -293,12 +236,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: types.ArtifactReference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
-				ID:   "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
+				ID:   "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4/1",
 				BlobIDs: []string{
-					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-					"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
+					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02/111111",
+					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5/111111",
+					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/111111",
+					"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566/111111",
 				},
 			},
 		},
@@ -308,86 +251,63 @@ func TestArtifact_Inspect(t *testing.T) {
 			disableAnalyzers: []analyzer.Type{analyzer.TypeDebian, analyzer.TypeDpkg, analyzer.TypeComposer},
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
+					ArtifactID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4/1",
 					BlobIDs: []string{
-						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-						"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
-					},
-					AnalyzerVersions: map[string]int{
-						string(analyzer.TypeAlpine): 1,
-						string(analyzer.TypeApk):    1,
-						string(analyzer.TypeUbuntu): 1,
-					},
-					ConfigAnalyzerVersions: map[string]int{
-						string(analyzer.TypeApkCommand): 1,
+						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02/101100",
+						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5/101100",
+						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/101100",
+						"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566/101100",
 					},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingBlobIDs: []string{
-						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02/101100",
+						"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5/101100",
+						"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/101100",
 					},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02/101100",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
-							AnalyzerVersions: map[string]int{
-								string(analyzer.TypeAlpine): 1,
-								string(analyzer.TypeApk):    1,
-								string(analyzer.TypeUbuntu): 1,
-							},
-							Digest: "",
-							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							Digest:        "",
+							DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						},
 					},
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5/101100",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
-							AnalyzerVersions: map[string]int{
-								string(analyzer.TypeAlpine): 1,
-								string(analyzer.TypeApk):    1,
-								string(analyzer.TypeUbuntu): 1,
-							},
-							Digest: "",
-							DiffID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+							Digest:        "",
+							DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 						},
 					},
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+						BlobID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/101100",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
-							AnalyzerVersions: map[string]int{
-								string(analyzer.TypeAlpine): 1,
-								string(analyzer.TypeApk):    1,
-								string(analyzer.TypeUbuntu): 1,
-							},
-							Digest:     "",
-							DiffID:     "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-							OpaqueDirs: []string{"php-app/"},
+							Digest:        "",
+							DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+							OpaqueDirs:    []string{"php-app/"},
 						},
 					},
 				},
 			},
 			want: types.ArtifactReference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
-				ID:   "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
+				ID:   "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4/1",
 				BlobIDs: []string{
-					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-					"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
+					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02/101100",
+					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5/101100",
+					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/101100",
+					"sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566/101100",
 				},
 			},
 		},
@@ -396,19 +316,8 @@ func TestArtifact_Inspect(t *testing.T) {
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-					BlobIDs:    []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
-					AnalyzerVersions: map[string]int{
-						string(analyzer.TypeAlpine):   1,
-						string(analyzer.TypeApk):      1,
-						string(analyzer.TypeComposer): 1,
-						string(analyzer.TypeDebian):   1,
-						string(analyzer.TypeDpkg):     1,
-						string(analyzer.TypeUbuntu):   1,
-					},
-					ConfigAnalyzerVersions: map[string]int{
-						string(analyzer.TypeApkCommand): 1,
-					},
+					ArtifactID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72/1",
+					BlobIDs:    []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203/111111"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					Err: xerrors.New("MissingBlobs failed"),
@@ -421,40 +330,21 @@ func TestArtifact_Inspect(t *testing.T) {
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-					BlobIDs:    []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
-					AnalyzerVersions: map[string]int{
-						string(analyzer.TypeAlpine):   1,
-						string(analyzer.TypeApk):      1,
-						string(analyzer.TypeComposer): 1,
-						string(analyzer.TypeDebian):   1,
-						string(analyzer.TypeDpkg):     1,
-						string(analyzer.TypeUbuntu):   1,
-					},
-					ConfigAnalyzerVersions: map[string]int{
-						string(analyzer.TypeApkCommand): 1,
-					},
+					ArtifactID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72/1",
+					BlobIDs:    []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203/111111"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
-					MissingBlobIDs: []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
+					MissingBlobIDs: []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203/111111"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+						BlobID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203/111111",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
-							AnalyzerVersions: map[string]int{
-								string(analyzer.TypeAlpine):   1,
-								string(analyzer.TypeApk):      1,
-								string(analyzer.TypeComposer): 1,
-								string(analyzer.TypeDebian):   1,
-								string(analyzer.TypeDpkg):     1,
-								string(analyzer.TypeUbuntu):   1,
-							},
-							Digest: "",
-							DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+							Digest:        "",
+							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 							OS: &types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
@@ -495,41 +385,22 @@ func TestArtifact_Inspect(t *testing.T) {
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-					BlobIDs:    []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
-					AnalyzerVersions: map[string]int{
-						string(analyzer.TypeAlpine):   1,
-						string(analyzer.TypeApk):      1,
-						string(analyzer.TypeComposer): 1,
-						string(analyzer.TypeDebian):   1,
-						string(analyzer.TypeDpkg):     1,
-						string(analyzer.TypeUbuntu):   1,
-					},
-					ConfigAnalyzerVersions: map[string]int{
-						string(analyzer.TypeApkCommand): 1,
-					},
+					ArtifactID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72/1",
+					BlobIDs:    []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203/111111"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingArtifact: true,
-					MissingBlobIDs:  []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
+					MissingBlobIDs:  []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203/111111"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+						BlobID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203/111111",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
-							AnalyzerVersions: map[string]int{
-								string(analyzer.TypeAlpine):   1,
-								string(analyzer.TypeApk):      1,
-								string(analyzer.TypeComposer): 1,
-								string(analyzer.TypeDebian):   1,
-								string(analyzer.TypeDpkg):     1,
-								string(analyzer.TypeUbuntu):   1,
-							},
-							Digest: "",
-							DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+							Digest:        "",
+							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 							OS: &types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
@@ -564,12 +435,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+						ArtifactID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72/1",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: 1,
-							AnalyzerVersions: map[string]int{
-								string(analyzer.TypeApkCommand): 1,
-							},
 							Architecture:  "amd64",
 							Created:       time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC),
 							DockerVersion: "18.09.7",

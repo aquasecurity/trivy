@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 
 	"github.com/aquasecurity/fanal/types"
-	"github.com/google/go-containerregistry/pkg/v1"
 	bolt "go.etcd.io/bbolt"
 	"golang.org/x/xerrors"
 )
@@ -77,10 +76,6 @@ func (fs FSCache) getBlob(blobBucket *bolt.Bucket, diffID string) (types.BlobInf
 
 // PutBlob stores blob information such as layer information in local cache
 func (fs FSCache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
-	if _, err := v1.NewHash(blobID); err != nil {
-		return xerrors.Errorf("invalid diffID (%s): %w", blobID, err)
-	}
-
 	b, err := json.Marshal(blobInfo)
 	if err != nil {
 		return xerrors.Errorf("unable to marshal blob JSON (%s): %w", blobID, err)
@@ -140,8 +135,7 @@ func (fs FSCache) PutArtifact(artifactID string, artifactInfo types.ArtifactInfo
 }
 
 // MissingBlobs returns missing blob IDs such as layer IDs
-func (fs FSCache) MissingBlobs(artifactID string, blobIDs []string,
-	analyzerVersions, configAnalyzerVersions map[string]int) (bool, []string, error) {
+func (fs FSCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []string, error) {
 	var missingArtifact bool
 	var missingBlobIDs []string
 	err := fs.db.View(func(tx *bolt.Tx) error {
@@ -153,8 +147,7 @@ func (fs FSCache) MissingBlobs(artifactID string, blobIDs []string,
 				missingBlobIDs = append(missingBlobIDs, blobID)
 				continue
 			}
-			if blobInfo.SchemaVersion != types.BlobJSONSchemaVersion ||
-				isStale(analyzerVersions, blobInfo.AnalyzerVersions) {
+			if blobInfo.SchemaVersion != types.BlobJSONSchemaVersion {
 				missingBlobIDs = append(missingBlobIDs, blobID)
 			}
 		}
@@ -170,8 +163,7 @@ func (fs FSCache) MissingBlobs(artifactID string, blobIDs []string,
 		// error means cache missed artifact info
 		return true, missingBlobIDs, nil
 	}
-	if artifactInfo.SchemaVersion != types.ArtifactJSONSchemaVersion ||
-		isStale(configAnalyzerVersions, artifactInfo.AnalyzerVersions) {
+	if artifactInfo.SchemaVersion != types.ArtifactJSONSchemaVersion {
 		missingArtifact = true
 	}
 	return missingArtifact, missingBlobIDs, nil

@@ -3,9 +3,9 @@ package cache
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -13,25 +13,20 @@ import (
 	"github.com/stretchr/testify/require"
 	bolt "go.etcd.io/bbolt"
 
-	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/types"
 	depTypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
-func newTempDB(dbPath string) (string, error) {
-	dir, err := ioutil.TempDir("", "cache-test")
-	if err != nil {
-		return "", err
-	}
-
+func newTempDB(t *testing.T, dbPath string) (string, error) {
+	dir := t.TempDir()
 	if dbPath != "" {
 		d := filepath.Join(dir, "fanal")
-		if err = os.MkdirAll(d, 0700); err != nil {
+		if err := os.MkdirAll(d, 0700); err != nil {
 			return "", err
 		}
 
 		dst := filepath.Join(d, "fanal.db")
-		if _, err = copyFile(dbPath, dst); err != nil {
+		if _, err := copyFile(dbPath, dst); err != nil {
 			return "", err
 		}
 	}
@@ -64,7 +59,7 @@ func copyFile(src, dst string) (int64, error) {
 	return n, err
 }
 
-func TestFSCache_GetLayer(t *testing.T) {
+func TestFSCache_GetBlob(t *testing.T) {
 	type args struct {
 		layerID string
 	}
@@ -79,13 +74,10 @@ func TestFSCache_GetLayer(t *testing.T) {
 			name:   "happy path",
 			dbPath: "testdata/fanal.db",
 			args: args{
-				layerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+				layerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/11101",
 			},
 			want: types.BlobInfo{
-				SchemaVersion: 2,
-				AnalyzerVersions: map[string]int{
-					string(analyzer.TypeAlpine): 2,
-				},
+				SchemaVersion: 1,
 				OS: &types.OS{
 					Family: "alpine",
 					Name:   "3.10",
@@ -103,9 +95,8 @@ func TestFSCache_GetLayer(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tmpDir, err := newTempDB(tt.dbPath)
+			tmpDir, err := newTempDB(t, tt.dbPath)
 			require.NoError(t, err)
-			defer os.RemoveAll(tmpDir)
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
@@ -118,7 +109,7 @@ func TestFSCache_GetLayer(t *testing.T) {
 	}
 }
 
-func TestFSCache_PutLayer(t *testing.T) {
+func TestFSCache_PutBlob(t *testing.T) {
 	type fields struct {
 		db        *bolt.DB
 		directory string
@@ -257,22 +248,25 @@ func TestFSCache_PutLayer(t *testing.T) {
 			wantLayerID: "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
 		},
 		{
-			name: "sad path invalid diffID",
+			name: "sad path closed DB",
 			args: args{
-				diffID: "sha256:invalid",
+				diffID: "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec/11111",
 			},
-			wantErr: "invalid diffID",
+			wantErr: "database not open",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tmpDir, err := newTempDB("")
+			tmpDir, err := newTempDB(t, "")
 			require.NoError(t, err)
-			defer os.RemoveAll(tmpDir)
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
 			defer fs.Clear()
+
+			if strings.HasPrefix(tt.name, "sad") {
+				require.NoError(t, fs.Close())
+			}
 
 			err = fs.PutBlob(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
@@ -294,7 +288,7 @@ func TestFSCache_PutLayer(t *testing.T) {
 	}
 }
 
-func TestFSCache_PutImage(t *testing.T) {
+func TestFSCache_PutArtifact(t *testing.T) {
 	type args struct {
 		imageID     string
 		imageConfig types.ArtifactInfo
@@ -343,9 +337,8 @@ func TestFSCache_PutImage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tmpDir, err := newTempDB("")
+			tmpDir, err := newTempDB(t, "")
 			require.NoError(t, err)
-			defer os.RemoveAll(tmpDir)
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
@@ -372,12 +365,10 @@ func TestFSCache_PutImage(t *testing.T) {
 	}
 }
 
-func TestFSCache_MissingLayers(t *testing.T) {
+func TestFSCache_MissingBlobs(t *testing.T) {
 	type args struct {
-		imageID                string
-		layerIDs               []string
-		analyzerVersions       map[string]int
-		configAnalyzerVersions map[string]int
+		imageID  string
+		layerIDs []string
 	}
 	tests := []struct {
 		name                string
@@ -391,24 +382,17 @@ func TestFSCache_MissingLayers(t *testing.T) {
 			name:   "happy path",
 			dbPath: "testdata/fanal.db",
 			args: args{
-				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
+				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4/1",
 				layerIDs: []string{
-					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-					"sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
-				},
-				analyzerVersions: map[string]int{
-					string(analyzer.TypeAlpine): 2,
-				},
-				configAnalyzerVersions: map[string]int{
-					string(analyzer.TypeApkCommand): 1,
+					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/11101",
+					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5/11101",
+					"sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec/11101",
 				},
 			},
 			wantMissingImage: false,
 			wantMissingLayerIDs: []string{
-				"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-				"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-				"sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec",
+				"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5/11101",
+				"sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec/11101",
 			},
 		},
 		{
@@ -418,12 +402,6 @@ func TestFSCache_MissingLayers(t *testing.T) {
 				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
 				layerIDs: []string{
 					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-				},
-				analyzerVersions: map[string]int{
-					string(analyzer.TypeAlpine): 2,
-				},
-				configAnalyzerVersions: map[string]int{
-					string(analyzer.TypeApkCommand): 1,
 				},
 			},
 			wantMissingImage: true,
@@ -439,12 +417,6 @@ func TestFSCache_MissingLayers(t *testing.T) {
 				layerIDs: []string{
 					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				},
-				analyzerVersions: map[string]int{
-					string(analyzer.TypeAlpine): 2,
-				},
-				configAnalyzerVersions: map[string]int{
-					string(analyzer.TypeApkCommand): 1,
-				},
 			},
 			wantMissingImage: true,
 			wantMissingLayerIDs: []string{
@@ -459,12 +431,6 @@ func TestFSCache_MissingLayers(t *testing.T) {
 				layerIDs: []string{
 					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				},
-				analyzerVersions: map[string]int{
-					string(analyzer.TypeAlpine): 2,
-				},
-				configAnalyzerVersions: map[string]int{
-					string(analyzer.TypeApkCommand): 1,
-				},
 			},
 			wantMissingImage: true,
 			wantMissingLayerIDs: []string{
@@ -475,35 +441,27 @@ func TestFSCache_MissingLayers(t *testing.T) {
 			name:   "happy path: new config analyzer",
 			dbPath: "testdata/fanal.db",
 			args: args{
-				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
+				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4/2",
 				layerIDs: []string{
-					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-				},
-				analyzerVersions: map[string]int{
-					string(analyzer.TypeAlpine): 1,
-				},
-				configAnalyzerVersions: map[string]int{
-					"something_new": 1,
+					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/11102",
 				},
 			},
 			wantMissingImage: true,
 			wantMissingLayerIDs: []string{
-				"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+				"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/11102",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tmpDir, err := newTempDB(tt.dbPath)
+			tmpDir, err := newTempDB(t, tt.dbPath)
 			require.NoError(t, err)
-			defer os.RemoveAll(tmpDir)
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
 			defer fs.Clear()
 
-			gotMissingImage, gotMissingLayerIDs, err := fs.MissingBlobs(tt.args.imageID, tt.args.layerIDs,
-				tt.args.analyzerVersions, tt.args.configAnalyzerVersions)
+			gotMissingImage, gotMissingLayerIDs, err := fs.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

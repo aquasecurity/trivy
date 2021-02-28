@@ -13,14 +13,10 @@ type MockArtifactCache struct {
 }
 
 type ArtifactCacheMissingBlobsArgs struct {
-	ArtifactID                     string
-	ArtifactIDAnything             bool
-	BlobIDs                        []string
-	BlobIDsAnything                bool
-	AnalyzerVersions               map[string]int
-	AnalyzerVersionsAnything       bool
-	ConfigAnalyzerVersions         map[string]int
-	ConfigAnalyzerVersionsAnything bool
+	ArtifactID         string
+	ArtifactIDAnything bool
+	BlobIDs            []string
+	BlobIDsAnything    bool
 }
 
 type ArtifactCacheMissingBlobsReturns struct {
@@ -46,16 +42,6 @@ func (_m *MockArtifactCache) ApplyMissingBlobsExpectation(e ArtifactCacheMissing
 	} else {
 		args = append(args, e.Args.BlobIDs)
 	}
-	if e.Args.AnalyzerVersionsAnything {
-		args = append(args, mock.Anything)
-	} else {
-		args = append(args, e.Args.AnalyzerVersions)
-	}
-	if e.Args.ConfigAnalyzerVersionsAnything {
-		args = append(args, mock.Anything)
-	} else {
-		args = append(args, e.Args.ConfigAnalyzerVersions)
-	}
 	_m.On("MissingBlobs", args...).Return(e.Returns.MissingArtifact, e.Returns.MissingBlobIDs, e.Returns.Err)
 }
 
@@ -65,20 +51,20 @@ func (_m *MockArtifactCache) ApplyMissingBlobsExpectations(expectations []Artifa
 	}
 }
 
-// MissingBlobs provides a mock function with given fields: artifactID, blobIDs, analyzerVersions, configAnalyzerVersions
-func (_m *MockArtifactCache) MissingBlobs(artifactID string, blobIDs []string, analyzerVersions map[string]int, configAnalyzerVersions map[string]int) (bool, []string, error) {
-	ret := _m.Called(artifactID, blobIDs, analyzerVersions, configAnalyzerVersions)
+// MissingBlobs provides a mock function with given fields: artifactID, blobIDs
+func (_m *MockArtifactCache) MissingBlobs(artifactID string, blobIDs []string) (bool, []string, error) {
+	ret := _m.Called(artifactID, blobIDs)
 
 	var r0 bool
-	if rf, ok := ret.Get(0).(func(string, []string, map[string]int, map[string]int) bool); ok {
-		r0 = rf(artifactID, blobIDs, analyzerVersions, configAnalyzerVersions)
+	if rf, ok := ret.Get(0).(func(string, []string) bool); ok {
+		r0 = rf(artifactID, blobIDs)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}
 
 	var r1 []string
-	if rf, ok := ret.Get(1).(func(string, []string, map[string]int, map[string]int) []string); ok {
-		r1 = rf(artifactID, blobIDs, analyzerVersions, configAnalyzerVersions)
+	if rf, ok := ret.Get(1).(func(string, []string) []string); ok {
+		r1 = rf(artifactID, blobIDs)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).([]string)
@@ -86,8 +72,8 @@ func (_m *MockArtifactCache) MissingBlobs(artifactID string, blobIDs []string, a
 	}
 
 	var r2 error
-	if rf, ok := ret.Get(2).(func(string, []string, map[string]int, map[string]int) error); ok {
-		r2 = rf(artifactID, blobIDs, analyzerVersions, configAnalyzerVersions)
+	if rf, ok := ret.Get(2).(func(string, []string) error); ok {
+		r2 = rf(artifactID, blobIDs)
 	} else {
 		r2 = ret.Error(2)
 	}
