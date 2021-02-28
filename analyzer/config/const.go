@@ -1,7 +1,8 @@
 package config
 
 const (
-	YAML = "yaml"
-	TOML = "toml"
-	JSON = "json"
+	YAML       = "yaml"
+	TOML       = "toml"
+	JSON       = "json"
+	Dockerfile = "dockerfile"
 )

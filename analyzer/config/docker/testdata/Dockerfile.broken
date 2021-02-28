@@ -1,0 +1,3 @@
+FROM foo 
+
+ENV PATH

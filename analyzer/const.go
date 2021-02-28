@@ -35,7 +35,8 @@ const (
 	TypeApkCommand = Type("apk-command")
 
 	// Structured Config
-	TypeYaml = Type("yaml")
-	TypeTOML = Type("toml")
-	TypeJSON = Type("json")
+	TypeYaml       = Type("yaml")
+	TypeTOML       = Type("toml")
+	TypeJSON       = Type("json")
+	TypeDockerfile = Type("dockerfile")
 )
