@@ -121,14 +121,15 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 	result, eosl, err := s.detectVulnsInOSPkgs(target, detail.OS.Family, detail.OS.Name, pkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
+	} else if result == nil {
+		return nil, eosl, nil
 	}
-	if result != nil {
-		if options.ListAllPackages {
-			sort.Slice(pkgs, func(i, j int) bool {
-				return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
-			})
-			result.Packages = pkgs
-		}
+
+	if options.ListAllPackages {
+		sort.Slice(pkgs, func(i, j int) bool {
+			return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
+		})
+		result.Packages = pkgs
 	}
 
 	return result, eosl, nil
