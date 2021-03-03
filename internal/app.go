@@ -7,11 +7,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/types"
+
 	"github.com/spf13/afero"
 	"github.com/urfave/cli/v2"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy-db/pkg/types"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/artifact"
 	"github.com/aquasecurity/trivy/internal/client"
 	"github.com/aquasecurity/trivy/internal/server"
@@ -54,7 +56,7 @@ var (
 	severityFlag = cli.StringFlag{
 		Name:    "severity",
 		Aliases: []string{"s"},
-		Value:   strings.Join(types.SeverityNames, ","),
+		Value:   strings.Join(dbTypes.SeverityNames, ","),
 		Usage:   "severities of vulnerabilities to be displayed (comma separated)",
 		EnvVars: []string{"TRIVY_SEVERITY"},
 	}
@@ -132,9 +134,16 @@ var (
 
 	vulnTypeFlag = cli.StringFlag{
 		Name:    "vuln-type",
-		Value:   "os,library",
+		Value:   strings.Join([]string{types.VulnTypeOS, types.VulnTypeLibrary}, ","),
 		Usage:   "comma-separated list of vulnerability types (os,library)",
 		EnvVars: []string{"TRIVY_VULN_TYPE"},
+	}
+
+	securityChecksFlag = cli.StringFlag{
+		Name:    "security-checks",
+		Value:   types.SecurityCheckVulnerability,
+		Usage:   "comma-separated list of what security issues to detect (vuln,iac)",
+		EnvVars: []string{"TRIVY_SECURITY_CHECKS"},
 	}
 
 	cacheDirFlag = cli.StringFlag{
@@ -208,6 +217,21 @@ var (
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
+	iacPolicy = cli.StringSliceFlag{
+		Name:    "iac-policy",
+		Usage:   "specify paths to the Rego policy files directory, applying IaC files",
+		Value:   cli.NewStringSlice("policy"),
+		EnvVars: []string{"TRIVY_IAC_POLICY"},
+	}
+
+	iacPolicyAlias = cli.StringSliceFlag{
+		Name:    "policy",
+		Aliases: []string{"iac-policy"},
+		Usage:   "specify paths to the Rego policy files directory, applying IaC files",
+		Value:   cli.NewStringSlice("policy"),
+		EnvVars: []string{"TRIVY_POLICY"},
+	}
+
 	globalFlags = []cli.Flag{
 		&quietFlag,
 		&debugFlag,
@@ -229,6 +253,7 @@ var (
 		&ignoreUnfixedFlag,
 		&removedPkgsFlag,
 		&vulnTypeFlag,
+		&securityChecksFlag,
 		&ignoreFileFlag,
 		&timeoutFlag,
 		&lightFlag,
@@ -237,6 +262,7 @@ var (
 		&skipFiles,
 		&skipDirectories,
 		&cacheBackendFlag,
+		&iacPolicy,
 	}
 
 	// deprecated options
@@ -282,6 +308,7 @@ func NewApp(version string) *cli.App {
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
+		NewIaCCommand(),
 	}
 	app.Action = artifact.ImageRun
 	return app
@@ -296,6 +323,10 @@ func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
 			stringFlag := *pf
 			stringFlag.Hidden = hidden
 			f = &stringFlag
+		case *cli.StringSliceFlag:
+			stringSliceFlag := *pf
+			stringSliceFlag.Hidden = hidden
+			f = &stringSliceFlag
 		case *cli.BoolFlag:
 			boolFlag := *pf
 			boolFlag.Hidden = hidden
@@ -389,6 +420,7 @@ func NewFilesystemCommand() *cli.Command {
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
+			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
 			&timeoutFlag,
@@ -397,6 +429,7 @@ func NewFilesystemCommand() *cli.Command {
 			&listAllPackages,
 			&skipFiles,
 			&skipDirectories,
+			&iacPolicy,
 		},
 	}
 }
@@ -421,6 +454,7 @@ func NewRepositoryCommand() *cli.Command {
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
+			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
 			&timeoutFlag,
@@ -452,6 +486,7 @@ func NewClientCommand() *cli.Command {
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
+			&securityChecksFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,
 			&ignorePolicy,
@@ -496,6 +531,34 @@ func NewServerCommand() *cli.Command {
 				Usage:   "listen address",
 				EnvVars: []string{"TRIVY_LISTEN"},
 			},
+		},
+	}
+}
+
+// NewIaCCommand adds iac command
+func NewIaCCommand() *cli.Command {
+	return &cli.Command{
+		Name:      "iac",
+		ArgsUsage: "dir",
+		Usage:     "scan IaC config files",
+		Action:    artifact.IaCRun,
+		Flags: []cli.Flag{
+			&templateFlag,
+			&formatFlag,
+			&severityFlag,
+			&outputFlag,
+			&exitCodeFlag,
+			&skipUpdateFlag,
+			&clearCacheFlag,
+			&ignoreUnfixedFlag,
+			&ignoreFileFlag,
+			&cacheBackendFlag,
+			&timeoutFlag,
+			&noProgressFlag,
+			&ignorePolicy,
+			&skipFiles,
+			&skipDirectories,
+			&iacPolicyAlias,
 		},
 	}
 }

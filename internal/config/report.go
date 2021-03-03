@@ -4,6 +4,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/types"
+
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 	"golang.org/x/xerrors"
@@ -22,14 +24,16 @@ type ReportConfig struct {
 	IgnorePolicy  string
 
 	// these variables are not exported
-	vulnType   string
-	output     string
-	severities string
+	vulnType       string
+	securityChecks string
+	output         string
+	severities     string
 
 	// these variables are populated by Init()
-	VulnType   []string
-	Output     *os.File
-	Severities []dbTypes.Severity
+	VulnType       []string
+	SecurityChecks []string
+	Output         *os.File
+	Severities     []dbTypes.Severity
 }
 
 // NewReportConfig is the factory method to return ReportConfig
@@ -40,11 +44,12 @@ func NewReportConfig(c *cli.Context) ReportConfig {
 		Template:     c.String("template"),
 		IgnorePolicy: c.String("ignore-policy"),
 
-		vulnType:      c.String("vuln-type"),
-		severities:    c.String("severity"),
-		IgnoreFile:    c.String("ignorefile"),
-		IgnoreUnfixed: c.Bool("ignore-unfixed"),
-		ExitCode:      c.Int("exit-code"),
+		vulnType:       c.String("vuln-type"),
+		securityChecks: c.String("security-checks"),
+		severities:     c.String("severity"),
+		IgnoreFile:     c.String("ignorefile"),
+		IgnoreUnfixed:  c.Bool("ignore-unfixed"),
+		ExitCode:       c.Int("exit-code"),
 	}
 }
 
@@ -62,7 +67,22 @@ func (c *ReportConfig) Init(logger *zap.SugaredLogger) (err error) {
 	}
 
 	c.Severities = c.splitSeverity(logger, c.severities)
-	c.VulnType = strings.Split(c.vulnType, ",")
+
+	// Validate vulnerability types
+	for _, v := range strings.Split(c.vulnType, ",") {
+		if types.NewVulnType(v) == types.VulnTypeUnknown {
+			return xerrors.Errorf("unknown vulnerability type (%s)", v)
+		}
+		c.VulnType = append(c.VulnType, v)
+	}
+
+	// Validate security checks
+	for _, v := range strings.Split(c.securityChecks, ",") {
+		if types.NewSecurityCheck(v) == types.SecurityCheckUnknown {
+			return xerrors.Errorf("unknown security check (%s)", v)
+		}
+		c.SecurityChecks = append(c.SecurityChecks, v)
+	}
 
 	// for testability
 	c.severities = ""

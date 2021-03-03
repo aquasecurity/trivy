@@ -10,7 +10,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// ArtifactConfig holds the config for a artifact scanning
+// ArtifactConfig holds the config for an artifact scanning
 type ArtifactConfig struct {
 	Input      string
 	Timeout    time.Duration

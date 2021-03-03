@@ -19,7 +19,6 @@ require (
 	github.com/docker/docker v20.10.3+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/elazarl/goproxy v0.0.0-20200809112317-0581fc3aee2d // indirect
-	github.com/elazarl/goproxy/ext v0.0.0-20200809112317-0581fc3aee2d // indirect
 	github.com/go-redis/redis/v8 v8.4.0
 	github.com/goccy/go-yaml v1.8.2 // indirect
 	github.com/golang/protobuf v1.4.3
@@ -35,6 +34,7 @@ require (
 	github.com/masahiro331/go-mvn-version v0.0.0-20210214074851-415aa65db8c0
 	github.com/mitchellh/copystructure v1.1.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.4
+	github.com/open-policy-agent/conftest v0.23.0
 	github.com/open-policy-agent/opa v0.25.2
 	github.com/smartystreets/assertions v1.2.0 // indirect
 	github.com/spf13/afero v1.2.2

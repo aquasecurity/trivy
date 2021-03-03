@@ -89,8 +89,17 @@ func (tw TableWriter) write(result Result) {
 	if !tw.Light {
 		header = append(header, "Title")
 	}
-	table.SetHeader(header)
-	severityCount := tw.setRows(table, result.Vulnerabilities)
+	// TODO
+	var severityCount map[string]int
+	if result.Type == "conf" {
+		header = []string{"Type", "Misconfiguration ID", "Severity", "Message"}
+		table.SetHeader(header)
+		table.SetColWidth(60)
+		severityCount = tw.setIaCRows(table, result.Vulnerabilities)
+	} else {
+		table.SetHeader(header)
+		severityCount = tw.setRows(table, result.Vulnerabilities)
+	}
 
 	var results []string
 
@@ -151,6 +160,32 @@ func (tw TableWriter) setRows(table *tablewriter.Table, vulns []types.DetectedVu
 		if !tw.Light {
 			row = append(row, strings.TrimSpace(title))
 		}
+		table.Append(row)
+	}
+	return severityCount
+}
+
+func (tw TableWriter) setIaCRows(table *tablewriter.Table, vulns []types.DetectedVulnerability) map[string]int {
+	severityCount := map[string]int{}
+	for _, v := range vulns {
+		severityCount[v.Severity]++
+
+		title := v.Title
+
+		// TODO
+		v.PrimaryURL = fmt.Sprintf("https://avd.aquasec.com/%s", v.VulnerabilityID)
+		if len(v.PrimaryURL) > 0 {
+			r := strings.NewReplacer("https://", "", "http://", "")
+			title = fmt.Sprintf("%s -->%s", title, r.Replace(v.PrimaryURL))
+		}
+
+		var row []string
+		if tw.Output == os.Stdout {
+			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity), strings.TrimSpace(title)}
+		} else {
+			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, strings.TrimSpace(title)}
+		}
+
 		table.Append(row)
 	}
 	return severityCount

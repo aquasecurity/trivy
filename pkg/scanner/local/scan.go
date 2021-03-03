@@ -1,6 +1,7 @@
 package local
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -10,10 +11,16 @@ import (
 	"time"
 
 	"github.com/google/wire"
+	"github.com/open-policy-agent/conftest/output"
+	"github.com/open-policy-agent/conftest/policy"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
+	_ "github.com/aquasecurity/fanal/analyzer/config/docker"
+	_ "github.com/aquasecurity/fanal/analyzer/config/json"
+	_ "github.com/aquasecurity/fanal/analyzer/config/toml"
+	_ "github.com/aquasecurity/fanal/analyzer/config/yaml"
 	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
 	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
 	_ "github.com/aquasecurity/fanal/analyzer/library/composer"
@@ -35,6 +42,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpm"
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -79,7 +87,7 @@ func (s Scanner) Scan(target, versionedArtifactID string, versionedBlobIDs []str
 	artifactDetail, err := s.applier.ApplyLayers(versionedArtifactID, versionedBlobIDs)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
-		log.Logger.Warn("OS is not detected and vulnerabilities in OS packages are not detected.")
+		log.Logger.Debug("OS is not detected and vulnerabilities in OS packages are not detected.")
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
 		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
@@ -90,29 +98,62 @@ func (s Scanner) Scan(target, versionedArtifactID string, versionedBlobIDs []str
 	var eosl bool
 	var results report.Results
 
-	if utils.StringInSlice("os", options.VulnType) && artifactDetail.OS != nil {
-		var result *report.Result
-		result, eosl, err = s.scanOSPkgs(target, artifactDetail, options)
+	// Scan OS packages and programming language dependencies
+	if utils.StringInSlice(types.SecurityCheckVulnerability, options.SecurityChecks) {
+		var vulnResults report.Results
+		vulnResults, eosl, err = s.checkVulnerabilities(target, artifactDetail, options)
 		if err != nil {
-			return nil, nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
-		} else if result != nil {
-			results = append(results, *result)
+			return nil, nil, false, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 		}
+		results = append(results, vulnResults...)
 	}
 
-	if utils.StringInSlice("library", options.VulnType) {
-		libResults, err := s.scanLibrary(artifactDetail.Applications, options)
+	// Scan IaC config files
+	if utils.StringInSlice(types.SecurityCheckIaC, options.SecurityChecks) {
+		iacResults, err := s.scanConfig(artifactDetail.Configs, options)
 		if err != nil {
-			return nil, nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
+			return nil, nil, false, xerrors.Errorf("failed to scan config files: %w", err)
 		}
-		results = append(results, libResults...)
+		results = append(results, iacResults...)
 	}
 
 	return results, artifactDetail.OS, eosl, nil
 }
 
+func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
+	report.Results, bool, error) {
+	var eosl bool
+	var results report.Results
+
+	if utils.StringInSlice(types.VulnTypeOS, options.VulnType) {
+		result, detectedEosl, err := s.scanOSPkgs(target, detail, options)
+		if err != nil {
+			return nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
+		} else if result != nil {
+			results = append(results, *result)
+		}
+		eosl = detectedEosl
+	}
+
+	if utils.StringInSlice(types.VulnTypeLibrary, options.VulnType) {
+		libResults, err := s.scanLibrary(detail.Applications, options)
+		if err != nil {
+			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
+		}
+		results = append(results, libResults...)
+	}
+
+	return results, eosl, nil
+}
+
 func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
 	*report.Result, bool, error) {
+	if detail.OS == nil {
+		log.Logger.Infof("Detected OS: unknown")
+		return nil, false, nil
+	}
+	log.Logger.Infof("Detected OS: %s", detail.OS.Family)
+
 	pkgs := detail.Packages
 	if options.ScanRemovedPackages {
 		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
@@ -156,8 +197,8 @@ func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []fty
 }
 
 func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOptions) (report.Results, error) {
+	log.Logger.Infof("Number of PL dependency files: %d", len(apps))
 	if len(apps) == 0 {
-		log.Logger.Info("Trivy skips scanning programming language libraries because no supported file was detected")
 		return nil, nil
 	}
 
@@ -208,6 +249,103 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		return results[i].Target < results[j].Target
 	})
 	return results, nil
+}
+
+func (s Scanner) scanConfig(configs []ftypes.Config, options types.ScanOptions) (report.Results, error) {
+	log.Logger.Infof("Number of config files: %d", len(configs))
+
+	ctx := context.TODO()
+	configurations := map[string]interface{}{}
+	for _, conf := range configs {
+		if skipped(conf.FilePath, options.SkipFiles, options.SkipDirectories) {
+			continue
+		}
+		log.Logger.Debugf("Scanned config file: %s", conf.FilePath)
+		configurations[conf.FilePath] = conf.Content
+	}
+
+	engine, err := policy.LoadWithData(ctx, options.OPAPolicy, options.OPAData)
+	if err != nil {
+		return nil, xerrors.Errorf("policy load error: %w", err)
+	}
+
+	uniqResults := map[string][]types.DetectedVulnerability{}
+	for _, namespace := range engine.Namespaces() {
+		result, err := engine.Check(ctx, configurations, namespace)
+		if err != nil {
+			return nil, xerrors.Errorf("query rule: %w", err)
+		}
+
+		for _, r := range result {
+			var vulns []types.DetectedVulnerability
+			for _, f := range r.Failures {
+				vulns = append(vulns, resultToVuln(f, dbTypes.SeverityCritical))
+			}
+			for _, w := range r.Warnings {
+				vulns = append(vulns, resultToVuln(w, dbTypes.SeverityMedium))
+			}
+
+			uniqResults[r.FileName] = append(uniqResults[r.FileName], vulns...)
+		}
+	}
+
+	var results report.Results
+	for fileName, vulns := range uniqResults {
+		results = append(results, report.Result{
+			Target:          fileName,
+			Type:            "conf", // TODO
+			Vulnerabilities: vulns,
+		})
+	}
+
+	return results, nil
+}
+
+func resultToVuln(res output.Result, defaultSeverity dbTypes.Severity) types.DetectedVulnerability {
+	vulnerabilityID := "UNKNOWN"
+	if v, ok := res.Metadata["id"]; ok {
+		switch vv := v.(type) {
+		case string:
+			vulnerabilityID = vv
+		default:
+			log.Logger.Warn("id in the policy must be string (%T)", vv)
+		}
+	}
+
+	checkType := "UNKNOWN"
+	if v, ok := res.Metadata["type"]; ok {
+		switch vv := v.(type) {
+		case string:
+			checkType = vv
+		default:
+			log.Logger.Warn("type in the policy must be string (%T)", vv)
+		}
+	}
+
+	severity := defaultSeverity
+	if v, ok := res.Metadata["severity"]; ok {
+		switch vv := v.(type) {
+		case string:
+			sev, err := dbTypes.NewSeverity(vv)
+			if err != nil {
+				log.Logger.Warnf("severity must be %s", dbTypes.SeverityNames)
+			} else {
+				severity = sev
+			}
+		default:
+			log.Logger.Warnf("id in the policy must be string (%T)", vv)
+		}
+	}
+
+	return types.DetectedVulnerability{
+		VulnerabilityID: vulnerabilityID,
+		PkgName:         checkType, // the type is not package, but pseudo package name
+		Layer:           ftypes.Layer{},
+		Vulnerability: dbTypes.Vulnerability{
+			Title:    res.Message,
+			Severity: severity.String(),
+		},
+	}
 }
 
 func skipped(filePath string, skipFiles, skipDirectories []string) bool {

@@ -126,10 +126,12 @@ func scan(ctx context.Context, conf config.Config, initializeScanner InitializeS
 
 	scanOptions := types.ScanOptions{
 		VulnType:            conf.VulnType,
+		SecurityChecks:      conf.SecurityChecks,
 		ScanRemovedPackages: conf.ScanRemovedPkgs, // this is valid only for image subcommand
 		ListAllPackages:     conf.ListAllPkgs,
 		SkipFiles:           conf.SkipFiles,
 		SkipDirectories:     conf.SkipDirectories,
+		OPAPolicy:           conf.IaCPolicy,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
@@ -155,7 +157,9 @@ func scan(ctx context.Context, conf config.Config, initializeScanner InitializeS
 func filter(ctx context.Context, conf config.Config, results report.Results) (report.Results, error) {
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
-		vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
+		if results[i].Type != "conf" {
+			vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
+		}
 		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
 			conf.Severities, conf.IgnoreUnfixed, conf.IgnoreFile, conf.IgnorePolicy)
 		if err != nil {

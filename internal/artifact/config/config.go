@@ -15,6 +15,7 @@ type Config struct {
 	config.ImageConfig
 	config.ReportConfig
 	config.CacheConfig
+	config.IaCConfig
 
 	// deprecated
 	onlyUpdate string
@@ -38,6 +39,7 @@ func New(c *cli.Context) (Config, error) {
 		ImageConfig:    config.NewImageConfig(c),
 		ReportConfig:   config.NewReportConfig(c),
 		CacheConfig:    config.NewCacheConfig(c),
+		IaCConfig:      config.NewIaCConfig(c),
 
 		onlyUpdate:  c.String("only-update"),
 		refresh:     c.Bool("refresh"),
