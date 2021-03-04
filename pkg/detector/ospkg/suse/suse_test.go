@@ -1,7 +1,6 @@
 package suse
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -11,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	susecvrf "github.com/aquasecurity/trivy-db/pkg/vulnsrc/suse-cvrf"
-	"github.com/aquasecurity/trivy/pkg/log"
 
 	"k8s.io/utils/clock"
 	clocktesting "k8s.io/utils/clock/testing"
@@ -34,11 +32,6 @@ func (msc MockSuseConfig) Get(a string, b string) ([]dbTypes.Advisory, error) {
 		return msc.get(a, b)
 	}
 	return []dbTypes.Advisory{}, nil
-}
-
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	os.Exit(m.Run())
 }
 
 func TestScanner_IsSupportedVersion(t *testing.T) {

@@ -7,7 +7,6 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func TestRubyGemsComparer_IsVulnerable(t *testing.T) {
@@ -93,7 +92,6 @@ func TestRubyGemsComparer_IsVulnerable(t *testing.T) {
 			want: false,
 		},
 	}
-	log.InitLogger(false, false)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := bundler.RubyGemsComparer{}

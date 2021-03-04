@@ -7,7 +7,6 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func TestGenericComparer_IsVulnerable(t *testing.T) {
@@ -85,7 +84,6 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 			want: false,
 		},
 	}
-	log.InitLogger(false, false)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			v := comparer.GenericComparer{}

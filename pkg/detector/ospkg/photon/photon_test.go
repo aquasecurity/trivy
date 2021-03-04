@@ -1,12 +1,10 @@
 package photon
 
 import (
-	"os"
 	"testing"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -28,11 +26,6 @@ func (mpc MockPhotonConfig) Get(a string, b string) ([]dbTypes.Advisory, error) 
 		return mpc.get(a, b)
 	}
 	return []dbTypes.Advisory{}, nil
-}
-
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	os.Exit(m.Run())
 }
 
 func TestScanner_Detect(t *testing.T) {
