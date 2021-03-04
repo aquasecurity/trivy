@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/artifact"
 	"github.com/aquasecurity/trivy/internal/client"
+	"github.com/aquasecurity/trivy/internal/plugin"
 	"github.com/aquasecurity/trivy/internal/server"
 	tdb "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -282,7 +283,9 @@ func NewApp(version string) *cli.App {
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
+		NewPluginCommand(),
 	}
+	app.Commands = append(app.Commands, plugin.LoadCommands()...)
 	app.Action = artifact.ImageRun
 	return app
 }
@@ -495,6 +498,23 @@ func NewServerCommand() *cli.Command {
 				Value:   "localhost:4954",
 				Usage:   "listen address",
 				EnvVars: []string{"TRIVY_LISTEN"},
+			},
+		},
+	}
+}
+
+// NewPluginCommand is the factory method to add plugin command
+func NewPluginCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "plugin",
+		Aliases: []string{"p"},
+		Usage:   "plugin",
+		Subcommands: cli.Commands{
+			{
+				Name:    "install",
+				Aliases: []string{"i"},
+				Usage:   "install a plugin",
+				Action:  plugin.Install,
 			},
 		},
 	}
