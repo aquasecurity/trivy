@@ -123,7 +123,7 @@ See [here](#continuous-integration-ci) for details.
   - container image
     - A local image in Docker Engine which is running as a daemon
     - A local image in Podman (>=2.0) which is exposing a socket
-    - A remote image in Docker Registry such as Docker Hub, ECR, GCR and ACR
+    - A remote image in Docker Registry such as Docker Hub, Amazon ECR, GCR and ACR
     - A tar archive stored in the `docker save` / `podman save` formatted file
     - An image directory compliant with [OCI Image Format](https://github.com/opencontainers/image-spec)
   - local filesystem
@@ -1975,6 +1975,7 @@ See [here](docs/air-gap.md)
 | Quay           |       ✅        |              ×              |    ⭐ ⭐ ⭐    |   ⭐ ⭐      |        ×            |
 | Docker Hub     |       ✅        |              ×              |    ⭐ ⭐ ⭐    |    ⭐        |        ×            |
 | GCR            |       ✅        |              ×              |    ⭐ ⭐ ⭐    |   ⭐ ⭐      |        ×            |
+| Amazon ECR     |       ✅        |              ×              |    ⭐ ⭐ ⭐    |   ⭐ ⭐      |        ×            |
 
 ## Blogs
 - [Open Source CVE Scanner Round-Up: Clair vs Anchore vs Trivy](https://boxboat.com/2020/04/24/image-scanning-tech-compared/)
@@ -2019,9 +2020,9 @@ Then, as noted above, `Anchore Engine` does not detect unfixable vulnerabilities
 Also, `Anchore Engine` needs some steps to start scanning.
 `Trivy` is much easier to use.
 
-## vs Quay, Docker Hub, GCR
+## vs Quay, Docker Hub, GCR, Amazon ECR
 
-As `Quay` uses `Clair` internally, it has the same accuracy as `Clair`. `Docker Hub` can scan only official images. `GCR` hardly detects vulnerabilities on Alpine Linux. Also, it is locked to a specific registry.
+As `Quay` and `Amazon ECR` use `Clair` internally, they have the same accuracy as `Clair`. `Docker Hub` can scan only official images. `GCR` hardly detects vulnerabilities on Alpine Linux. Also, it is locked to a specific registry.
 
 `Trivy` can be used regardless of the registry, and it is easily integrated with CI/CD services.
 
