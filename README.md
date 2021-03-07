@@ -1784,10 +1784,12 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 | SUSE Enterprise Linux        | 11, 12, 15                               | Installed by zypper/rpm       |                  NO                  |
 | Photon OS                    | 1.0, 2.0, 3.0                            | Installed by tdnf/yum/rpm     |                  NO                  |
 | Debian GNU/Linux             | wheezy, jessie, stretch, buster          | Installed by apt/apt-get/dpkg |                 YES                  |
-| Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg |                 YES                  |
+| Ubuntu                       | Supported versions by Canonical *1       | Installed by apt/apt-get/dpkg |                 YES                  |
 | Distroless                   | Any                                      | Installed by apt/apt-get/dpkg |                 YES                  |
 
 Distroless: https://github.com/GoogleContainerTools/distroless
+
+*1 Trivy no longer detects vulnerabilities in versions that have reached End of Life.
 
 ## Application Dependencies
 
