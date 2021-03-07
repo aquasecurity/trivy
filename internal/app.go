@@ -508,19 +508,28 @@ func NewPluginCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "plugin",
 		Aliases: []string{"p"},
-		Usage:   "plugin",
+		Usage:   "manage plugins",
 		Subcommands: cli.Commands{
 			{
-				Name:    "install",
-				Aliases: []string{"i"},
-				Usage:   "install a plugin",
-				Action:  plugin.Install,
+				Name:      "install",
+				Aliases:   []string{"i"},
+				Usage:     "install a plugin",
+				ArgsUsage: "URL | FILE_PATH",
+				Action:    plugin.Install,
 			},
 			{
-				Name:    "run",
-				Aliases: []string{"r"},
-				Usage:   "run a plugin on the fly",
-				Action:  plugin.Run,
+				Name:      "uninstall",
+				Aliases:   []string{"u"},
+				Usage:     "uninstall a plugin",
+				ArgsUsage: "PLUGIN_NAME",
+				Action:    plugin.Uninstall,
+			},
+			{
+				Name:      "run",
+				Aliases:   []string{"r"},
+				Usage:     "run a plugin on the fly",
+				ArgsUsage: "PLUGIN_NAME [PLUGIN_OPTIONS]",
+				Action:    plugin.Run,
 			},
 		},
 	}

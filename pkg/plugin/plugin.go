@@ -39,17 +39,20 @@ type Plugin struct {
 	Platforms   []Platform `yaml:"platforms"`
 }
 
+// Platform represents where the execution file exists per platform.
 type Platform struct {
 	Selector *Selector
 	URI      string
 	Bin      string
 }
 
+// Selector represents the environment.
 type Selector struct {
 	OS   string
 	Arch string
 }
 
+// Run runs the plugin
 func (p Plugin) Run(ctx context.Context, args []string) error {
 	platform, err := p.selectPlatform()
 	if err != nil {
@@ -107,6 +110,7 @@ func (p Plugin) install(ctx context.Context, dst, pwd string) error {
 	return nil
 }
 
+// Install installs a plugin
 func Install(ctx context.Context, url string) (Plugin, error) {
 	// Replace short names with full qualified names
 	// e.g. kubectl => github.com/aquasecurity/trivy-plugin-kubectl
@@ -149,6 +153,12 @@ func Install(ctx context.Context, url string) (Plugin, error) {
 	return plugin, nil
 }
 
+// Uninstall installs the plugin
+func Uninstall(name string) error {
+	pluginDir := filepath.Join(dir(), name)
+	return os.RemoveAll(pluginDir)
+}
+
 func download(ctx context.Context, src, dst, pwd string) error {
 	// go-getter doesn't allow the dst directory already exists if the src is directory.
 	_ = os.RemoveAll(dst)
@@ -176,6 +186,7 @@ func download(ctx context.Context, src, dst, pwd string) error {
 	return nil
 }
 
+// LoadAll loads all plugins
 func LoadAll() ([]Plugin, error) {
 	pluginsDir := dir()
 	dirs, err := os.ReadDir(pluginsDir)

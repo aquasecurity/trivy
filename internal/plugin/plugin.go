@@ -27,7 +27,25 @@ func Install(c *cli.Context) error {
 	return nil
 }
 
-// Run runs a plugin
+// Uninstall uninstalls the plugin
+func Uninstall(c *cli.Context) error {
+	if c.NArg() != 1 {
+		cli.ShowSubcommandHelpAndExit(c, 1)
+	}
+
+	if err := initLogger(c); err != nil {
+		return xerrors.Errorf("initialize error: %w", err)
+	}
+
+	pluginName := c.Args().First()
+	if err := plugin.Uninstall(pluginName); err != nil {
+		return xerrors.Errorf("plugin uninstall error: %w", err)
+	}
+
+	return nil
+}
+
+// Run runs the plugin
 func Run(c *cli.Context) error {
 	if c.NArg() < 1 {
 		cli.ShowSubcommandHelpAndExit(c, 1)
@@ -49,7 +67,7 @@ func Run(c *cli.Context) error {
 	return nil
 }
 
-// LoadCommands loads plugins
+// LoadCommands loads plugins as subcommands
 func LoadCommands() cli.Commands {
 	var commands cli.Commands
 	plugins, _ := plugin.LoadAll()
