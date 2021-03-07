@@ -20,13 +20,36 @@ func Install(c *cli.Context) error {
 	}
 
 	url := c.Args().First()
-	if err := plugin.Install(c.Context, url); err != nil {
+	if _, err := plugin.Install(c.Context, url); err != nil {
 		return xerrors.Errorf("plugin install error: %w", err)
 	}
 
 	return nil
 }
 
+// Run runs a plugin
+func Run(c *cli.Context) error {
+	if c.NArg() < 1 {
+		cli.ShowSubcommandHelpAndExit(c, 1)
+	}
+
+	if err := initLogger(c); err != nil {
+		return xerrors.Errorf("initialize error: %w", err)
+	}
+
+	url := c.Args().First()
+	pl, err := plugin.Install(c.Context, url)
+	if err != nil {
+		return xerrors.Errorf("plugin install error: %w", err)
+	}
+
+	if err = pl.Run(c.Context, c.Args().Tail()); err != nil {
+		return xerrors.Errorf("unable to run %s plugin: %w", pl.Name, err)
+	}
+	return nil
+}
+
+// LoadCommands loads plugins
 func LoadCommands() cli.Commands {
 	var commands cli.Commands
 	plugins, _ := plugin.LoadAll()

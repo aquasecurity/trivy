@@ -516,6 +516,12 @@ func NewPluginCommand() *cli.Command {
 				Usage:   "install a plugin",
 				Action:  plugin.Install,
 			},
+			{
+				Name:    "run",
+				Aliases: []string{"r"},
+				Usage:   "run a plugin on the fly",
+				Action:  plugin.Run,
+			},
 		},
 	}
 }

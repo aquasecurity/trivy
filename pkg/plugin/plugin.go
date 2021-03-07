@@ -23,11 +23,16 @@ const (
 
 var (
 	pluginsRelativeDir = filepath.Join(".trivy", "plugins")
+
+	officialPlugins = map[string]string{
+		"kubectl": "github.com/aquasecurity/trivy-plugin-kubectl",
+	}
 )
 
 // Plugin represents a plugin.
 type Plugin struct {
 	Name        string     `yaml:"name"`
+	Repository  string     `yaml:"repository"`
 	Version     string     `yaml:"version"`
 	Usage       string     `yaml:"usage"`
 	Description string     `yaml:"description"`
@@ -102,40 +107,46 @@ func (p Plugin) install(ctx context.Context, dst, pwd string) error {
 	return nil
 }
 
-func Install(ctx context.Context, url string) error {
+func Install(ctx context.Context, url string) (Plugin, error) {
+	// Replace short names with full qualified names
+	// e.g. kubectl => github.com/aquasecurity/trivy-plugin-kubectl
+	if v, ok := officialPlugins[url]; ok {
+		url = v
+	}
+
 	log.Logger.Infof("Installing the plugin from %s...", url)
 	tempDir, err := os.MkdirTemp("", "trivy-plugin")
 	if err != nil {
-		return xerrors.Errorf("failed to create a temp dir: %w", err)
+		return Plugin{}, xerrors.Errorf("failed to create a temp dir: %w", err)
 	}
 	defer os.RemoveAll(tempDir)
 
 	pwd, err := os.Getwd()
 	if err != nil {
-		return xerrors.Errorf("unable to get the current dir: %w", err)
+		return Plugin{}, xerrors.Errorf("unable to get the current dir: %w", err)
 	}
 
 	if err = download(ctx, url, tempDir, pwd); err != nil {
-		return xerrors.Errorf("download error: %w", err)
+		return Plugin{}, xerrors.Errorf("download error: %w", err)
 	}
 
 	log.Logger.Info("Loading the plugin metadata...")
 	plugin, err := loadMetadata(tempDir)
 	if err != nil {
-		return xerrors.Errorf("failed to load the plugin metadata: %w", err)
+		return Plugin{}, xerrors.Errorf("failed to load the plugin metadata: %w", err)
 	}
 
 	pluginDir := filepath.Join(dir(), plugin.Name)
 	if err = plugin.install(ctx, pluginDir, tempDir); err != nil {
-		return xerrors.Errorf("failed to install the plugin: %w", err)
+		return Plugin{}, xerrors.Errorf("failed to install the plugin: %w", err)
 	}
 
 	// Copy plugin.yaml into the plugin dir
 	if _, err = utils.CopyFile(filepath.Join(tempDir, configFile), filepath.Join(pluginDir, configFile)); err != nil {
-		return xerrors.Errorf("failed to copy plugin.yaml: %w", err)
+		return Plugin{}, xerrors.Errorf("failed to copy plugin.yaml: %w", err)
 	}
 
-	return nil
+	return plugin, nil
 }
 
 func download(ctx context.Context, src, dst, pwd string) error {
