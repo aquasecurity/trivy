@@ -37,6 +37,10 @@ type Plugin struct {
 	Usage       string     `yaml:"usage"`
 	Description string     `yaml:"description"`
 	Platforms   []Platform `yaml:"platforms"`
+
+	// runtime environment for testability
+	GOOS   string `yaml:"_goos"`
+	GOARCH string `yaml:"_goarch"`
 }
 
 // Platform represents where the execution file exists per platform.
@@ -82,14 +86,22 @@ func (p Plugin) Run(ctx context.Context, args []string) error {
 }
 
 func (p Plugin) selectPlatform() (Platform, error) {
+	// These values are only filled in during unit tests.
+	if p.GOOS == "" {
+		p.GOOS = runtime.GOOS
+	}
+	if p.GOARCH == "" {
+		p.GOARCH = runtime.GOARCH
+	}
+
 	for _, platform := range p.Platforms {
 		if platform.Selector == nil {
 			return platform, nil
 		}
 
 		selector := platform.Selector
-		if (selector.OS == "" || runtime.GOOS == selector.OS) &&
-			(selector.Arch == "" || runtime.GOARCH == selector.Arch) {
+		if (selector.OS == "" || p.GOOS == selector.OS) &&
+			(selector.Arch == "" || p.GOARCH == selector.Arch) {
 			log.Logger.Debugf("Platform found, os: %s, arch: %s", selector.OS, selector.Arch)
 			return platform, nil
 		}
