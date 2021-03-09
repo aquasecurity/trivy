@@ -57,6 +57,9 @@ issues:
         - gosec
       text: "Deferring unsafe method"
     - linters:
+        - gosec
+      text: "G204: Subprocess launched with variable"
+    - linters:
         - errcheck
       text: "Close` is not checked"
     - linters:
