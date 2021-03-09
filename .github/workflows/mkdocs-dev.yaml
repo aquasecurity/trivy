@@ -25,5 +25,4 @@ jobs:
           git config user.name "knqyf263"
           git config user.email "knqyf263@gmail.com"
       - name: Deploy the dev documents
-        run: |
-          mike deploy --push dev
+        run: mike deploy --push dev
