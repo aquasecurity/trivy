@@ -1,17 +1,11 @@
-# This is a manually triggered workflow to build and publish the MkDocs from the
-# main branch to GitHub pages at https://aquasecurity.github.io/trivy
-name: Deploy documentation
-
+name: Deploy the latest documentation
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: Version to be deployed
-        required: true
-
+  push:
+    tags:
+      - "v*"
 jobs:
   deploy:
-    name: Deploy documentation
+    name: Deploy the latest documentation
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout main
@@ -22,14 +16,18 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.x
-      - run: |
+      - name: Install dependencies
+        run: |
           pip install git+https://${GH_TOKEN}@github.com/squidfunk/mkdocs-material-insiders.git
           pip install mike
           pip install mkdocs-macros-plugin
         env:
           GH_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
-      - run: |
+      - name: Configure the git user
+        run: |
           git config user.name "knqyf263"
-          git config user.email "teppei.fukuda@@aquasec.com"
-      - run: |
-          mike deploy --push --update-aliases ${{ github.event.inputs.version }} latest
+          git config user.email "knqyf263@gmail.com"
+      - name: Deploy the latest documents
+        run: |
+          VERSION=$(echo ${{ github.ref }} | sed -e "s#refs/tags/##g")
+          mike deploy --push --update-aliases $VERSION latest
