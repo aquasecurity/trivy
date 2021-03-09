@@ -72,6 +72,12 @@ markdown_extensions:
   - pymdownx.superfences
   - admonition
 
+extra:
+  generator: false
+  version:
+    method: mike
+    provider: mike
+
 plugins:
   - search
   - macros
