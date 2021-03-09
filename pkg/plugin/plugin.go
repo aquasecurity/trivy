@@ -110,6 +110,7 @@ func (p Plugin) selectPlatform() (Platform, error) {
 }
 
 func (p Plugin) install(ctx context.Context, dst, pwd string) error {
+	log.Logger.Debugf("Installing the plugin to %s...", dst)
 	platform, err := p.selectPlatform()
 	if err != nil {
 		return xerrors.Errorf("platform selection error: %w", err)
@@ -122,12 +123,28 @@ func (p Plugin) install(ctx context.Context, dst, pwd string) error {
 	return nil
 }
 
+func (p Plugin) dir() (string, error) {
+	if p.Name == "" {
+		return "", xerrors.Errorf("'name' is empty")
+	}
+
+	// e.g. ~/.trivy/plugins/kubectl
+	return filepath.Join(dir(), p.Name), nil
+}
+
 // Install installs a plugin
-func Install(ctx context.Context, url string) (Plugin, error) {
+func Install(ctx context.Context, url string, force bool) (Plugin, error) {
 	// Replace short names with full qualified names
 	// e.g. kubectl => github.com/aquasecurity/trivy-plugin-kubectl
 	if v, ok := officialPlugins[url]; ok {
 		url = v
+	}
+
+	if !force {
+		// If the plugin is already installed, it skips installing the plugin.
+		if p, installed := isInstalled(url); installed {
+			return p, nil
+		}
 	}
 
 	log.Logger.Infof("Installing the plugin from %s...", url)
@@ -152,7 +169,11 @@ func Install(ctx context.Context, url string) (Plugin, error) {
 		return Plugin{}, xerrors.Errorf("failed to load the plugin metadata: %w", err)
 	}
 
-	pluginDir := filepath.Join(dir(), plugin.Name)
+	pluginDir, err := plugin.dir()
+	if err != nil {
+		return Plugin{}, xerrors.Errorf("failed to determine the plugin dir: %w", err)
+	}
+
 	if err = plugin.install(ctx, pluginDir, tempDir); err != nil {
 		return Plugin{}, xerrors.Errorf("failed to install the plugin: %w", err)
 	}
@@ -244,4 +265,18 @@ func dir() string {
 
 	homeDir, _ := os.UserHomeDir()
 	return filepath.Join(homeDir, pluginsRelativeDir)
+}
+
+func isInstalled(url string) (Plugin, bool) {
+	installedPlugins, err := LoadAll()
+	if err != nil {
+		return Plugin{}, false
+	}
+
+	for _, plugin := range installedPlugins {
+		if plugin.Repository == url {
+			return plugin, true
+		}
+	}
+	return Plugin{}, false
 }

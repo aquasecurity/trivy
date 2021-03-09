@@ -1,12 +1,13 @@
 package plugin
 
 import (
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
+	"context"
 
 	"github.com/aquasecurity/trivy/internal/config"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 )
 
 // Install installs a plugin
@@ -20,7 +21,7 @@ func Install(c *cli.Context) error {
 	}
 
 	url := c.Args().First()
-	if _, err := plugin.Install(c.Context, url); err != nil {
+	if _, err := plugin.Install(c.Context, url, true); err != nil {
 		return xerrors.Errorf("plugin install error: %w", err)
 	}
 
