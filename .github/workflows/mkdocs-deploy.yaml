@@ -27,10 +27,9 @@ jobs:
           pip install mike
           pip install mkdocs-macros-plugin
         env:
-          # Note: It is not the same as ${{ secrets.GITHUB_TOKEN }} !
-          GH_TOKEN: ${{ secrets.MKDOCS_GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
       - run: |
-          git config user.name "ronaudinho"
-          git config user.email "doelaudi@gmail.com"
+          git config user.name "knqyf263"
+          git config user.email "teppei.fukuda@@aquasec.com"
       - run: |
           mike deploy --push --update-aliases ${{ github.event.inputs.version }} latest
