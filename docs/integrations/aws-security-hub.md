@@ -17,7 +17,7 @@ $ aws securityhub batch-import-findings --findings file://report.asff
 ```
 
 ## Customize
-You can customize [asff.tpl](../../contrib/asff.tpl).
+You can customize [asff.tpl](https://github.com/aquasecurity/trivy/blob/main/contrib/asff.tpl)
 
 ```
 $ export AWS_REGION=us-west-1

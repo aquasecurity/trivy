@@ -1,0 +1,28 @@
+name: Deploy the dev documentation
+on: workflow_dispatch # TOOD: fix me
+jobs:
+  deploy:
+    name: Deploy documentation
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - name: Install dependencies
+        run: |
+          pip install git+https://${GH_TOKEN}@github.com/squidfunk/mkdocs-material-insiders.git
+          pip install mike
+          pip install mkdocs-macros-plugin
+        env:
+          GH_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
+      - name: Configure the git user
+        run: |
+          git config user.name "knqyf263"
+          git config user.email "knqyf263@gmail.com"
+      - name: Deploy the dev documents
+        run: mike deploy --push dev

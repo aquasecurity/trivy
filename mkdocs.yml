@@ -1,0 +1,83 @@
+site_name: Trivy
+site_url: https://aquasecurity.github.io/trivy/
+site_description: A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifacts, Suitable for CI
+docs_dir: docs/
+repo_name: GitHub
+repo_url: https://github.com/aquasecurity/trivy
+edit_uri: ""
+
+nav:
+  - Overview: index.md
+  - Installation: installation.md
+  - Quick Start: quickstart.md
+  - Scanning:
+      - Overview: scanning/index.md
+      - Image: scanning/image.md
+      - Filesystem: scanning/filesystem.md
+      - Git Repository: scanning/git-repository.md
+      - Advanced:
+          - Embed in Dockerfile: scanning/advanced/embed-in-dockerfile.md
+          - Unpacked container image filesystem: scanning/advanced/unpacked-filesystem.md
+          - OCI : scanning/advanced/oci.md
+          - Podman: scanning/advanced/podman.md
+  - Modes:
+      - Standalone: modes/standalone.md
+      - Client/Server: modes/client-server.md
+  - Examples:
+      - Vulnerability Filtering: examples/filter.md
+      - Report Formats: examples/report.md
+      - Vulnerability DB: examples/db.md
+      - Cache: examples/cache.md
+      - Skip Files/Directories: examples/skip.md
+      - Others: examples/others.md
+  - Integrations:
+      - Overview: integrations/index.md
+      - GitHub Actions: integrations/github-actions.md
+      - CircleCI: integrations/circleci.md
+      - Travis CI: integrations/travis-ci.md
+      - GitLab CI: integrations/gitlab-ci.md
+      - AWS CodePipeline: integrations/aws-codepipeline.md
+      - AWS Security Hub: integrations/aws-security-hub.md
+  - Private Docker Registries:
+      - Overview: private-registries/index.md
+      - Docker Hub: private-registries/docker-hub.md
+      - AWS ECR (Elastic Container Registry): private-registries/ecr.md
+      - GCR (Google Container Registry): private-registries/gcr.md
+      - Self-Hosted: private-registries/self.md
+  - Vulnerability Detection:
+      - Overview: vuln-detection/index.md
+      - OS Packages: vuln-detection/os.md
+      - Application Dependencies: vuln-detection/library.md
+      - Supported Image TAR Format: vuln-detection/image-tar-format.md
+      - Data Sources: vuln-detection/data-source.md
+  - Usage:
+      - Overview: usage/index.md
+      - Image: usage/image.md
+      - Filesystem: usage/fs.md
+      - Repository: usage/repo.md
+      - Client: usage/client.md
+      - Server: usage/server.md
+  - Air-Gapped Environment: air-gap.md
+  - Comparison with Other Scanners: comparison.md
+  - FAQ: faq.md
+  - Credits: credit.md
+
+theme:
+    name: material
+    language: 'en'
+    logo: imgs/logo.png
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - admonition
+
+extra:
+  generator: false
+  version:
+    method: mike
+    provider: mike
+
+plugins:
+  - search
+  - macros
