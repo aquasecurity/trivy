@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 	"time"
 
@@ -286,7 +287,15 @@ func NewApp(version string) *cli.App {
 		NewPluginCommand(),
 	}
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
-	app.Action = artifact.ImageRun
+
+	runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN")
+	if runAsPlugin == "" {
+		app.Action = artifact.ImageRun
+	} else {
+		app.Action = func(ctx *cli.Context) error {
+			return plugin.RunWithArgs(ctx.Context, runAsPlugin, ctx.Args().Slice())
+		}
+	}
 	return app
 }
 

@@ -57,12 +57,17 @@ func Run(c *cli.Context) error {
 	}
 
 	url := c.Args().First()
-	pl, err := plugin.Install(c.Context, url)
+	args := c.Args().Tail()
+	return RunWithArgs(c.Context, url, args)
+}
+
+func RunWithArgs(ctx context.Context, url string, args []string) error {
+	pl, err := plugin.Install(ctx, url, false)
 	if err != nil {
 		return xerrors.Errorf("plugin install error: %w", err)
 	}
 
-	if err = pl.Run(c.Context, c.Args().Tail()); err != nil {
+	if err = pl.Run(ctx, args); err != nil {
 		return xerrors.Errorf("unable to run %s plugin: %w", pl.Name, err)
 	}
 	return nil
