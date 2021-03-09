@@ -18,7 +18,7 @@ var (
 
 func init() {
 	// Set the default logger
-	Logger, _ = NewLogger(false, false)
+	Logger, _ = NewLogger(false, false) // nolint: errcheck
 }
 
 // InitLogger initialize the logger variable

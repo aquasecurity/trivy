@@ -70,7 +70,11 @@ func Run(c *cli.Context) error {
 // LoadCommands loads plugins as subcommands
 func LoadCommands() cli.Commands {
 	var commands cli.Commands
-	plugins, _ := plugin.LoadAll()
+	plugins, err := plugin.LoadAll()
+	if err != nil {
+		log.Logger.Debugf("no plugins were loaded")
+		return nil
+	}
 	for _, p := range plugins {
 		cmd := &cli.Command{
 			Name:  p.Name,

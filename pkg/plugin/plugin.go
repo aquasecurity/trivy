@@ -203,7 +203,7 @@ func LoadAll() ([]Plugin, error) {
 	pluginsDir := dir()
 	dirs, err := os.ReadDir(pluginsDir)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("failed to read %s: %w", pluginsDir, err)
 	}
 
 	var plugins []Plugin
