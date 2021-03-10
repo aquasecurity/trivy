@@ -24,6 +24,7 @@ nav:
       - Standalone: modes/standalone.md
       - Client/Server: modes/client-server.md
   - Examples:
+      - Overview: examples/index.md
       - Vulnerability Filtering: examples/filter.md
       - Report Formats: examples/report.md
       - Vulnerability DB: examples/db.md

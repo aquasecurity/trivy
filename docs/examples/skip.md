@@ -1,4 +1,4 @@
-# Skip Files/Directories
+# Skip Traversal of Files/Directories
 
 ## Skip Files
 Trivy traversals directories and looks for all lock files by default.
