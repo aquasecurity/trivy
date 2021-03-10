@@ -7,13 +7,12 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/aquasecurity/trivy/pkg/utils"
-
 	getter "github.com/hashicorp/go-getter"
 	"golang.org/x/xerrors"
 	yaml "gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 const (
@@ -148,20 +147,11 @@ func Install(ctx context.Context, url string, force bool) (Plugin, error) {
 	}
 
 	log.Logger.Infof("Installing the plugin from %s...", url)
-	tempDir, err := os.MkdirTemp("", "trivy-plugin")
+	tempDir, err := downloadToTempDir(ctx, url)
 	if err != nil {
-		return Plugin{}, xerrors.Errorf("failed to create a temp dir: %w", err)
+		return Plugin{}, xerrors.Errorf("download failed: %w", err)
 	}
 	defer os.RemoveAll(tempDir)
-
-	pwd, err := os.Getwd()
-	if err != nil {
-		return Plugin{}, xerrors.Errorf("unable to get the current dir: %w", err)
-	}
-
-	if err = download(ctx, url, tempDir, pwd); err != nil {
-		return Plugin{}, xerrors.Errorf("download error: %w", err)
-	}
 
 	log.Logger.Info("Loading the plugin metadata...")
 	plugin, err := loadMetadata(tempDir)
@@ -190,6 +180,24 @@ func Install(ctx context.Context, url string, force bool) (Plugin, error) {
 func Uninstall(name string) error {
 	pluginDir := filepath.Join(dir(), name)
 	return os.RemoveAll(pluginDir)
+}
+
+func downloadToTempDir(ctx context.Context, url string) (string, error) {
+	tempDir, err := os.MkdirTemp("", "trivy-plugin")
+	if err != nil {
+		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
+	}
+
+	pwd, err := os.Getwd()
+	if err != nil {
+		return "", xerrors.Errorf("unable to get the current dir: %w", err)
+	}
+
+	if err = download(ctx, url, tempDir, pwd); err != nil {
+		return "", xerrors.Errorf("download error: %w", err)
+	}
+
+	return tempDir, nil
 }
 
 func download(ctx context.Context, src, dst, pwd string) error {

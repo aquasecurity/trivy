@@ -1,4 +1,4 @@
-package plugin
+package plugin_test
 
 import (
 	"context"
@@ -6,10 +6,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/log"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/plugin"
 )
 
 func TestPlugin_Run(t *testing.T) {
@@ -19,7 +20,7 @@ func TestPlugin_Run(t *testing.T) {
 		Version     string
 		Usage       string
 		Description string
-		Platforms   []Platform
+		Platforms   []plugin.Platform
 		GOOS        string
 		GOARCH      string
 	}
@@ -40,9 +41,9 @@ func TestPlugin_Run(t *testing.T) {
 				Version:     "0.1.0",
 				Usage:       "test",
 				Description: "test",
-				Platforms: []Platform{
+				Platforms: []plugin.Platform{
 					{
-						Selector: &Selector{
+						Selector: &plugin.Selector{
 							OS:   "linux",
 							Arch: "amd64",
 						},
@@ -62,7 +63,7 @@ func TestPlugin_Run(t *testing.T) {
 				Version:     "0.1.0",
 				Usage:       "test",
 				Description: "test",
-				Platforms: []Platform{
+				Platforms: []plugin.Platform{
 					{
 						URI: "github.com/aquasecurity/trivy-plugin-test",
 						Bin: "test.sh",
@@ -78,9 +79,9 @@ func TestPlugin_Run(t *testing.T) {
 				Version:     "0.1.0",
 				Usage:       "test",
 				Description: "test",
-				Platforms: []Platform{
+				Platforms: []plugin.Platform{
 					{
-						Selector: &Selector{
+						Selector: &plugin.Selector{
 							OS:   "darwin",
 							Arch: "amd64",
 						},
@@ -101,9 +102,9 @@ func TestPlugin_Run(t *testing.T) {
 				Version:     "0.1.0",
 				Usage:       "test",
 				Description: "test",
-				Platforms: []Platform{
+				Platforms: []plugin.Platform{
 					{
-						Selector: &Selector{
+						Selector: &plugin.Selector{
 							OS:   "linux",
 							Arch: "amd64",
 						},
@@ -124,9 +125,9 @@ func TestPlugin_Run(t *testing.T) {
 				Version:     "0.1.0",
 				Usage:       "test",
 				Description: "test",
-				Platforms: []Platform{
+				Platforms: []plugin.Platform{
 					{
-						Selector: &Selector{
+						Selector: &plugin.Selector{
 							OS:   "linux",
 							Arch: "amd64",
 						},
@@ -145,7 +146,7 @@ func TestPlugin_Run(t *testing.T) {
 			os.Setenv("XDG_DATA_HOME", "testdata")
 			defer os.Unsetenv("XDG_DATA_HOME")
 
-			p := Plugin{
+			p := plugin.Plugin{
 				Name:        tt.fields.Name,
 				Repository:  tt.fields.Repository,
 				Version:     tt.fields.Version,
@@ -171,22 +172,22 @@ func TestInstall(t *testing.T) {
 	tests := []struct {
 		name     string
 		url      string
-		want     Plugin
+		want     plugin.Plugin
 		wantFile string
 		wantErr  string
 	}{
 		{
 			name: "happy path",
 			url:  "testdata/test_plugin",
-			want: Plugin{
+			want: plugin.Plugin{
 				Name:        "test_plugin",
 				Repository:  "github.com/aquasecurity/trivy-plugin-test",
 				Version:     "0.1.0",
 				Usage:       "test",
 				Description: "test",
-				Platforms: []Platform{
+				Platforms: []plugin.Platform{
 					{
-						Selector: &Selector{
+						Selector: &plugin.Selector{
 							OS:   "linux",
 							Arch: "amd64",
 						},
@@ -202,15 +203,15 @@ func TestInstall(t *testing.T) {
 		{
 			name: "plugin not found",
 			url:  "testdata/not_found",
-			want: Plugin{
+			want: plugin.Plugin{
 				Name:        "test_plugin",
 				Repository:  "github.com/aquasecurity/trivy-plugin-test",
 				Version:     "0.1.0",
 				Usage:       "test",
 				Description: "test",
-				Platforms: []Platform{
+				Platforms: []plugin.Platform{
 					{
-						Selector: &Selector{
+						Selector: &plugin.Selector{
 							OS:   "linux",
 							Arch: "amd64",
 						},
@@ -226,15 +227,15 @@ func TestInstall(t *testing.T) {
 		{
 			name: "no plugin.yaml",
 			url:  "testdata/no_yaml",
-			want: Plugin{
+			want: plugin.Plugin{
 				Name:        "no_yaml",
 				Repository:  "github.com/aquasecurity/trivy-plugin-test",
 				Version:     "0.1.0",
 				Usage:       "test",
 				Description: "test",
-				Platforms: []Platform{
+				Platforms: []plugin.Platform{
 					{
-						Selector: &Selector{
+						Selector: &plugin.Selector{
 							OS:   "linux",
 							Arch: "amd64",
 						},
@@ -256,7 +257,7 @@ func TestInstall(t *testing.T) {
 			dst := t.TempDir()
 			os.Setenv("XDG_DATA_HOME", dst)
 
-			got, err := Install(context.Background(), tt.url)
+			got, err := plugin.Install(context.Background(), tt.url, false)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -285,7 +286,7 @@ func TestUninstall(t *testing.T) {
 	require.NoError(t, err)
 
 	// Uninstall the plugin
-	err = Uninstall(pluginName)
+	err = plugin.Uninstall(pluginName)
 	assert.NoError(t, err)
 	assert.NoFileExists(t, pluginDir)
 }
@@ -294,22 +295,22 @@ func TestLoadAll1(t *testing.T) {
 	tests := []struct {
 		name    string
 		dir     string
-		want    []Plugin
+		want    []plugin.Plugin
 		wantErr string
 	}{
 		{
 			name: "happy path",
 			dir:  "testdata",
-			want: []Plugin{
+			want: []plugin.Plugin{
 				{
 					Name:        "test_plugin",
 					Repository:  "github.com/aquasecurity/trivy-plugin-test",
 					Version:     "0.1.0",
 					Usage:       "test",
 					Description: "test",
-					Platforms: []Platform{
+					Platforms: []plugin.Platform{
 						{
-							Selector: &Selector{
+							Selector: &plugin.Selector{
 								OS:   "linux",
 								Arch: "amd64",
 							},
@@ -333,7 +334,7 @@ func TestLoadAll1(t *testing.T) {
 			os.Setenv("XDG_DATA_HOME", tt.dir)
 			defer os.Unsetenv("XDG_DATA_HOME")
 
-			got, err := LoadAll()
+			got, err := plugin.LoadAll()
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

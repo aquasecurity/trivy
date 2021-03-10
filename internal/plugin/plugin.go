@@ -3,11 +3,12 @@ package plugin
 import (
 	"context"
 
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/internal/config"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 )
 
 // Install installs a plugin
@@ -61,6 +62,7 @@ func Run(c *cli.Context) error {
 	return RunWithArgs(c.Context, url, args)
 }
 
+// RunWithArgs runs the plugin with arguments
 func RunWithArgs(ctx context.Context, url string, args []string) error {
 	pl, err := plugin.Install(ctx, url, false)
 	if err != nil {
