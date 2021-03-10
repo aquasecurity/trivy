@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'docs/**'
+      - mkdocs.yml
     branches:
       - main
 jobs:
