@@ -57,6 +57,7 @@ nav:
       - Repository: usage/repo.md
       - Client: usage/client.md
       - Server: usage/server.md
+  - Plugins: plugins.md
   - Air-Gapped Environment: air-gap.md
   - Comparison with Other Scanners: comparison.md
   - FAQ: faq.md
