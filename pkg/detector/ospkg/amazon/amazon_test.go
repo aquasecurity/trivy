@@ -87,7 +87,6 @@ func TestScanner_Detect(t *testing.T) {
 	})
 
 	t.Run("get vulnerabilities fails to fetch", func(t *testing.T) {
-		_ = log.InitLogger(true, false)
 		s := &Scanner{
 			l: log.Logger,
 			ac: MockAmazonConfig{

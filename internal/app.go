@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/artifact"
 	"github.com/aquasecurity/trivy/internal/client"
+	"github.com/aquasecurity/trivy/internal/plugin"
 	"github.com/aquasecurity/trivy/internal/server"
 	tdb "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -282,8 +284,18 @@ func NewApp(version string) *cli.App {
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
+		NewPluginCommand(),
 	}
-	app.Action = artifact.ImageRun
+	app.Commands = append(app.Commands, plugin.LoadCommands()...)
+
+	runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN")
+	if runAsPlugin == "" {
+		app.Action = artifact.ImageRun
+	} else {
+		app.Action = func(ctx *cli.Context) error {
+			return plugin.RunWithArgs(ctx.Context, runAsPlugin, ctx.Args().Slice())
+		}
+	}
 	return app
 }
 
@@ -495,6 +507,38 @@ func NewServerCommand() *cli.Command {
 				Value:   "localhost:4954",
 				Usage:   "listen address",
 				EnvVars: []string{"TRIVY_LISTEN"},
+			},
+		},
+	}
+}
+
+// NewPluginCommand is the factory method to add plugin command
+func NewPluginCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "plugin",
+		Aliases: []string{"p"},
+		Usage:   "manage plugins",
+		Subcommands: cli.Commands{
+			{
+				Name:      "install",
+				Aliases:   []string{"i"},
+				Usage:     "install a plugin",
+				ArgsUsage: "URL | FILE_PATH",
+				Action:    plugin.Install,
+			},
+			{
+				Name:      "uninstall",
+				Aliases:   []string{"u"},
+				Usage:     "uninstall a plugin",
+				ArgsUsage: "PLUGIN_NAME",
+				Action:    plugin.Uninstall,
+			},
+			{
+				Name:      "run",
+				Aliases:   []string{"r"},
+				Usage:     "run a plugin on the fly",
+				ArgsUsage: "PLUGIN_NAME [PLUGIN_OPTIONS]",
+				Action:    plugin.Run,
 			},
 		},
 	}
