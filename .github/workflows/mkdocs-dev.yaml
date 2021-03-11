@@ -1,8 +1,14 @@
 name: Deploy the dev documentation
-on: workflow_dispatch # TOOD: fix me
+on:
+  push:
+    paths:
+      - 'docs/**'
+      - mkdocs.yml
+    branches:
+      - main
 jobs:
   deploy:
-    name: Deploy documentation
+    name: Deploy the dev documentation
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout main

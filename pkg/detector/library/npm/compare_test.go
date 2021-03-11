@@ -7,7 +7,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/npm"
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func TestNpmComparer_IsVulnerable(t *testing.T) {
@@ -129,7 +128,6 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 			want: false,
 		},
 	}
-	log.InitLogger(false, false)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := npm.Comparer{}

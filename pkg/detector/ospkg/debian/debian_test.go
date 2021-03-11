@@ -1,14 +1,12 @@
 package debian
 
 import (
-	"os"
 	"testing"
 	"time"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -49,11 +47,6 @@ func (mdc MockDebianConfig) Get(a string, b string) ([]dbTypes.Advisory, error) 
 		return mdc.get(a, b)
 	}
 	return []dbTypes.Advisory{}, nil
-}
-
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	os.Exit(m.Run())
 }
 
 func TestScanner_IsSupportedVersion(t *testing.T) {

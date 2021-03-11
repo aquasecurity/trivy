@@ -2,7 +2,6 @@ package alpine
 
 import (
 	"errors"
-	"os"
 	"testing"
 	"time"
 
@@ -12,14 +11,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-
-	"github.com/aquasecurity/trivy/pkg/log"
 )
-
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	os.Exit(m.Run())
-}
 
 func TestScanner_Detect(t *testing.T) {
 	type args struct {

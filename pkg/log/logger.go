@@ -16,6 +16,11 @@ var (
 	debugOption bool
 )
 
+func init() {
+	// Set the default logger
+	Logger, _ = NewLogger(false, false) // nolint: errcheck
+}
+
 // InitLogger initialize the logger variable
 func InitLogger(debug, disable bool) (err error) {
 	debugOption = debug
