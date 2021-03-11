@@ -63,6 +63,9 @@ nav:
   - Comparison with Other Scanners: comparison.md
   - Further Reading: further.md
   - FAQ: faq.md
+  - Maintainer:
+      - Help Wanted: contrib/help-wanted.md
+      - Triage: contrib/triage.md
   - Credits: credit.md
 
 theme:
