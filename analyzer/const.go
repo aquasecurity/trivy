@@ -40,4 +40,5 @@ const (
 	TypeTOML
 	TypeJSON
 	TypeDockerfile
+	TypeHCL
 )
