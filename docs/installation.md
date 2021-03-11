@@ -1,12 +1,14 @@
 # Installation
 
-Replace `{TRIVY_VERSION}` with the latest released version of Trivy. You can find the latest releases on this page: https://github.com/aquasecurity/trivy/releases
+!!! note
+    Replace `{TRIVY_VERSION}` with the latest released version of Trivy.
+    You can find the latest releases on this page: https://github.com/aquasecurity/trivy/releases
 
 ## RHEL/CentOS
 
 Add repository setting to `/etc/yum.repos.d`.
 
-```
+```bash
 $ sudo vim /etc/yum.repos.d/trivy.repo
 [trivy]
 name=Trivy repository
@@ -19,7 +21,7 @@ $ sudo yum -y install trivy
 
 or
 
-```
+```bash
 $ rpm -ivh https://github.com/aquasecurity/trivy/releases/download/{TRIVY_VERSION}/trivy_{TRIVY_VERSION}_Linux-64bit.rpm
 ```
 
@@ -27,7 +29,7 @@ $ rpm -ivh https://github.com/aquasecurity/trivy/releases/download/{TRIVY_VERSIO
 
 Add repository to `/etc/apt/sources.list.d`.
 
-```
+```bash
 $ sudo apt-get install wget apt-transport-https gnupg lsb-release
 $ wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
 $ echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
@@ -37,7 +39,7 @@ $ sudo apt-get install trivy
 
 or
 
-```
+```bash
 $ wget https://github.com/aquasecurity/trivy/releases/download/{TRIVY_VERSION}/trivy_{TRIVY_VERSION}_Linux-64bit.deb
 $ sudo dpkg -i trivy_{TRIVY_VERSION}_Linux-64bit.deb
 ```
@@ -46,11 +48,12 @@ $ sudo dpkg -i trivy_{TRIVY_VERSION}_Linux-64bit.deb
 
 ## Arch Linux
 Package trivy-bin can be installed from the Arch User Repository. Examples:
-```
+
+```bash
 pikaur -Sy trivy-bin
 ```
 or
-```
+```bash
 yay -Sy trivy-bin
 ```
 
@@ -58,7 +61,7 @@ yay -Sy trivy-bin
 
 You can use homebrew on macOS and Linux.
 
-```
+```bash
 $ brew install aquasecurity/trivy/trivy
 ```
 
@@ -68,7 +71,7 @@ You can use nix on Linux or macOS and on others unofficially.
 
 Note that trivy is currently only in the unstable channels.
 
-```
+```bash
 $ nix-env --install trivy
 ```
 
@@ -78,7 +81,7 @@ Or through your configuration on NixOS or with home-manager as usual
 ## Install Script
 This script downloads Trivy binary based on your OS and architecture.
 
-```
+```bash
 $ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 ```
 
@@ -88,7 +91,7 @@ Get the latest version from [this page](https://github.com/aquasecurity/trivy/re
 
 ## From source
 
-```sh
+```bash
 $ mkdir -p $GOPATH/src/github.com/aquasecurity
 $ cd $GOPATH/src/github.com/aquasecurity
 $ git clone https://github.com/aquasecurity/trivy
@@ -101,25 +104,25 @@ $ go install
 ### Docker Hub
 Replace [YOUR_CACHE_DIR] with the cache directory on your machine.
 
-```
+```bash
 $ docker pull aquasec/trivy
 ```
 
 Example for Linux:
 
-```
+```bash
 $ docker run --rm -v [YOUR_CACHE_DIR]:/root/.cache/ aquasec/trivy [YOUR_IMAGE_NAME]
 ```
 
 Example for macOS:
 
-```
+```bash
 $ docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy python:3.4-alpine
 ```
 
 If you would like to scan the image on your host machine, you need to mount `docker.sock`.
 
-```
+```bash
 $ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
     -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy python:3.4-alpine
 ```
@@ -129,7 +132,7 @@ Please re-pull latest `aquasec/trivy` if an error occurred.
 <details>
 <summary>Result</summary>
 
-```
+```bash
 2019-05-16T01:20:43.180+0900    INFO    Updating vulnerability database...
 2019-05-16T01:20:53.029+0900    INFO    Detecting Alpine vulnerabilities...
 
@@ -151,7 +154,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 The same image is hosted on [GitHub Container Registry][registry] as well.
 
-```
+```bash
 $ docker pull ghcr.io/aquasecurity/trivy:latest
 ```
 
@@ -161,6 +164,6 @@ $ docker pull ghcr.io/aquasecurity/trivy:latest
 
 The same image is hosted on [Amazon ECR Public](https://gallery.ecr.aws/aquasecurity/trivy) as well.
 
-```
+```bash
 $ docker pull public.ecr.aws/aquasecurity/trivy:latest
 ```
