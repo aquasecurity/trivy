@@ -23,7 +23,7 @@ Image,PackageName,VulnerabilityID,Severity,Score,InstalledVersion,FixedVersion,T
     {{- $score }},
     {{- .InstalledVersion }},
     {{- .FixedVersion }},
-    {{- replaceAll $description "," ";" }}
+    {{- replace "," ";" $description }}
 {{ end }}
 {{ end -}}
 {{- end }}

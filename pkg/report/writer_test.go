@@ -344,6 +344,21 @@ func TestReportWriter_Template(t *testing.T) {
 			expected: `Critical: 2, High: 1`,
 		},
 		{
+			name: "Replace using sprig",
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2019-0000",
+					PkgName:         "foo",
+					Vulnerability: dbTypes.Vulnerability{
+						Title: "Title with, a, comma, after, each, word.",
+						Severity:    dbTypes.SeverityCritical.String(),
+					},
+				},
+			},
+			template: `{{ range . }}{{- range .Vulnerabilities }}{{- $description := .Title }}{{- .PkgName -}},{{- replace "," ";" $description }}{{ end }}{{ end }}`,
+			expected: `foo,Title with; a; comma; after; each; word.`,
+		},
+		{
 			name:          "happy path: env var parsing and getCurrentTime",
 			detectedVulns: []types.DetectedVulnerability{},
 			template:      `{{ toLower (getEnv "AWS_ACCOUNT_ID") }} {{ getCurrentTime }}`,
