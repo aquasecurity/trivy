@@ -364,6 +364,12 @@ func TestReportWriter_Template(t *testing.T) {
 			template:      `{{ toLower (getEnv "AWS_ACCOUNT_ID") }} {{ getCurrentTime }}`,
 			expected:      `123456789012 2020-08-10T07:28:17.000958601Z`,
 		},
+		{
+			name:          "happy path: replace colon with dash",
+			detectedVulns: []types.DetectedVulnerability{},
+			template:      `{{- $time := getCurrentTime -}} {{ replaceAll $time ":" "-" }}`,
+			expected:      `123456789012 2020-08-10T07-28-17.000958601Z`,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
