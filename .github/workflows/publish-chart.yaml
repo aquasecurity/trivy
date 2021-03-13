@@ -1,16 +1,14 @@
 name: Publish Chart Helm
 on:
   push:
-    branches: [main,issue-839-helmRep]
-    # paths:
-    #   - 'helm/trivy/**'
+    branches: [main]
+    paths:
+      - 'helm/trivy/**'
   workflow_dispatch:
 env:
   HELM_REP: helm-charts
-  HELM_REP_URL: https://krolval.github.io/helm-charts/
-  GH_OWNER: krolval
+  GH_OWNER: aquasecurity
   CHART_DIR: helm/trivy
-  GITHUB_USER: krol3
 jobs:
   release:
     runs-on: ubuntu-20.04
@@ -35,24 +33,19 @@ jobs:
         continue-on-error: true
         ## Upload the tar in the Releases repository
         run: |
-          ./cr upload -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} --token ${{ secrets.API_TOKEN_GITHUB }} -p .cr-release-packages
+          ./cr upload -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} --token ${{ secrets.TOKEN_GH }} -p .cr-release-packages
       - name: Index helm chart
         run: |
-          ./cr index -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} -c ${{ env.HELM_REP_URL }} -i index.yaml
-          cp index.yaml /tmp/index.yaml
+          ./cr index -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} -c https://${{ env.GH_OWNER }}.github.io/${{ env.HELM_REP }}/ -i index.yaml
 
-      - name: Check out chart repo
-        uses: actions/checkout@v2
+      - name: Push index file
+        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.TOKEN_GH }}
         with:
-          repository: ${{ env.GH_OWNER }}/${{ env.HELM_REP }}
-          ref: gh-pages
-         # token: ${{ secrets.API_TOKEN_GITHUB }}
-      - name: Update Helm repository index.yaml
-        run: |
-          git config --global user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          cp /tmp/index.yaml ./
-          git add index.yaml
-          git pull
-          git commit -m "Update trivy chart"
-          git push origin gh-pages
+          source_file: 'index.yaml'
+          destination_repo: '${{ env.GH_OWNER }}/${{ env.HELM_REP }}'
+          destination_folder: '.'
+          destination_branch: 'gh-pages'
+          user_email: aqua-bot@users.noreply.github.com
+          user_name: 'aqua-bot'
