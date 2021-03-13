@@ -3,22 +3,18 @@ package utils
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
-	"testing"
 
-	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 
-	fixtures "github.com/aquasecurity/bolt-fixtures"
-	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var cacheDir string
 
+// DefaultCacheDir returns/creates the cache-dir to be used for trivu operations
 func DefaultCacheDir() string {
 	tmpDir, err := os.UserCacheDir()
 	if err != nil {
@@ -27,14 +23,17 @@ func DefaultCacheDir() string {
 	return filepath.Join(tmpDir, "trivy")
 }
 
+// CacheDir returns the directory used for caching
 func CacheDir() string {
 	return cacheDir
 }
 
+// SetCacheDir sets the tricy cacheDir
 func SetCacheDir(dir string) {
 	cacheDir = dir
 }
 
+// FileWalk walks the directory and performs operations on files defined by walkFn
 func FileWalk(root string, targetFiles map[string]struct{}, walkFn func(r io.Reader, path string) error) error {
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -75,6 +74,7 @@ func FileWalk(root string, targetFiles map[string]struct{}, walkFn func(r io.Rea
 	return nil
 }
 
+// StringInSlice checks if strings exist in list of strings
 func StringInSlice(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
@@ -84,6 +84,7 @@ func StringInSlice(a string, list []string) bool {
 	return false
 }
 
+// FilterTargets filters the target based on prefixPath
 func FilterTargets(prefixPath string, targets map[string]struct{}) (map[string]struct{}, error) {
 	filtered := map[string]struct{}{}
 	for filename := range targets {
@@ -101,6 +102,7 @@ func FilterTargets(prefixPath string, targets map[string]struct{}) (map[string]s
 	return filtered, nil
 }
 
+// CopyFile copies the file content from scr to dst
 func CopyFile(src, dst string) (int64, error) {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
@@ -124,27 +126,4 @@ func CopyFile(src, dst string) (int64, error) {
 	defer destination.Close()
 	n, err := io.Copy(destination, source)
 	return n, err
-}
-
-// InitTestDB is a utility function initializing BoltDB for unit testing
-func InitTestDB(t *testing.T, fixtureFiles []string) string {
-	// Create a temp dir
-	dir, err := ioutil.TempDir("", "TestDB")
-	require.NoError(t, err)
-
-	dbPath := db.Path(dir)
-	dbDir := filepath.Dir(dbPath)
-	err = os.MkdirAll(dbDir, 0700)
-	require.NoError(t, err)
-
-	// Load testdata into BoltDB
-	loader, err := fixtures.New(dbPath, fixtureFiles)
-	require.NoError(t, err)
-	require.NoError(t, loader.Load())
-	require.NoError(t, loader.Close())
-
-	// Initialize DB
-	require.NoError(t, db.Init(dir))
-
-	return dir
 }

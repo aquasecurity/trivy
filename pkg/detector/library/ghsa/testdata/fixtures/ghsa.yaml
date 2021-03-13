@@ -1,0 +1,22 @@
+- bucket: GitHub Security Advisory Composer
+  pairs:
+    - bucket: "symfony/symfony"
+      pairs:
+        - key: CVE-2020-15094
+          value:
+            PatchedVersions:
+              - 5.1.5
+              - 4.4.13
+            VulnerableVersions:
+              - ">= 5.0.0, < 5.1.5"
+              - ">= 4.4.0, < 4.4.13"
+- bucket: GitHub Security Advisory Nuget
+  pairs:
+    - bucket: "AWSSDK.Core"
+      pairs:
+        - key: CVE-2020-99999
+          value:
+            PatchedVersions:
+              - 3.5.1.31
+            VulnerableVersions:
+              - ">= 3.0.0, < 3.5.1.31"

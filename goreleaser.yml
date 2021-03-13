@@ -12,20 +12,24 @@ builds:
     goos:
       - darwin
       - linux
+      - freebsd
+      - openbsd
     goarch:
       - amd64
       - 386
       - arm
       - arm64
+      - ppc64le
     goarm:
       - 7
+    ignore:
+      - goos: darwin
+        goarch: 386
 
 nfpms:
   -
     formats:
       - deb
-      - rpm
-    dependencies:
       - rpm
     vendor: "aquasecurity"
     homepage: "https://github.com/aquasecurity"
@@ -38,6 +42,7 @@ nfpms:
       386: 32bit
       arm: ARM
       arm64: ARM64
+      ppc64le: PPC64LE
       darwin: macOS
       linux: Linux
       openbsd: OpenBSD
@@ -54,6 +59,7 @@ archives:
       386: 32bit
       arm: ARM
       arm64: ARM64
+      ppc64le: PPC64LE
       darwin: macOS
       linux: Linux
       openbsd: OpenBSD
@@ -63,15 +69,14 @@ archives:
     files:
       - README.md
       - LICENSE
-      - contrib/gitlab.tpl
+      - contrib/*.tpl
+
 
 brews:
   -
-    github:
+    tap:
       owner: aquasecurity
       name: homebrew-trivy
-    dependencies:
-      - rpm
     homepage: "https://github.com/aquasecurity/trivy"
     description: ""
     test: |
@@ -81,6 +86,10 @@ dockers:
   - image_templates:
       - "docker.io/aquasec/trivy:{{ .Version }}"
       - "docker.io/aquasec/trivy:latest"
+      - "ghcr.io/aquasecurity/trivy:{{ .Version }}"
+      - "ghcr.io/aquasecurity/trivy:latest"
+      - "public.ecr.aws/aquasecurity/trivy:latest"
+      - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}"
     binaries:
       - trivy
     build_flag_templates:
@@ -93,6 +102,4 @@ dockers:
       - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
       - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
     extra_files:
-    - contrib/gitlab.tpl
-    - contrib/junit.tpl
-    - contrib/sarif.tpl
+    - contrib/

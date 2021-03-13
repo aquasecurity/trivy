@@ -48,19 +48,23 @@ var (
 		"19.04": time.Date(2020, 1, 18, 23, 59, 59, 0, time.UTC),
 		"19.10": time.Date(2020, 7, 17, 23, 59, 59, 0, time.UTC),
 		"20.04": time.Date(2030, 4, 23, 23, 59, 59, 0, time.UTC),
+		"20.10": time.Date(2021, 7, 22, 23, 59, 59, 0, time.UTC),
 	}
 )
 
+// Scanner implements the Ubuntu scanner
 type Scanner struct {
 	vs dbTypes.VulnSrc
 }
 
+// NewScanner is the factory method for Scanner
 func NewScanner() *Scanner {
 	return &Scanner{
 		vs: ubuntu.NewVulnSrc(),
 	}
 }
 
+// Detect scans and returns the vulnerabilities
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Ubuntu vulnerabilities...")
 	log.Logger.Debugf("ubuntu: os version: %s", osVer)
@@ -108,6 +112,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
+// IsSupportedVersion checks is OSFamily can be scanned using Ubuntu scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	now := time.Now()
 	return s.isSupportedVersion(now, osFamily, osVer)

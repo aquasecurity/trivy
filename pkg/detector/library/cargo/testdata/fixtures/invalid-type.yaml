@@ -1,0 +1,7 @@
+- bucket: rust-advisory-db
+  pairs:
+    - bucket: bumpalo
+      pairs:
+        - key: RUSTSEC-2020-0006
+          value:
+            PatchedVersions: foo

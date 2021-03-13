@@ -3,10 +3,11 @@ package operation
 import (
 	"context"
 	"os"
+	"strings"
 
-	"github.com/spf13/afero"
-
+	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
+	"github.com/spf13/afero"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
@@ -15,20 +16,37 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
+// SuperSet binds cache dependencies
 var SuperSet = wire.NewSet(
 	cache.NewFSCache,
 	wire.Bind(new(cache.LocalArtifactCache), new(cache.FSCache)),
 	NewCache,
 )
 
+// Cache implements the local cache
 type Cache struct {
-	client cache.LocalArtifactCache
+	cache.Cache
 }
 
-func NewCache(client cache.LocalArtifactCache) Cache {
-	return Cache{client: client}
+// NewCache is the factory method for Cache
+func NewCache(backend string) (Cache, error) {
+	if strings.HasPrefix(backend, "redis://") {
+		log.Logger.Infof("Redis cache: %s", backend)
+		options, err := redis.ParseURL(backend)
+		if err != nil {
+			return Cache{}, err
+		}
+		redisCache := cache.NewRedisCache(options)
+		return Cache{Cache: redisCache}, nil
+	}
+	fsCache, err := cache.NewFSCache(utils.CacheDir())
+	if err != nil {
+		return Cache{}, xerrors.Errorf("unable to initialize fs cache: %w", err)
+	}
+	return Cache{Cache: fsCache}, nil
 }
 
+// Reset resets the cache
 func (c Cache) Reset() (err error) {
 	if err := c.ClearDB(); err != nil {
 		return xerrors.Errorf("failed to clear the database: %w", err)
@@ -39,6 +57,7 @@ func (c Cache) Reset() (err error) {
 	return nil
 }
 
+// ClearDB clears the DB cache
 func (c Cache) ClearDB() (err error) {
 	log.Logger.Info("Removing DB file...")
 	if err = os.RemoveAll(utils.CacheDir()); err != nil {
@@ -47,14 +66,16 @@ func (c Cache) ClearDB() (err error) {
 	return nil
 }
 
+// ClearImages clears the cache images
 func (c Cache) ClearImages() error {
 	log.Logger.Info("Removing image caches...")
-	if err := c.client.Clear(); err != nil {
+	if err := c.Clear(); err != nil {
 		return xerrors.Errorf("failed to remove the cache: %w", err)
 	}
 	return nil
 }
 
+// DownloadDB downloads the DB
 func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) error {
 	client := initializeDBClient(cacheDir, quiet)
 	ctx := context.Background()
@@ -66,7 +87,7 @@ func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) erro
 	if needsUpdate {
 		log.Logger.Info("Need to update DB")
 		log.Logger.Info("Downloading DB...")
-		if err := client.Download(ctx, cacheDir, light); err != nil {
+		if err = client.Download(ctx, cacheDir, light); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}
 		if err = client.UpdateMetadata(cacheDir); err != nil {
@@ -87,7 +108,7 @@ func showDBInfo(cacheDir string) error {
 	if err != nil {
 		return xerrors.Errorf("something wrong with DB: %w", err)
 	}
-	log.Logger.Debugf("DB Schema: %d, Type: %d, UpdatedAt: %s, NextUpdate: %s",
-		metadata.Version, metadata.Type, metadata.UpdatedAt, metadata.NextUpdate)
+	log.Logger.Debugf("DB Schema: %d, Type: %d, UpdatedAt: %s, NextUpdate: %s, DownloadedAt: %s",
+		metadata.Version, metadata.Type, metadata.UpdatedAt, metadata.NextUpdate, metadata.DownloadedAt)
 	return nil
 }

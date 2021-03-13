@@ -1,0 +1,11 @@
+- bucket: ruby-advisory-db
+  pairs:
+    - bucket: activesupport
+      pairs:
+        - key: CVE-2015-3226
+          value:
+            PatchedVersions:
+              - ">= 4.2.2"
+              - "~> 4.1.11"
+            UnaffectedVersions:
+              - "< 4.1.0"

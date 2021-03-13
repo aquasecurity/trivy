@@ -6,6 +6,8 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
+	version "github.com/knqyf263/go-rpm-version"
+
 	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -13,7 +15,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
-	version "github.com/knqyf263/go-rpm-version"
 )
 
 var (
@@ -33,11 +34,14 @@ var (
 		"12.1": time.Date(2017, 5, 31, 23, 59, 59, 0, time.UTC),
 		"12.2": time.Date(2018, 3, 31, 23, 59, 59, 0, time.UTC),
 		"12.3": time.Date(2019, 1, 30, 23, 59, 59, 0, time.UTC),
-		// 6 months after SLES12 SP5 release
-		// "12.4": time.Date(2024, 10, 31, 23, 59, 59, 0, time.UTC),
-		"15": time.Date(2019, 12, 31, 23, 59, 59, 0, time.UTC),
-		// 6 months after SLES 15 SP2 release
-		// "15.1":   time.Date(2028, 7, 31, 23, 59, 59, 0, time.UTC),
+		"12.4": time.Date(2020, 6, 30, 23, 59, 59, 0, time.UTC),
+		"12.5": time.Date(2024, 10, 31, 23, 59, 59, 0, time.UTC),
+		"15":   time.Date(2019, 12, 31, 23, 59, 59, 0, time.UTC),
+		"15.1": time.Date(2021, 1, 31, 23, 59, 59, 0, time.UTC),
+		// 6 months after SLES 15 SP3 release
+		"15.2": time.Date(2021, 10, 31, 23, 59, 59, 0, time.UTC),
+		// 6 months after SLES 15 SP4 release
+		// "15.3":   time.Date(2028, 7, 31, 23, 59, 59, 0, time.UTC),
 	}
 
 	opensuseEolDates = map[string]time.Time{
@@ -51,20 +55,24 @@ var (
 	}
 )
 
+// Scanner implements suse scanner
 type Scanner struct {
-	vs     dbTypes.VulnSrc
-	clock  clock.Clock
-	family string
+	vs    dbTypes.VulnSrc
+	clock clock.Clock
 }
 
-type SUSEType int
+// Type to define SUSE type
+type Type int
 
 const (
-	SUSEEnterpriseLinux SUSEType = iota
+	// SUSEEnterpriseLinux is Linux Enterprise version
+	SUSEEnterpriseLinux Type = iota
+	// OpenSUSE for open versions
 	OpenSUSE
 )
 
-func NewScanner(t SUSEType) *Scanner {
+// NewScanner is the factory method for Scanner
+func NewScanner(t Type) *Scanner {
 	switch t {
 	case SUSEEnterpriseLinux:
 		return &Scanner{
@@ -80,6 +88,7 @@ func NewScanner(t SUSEType) *Scanner {
 	return nil
 }
 
+// Detect scans and returns the vulnerabilities
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting SUSE vulnerabilities...")
 	log.Logger.Debugf("SUSE: os version: %s", osVer)
@@ -111,6 +120,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
+// IsSupportedVersion checks if OSFamily can be scanned using SUSE scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	var eolDate time.Time
 	var ok bool

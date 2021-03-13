@@ -1,0 +1,7 @@
+- bucket: php-security-advisories
+  pairs:
+    - bucket: "composer://aws/aws-sdk-php"
+      pairs:
+        - key: CVE-2015-5723
+          value:
+            Branches: invalid

@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/config"
 )
 
+// Config holds the Trivy client config
 type Config struct {
 	config.GlobalConfig
 	config.ArtifactConfig
@@ -25,6 +26,7 @@ type Config struct {
 	CustomHeaders http.Header
 }
 
+// New is the factory method for Config
 func New(c *cli.Context) (Config, error) {
 	gc, err := config.NewGlobalConfig(c)
 	if err != nil {
@@ -43,6 +45,7 @@ func New(c *cli.Context) (Config, error) {
 	}, nil
 }
 
+// Init initializes the config
 func (c *Config) Init() (err error) {
 	// --clear-cache doesn't conduct the scan
 	if c.ClearCache {
@@ -60,12 +63,7 @@ func (c *Config) Init() (err error) {
 		return err
 	}
 
-	if err := c.ArtifactConfig.Init(c.Context.Args(), c.Logger); err != nil {
-		return err
-	}
-
-	if err := c.ImageConfig.Init(c.Context.Args(), c.Logger); err != nil {
-		cli.ShowAppHelp(c.Context)
+	if err := c.ArtifactConfig.Init(c.Context, c.Logger); err != nil {
 		return err
 	}
 

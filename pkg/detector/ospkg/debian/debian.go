@@ -33,18 +33,20 @@ var (
 		"6.0": time.Date(2016, 2, 29, 23, 59, 59, 0, time.UTC),
 		"7":   time.Date(2018, 5, 31, 23, 59, 59, 0, time.UTC),
 		"8":   time.Date(2020, 6, 30, 23, 59, 59, 0, time.UTC),
-		"9":   time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
-		"10":  time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		"9":   time.Date(2022, 6, 30, 23, 59, 59, 0, time.UTC),
+		"10":  time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
 		"11":  time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 		"12":  time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 	}
 )
 
+// Scanner implements the Debian scanner
 type Scanner struct {
 	ovalVs dbTypes.VulnSrc
 	vs     dbTypes.VulnSrc
 }
 
+// NewScanner is the factory method to return Scanner
 func NewScanner() *Scanner {
 	return &Scanner{
 		ovalVs: debianoval.NewVulnSrc(),
@@ -52,6 +54,7 @@ func NewScanner() *Scanner {
 	}
 }
 
+// Detect scans and return vulnerabilities using Debian scanner
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Debian vulnerabilities...")
 
@@ -78,7 +81,8 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 		}
 
 		for _, adv := range advisories {
-			fixedVersion, err := version.NewVersion(adv.FixedVersion)
+			var fixedVersion version.Version
+			fixedVersion, err = version.NewVersion(adv.FixedVersion)
 			if err != nil {
 				log.Logger.Debugf("failed to parse Debian package version: %w", err)
 				continue
@@ -115,6 +119,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
+// IsSupportedVersion checks is OSFamily can be scanned using Debian
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	now := time.Now()
 	return s.isSupportedVersion(now, osFamily, osVer)

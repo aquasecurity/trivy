@@ -7,6 +7,7 @@ package artifact
 
 import (
 	"context"
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/applier"
 	image2 "github.com/aquasecurity/fanal/artifact/image"
 	local2 "github.com/aquasecurity/fanal/artifact/local"
@@ -14,7 +15,6 @@ import (
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/image"
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
@@ -25,12 +25,10 @@ import (
 
 // Injectors from inject.go:
 
-func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, timeout time.Duration) (scanner.Scanner, func(), error) {
+func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, timeout time.Duration, disableAnalyzers []analyzer.Type) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
-	driverFactory := library.DriverFactory{}
-	libraryDetector := library.NewDetector(driverFactory)
-	localScanner := local.NewScanner(applierApplier, detector, libraryDetector)
+	localScanner := local.NewScanner(applierApplier, detector)
 	dockerOption, err := types.GetDockerOption(timeout)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
@@ -39,47 +37,41 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
-	artifact := image2.NewArtifact(imageImage, artifactCache)
+	artifact := image2.NewArtifact(imageImage, artifactCache, disableAnalyzers)
 	scannerScanner := scanner.NewScanner(localScanner, artifact)
 	return scannerScanner, func() {
 		cleanup()
 	}, nil
 }
 
-func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, timeout time.Duration) (scanner.Scanner, error) {
+func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, timeout time.Duration, disableAnalyzers []analyzer.Type) (scanner.Scanner, error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
-	driverFactory := library.DriverFactory{}
-	libraryDetector := library.NewDetector(driverFactory)
-	localScanner := local.NewScanner(applierApplier, detector, libraryDetector)
+	localScanner := local.NewScanner(applierApplier, detector)
 	imageImage, err := image.NewArchiveImage(filePath)
 	if err != nil {
 		return scanner.Scanner{}, err
 	}
-	artifact := image2.NewArtifact(imageImage, artifactCache)
+	artifact := image2.NewArtifact(imageImage, artifactCache, disableAnalyzers)
 	scannerScanner := scanner.NewScanner(localScanner, artifact)
 	return scannerScanner, nil
 }
 
-func initializeFilesystemScanner(ctx context.Context, dir string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache) (scanner.Scanner, func(), error) {
+func initializeFilesystemScanner(ctx context.Context, dir string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, disableAnalyzers []analyzer.Type) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
-	driverFactory := library.DriverFactory{}
-	libraryDetector := library.NewDetector(driverFactory)
-	localScanner := local.NewScanner(applierApplier, detector, libraryDetector)
-	artifact := local2.NewArtifact(dir, artifactCache)
+	localScanner := local.NewScanner(applierApplier, detector)
+	artifact := local2.NewArtifact(dir, artifactCache, disableAnalyzers)
 	scannerScanner := scanner.NewScanner(localScanner, artifact)
 	return scannerScanner, func() {
 	}, nil
 }
 
-func initializeRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache) (scanner.Scanner, func(), error) {
+func initializeRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, disableAnalyzers []analyzer.Type) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
-	driverFactory := library.DriverFactory{}
-	libraryDetector := library.NewDetector(driverFactory)
-	localScanner := local.NewScanner(applierApplier, detector, libraryDetector)
-	artifact, cleanup, err := remote.NewArtifact(url, artifactCache)
+	localScanner := local.NewScanner(applierApplier, detector)
+	artifact, cleanup, err := remote.NewArtifact(url, artifactCache, disableAnalyzers)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}

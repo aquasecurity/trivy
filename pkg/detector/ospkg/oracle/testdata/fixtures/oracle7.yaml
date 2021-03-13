@@ -1,0 +1,12 @@
+- bucket: Oracle Linux 7
+  pairs:
+    - bucket: curl
+      pairs:
+        - key: CVE-2020-8177
+          value:
+            FixedVersion: "7.29.0-59.0.1.el7_9.1"
+    - bucket: glibc
+      pairs:
+        - key: CVE-2017-1000364
+          value:
+            FixedVersion: "2:2.17-157.ksplice1.el7_3.4"

@@ -1,12 +1,14 @@
 {
-  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.4.json",
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
   "version": "2.1.0",
   "runs": [
     {
       "tool": {
         "driver": {
           "name": "Trivy",
+          "informationUri": "https://github.com/aquasecurity/trivy",
           "fullName": "Trivy Vulnerability Scanner",
+          "version": "v0.15.0",
           "rules": [
             {
               "id": "[MEDIUM] CVE-2019-1549",
@@ -17,9 +19,10 @@
               "fullDescription": {
                 "text": "openssl: information disclosure in fork()."
               },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1549",
               "help": {
-                "text": "Vulnerability CVE-2019-1549\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1549](https://nvd.nist.gov/vuln/detail/cve-2019-1549)",
-                "markdown": "**Vulnerability CVE-2019-1549**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1549](https://nvd.nist.gov/vuln/detail/cve-2019-1549)|\n"
+                "text": "Vulnerability CVE-2019-1549\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)",
+                "markdown": "**Vulnerability CVE-2019-1549**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)|\n"
               },
               "properties": {
                 "tags": [
@@ -39,9 +42,10 @@
               "fullDescription": {
                 "text": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64."
               },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1551",
               "help": {
-                "text": "Vulnerability CVE-2019-1551\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r2\nLink: [CVE-2019-1551](https://nvd.nist.gov/vuln/detail/cve-2019-1551)",
-                "markdown": "**Vulnerability CVE-2019-1551**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1d-r2|[CVE-2019-1551](https://nvd.nist.gov/vuln/detail/cve-2019-1551)|\n"
+                "text": "Vulnerability CVE-2019-1551\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r2\nLink: [CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)",
+                "markdown": "**Vulnerability CVE-2019-1551**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1d-r2|[CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)|\n"
               },
               "properties": {
                 "tags": [
@@ -61,9 +65,10 @@
               "fullDescription": {
                 "text": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey."
               },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1563",
               "help": {
-                "text": "Vulnerability CVE-2019-1563\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1563](https://nvd.nist.gov/vuln/detail/cve-2019-1563)",
-                "markdown": "**Vulnerability CVE-2019-1563**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1563](https://nvd.nist.gov/vuln/detail/cve-2019-1563)|\n"
+                "text": "Vulnerability CVE-2019-1563\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1563](https://avd.aquasec.com/nvd/cve-2019-1563)",
+                "markdown": "**Vulnerability CVE-2019-1563**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1563](https://avd.aquasec.com/nvd/cve-2019-1563)|\n"
               },
               "properties": {
                 "tags": [
@@ -83,9 +88,10 @@
               "fullDescription": {
                 "text": "openssl: side-channel weak encryption vulnerability."
               },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1547",
               "help": {
-                "text": "Vulnerability CVE-2019-1547\nSeverity: LOW\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1547](https://nvd.nist.gov/vuln/detail/cve-2019-1547)",
-                "markdown": "**Vulnerability CVE-2019-1547**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libcrypto1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1547](https://nvd.nist.gov/vuln/detail/cve-2019-1547)|\n"
+                "text": "Vulnerability CVE-2019-1547\nSeverity: LOW\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1547](https://avd.aquasec.com/nvd/cve-2019-1547)",
+                "markdown": "**Vulnerability CVE-2019-1547**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libcrypto1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1547](https://avd.aquasec.com/nvd/cve-2019-1547)|\n"
               },
               "properties": {
                 "tags": [
@@ -105,9 +111,10 @@
               "fullDescription": {
                 "text": "openssl: information disclosure in fork()."
               },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1549",
               "help": {
-                "text": "Vulnerability CVE-2019-1549\nSeverity: MEDIUM\nPackage: libssl1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1549](https://nvd.nist.gov/vuln/detail/cve-2019-1549)",
-                "markdown": "**Vulnerability CVE-2019-1549**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libssl1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1549](https://nvd.nist.gov/vuln/detail/cve-2019-1549)|\n"
+                "text": "Vulnerability CVE-2019-1549\nSeverity: MEDIUM\nPackage: libssl1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)",
+                "markdown": "**Vulnerability CVE-2019-1549**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libssl1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)|\n"
               },
               "properties": {
                 "tags": [
@@ -127,9 +134,10 @@
               "fullDescription": {
                 "text": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64."
               },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1551",
               "help": {
-                "text": "Vulnerability CVE-2019-1551\nSeverity: MEDIUM\nPackage: libssl1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r2\nLink: [CVE-2019-1551](https://nvd.nist.gov/vuln/detail/cve-2019-1551)",
-                "markdown": "**Vulnerability CVE-2019-1551**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libssl1.1|1.1.1c-r0|1.1.1d-r2|[CVE-2019-1551](https://nvd.nist.gov/vuln/detail/cve-2019-1551)|\n"
+                "text": "Vulnerability CVE-2019-1551\nSeverity: MEDIUM\nPackage: libssl1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r2\nLink: [CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)",
+                "markdown": "**Vulnerability CVE-2019-1551**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libssl1.1|1.1.1c-r0|1.1.1d-r2|[CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)|\n"
               },
               "properties": {
                 "tags": [
@@ -149,9 +157,10 @@
               "fullDescription": {
                 "text": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey."
               },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1563",
               "help": {
-                "text": "Vulnerability CVE-2019-1563\nSeverity: MEDIUM\nPackage: libssl1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1563](https://nvd.nist.gov/vuln/detail/cve-2019-1563)",
-                "markdown": "**Vulnerability CVE-2019-1563**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libssl1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1563](https://nvd.nist.gov/vuln/detail/cve-2019-1563)|\n"
+                "text": "Vulnerability CVE-2019-1563\nSeverity: MEDIUM\nPackage: libssl1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1563](https://avd.aquasec.com/nvd/cve-2019-1563)",
+                "markdown": "**Vulnerability CVE-2019-1563**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libssl1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1563](https://avd.aquasec.com/nvd/cve-2019-1563)|\n"
               },
               "properties": {
                 "tags": [
@@ -171,9 +180,10 @@
               "fullDescription": {
                 "text": "openssl: side-channel weak encryption vulnerability."
               },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1547",
               "help": {
-                "text": "Vulnerability CVE-2019-1547\nSeverity: LOW\nPackage: libssl1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1547](https://nvd.nist.gov/vuln/detail/cve-2019-1547)",
-                "markdown": "**Vulnerability CVE-2019-1547**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libssl1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1547](https://nvd.nist.gov/vuln/detail/cve-2019-1547)|\n"
+                "text": "Vulnerability CVE-2019-1547\nSeverity: LOW\nPackage: libssl1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1547](https://avd.aquasec.com/nvd/cve-2019-1547)",
+                "markdown": "**Vulnerability CVE-2019-1547**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libssl1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1547](https://avd.aquasec.com/nvd/cve-2019-1547)|\n"
               },
               "properties": {
                 "tags": [
@@ -212,7 +222,7 @@
           "ruleIndex": 1,
           "level": "error",
           "message": {
-            "text": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t)."
+            "text": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e-dev (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u-dev (Affected 1.0.2-1.0.2t)."
           },
           "locations": [{
             "physicalLocation": {
@@ -292,7 +302,7 @@
           "ruleIndex": 5,
           "level": "error",
           "message": {
-            "text": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t)."
+            "text": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e-dev (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u-dev (Affected 1.0.2-1.0.2t)."
           },
           "locations": [{
             "physicalLocation": {

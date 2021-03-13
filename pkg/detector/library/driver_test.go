@@ -1,31 +1,27 @@
 package library_test
 
 import (
-	"os"
 	"testing"
 
-	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	lib "github.com/aquasecurity/fanal/analyzer/library"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 func TestDriver_Detect(t *testing.T) {
-	type fields struct {
-		fileName string
-	}
 	type args struct {
 		pkgName string
-		pkgVer  *semver.Version
+		pkgVer  string
 	}
 	tests := []struct {
 		name     string
 		fixtures []string
-		fields   fields
+		libType  string
 		args     args
 		want     []types.DetectedVulnerability
 		wantErr  string
@@ -33,10 +29,10 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name:     "happy path",
 			fixtures: []string{"testdata/fixtures/php.yaml"},
-			fields:   fields{fileName: "composer.lock"},
+			libType:  lib.Composer,
 			args: args{
 				pkgName: "symfony/symfony",
-				pkgVer:  semver.MustParse("4.2.6"),
+				pkgVer:  "4.2.6",
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -50,10 +46,10 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name:     "non-prefix buckets",
 			fixtures: []string{"testdata/fixtures/php-without-prefix.yaml"},
-			fields:   fields{fileName: "composer.lock"},
+			libType:  lib.Composer,
 			args: args{
 				pkgName: "symfony/symfony",
-				pkgVer:  semver.MustParse("4.2.6"),
+				pkgVer:  "4.2.6",
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -67,10 +63,10 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name:     "no patched versions in the advisory",
 			fixtures: []string{"testdata/fixtures/php.yaml"},
-			fields:   fields{fileName: "composer.lock"},
+			libType:  lib.Composer,
 			args: args{
 				pkgName: "symfony/symfony",
-				pkgVer:  semver.MustParse("4.4.6"),
+				pkgVer:  "4.4.6",
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -84,10 +80,10 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name:     "no vulnerable versions in the advisory",
 			fixtures: []string{"testdata/fixtures/ruby.yaml"},
-			fields:   fields{fileName: "Gemfile.lock"},
+			libType:  lib.Bundler,
 			args: args{
 				pkgName: "activesupport",
-				pkgVer:  semver.MustParse("4.1.1"),
+				pkgVer:  "4.1.1",
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -101,22 +97,20 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name:     "no vulnerability",
 			fixtures: []string{"testdata/fixtures/php.yaml"},
-			fields:   fields{fileName: "composer.lock"},
+			libType:  lib.Composer,
 			args: args{
 				pkgName: "symfony/symfony",
-				pkgVer:  semver.MustParse("4.4.7"),
+				pkgVer:  "4.4.7",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Initialize DB
-			dir := utils.InitTestDB(t, tt.fixtures)
-			defer os.RemoveAll(dir)
+			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
-			factory := library.DriverFactory{}
-			driver, err := factory.NewDriver(tt.fields.fileName)
+			driver, err := library.NewDriver(tt.libType)
 			require.NoError(t, err)
 
 			got, err := driver.Detect(tt.args.pkgName, tt.args.pkgVer)

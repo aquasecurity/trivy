@@ -38,19 +38,23 @@ var (
 		"3.10": time.Date(2021, 5, 1, 23, 59, 59, 0, time.UTC),
 		"3.11": time.Date(2021, 11, 1, 23, 59, 59, 0, time.UTC),
 		"3.12": time.Date(2022, 5, 1, 23, 59, 59, 0, time.UTC),
+		"3.13": time.Date(2022, 11, 1, 23, 59, 59, 0, time.UTC),
 	}
 )
 
+// Scanner implements the Alpine scanner
 type Scanner struct {
 	vs dbTypes.VulnSrc
 }
 
+// NewScanner is the factory method for Scanner
 func NewScanner() *Scanner {
 	return &Scanner{
 		vs: alpine.NewVulnSrc(),
 	}
 }
 
+// Detect vulnerabilities in package using Alpine scanner
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Alpine vulnerabilities...")
 	if strings.Count(osVer, ".") > 1 {
@@ -94,6 +98,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
+// IsSupportedVersion checks the OSFamily can be scanned using Alpine scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	now := time.Now()
 	return s.isSupportedVersion(now, osFamily, osVer)

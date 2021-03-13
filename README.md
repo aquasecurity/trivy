@@ -4,9 +4,9 @@
 [![GitHub release](https://img.shields.io/github/release/aquasecurity/trivy.svg)](https://github.com/aquasecurity/trivy/releases/latest)
 [![CircleCI](https://circleci.com/gh/aquasecurity/trivy.svg?style=svg)](https://circleci.com/gh/aquasecurity/trivy)
 [![Go Report Card](https://goreportcard.com/badge/github.com/aquasecurity/trivy)](https://goreportcard.com/report/github.com/aquasecurity/trivy)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/aquasecurity/trivy/blob/master/LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/aquasecurity/trivy/blob/main/LICENSE)
 [![Docker image](https://images.microbadger.com/badges/version/aquasec/trivy.svg)](https://microbadger.com/images/aquasec/trivy "Get your own version badge on microbadger.com")
-[![codecov](https://codecov.io/gh/aquasecurity/trivy/branch/master/graph/badge.svg)](https://codecov.io/gh/aquasecurity/trivy)
+[![codecov](https://codecov.io/gh/aquasecurity/trivy/branch/main/graph/badge.svg)](https://codecov.io/gh/aquasecurity/trivy)
 
 A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifacts, Suitable for CI.
 
@@ -23,6 +23,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
   * [Debian/Ubuntu](#debianubuntu)
   * [Arch Linux](#arch-linux)
   * [Homebrew](#homebrew)
+  * [Nix/NixOS](#nixnixos)
   * [Install Script](#install-script)
   * [Binary](#binary)
   * [From source](#from-source)
@@ -33,6 +34,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
   * [Filesystem](#filesystem)
   * [Embed in Dockerfile](#embed-in-dockerfile)
   * [Git Repository](#git-repository)
+  * [Podman](#podman)
 - [Examples](#examples)
   * [Standalone](#standalone)
     + [Scan an image](#scan-an-image)
@@ -46,6 +48,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
     + [Filter the vulnerabilities by severities](#filter-the-vulnerabilities-by-severities)
     + [Filter the vulnerabilities by type](#filter-the-vulnerabilities-by-type)
     + [Filter the vulnerabilities by Open Policy Agent](#filter-the-vulnerabilities-by-open-policy-agent-policy)
+    + [Skip traversal of the specific files](#skip-traversal-of-the-specific-files)
     + [Skip traversal in the specific directory](#skip-traversal-in-the-specific-directory)
     + [Skip update of vulnerability DB](#skip-update-of-vulnerability-db)
     + [Only download vulnerability database](#only-download-vulnerability-database)
@@ -53,6 +56,7 @@ A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifa
     + [Specify exit code](#specify-exit-code)
     + [Ignore the specified vulnerabilities](#ignore-the-specified-vulnerabilities)
     + [Specify cache directory](#specify-cache-directory)
+    + [Specify cache backend](#specify-cache-backend)
     + [Clear caches](#clear-caches)
     + [Reset](#reset)
     + [Use lightweight DB](#use-lightweight-db)
@@ -99,16 +103,16 @@ See [here](#continuous-integration-ci) for details.
 
 - Detect comprehensive vulnerabilities
   - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
-  - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn and Cargo)
+  - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, and Maven)
 - Simple
   - Specify only an image name or artifact name
   - See [Quick Start](#quick-start) and [Examples](#examples)
 - Fast
   - The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish in single seconds.
-  - Unlike other scanners that take long to fetch vulnerability information (~10 minutes) on the first run, and encourage you to maintain the a durable vulnerability database, Trivy is stateless and requires no maintenance or preparation.
+  - Unlike other scanners that take long to fetch vulnerability information (~10 minutes) on the first run, and encourage you to maintain a durable vulnerability database, Trivy is stateless and requires no maintenance or preparation.
 - Easy installation
   - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](#installation))
-  - **No pre-requisites** such as installation of DB, libraries, etc. (The exception is that you need `rpm` installed to scan images based on RHEL/CentOS. This is automatically included if you use our installers or the Trivy container image. See [Vulnerability Detection](#vulnerability-detection) for background information.)
+  - **No pre-requisites** such as installation of DB, libraries, etc.
 - High accuracy
   - **Especially Alpine Linux and RHEL/CentOS**
   - Other OSes are also high
@@ -118,13 +122,14 @@ See [here](#continuous-integration-ci) for details.
 - Support multiple formats
   - container image
     - A local image in Docker Engine which is running as a daemon
+    - A local image in Podman (>=2.0) which is exposing a socket
     - A remote image in Docker Registry such as Docker Hub, ECR, GCR and ACR
-    - A tar archive stored in the `docker save` formatted file
+    - A tar archive stored in the `docker save` / `podman save` formatted file
     - An image directory compliant with [OCI Image Format](https://github.com/opencontainers/image-spec)
   - local filesystem
   - remote git repository
 
-Please see [LICENSE](https://github.com/aquasecurity/trivy/blob/master/LICENSE) for Trivy licensing information. Note that Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only.
+Please see [LICENSE](https://github.com/aquasecurity/trivy/blob/main/LICENSE) for Trivy licensing information. Note that Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only.
 
 # Installation
 
@@ -166,7 +171,6 @@ $ sudo apt-get install trivy
 or
 
 ```
-$ sudo apt-get install rpm
 $ wget https://github.com/aquasecurity/trivy/releases/download/{TRIVY_VERSION}/trivy_{TRIVY_VERSION}_Linux-64bit.deb
 $ sudo dpkg -i trivy_{TRIVY_VERSION}_Linux-64bit.deb
 ```
@@ -191,18 +195,29 @@ You can use homebrew on macOS and Linux.
 $ brew install aquasecurity/trivy/trivy
 ```
 
+## Nix/NixOS
+
+You can use nix on Linux or macOS and on others unofficially.
+
+Note that trivy is currently only in the unstable channels.
+
+```
+$ nix-env --install trivy
+```
+
+Or through your configuration on NixOS or with home-manager as usual
+
+
 ## Install Script
 This script downloads Trivy binary based on your OS and architecture.
 
 ```
-$ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
+$ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 ```
 
 ## Binary
 
 Get the latest version from [this page](https://github.com/aquasecurity/trivy/releases/latest), and download the archive file for your operating system/architecture. Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
-
-You also need to install `rpm` command for scanning images based on RHEL/CentOS.
 
 ## From source
 
@@ -215,13 +230,11 @@ $ export GO111MODULE=on
 $ go install
 ```
 
-You also need to install `rpm` command for scanning images based on RHEL/CentOS.
-
 # Quick Start
 
 ## Image
 
-Simply specify an image name (and a tag). **The `latest` tag should be avoided as problems occur with the image cache.** See [Clear image caches](#clear-image-caches).
+Simply specify an image name (and a tag).
 
 ### Basic
 
@@ -257,6 +270,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 </details>
 
 ### Docker
+#### Docker Hub
 
 Replace [YOUR_CACHE_DIR] with the cache directory on your machine.
 
@@ -300,6 +314,14 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 </details>
 
+#### GitHub Container Registry
+The same image is hosted on GitHub Container Registry as well.  
+https://github.com/orgs/aquasecurity/packages/container/package/trivy
+
+```
+$ docker pull ghcr.io/aquasecurity/trivy:latest
+```
+
 ## Filesystem
 Scan a filesystem (such as a host machine, a virtual machine image, or an unpacked container image filesystem).
 
@@ -314,22 +336,34 @@ Scan your container from inside the container.
 
 ```
 $ docker run --rm -it alpine:3.11
-/ # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
+/ # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 / # trivy fs /
 ```
 
 ## Embed in Dockerfile
-Scan your image as part of the build process by embedding Trivy in the Dockerfile. This approach can be used to update Dockerfiles currently using Aqua’s [Microscanner](https://github.com/aquasecurity/microscanner).
+Scan your image as part of the build process by embedding Trivy in the
+Dockerfile. This approach can be used to update Dockerfiles currently using
+Aqua’s [Microscanner](https://github.com/aquasecurity/microscanner).
 
 ```
 $ cat Dockerfile
 FROM alpine:3.7
 
 RUN apk add curl \
-    && curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin \
+    && curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin \
     && trivy filesystem --exit-code 1 --no-progress /
 
 $ docker build -t vulnerable-image .
+```
+Alternatively you can use Trivy in a multistage build. Thus avoiding the
+insecure `curl | sh`. Also the image is not changed.
+```
+[...]
+# Run vulnerability scan on build image
+FROM build AS vulnscan
+COPY --from=aquasec/trivy:latest /usr/local/bin/trivy /usr/local/bin/trivy
+RUN trivy filesystem --exit-code 1 --no-progress /
+[...]
 ```
 
 ## Git Repository
@@ -340,6 +374,30 @@ $ trivy repo https://github.com/knqyf263/trivy-ci-test
 ```
 
 Only public repositories are supported.
+
+## Podman
+[EXPERIMENTAL] This feature might change without preserving backwards compatibility.
+
+Scan your image in Podman (>=2.0) running locally. The remote Podman is not supported.
+Before performing Trivy commands, you must enable the podman.sock systemd service on your machine.
+For more details, see [here](https://github.com/containers/podman/blob/master/docs/tutorials/remote_client.md#enable-the-podman-service-on-the-server-machine)
+
+```
+$ systemctl --user enable --now podman.socket
+```
+
+Then, you can scan your image in Podman.
+
+```
+$ cat Dockerfile
+FROM alpine:3.12
+RUN apk add --no-cache bash
+$ podman build -t test .
+$ podman images
+REPOSITORY                TAG     IMAGE ID      CREATED      SIZE
+localhost/test            latest  efc372d4e0de  About a minute ago  7.94 MB
+$ trivy image test
+```
 
 # Examples
 
@@ -625,7 +683,7 @@ $ trivy image --input /path/to/alpine
 
 ```
 $ docker run --rm -it alpine:3.10.2
-/ # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
+/ # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 / # trivy fs /
 ```
 
@@ -710,7 +768,7 @@ $ cat Dockerfile
 FROM alpine:3.7
 
 RUN apk add curl \
-    && curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin \
+    && curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin \
     && trivy filesystem --exit-code 1 --no-progress /
 
 $ docker build -t vulnerable-image .
@@ -723,7 +781,7 @@ $ docker build -t vulnerable-image .
 Sending build context to Docker daemon  31.14MB
 Step 1/2 : FROM alpine:3.7
  ---> 6d1ef012b567
-Step 2/2 : RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin && trivy filesystem --exit-code 1 --no-progress /
+Step 2/2 : RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin && trivy filesystem --exit-code 1 --no-progress /
  ---> Running in 27b004205da0
 2020-06-01T14:10:41.261Z        INFO    Need to update DB
 2020-06-01T14:10:41.262Z        INFO    Downloading DB...
@@ -873,6 +931,8 @@ $ trivy image -f json -o results.json golang:1.12-alpine
 
 </details>
 
+`VulnerabilityID`, `PkgName`, `InstalledVersion`, and `Severity` in `Vulnerabilities` are always filled with values, but other fields might be empty.
+
 ### Save the results using a template
 
 ```
@@ -886,6 +946,22 @@ $ trivy image --format template --template "{{ range . }} {{ .Target }} {{ end }
  golang:1.12-alpine (alpine 3.10.2)
 ```
 </details>
+
+You can compute different figures within the template using [sprig](http://masterminds.github.io/sprig/) functions. 
+As an example you can summarize the different classes of issues:
+
+```
+$ trivy image --format template --template '{{- $critical := 0 }}{{- $high := 0 }}{{- range . }}{{- range .Vulnerabilities }}{{- if  eq .Severity "CRITICAL" }}{{- $critical = add $critical 1 }}{{- end }}{{- if  eq .Severity "HIGH" }}{{- $high = add $high 1 }}{{- end }}{{- end }}{{- end }}Critical: {{ $critical }}, High: {{ $high }}' golang:1.12-alpine
+```
+<details>
+<summary>Result</summary>
+
+```
+Critical: 0, High: 2
+```
+</details>
+
+For other features of sprig, see the official [sprig](http://masterminds.github.io/sprig/) documentation.
 
 You can load templates from a file prefixing the template path with an @.
 
@@ -1116,7 +1192,7 @@ There is a built-in Rego library with helper functions that you can import into 
 To get started, see the [example policy](./contrib/example_policy).
 
 ```
-$ trivy image --policy contrib/example_filter/basic.rego centos:7
+$ trivy image --ignore-policy contrib/example_filter/basic.rego centos:7
 ```
 
 <details>
@@ -1139,6 +1215,13 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
 </details>
 
+### Skip traversal of the specific files
+Trivy traversals directories and looks for all lock files by default. If your image contains lock files which are not maintained by you, you can skip the file.
+
+```
+$ trivy image --skip-files "/Gemfile.lock,/app/Pipfile.lock" quay.io/fluentd_elasticsearch/fluentd:v2.9.0
+```
+
 ### Skip traversal in the specific directory
 Trivy traversals directories and look for all lock files by default. If your image contains lock files which are not maintained by you, you can skip traversal in the specific directory.
 
@@ -1149,7 +1232,7 @@ $ trivy image --skip-dirs "/usr/lib/ruby/gems,/etc" fluent/fluentd:edge
 
 ### Skip update of vulnerability DB
 
-`Trivy` always updates its vulnerability database when it starts operating. This is usually fast, as it is a difference update. But if you want to skip even that, use the `--skip-update` option.
+`Trivy` downloads its vulnerability database every 12 hours when it starts operating. This is usually fast, as the size of the DB is only 10~30MB. But if you want to skip even that, use the `--skip-update` option.
 
 ```
 $ trivy image --skip-update python:3.4-alpine3.9
@@ -1305,9 +1388,24 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 $ trivy --cache-dir /tmp/trivy/ image python:3.4-alpine3.9
 ```
 
+### Specify cache backend
+[EXPERIMENTAL] This feature might change without preserving backwards compatibility.
+
+Trivy supports local filesystem and Redis as the cache backend. This option is useful especially for client/server mode.
+
+Two options:
+- `fs` 
+  - the cache path can be specified by `--cache-dir`
+- `redis://`
+  - `redis://[HOST]:[PORT]`
+
+```
+$ trivy server --cache-backend redis://localhost:6379
+```
+
 ### Clear caches
 
-The `--clear-cache` option removes caches. This option is useful if the image which has the same tag is updated (such as when using `latest` tag).
+The `--clear-cache` option removes caches.
 
 **The scan is not performed.**
 
@@ -1447,7 +1545,7 @@ Since in automated scenarios such as CI/CD you are only interested in the end re
 
 ## GitHub Actions
 
-- Here is the [Trivy Github Action](https://github.com/aquasecurity/trivy-action) (currently Experimental)
+- Here is the [Trivy Github Action](https://github.com/aquasecurity/trivy-action)
 - The Microsoft Azure team have written a [container-scan action](https://github.com/Azure/container-scan) that uses Trivy and Dockle
 - For full control over the options specified to Trivy, this [blog post](https://blog.aquasec.com/devsecops-with-trivy-github-actions) describes adding Trivy into your own GitHub action workflows 
 
@@ -1476,6 +1574,7 @@ cache:
 ```
 
 Example: https://travis-ci.org/aquasecurity/trivy-ci-test
+
 Repository: https://github.com/aquasecurity/trivy-ci-test
 
 ## CircleCI
@@ -1495,7 +1594,7 @@ jobs:
       - run:
           name: Install trivy
           command: |
-            apk add --update-cache --upgrade curl rpm
+            apk add --update-cache --upgrade curl
             VERSION=$(
                 curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | \
                 grep '"tag_name":' | \
@@ -1516,6 +1615,7 @@ workflows:
 ```
 
 Example: https://circleci.com/gh/aquasecurity/trivy-ci-test
+
 Repository: https://github.com/aquasecurity/trivy-ci-test
 
 ## GitLab CI
@@ -1539,11 +1639,9 @@ trivy:
     DOCKER_TLS_CERTDIR: ""
     IMAGE: trivy-ci-test:$CI_COMMIT_SHA
   before_script:
-    - apk add --no-cache curl
-    - export VERSION=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-    - echo $VERSION
-    - wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION}/trivy_${VERSION}_Linux-64bit.tar.gz
-    - tar zxvf trivy_${VERSION}_Linux-64bit.tar.gz
+    - export TRIVY_VERSION=$(wget -qO - "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+    - echo $TRIVY_VERSION
+    - wget --no-verbose https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz -O - | tar -zxvf -
   allow_failure: true
   script:
     # Build image
@@ -1552,7 +1650,7 @@ trivy:
     - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE
     # Print report
     - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE
-    # Fail on high and critical vulnerabilities
+    # Fail on severe vulnerabilities
     - ./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE
   cache:
     paths:
@@ -1561,6 +1659,58 @@ trivy:
   artifacts:
     reports:
       container_scanning: gl-container-scanning-report.json
+```
+
+Example: https://gitlab.com/aquasecurity/trivy-ci-test/pipelines
+
+Repository: https://github.com/aquasecurity/trivy-ci-test
+
+### GitLab CI using Trivy container
+
+To scan a previously built image that has already been pushed into the
+GitLab container registry the following CI job manifest can be used.
+Note that `entrypoint` needs to be unset for the `script` section to work.
+In case of a non-public GitLab project Trivy additionally needs to
+authenticate to the registry to be able to pull your application image.
+Finally, it is not necessary to clone the project repo as we only work
+with the container image.
+
+```yaml
+container_scanning:
+  image:
+    name: docker.io/aquasec/trivy:latest
+    entrypoint: [""]
+  variables:
+    # No need to clone the repo, we exclusively work on artifacts.  See
+    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    GIT_STRATEGY: none
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_AUTH_URL: "$CI_REGISTRY"
+    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  script:
+    - trivy --version
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - time trivy image --clear-cache
+    # update vulnerabilities db
+    - time trivy --download-db-only --no-progress --cache-dir .trivycache/
+    # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
+    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@/contrib/gitlab.tpl"
+        --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$FULL_IMAGE_NAME"
+    # Prints full report
+    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress "$FULL_IMAGE_NAME"
+    # Fails on high and critical vulnerabilities
+    - time trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress "$FULL_IMAGE_NAME"
+  cache:
+    paths:
+      - .trivycache/
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/ (Container Scanning report is available on GitLab EE Ultimate or GitLab.com Gold)
+  artifacts:
+    when:                          always
+    reports:
+      container_scanning:          gl-container-scanning-report.json
+  tags:
+    - docker-runner
 ```
 
 ## AWS CodePipeline
@@ -1581,11 +1731,10 @@ But, I can't recommend using ENV vars in your local machine to you.
 
 ### Docker Hub
 
-Docker Hub needs `TRIVY_AUTH_URL`, `TRIVY_USERNAME` and `TRIVY_PASSWORD`.
+Docker Hub needs `TRIVY_USERNAME` and `TRIVY_PASSWORD`.
 You don't need to set ENV vars when download from public repository.
 
 ```bash
-export TRIVY_AUTH_URL=https://registry.hub.docker.com
 export TRIVY_USERNAME={DOCKERHUB_USERNAME}
 export TRIVY_PASSWORD={DOCKERHUB_PASSWORD}
 ```
@@ -1625,7 +1774,7 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 
 | OS                           | Supported Versions                       | Target Packages               | Detection of unfixed vulnerabilities |
 | ---------------------------- | ---------------------------------------- | ----------------------------- | :----------------------------------: |
-| Alpine Linux                 | 2.2 - 2.7, 3.0 - 3.12                    | Installed by apk              |                  NO                  |
+| Alpine Linux                 | 2.2 - 2.7, 3.0 - 3.13                    | Installed by apk              |                  NO                  |
 | Red Hat Universal Base Image | 7, 8                                     | Installed by yum/rpm          |                 YES                  |
 | Red Hat Enterprise Linux     | 6, 7, 8                                  | Installed by yum/rpm          |                 YES                  |
 | CentOS                       | 6, 7                                     | Installed by yum/rpm          |                 YES                  |
@@ -1635,12 +1784,12 @@ The unfixed/unfixable vulnerabilities mean that the patch has not yet been provi
 | SUSE Enterprise Linux        | 11, 12, 15                               | Installed by zypper/rpm       |                  NO                  |
 | Photon OS                    | 1.0, 2.0, 3.0                            | Installed by tdnf/yum/rpm     |                  NO                  |
 | Debian GNU/Linux             | wheezy, jessie, stretch, buster          | Installed by apt/apt-get/dpkg |                 YES                  |
-| Ubuntu                       | 12.04, 14.04, 16.04, 18.04, 18.10, 19.04 | Installed by apt/apt-get/dpkg |                 YES                  |
+| Ubuntu                       | Supported versions by Canonical *1       | Installed by apt/apt-get/dpkg |                 YES                  |
 | Distroless                   | Any                                      | Installed by apt/apt-get/dpkg |                 YES                  |
 
-RHEL, CentOS, Oracle Linux, SUSE, Amazon Linux and Photon OS package information is stored in a binary format, and Trivy uses the `rpm` executable to parse this information when scanning an image based on RHEL or CentOS. The Trivy container image includes `rpm`, and the installers include it as a dependency. If you installed the `trivy` binary using `wget` or `curl`, or if you build it from source, you will also need to ensure that `rpm` is available.
-
 Distroless: https://github.com/GoogleContainerTools/distroless
+
+*1 Trivy no longer detects vulnerabilities in versions that have reached End of Life.
 
 ## Application Dependencies
 
@@ -1658,10 +1807,14 @@ Distroless: https://github.com/GoogleContainerTools/distroless
   - yarn.lock
 - Rust
   - Cargo.lock
+- .NET
+  - packages.lock.json
+- Java
+  - JAR/WAR/EAR files (*.jar, *.war, and *.ear)
 
 The path of these files does not matter.
 
-Example: https://github.com/aquasecurity/trivy-ci-test/blob/master/Dockerfile
+Example: https://github.com/aquasecurity/trivy-ci-test/blob/main/Dockerfile
 
 ## Image Tar format
 Trivy scans a tar image with the following format.
@@ -1689,6 +1842,10 @@ Trivy scans a tar image with the following format.
   - https://github.com/advisories?query=ecosystem%3Anpm
 - Rust
   - https://github.com/RustSec/advisory-db
+- .NET
+  - https://github.com/advisories?query=ecosystem%3Anuget
+- Java
+  - https://github.com/advisories?query=ecosystem%3Amaven
 
 # Usage
 Trivy has several sub commands, image, fs, repo, client and server.
@@ -1698,10 +1855,10 @@ NAME:
    trivy - A simple and comprehensive vulnerability scanner for containers
 
 USAGE:
-   trivy [global options] command [command options] image_name
+   trivy [global options] command [command options] target
 
 VERSION:
-   v0.9.0
+   v0.15.0
 
 COMMANDS:
    image, i          scan an image
@@ -1717,7 +1874,6 @@ GLOBAL OPTIONS:
    --cache-dir value  cache directory (default: "/Users/teppei/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
    --help, -h         show help (default: false)
    --version, -v      print the version (default: false)
-
 ```
 
 ## Image
@@ -1728,29 +1884,32 @@ NAME:
    trivy image - scan an image
 
 USAGE:
-   trivy image [command options] [arguments...]
+   trivy image [command options] image_name
 
 OPTIONS:
-   --template value    output template [$TRIVY_TEMPLATE]
-   --format value      format (table, json, template) (default: "table") [$TRIVY_FORMAT]
-   --input value       input file path instead of image name [$TRIVY_INPUT]
-   --severity value    severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
-   --output value      output file name [$TRIVY_OUTPUT]
-   --exit-code value   Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
-   --skip-update       skip db update (default: false) [$TRIVY_SKIP_UPDATE]
-   --download-db-only  download/update vulnerability database but don't run a scan (default: false) [$TRIVY_DOWNLOAD_DB_ONLY]
-   --reset             remove all caches and database (default: false) [$TRIVY_RESET]
-   --clear-cache       clear image caches without scanning (default: false) [$TRIVY_CLEAR_CACHE]
-   --no-progress       suppress progress bar (default: false) [$TRIVY_NO_PROGRESS]
-   --ignore-unfixed    display only fixed vulnerabilities (default: false) [$TRIVY_IGNORE_UNFIXED]
-   --removed-pkgs      detect vulnerabilities of removed packages (only for Alpine) (default: false) [$TRIVY_REMOVED_PKGS]
-   --vuln-type value   comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
-   --ignorefile value  specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
-   --timeout value     docker timeout (default: 2m0s) [$TRIVY_TIMEOUT]
-   --light             light mode: it's faster, but vulnerability descriptions and references are not displayed (default: false) [$TRIVY_LIGHT]
-   --list-all-pkgs     enabling the option will output all packages regardless of vulnerability [$TRIVY_LIST_ALL_PKGS]
-   --skip-dirs value   specify the directory where the traversal is skipped [$TRIVY_SKIP_DIRS]
-   --help, -h          show help (default: false)
+   --template value, -t value  output template [$TRIVY_TEMPLATE]
+   --format value, -f value    format (table, json, template) (default: "table") [$TRIVY_FORMAT]
+   --input value, -i value     input file path instead of image name [$TRIVY_INPUT]
+   --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
+   --output value, -o value    output file name [$TRIVY_OUTPUT]
+   --exit-code value           Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
+   --skip-update               skip db update (default: false) [$TRIVY_SKIP_UPDATE]
+   --download-db-only          download/update vulnerability database but don't run a scan (default: false) [$TRIVY_DOWNLOAD_DB_ONLY]
+   --reset                     remove all caches and database (default: false) [$TRIVY_RESET]
+   --clear-cache, -c           clear image caches without scanning (default: false) [$TRIVY_CLEAR_CACHE]
+   --no-progress               suppress progress bar (default: false) [$TRIVY_NO_PROGRESS]
+   --ignore-unfixed            display only fixed vulnerabilities (default: false) [$TRIVY_IGNORE_UNFIXED]
+   --removed-pkgs              detect vulnerabilities of removed packages (only for Alpine) (default: false) [$TRIVY_REMOVED_PKGS]
+   --vuln-type value           comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
+   --ignorefile value          specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
+   --timeout value             docker timeout (default: 5m0s) [$TRIVY_TIMEOUT]
+   --light                     light mode: it's faster, but vulnerability descriptions and references are not displayed (default: false) [$TRIVY_LIGHT]
+   --ignore-policy value       specify the Rego file to evaluate each vulnerability [$TRIVY_IGNORE_POLICY]
+   --list-all-pkgs             enabling the option will output all packages regardless of vulnerability (default: false) [$TRIVY_LIST_ALL_PKGS]
+   --skip-files value          specify the file path to skip traversal [$TRIVY_SKIP_FILES]
+   --skip-dirs value           specify the directory where the traversal is skipped [$TRIVY_SKIP_DIRS]
+   --cache-backend value       cache backend (e.g. redis://localhost:6379) (default: "fs") [$TRIVY_CACHE_BACKEND]
+   --help, -h                  show help (default: false)
 ```
 
 ## Client
@@ -1760,7 +1919,7 @@ NAME:
    trivy client - client mode
 
 USAGE:
-   trivy client [command options] [arguments...]
+   trivy client [command options] image_name
 
 OPTIONS:
    --template value, -t value  output template [$TRIVY_TEMPLATE]
@@ -1769,16 +1928,18 @@ OPTIONS:
    --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
    --output value, -o value    output file name [$TRIVY_OUTPUT]
    --exit-code value           Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
-   --clear-cache, -c           clear image caches without scanning [$TRIVY_CLEAR_CACHE]
-   --quiet, -q                 suppress progress bar and log output [$TRIVY_QUIET]
-   --ignore-unfixed            display only fixed vulnerabilities [$TRIVY_IGNORE_UNFIXED]
-   --debug, -d                 debug mode [$TRIVY_DEBUG]
+   --clear-cache, -c           clear image caches without scanning (default: false) [$TRIVY_CLEAR_CACHE]
+   --ignore-unfixed            display only fixed vulnerabilities (default: false) [$TRIVY_IGNORE_UNFIXED]
+   --removed-pkgs              detect vulnerabilities of removed packages (only for Alpine) (default: false) [$TRIVY_REMOVED_PKGS]
    --vuln-type value           comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
    --ignorefile value          specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
-   --cache-dir value           use as cache directory, but image cache is stored in /path/to/cache/fanal (default: "/Users/teppei/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
-   --timeout value             docker timeout (default: 1m0s) [$TRIVY_TIMEOUT]
+   --timeout value             docker timeout (default: 5m0s) [$TRIVY_TIMEOUT]
+   --ignore-policy value       specify the Rego file to evaluate each vulnerability [$TRIVY_IGNORE_POLICY]
    --token value               for authentication [$TRIVY_TOKEN]
+   --token-header value        specify a header name for token (default: "Trivy-Token") [$TRIVY_TOKEN_HEADER]
    --remote value              server address (default: "http://localhost:4954") [$TRIVY_REMOTE]
+   --custom-headers value      custom headers [$TRIVY_CUSTOM_HEADERS]
+   --help, -h                  show help (default: false)
 ```
 
 ## Server
@@ -1791,14 +1952,14 @@ USAGE:
    trivy server [command options] [arguments...]
 
 OPTIONS:
-   --skip-update       skip db update [$TRIVY_SKIP_UPDATE]
-   --download-db-only  download/update vulnerability database but don't run a scan [$TRIVY_DOWNLOAD_DB_ONLY]
-   --reset             remove all caches and database [$TRIVY_RESET]
-   --quiet, -q         suppress progress bar and log output [$TRIVY_QUIET]
-   --debug, -d         debug mode [$TRIVY_DEBUG]
-   --cache-dir value   use as cache directory, but image cache is stored in /path/to/cache/fanal (default: "/Users/teppei/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
-   --token value       for authentication [$TRIVY_TOKEN]
-   --listen value      listen address (default: "localhost:4954") [$TRIVY_LISTEN]
+   --skip-update          skip db update (default: false) [$TRIVY_SKIP_UPDATE]
+   --download-db-only     download/update vulnerability database but don't run a scan (default: false) [$TRIVY_DOWNLOAD_DB_ONLY]
+   --reset                remove all caches and database (default: false) [$TRIVY_RESET]
+   --cache-backend value  cache backend (e.g. redis://localhost:6379) (default: "fs") [$TRIVY_CACHE_BACKEND]
+   --token value          for authentication [$TRIVY_TOKEN]
+   --token-header value   specify a header name for token (default: "Trivy-Token") [$TRIVY_TOKEN_HEADER]
+   --listen value         listen address (default: "localhost:4954") [$TRIVY_LISTEN]
+   --help, -h             show help (default: false)
 ```
 
 # Air-gapped environment
@@ -1810,13 +1971,12 @@ See [here](docs/air-gap.md)
 
 | Scanner        | OS<br>Packages  | Application<br>Dependencies | Easy to use  | Accuracy    | Suitable<br>for CI  |
 | -------------- | :-------------: | :-------------------------: | :----------: | :---------: | :-----------------: |
-| Trivy          |       OK        |              OK             |      OK      |    Best     |       OK            |
-| Clair          |       OK        |         Not present         |      Good    |    OK       |       Good          |
-| Anchore Engine |       OK        |             Good            |      Good    |    OK       |       Good          |
-| Quay           |       OK        |         Not present         |      OK      |    OK       |    Not present      |
-| MicroScanner   |       OK        |         Not present         |      OK      |    OK       |       OK            |
-| Docker Hub     |       OK        |         Not present         |      OK      | Not present |    Not present      |
-| GCR            |       OK        |         Not present         |      OK      |    OK       |    Not present      |
+| Trivy          |       ✅        |       ✅<br>(7 languages)   |    ⭐ ⭐ ⭐    |  ⭐ ⭐ ⭐    |      ⭐ ⭐ ⭐         |
+| Clair          |       ✅        |              ×              |      ⭐       |   ⭐ ⭐      |      ⭐ ⭐           |
+| Anchore Engine |       ✅        |       ✅<br>(4 languages)   |     ⭐ ⭐      |   ⭐ ⭐      |     ⭐ ⭐ ⭐         |
+| Quay           |       ✅        |              ×              |    ⭐ ⭐ ⭐    |   ⭐ ⭐      |        ×            |
+| Docker Hub     |       ✅        |              ×              |    ⭐ ⭐ ⭐    |    ⭐        |        ×            |
+| GCR            |       ✅        |              ×              |    ⭐ ⭐ ⭐    |   ⭐ ⭐      |        ×            |
 
 ## Blogs
 - [Open Source CVE Scanner Round-Up: Clair vs Anchore vs Trivy](https://boxboat.com/2020/04/24/image-scanning-tech-compared/)
@@ -1829,7 +1989,7 @@ However, the purpose of this database is to make it possible to know what packag
 As README says, it is not a complete database of all security issues in Alpine.
 
 `Trivy` collects vulnerability information in Alpine Linux from [Alpine Linux aports repository](https://gitlab.alpinelinux.org/alpine/aports).
-Then, those vulnerabilities will be saved on [vuln-list](https://github.com/aquasecurity/vuln-list/tree/master/alpine).
+Then, those vulnerabilities will be saved on [vuln-list](https://github.com/aquasecurity/vuln-list/tree/main/alpine).
 
 `alpine-secdb` has 6959 vulnerabilities (as of 2019/05/12).
 `vuln-list` has 11101 vulnerabilities related to Alpine Linux (as of 2019/05/12).
@@ -1953,6 +2113,19 @@ $ brew unlink trivy && brew uninstall trivy
 ($ rm -rf /usr/local/Cellar/trivy/64)
 $ brew install aquasecurity/trivy/trivy
 ```
+
+### Error: x509: certificate signed by unknown authority
+`TRIVY_INSECURE` can be used to allow insecure connections to a container registry when using SSL.
+
+```
+$ TRIVY_INSECURE=true trivy image [YOUR_IMAGE]
+```
+
+### Running in parallel takes same time as series run 
+When running trivy on multiple images simultaneously, it will take same time as running trivy in series.  
+This is because of a limitation of boltdb.  
+> Bolt obtains a file lock on the data file so multiple processes cannot open the same database at the same time. Opening an already open Bolt database will cause it to hang until the other process closes it.
+Reference : [boltdb: Opening a database](https://github.com/boltdb/bolt#opening-a-database).
 
 ## Others
 

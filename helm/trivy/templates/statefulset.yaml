@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "trivy.fullname" . }}
+  labels:
+{{ include "trivy.labels" . | indent 4 }}
+spec:
+  podManagementPolicy: "Parallel"
+  serviceName: {{ include "trivy.fullname" . }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "trivy.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  {{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size }}
+        accessModes:
+          - {{ .Values.persistence.accessMode }}
+        storageClassName: {{ .Values.persistence.storageClass }}
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "trivy.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ include "trivy.fullname" . }}
+      automountServiceAccountToken: false
+      {{- if .Values.podSecurityContext }}
+      securityContext:
+{{ toYaml .Values.podSecurityContext | indent 8 }}
+      {{- end }}
+      {{- if .Values.image.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+      {{- end }}
+      containers:
+        - name: main
+          image: {{ template "trivy.imageRef" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          {{- if .Values.securityContext }}
+          securityContext:
+{{ toYaml .Values.securityContext | indent 12 }}
+          {{- end }}
+          args:
+            - server
+          env:
+            - name: "TRIVY_LISTEN"
+              value: "0.0.0.0:{{ .Values.service.port | default 4954 }}"
+            - name: "TRIVY_CACHE_DIR"
+              value: "/home/scanner/.cache/trivy"
+            {{- if .Values.trivy.cache.redis.enabled }}
+            - name: "TRIVY_CACHE_BACKEND"
+              value: {{ .Values.trivy.cache.redis.url | quote }}
+            {{- end }}
+            - name: "TRIVY_DEBUG"
+              value: {{ .Values.trivy.debugMode | default false | quote }}
+            - name: "TRIVY_SKIP_UPDATE"
+              value: {{ .Values.trivy.skipUpdate | default false | quote }}
+            - name: "GITHUB_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "trivy.fullname" . }}
+                  key: gitHubToken
+            - name: "HTTP_PROXY"
+              value: {{ .Values.httpProxy | quote }}
+            - name: "HTTPS_PROXY"
+              value: {{ .Values.httpsProxy | quote }}
+            - name: "NO_PROXY"
+              value: {{ .Values.noProxy | quote }}
+          ports:
+            - name: trivy-http
+              containerPort: {{ .Values.service.port }}
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /healthz
+              port: trivy-http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /healthz
+              port: trivy-http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-data
+              readOnly: false
+            - mountPath: /home/scanner/.cache
+              name: data
+              readOnly: false
+          {{- if .Values.resources }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          {{- end }}
+      volumes:
+        - name: tmp-data
+          emptyDir: {}
+        {{- if not .Values.persistence.enabled }}
+        - name: data
+          emptyDir: {}
+        {{- end }}

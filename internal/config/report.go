@@ -11,6 +11,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 )
 
+// ReportConfig holds the config for reporting scan results
 type ReportConfig struct {
 	Format   string
 	Template string
@@ -31,6 +32,7 @@ type ReportConfig struct {
 	Severities []dbTypes.Severity
 }
 
+// NewReportConfig is the factory method to return ReportConfig
 func NewReportConfig(c *cli.Context) ReportConfig {
 	return ReportConfig{
 		output:       c.String("output"),
@@ -46,6 +48,7 @@ func NewReportConfig(c *cli.Context) ReportConfig {
 	}
 }
 
+// Init initializes the ReportConfig
 func (c *ReportConfig) Init(logger *zap.SugaredLogger) (err error) {
 	if c.Template != "" {
 		if c.Format == "" {

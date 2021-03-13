@@ -1,6 +1,7 @@
 package config
 
 import (
+	"os"
 	"strings"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// ArtifactConfig holds the config for a artifact scanning
 type ArtifactConfig struct {
 	Input      string
 	Timeout    time.Duration
@@ -16,37 +18,45 @@ type ArtifactConfig struct {
 
 	skipDirectories string
 	SkipDirectories []string
+	skipFiles       string
+	SkipFiles       []string
 
 	// this field is populated in Init()
 	Target string
 }
 
+// NewArtifactConfig is the factory method to return artifact config
 func NewArtifactConfig(c *cli.Context) ArtifactConfig {
 	return ArtifactConfig{
 		Input:           c.String("input"),
 		Timeout:         c.Duration("timeout"),
 		ClearCache:      c.Bool("clear-cache"),
+		skipFiles:       c.String("skip-files"),
 		skipDirectories: c.String("skip-dirs"),
 	}
 }
 
-var ErrNoTarget = xerrors.New("no target is specified")
-
-func (c *ArtifactConfig) Init(args cli.Args, logger *zap.SugaredLogger) (err error) {
-	if c.Input == "" && args.Len() == 0 {
+// Init initialize the CLI context for artifact scanning
+func (c *ArtifactConfig) Init(ctx *cli.Context, logger *zap.SugaredLogger) (err error) {
+	if c.Input == "" && ctx.Args().Len() == 0 {
 		logger.Debug(`trivy requires at least 1 argument or --input option`)
-		return ErrNoTarget
-	} else if args.Len() > 1 {
+		_ = cli.ShowSubcommandHelp(ctx) // nolint: errcheck
+		os.Exit(0)
+	} else if ctx.Args().Len() > 1 {
 		logger.Error(`multiple targets cannot be specified`)
 		return xerrors.New("arguments error")
 	}
 
 	if c.Input == "" {
-		c.Target = args.First()
+		c.Target = ctx.Args().First()
 	}
 
 	if c.skipDirectories != "" {
 		c.SkipDirectories = strings.Split(c.skipDirectories, ",")
+	}
+
+	if c.skipFiles != "" {
+		c.SkipFiles = strings.Split(c.skipFiles, ",")
 	}
 
 	return nil

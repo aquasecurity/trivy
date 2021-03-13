@@ -1,0 +1,28 @@
+- bucket: php-security-advisories
+  pairs:
+    - bucket: "composer://aws/aws-sdk-php"
+      pairs:
+        - key: CVE-2015-5723
+          value:
+            Branches:
+              3.x:
+                Versions:
+                  - ">=3.0.0"
+                  - "<3.2.1"
+    - bucket: "composer://guzzlehttp/guzzle"
+      pairs:
+        - key: CVE-2016-5385
+          value:
+            Branches:
+              4.x:
+                Versions:
+                  - ">=4.0.0rc2"
+                  - "<4.2.4"
+              5.3:
+                Versions:
+                  - ">=5"
+                  - "<5.3.1"
+              master:
+                Versions:
+                  - ">=6"
+                  - "<6.2.1"

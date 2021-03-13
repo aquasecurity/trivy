@@ -4,14 +4,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat"
-
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -32,21 +31,26 @@ var (
 		"5": time.Date(2017, 3, 31, 23, 59, 59, 0, time.UTC),
 		"6": time.Date(2020, 11, 30, 23, 59, 59, 0, time.UTC),
 		"7": time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
-		// N/A
-		"8": time.Date(3000, 6, 30, 23, 59, 59, 0, time.UTC),
+		"8": time.Date(2021, 12, 31, 23, 59, 59, 0, time.UTC),
+	}
+	excludedVendorsSuffix = []string{
+		".remi",
 	}
 )
 
+// Scanner implements the Redhat scanner
 type Scanner struct {
 	vs dbTypes.VulnSrc
 }
 
+// NewScanner is the factory method for Scanner
 func NewScanner() *Scanner {
 	return &Scanner{
 		vs: redhat.NewVulnSrc(),
 	}
 }
 
+// Detect scans and returns redhat vulenrabilities
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting RHEL/CentOS vulnerabilities...")
 	if strings.Count(osVer, ".") > 0 {
@@ -57,8 +61,14 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
+		if !s.isFromSupportedVendor(pkg) {
+			log.Logger.Debugf("Skipping %s: unsupported vendor", pkg.Name)
+			continue
+		}
+
 		// For Red Hat Security Data API containing only source package names
-		advisories, err := s.vs.Get(osVer, pkg.SrcName)
+		pkgName := addModularNamespace(pkg.SrcName, pkg.Modularitylabel)
+		advisories, err := s.vs.Get(osVer, pkgName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
 		}
@@ -79,8 +89,9 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 			vulns = append(vulns, vuln)
 		}
 
-		// For Red Hat OVAL containing only binary package names
-		advisories, err = s.vs.Get(osVer, pkg.Name)
+		// For Red Hat OVAL v2 containing only binary package names
+		pkgName = addModularNamespace(pkg.Name, pkg.Modularitylabel)
+		advisories, err = s.vs.Get(osVer, pkgName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
 		}
@@ -102,6 +113,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
+// IsSupportedVersion checks is OSFamily can be scanned with Redhat scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	now := time.Now()
 	return s.isSupportedVersion(now, osFamily, osVer)
@@ -124,4 +136,27 @@ func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool
 		return false
 	}
 	return now.Before(eolDate)
+}
+
+func (s *Scanner) isFromSupportedVendor(pkg ftypes.Package) bool {
+	for _, s := range excludedVendorsSuffix {
+		if strings.HasSuffix(pkg.Release, s) {
+			return false
+		}
+	}
+	return true
+}
+
+func addModularNamespace(name, label string) string {
+	// e.g. npm, nodejs:12:8030020201124152102:229f0a1c => nodejs:12::npm
+	var count int
+	for i, r := range label {
+		if r == ':' {
+			count++
+		}
+		if count == 2 {
+			return label[:i] + "::" + name
+		}
+	}
+	return name
 }

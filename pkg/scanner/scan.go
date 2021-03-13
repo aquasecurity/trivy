@@ -10,6 +10,7 @@ import (
 	aimage "github.com/aquasecurity/fanal/artifact/image"
 	flocal "github.com/aquasecurity/fanal/artifact/local"
 	"github.com/aquasecurity/fanal/artifact/remote"
+	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/image"
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -26,6 +27,7 @@ var StandaloneSuperSet = wire.NewSet(
 	NewScanner,
 )
 
+// StandaloneDockerSet binds docker dependencies
 var StandaloneDockerSet = wire.NewSet(
 	types.GetDockerOption,
 	image.NewDockerImage,
@@ -33,17 +35,20 @@ var StandaloneDockerSet = wire.NewSet(
 	StandaloneSuperSet,
 )
 
+// StandaloneArchiveSet binds archive scan dependencies
 var StandaloneArchiveSet = wire.NewSet(
 	image.NewArchiveImage,
 	aimage.NewArtifact,
 	StandaloneSuperSet,
 )
 
+// StandaloneFilesystemSet binds filesystem dependencies
 var StandaloneFilesystemSet = wire.NewSet(
 	flocal.NewArtifact,
 	StandaloneSuperSet,
 )
 
+// StandaloneRepositorySet binds repository dependencies
 var StandaloneRepositorySet = wire.NewSet(
 	remote.NewArtifact,
 	StandaloneSuperSet,
@@ -57,38 +62,49 @@ var RemoteSuperSet = wire.NewSet(
 	NewScanner,
 )
 
+// RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
 	types.GetDockerOption,
 	image.NewDockerImage,
 	RemoteSuperSet,
 )
 
+// RemoteArchiveSet binds remote archive dependencies
 var RemoteArchiveSet = wire.NewSet(
 	image.NewArchiveImage,
 	RemoteSuperSet,
 )
 
+// Scanner implements the Artifact and Driver operations
 type Scanner struct {
 	driver   Driver
 	artifact artifact.Artifact
 }
 
+// Driver defines operations of scanner
 type Driver interface {
 	Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (results report.Results, osFound *ftypes.OS, eols bool, err error)
 }
 
+// NewScanner is the factory method of Scanner
 func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
 	return Scanner{driver: driver, artifact: ar}
 }
 
+// ScanArtifact scans the artifacts and returns results
 func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (report.Results, error) {
 	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {
 		return nil, xerrors.Errorf("failed analysis: %w", err)
 	}
 
-	log.Logger.Debugf("Artifact ID: %s", artifactInfo.ID)
-	log.Logger.Debugf("Blob IDs: %v", artifactInfo.BlobIDs)
+	// Debug information
+	var blobIDs []string
+	for _, b := range artifactInfo.BlobIDs {
+		blobIDs = append(blobIDs, cache.TrimVersionSuffix(b))
+	}
+	log.Logger.Debugf("Artifact ID: %s", cache.TrimVersionSuffix(artifactInfo.ID))
+	log.Logger.Debugf("Blob IDs: %v", blobIDs)
 
 	results, osFound, eosl, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {

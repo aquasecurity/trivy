@@ -1,15 +1,15 @@
-# Air-gapped environment
+# Air-Gapped Environment
+
 Trivy can be used in air-gapped environments.
 
 ## Download the vulnerability database
 At first, you need to download the vulnerability database for use in air-gapped environments.
-Go to [trivy-db](https://github.com/aquasecurity/trivy-db/releases) and download `trivy-offline.db.tgz` in the latest release.
+Go to [trivy-db][trivy-db] and download `trivy-offline.db.tgz` in the latest release.
 If you download `trivy-light-offline.db.tgz`, you have to run Trivy with `--light` option.
 
 ```
 $ wget https://github.com/aquasecurity/trivy-db/releases/latest/download/trivy-offline.db.tgz
 ```
-
 
 ## Transfer the DB file into the air-gapped environment
 The way of transfer depends on the environment.
@@ -53,3 +53,5 @@ In an air-gapped environment, specify `--skip-update` so that Trivy doesn't atte
 ```
 $ trivy image --skip-update alpine:3.12
 ```
+
+[trivy-db]: https://github.com/aquasecurity/trivy-db/releases

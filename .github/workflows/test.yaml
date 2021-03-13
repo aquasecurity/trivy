@@ -1,6 +1,33 @@
 name: Test
 on: pull_request
+env:
+  GO_VERSION: "1.16"
 jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.31
+          args: --deadline=30m
+
+      - name: Run unit tests
+        run: make test
+
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v1
+        with:
+          files: ./coverage.txt
+
   integration:
     name: Integration Test
     runs-on: ubuntu-latest
@@ -8,7 +35,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v1
       with:
-        go-version: 1.14.x
+        go-version: ${{ env.GO_VERSION }}
       id: go
 
     - name: Check out code into the Go module directory
@@ -27,10 +54,34 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v1
       with:
-        go-version: 1.14.x
+        go-version: ${{ env.GO_VERSION }}
 
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v1
       with:
         version: latest
         args: release --snapshot --rm-dist --skip-publish
+
+  build-documents:
+    name: Documentation Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        persist-credentials: true
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+    - name: Install dependencies
+      run: |
+        pip install mkdocs-material
+        pip install mike
+        pip install mkdocs-macros-plugin
+    - name: Configure the git user
+      run: |
+        git config user.name "knqyf263"
+        git config user.email "knqyf263@gmail.com"
+    - name: Deploy the dev documents
+      run: mike deploy test

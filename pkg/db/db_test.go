@@ -22,7 +22,6 @@ import (
 	clocktesting "k8s.io/utils/clock/testing"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -133,10 +132,30 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			skip:          true,
 			expectedError: xerrors.New("--skip-update cannot be specified with the old DB"),
 		},
-	}
-
-	if err := log.InitLogger(false, true); err != nil {
-		require.NoError(t, err, "failed to init logger")
+		{
+			name:  "happy with old DownloadedAt",
+			light: false,
+			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			metadata: db.Metadata{
+				Version:      1,
+				Type:         db.TypeFull,
+				NextUpdate:   timeNextUpdateDay1,
+				DownloadedAt: time.Date(2019, 9, 30, 22, 30, 0, 0, time.UTC),
+			},
+			expected: true,
+		},
+		{
+			name:  "skip downloading DB with recent DownloadedAt",
+			light: false,
+			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
+			metadata: db.Metadata{
+				Version:      1,
+				Type:         db.TypeFull,
+				NextUpdate:   timeNextUpdateDay1,
+				DownloadedAt: time.Date(2019, 9, 30, 23, 30, 0, 0, time.UTC),
+			},
+			expected: false,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -217,9 +236,6 @@ func TestClient_Download(t *testing.T) {
 		},
 	}
 
-	err := log.InitLogger(false, true)
-	require.NoError(t, err, "failed to init logger")
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			mockConfig := new(mockDbOperation)
@@ -252,14 +268,17 @@ func TestClient_Download(t *testing.T) {
 }
 
 func TestClient_UpdateMetadata(t *testing.T) {
+	timeDownloadedAt := clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC))
 	testCases := []struct {
 		name                     string
+		clock                    clock.Clock
 		getMetadataExpectation   dbOperationGetMetadataExpectation
 		storeMetadataExpectation dbOperationStoreMetadataExpectation
 		expectedError            error
 	}{
 		{
-			name: "happy path",
+			name:  "happy path",
+			clock: timeDownloadedAt,
 			getMetadataExpectation: dbOperationGetMetadataExpectation{
 				Returns: dbOperationGetMetadataReturns{
 					Metadata: db.Metadata{
@@ -273,15 +292,17 @@ func TestClient_UpdateMetadata(t *testing.T) {
 			},
 			storeMetadataExpectation: dbOperationStoreMetadataExpectation{
 				Metadata: db.Metadata{
-					Version:    1,
-					Type:       1,
-					NextUpdate: time.Date(2020, 4, 30, 23, 59, 59, 0, time.UTC),
-					UpdatedAt:  time.Date(2006, 4, 30, 23, 59, 59, 0, time.UTC),
+					Version:      1,
+					Type:         1,
+					NextUpdate:   time.Date(2020, 4, 30, 23, 59, 59, 0, time.UTC),
+					UpdatedAt:    time.Date(2006, 4, 30, 23, 59, 59, 0, time.UTC),
+					DownloadedAt: timeDownloadedAt.Now(),
 				},
 			},
 		},
 		{
-			name: "sad path, get metadata fails",
+			name:  "sad path, get metadata fails",
+			clock: timeDownloadedAt,
 			getMetadataExpectation: dbOperationGetMetadataExpectation{
 				Returns: dbOperationGetMetadataReturns{
 					Err: errors.New("get metadata failed"),
@@ -290,7 +311,8 @@ func TestClient_UpdateMetadata(t *testing.T) {
 			expectedError: errors.New("unable to get metadata: get metadata failed"),
 		},
 		{
-			name: "sad path, store metadata fails",
+			name:  "sad path, store metadata fails",
+			clock: timeDownloadedAt,
 			getMetadataExpectation: dbOperationGetMetadataExpectation{
 				Returns: dbOperationGetMetadataReturns{
 					Metadata: db.Metadata{
@@ -304,10 +326,11 @@ func TestClient_UpdateMetadata(t *testing.T) {
 			},
 			storeMetadataExpectation: dbOperationStoreMetadataExpectation{
 				Metadata: db.Metadata{
-					Version:    1,
-					Type:       1,
-					NextUpdate: time.Date(2020, 4, 30, 23, 59, 59, 0, time.UTC),
-					UpdatedAt:  time.Date(2006, 4, 30, 23, 59, 59, 0, time.UTC),
+					Version:      1,
+					Type:         1,
+					NextUpdate:   time.Date(2020, 4, 30, 23, 59, 59, 0, time.UTC),
+					UpdatedAt:    time.Date(2006, 4, 30, 23, 59, 59, 0, time.UTC),
+					DownloadedAt: timeDownloadedAt.Now(),
 				},
 				Returns: dbOperationStoreMetadataReturns{
 					Err: errors.New("store metadata failed"),
@@ -320,9 +343,6 @@ func TestClient_UpdateMetadata(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			mockConfig := new(mockDbOperation)
-			err := log.InitLogger(false, true)
-			require.NoError(t, err, "failed to init logger")
-
 			mockConfig.ApplyGetMetadataExpectation(tc.getMetadataExpectation)
 			mockConfig.ApplyStoreMetadataExpectation(tc.storeMetadataExpectation)
 
@@ -334,7 +354,7 @@ func TestClient_UpdateMetadata(t *testing.T) {
 			defer os.RemoveAll(dir)
 
 			pb := indicator.NewProgressBar(true)
-			client := NewClient(mockConfig, nil, pb, nil, metadata)
+			client := NewClient(mockConfig, nil, pb, tc.clock, metadata)
 
 			err = client.UpdateMetadata(dir)
 			switch {

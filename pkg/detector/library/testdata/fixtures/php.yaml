@@ -1,4 +1,4 @@
-- bucket: "php::GitHub Security Advisory Composer"
+- bucket: "composer::GitHub Security Advisory Composer"
   pairs:
     - bucket: symfony/symfony
       pairs:
@@ -8,7 +8,7 @@
               - 4.2.7
             VulnerableVersions:
               - ">= 4.2.0, < 4.2.7"
-- bucket: "php::php-security-advisories"
+- bucket: "composer::php-security-advisories"
   pairs:
     - bucket: symfony/symfony
       pairs:

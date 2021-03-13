@@ -1,7 +1,6 @@
 package redhat
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -12,14 +11,8 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
-
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	os.Exit(m.Run())
-}
 
 func TestScanner_Detect(t *testing.T) {
 	type args struct {
@@ -178,6 +171,95 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path: modular packages",
+			args: args{
+				osVer: "8.3",
+				pkgs: []ftypes.Package{
+					{
+						Name:            "php",
+						Version:         "7.2.24",
+						Release:         "1.module_el8.2.0+313+b04d0a66",
+						Arch:            "x86_64",
+						Epoch:           0,
+						SrcName:         "php",
+						SrcVersion:      "7.2.24",
+						SrcRelease:      "1.module_el8.2.0+313+b04d0a66",
+						SrcEpoch:        0,
+						Modularitylabel: "php:7.2:8020020200507003613:2c7ca891",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:3e968ecc016e1b9aa19023798229bf2d25c813d1bf092533f38b056aff820524",
+						},
+					},
+				},
+			},
+			get: []dbTypes.GetExpectation{
+				{
+					Args: dbTypes.GetArgs{
+						Release: "8",
+						PkgName: "php:7.2::php",
+					},
+					Returns: dbTypes.GetReturns{
+						Advisories: []dbTypes.Advisory{
+							{
+								VulnerabilityID: "CVE-2019-11043",
+								FixedVersion:    "7.3.5-5.module+el8.1.0+4560+e0eee7d6",
+							},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2019-11043",
+					PkgName:          "php",
+					InstalledVersion: "7.2.24-1.module_el8.2.0+313+b04d0a66",
+					FixedVersion:     "7.3.5-5.module+el8.1.0+4560+e0eee7d6",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:3e968ecc016e1b9aa19023798229bf2d25c813d1bf092533f38b056aff820524",
+					},
+				},
+			},
+		},
+		{
+			name: "happy path: packages from remi repository are skipped",
+			args: args{
+				osVer: "7.6",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "php",
+						Version:    "7.3.23",
+						Release:    "1.el7.remi",
+						Arch:       "x86_64",
+						Epoch:      0,
+						SrcName:    "php",
+						SrcVersion: "7.3.23",
+						SrcRelease: "1.el7.remi",
+						SrcEpoch:   0,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:c27b3cf4d516baf5932d5df3a573c6a571ddace3ee2a577492292d2e849c112b",
+						},
+					},
+				},
+			},
+			get: []dbTypes.GetExpectation{
+				{
+					Args: dbTypes.GetArgs{
+						Release: "7",
+						PkgName: "php",
+					},
+					Returns: dbTypes.GetReturns{
+						Advisories: []dbTypes.Advisory{
+							{
+								VulnerabilityID: "CVE-2011-4718",
+								FixedVersion:    "",
+							},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability(nil),
+		},
+		{
 			name: "sad path: Get returns an error",
 			args: args{
 				osVer: "5",
@@ -259,6 +341,12 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			osFamily:  "centos",
 			osVersion: "8.0",
 			expected:  true,
+		},
+		"centos8 (eol ends)": {
+			now:       time.Date(2022, 12, 1, 0, 0, 0, 0, time.UTC),
+			osFamily:  "centos",
+			osVersion: "8.0",
+			expected:  false,
 		},
 		"two dots": {
 			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),

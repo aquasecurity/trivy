@@ -21,25 +21,31 @@ import (
 )
 
 var (
+	// ErrUnsupportedOS defines error for unsupported OS
 	ErrUnsupportedOS = xerrors.New("unsupported os")
 
+	// SuperSet binds dependencies for OS scan
 	SuperSet = wire.NewSet(
 		wire.Struct(new(Detector)),
 		wire.Bind(new(Operation), new(Detector)),
 	)
 )
 
+// Operation defines operation of OSpkg scan
 type Operation interface {
 	Detect(string, string, string, time.Time, []ftypes.Package) ([]types.DetectedVulnerability, bool, error)
 }
 
+// Driver defines operations for OS package scan
 type Driver interface {
 	Detect(string, []ftypes.Package) ([]types.DetectedVulnerability, error)
 	IsSupportedVersion(string, string) bool
 }
 
+// Detector implements Operation
 type Detector struct{}
 
+// Detect detects the vulnerabilities
 func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
 	driver := newDriver(osFamily, osName)
 	if driver == nil {
@@ -56,31 +62,31 @@ func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []ftypes.
 	return vulns, eosl, nil
 }
 
+// nolint: gocyclo
+// TODO: fix cyclometic complexity by removing default
 func newDriver(osFamily, osName string) Driver {
 	// TODO: use DI and change struct names
-	var d Driver
 	switch osFamily {
 	case fos.Alpine:
-		d = alpine.NewScanner()
+		return alpine.NewScanner()
 	case fos.Debian:
-		d = debian.NewScanner()
+		return debian.NewScanner()
 	case fos.Ubuntu:
-		d = ubuntu.NewScanner()
+		return ubuntu.NewScanner()
 	case fos.RedHat, fos.CentOS:
-		d = redhat.NewScanner()
+		return redhat.NewScanner()
 	case fos.Amazon:
-		d = amazon.NewScanner()
+		return amazon.NewScanner()
 	case fos.Oracle:
-		d = oracle.NewScanner()
+		return oracle.NewScanner()
 	case fos.OpenSUSELeap:
-		d = suse.NewScanner(suse.OpenSUSE)
+		return suse.NewScanner(suse.OpenSUSE)
 	case fos.SLES:
-		d = suse.NewScanner(suse.SUSEEnterpriseLinux)
+		return suse.NewScanner(suse.SUSEEnterpriseLinux)
 	case fos.Photon:
-		d = photon.NewScanner()
+		return photon.NewScanner()
 	default:
 		log.Logger.Warnf("unsupported os : %s", osFamily)
 		return nil
 	}
-	return d
 }

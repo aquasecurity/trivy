@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 	"time"
 
@@ -14,12 +15,14 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/artifact"
 	"github.com/aquasecurity/trivy/internal/client"
+	"github.com/aquasecurity/trivy/internal/plugin"
 	"github.com/aquasecurity/trivy/internal/server"
 	tdb "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
+// VersionInfo holds the trivy DB version Info
 type VersionInfo struct {
 	Version         string       `json:",omitempty"`
 	VulnerabilityDB *db.Metadata `json:",omitempty"`
@@ -143,6 +146,13 @@ var (
 		EnvVars: []string{"TRIVY_CACHE_DIR"},
 	}
 
+	cacheBackendFlag = cli.StringFlag{
+		Name:    "cache-backend",
+		Value:   "fs",
+		Usage:   "cache backend (e.g. redis://localhost:6379)",
+		EnvVars: []string{"TRIVY_CACHE_BACKEND"},
+	}
+
 	ignoreFileFlag = cli.StringFlag{
 		Name:    "ignorefile",
 		Value:   vulnerability.DefaultIgnoreFile,
@@ -152,8 +162,8 @@ var (
 
 	timeoutFlag = cli.DurationFlag{
 		Name:    "timeout",
-		Value:   time.Second * 120,
-		Usage:   "docker timeout",
+		Value:   time.Second * 300,
+		Usage:   "timeout",
 		EnvVars: []string{"TRIVY_TIMEOUT"},
 	}
 
@@ -188,6 +198,12 @@ var (
 		EnvVars: []string{"TRIVY_LIST_ALL_PKGS"},
 	}
 
+	skipFiles = cli.StringFlag{
+		Name:    "skip-files",
+		Usage:   "specify the file path to skip traversal",
+		EnvVars: []string{"TRIVY_SKIP_FILES"},
+	}
+
 	skipDirectories = cli.StringFlag{
 		Name:    "skip-dirs",
 		Usage:   "specify the directory where the traversal is skipped",
@@ -220,7 +236,9 @@ var (
 		&lightFlag,
 		&ignorePolicy,
 		&listAllPackages,
+		&skipFiles,
 		&skipDirectories,
+		&cacheBackendFlag,
 	}
 
 	// deprecated options
@@ -243,6 +261,7 @@ var (
 	}
 )
 
+// NewApp is the factory method to return Trivy CLI
 func NewApp(version string) *cli.App {
 	cli.VersionPrinter = func(c *cli.Context) {
 		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
@@ -265,8 +284,18 @@ func NewApp(version string) *cli.App {
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
+		NewPluginCommand(),
 	}
-	app.Action = artifact.ImageRun
+	app.Commands = append(app.Commands, plugin.LoadCommands()...)
+
+	runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN")
+	if runAsPlugin == "" {
+		app.Action = artifact.ImageRun
+	} else {
+		app.Action = func(ctx *cli.Context) error {
+			return plugin.RunWithArgs(ctx.Context, runAsPlugin, ctx.Args().Slice())
+		}
+	}
 	return app
 }
 
@@ -300,19 +329,20 @@ func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
 	var dbMeta *db.Metadata
 
-	metadata, _ := tdb.NewMetadata(afero.NewOsFs(), cacheDir).Get()
+	metadata, _ := tdb.NewMetadata(afero.NewOsFs(), cacheDir).Get() // nolint: errcheck
 	if !metadata.UpdatedAt.IsZero() && !metadata.NextUpdate.IsZero() && metadata.Version != 0 {
 		dbMeta = &db.Metadata{
-			Version:    metadata.Version,
-			Type:       metadata.Type,
-			NextUpdate: metadata.NextUpdate.UTC(),
-			UpdatedAt:  metadata.UpdatedAt.UTC(),
+			Version:      metadata.Version,
+			Type:         metadata.Type,
+			NextUpdate:   metadata.NextUpdate.UTC(),
+			UpdatedAt:    metadata.UpdatedAt.UTC(),
+			DownloadedAt: metadata.DownloadedAt.UTC(),
 		}
 	}
 
 	switch outputFormat {
 	case "json":
-		b, _ := json.Marshal(VersionInfo{
+		b, _ := json.Marshal(VersionInfo{ // nolint: errcheck
 			Version:         version,
 			VulnerabilityDB: dbMeta,
 		})
@@ -332,12 +362,14 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
   Version: %d
   UpdatedAt: %s
   NextUpdate: %s
-`, dbType, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC())
+  DownloadedAt: %s
+`, dbType, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC(), dbMeta.DownloadedAt.UTC())
 		}
 		fmt.Fprintf(outputWriter, output)
 	}
 }
 
+// NewImageCommand is the factory method to add image command
 func NewImageCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "image",
@@ -349,6 +381,7 @@ func NewImageCommand() *cli.Command {
 	}
 }
 
+// NewFilesystemCommand is the factory method to add filesystem command
 func NewFilesystemCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "filesystem",
@@ -363,23 +396,24 @@ func NewFilesystemCommand() *cli.Command {
 			&severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
+			&skipUpdateFlag,
 			&clearCacheFlag,
-			&quietFlag,
 			&ignoreUnfixedFlag,
-			&debugFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
 			&ignoreFileFlag,
-			&cacheDirFlag,
+			&cacheBackendFlag,
 			&timeoutFlag,
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
+			&skipFiles,
 			&skipDirectories,
 		},
 	}
 }
 
+// NewRepositoryCommand is the factory method to add repository command
 func NewRepositoryCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "repository",
@@ -394,23 +428,24 @@ func NewRepositoryCommand() *cli.Command {
 			&severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
+			&skipUpdateFlag,
 			&clearCacheFlag,
-			&quietFlag,
 			&ignoreUnfixedFlag,
-			&debugFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
 			&ignoreFileFlag,
-			&cacheDirFlag,
+			&cacheBackendFlag,
 			&timeoutFlag,
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
+			&skipFiles,
 			&skipDirectories,
 		},
 	}
 }
 
+// NewClientCommand is the factory method to add client command
 func NewClientCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "client",
@@ -426,13 +461,10 @@ func NewClientCommand() *cli.Command {
 			&outputFlag,
 			&exitCodeFlag,
 			&clearCacheFlag,
-			&quietFlag,
 			&ignoreUnfixedFlag,
-			&debugFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
 			&ignoreFileFlag,
-			&cacheDirFlag,
 			&timeoutFlag,
 			&ignorePolicy,
 
@@ -454,6 +486,7 @@ func NewClientCommand() *cli.Command {
 	}
 }
 
+// NewServerCommand is the factory method to add server command
 func NewServerCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "server",
@@ -464,9 +497,7 @@ func NewServerCommand() *cli.Command {
 			&skipUpdateFlag,
 			&downloadDBOnlyFlag,
 			&resetFlag,
-			&quietFlag,
-			&debugFlag,
-			&cacheDirFlag,
+			&cacheBackendFlag,
 
 			// original flags
 			&token,
@@ -476,6 +507,38 @@ func NewServerCommand() *cli.Command {
 				Value:   "localhost:4954",
 				Usage:   "listen address",
 				EnvVars: []string{"TRIVY_LISTEN"},
+			},
+		},
+	}
+}
+
+// NewPluginCommand is the factory method to add plugin command
+func NewPluginCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "plugin",
+		Aliases: []string{"p"},
+		Usage:   "manage plugins",
+		Subcommands: cli.Commands{
+			{
+				Name:      "install",
+				Aliases:   []string{"i"},
+				Usage:     "install a plugin",
+				ArgsUsage: "URL | FILE_PATH",
+				Action:    plugin.Install,
+			},
+			{
+				Name:      "uninstall",
+				Aliases:   []string{"u"},
+				Usage:     "uninstall a plugin",
+				ArgsUsage: "PLUGIN_NAME",
+				Action:    plugin.Uninstall,
+			},
+			{
+				Name:      "run",
+				Aliases:   []string{"r"},
+				Usage:     "run a plugin on the fly",
+				ArgsUsage: "PLUGIN_NAME [PLUGIN_OPTIONS]",
+				Action:    plugin.Run,
 			},
 		},
 	}

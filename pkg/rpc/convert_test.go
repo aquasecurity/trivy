@@ -1,26 +1,21 @@
 package rpc
 
 import (
-	"os"
 	"testing"
+	"time"
 
-	"github.com/aquasecurity/trivy/rpc/common"
+	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-
-	"github.com/aquasecurity/trivy/pkg/log"
-
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/aquasecurity/trivy/rpc/common"
+	"github.com/aquasecurity/trivy/rpc/scanner"
 )
-
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	code := m.Run()
-	os.Exit(code)
-}
 
 func TestConvertToRpcPkgs(t *testing.T) {
 	type args struct {
@@ -65,7 +60,7 @@ func TestConvertToRpcPkgs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertToRpcPkgs(tt.args.pkgs)
+			got := ConvertToRPCPkgs(tt.args.pkgs)
 			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
@@ -113,7 +108,7 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertFromRpcPkgs(tt.args.rpcPkgs)
+			got := ConvertFromRPCPkgs(tt.args.rpcPkgs)
 			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
@@ -144,7 +139,7 @@ func TestConvertFromRpcLibraries(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertFromRpcLibraries(tt.args.rpcLibs)
+			got := ConvertFromRPCLibraries(tt.args.rpcLibs)
 			assert.Equal(t, got, tt.want, tt.name)
 		})
 	}
@@ -175,62 +170,16 @@ func TestConvertToRpcLibraries(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertToRpcLibraries(tt.args.libs)
-			assert.Equal(t, got, tt.want, tt.name)
-		})
-	}
-}
-
-func TestConvertFromRpcVulns(t *testing.T) {
-	type args struct {
-		rpcVulns []*common.Vulnerability
-	}
-	tests := []struct {
-		name string
-		args args
-		want []types.DetectedVulnerability
-	}{
-		{
-			name: "happy path",
-			args: args{
-				rpcVulns: []*common.Vulnerability{
-					{
-						VulnerabilityId:  "CVE-2019-0001",
-						PkgName:          "foo",
-						InstalledVersion: "1.2.3",
-						FixedVersion:     "1.2.4",
-						Title:            "DoS",
-						Description:      "Denial of Service",
-						Severity:         common.Severity_CRITICAL,
-						References:       []string{"http://example.com"},
-					},
-				},
-			},
-			want: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-2019-0001",
-					PkgName:          "foo",
-					InstalledVersion: "1.2.3",
-					FixedVersion:     "1.2.4",
-					Vulnerability: dbTypes.Vulnerability{
-						Title:       "DoS",
-						Description: "Denial of Service",
-						Severity:    "CRITICAL",
-						References:  []string{"http://example.com"},
-					},
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertFromRpcVulns(tt.args.rpcVulns)
+			got := ConvertToRPCLibraries(tt.args.libs)
 			assert.Equal(t, got, tt.want, tt.name)
 		})
 	}
 }
 
 func TestConvertToRpcVulns(t *testing.T) {
+	fixedPublishedDate := time.Unix(1257894000, 0)
+	fixedLastModifiedDate := time.Unix(1257894010, 0)
+
 	type args struct {
 		vulns []types.DetectedVulnerability
 	}
@@ -260,12 +209,15 @@ func TestConvertToRpcVulns(t *testing.T) {
 									V3Score:  7.8,
 								},
 							},
-							References: []string{"http://example.com"},
+							References:       []string{"http://example.com"},
+							PublishedDate:    &fixedPublishedDate,
+							LastModifiedDate: &fixedLastModifiedDate,
 						},
 						Layer: ftypes.Layer{
 							Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 							DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 						},
+						PrimaryURL: "https://avd.aquasec.com/nvd/CVE-2019-0001",
 					},
 				},
 			},
@@ -291,6 +243,9 @@ func TestConvertToRpcVulns(t *testing.T) {
 						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 					},
+					PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
+					PublishedDate:    timestamppb.New(fixedPublishedDate),
+					LastModifiedDate: timestamppb.New(fixedLastModifiedDate),
 				},
 			},
 		},
@@ -337,8 +292,179 @@ func TestConvertToRpcVulns(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertToRpcVulns(tt.args.vulns)
-			assert.Equal(t, got, tt.want, tt.name)
+			got := ConvertToRPCVulns(tt.args.vulns)
+			assert.Equal(t, tt.want, got, tt.name)
+		})
+	}
+}
+
+func TestConvertFromRPCResults(t *testing.T) {
+	fixedPublishedDate := time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC)
+	fixedLastModifiedDate := time.Date(2009, 11, 10, 23, 0, 10, 0, time.UTC)
+
+	type args struct {
+		rpcResults []*scanner.Result
+	}
+	tests := []struct {
+		name string
+		args args
+		want []report.Result
+	}{
+		{
+			name: "happy path",
+			args: args{rpcResults: []*scanner.Result{
+				{
+					Target: "alpine:3.10",
+					Type:   vulnerability.Alpine,
+					Vulnerabilities: []*common.Vulnerability{
+						{
+							VulnerabilityId:  "CVE-2019-0001",
+							PkgName:          "musl",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Title:            "DoS",
+							Description:      "Denial of Service",
+							Severity:         common.Severity_MEDIUM,
+							SeveritySource:   vulnerability.Nvd,
+							CweIds:           []string{"CWE-123", "CWE-456"},
+							Cvss: map[string]*common.CVSS{
+								"redhat": {
+									V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+									V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+									V2Score:  7.2,
+									V3Score:  7.8,
+								},
+							},
+							References: []string{"http://example.com"},
+							Layer: &common.Layer{
+								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+								DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+							},
+							PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
+							PublishedDate:    timestamppb.New(fixedPublishedDate),
+							LastModifiedDate: timestamppb.New(fixedLastModifiedDate),
+						},
+					},
+				}},
+			},
+			want: []report.Result{
+				{
+					Target: "alpine:3.10",
+					Type:   vulnerability.Alpine,
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2019-0001",
+							PkgName:          "musl",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Layer: ftypes.Layer{
+								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+								DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+							},
+							SeveritySource: vulnerability.Nvd,
+							PrimaryURL:     "https://avd.aquasec.com/nvd/CVE-2019-0001",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:          "DoS",
+								Description:    "Denial of Service",
+								Severity:       common.Severity_MEDIUM.String(),
+								CweIDs:         []string{"CWE-123", "CWE-456"},
+								VendorSeverity: nil,
+								CVSS: dbTypes.VendorCVSS{
+									"redhat": {
+										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+										V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+										V2Score:  7.2,
+										V3Score:  7.8,
+									},
+								},
+								References:       []string{"http://example.com"},
+								PublishedDate:    &fixedPublishedDate,
+								LastModifiedDate: &fixedLastModifiedDate,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy path - with nil dates",
+			args: args{rpcResults: []*scanner.Result{
+				{
+					Target: "alpine:3.10",
+					Type:   vulnerability.Alpine,
+					Vulnerabilities: []*common.Vulnerability{
+						{
+							VulnerabilityId:  "CVE-2019-0001",
+							PkgName:          "musl",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Title:            "DoS",
+							Description:      "Denial of Service",
+							Severity:         common.Severity_MEDIUM,
+							SeveritySource:   vulnerability.Nvd,
+							CweIds:           []string{"CWE-123", "CWE-456"},
+							Cvss: map[string]*common.CVSS{
+								"redhat": {
+									V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+									V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+									V2Score:  7.2,
+									V3Score:  7.8,
+								},
+							},
+							References: []string{"http://example.com"},
+							Layer: &common.Layer{
+								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+								DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+							},
+							PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
+							PublishedDate:    nil,
+							LastModifiedDate: nil,
+						},
+					},
+				}},
+			},
+			want: []report.Result{
+				{
+					Target: "alpine:3.10",
+					Type:   vulnerability.Alpine,
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2019-0001",
+							PkgName:          "musl",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Layer: ftypes.Layer{
+								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+								DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+							},
+							SeveritySource: vulnerability.Nvd,
+							PrimaryURL:     "https://avd.aquasec.com/nvd/CVE-2019-0001",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:          "DoS",
+								Description:    "Denial of Service",
+								Severity:       common.Severity_MEDIUM.String(),
+								CweIDs:         []string{"CWE-123", "CWE-456"},
+								VendorSeverity: nil,
+								CVSS: dbTypes.VendorCVSS{
+									"redhat": {
+										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+										V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+										V2Score:  7.2,
+										V3Score:  7.8,
+									},
+								},
+								References: []string{"http://example.com"},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertFromRPCResults(tt.args.rpcResults)
+			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
 }

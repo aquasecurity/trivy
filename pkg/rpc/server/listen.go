@@ -19,20 +19,38 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
-	"github.com/aquasecurity/trivy/rpc/detector"
-	rpcDetector "github.com/aquasecurity/trivy/rpc/detector"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
+// DBWorkerSuperSet binds the dependencies for Trivy DB worker
 var DBWorkerSuperSet = wire.NewSet(
 	dbFile.SuperSet,
 	newDBWorker,
 )
 
-func ListenAndServe(c config.Config, fsCache cache.FSCache) error {
+// ListenAndServe starts Trivy server
+func ListenAndServe(c config.Config, serverCache cache.Cache) error {
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
 
+	go func() {
+		worker := initializeDBWorker(c.CacheDir, true)
+		ctx := context.Background()
+		for {
+			time.Sleep(1 * time.Hour)
+			if err := worker.update(ctx, c.AppVersion, c.CacheDir, dbUpdateWg, requestWg); err != nil {
+				log.Logger.Errorf("%+v\n", err)
+			}
+		}
+	}()
+
+	mux := newServeMux(serverCache, dbUpdateWg, requestWg, c.Token, c.TokenHeader)
+	log.Logger.Infof("Listening %s...", c.Listen)
+
+	return http.ListenAndServe(c.Listen, mux)
+}
+
+func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup, token, tokenHeader string) *http.ServeMux {
 	withWaitGroup := func(base http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Stop processing requests during DB update
@@ -47,42 +65,27 @@ func ListenAndServe(c config.Config, fsCache cache.FSCache) error {
 		})
 	}
 
-	go func() {
-		worker := initializeDBWorker(c.CacheDir, true)
-		ctx := context.Background()
-		for {
-			time.Sleep(1 * time.Hour)
-			if err := worker.update(ctx, c.AppVersion, c.CacheDir, dbUpdateWg, requestWg); err != nil {
-				log.Logger.Errorf("%+v\n", err)
-			}
-		}
-	}()
-
 	mux := http.NewServeMux()
 
-	scanHandler := rpcScanner.NewScannerServer(initializeScanServer(fsCache), nil)
-	mux.Handle(rpcScanner.ScannerPathPrefix, withToken(withWaitGroup(scanHandler), c.Token, c.TokenHeader))
+	scanHandler := rpcScanner.NewScannerServer(initializeScanServer(serverCache), nil)
+	mux.Handle(rpcScanner.ScannerPathPrefix, withToken(withWaitGroup(scanHandler), token, tokenHeader))
 
-	layerHandler := rpcCache.NewCacheServer(NewCacheServer(fsCache), nil)
-	mux.Handle(rpcCache.CachePathPrefix, withToken(withWaitGroup(layerHandler), c.Token, c.TokenHeader))
+	layerHandler := rpcCache.NewCacheServer(NewCacheServer(serverCache), nil)
+	mux.Handle(rpcCache.CachePathPrefix, withToken(withWaitGroup(layerHandler), token, tokenHeader))
 
-	// osHandler is for backward compatibility
-	osHandler := rpcDetector.NewOSDetectorServer(initializeOspkgServer(), nil)
-	mux.Handle(rpcDetector.OSDetectorPathPrefix, withToken(withWaitGroup(osHandler), c.Token, c.TokenHeader))
+	mux.HandleFunc("/healthz", func(rw http.ResponseWriter, r *http.Request) {
+		if _, err := rw.Write([]byte("ok")); err != nil {
+			log.Logger.Errorf("health check error: %s", err)
+		}
+	})
 
-	// libHandler is for backward compatibility
-	libHandler := rpcDetector.NewLibDetectorServer(initializeLibServer(), nil)
-	mux.Handle(rpcDetector.LibDetectorPathPrefix, withToken(withWaitGroup(libHandler), c.Token, c.TokenHeader))
-
-	log.Logger.Infof("Listening %s...", c.Listen)
-
-	return http.ListenAndServe(c.Listen, mux)
+	return mux
 }
 
 func withToken(base http.Handler, token, tokenHeader string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if token != "" && token != r.Header.Get(tokenHeader) {
-			detector.WriteError(w, twirp.NewError(twirp.Unauthenticated, "invalid token"))
+			rpcScanner.WriteError(w, twirp.NewError(twirp.Unauthenticated, "invalid token"))
 			return
 		}
 		base.ServeHTTP(w, r)
@@ -121,7 +124,7 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 	}
 	defer os.RemoveAll(tmpDir)
 
-	if err := w.dbClient.Download(ctx, tmpDir, false); err != nil {
+	if err = w.dbClient.Download(ctx, tmpDir, false); err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 
