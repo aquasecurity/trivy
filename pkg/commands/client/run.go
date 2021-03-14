@@ -8,7 +8,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/trivy/internal/client/config"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -20,21 +19,21 @@ import (
 
 // Run runs the scan
 func Run(cliCtx *cli.Context) error {
-	c, err := config.New(cliCtx)
+	c, err := NewConfig(cliCtx)
 	if err != nil {
 		return err
 	}
 	return run(c)
 }
 
-func run(conf config.Config) error {
+func run(conf Config) error {
 	ctx, cancel := context.WithTimeout(context.Background(), conf.Timeout)
 	defer cancel()
 
 	return runWithContext(ctx, conf)
 }
 
-func runWithContext(ctx context.Context, conf config.Config) error {
+func runWithContext(ctx context.Context, conf Config) error {
 	if err := initialize(&conf); err != nil {
 		return xerrors.Errorf("initialize error: %w", err)
 	}
@@ -80,7 +79,7 @@ func runWithContext(ctx context.Context, conf config.Config) error {
 	return nil
 }
 
-func initialize(conf *config.Config) error {
+func initialize(conf *Config) error {
 	// Initialize logger
 	if err := log.InitLogger(conf.Debug, conf.Quiet); err != nil {
 		return xerrors.Errorf("failed to initialize a logger: %w", err)
@@ -98,7 +97,7 @@ func initialize(conf *config.Config) error {
 	return nil
 }
 
-func initializeScanner(ctx context.Context, conf config.Config) (scanner.Scanner, func(), error) {
+func initializeScanner(ctx context.Context, conf Config) (scanner.Scanner, func(), error) {
 	remoteCache := cache.NewRemoteCache(cache.RemoteURL(conf.RemoteAddr), conf.CustomHeaders)
 
 	// By default, apk commands are not analyzed.
@@ -127,7 +126,7 @@ func initializeScanner(ctx context.Context, conf config.Config) (scanner.Scanner
 	return s, cleanup, nil
 }
 
-func exit(c config.Config, results report.Results) {
+func exit(c Config, results report.Results) {
 	if c.ExitCode != 0 {
 		for _, result := range results {
 			if len(result.Vulnerabilities) > 0 {

@@ -12,8 +12,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/internal/artifact/config"
-	"github.com/aquasecurity/trivy/internal/operation"
+	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/scanner"
@@ -27,14 +26,14 @@ var errSkipScan = errors.New("skip subsequent processes")
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration,
 	[]analyzer.Type) (scanner.Scanner, func(), error)
 
-func run(conf config.Config, initializeScanner InitializeScanner) error {
+func run(conf Config, initializeScanner InitializeScanner) error {
 	ctx, cancel := context.WithTimeout(context.Background(), conf.Timeout)
 	defer cancel()
 
 	return runWithContext(ctx, conf, initializeScanner)
 }
 
-func runWithContext(ctx context.Context, conf config.Config, initializeScanner InitializeScanner) error {
+func runWithContext(ctx context.Context, conf Config, initializeScanner InitializeScanner) error {
 	if err := log.InitLogger(conf.Debug, conf.Quiet); err != nil {
 		l.Fatal(err)
 	}
@@ -75,7 +74,7 @@ func runWithContext(ctx context.Context, conf config.Config, initializeScanner I
 	return nil
 }
 
-func initCache(c config.Config) (operation.Cache, error) {
+func initCache(c Config) (operation.Cache, error) {
 	utils.SetCacheDir(c.CacheDir)
 	cache, err := operation.NewCache(c.CacheBackend)
 	if err != nil {
@@ -100,7 +99,7 @@ func initCache(c config.Config) (operation.Cache, error) {
 	return cache, nil
 }
 
-func initDB(c config.Config) error {
+func initDB(c Config) error {
 	// download the database file
 	noProgress := c.Quiet || c.NoProgress
 	if err := operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.Light, c.SkipUpdate); err != nil {
@@ -117,7 +116,7 @@ func initDB(c config.Config) error {
 	return nil
 }
 
-func scan(ctx context.Context, conf config.Config, initializeScanner InitializeScanner, cacheClient cache.Cache) (
+func scan(ctx context.Context, conf Config, initializeScanner InitializeScanner, cacheClient cache.Cache) (
 	report.Results, error) {
 	target := conf.Target
 	if conf.Input != "" {
@@ -152,7 +151,7 @@ func scan(ctx context.Context, conf config.Config, initializeScanner InitializeS
 	return results, nil
 }
 
-func filter(ctx context.Context, conf config.Config, results report.Results) (report.Results, error) {
+func filter(ctx context.Context, conf Config, results report.Results) (report.Results, error) {
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
 		vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
@@ -166,7 +165,7 @@ func filter(ctx context.Context, conf config.Config, results report.Results) (re
 	return results, nil
 }
 
-func exit(c config.Config, results report.Results) {
+func exit(c Config, results report.Results) {
 	if c.ExitCode != 0 {
 		for _, result := range results {
 			if len(result.Vulnerabilities) > 0 {

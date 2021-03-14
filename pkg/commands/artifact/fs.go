@@ -9,7 +9,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/trivy/internal/artifact/config"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )
 
@@ -24,7 +23,7 @@ func filesystemScanner(ctx context.Context, dir string, ac cache.ArtifactCache, 
 
 // FilesystemRun runs scan on filesystem
 func FilesystemRun(cliCtx *cli.Context) error {
-	c, err := config.New(cliCtx)
+	c, err := NewConfig(cliCtx)
 	if err != nil {
 		return err
 	}

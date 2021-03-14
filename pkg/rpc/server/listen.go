@@ -14,7 +14,6 @@ import (
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/internal/server/config"
 	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -28,26 +27,46 @@ var DBWorkerSuperSet = wire.NewSet(
 	newDBWorker,
 )
 
+// Server represents Trivy server
+type Server struct {
+	appVersion  string
+	addr        string
+	cacheDir    string
+	token       string
+	tokenHeader string
+}
+
+// NewServer returns an instance of Server
+func NewServer(appVersion, addr, cacheDir, token, tokenHeader string) Server {
+	return Server{
+		appVersion:  appVersion,
+		addr:        addr,
+		cacheDir:    cacheDir,
+		token:       token,
+		tokenHeader: tokenHeader,
+	}
+}
+
 // ListenAndServe starts Trivy server
-func ListenAndServe(c config.Config, serverCache cache.Cache) error {
+func (s Server) ListenAndServe(serverCache cache.Cache) error {
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
-		worker := initializeDBWorker(c.CacheDir, true)
+		worker := initializeDBWorker(s.cacheDir, true)
 		ctx := context.Background()
 		for {
 			time.Sleep(1 * time.Hour)
-			if err := worker.update(ctx, c.AppVersion, c.CacheDir, dbUpdateWg, requestWg); err != nil {
+			if err := worker.update(ctx, s.appVersion, s.cacheDir, dbUpdateWg, requestWg); err != nil {
 				log.Logger.Errorf("%+v\n", err)
 			}
 		}
 	}()
 
-	mux := newServeMux(serverCache, dbUpdateWg, requestWg, c.Token, c.TokenHeader)
-	log.Logger.Infof("Listening %s...", c.Listen)
+	mux := newServeMux(serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader)
+	log.Logger.Infof("Listening %s...", s.addr)
 
-	return http.ListenAndServe(c.Listen, mux)
+	return http.ListenAndServe(s.addr, mux)
 }
 
 func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup, token, tokenHeader string) *http.ServeMux {

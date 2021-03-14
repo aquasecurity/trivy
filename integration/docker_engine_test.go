@@ -10,12 +10,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/internal"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/commands"
 )
 
 func TestRun_WithDockerEngine(t *testing.T) {
@@ -283,7 +283,7 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			defer os.Remove(of.Name())
 
 			// run trivy
-			app := internal.NewApp("dev")
+			app := commands.NewApp("dev")
 			trivyArgs := []string{"trivy"}
 			trivyArgs = append(trivyArgs, "--cache-dir", cacheDir)
 			if tc.withImageSubcommand {

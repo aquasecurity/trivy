@@ -1,10 +1,10 @@
-package config
+package artifact
 
 import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/internal/config"
+	"github.com/aquasecurity/trivy/pkg/commands/config"
 )
 
 // Config holds the artifact config
@@ -24,8 +24,8 @@ type Config struct {
 	autoRefresh bool
 }
 
-// New is the factory method to return config
-func New(c *cli.Context) (Config, error) {
+// NewConfig is the factory method to return config
+func NewConfig(c *cli.Context) (Config, error) {
 	gc, err := config.NewGlobalConfig(c)
 	if err != nil {
 		return Config{}, xerrors.Errorf("failed to initialize global options: %w", err)
