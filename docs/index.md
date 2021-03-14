@@ -17,9 +17,9 @@ Trivy can be run in two different modes:
 
 Trivy can scan three different artifacts:
 
-- [Container Images](https://aquasecurity.github.io/trivy/latest/scanning/image/)
-- [Filesystem](https://aquasecurity.github.io/trivy/latest/scanning/filesystem/)
-- [Git Repositories](https://aquasecurity.github.io/trivy/latest/scanning/git-repository/)
+- [Container Images](./scanning/image.md)
+- [Filesystem](./scanning/filesystem.md)
+- [Git Repositories](./scanning/git-repository.md)
 
 <img src="imgs/usage.gif" width="700">
 <img src="imgs/usage1.png" width="600">
