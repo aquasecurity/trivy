@@ -26,7 +26,7 @@ Trivy can scan three different artifacts:
 <img src="imgs/usage2.png" width="600">
 
 It is considered to be used in CI. Before pushing to a container registry or deploying your application, you can scan your local container image and other artifacts easily.
-See [here](https://aquasecurity.github.io/trivy/latest/integrations/) for details.
+See [here](./integrations/index.md) for details.
 
 ## Features
 
