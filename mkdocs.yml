@@ -29,7 +29,7 @@ nav:
       - Report Formats: examples/report.md
       - Vulnerability DB: examples/db.md
       - Cache: examples/cache.md
-      - Skip Files/Directories: examples/skip.md
+      - Skip Traversal of Files/Directories: examples/skip.md
       - Others: examples/others.md
   - Integrations:
       - Overview: integrations/index.md
