@@ -24,7 +24,7 @@ type Config struct {
 	autoRefresh bool
 }
 
-// New is the factory method to return config
+// NewConfig is the factory method to return config
 func NewConfig(c *cli.Context) (Config, error) {
 	gc, err := config.NewGlobalConfig(c)
 	if err != nil {

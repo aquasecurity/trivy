@@ -27,6 +27,7 @@ var DBWorkerSuperSet = wire.NewSet(
 	newDBWorker,
 )
 
+// Server represents Trivy server
 type Server struct {
 	appVersion  string
 	addr        string
@@ -35,6 +36,7 @@ type Server struct {
 	tokenHeader string
 }
 
+// NewServer returns an instance of Server
 func NewServer(appVersion, addr, cacheDir, token, tokenHeader string) Server {
 	return Server{
 		appVersion:  appVersion,

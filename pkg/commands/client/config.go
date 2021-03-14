@@ -26,7 +26,7 @@ type Config struct {
 	CustomHeaders http.Header
 }
 
-// New is the factory method for Config
+// NewConfig is the factory method for Config
 func NewConfig(c *cli.Context) (Config, error) {
 	gc, err := config.NewGlobalConfig(c)
 	if err != nil {
