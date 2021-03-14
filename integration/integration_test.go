@@ -14,8 +14,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/spf13/afero"
+
+	"github.com/aquasecurity/trivy-db/pkg/db"
 )
 
 var update = flag.Bool("update", false, "update golden files")
