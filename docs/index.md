@@ -12,8 +12,8 @@ A software vulnerability is a glitch, flaw, or weakness present in the software 
 
 Trivy can be run in two different modes:
 
-- [Standalone](https://aquasecurity.github.io/trivy/latest/modes/standalone/)
-- [Client/Server](https://aquasecurity.github.io/trivy/latest/modes/client-server/)
+- [Standalone](./modes/standalone.md)
+- [Client/Server](./modes/client-server.md)
 
 Trivy can scan three different artifacts:
 
