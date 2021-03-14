@@ -1,9 +1,5 @@
 # Installation
 
-!!! note
-    Replace `{TRIVY_VERSION}` with the latest released version of Trivy.
-    You can find the latest releases on this page: https://github.com/aquasecurity/trivy/releases
-
 ## RHEL/CentOS
 
 Add repository setting to `/etc/yum.repos.d`.
@@ -22,7 +18,7 @@ $ sudo yum -y install trivy
 or
 
 ```bash
-$ rpm -ivh https://github.com/aquasecurity/trivy/releases/download/{TRIVY_VERSION}/trivy_{TRIVY_VERSION}_Linux-64bit.rpm
+rpm -ivh https://github.com/aquasecurity/trivy/releases/download/{{ git.tag }}/trivy_{{ git.tag[1:] }}_Linux-64bit.rpm
 ```
 
 ## Debian/Ubuntu
@@ -40,8 +36,8 @@ $ sudo apt-get install trivy
 or
 
 ```bash
-$ wget https://github.com/aquasecurity/trivy/releases/download/{TRIVY_VERSION}/trivy_{TRIVY_VERSION}_Linux-64bit.deb
-$ sudo dpkg -i trivy_{TRIVY_VERSION}_Linux-64bit.deb
+wget https://github.com/aquasecurity/trivy/releases/download/{{ git.tag }}/trivy_{{ git.tag[1:] }}_Linux-64bit.deb
+sudo dpkg -i trivy_{{ git.tag[1:] }}_Linux-64bit.deb
 ```
 
 
@@ -82,19 +78,21 @@ Or through your configuration on NixOS or with home-manager as usual
 This script downloads Trivy binary based on your OS and architecture.
 
 ```bash
-$ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin {{ git.tag }}
 ```
 
 ## Binary
 
-Get the latest version from [this page](https://github.com/aquasecurity/trivy/releases/latest), and download the archive file for your operating system/architecture. Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like). Make sure it has execution bits turned on.
+Download the archive file for your operating system/architecture from [here](https://github.com/aquasecurity/trivy/releases/tag/{{ git.tag }}). 
+Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like).
+Make sure it has execution bits turned on.
 
 ## From source
 
 ```bash
 $ mkdir -p $GOPATH/src/github.com/aquasecurity
 $ cd $GOPATH/src/github.com/aquasecurity
-$ git clone https://github.com/aquasecurity/trivy
+$ git clone --depth 1 --branch {{ git.tag }} https://github.com/aquasecurity/trivy
 $ cd trivy/cmd/trivy/
 $ export GO111MODULE=on
 $ go install
@@ -105,26 +103,26 @@ $ go install
 Replace [YOUR_CACHE_DIR] with the cache directory on your machine.
 
 ```bash
-$ docker pull aquasec/trivy
+docker pull aquasec/trivy:{{ git.tag[1:] }}
 ```
 
 Example for Linux:
 
 ```bash
-$ docker run --rm -v [YOUR_CACHE_DIR]:/root/.cache/ aquasec/trivy [YOUR_IMAGE_NAME]
+docker run --rm -v [YOUR_CACHE_DIR]:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} [YOUR_IMAGE_NAME]
 ```
 
 Example for macOS:
 
 ```bash
-$ docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy python:3.4-alpine
+docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} python:3.4-alpine
 ```
 
 If you would like to scan the image on your host machine, you need to mount `docker.sock`.
 
 ```bash
-$ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-    -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy python:3.4-alpine
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+    -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} python:3.4-alpine
 ```
 
 Please re-pull latest `aquasec/trivy` if an error occurred.
@@ -155,7 +153,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 The same image is hosted on [GitHub Container Registry][registry] as well.
 
 ```bash
-$ docker pull ghcr.io/aquasecurity/trivy:latest
+docker pull ghcr.io/aquasecurity/trivy:{{ git.tag[1:] }}
 ```
 
 [registry]: https://github.com/orgs/aquasecurity/packages/container/package/trivy
@@ -165,5 +163,5 @@ $ docker pull ghcr.io/aquasecurity/trivy:latest
 The same image is hosted on [Amazon ECR Public](https://gallery.ecr.aws/aquasecurity/trivy) as well.
 
 ```bash
-$ docker pull public.ecr.aws/aquasecurity/trivy:latest
+docker pull public.ecr.aws/aquasecurity/trivy:{{ git.tag[1:] }}
 ```
