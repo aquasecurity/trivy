@@ -9,7 +9,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/trivy/internal/artifact/config"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )
 
@@ -25,7 +24,7 @@ func repositoryScanner(ctx context.Context, dir string, ac cache.ArtifactCache, 
 
 // RepositoryRun runs scan on repository
 func RepositoryRun(cliCtx *cli.Context) error {
-	c, err := config.New(cliCtx)
+	c, err := NewConfig(cliCtx)
 	if err != nil {
 		return err
 	}

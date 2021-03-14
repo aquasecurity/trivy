@@ -1,4 +1,4 @@
-package config
+package artifact
 
 import (
 	"flag"
@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap/zaptest/observer"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/internal/config"
+	"github.com/aquasecurity/trivy/pkg/commands/config"
 )
 
 func TestConfig_Init(t *testing.T) {
@@ -188,7 +188,7 @@ func TestConfig_Init(t *testing.T) {
 			ctx := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
 
-			c, err := New(ctx)
+			c, err := NewConfig(ctx)
 			require.NoError(t, err, err)
 
 			c.GlobalConfig.Logger = logger.Sugar()
@@ -204,6 +204,7 @@ func TestConfig_Init(t *testing.T) {
 			// test the error
 			switch {
 			case tt.wantErr != "":
+				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			default:

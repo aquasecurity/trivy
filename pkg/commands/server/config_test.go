@@ -1,4 +1,4 @@
-package config_test
+package server_test
 
 import (
 	"flag"
@@ -8,20 +8,20 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/urfave/cli/v2"
 
-	"github.com/aquasecurity/trivy/internal/config"
-	c "github.com/aquasecurity/trivy/internal/server/config"
+	"github.com/aquasecurity/trivy/pkg/commands/config"
+	"github.com/aquasecurity/trivy/pkg/commands/server"
 )
 
 func TestNew(t *testing.T) {
 	tests := []struct {
 		name string
 		args []string
-		want c.Config
+		want server.Config
 	}{
 		{
 			name: "happy path",
 			args: []string{"-quiet", "--no-progress", "--reset", "--skip-update", "--listen", "localhost:8080"},
-			want: c.Config{
+			want: server.Config{
 				GlobalConfig: config.GlobalConfig{
 					Quiet: true,
 				},
@@ -49,7 +49,7 @@ func TestNew(t *testing.T) {
 
 			tt.want.GlobalConfig.Context = ctx
 
-			got := c.New(ctx)
+			got := server.NewConfig(ctx)
 			assert.Equal(t, tt.want.GlobalConfig.Quiet, got.Quiet, tt.name)
 			assert.Equal(t, tt.want.DBConfig, got.DBConfig, tt.name)
 			assert.Equal(t, tt.want.Listen, got.Listen, tt.name)
@@ -88,7 +88,7 @@ func TestConfig_Init(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &c.Config{
+			c := &server.Config{
 				DBConfig: tt.dbConfig,
 			}
 

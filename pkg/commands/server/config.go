@@ -1,9 +1,9 @@
-package config
+package server
 
 import (
 	"github.com/urfave/cli/v2"
 
-	"github.com/aquasecurity/trivy/internal/config"
+	"github.com/aquasecurity/trivy/pkg/commands/config"
 )
 
 // Config holds the Trivy config
@@ -17,8 +17,8 @@ type Config struct {
 	TokenHeader string
 }
 
-// New is the factory method to return config
-func New(c *cli.Context) Config {
+// NewConfig is the factory method to return config
+func NewConfig(c *cli.Context) Config {
 	// the error is ignored because logger is unnecessary
 	gc, _ := config.NewGlobalConfig(c) // nolint: errcheck
 	return Config{

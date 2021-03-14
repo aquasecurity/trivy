@@ -1,4 +1,4 @@
-package internal
+package commands
 
 import (
 	"encoding/json"
@@ -13,10 +13,10 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/internal/artifact"
-	"github.com/aquasecurity/trivy/internal/client"
-	"github.com/aquasecurity/trivy/internal/plugin"
-	"github.com/aquasecurity/trivy/internal/server"
+	"github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/client"
+	"github.com/aquasecurity/trivy/pkg/commands/plugin"
+	"github.com/aquasecurity/trivy/pkg/commands/server"
 	tdb "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"

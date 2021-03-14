@@ -5,19 +5,18 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/internal/operation"
-	"github.com/aquasecurity/trivy/internal/server/config"
+	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/rpc/server"
+	rpcServer "github.com/aquasecurity/trivy/pkg/rpc/server"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 // Run runs the scan
 func Run(ctx *cli.Context) error {
-	return run(config.New(ctx))
+	return run(NewConfig(ctx))
 }
 
-func run(c config.Config) (err error) {
+func run(c Config) (err error) {
 	if err = log.InitLogger(c.Debug, c.Quiet); err != nil {
 		return xerrors.Errorf("failed to initialize a logger: %w", err)
 	}
@@ -53,5 +52,6 @@ func run(c config.Config) (err error) {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 
-	return server.ListenAndServe(c, cache)
+	server := rpcServer.NewServer(c.AppVersion, c.Listen, c.CacheDir, c.Token, c.TokenHeader)
+	return server.ListenAndServe(cache)
 }
