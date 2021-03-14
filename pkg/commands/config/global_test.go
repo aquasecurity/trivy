@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/urfave/cli/v2"
 
-	"github.com/aquasecurity/trivy/internal/config"
+	"github.com/aquasecurity/trivy/pkg/commands/config"
 )
 
 func TestNewGlobalConfig(t *testing.T) {

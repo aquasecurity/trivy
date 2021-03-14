@@ -1,4 +1,4 @@
-package config
+package client
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/internal/config"
+	"github.com/aquasecurity/trivy/pkg/commands/config"
 )
 
 // Config holds the Trivy client config
@@ -27,7 +27,7 @@ type Config struct {
 }
 
 // New is the factory method for Config
-func New(c *cli.Context) (Config, error) {
+func NewConfig(c *cli.Context) (Config, error) {
 	gc, err := config.NewGlobalConfig(c)
 	if err != nil {
 		return Config{}, xerrors.Errorf("failed to initialize global options: %w", err)

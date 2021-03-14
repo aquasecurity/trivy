@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/urfave/cli/v2"
 
-	"github.com/aquasecurity/trivy/internal/config"
+	"github.com/aquasecurity/trivy/pkg/commands/config"
 )
 
 func TestNewDBConfig(t *testing.T) {
