@@ -7,7 +7,7 @@
     - [Tweaking Trivy output to fit your workflow][tweaking]
     - [How does a vulnerability scanner identify packages?][identify]
 - CNCF Webinar 2020
-  - [Trivy Open Source Scanner for Container Images – Just Download and Run!][cncf]
+    - [Trivy Open Source Scanner for Container Images – Just Download and Run!][cncf]
 - KubeCon + CloudNativeCon Europe 2020 Virtual
   - [Handling Container Vulnerabilities with Open Policy Agent - Teppei Fukuda, Aqua Security][kubecon]
   
