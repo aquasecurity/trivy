@@ -171,7 +171,7 @@ $ sudo apt-get install trivy
 or
 
 ```
-$ wget https://github.com/aquasecurity/trivy/releases/download/{TRIVY_VERSION}/trivy_{TRIVY_VERSION}_Linux-64bit.deb
+$ wget https://github.com/aquasecurity/trivy/releases/download/v{TRIVY_VERSION}/trivy_{TRIVY_VERSION}_Linux-64bit.deb
 $ sudo dpkg -i trivy_{TRIVY_VERSION}_Linux-64bit.deb
 ```
 
