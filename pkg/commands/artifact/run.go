@@ -10,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -24,7 +25,7 @@ var errSkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanner type to define initialize function signature
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration,
-	[]analyzer.Type) (scanner.Scanner, func(), error)
+	[]analyzer.Type, config.ScannerOption) (scanner.Scanner, func(), error)
 
 func run(opt Option, initializeScanner InitializeScanner) error {
 	ctx, cancel := context.WithTimeout(context.Background(), opt.Timeout)
@@ -130,7 +131,6 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		ListAllPackages:     opt.ListAllPkgs,
 		SkipFiles:           opt.SkipFiles,
 		SkipDirectories:     opt.SkipDirectories,
-		OPAPolicy:           opt.OPAPolicy,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
@@ -140,7 +140,17 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		disabledAnalyzers = []analyzer.Type{}
 	}
 
-	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Timeout, disabledAnalyzers)
+	// ScannerOptions is filled only when config scanning is enabled.
+	var configScannerOptions config.ScannerOption
+	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
+		configScannerOptions = config.ScannerOption{
+			PolicyPaths: opt.OPAPolicy,
+			DataPaths:   opt.OPAData,
+		}
+	}
+
+	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Timeout,
+		disabledAnalyzers, configScannerOptions)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
@@ -156,9 +166,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 func filter(ctx context.Context, opt Option, results report.Results) (report.Results, error) {
 	vulnClient := initializeVulnerabilityClient()
 	for i := range results {
-		if results[i].Type != "config" {
-			vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
-		}
+		vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
 		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
 			opt.Severities, opt.IgnoreUnfixed, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
