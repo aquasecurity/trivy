@@ -216,45 +216,9 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Overview
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="." class="md-nav__link md-nav__link--active">
         Overview
       </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#abstract" class="md-nav__link">
-    Abstract
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
-    Features
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -565,6 +529,20 @@
   
   
     <li class="md-nav__item">
+      <a href="examples/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="examples/filter/" class="md-nav__link">
         Vulnerability Filtering
       </a>
@@ -622,7 +600,7 @@
   
     <li class="md-nav__item">
       <a href="examples/skip/" class="md-nav__link">
-        Skip Files/Directories
+        Skip Traversal of Files/Directories
       </a>
     </li>
   
@@ -1145,9 +1123,86 @@
   
   
     <li class="md-nav__item">
+      <a href="further/" class="md-nav__link">
+        Further Reading
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="faq/" class="md-nav__link">
         FAQ
       </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_15" type="checkbox" id="__nav_15" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_15">
+          Maintainer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Maintainer" data-md-level="1">
+        <label class="md-nav__title" for="__nav_15">
+          <span class="md-nav__icon md-icon"></span>
+          Maintainer
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contrib/help-wanted/" class="md-nav__link">
+        Help Wanted
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contrib/triage/" class="md-nav__link">
+        Triage
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -1185,28 +1240,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#abstract" class="md-nav__link">
-    Abstract
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
-    Features
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1220,16 +1253,28 @@
                 
                 <h1 id="welcome-to-trivy">Welcome to Trivy</h1>
 <p>A Simple and Comprehensive Vulnerability Scanner for Containers and other Artifacts, Suitable for CI.</p>
-<p><img src="imgs/usage.gif" width="700">
-<img src="imgs/usage1.png" width="600">
-<img src="imgs/usage2.png" width="600"></p>
-<h2 id="abstract">Abstract</h2>
+<h1 id="abstract">Abstract</h1>
 <p><code>Trivy</code> (<code>tri</code> pronounced like <strong>tri</strong>gger, <code>vy</code> pronounced like en<strong>vy</strong>) is a simple and comprehensive vulnerability scanner for containers and other artifacts.
 A software vulnerability is a glitch, flaw, or weakness present in the software or in an Operating System.
 <code>Trivy</code> detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, yarn, etc.).
 <code>Trivy</code> is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify a target such as an image name of the container.</p>
+<p><img src="imgs/overview.png" width="700"></p>
+<p>Trivy can be run in two different modes:</p>
+<ul>
+<li><a href="modes/standalone/">Standalone</a></li>
+<li><a href="modes/client-server/">Client/Server</a></li>
+</ul>
+<p>Trivy can scan three different artifacts:</p>
+<ul>
+<li><a href="scanning/image/">Container Images</a></li>
+<li><a href="scanning/filesystem/">Filesystem</a></li>
+<li><a href="scanning/git-repository/">Git Repositories</a></li>
+</ul>
+<p><img src="imgs/usage.gif" width="700">
+<img src="imgs/usage1.png" width="600">
+<img src="imgs/usage2.png" width="600"></p>
 <p>It is considered to be used in CI. Before pushing to a container registry or deploying your application, you can scan your local container image and other artifacts easily.
-See <a href="#continuous-integration-ci">here</a> for details.</p>
+See <a href="integrations/">here</a> for details.</p>
 <h2 id="features">Features</h2>
 <ul>
 <li>Detect comprehensive vulnerabilities<ul>
@@ -1239,7 +1284,7 @@ See <a href="#continuous-integration-ci">here</a> for details.</p>
 </li>
 <li>Simple<ul>
 <li>Specify only an image name or artifact name</li>
-<li>See <a href="#quick-start">Quick Start</a> and <a href="#examples">Examples</a></li>
+<li>See <a href="quickstart/">Quick Start</a> and <a href="examples/">Examples</a></li>
 </ul>
 </li>
 <li>Fast<ul>
@@ -1248,7 +1293,7 @@ See <a href="#continuous-integration-ci">here</a> for details.</p>
 </ul>
 </li>
 <li>Easy installation<ul>
-<li><code>apt-get install</code>, <code>yum install</code> and <code>brew install</code> is possible (See <a href="#installation">Installation</a>)</li>
+<li><code>apt-get install</code>, <code>yum install</code> and <code>brew install</code> is possible (See <a href="installation/">Installation</a>)</li>
 <li><strong>No pre-requisites</strong> such as installation of DB, libraries, etc.</li>
 </ul>
 </li>
@@ -1259,7 +1304,7 @@ See <a href="#continuous-integration-ci">here</a> for details.</p>
 </li>
 <li>DevSecOps<ul>
 <li><strong>Suitable for CI</strong> such as Travis CI, CircleCI, Jenkins, GitLab CI, etc.</li>
-<li>See <a href="#continuous-integration-ci">CI Example</a></li>
+<li>See <a href="integrations/">CI Example</a></li>
 </ul>
 </li>
 <li>Support multiple formats<ul>
@@ -1276,7 +1321,11 @@ See <a href="#continuous-integration-ci">here</a> for details.</p>
 </ul>
 </li>
 </ul>
-<p>Please see <a href="https://github.com/aquasecurity/trivy/blob/main/LICENSE">LICENSE</a> for Trivy licensing information. Note that Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only.</p>
+<p>Please see <a href="https://github.com/aquasecurity/trivy/blob/main/LICENSE">LICENSE</a> for Trivy licensing information.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only.</p>
+</div>
                 
               
               
