@@ -30,8 +30,8 @@ func NewRemoteCache(url RemoteURL, customHeaders http.Header) cache.ArtifactCach
 }
 
 // PutArtifact sends artifact to remote client
-func (c RemoteCache) PutArtifact(imageID string, imageInfo types.ArtifactInfo) error {
-	_, err := c.client.PutArtifact(c.ctx, rpc.ConvertToRPCArtifactInfo(imageID, imageInfo))
+func (c RemoteCache) PutArtifact(imageID string, artifactInfo types.ArtifactInfo) error {
+	_, err := c.client.PutArtifact(c.ctx, rpc.ConvertToRPCArtifactInfo(imageID, artifactInfo))
 	if err != nil {
 		return xerrors.Errorf("unable to store cache on the server: %w", err)
 	}
@@ -39,8 +39,8 @@ func (c RemoteCache) PutArtifact(imageID string, imageInfo types.ArtifactInfo) e
 }
 
 // PutBlob sends blobInfo to remote client
-func (c RemoteCache) PutBlob(diffID string, layerInfo types.BlobInfo) error {
-	_, err := c.client.PutBlob(c.ctx, rpc.ConvertToRPCBlobInfo(diffID, layerInfo))
+func (c RemoteCache) PutBlob(diffID string, blobInfo types.BlobInfo) error {
+	_, err := c.client.PutBlob(c.ctx, rpc.ConvertToRPCBlobInfo(diffID, blobInfo))
 	if err != nil {
 		return xerrors.Errorf("unable to store cache on the server: %w", err)
 	}
