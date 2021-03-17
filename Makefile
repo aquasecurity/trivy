@@ -5,6 +5,9 @@ GOPATH=$(shell go env GOPATH)
 GOBIN=$(GOPATH)/bin
 GOSRC=$(GOPATH)/src
 
+MKDOCS_IMAGE := aquasec/mkdocs-material:dev
+MKDOCS_PORT := 8000
+
 u := $(if $(update),-u)
 
 $(GOBIN)/wire:
@@ -67,3 +70,9 @@ $(GOBIN)/labeler:
 .PHONY: label
 label: $(GOBIN)/labeler
 	labeler apply misc/triage/labels.yaml -r aquasecurity/trivy -l 5
+
+.PHONY: mkdocs-serve
+## Runs MkDocs development server to preview the documentation page
+mkdocs-serve:
+	docker build -t $(MKDOCS_IMAGE) -f docs/build/Dockerfile docs/build
+	docker run --name mkdocs-serve --rm -v $(PWD):/docs -p $(MKDOCS_PORT):8000 $(MKDOCS_IMAGE)
