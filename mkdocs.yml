@@ -24,11 +24,12 @@ nav:
       - Standalone: modes/standalone.md
       - Client/Server: modes/client-server.md
   - Examples:
+      - Overview: examples/index.md
       - Vulnerability Filtering: examples/filter.md
       - Report Formats: examples/report.md
       - Vulnerability DB: examples/db.md
       - Cache: examples/cache.md
-      - Skip Files/Directories: examples/skip.md
+      - Skip Traversal of Files/Directories: examples/skip.md
       - Others: examples/others.md
   - Integrations:
       - Overview: integrations/index.md
@@ -60,7 +61,11 @@ nav:
   - Plugins: plugins.md
   - Air-Gapped Environment: air-gap.md
   - Comparison with Other Scanners: comparison.md
+  - Further Reading: further.md
   - FAQ: faq.md
+  - Maintainer:
+      - Help Wanted: contrib/help-wanted.md
+      - Triage: contrib/triage.md
   - Credits: credit.md
 
 theme:
