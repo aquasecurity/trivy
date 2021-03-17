@@ -27,15 +27,18 @@ var errSkipScan = errors.New("skip subsequent processes")
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration,
 	[]analyzer.Type, config.ScannerOption) (scanner.Scanner, func(), error)
 
+// InitCache defines cache initializer
+type InitCache func(c Option) (cache.Cache, error)
+
 // Run performs artifact scanning
-func Run(opt Option, initializeScanner InitializeScanner) error {
+func Run(opt Option, initializeScanner InitializeScanner, initCache InitCache) error {
 	ctx, cancel := context.WithTimeout(context.Background(), opt.Timeout)
 	defer cancel()
 
-	return runWithContext(ctx, opt, initializeScanner)
+	return runWithContext(ctx, opt, initializeScanner, initCache)
 }
 
-func runWithContext(ctx context.Context, opt Option, initializeScanner InitializeScanner) error {
+func runWithContext(ctx context.Context, opt Option, initializeScanner InitializeScanner, initCache InitCache) error {
 	if err := log.InitLogger(opt.Debug, opt.Quiet); err != nil {
 		l.Fatal(err)
 	}
@@ -76,7 +79,7 @@ func runWithContext(ctx context.Context, opt Option, initializeScanner Initializ
 	return nil
 }
 
-func initCache(c Option) (operation.Cache, error) {
+func initFSCache(c Option) (cache.Cache, error) {
 	utils.SetCacheDir(c.CacheDir)
 	cache, err := operation.NewCache(c.CacheBackend)
 	if err != nil {

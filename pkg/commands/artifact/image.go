@@ -45,8 +45,8 @@ func ImageRun(cliCtx *cli.Context) error {
 
 	if opt.Input != "" {
 		// scan tar file
-		return Run(opt, archiveScanner)
+		return Run(opt, archiveScanner, initFSCache)
 	}
 
-	return Run(opt, dockerScanner)
+	return Run(opt, dockerScanner, initFSCache)
 }

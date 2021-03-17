@@ -14,7 +14,7 @@ func ConfigRun(cliCtx *cli.Context) error {
 		return xerrors.Errorf("option error: %w", err)
 	}
 
-	// initialize config
+	// initialize options
 	if err = opt.Init(); err != nil {
 		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
@@ -24,5 +24,5 @@ func ConfigRun(cliCtx *cli.Context) error {
 	opt.SecurityChecks = []string{types.SecurityCheckConfig}
 
 	// Run filesystem command internally
-	return Run(opt, filesystemScanner)
+	return Run(opt, filesystemScanner, initFSCache)
 }

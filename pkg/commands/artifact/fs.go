@@ -34,5 +34,5 @@ func FilesystemRun(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
 
-	return Run(opt, filesystemScanner)
+	return Run(opt, filesystemScanner, initFSCache)
 }
