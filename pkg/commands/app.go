@@ -578,9 +578,10 @@ func NewConfigCommand() *cli.Command {
 // NewPluginCommand is the factory method to add plugin command
 func NewPluginCommand() *cli.Command {
 	return &cli.Command{
-		Name:    "plugin",
-		Aliases: []string{"p"},
-		Usage:   "manage plugins",
+		Name:      "plugin",
+		Aliases:   []string{"p"},
+		ArgsUsage: "plugin_uri",
+		Usage:     "manage plugins",
 		Subcommands: cli.Commands{
 			{
 				Name:      "install",
