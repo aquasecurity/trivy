@@ -22,7 +22,6 @@ import (
 	clocktesting "k8s.io/utils/clock/testing"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -159,10 +158,6 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		},
 	}
 
-	if err := log.InitLogger(false, true); err != nil {
-		require.NoError(t, err, "failed to init logger")
-	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			fs := afero.NewMemMapFs()
@@ -240,9 +235,6 @@ func TestClient_Download(t *testing.T) {
 			expectedError: xerrors.New("invalid gzip file: unexpected EOF"),
 		},
 	}
-
-	err := log.InitLogger(false, true)
-	require.NoError(t, err, "failed to init logger")
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -351,9 +343,6 @@ func TestClient_UpdateMetadata(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			mockConfig := new(mockDbOperation)
-			err := log.InitLogger(false, true)
-			require.NoError(t, err, "failed to init logger")
-
 			mockConfig.ApplyGetMetadataExpectation(tc.getMetadataExpectation)
 			mockConfig.ApplyStoreMetadataExpectation(tc.storeMetadataExpectation)
 

@@ -109,7 +109,7 @@ func (s Scanner) Scan(target, versionedArtifactID string, versionedBlobIDs []str
 	}
 
 	// Scan IaC config files
-	if utils.StringInSlice(types.SecurityCheckIaC, options.SecurityChecks) {
+	if utils.StringInSlice(types.SecurityCheckConfig, options.SecurityChecks) {
 		iacResults, err := s.scanConfig(artifactDetail.Configs, options)
 		if err != nil {
 			return nil, nil, false, xerrors.Errorf("failed to scan config files: %w", err)

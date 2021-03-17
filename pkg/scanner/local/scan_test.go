@@ -18,7 +18,6 @@ import (
 	dtypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -797,7 +796,6 @@ func TestScanner_Scan(t *testing.T) {
 		},
 	}
 
-	log.InitLogger(false, true)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_ = dbtest.InitDB(t, tt.fixtures)

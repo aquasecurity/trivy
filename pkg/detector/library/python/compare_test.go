@@ -7,7 +7,6 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/python"
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func TestPep440Comparer_IsVulnerable(t *testing.T) {
@@ -107,7 +106,6 @@ func TestPep440Comparer_IsVulnerable(t *testing.T) {
 			want: false,
 		},
 	}
-	log.InitLogger(false, false)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := python.Pep440Comparer{}

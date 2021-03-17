@@ -13,9 +13,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/pkg/log"
 	"golang.org/x/xerrors"
 
 	"github.com/stretchr/testify/assert"
@@ -410,9 +407,6 @@ func TestClient_DownloadDB(t *testing.T) {
 			expectedError: xerrors.New("DB file not found"),
 		},
 	}
-
-	err := log.InitLogger(false, true)
-	require.NoError(t, err, "Init logger failed")
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {

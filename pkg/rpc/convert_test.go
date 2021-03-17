@@ -1,7 +1,6 @@
 package rpc
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -12,18 +11,11 @@ import (
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/common"
 	"github.com/aquasecurity/trivy/rpc/scanner"
 )
-
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	code := m.Run()
-	os.Exit(code)
-}
 
 func TestConvertToRpcPkgs(t *testing.T) {
 	type args struct {

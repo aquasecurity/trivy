@@ -1,7 +1,6 @@
 package redhat
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -12,14 +11,8 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
-
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	os.Exit(m.Run())
-}
 
 func TestScanner_Detect(t *testing.T) {
 	type args struct {

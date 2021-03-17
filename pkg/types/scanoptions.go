@@ -9,7 +9,7 @@ type ScanOptions struct {
 	SkipFiles           []string
 	SkipDirectories     []string
 
-	// IaC scanning
+	// Config scanning
 	OPAPolicy []string
 	OPAData   []string
 }

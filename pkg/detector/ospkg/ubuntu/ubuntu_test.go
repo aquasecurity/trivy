@@ -1,7 +1,6 @@
 package ubuntu
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -10,8 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type MockUbuntuConfig struct {
@@ -31,11 +28,6 @@ func (muc MockUbuntuConfig) Get(a string, b string) ([]dbTypes.Advisory, error) 
 		return muc.get(a, b)
 	}
 	return []dbTypes.Advisory{}, nil
-}
-
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	os.Exit(m.Run())
 }
 
 func TestScanner_IsSupportedVersion(t *testing.T) {

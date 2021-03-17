@@ -1,7 +1,6 @@
 package oracle
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -14,14 +13,8 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
-
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	os.Exit(m.Run())
-}
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	vectors := map[string]struct {

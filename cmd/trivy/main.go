@@ -1,11 +1,9 @@
 package main
 
 import (
-	l "log"
 	"os"
 
-	"github.com/aquasecurity/trivy/internal"
-
+	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -14,12 +12,9 @@ var (
 )
 
 func main() {
-	app := internal.NewApp(version)
+	app := commands.NewApp(version)
 	err := app.Run(os.Args)
 	if err != nil {
-		if log.Logger != nil {
-			log.Fatal(err)
-		}
-		l.Fatal(err)
+		log.Fatal(err)
 	}
 }

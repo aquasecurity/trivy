@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func TestComparer_IsVulnerable(t *testing.T) {
@@ -76,7 +75,6 @@ func TestComparer_IsVulnerable(t *testing.T) {
 			want: false,
 		},
 	}
-	log.InitLogger(false, false)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := maven.Comparer{}

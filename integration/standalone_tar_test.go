@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/internal"
+	"github.com/aquasecurity/trivy/pkg/commands"
 )
 
 func TestRun_WithTar(t *testing.T) {
@@ -378,7 +378,7 @@ func TestRun_WithTar(t *testing.T) {
 	defer os.RemoveAll(cacheDir)
 
 	// Setup CLI App
-	app := internal.NewApp("dev")
+	app := commands.NewApp("dev")
 	app.Writer = ioutil.Discard
 
 	for _, c := range cases {

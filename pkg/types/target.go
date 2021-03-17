@@ -17,12 +17,12 @@ const (
 	// security checks
 	SecurityCheckUnknown       = SecurityCheck("unknown")
 	SecurityCheckVulnerability = SecurityCheck("vuln")
-	SecurityCheckIaC           = SecurityCheck("iac")
+	SecurityCheckConfig        = SecurityCheck("config")
 )
 
 var (
 	vulnTypes      = []string{VulnTypeOS, VulnTypeLibrary}
-	securityChecks = []string{SecurityCheckVulnerability, SecurityCheckIaC}
+	securityChecks = []string{SecurityCheckVulnerability, SecurityCheckConfig}
 )
 
 // NewVulnType returns an instance of VulnType
