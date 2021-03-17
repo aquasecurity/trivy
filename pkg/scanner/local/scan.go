@@ -1,7 +1,6 @@
 package local
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -11,16 +10,10 @@ import (
 	"time"
 
 	"github.com/google/wire"
-	"github.com/open-policy-agent/conftest/output"
-	"github.com/open-policy-agent/conftest/policy"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
-	_ "github.com/aquasecurity/fanal/analyzer/config/docker"
-	_ "github.com/aquasecurity/fanal/analyzer/config/json"
-	_ "github.com/aquasecurity/fanal/analyzer/config/toml"
-	_ "github.com/aquasecurity/fanal/analyzer/config/yaml"
 	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
 	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
 	_ "github.com/aquasecurity/fanal/analyzer/library/composer"
@@ -110,11 +103,8 @@ func (s Scanner) Scan(target, versionedArtifactID string, versionedBlobIDs []str
 
 	// Scan IaC config files
 	if utils.StringInSlice(types.SecurityCheckConfig, options.SecurityChecks) {
-		iacResults, err := s.scanConfig(artifactDetail.Configs, options)
-		if err != nil {
-			return nil, nil, false, xerrors.Errorf("failed to scan config files: %w", err)
-		}
-		results = append(results, iacResults...)
+		configResults := s.misconfsToResults(artifactDetail.Misconfigurations, options)
+		results = append(results, configResults...)
 	}
 
 	return results, artifactDetail.OS, eosl, nil
@@ -251,100 +241,56 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 	return results, nil
 }
 
-func (s Scanner) scanConfig(configs []ftypes.Config, options types.ScanOptions) (report.Results, error) {
-	log.Logger.Infof("Number of config files: %d", len(configs))
-
-	ctx := context.TODO()
-	configurations := map[string]interface{}{}
-	for _, conf := range configs {
-		if skipped(conf.FilePath, options.SkipFiles, options.SkipDirectories) {
+func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) report.Results {
+	log.Logger.Infof("Detected config files: %d", len(misconfs))
+	var results report.Results
+	for _, misconf := range misconfs {
+		if skipped(misconf.FilePath, options.SkipFiles, options.SkipDirectories) {
 			continue
 		}
-		log.Logger.Debugf("Scanned config file: %s", conf.FilePath)
-		configurations[conf.FilePath] = conf.Content
-	}
 
-	engine, err := policy.LoadWithData(ctx, options.OPAPolicy, options.OPAData)
-	if err != nil {
-		return nil, xerrors.Errorf("policy load error: %w", err)
-	}
+		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
 
-	uniqResults := map[string][]types.DetectedVulnerability{}
-	for _, namespace := range engine.Namespaces() {
-		result, err := engine.Check(ctx, configurations, namespace)
-		if err != nil {
-			return nil, xerrors.Errorf("query rule: %w", err)
+		var detected []types.DetectedMisconfiguration
+		for _, f := range misconf.Failures {
+			detected = append(detected, toDetectedMisconfiguration(f, dbTypes.SeverityCritical, misconf.Layer))
+		}
+		for _, w := range misconf.Warnings {
+			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityMedium, misconf.Layer))
 		}
 
-		for _, r := range result {
-			var vulns []types.DetectedVulnerability
-			for _, f := range r.Failures {
-				vulns = append(vulns, resultToVuln(f, dbTypes.SeverityCritical))
-			}
-			for _, w := range r.Warnings {
-				vulns = append(vulns, resultToVuln(w, dbTypes.SeverityMedium))
-			}
-
-			uniqResults[r.FileName] = append(uniqResults[r.FileName], vulns...)
-		}
-	}
-
-	var results report.Results
-	for fileName, vulns := range uniqResults {
 		results = append(results, report.Result{
-			Target:          fileName,
-			Type:            "conf", // TODO
-			Vulnerabilities: vulns,
+			Target:            misconf.FilePath,
+			Type:              "conf", // TODO
+			Misconfigurations: detected,
 		})
 	}
 
-	return results, nil
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].Target < results[j].Target
+	})
+
+	return results
 }
 
-func resultToVuln(res output.Result, defaultSeverity dbTypes.Severity) types.DetectedVulnerability {
-	vulnerabilityID := "UNKNOWN"
-	if v, ok := res.Metadata["id"]; ok {
-		switch vv := v.(type) {
-		case string:
-			vulnerabilityID = vv
-		default:
-			log.Logger.Warn("id in the policy must be string (%T)", vv)
-		}
-	}
-
-	checkType := "UNKNOWN"
-	if v, ok := res.Metadata["type"]; ok {
-		switch vv := v.(type) {
-		case string:
-			checkType = vv
-		default:
-			log.Logger.Warn("type in the policy must be string (%T)", vv)
-		}
-	}
+func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbTypes.Severity,
+	layer ftypes.Layer) types.DetectedMisconfiguration {
 
 	severity := defaultSeverity
-	if v, ok := res.Metadata["severity"]; ok {
-		switch vv := v.(type) {
-		case string:
-			sev, err := dbTypes.NewSeverity(vv)
-			if err != nil {
-				log.Logger.Warnf("severity must be %s", dbTypes.SeverityNames)
-			} else {
-				severity = sev
-			}
-		default:
-			log.Logger.Warnf("id in the policy must be string (%T)", vv)
-		}
+	sev, err := dbTypes.NewSeverity(res.Severity)
+	if err != nil {
+		log.Logger.Warnf("severity must be %s", dbTypes.SeverityNames)
+	} else {
+		severity = sev
 	}
 
-	return types.DetectedVulnerability{
-		VulnerabilityID: vulnerabilityID,
-		PkgName:         checkType, // the type is not package, but pseudo package name
-		Layer:           ftypes.Layer{},
-		Vulnerability: dbTypes.Vulnerability{
-			Title:    res.Message,
-			Severity: severity.String(),
-		},
+	return types.DetectedMisconfiguration{
+		ID:         res.ID,
+		Type:       res.Type,
+		Message:    strings.TrimSpace(res.Message),
+		Severity:   severity.String(),
+		PrimaryURL: fmt.Sprintf("https://avd.aquasec.com/%s", res.ID),
+		Layer:      layer,
 	}
 }
 
