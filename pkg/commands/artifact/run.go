@@ -27,7 +27,8 @@ var errSkipScan = errors.New("skip subsequent processes")
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration,
 	[]analyzer.Type, config.ScannerOption) (scanner.Scanner, func(), error)
 
-func run(opt Option, initializeScanner InitializeScanner) error {
+// Run performs artifact scanning
+func Run(opt Option, initializeScanner InitializeScanner) error {
 	ctx, cancel := context.WithTimeout(context.Background(), opt.Timeout)
 	defer cancel()
 

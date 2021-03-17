@@ -34,5 +34,5 @@ func RepositoryRun(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
 
-	return run(opt, repositoryScanner)
+	return Run(opt, repositoryScanner)
 }

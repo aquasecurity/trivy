@@ -24,5 +24,5 @@ func ConfigRun(cliCtx *cli.Context) error {
 	opt.SecurityChecks = []string{types.SecurityCheckConfig}
 
 	// Run filesystem command internally
-	return run(opt, filesystemScanner)
+	return Run(opt, filesystemScanner)
 }
