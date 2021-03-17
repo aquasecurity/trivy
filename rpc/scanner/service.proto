@@ -18,6 +18,7 @@ message ScanRequest {
 
 message ScanOptions {
   repeated string vuln_type = 1;
+  repeated string security_checks = 2;
 }
 
 message ScanResponse {
@@ -28,7 +29,8 @@ message ScanResponse {
 
 // Result is the same as github.com/aquasecurity/trivy/pkg/report.Result
 message Result {
-  string   target                               = 1;
-  repeated common.Vulnerability vulnerabilities = 2;
-  string                        type            = 3;
+  string   target                                            = 1;
+  repeated common.Vulnerability vulnerabilities              = 2;
+  repeated common.DetectedMisconfiguration misconfigurations = 4;
+  string                                   type              = 3;
 }

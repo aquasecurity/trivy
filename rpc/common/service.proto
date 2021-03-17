@@ -42,6 +42,31 @@ message Library {
   string version = 2;
 }
 
+message Misconfiguration {
+  string file_type                 = 1;
+  string file_path                 = 2;
+  string namespace                 = 3;
+  int32                  successes = 4;
+  repeated MisconfResult warnings  = 5;
+  repeated MisconfResult failures  = 6;
+}
+
+message MisconfResult {
+  string type     = 1;
+  string id       = 2;
+  string message  = 3;
+  string severity = 4;
+}
+
+message DetectedMisconfiguration {
+  string   type        = 1;
+  string   id          = 2;
+  string   message     = 3;
+  Severity severity    = 4;
+  string   primary_url = 5;
+  Layer    layer       = 6;
+}
+
 message Vulnerability {
   string                    vulnerability_id   = 1;
   string                    pkg_name           = 2;
