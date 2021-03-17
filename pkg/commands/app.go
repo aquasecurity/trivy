@@ -501,6 +501,7 @@ func NewClientCommand() *cli.Command {
 			&ignoreFileFlag,
 			&timeoutFlag,
 			&ignorePolicy,
+			&configPolicy,
 
 			// original flags
 			&token,
@@ -570,7 +571,7 @@ func NewConfigCommand() *cli.Command {
 			&ignorePolicy,
 			&skipFiles,
 			&skipDirectories,
-			&configPolicy,
+			&configPolicyAlias,
 		},
 	}
 }
