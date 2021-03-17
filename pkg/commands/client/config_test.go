@@ -25,7 +25,7 @@ func TestConfig_Init(t *testing.T) {
 		reportConfig option.ReportOption
 		args         []string
 		logs         []string
-		want         Config
+		want         Option
 		wantErr      string
 	}{
 		{
@@ -35,7 +35,7 @@ func TestConfig_Init(t *testing.T) {
 				VulnType:   []string{"os"},
 			},
 			args: []string{"--severity", "CRITICAL", "--vuln-type", "os", "--quiet", "alpine:3.10"},
-			want: Config{
+			want: Option{
 				GlobalOption: option.GlobalOption{
 					Quiet: true,
 				},
@@ -53,7 +53,7 @@ func TestConfig_Init(t *testing.T) {
 		{
 			name: "happy path with token and token header",
 			args: []string{"--token", "secret", "--token-header", "X-Trivy-Token", "alpine:3.11"},
-			want: Config{
+			want: Option{
 				ReportOption: option.ReportOption{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					Output:     os.Stdout,
@@ -72,7 +72,7 @@ func TestConfig_Init(t *testing.T) {
 		{
 			name: "happy path with good custom headers",
 			args: []string{"--custom-headers", "foo:bar", "alpine:3.11"},
-			want: Config{
+			want: Option{
 				ReportOption: option.ReportOption{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					Output:     os.Stdout,
@@ -90,7 +90,7 @@ func TestConfig_Init(t *testing.T) {
 		{
 			name: "happy path with bad custom headers",
 			args: []string{"--custom-headers", "foobaz", "alpine:3.11"},
-			want: Config{
+			want: Option{
 				ReportOption: option.ReportOption{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					Output:     os.Stdout,
@@ -109,7 +109,7 @@ func TestConfig_Init(t *testing.T) {
 			logs: []string{
 				"unknown severity option: unknown severity: INVALID",
 			},
-			want: Config{
+			want: Option{
 				ReportOption: option.ReportOption{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
 					Output:     os.Stdout,
@@ -127,7 +127,7 @@ func TestConfig_Init(t *testing.T) {
 			logs: []string{
 				"--template is ignored because --format template is not specified. Use --template option with --format template option.",
 			},
-			want: Config{
+			want: Option{
 				ReportOption: option.ReportOption{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					Output:     os.Stdout,
@@ -146,7 +146,7 @@ func TestConfig_Init(t *testing.T) {
 			logs: []string{
 				"--template is ignored because --format json is specified. Use --template option with --format template option.",
 			},
-			want: Config{
+			want: Option{
 				ReportOption: option.ReportOption{
 					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 					Output:     os.Stdout,
@@ -166,7 +166,7 @@ func TestConfig_Init(t *testing.T) {
 			logs: []string{
 				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
 			},
-			want: Config{
+			want: Option{
 				ReportOption: option.ReportOption{
 					Severities: []dbTypes.Severity{dbTypes.SeverityMedium},
 					Output:     os.Stdout,
@@ -185,7 +185,7 @@ func TestConfig_Init(t *testing.T) {
 			logs: []string{
 				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
 			},
-			want: Config{
+			want: Option{
 				ReportOption: option.ReportOption{
 					Severities: []dbTypes.Severity{dbTypes.SeverityMedium},
 					Output:     os.Stdout,
@@ -228,7 +228,7 @@ func TestConfig_Init(t *testing.T) {
 			ctx := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
 
-			c, err := NewConfig(ctx)
+			c, err := NewOption(ctx)
 			require.NoError(t, err, err)
 
 			c.GlobalOption.Logger = logger.Sugar()

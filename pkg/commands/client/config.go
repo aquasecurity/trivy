@@ -9,12 +9,13 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// Config holds the Trivy client config
-type Config struct {
+// Option holds the Trivy client options
+type Option struct {
 	option.GlobalOption
 	option.ArtifactOption
 	option.ImageOption
 	option.ReportOption
+	option.ConfigOption
 
 	RemoteAddr    string
 	token         string
@@ -25,18 +26,19 @@ type Config struct {
 	CustomHeaders http.Header
 }
 
-// NewConfig is the factory method for Config
-func NewConfig(c *cli.Context) (Config, error) {
+// NewOption is the factory method for Option
+func NewOption(c *cli.Context) (Option, error) {
 	gc, err := option.NewGlobalOption(c)
 	if err != nil {
-		return Config{}, xerrors.Errorf("failed to initialize global options: %w", err)
+		return Option{}, xerrors.Errorf("failed to initialize global options: %w", err)
 	}
 
-	return Config{
+	return Option{
 		GlobalOption:   gc,
 		ArtifactOption: option.NewArtifactOption(c),
 		ImageOption:    option.NewImageOption(c),
 		ReportOption:   option.NewReportOption(c),
+		ConfigOption:   option.NewConfigOption(c),
 		RemoteAddr:     c.String("remote"),
 		token:          c.String("token"),
 		tokenHeader:    c.String("token-header"),
@@ -44,8 +46,8 @@ func NewConfig(c *cli.Context) (Config, error) {
 	}, nil
 }
 
-// Init initializes the config
-func (c *Config) Init() (err error) {
+// Init initializes the options
+func (c *Option) Init() (err error) {
 	// --clear-cache doesn't conduct the scan
 	if c.ClearCache {
 		return nil

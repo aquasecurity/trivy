@@ -38,7 +38,10 @@ func NewScanServer(s scanner.Driver, vulnClient vulnerability.Operation) *ScanSe
 
 // Scan scans and return response
 func (s *ScanServer) Scan(_ context.Context, in *rpcScanner.ScanRequest) (*rpcScanner.ScanResponse, error) {
-	options := types.ScanOptions{VulnType: in.Options.VulnType}
+	options := types.ScanOptions{
+		VulnType:       in.Options.VulnType,
+		SecurityChecks: in.Options.SecurityChecks,
+	}
 	results, os, eosl, err := s.localScanner.Scan(in.Target, in.ArtifactId, in.BlobIds, options)
 	if err != nil {
 		return nil, xerrors.Errorf("failed scan, %s: %w", in.Target, err)
