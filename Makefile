@@ -5,7 +5,7 @@ GOPATH=$(shell go env GOPATH)
 GOBIN=$(GOPATH)/bin
 GOSRC=$(GOPATH)/src
 
-MKDOCS_IMAGE := aquasec/mkdocs-material:starboard
+MKDOCS_IMAGE := aquasec/mkdocs-material:dev
 MKDOCS_PORT := 8000
 
 u := $(if $(update),-u)
