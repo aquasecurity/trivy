@@ -8,8 +8,4 @@ type ScanOptions struct {
 	ListAllPackages     bool
 	SkipFiles           []string
 	SkipDirectories     []string
-
-	// Config scanning
-	OPAPolicy []string
-	OPAData   []string
 }
