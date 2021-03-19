@@ -1,0 +1,51 @@
+name: Publish Chart Helm
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'helm/trivy/**'
+  workflow_dispatch:
+env:
+  HELM_REP: helm-charts
+  GH_OWNER: aquasecurity
+  CHART_DIR: helm/trivy
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.5.0
+      - name: Install chart-releaser
+        run: |
+          wget https://github.com/helm/chart-releaser/releases/download/v1.1.1/chart-releaser_1.1.1_linux_amd64.tar.gz
+          tar xzvf chart-releaser_1.1.1_linux_amd64.tar.gz cr
+      - name: Package helm chart
+        run: |
+          ./cr package ${{ env.CHART_DIR }}
+      - name: Upload helm chart
+        # Failed with upload the same version: https://github.com/helm/chart-releaser/issues/101
+        continue-on-error: true
+        ## Upload the tar in the Releases repository
+        run: |
+          ./cr upload -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} --token ${{ secrets.ORG_GITHUB_TOKEN }} -p .cr-release-packages
+      - name: Index helm chart
+        run: |
+          ./cr index -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} -c https://${{ env.GH_OWNER }}.github.io/${{ env.HELM_REP }}/ -i index.yaml
+
+      - name: Push index file
+        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.ORG_GITHUB_TOKEN }}
+        with:
+          source_file: 'index.yaml'
+          destination_repo: '${{ env.GH_OWNER }}/${{ env.HELM_REP }}'
+          destination_folder: '.'
+          destination_branch: 'gh-pages'
+          user_email: aqua-bot@users.noreply.github.com
+          user_name: 'aqua-bot'
