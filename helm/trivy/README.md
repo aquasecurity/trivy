@@ -18,6 +18,15 @@ This chart bootstraps a Trivy deployment on a [Kubernetes](http://kubernetes.io)
 - Kubernetes 1.12+
 - Helm 3+
 
+## Installing from the the Aqua Chart Repository
+
+```
+helm repo add aquasecurity https://aquasecurity.github.io/helm-charts/
+helm repo update
+helm search repo trivy
+helm install my-trivy aquasecurity/trivy
+```
+
 ## Installing the Chart
 
 To install the chart with the release name `my-release`:
