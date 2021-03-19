@@ -258,7 +258,7 @@ func TestReportWriter_Template(t *testing.T) {
 			template: `<testsuites>
 {{- range . -}}
 {{- $failures := len .Vulnerabilities }}
-    <testsuite tests="1" failures="{{ $failures }}" time="" name="{{  .Target }}" errors="0" skipped="0">
+    <testsuite tests="{{ $failures }}" failures="{{ $failures }}" time="" name="{{  .Target }}" errors="0" skipped="0">
 	{{- if not (eq .Type "") }}
         <properties>
             <property name="type" value="{{ .Type }}"></property>
@@ -320,7 +320,7 @@ func TestReportWriter_Template(t *testing.T) {
 					PkgName:         "foo",
 					Vulnerability: dbTypes.Vulnerability{
 						Description: "without period",
-						Severity: dbTypes.SeverityCritical.String(),
+						Severity:    dbTypes.SeverityCritical.String(),
 					},
 				},
 				{
@@ -328,7 +328,7 @@ func TestReportWriter_Template(t *testing.T) {
 					PkgName:         "bar",
 					Vulnerability: dbTypes.Vulnerability{
 						Description: "with period.",
-						Severity: dbTypes.SeverityCritical.String(),
+						Severity:    dbTypes.SeverityCritical.String(),
 					},
 				},
 				{
@@ -336,7 +336,7 @@ func TestReportWriter_Template(t *testing.T) {
 					PkgName:         "bar",
 					Vulnerability: dbTypes.Vulnerability{
 						Description: `with period and unescaped string curl: Use-after-free when closing 'easy' handle in Curl_close().`,
-						Severity: dbTypes.SeverityHigh.String(),
+						Severity:    dbTypes.SeverityHigh.String(),
 					},
 				},
 			},
