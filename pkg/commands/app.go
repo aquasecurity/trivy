@@ -200,13 +200,13 @@ var (
 
 	skipFiles = cli.StringFlag{
 		Name:    "skip-files",
-		Usage:   "specify the file path to skip traversal",
+		Usage:   "specify comma separated list of file paths to skip traversal",
 		EnvVars: []string{"TRIVY_SKIP_FILES"},
 	}
 
 	skipDirectories = cli.StringFlag{
 		Name:    "skip-dirs",
-		Usage:   "specify the directory where the traversal is skipped",
+		Usage:   "specify comma separated list of directories where traversal is skipped",
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
