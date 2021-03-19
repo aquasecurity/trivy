@@ -344,6 +344,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#helm" class="md-nav__link">
+    Helm
+  </a>
+  
+    <nav class="md-nav" aria-label="Helm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installing-from-the-the-aqua-chart-repository" class="md-nav__link">
+    Installing from the the Aqua Chart Repository
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-the-chart" class="md-nav__link">
+    Installing the Chart
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1464,6 +1491,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#helm" class="md-nav__link">
+    Helm
+  </a>
+  
+    <nav class="md-nav" aria-label="Helm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installing-from-the-the-aqua-chart-repository" class="md-nav__link">
+    Installing from the the Aqua Chart Repository
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-the-chart" class="md-nav__link">
+    Installing the Chart
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1581,6 +1635,22 @@ Total: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m"
 <p>The same image is hosted on <a href="https://gallery.ecr.aws/aquasecurity/trivy">Amazon ECR Public</a> as well.</p>
 <div class="highlight"><pre><span></span><code>docker pull public.ecr.aws/aquasecurity/trivy:0.16.0
 </code></pre></div>
+<h2 id="helm">Helm</h2>
+<h3 id="installing-from-the-the-aqua-chart-repository">Installing from the the Aqua Chart Repository</h3>
+<div class="highlight"><pre><span></span><code>$ helm repo add aquasecurity https://aquasecurity.github.io/helm-charts/
+$ helm repo update
+$ helm search repo trivy
+$ helm install my-trivy aquasecurity/trivy
+</code></pre></div>
+<h3 id="installing-the-chart">Installing the Chart</h3>
+<p>To install the chart with the release name <code>my-release</code>:</p>
+<div class="highlight"><pre><span></span><code>$ helm install my-release .
+</code></pre></div>
+<p>The command deploys Trivy on the Kubernetes cluster in the default configuration. The <a href="#parameters">Parameters</a>
+section lists the parameters that can be configured during installation.</p>
+<blockquote>
+<p><strong>Tip</strong>: List all releases using <code>helm list</code>.</p>
+</blockquote>
                 
               
               
