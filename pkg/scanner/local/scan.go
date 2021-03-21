@@ -242,7 +242,7 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 
 		results = append(results, report.Result{
 			Target:            misconf.FilePath,
-			Type:              "conf", // TODO
+			Type:              misconf.FileType,
 			Misconfigurations: detected,
 		})
 	}
