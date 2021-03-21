@@ -62,14 +62,15 @@ func runWithContext(ctx context.Context, opt Option) error {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
 
-	vulnClient := initializeVulnerabilityClient()
+	resultClient := initializeResultClient()
 	for i := range results {
-		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
+		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
 			opt.Severities, opt.IgnoreUnfixed, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return err
 		}
 		results[i].Vulnerabilities = vulns
+		results[i].Misconfigurations = misconfs
 	}
 
 	if err = report.WriteResults(opt.Format, opt.Output, opt.Severities, results, opt.Template, false); err != nil {

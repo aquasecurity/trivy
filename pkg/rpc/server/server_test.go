@@ -19,9 +19,9 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	"github.com/aquasecurity/trivy/rpc/common"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
@@ -40,7 +40,7 @@ func TestScanServer_Scan(t *testing.T) {
 		name                string
 		args                args
 		scanExpectation     scanner.DriverScanExpectation
-		fillInfoExpectation vulnerability.OperationFillInfoExpectation
+		fillInfoExpectation result.OperationFillInfoExpectation
 		want                *rpcScanner.ScanResponse
 		wantErr             string
 	}{
@@ -86,8 +86,8 @@ func TestScanServer_Scan(t *testing.T) {
 					},
 				},
 			},
-			fillInfoExpectation: vulnerability.OperationFillInfoExpectation{
-				Args: vulnerability.OperationFillInfoArgs{
+			fillInfoExpectation: result.OperationFillInfoExpectation{
+				Args: result.OperationFillInfoArgs{
 					Vulns: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2019-0001",
@@ -164,7 +164,7 @@ func TestScanServer_Scan(t *testing.T) {
 			mockDriver := new(scanner.MockDriver)
 			mockDriver.ApplyScanExpectation(tt.scanExpectation)
 
-			mockVulnClient := new(vulnerability.MockOperation)
+			mockVulnClient := new(result.MockOperation)
 			mockVulnClient.ApplyFillInfoExpectation(tt.fillInfoExpectation)
 
 			s := NewScanServer(mockDriver, mockVulnClient)

@@ -1,4 +1,4 @@
-package vulnerability
+package result
 
 import (
 	"context"
@@ -354,7 +354,7 @@ func TestClient_FillInfo(t *testing.T) {
 				dbc: mockDBConfig,
 			}
 
-			c.FillInfo(tt.args.vulns, tt.args.reportType)
+			c.FillVulnerabilityInfo(tt.args.vulns, tt.args.reportType)
 			assert.Equal(t, tt.expectedVulnerabilities, tt.args.vulns, tt.name)
 			mockDBConfig.AssertExpectations(t)
 		})
@@ -580,7 +580,7 @@ func TestClient_Filter(t *testing.T) {
 			args: args{
 				vulns: []types.DetectedVulnerability{
 					{
-						// this vulnerability is ignored
+						// this vulnerability is evaluate
 						VulnerabilityID:  "CVE-2019-0001",
 						PkgName:          "foo",
 						InstalledVersion: "1.2.3",
@@ -590,7 +590,7 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 					{
-						// this vulnerability is ignored
+						// this vulnerability is evaluate
 						VulnerabilityID:  "CVE-2019-0002",
 						PkgName:          "foo",
 						InstalledVersion: "1.2.3",
@@ -639,7 +639,7 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 					{
-						// this vulnerability is ignored
+						// this vulnerability is evaluate
 						VulnerabilityID:  "CVE-2019-0002",
 						PkgName:          "foo",
 						InstalledVersion: "1.2.3",
@@ -649,7 +649,7 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 					{
-						// this vulnerability is ignored
+						// this vulnerability is evaluate
 						VulnerabilityID:  "CVE-2019-0003",
 						PkgName:          "foo",
 						InstalledVersion: "1.2.3",

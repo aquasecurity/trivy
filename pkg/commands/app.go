@@ -18,9 +18,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	tdb "github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
 // VersionInfo holds the trivy DB version Info
@@ -163,7 +163,7 @@ var (
 
 	ignoreFileFlag = cli.StringFlag{
 		Name:    "ignorefile",
-		Value:   vulnerability.DefaultIgnoreFile,
+		Value:   result.DefaultIgnoreFile,
 		Usage:   "specify .trivyignore file",
 		EnvVars: []string{"TRIVY_IGNOREFILE"},
 	}

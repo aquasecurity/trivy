@@ -13,8 +13,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/github"
 	"github.com/aquasecurity/trivy/pkg/indicator"
+	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	"github.com/spf13/afero"
 	"k8s.io/utils/clock"
 )
@@ -26,7 +26,7 @@ func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServ
 	detector := ospkg.Detector{}
 	scanner := local.NewScanner(applierApplier, detector)
 	config := db.Config{}
-	client := vulnerability.NewClient(config)
+	client := result.NewClient(config)
 	scanServer := NewScanServer(scanner, client)
 	return scanServer
 }

@@ -174,15 +174,16 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 }
 
 func filter(ctx context.Context, opt Option, results report.Results) (report.Results, error) {
-	vulnClient := initializeVulnerabilityClient()
+	resultClient := initializeResultClient()
 	for i := range results {
-		vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
-		vulns, err := vulnClient.Filter(ctx, results[i].Vulnerabilities,
+		resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
+		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
 			opt.Severities, opt.IgnoreUnfixed, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return nil, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 		results[i].Vulnerabilities = vulns
+		results[i].Misconfigurations = misconfs
 	}
 	return results, nil
 }
