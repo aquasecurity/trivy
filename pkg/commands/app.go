@@ -221,7 +221,6 @@ var (
 	configPolicy = cli.StringSliceFlag{
 		Name:    "config-policy",
 		Usage:   "specify paths to the Rego policy files directory, applying config files",
-		Value:   cli.NewStringSlice("policy"),
 		EnvVars: []string{"TRIVY_CONFIG_POLICY"},
 	}
 
@@ -229,8 +228,13 @@ var (
 		Name:    "policy",
 		Aliases: []string{"config-policy"},
 		Usage:   "specify paths to the Rego policy files directory, applying config files",
-		Value:   cli.NewStringSlice("policy"),
 		EnvVars: []string{"TRIVY_POLICY"},
+	}
+
+	filePatterns = cli.StringSliceFlag{
+		Name:    "file-patterns",
+		Usage:   "specify file patterns",
+		EnvVars: []string{"TRIVY_FILE_PATTERNS"},
 	}
 
 	globalFlags = []cli.Flag{
@@ -572,6 +576,7 @@ func NewConfigCommand() *cli.Command {
 			&skipFiles,
 			&skipDirectories,
 			&configPolicyAlias,
+			&filePatterns,
 		},
 	}
 }

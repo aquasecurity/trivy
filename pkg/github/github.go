@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/google/go-github/v28/github"
+	"github.com/google/go-github/v33/github"
 	"golang.org/x/oauth2"
 	"golang.org/x/xerrors"
 
@@ -44,7 +44,7 @@ func (r Repository) ListReleases(ctx context.Context, opt *github.ListOptions) (
 
 // DownloadAsset returns reader object of downloaded object
 func (r Repository) DownloadAsset(ctx context.Context, id int64) (io.ReadCloser, string, error) {
-	return r.repository.DownloadReleaseAsset(ctx, r.owner, r.repoName, id)
+	return r.repository.DownloadReleaseAsset(ctx, r.owner, r.repoName, id, nil)
 }
 
 // Operation defines the file operations
@@ -113,7 +113,7 @@ func (c Client) DownloadDB(ctx context.Context, fileName string) (io.ReadCloser,
 	return nil, 0, xerrors.New("DB file not found")
 }
 
-func (c Client) downloadAsset(ctx context.Context, asset github.ReleaseAsset, fileName string) (io.ReadCloser, int, error) {
+func (c Client) downloadAsset(ctx context.Context, asset *github.ReleaseAsset, fileName string) (io.ReadCloser, int, error) {
 	log.Logger.Debugf("asset name: %s", asset.GetName())
 	if asset.GetName() != fileName {
 		return nil, 0, xerrors.New("file name doesn't match")
