@@ -96,7 +96,7 @@ func initFSCache(c Option) (cache.Cache, error) {
 	}
 	if c.ClearCache {
 		defer cache.Close()
-		if err = cache.ClearImages(); err != nil {
+		if err = cache.ClearArtifacts(); err != nil {
 			return operation.Cache{}, xerrors.Errorf("cache clear error: %w", err)
 		}
 		return operation.Cache{}, errSkipScan
@@ -147,9 +147,15 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
+		defaultPolicyPaths, err := operation.InitDefaultPolicies(ctx)
+		if err != nil {
+			return nil, err
+		}
+
 		configScannerOptions = config.ScannerOption{
-			PolicyPaths: opt.OPAPolicy,
-			DataPaths:   opt.OPAData,
+			PolicyPaths:  append(defaultPolicyPaths, opt.OPAPolicy...),
+			DataPaths:    opt.OPAData,
+			FilePatterns: opt.FilePatterns,
 		}
 	}
 

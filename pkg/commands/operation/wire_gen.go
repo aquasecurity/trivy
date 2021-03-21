@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/github"
 	"github.com/aquasecurity/trivy/pkg/indicator"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/spf13/afero"
 	"k8s.io/utils/clock"
 )
@@ -25,4 +26,11 @@ func initializeDBClient(cacheDir string, quiet bool) db.Client {
 	metadata := db.NewMetadata(fs, cacheDir)
 	dbClient := db.NewClient(config, client, progressBar, realClock, metadata)
 	return dbClient
+}
+
+func initializePolicyClient() policy.Client {
+	fs := afero.NewOsFs()
+	realClock := clock.RealClock{}
+	client := policy.NewClient(fs, realClock)
+	return client
 }
