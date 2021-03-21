@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/goutils v1.1.0 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20210317114414-23d678a31cd2
+	github.com/aquasecurity/fanal v0.0.0-20210321194632-dd777c21b2a1
 	github.com/aquasecurity/go-dep-parser v0.0.0-20210214113128-b97635cfd627
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -23,7 +23,7 @@ require (
 	github.com/goccy/go-yaml v1.8.2 // indirect
 	github.com/golang/protobuf v1.4.3
 	github.com/google/go-containerregistry v0.1.2
-	github.com/google/go-github/v28 v28.1.1
+	github.com/google/go-github/v33 v33.0.0
 	github.com/google/wire v0.4.0
 	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
 	github.com/hashicorp/go-getter v1.5.2
