@@ -1,0 +1,22 @@
+name: "Stale issues"
+on:
+  schedule:
+    - cron: '0 0 * * *'
+jobs:
+  stale:
+    timeout-minutes: 1
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/stale@v3
+      with:
+        repo-token: ${{ secrets.ORG_GITHUB_TOKEN }}
+        stale-issue-message: 'This issue is stale because it has been labeled with inactivity.'
+        stale-pr-message: 'This PR is stale because it has been labeled with inactivity.'
+        exempt-issue-labels: 'awaiting-approval,work-in-progress,priority/critical-urgent,priority/important-soon,priority/backlog,priority/awaiting-more-evidence'
+        exempt-pr-labels: 'awaiting-approval,work-in-progress'
+        stale-pr-label: 'no-pr-activity'
+        stale-issue-label: 'no-issue-activity'
+        days-before-stale: 90 # default 60
+        days-before-close: 20
+
+
