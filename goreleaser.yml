@@ -26,29 +26,29 @@ builds:
       - goos: darwin
         goarch: 386
 
-nfpms:
-  -
-    formats:
-      - deb
-      - rpm
-    vendor: "aquasecurity"
-    homepage: "https://github.com/aquasecurity"
-    maintainer: "Teppei Fukuda <knqyf263@gmail.com>"
-    description: "A Fast Vulnerability Scanner for Containers"
-    license: "Apache-2.0"
-    file_name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
-    replacements:
-      amd64: 64bit
-      386: 32bit
-      arm: ARM
-      arm64: ARM64
-      ppc64le: PPC64LE
-      darwin: macOS
-      linux: Linux
-      openbsd: OpenBSD
-      netbsd: NetBSD
-      freebsd: FreeBSD
-      dragonfly: DragonFlyBSD
+# nfpms:
+#   -
+#     formats:
+#       - deb
+#       - rpm
+#     vendor: "aquasecurity"
+#     homepage: "https://github.com/aquasecurity"
+#     maintainer: "Teppei Fukuda <knqyf263@gmail.com>"
+#     description: "A Fast Vulnerability Scanner for Containers"
+#     license: "Apache-2.0"
+#     file_name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+#     replacements:
+#       amd64: 64bit
+#       386: 32bit
+#       arm: ARM
+#       arm64: ARM64
+#       ppc64le: PPC64LE
+#       darwin: macOS
+#       linux: Linux
+#       openbsd: OpenBSD
+#       netbsd: NetBSD
+#       freebsd: FreeBSD
+#       dragonfly: DragonFlyBSD
 
 archives:
   -
@@ -72,25 +72,28 @@ archives:
       - contrib/*.tpl
 
 
-brews:
-  -
-    tap:
-      owner: aquasecurity
-      name: homebrew-trivy
-    homepage: "https://github.com/aquasecurity/trivy"
-    description: ""
-    test: |
-      system "#{bin}/program --version"
+# brews:
+#   -
+#     tap:
+#       owner: aquasecurity
+#       name: homebrew-trivy
+#     homepage: "https://github.com/aquasecurity/trivy"
+#     description: ""
+#     test: |
+#       system "#{bin}/program --version"
 
 dockers:
   - image_templates:
-      - "docker.io/aquasec/trivy:{{ .Version }}"
-      - "docker.io/aquasec/trivy:latest"
-      - "ghcr.io/aquasecurity/trivy:{{ .Version }}"
-      - "ghcr.io/aquasecurity/trivy:latest"
-      - "public.ecr.aws/aquasecurity/trivy:latest"
-      - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}"
-    binaries:
+      - "docker.io/oceanic/trivy:{{ .Version }}-amd64"
+      - "docker.io/oceanic/trivy:latest-amd64"
+      # - "ghcr.io/aquasecurity/trivy:{{ .Version }}"
+      # - "ghcr.io/aquasecurity/trivy:latest"
+      # - "public.ecr.aws/aquasecurity/trivy:latest"
+      # - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}"
+    use_buildx: true
+    goos: linux
+    goarch: amd64
+    ids:
       - trivy
     build_flag_templates:
       - "--label=org.label-schema.schema-version=1.0"
@@ -101,5 +104,30 @@ dockers:
       - "--label=org.label-schema.build-date={{ .Date }}"
       - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
       - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
+      - "--platform=linux/amd64"
+    extra_files:
+    - contrib/
+  - image_templates:
+      - "docker.io/oceanic/trivy:{{ .Version }}-arm64"
+      - "docker.io/oceanic/trivy:latest-arm64"
+      # - "ghcr.io/aquasecurity/trivy:{{ .Version }}"
+      # - "ghcr.io/aquasecurity/trivy:latest"
+      # - "public.ecr.aws/aquasecurity/trivy:latest"
+      # - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}"
+    use_buildx: true
+    goos: linux
+    goarch: arm64
+    ids:
+      - trivy
+    build_flag_templates:
+      - "--label=org.label-schema.schema-version=1.0"
+      - "--label=org.label-schema.name={{ .ProjectName }}"
+      - "--label=org.label-schema.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.label-schema.vendor=Aqua Security"
+      - "--label=org.label-schema.version={{ .Version }}"
+      - "--label=org.label-schema.build-date={{ .Date }}"
+      - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
+      - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
+      - "--platform=linux/arm64"
     extra_files:
     - contrib/
