@@ -5,7 +5,7 @@ on:
       - "v*"
 env:
   GO_VERSION: "1.16"
-  GH_USER: "aqua-bot"
+  GH_USER: "ocean"
 jobs:
   release:
     name: Release
@@ -26,7 +26,7 @@ jobs:
       - name: Checkout trivy-repo
         uses: actions/checkout@v2
         with:
-          repository: ${{ github.repository_owner }}/trivy-repo
+          repository: aquasecurity/trivy-repo
           path: trivy-repo
           fetch-depth: 0
           token: ${{ secrets.ORG_GITHUB_TOKEN }}
