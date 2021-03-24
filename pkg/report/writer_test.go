@@ -422,7 +422,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
           "version": "v0.15.0",
           "rules": [
             {
-              "id": "[CRITICAL] CVE-1234-5678",
+              "id": "[CRITICAL] CVE-1234-5678 foopackage",
               "name": "dockerfile_scan",
               "shortDescription": {
                 "text": "CVE-1234-5678 Package: foopackage"
@@ -447,7 +447,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
       },
       "results": [
         {
-          "ruleId": "[CRITICAL] CVE-1234-5678",
+          "ruleId": "[CRITICAL] CVE-1234-5678 foopackage",
           "ruleIndex": 0,
           "level": "error",
           "message": {
@@ -501,7 +501,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
           "version": "v0.15.0",
           "rules": [
             {
-              "id": "[CRITICAL] CVE-1234-5678",
+              "id": "[CRITICAL] CVE-1234-5678 foopackage",
               "name": "dockerfile_scan",
               "shortDescription": {
                 "text": "CVE-1234-5678 Package: foopackage"
@@ -527,7 +527,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
       },
       "results": [
         {
-          "ruleId": "[CRITICAL] CVE-1234-5678",
+          "ruleId": "[CRITICAL] CVE-1234-5678 foopackage",
           "ruleIndex": 0,
           "level": "error",
           "message": {
