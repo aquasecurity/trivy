@@ -71,7 +71,7 @@ nav:
 theme:
     name: material
     language: 'en'
-    logo: imgs/logo.png
+    logo: imgs/logo-white.svg
 
 markdown_extensions:
   - pymdownx.highlight
