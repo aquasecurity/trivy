@@ -19,7 +19,7 @@
                 ,
               {{- end }}
             {
-              "id": "[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}",
+              "id": "[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }} {{ .PkgName }}",
               "name": "dockerfile_scan",
               "shortDescription": {
                 "text": {{ printf "%v Package: %v" .VulnerabilityID .PkgName | printf "%q" }}
@@ -61,7 +61,7 @@
             ,
           {{- end }}
         {
-          "ruleId": "[{{ $vulnerability.Vulnerability.Severity }}] {{ $vulnerability.VulnerabilityID }}",
+          "ruleId": "[{{ $vulnerability.Vulnerability.Severity }}] {{ $vulnerability.VulnerabilityID }} {{ $vulnerability.PkgName }}",
           "ruleIndex": {{ $index }},
           "level": "error",
           "message": {
