@@ -6,5 +6,5 @@ type ScanOptions struct {
 	ScanRemovedPackages bool
 	ListAllPackages     bool
 	SkipFiles           []string
-	SkipDirectories     []string
+	SkipDirs            []string
 }

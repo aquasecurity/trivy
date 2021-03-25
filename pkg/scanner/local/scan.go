@@ -167,7 +167,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		if len(app.Libraries) == 0 {
 			continue
 		}
-		if skipped(app.FilePath, options.SkipFiles, options.SkipDirectories) {
+		if skipped(app.FilePath, options.SkipFiles, options.SkipDirs) {
 			continue
 		}
 

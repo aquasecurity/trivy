@@ -198,15 +198,15 @@ var (
 		EnvVars: []string{"TRIVY_LIST_ALL_PKGS"},
 	}
 
-	skipFiles = cli.StringFlag{
+	skipFiles = cli.StringSliceFlag{
 		Name:    "skip-files",
-		Usage:   "specify the file path to skip traversal",
+		Usage:   "specify the file paths to skip traversal",
 		EnvVars: []string{"TRIVY_SKIP_FILES"},
 	}
 
-	skipDirectories = cli.StringFlag{
+	skipDirs = cli.StringSliceFlag{
 		Name:    "skip-dirs",
-		Usage:   "specify the directory where the traversal is skipped",
+		Usage:   "specify the directories where the traversal is skipped",
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
@@ -237,7 +237,7 @@ var (
 		&ignorePolicy,
 		&listAllPackages,
 		&skipFiles,
-		&skipDirectories,
+		&skipDirs,
 		&cacheBackendFlag,
 	}
 
@@ -308,6 +308,10 @@ func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
 			stringFlag := *pf
 			stringFlag.Hidden = hidden
 			f = &stringFlag
+		case *cli.StringSliceFlag:
+			stringSliceFlag := *pf
+			stringSliceFlag.Hidden = hidden
+			f = &stringSliceFlag
 		case *cli.BoolFlag:
 			boolFlag := *pf
 			boolFlag.Hidden = hidden
@@ -408,7 +412,7 @@ func NewFilesystemCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&skipFiles,
-			&skipDirectories,
+			&skipDirs,
 		},
 	}
 }
@@ -440,7 +444,7 @@ func NewRepositoryCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&skipFiles,
-			&skipDirectories,
+			&skipDirs,
 		},
 	}
 }
