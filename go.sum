@@ -817,6 +817,8 @@ github.com/maratori/testpackage v1.0.1/go.mod h1:ddKdw+XG0Phzhx8BFDTKgpWP4i7MpAp
 github.com/marstr/guid v1.1.0/go.mod h1:74gB1z2wpxxInTG6yaqA7KrtM0NZ+RbrcqDvYHefzho=
 github.com/masahiro331/go-mvn-version v0.0.0-20210214074851-415aa65db8c0 h1:GT77MM4NtCZv3oeOlY+Y7EANZ86/h49oqPytEKTm3f8=
 github.com/masahiro331/go-mvn-version v0.0.0-20210214074851-415aa65db8c0/go.mod h1:M5wLEr5YKZ6OcOpiNGO0qPE4cd+xjUbBLlBvJGhZgWQ=
+github.com/masahiro331/go-mvn-version v0.0.0-20210228095506-4b11f8695552 h1:WhPSCO7w9pJnPiswS37eScNdLSAy7CXLkuDNVKLZXy4=
+github.com/masahiro331/go-mvn-version v0.0.0-20210228095506-4b11f8695552/go.mod h1:M5wLEr5YKZ6OcOpiNGO0qPE4cd+xjUbBLlBvJGhZgWQ=
 github.com/matoous/godox v0.0.0-20190911065817-5d6d842e92eb/go.mod h1:1BELzlh859Sh1c6+90blK8lbYy0kwQf1bYlBhBysy1s=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.1/go.mod h1:FuOcm+DKB9mbwrcAfNl7/TZVBZ6rcnceauSikq3lYCQ=

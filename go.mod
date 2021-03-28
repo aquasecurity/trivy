@@ -32,7 +32,7 @@ require (
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/kylelemons/godebug v1.1.0
-	github.com/masahiro331/go-mvn-version v0.0.0-20210214074851-415aa65db8c0
+	github.com/masahiro331/go-mvn-version v0.0.0-20210228095506-4b11f8695552
 	github.com/mitchellh/copystructure v1.1.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/open-policy-agent/opa v0.25.2
