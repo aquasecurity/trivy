@@ -39,6 +39,11 @@ func NewDriver(libType string) (Driver, error) {
 		driver = newNugetDriver()
 	case library.Jar:
 		driver = newMavenDriver()
+	case library.GoBinary:
+		driver = Driver{
+			ecosystem:  vulnerability.Go,
+			advisories: []advisory{NewAdvisory(vulnerability.Go, comparer.GenericComparer{})},
+		}
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
 	}
