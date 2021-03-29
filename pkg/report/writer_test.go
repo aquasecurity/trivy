@@ -258,15 +258,15 @@ func TestReportWriter_Template(t *testing.T) {
 			template: `<testsuites>
 {{- range . -}}
 {{- $failures := len .Vulnerabilities }}
-    <testsuite tests="1" failures="{{ $failures }}" time="" name="{{  .Target }}" errors="0" skipped="0">
+    <testsuite tests="{{ $failures }}" failures="{{ $failures }}" name="{{  .Target }}" errors="0" skipped="0" time="">
 	{{- if not (eq .Type "") }}
         <properties>
             <property name="type" value="{{ .Type }}"></property>
         </properties>
         {{- end -}}
         {{ range .Vulnerabilities }}
-        <testcase classname={{ printf "%v-%v" .PkgName .InstalledVersion | printf "%q" }} name="[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}" time="">
-            <failure message={{escapeXML .Title | printf "%q" }} type="description">{{ endWithPeriod (escapeString .Description) | printf "%q" }}</failure>
+        <testcase classname="{{ .PkgName }}-{{ .InstalledVersion }}" name="[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }}" time="">
+            <failure message="{{ escapeXML .Title }}" type="description">{{ escapeXML .Description }}</failure>
         </testcase>
     {{- end }}
 	</testsuite>
@@ -274,12 +274,12 @@ func TestReportWriter_Template(t *testing.T) {
 </testsuites>`,
 
 			expected: `<testsuites>
-    <testsuite tests="1" failures="1" time="" name="foojunit" errors="0" skipped="0">
+    <testsuite tests="1" failures="1" name="foojunit" errors="0" skipped="0" time="">
         <properties>
             <property name="type" value="test"></property>
         </properties>
-        <testcase classname="foo \\ test-1.2.3" name="[HIGH] 123" time="">
-            <failure message="gcc: POWER9 &#34;DARN&#34; RNG intrinsic produces repeated output" type="description">"curl version curl \\X 7.20.0 to and including curl 7.59.0 contains a CWE-126: Buffer Over-read vulnerability in denial of service that can result in curl can be tricked into reading data beyond the end of a heap based buffer used to store downloaded RTSP content.. This vulnerability appears to have been fixed in curl &lt; 7.20.0 and curl &gt;= 7.60.0."</failure>
+        <testcase classname="foo \ test-1.2.3" name="[HIGH] 123" time="">
+            <failure message="gcc: POWER9 &#34;DARN&#34; RNG intrinsic produces repeated output" type="description">curl version curl \X 7.20.0 to and including curl 7.59.0 contains a CWE-126: Buffer Over-read vulnerability in denial of service that can result in curl can be tricked into reading data beyond the end of a heap based buffer used to store downloaded RTSP content.. This vulnerability appears to have been fixed in curl &lt; 7.20.0 and curl &gt;= 7.60.0.</failure>
         </testcase>
 	</testsuite>
 </testsuites>`,
@@ -320,7 +320,7 @@ func TestReportWriter_Template(t *testing.T) {
 					PkgName:         "foo",
 					Vulnerability: dbTypes.Vulnerability{
 						Description: "without period",
-						Severity: dbTypes.SeverityCritical.String(),
+						Severity:    dbTypes.SeverityCritical.String(),
 					},
 				},
 				{
@@ -328,7 +328,7 @@ func TestReportWriter_Template(t *testing.T) {
 					PkgName:         "bar",
 					Vulnerability: dbTypes.Vulnerability{
 						Description: "with period.",
-						Severity: dbTypes.SeverityCritical.String(),
+						Severity:    dbTypes.SeverityCritical.String(),
 					},
 				},
 				{
@@ -336,7 +336,7 @@ func TestReportWriter_Template(t *testing.T) {
 					PkgName:         "bar",
 					Vulnerability: dbTypes.Vulnerability{
 						Description: `with period and unescaped string curl: Use-after-free when closing 'easy' handle in Curl_close().`,
-						Severity: dbTypes.SeverityHigh.String(),
+						Severity:    dbTypes.SeverityHigh.String(),
 					},
 				},
 			},
