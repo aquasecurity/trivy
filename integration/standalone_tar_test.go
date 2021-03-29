@@ -413,10 +413,15 @@ func TestRun_WithTar(t *testing.T) {
 			}
 
 			if len(c.testArgs.SkipFiles) != 0 {
-				osArgs = append(osArgs, "--skip-files", strings.Join(c.testArgs.SkipFiles, ","))
+				for _, skipFile := range c.testArgs.SkipFiles {
+					osArgs = append(osArgs, "--skip-files", skipFile)
+				}
 			}
+
 			if len(c.testArgs.SkipDirs) != 0 {
-				osArgs = append(osArgs, "--skip-dirs", strings.Join(c.testArgs.SkipDirs, ","))
+				for _, skipDir := range c.testArgs.SkipDirs {
+					osArgs = append(osArgs, "--skip-dirs", skipDir)
+				}
 			}
 
 			// Setup the output file

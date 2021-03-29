@@ -167,7 +167,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		if len(app.Libraries) == 0 {
 			continue
 		}
-		if skipped(app.FilePath, options.SkipFiles, options.SkipDirectories) {
+		if skipped(app.FilePath, options.SkipFiles, options.SkipDirs) {
 			continue
 		}
 
@@ -210,7 +210,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 	return results, nil
 }
 
-func skipped(filePath string, skipFiles, skipDirectories []string) bool {
+func skipped(filePath string, skipFiles, skipDirs []string) bool {
 	for _, skipFile := range skipFiles {
 		skipFile = strings.TrimLeft(filepath.Clean(skipFile), string(os.PathSeparator))
 		if filePath == skipFile {
@@ -218,7 +218,7 @@ func skipped(filePath string, skipFiles, skipDirectories []string) bool {
 		}
 	}
 
-	for _, skipDir := range skipDirectories {
+	for _, skipDir := range skipDirs {
 		skipDir = strings.TrimLeft(filepath.Clean(skipDir), string(os.PathSeparator))
 		rel, err := filepath.Rel(skipDir, filePath)
 		if err != nil {
