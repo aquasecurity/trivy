@@ -237,6 +237,14 @@ var (
 		EnvVars: []string{"TRIVY_FILE_PATTERNS"},
 	}
 
+	policyNamespaces = cli.StringSliceFlag{
+		Name:    "policy-namespaces",
+		Aliases: []string{"namespaces"},
+		Usage:   "Rego namespaces",
+		Value:   cli.NewStringSlice("users"),
+		EnvVars: []string{"TRIVY_POLICY_NAMESPACES"},
+	}
+
 	globalFlags = []cli.Flag{
 		&quietFlag,
 		&debugFlag,
@@ -268,6 +276,7 @@ var (
 		&skipDirectories,
 		&cacheBackendFlag,
 		&configPolicy,
+		&policyNamespaces,
 	}
 
 	// deprecated options
@@ -577,6 +586,7 @@ func NewConfigCommand() *cli.Command {
 			&skipDirectories,
 			&configPolicyAlias,
 			&filePatterns,
+			&policyNamespaces,
 		},
 	}
 }

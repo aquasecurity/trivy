@@ -153,8 +153,10 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		}
 
 		configScannerOptions = config.ScannerOption{
-			PolicyPaths:  append(defaultPolicyPaths, opt.OPAPolicy...),
-			DataPaths:    opt.OPAData,
+			// "appshield" is enabled by default.
+			Namespaces:   append(opt.PolicyNamespaces, "appshield"),
+			PolicyPaths:  append(defaultPolicyPaths, opt.PolicyPaths...),
+			DataPaths:    opt.DataPaths,
 			FilePatterns: opt.FilePatterns,
 		}
 	}

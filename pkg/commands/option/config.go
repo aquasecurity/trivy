@@ -6,14 +6,20 @@ import (
 
 // ConfigOption holds the options for config scanning
 type ConfigOption struct {
-	OPAPolicy []string
-	OPAData   []string
+	FilePatterns []string
+
+	// Rego
+	PolicyPaths      []string
+	DataPaths        []string
+	PolicyNamespaces []string
 }
 
 // NewConfigOption is the factory method to return config scanning options
 func NewConfigOption(c *cli.Context) ConfigOption {
 	return ConfigOption{
-		OPAPolicy: c.StringSlice("config-policy"),
-		OPAData:   c.StringSlice("config-data"),
+		FilePatterns:     c.StringSlice("file-patterns"),
+		PolicyPaths:      c.StringSlice("config-policy"),
+		DataPaths:        c.StringSlice("config-data"),
+		PolicyNamespaces: c.StringSlice("policy-namespaces"),
 	}
 }

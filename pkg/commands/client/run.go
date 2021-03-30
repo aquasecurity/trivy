@@ -113,8 +113,8 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	var configScannerOptions config.ScannerOption
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
 		configScannerOptions = config.ScannerOption{
-			PolicyPaths: opt.OPAPolicy,
-			DataPaths:   opt.OPAData,
+			PolicyPaths: opt.PolicyPaths,
+			DataPaths:   opt.DataPaths,
 		}
 	}
 
