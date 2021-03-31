@@ -4,9 +4,22 @@ Scan your remote git repository
 
 ```
 $ trivy repo https://github.com/knqyf263/trivy-ci-test
+$ trivy repo git@github.com:knqyf263/trivy-ci-test
 ```
 
-Only public repositories are supported.
+## Environment Variables
+### Checkout a branch, tag, or commit
+TRIVY_GIT_BRANCH  
+TRIVY_GIT_TAG  
+TRIVY_GIT_COMMIT - digest to checkout after cloning  
+
+### Clone under a specific directory
+TRIVY_GIT_CLONE_PARENT_DIRECTORY - defaults to system tmp directory  
+
+### SSH key-based authentication for private repositories
+TRIVY_GIT_USERNAME - parsed from repository url if not set  
+TRIVY_GIT_PASSWORD - key decryption password  
+TRIVY_GIT_KEY_PATH - ssh-agent will be used if key file not provided  
 
 <details>
 <summary>Result</summary>

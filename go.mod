@@ -19,6 +19,7 @@ require (
 	github.com/docker/docker v20.10.3+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/elazarl/goproxy v0.0.0-20200809112317-0581fc3aee2d // indirect
+	github.com/go-git/go-git/v5 v5.3.0
 	github.com/go-redis/redis/v8 v8.4.0
 	github.com/goccy/go-yaml v1.8.2 // indirect
 	github.com/golang/protobuf v1.4.3

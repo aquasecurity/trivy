@@ -71,7 +71,11 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	localScanner := local.NewScanner(applierApplier, detector)
-	artifact, cleanup, err := remote.NewArtifact(url, artifactCache, disableAnalyzers)
+	remoteRemote, err := types.GetGitOption(url)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
+	artifact, cleanup, err := remote.NewArtifact(remoteRemote, artifactCache, disableAnalyzers)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}

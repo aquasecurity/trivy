@@ -50,6 +50,7 @@ var StandaloneFilesystemSet = wire.NewSet(
 
 // StandaloneRepositorySet binds repository dependencies
 var StandaloneRepositorySet = wire.NewSet(
+	types.GetGitOption,
 	remote.NewArtifact,
 	StandaloneSuperSet,
 )
