@@ -285,13 +285,13 @@ func ConvertFromRPCMisconfigurations(rpcMisconfs []*common.Misconfiguration) []f
 	var misconfs []ftypes.Misconfiguration
 	for _, rpcMisconf := range rpcMisconfs {
 		misconfs = append(misconfs, ftypes.Misconfiguration{
-			FileType:  rpcMisconf.FileType,
-			FilePath:  rpcMisconf.FilePath,
-			Namespace: rpcMisconf.Namespace,
-			Successes: int(rpcMisconf.Successes),
-			Warnings:  ConvertFromRPCMisconfResults(rpcMisconf.Warnings),
-			Failures:  ConvertFromRPCMisconfResults(rpcMisconf.Failures),
-			Layer:     ftypes.Layer{},
+			FileType:   rpcMisconf.FileType,
+			FilePath:   rpcMisconf.FilePath,
+			Successes:  ConvertFromRPCMisconfResults(rpcMisconf.Successes),
+			Warnings:   ConvertFromRPCMisconfResults(rpcMisconf.Warnings),
+			Failures:   ConvertFromRPCMisconfResults(rpcMisconf.Failures),
+			Exceptions: ConvertFromRPCMisconfResults(rpcMisconf.Exceptions),
+			Layer:      ftypes.Layer{},
 		})
 	}
 	return misconfs
@@ -301,10 +301,14 @@ func ConvertFromRPCMisconfResults(rpcResults []*common.MisconfResult) []ftypes.M
 	var results []ftypes.MisconfResult
 	for _, r := range rpcResults {
 		results = append(results, ftypes.MisconfResult{
-			Type:     r.Type,
-			ID:       r.Id,
-			Message:  r.Message,
-			Severity: r.Severity,
+			Namespace: r.Namespace,
+			Message:   r.Message,
+			MisconfMetadata: ftypes.MisconfMetadata{
+				ID:       r.Id,
+				Type:     r.Type,
+				Title:    r.Title,
+				Severity: r.Severity,
+			},
 		})
 	}
 	return results
@@ -398,12 +402,12 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 	var misconfigurations []*common.Misconfiguration
 	for _, m := range blobInfo.Misconfigurations {
 		misconfigurations = append(misconfigurations, &common.Misconfiguration{
-			FileType:  m.FileType,
-			FilePath:  m.FilePath,
-			Namespace: m.Namespace,
-			Successes: int32(m.Successes),
-			Warnings:  ConvertToMisconfResults(m.Warnings),
-			Failures:  ConvertToMisconfResults(m.Failures),
+			FileType:   m.FileType,
+			FilePath:   m.FilePath,
+			Successes:  ConvertToMisconfResults(m.Successes),
+			Warnings:   ConvertToMisconfResults(m.Warnings),
+			Failures:   ConvertToMisconfResults(m.Failures),
+			Exceptions: ConvertToMisconfResults(m.Exceptions),
 		})
 
 	}
@@ -428,10 +432,12 @@ func ConvertToMisconfResults(results []ftypes.MisconfResult) []*common.MisconfRe
 	var rpcResults []*common.MisconfResult
 	for _, r := range results {
 		rpcResults = append(rpcResults, &common.MisconfResult{
-			Type:     r.Type,
-			Id:       r.ID,
-			Message:  r.Message,
-			Severity: r.Severity,
+			Namespace: r.Namespace,
+			Message:   r.Message,
+			Id:        r.ID,
+			Type:      r.Type,
+			Title:     r.Title,
+			Severity:  r.Severity,
 		})
 	}
 	return rpcResults

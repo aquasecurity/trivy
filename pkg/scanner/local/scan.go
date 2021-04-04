@@ -234,10 +234,16 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 
 		var detected []types.DetectedMisconfiguration
 		for _, f := range misconf.Failures {
-			detected = append(detected, toDetectedMisconfiguration(f, dbTypes.SeverityCritical, misconf.Layer))
+			detected = append(detected, toDetectedMisconfiguration(f, dbTypes.SeverityCritical, types.StatusFailure, misconf.Layer))
 		}
 		for _, w := range misconf.Warnings {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityMedium, misconf.Layer))
+			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityMedium, types.StatusFailure, misconf.Layer))
+		}
+		for _, w := range misconf.Successes {
+			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusPassed, misconf.Layer))
+		}
+		for _, w := range misconf.Exceptions {
+			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusException, misconf.Layer))
 		}
 
 		results = append(results, report.Result{
@@ -255,7 +261,7 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 }
 
 func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbTypes.Severity,
-	layer ftypes.Layer) types.DetectedMisconfiguration {
+	status types.MisconfStatus, layer ftypes.Layer) types.DetectedMisconfiguration {
 
 	severity := defaultSeverity
 	sev, err := dbTypes.NewSeverity(res.Severity)
@@ -265,12 +271,19 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		severity = sev
 	}
 
+	msg := strings.TrimSpace(res.Message)
+	if msg == "" {
+		msg = "No issues found"
+	}
+
 	return types.DetectedMisconfiguration{
 		ID:         res.ID,
+		Title:      res.Title,
 		Type:       res.Type,
-		Message:    strings.TrimSpace(res.Message),
+		Message:    msg,
 		Severity:   severity.String(),
 		PrimaryURL: fmt.Sprintf("https://avd.aquasec.com/%s", res.ID),
+		Status:     status,
 		Layer:      layer,
 	}
 }

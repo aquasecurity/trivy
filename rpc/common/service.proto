@@ -43,19 +43,21 @@ message Library {
 }
 
 message Misconfiguration {
-  string file_type                 = 1;
-  string file_path                 = 2;
-  string namespace                 = 3;
-  int32                  successes = 4;
-  repeated MisconfResult warnings  = 5;
-  repeated MisconfResult failures  = 6;
+  string                 file_type  = 1;
+  string                 file_path  = 2;
+  repeated MisconfResult successes  = 3;
+  repeated MisconfResult warnings   = 4;
+  repeated MisconfResult failures   = 5;
+  repeated MisconfResult exceptions = 6;
 }
 
 message MisconfResult {
-  string type     = 1;
-  string id       = 2;
-  string message  = 3;
-  string severity = 4;
+  string namespace = 1;
+  string message   = 2;
+  string id        = 3;
+  string type      = 4;
+  string title     = 5;
+  string severity  = 6;
 }
 
 message DetectedMisconfiguration {
