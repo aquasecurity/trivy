@@ -26,6 +26,21 @@ type Result struct {
 	Misconfigurations []types.DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
 }
 
+// Failed returns whether the result includes any vulnerabilities or misconfigurations
+func (results Results) Failed() bool {
+	for _, r := range results {
+		if len(r.Vulnerabilities) > 0 {
+			return true
+		}
+		for _, m := range r.Misconfigurations {
+			if m.Status == types.StatusFailure {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // WriteResults writes the result to output, format as passed in argument
 func WriteResults(format string, output io.Writer, severities []dbTypes.Severity, results Results, outputTemplate string, light bool) error {
 	var writer Writer

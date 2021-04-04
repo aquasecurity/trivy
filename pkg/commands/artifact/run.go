@@ -194,11 +194,7 @@ func filter(ctx context.Context, opt Option, results report.Results) (report.Res
 }
 
 func exit(c Option, results report.Results) {
-	if c.ExitCode != 0 {
-		for _, result := range results {
-			if len(result.Vulnerabilities) > 0 {
-				os.Exit(c.ExitCode)
-			}
-		}
+	if c.ExitCode != 0 && results.Failed() {
+		os.Exit(c.ExitCode)
 	}
 }
