@@ -96,7 +96,7 @@ func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) erro
 	}
 
 	// for debug
-	if err := showDBInfo(cacheDir); err != nil {
+	if err = showDBInfo(cacheDir); err != nil {
 		return xerrors.Errorf("failed to show database info: %w", err)
 	}
 	return nil

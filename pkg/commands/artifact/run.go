@@ -52,13 +52,16 @@ func runWithContext(ctx context.Context, opt Option, initializeScanner Initializ
 	}
 	defer cacheClient.Close()
 
-	if err = initDB(opt); err != nil {
-		if errors.Is(err, errSkipScan) {
-			return nil
+	// When scanning config files, it doesn't need to download the vulnerability database.
+	if utils.StringInSlice(types.SecurityCheckVulnerability, opt.SecurityChecks) {
+		if err = initDB(opt); err != nil {
+			if errors.Is(err, errSkipScan) {
+				return nil
+			}
+			return xerrors.Errorf("DB error: %w", err)
 		}
-		return xerrors.Errorf("DB error: %w", err)
+		defer db.Close()
 	}
-	defer db.Close()
 
 	results, err := scan(ctx, opt, initializeScanner, cacheClient)
 	if err != nil {
@@ -155,7 +158,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		configScannerOptions = config.ScannerOption{
 			// "appshield" is enabled by default.
 			Namespaces:   append(opt.PolicyNamespaces, "appshield"),
-			PolicyPaths:  append(defaultPolicyPaths, opt.PolicyPaths...),
+			PolicyPaths:  append(opt.PolicyPaths, defaultPolicyPaths...),
 			DataPaths:    opt.DataPaths,
 			FilePatterns: opt.FilePatterns,
 		}

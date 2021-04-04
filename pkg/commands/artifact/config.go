@@ -23,6 +23,9 @@ func ConfigRun(cliCtx *cli.Context) error {
 	opt.VulnType = nil
 	opt.SecurityChecks = []string{types.SecurityCheckConfig}
 
+	// Skip downloading vulnerability DB
+	opt.SkipUpdate = true
+
 	// Run filesystem command internally
 	return Run(opt, filesystemScanner, initFSCache)
 }
