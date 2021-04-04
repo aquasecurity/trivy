@@ -165,3 +165,25 @@ The same image is hosted on [Amazon ECR Public](https://gallery.ecr.aws/aquasecu
 ```bash
 docker pull public.ecr.aws/aquasecurity/trivy:{{ git.tag[1:] }}
 ```
+## Helm
+### Installing from the the Aqua Chart Repository
+
+```
+$ helm repo add aquasecurity https://aquasecurity.github.io/helm-charts/
+$ helm repo update
+$ helm search repo trivy
+$ helm install my-trivy aquasecurity/trivy
+```
+
+### Installing the Chart
+
+To install the chart with the release name `my-release`:
+
+```
+$ helm install my-release .
+```
+
+The command deploys Trivy on the Kubernetes cluster in the default configuration. The [Parameters](#parameters)
+section lists the parameters that can be configured during installation.
+
+> **Tip**: List all releases using `helm list`.

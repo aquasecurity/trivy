@@ -137,7 +137,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		ScanRemovedPackages: opt.ScanRemovedPkgs, // this is valid only for image subcommand
 		ListAllPackages:     opt.ListAllPkgs,
 		SkipFiles:           opt.SkipFiles,
-		SkipDirectories:     opt.SkipDirectories,
+		SkipDirs:            opt.SkipDirs,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 

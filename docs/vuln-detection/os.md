@@ -1,4 +1,4 @@
-# Suppored OS
+# Supported OS
 
 The unfixed/unfixable vulnerabilities mean that the patch has not yet been provided on their distribution. Trivy doesn't support self-compiled packages/binaries, but official packages provided by vendors such as Red Hat and Debian.
 

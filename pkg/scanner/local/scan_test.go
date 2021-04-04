@@ -609,8 +609,8 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType:        []string{"library"},
-					SkipDirectories: []string{"/usr/lib/ruby/gems"},
+					VulnType: []string{"library"},
+					SkipDirs: []string{"/usr/lib/ruby/gems"},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -829,9 +829,9 @@ func TestScanner_Scan(t *testing.T) {
 
 func Test_skipped(t *testing.T) {
 	type args struct {
-		filePath        string
-		skipFiles       []string
-		skipDirectories []string
+		filePath  string
+		skipFiles []string
+		skipDirs  []string
 	}
 	tests := []struct {
 		name string
@@ -841,24 +841,24 @@ func Test_skipped(t *testing.T) {
 		{
 			name: "no skip directory",
 			args: args{
-				filePath:        "app/Gemfile.lock",
-				skipDirectories: []string{},
+				filePath: "app/Gemfile.lock",
+				skipDirs: []string{},
 			},
 			want: false,
 		},
 		{
 			name: "skip directory with the leading slash",
 			args: args{
-				filePath:        "app/Gemfile.lock",
-				skipDirectories: []string{"/app"},
+				filePath: "app/Gemfile.lock",
+				skipDirs: []string{"/app"},
 			},
 			want: true,
 		},
 		{
 			name: "skip directory without a slash",
 			args: args{
-				filePath:        "usr/lib/ruby/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock",
-				skipDirectories: []string{"/usr/lib/ruby"},
+				filePath: "usr/lib/ruby/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock",
+				skipDirs: []string{"/usr/lib/ruby"},
 			},
 			want: true,
 		},
@@ -881,15 +881,15 @@ func Test_skipped(t *testing.T) {
 		{
 			name: "not skipped",
 			args: args{
-				filePath:        "usr/lib/ruby/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock",
-				skipDirectories: []string{"lib/ruby"},
+				filePath: "usr/lib/ruby/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock",
+				skipDirs: []string{"lib/ruby"},
 			},
 			want: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := skipped(tt.args.filePath, tt.args.skipFiles, tt.args.skipDirectories)
+			got := skipped(tt.args.filePath, tt.args.skipFiles, tt.args.skipDirs)
 			assert.Equal(t, tt.want, got)
 		})
 	}
