@@ -4,9 +4,10 @@ import (
 	"flag"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/stretchr/testify/assert"
 	"github.com/urfave/cli/v2"
+
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 )
 
 func TestNewCacheOption(t *testing.T) {

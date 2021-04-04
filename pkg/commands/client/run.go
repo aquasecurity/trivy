@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -17,6 +18,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
+
+const defaultPolicyNamespace = "appshield"
 
 // Run runs the scan
 func Run(cliCtx *cli.Context) error {
@@ -112,9 +115,16 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
+		defaultPolicyPaths, err := operation.InitDefaultPolicies(ctx)
+		if err != nil {
+			return scanner.Scanner{}, nil, xerrors.Errorf("failed to initialize default policies: %w", err)
+		}
+
 		configScannerOptions = config.ScannerOption{
-			PolicyPaths: opt.PolicyPaths,
-			DataPaths:   opt.DataPaths,
+			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespace),
+			PolicyPaths:  append(opt.PolicyPaths, defaultPolicyPaths...),
+			DataPaths:    opt.DataPaths,
+			FilePatterns: opt.FilePatterns,
 		}
 	}
 

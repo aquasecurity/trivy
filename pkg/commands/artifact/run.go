@@ -21,6 +21,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
+const defaultPolicyNamespace = "appshield"
+
 var errSkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanner type to define initialize function signature
@@ -152,12 +154,11 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
 		defaultPolicyPaths, err := operation.InitDefaultPolicies(ctx)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("failed to initialize default policies: %w", err)
 		}
 
 		configScannerOptions = config.ScannerOption{
-			// "appshield" is enabled by default.
-			Namespaces:   append(opt.PolicyNamespaces, "appshield"),
+			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespace),
 			PolicyPaths:  append(opt.PolicyPaths, defaultPolicyPaths...),
 			DataPaths:    opt.DataPaths,
 			FilePatterns: opt.FilePatterns,

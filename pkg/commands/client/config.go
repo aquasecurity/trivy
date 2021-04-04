@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 )
 
 // Option holds the Trivy client options

@@ -1,8 +1,9 @@
 package server
 
 import (
-	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/urfave/cli/v2"
+
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 )
 
 // Config holds the Trivy config

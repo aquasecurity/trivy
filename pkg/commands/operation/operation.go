@@ -114,7 +114,7 @@ func InitDefaultPolicies(ctx context.Context) ([]string, error) {
 
 	policyPaths, err := client.LoadDefaultPolicies(ctx)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("policy load error: %w", err)
 	}
 	return policyPaths, nil
 }

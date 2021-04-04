@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	// DefaultIgnoreFile is the file name to be evaluate
+	// DefaultIgnoreFile is the file name to be evaluated
 	DefaultIgnoreFile = ".trivyignore"
 )
 

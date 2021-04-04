@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/open-policy-agent/opa/bundle"
-
 	"github.com/google/wire"
+	"github.com/open-policy-agent/opa/bundle"
 	"github.com/spf13/afero"
+	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
@@ -19,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
+// TODO: fix
 const bundleURL = "https://knqyf263.github.io/appshield/bundle.tar.gz"
 
 // SuperSet binds the dependencies
@@ -56,12 +57,12 @@ func NewClient(fs afero.Fs, clock clock.Clock) Client {
 func (c Client) LoadDefaultPolicies(ctx context.Context) ([]string, error) {
 	f, err := os.Open(manifestPath())
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("file open error (%s): %w", manifestPath(), err)
 	}
 
 	var manifest bundle.Manifest
 	if err = json.NewDecoder(f).Decode(&manifest); err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("json decode error (%s): %w", manifestPath(), err)
 	}
 
 	if manifest.Roots == nil || len(*manifest.Roots) == 0 {
@@ -99,13 +100,16 @@ func (c Client) NeedsUpdate() (string, bool) {
 }
 
 func (c Client) DownloadDefaultPolicies(ctx context.Context, etag string) error {
-	req, _ := http.NewRequestWithContext(ctx, "HEAD", bundleURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodHead, bundleURL, nil)
+	if err != nil {
+		return xerrors.Errorf("http client error: %w", err)
+	}
 	req.Header.Set("If-None-Match", etag)
 
 	client := new(http.Client)
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return xerrors.Errorf("http request error: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -118,11 +122,11 @@ func (c Client) DownloadDefaultPolicies(ctx context.Context, etag string) error 
 	log.Logger.Info("Downloading the default policies...")
 	dst := contentDir()
 	if err = downloader.Download(ctx, bundleURL, dst, dst); err != nil {
-		return err
+		return xerrors.Errorf("policy download error: %w", err)
 	}
 
 	if err = c.updateMetadata(resp.Header.Get("etag"), c.clock.Now()); err != nil {
-		return err
+		return xerrors.Errorf("unable to update the policy metadata: %w", err)
 	}
 
 	return nil
@@ -136,11 +140,11 @@ func (c Client) updateMetadata(etag string, now time.Time) error {
 
 	f, err := c.fs.Create(metadataPath())
 	if err != nil {
-		return err
+		return xerrors.Errorf("failed to open a policy manifest: %w", err)
 	}
 
 	if err = json.NewEncoder(f).Encode(meta); err != nil {
-		return err
+		return xerrors.Errorf("json encode error: %w", err)
 	}
 
 	return nil

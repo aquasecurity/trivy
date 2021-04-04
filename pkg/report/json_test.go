@@ -58,7 +58,6 @@ func TestReportWriter_JSON(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-
 			jw := report.JSONWriter{}
 			jsonWritten := bytes.Buffer{}
 			jw.Output = &jsonWritten
@@ -70,14 +69,14 @@ func TestReportWriter_JSON(t *testing.T) {
 				},
 			}
 
-			assert.NoError(t, report.WriteResults("json", &jsonWritten, nil, inputResults, "", false), tc.name)
+			err := report.WriteResults("json", &jsonWritten, nil, inputResults, "", false)
+			assert.NoError(t, err)
 
 			writtenResults := report.Results{}
-			errJson := json.Unmarshal([]byte(jsonWritten.String()), &writtenResults)
-			assert.NoError(t, errJson, "invalid json written", tc.name)
+			err = json.Unmarshal([]byte(jsonWritten.String()), &writtenResults)
+			assert.NoError(t, err, "invalid json written", tc.name)
 
 			assert.Equal(t, tc.expectedJSON, writtenResults, tc.name)
 		})
 	}
-
 }

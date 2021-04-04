@@ -465,9 +465,9 @@ func ConvertToRPCScanResponse(results report.Results, os *ftypes.OS, eosl bool) 
 	for _, result := range results {
 		rpcResults = append(rpcResults, &scanner.Result{
 			Target:            result.Target,
+			Type:              result.Type,
 			Vulnerabilities:   ConvertToRPCVulns(result.Vulnerabilities),
 			Misconfigurations: ConvertToRPCMisconfs(result.Misconfigurations),
-			Type:              result.Type,
 		})
 	}
 

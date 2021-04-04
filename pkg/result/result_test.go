@@ -580,7 +580,7 @@ func TestClient_Filter(t *testing.T) {
 			args: args{
 				vulns: []types.DetectedVulnerability{
 					{
-						// this vulnerability is evaluate
+						// this vulnerability is ignored
 						VulnerabilityID:  "CVE-2019-0001",
 						PkgName:          "foo",
 						InstalledVersion: "1.2.3",
@@ -590,7 +590,7 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 					{
-						// this vulnerability is evaluate
+						// this vulnerability is ignored
 						VulnerabilityID:  "CVE-2019-0002",
 						PkgName:          "foo",
 						InstalledVersion: "1.2.3",
@@ -639,7 +639,7 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 					{
-						// this vulnerability is evaluate
+						// this vulnerability is ignored
 						VulnerabilityID:  "CVE-2019-0002",
 						PkgName:          "foo",
 						InstalledVersion: "1.2.3",
@@ -649,7 +649,7 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 					{
-						// this vulnerability is evaluate
+						// this vulnerability is ignored
 						VulnerabilityID:  "CVE-2019-0003",
 						PkgName:          "foo",
 						InstalledVersion: "1.2.3",
