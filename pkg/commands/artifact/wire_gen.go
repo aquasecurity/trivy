@@ -38,7 +38,11 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
-	artifact := image2.NewArtifact(imageImage, artifactCache, disableAnalyzers, configScannerOption)
+	artifact, err := image2.NewArtifact(imageImage, artifactCache, disableAnalyzers, configScannerOption)
+	if err != nil {
+		cleanup()
+		return scanner.Scanner{}, nil, err
+	}
 	scannerScanner := scanner.NewScanner(localScanner, artifact)
 	return scannerScanner, func() {
 		cleanup()
@@ -53,7 +57,10 @@ func initializeArchiveScanner(ctx context.Context, filePath string, artifactCach
 	if err != nil {
 		return scanner.Scanner{}, err
 	}
-	artifact := image2.NewArtifact(imageImage, artifactCache, disableAnalyzers, configScannerOption)
+	artifact, err := image2.NewArtifact(imageImage, artifactCache, disableAnalyzers, configScannerOption)
+	if err != nil {
+		return scanner.Scanner{}, err
+	}
 	scannerScanner := scanner.NewScanner(localScanner, artifact)
 	return scannerScanner, nil
 }
@@ -62,7 +69,10 @@ func initializeFilesystemScanner(ctx context.Context, dir string, artifactCache 
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	localScanner := local.NewScanner(applierApplier, detector)
-	artifact := local2.NewArtifact(dir, artifactCache, disableAnalyzers, configScannerOption)
+	artifact, err := local2.NewArtifact(dir, artifactCache, disableAnalyzers, configScannerOption)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
 	scannerScanner := scanner.NewScanner(localScanner, artifact)
 	return scannerScanner, func() {
 	}, nil
