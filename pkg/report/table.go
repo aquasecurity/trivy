@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
 
 	ftypes "github.com/aquasecurity/fanal/types"
@@ -38,10 +39,11 @@ func (tw TableWriter) write(result Result) {
 
 	var total int
 	var severityCount map[string]int
+	var testCount map[types.MisconfStatus]int
 	if len(result.Vulnerabilities) != 0 {
 		total, severityCount = tw.writeVulnerabilities(table, result.Vulnerabilities)
 	} else if len(result.Misconfigurations) != 0 {
-		total, severityCount = tw.writeMisconfigurations(table, result.Misconfigurations)
+		total, severityCount, testCount = tw.writeMisconfigurations(table, result.Misconfigurations)
 	}
 
 	var severities []string
@@ -60,7 +62,15 @@ func (tw TableWriter) write(result Result) {
 
 	fmt.Printf("\n%s\n", result.Target)
 	fmt.Println(strings.Repeat("=", len(result.Target)))
-	fmt.Printf("Total: %d (%s)\n\n", total, strings.Join(results, ", "))
+	if len(testCount) != 0 {
+		// for misconfigurations
+		fmt.Printf("Tests: %d (PASSED: %d, FAILURE: %d, EXCEPTIONS: %d)\n", testCount[types.StatusFailure]+testCount[types.StatusPassed],
+			testCount[types.StatusPassed], testCount[types.StatusFailure], testCount[types.StatusException])
+		fmt.Printf("Failures: %d (%s)\n\n", total, strings.Join(results, ", "))
+	} else {
+		// for vulnerabilities
+		fmt.Printf("Total: %d (%s)\n\n", total, strings.Join(results, ", "))
+	}
 
 	if len(result.Vulnerabilities) == 0 && len(result.Misconfigurations) == 0 {
 		return
@@ -83,13 +93,16 @@ func (tw TableWriter) writeVulnerabilities(table *tablewriter.Table, vulns []typ
 	return len(vulns), severityCount
 }
 
-func (tw TableWriter) writeMisconfigurations(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) (int, map[string]int) {
+func (tw TableWriter) writeMisconfigurations(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) (
+	int, map[string]int, map[types.MisconfStatus]int) {
 	table.SetColWidth(60)
-	header := []string{"Type", "Misconf ID", "Severity", "Message"}
+	header := []string{"Type", "Misconf ID", "Title", "Severity", "Status", "Message"}
+	table.SetColumnAlignment([]int{tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT,
+		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT})
 	table.SetHeader(header)
-	severityCount := tw.setMisconfRows(table, misconfs)
+	severityCount, testCount := tw.setMisconfRows(table, misconfs)
 
-	return len(misconfs), severityCount
+	return testCount[types.StatusFailure], severityCount, testCount
 }
 
 func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []types.DetectedVulnerability) map[string]int {
@@ -127,21 +140,32 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 	return severityCount
 }
 
-func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) map[string]int {
+func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) (
+	map[string]int, map[types.MisconfStatus]int) {
 	severityCount := map[string]int{}
-	for _, v := range misconfs {
-		severityCount[v.Severity]++
-
-		v.PrimaryURL = strings.TrimPrefix(v.PrimaryURL, "https://")
+	testCount := map[types.MisconfStatus]int{}
+	for _, misconf := range misconfs {
+		if misconf.Status == types.StatusFailure {
+			severityCount[misconf.Severity]++
+			primaryURL := strings.TrimPrefix(misconf.PrimaryURL, "https://")
+			misconf.Message = fmt.Sprintf("%s -->%s", misconf.Message, primaryURL)
+		}
+		testCount[misconf.Status]++
 
 		var row []string
 		if tw.Output == os.Stdout {
-			row = []string{v.Type, v.ID, dbTypes.ColorizeSeverity(v.Severity), v.Message}
+			if misconf.Status == types.StatusPassed {
+				row = []string{misconf.Type, misconf.ID, misconf.Title, color.New(color.FgGreen).Sprint(misconf.Severity),
+					color.New(color.FgGreen).Sprint(misconf.Status), misconf.Message}
+			} else {
+				row = []string{misconf.Type, misconf.ID, misconf.Title, dbTypes.ColorizeSeverity(misconf.Severity),
+					color.New(color.FgRed).Sprint(misconf.Status), misconf.Message}
+			}
 		} else {
-			row = []string{v.Type, v.ID, v.Severity, v.Message}
+			row = []string{misconf.Type, misconf.ID, misconf.Title, misconf.Severity, string(misconf.Status), misconf.Message}
 		}
 
 		table.Append(row)
 	}
-	return severityCount
+	return severityCount, testCount
 }

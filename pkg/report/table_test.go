@@ -14,23 +14,28 @@ import (
 func TestReportWriter_Table(t *testing.T) {
 	testCases := []struct {
 		name           string
-		detectedVulns  []types.DetectedVulnerability
+		results        report.Results
 		expectedOutput string
 		light          bool
 	}{
 		{
 			name: "happy path full",
-			detectedVulns: []types.DetectedVulnerability{
+			results: report.Results{
 				{
-					VulnerabilityID:  "CVE-2020-0001",
-					PkgName:          "foo",
-					InstalledVersion: "1.2.3",
-					FixedVersion:     "3.4.5",
-					PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
-					Vulnerability: dbTypes.Vulnerability{
-						Title:       "foobar",
-						Description: "baz",
-						Severity:    "HIGH",
+					Target: "test",
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2020-0001",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "3.4.5",
+							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "foobar",
+								Description: "baz",
+								Severity:    "HIGH",
+							},
+						},
 					},
 				},
 			},
@@ -45,59 +50,74 @@ func TestReportWriter_Table(t *testing.T) {
 		{
 			name:  "happy path light",
 			light: true,
-			detectedVulns: []types.DetectedVulnerability{
+			results: report.Results{
 				{
-					VulnerabilityID:  "123",
-					PkgName:          "foo",
-					InstalledVersion: "1.2.3",
-					FixedVersion:     "3.4.5",
-					Vulnerability: dbTypes.Vulnerability{
-						Title:       "foobar",
-						Description: "baz",
-						Severity:    "HIGH",
+					Target: "test",
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2020-0001",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "3.4.5",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:    "foobar",
+								Severity: "HIGH",
+							},
+						},
 					},
 				},
 			},
 			expectedOutput: `+---------+------------------+----------+-------------------+---------------+
 | LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |
 +---------+------------------+----------+-------------------+---------------+
-| foo     |              123 | HIGH     | 1.2.3             | 3.4.5         |
+| foo     | CVE-2020-0001    | HIGH     | 1.2.3             | 3.4.5         |
 +---------+------------------+----------+-------------------+---------------+
 `,
 		},
 		{
 			name: "no title for vuln and missing primary link",
-			detectedVulns: []types.DetectedVulnerability{
+			results: report.Results{
 				{
-					VulnerabilityID:  "123",
-					PkgName:          "foo",
-					InstalledVersion: "1.2.3",
-					FixedVersion:     "3.4.5",
-					Vulnerability: dbTypes.Vulnerability{
-						Description: "foobar",
-						Severity:    "HIGH",
+					Target: "test",
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2020-0001",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "3.4.5",
+							Vulnerability: dbTypes.Vulnerability{
+								Description: "foobar",
+								Severity:    "HIGH",
+							},
+						},
 					},
 				},
 			},
 			expectedOutput: `+---------+------------------+----------+-------------------+---------------+--------+
 | LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION | TITLE  |
 +---------+------------------+----------+-------------------+---------------+--------+
-| foo     |              123 | HIGH     | 1.2.3             | 3.4.5         | foobar |
+| foo     | CVE-2020-0001    | HIGH     | 1.2.3             | 3.4.5         | foobar |
 +---------+------------------+----------+-------------------+---------------+--------+
 `,
 		},
 		{
 			name: "long title for vuln",
-			detectedVulns: []types.DetectedVulnerability{
+			results: report.Results{
 				{
-					VulnerabilityID:  "CVE-2020-1234",
-					PkgName:          "foo",
-					InstalledVersion: "1.2.3",
-					FixedVersion:     "3.4.5",
-					PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
-					Vulnerability: dbTypes.Vulnerability{
-						Title:    "a b c d e f g h i j k l m n o p q r s t u v",
-						Severity: "HIGH",
+					Target: "test",
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2020-1234",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "3.4.5",
+							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-1234",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "a b c d e f g h i j k l m n o p q r s t u v",
+								Description: "foobar",
+								Severity:    "HIGH",
+							},
+						},
 					},
 				},
 			},
@@ -105,27 +125,56 @@ func TestReportWriter_Table(t *testing.T) {
 | LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |                TITLE                 |
 +---------+------------------+----------+-------------------+---------------+--------------------------------------+
 | foo     | CVE-2020-1234    | HIGH     | 1.2.3             | 3.4.5         | a b c d e f g h i j k l...           |
-|         |                  |          |                   |               | -->avd.aquasec.com/nvd/cve-2020-0001 |
+|         |                  |          |                   |               | -->avd.aquasec.com/nvd/cve-2020-1234 |
 +---------+------------------+----------+-------------------+---------------+--------------------------------------+
 `,
 		},
 		{
+			name: "happy path misconfigurations",
+			results: report.Results{
+				{
+					Target: "test",
+					Misconfigurations: []types.DetectedMisconfiguration{
+						{
+							Type:       "Kubernetes Security Check",
+							ID:         "KSV001",
+							Title:      "Image tag ':latest' used",
+							Message:    "Message",
+							Severity:   "HIGH",
+							PrimaryURL: "https://avd.aquasec.com/appshield/ksv001",
+							Status:     types.StatusFailure,
+						},
+						{
+							Type:       "Kubernetes Security Check",
+							ID:         "KSV002",
+							Title:      "SYS_ADMIN capability added",
+							Message:    "Message",
+							Severity:   "CRITICAL",
+							PrimaryURL: "https://avd.aquasec.com/appshield/ksv002",
+							Status:     types.StatusFailure,
+						},
+					},
+				},
+			},
+			expectedOutput: `+---------------------------+------------+----------------------------+----------+--------+---------------------------------------------+
+|           TYPE            | MISCONF ID |           TITLE            | SEVERITY | STATUS |                   MESSAGE                   |
++---------------------------+------------+----------------------------+----------+--------+---------------------------------------------+
+| Kubernetes Security Check |   KSV001   | Image tag ':latest' used   |   HIGH   |  FAIL  | Message -->avd.aquasec.com/appshield/ksv001 |
++                           +------------+----------------------------+----------+        +---------------------------------------------+
+|                           |   KSV002   | SYS_ADMIN capability added | CRITICAL |        | Message -->avd.aquasec.com/appshield/ksv002 |
++---------------------------+------------+----------------------------+----------+--------+---------------------------------------------+
+`,
+		},
+		{
 			name:           "no vulns",
-			detectedVulns:  []types.DetectedVulnerability{},
 			expectedOutput: ``,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			inputResults := report.Results{
-				{
-					Target:          "foo",
-					Vulnerabilities: tc.detectedVulns,
-				},
-			}
 			tableWritten := bytes.Buffer{}
-			assert.NoError(t, report.WriteResults("table", &tableWritten, nil, inputResults, "", tc.light), tc.name)
+			assert.NoError(t, report.WriteResults("table", &tableWritten, nil, tc.results, "", tc.light), tc.name)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})
 	}

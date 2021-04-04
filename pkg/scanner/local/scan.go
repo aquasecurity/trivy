@@ -282,7 +282,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		Type:       res.Type,
 		Message:    msg,
 		Severity:   severity.String(),
-		PrimaryURL: fmt.Sprintf("https://avd.aquasec.com/%s", res.ID),
+		PrimaryURL: fmt.Sprintf("https://avd.aquasec.com/appshield/%s", strings.ToLower(res.ID)),
 		Status:     status,
 		Layer:      layer,
 	}
