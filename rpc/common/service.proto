@@ -54,8 +54,8 @@ message Misconfiguration {
 message MisconfResult {
   string namespace = 1;
   string message   = 2;
-  string id        = 3;
-  string type      = 4;
+  string type      = 3;
+  string id        = 4;
   string title     = 5;
   string severity  = 6;
 }
@@ -63,10 +63,11 @@ message MisconfResult {
 message DetectedMisconfiguration {
   string   type        = 1;
   string   id          = 2;
-  string   message     = 3;
-  Severity severity    = 4;
-  string   primary_url = 5;
-  Layer    layer       = 6;
+  string   title       = 3;
+  string   message     = 4;
+  Severity severity    = 5;
+  string   primary_url = 6;
+  Layer    layer       = 7;
 }
 
 message Vulnerability {

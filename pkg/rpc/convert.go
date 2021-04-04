@@ -141,6 +141,7 @@ func ConvertToRPCMisconfs(misconfs []types.DetectedMisconfiguration) []*common.D
 		rpcMisconfs = append(rpcMisconfs, &common.DetectedMisconfiguration{
 			Type:       m.Type,
 			Id:         m.ID,
+			Title:      m.Title,
 			Message:    m.Message,
 			Severity:   common.Severity(severity),
 			PrimaryUrl: m.PrimaryURL,
@@ -227,6 +228,7 @@ func ConvertFromRPCMisconfs(rpcMisconfs []*common.DetectedMisconfiguration) []ty
 		misconfs = append(misconfs, types.DetectedMisconfiguration{
 			Type:       rpcMisconf.Type,
 			ID:         rpcMisconf.Id,
+			Title:      rpcMisconf.Title,
 			Message:    rpcMisconf.Message,
 			Severity:   rpcMisconf.Severity.String(),
 			PrimaryURL: rpcMisconf.PrimaryUrl,
