@@ -8,9 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/google/wire"
 	"github.com/open-policy-agent/opa/bundle"
-	"github.com/spf13/afero"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
@@ -22,42 +20,54 @@ import (
 // TODO: fix
 const bundleURL = "https://knqyf263.github.io/appshield/bundle.tar.gz"
 
-// SuperSet binds the dependencies
-var SuperSet = wire.NewSet(
-	// clock.Clock
-	wire.Struct(new(clock.RealClock)),
-	wire.Bind(new(clock.Clock), new(clock.RealClock)),
+type options struct {
+	url   string
+	clock clock.Clock
+}
 
-	// Filesystem
-	afero.NewOsFs,
+type option func(*options)
 
-	// policy.Client
-	NewClient,
-)
+func WithBundleURL(url string) option {
+	return func(opts *options) {
+		opts.url = url
+	}
+}
 
-type metadata struct {
+func WithClock(clock clock.Clock) option {
+	return func(opts *options) {
+		opts.clock = clock
+	}
+}
+
+type Metadata struct {
 	Etag          string
 	LastUpdatedAt time.Time
 }
 
 // Client implements policy operations
 type Client struct {
-	fs    afero.Fs
-	clock clock.Clock
+	opts options
 }
 
 // NewClient is the factory method for policy client
-func NewClient(fs afero.Fs, clock clock.Clock) Client {
+func NewClient(opts ...option) Client {
+	o := &options{
+		url:   bundleURL,
+		clock: clock.RealClock{},
+	}
+
+	for _, opt := range opts {
+		opt(o)
+	}
 	return Client{
-		fs:    fs,
-		clock: clock,
+		opts: *o,
 	}
 }
 
 func (c Client) LoadDefaultPolicies() ([]string, error) {
 	f, err := os.Open(manifestPath())
 	if err != nil {
-		return nil, xerrors.Errorf("file open error (%s): %w", manifestPath(), err)
+		return nil, xerrors.Errorf("manifest file open error (%s): %w", manifestPath(), err)
 	}
 
 	var manifest bundle.Manifest
@@ -78,20 +88,20 @@ func (c Client) LoadDefaultPolicies() ([]string, error) {
 }
 
 func (c Client) NeedsUpdate() (string, bool) {
-	f, err := c.fs.Open(metadataPath())
+	f, err := os.Open(metadataPath())
 	if err != nil {
-		log.Logger.Debug("Failed to open the policy metadata: %s", err)
+		log.Logger.Debugf("Failed to open the policy metadata: %s", err)
 		return "", true
 	}
 
-	var meta metadata
+	var meta Metadata
 	if err = json.NewDecoder(f).Decode(&meta); err != nil {
-		log.Logger.Warn("Policy JSON decode error: %s", err)
+		log.Logger.Warnf("Policy JSON decode error: %s", err)
 		return "", true
 	}
 
 	// Update if it's been a day since the last update.
-	if c.clock.Now().After(meta.LastUpdatedAt.Add(24 * time.Hour)) {
+	if c.opts.clock.Now().After(meta.LastUpdatedAt.Add(24 * time.Hour)) {
 		return meta.Etag, true
 	}
 
@@ -100,7 +110,7 @@ func (c Client) NeedsUpdate() (string, bool) {
 }
 
 func (c Client) DownloadDefaultPolicies(ctx context.Context, etag string) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodHead, bundleURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodHead, c.opts.url, nil)
 	if err != nil {
 		return xerrors.Errorf("http client error: %w", err)
 	}
@@ -121,11 +131,11 @@ func (c Client) DownloadDefaultPolicies(ctx context.Context, etag string) error 
 	log.Logger.Info("Need to update the default policies")
 	log.Logger.Info("Downloading the default policies...")
 	dst := contentDir()
-	if err = downloader.Download(ctx, bundleURL, dst, dst); err != nil {
+	if err = downloader.Download(ctx, c.opts.url, dst, dst); err != nil {
 		return xerrors.Errorf("policy download error: %w", err)
 	}
 
-	if err = c.updateMetadata(resp.Header.Get("etag"), c.clock.Now()); err != nil {
+	if err = c.updateMetadata(resp.Header.Get("etag"), c.opts.clock.Now()); err != nil {
 		return xerrors.Errorf("unable to update the policy metadata: %w", err)
 	}
 
@@ -133,12 +143,12 @@ func (c Client) DownloadDefaultPolicies(ctx context.Context, etag string) error 
 }
 
 func (c Client) updateMetadata(etag string, now time.Time) error {
-	meta := metadata{
+	meta := Metadata{
 		Etag:          etag,
 		LastUpdatedAt: now,
 	}
 
-	f, err := c.fs.Create(metadataPath())
+	f, err := os.Create(metadataPath())
 	if err != nil {
 		return xerrors.Errorf("failed to open a policy manifest: %w", err)
 	}
