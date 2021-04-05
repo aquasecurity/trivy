@@ -299,6 +299,7 @@ func ConvertFromRPCMisconfigurations(rpcMisconfs []*common.Misconfiguration) []f
 	return misconfs
 }
 
+// ConvertFromRPCMisconfResults converts common.MisconfResult to fanal.MisconfResult
 func ConvertFromRPCMisconfResults(rpcResults []*common.MisconfResult) []ftypes.MisconfResult {
 	var results []ftypes.MisconfResult
 	for _, r := range rpcResults {
@@ -430,6 +431,7 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 	}
 }
 
+// ConvertToMisconfResults returns common.MisconfResult
 func ConvertToMisconfResults(results []ftypes.MisconfResult) []*common.MisconfResult {
 	var rpcResults []*common.MisconfResult
 	for _, r := range results {

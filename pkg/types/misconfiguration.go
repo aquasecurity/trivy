@@ -14,10 +14,16 @@ type DetectedMisconfiguration struct {
 	Layer      ftypes.Layer  `json:",omitempty"`
 }
 
+// MisconfStatus represents a status of misconfiguration
 type MisconfStatus string
 
 const (
-	StatusPassed    MisconfStatus = "PASS"
-	StatusFailure   MisconfStatus = "FAIL"
+	// StatusPassed represents successful status
+	StatusPassed MisconfStatus = "PASS"
+
+	// StatusFailure represents failure status
+	StatusFailure MisconfStatus = "FAIL"
+
+	// StatusException Passed represents the status of exception
 	StatusException MisconfStatus = "EXCEPTION"
 )

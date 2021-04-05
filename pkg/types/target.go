@@ -9,15 +9,23 @@ type VulnType = string
 type SecurityCheck = string
 
 const (
-	// vulnerability types
+	// VulnTypeUnknown is a vulnerability type of unknown
 	VulnTypeUnknown = VulnType("unknown")
-	VulnTypeOS      = VulnType("os")
+
+	// VulnTypeOS is a vulnerability type of OS packages
+	VulnTypeOS = VulnType("os")
+
+	// VulnTypeLibrary is a vulnerability type of programming language dependencies
 	VulnTypeLibrary = VulnType("library")
 
-	// security checks
-	SecurityCheckUnknown       = SecurityCheck("unknown")
+	// SecurityCheckUnknown is a security check of unknown
+	SecurityCheckUnknown = SecurityCheck("unknown")
+
+	// SecurityCheckVulnerability is a security check of vulnerabilities
 	SecurityCheckVulnerability = SecurityCheck("vuln")
-	SecurityCheckConfig        = SecurityCheck("config")
+
+	// SecurityCheckConfig is a security check of misconfigurations
+	SecurityCheckConfig = SecurityCheck("config")
 )
 
 var (
