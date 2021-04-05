@@ -54,7 +54,7 @@ func NewClient(fs afero.Fs, clock clock.Clock) Client {
 	}
 }
 
-func (c Client) LoadDefaultPolicies(ctx context.Context) ([]string, error) {
+func (c Client) LoadDefaultPolicies() ([]string, error) {
 	f, err := os.Open(manifestPath())
 	if err != nil {
 		return nil, xerrors.Errorf("file open error (%s): %w", manifestPath(), err)
