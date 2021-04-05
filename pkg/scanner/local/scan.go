@@ -289,6 +289,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 }
 
 func skipped(filePath string, skipFiles, skipDirs []string) bool {
+	filePath = strings.TrimLeft(filepath.Clean(filePath), string(os.PathSeparator))
 	for _, skipFile := range skipFiles {
 		skipFile = strings.TrimLeft(filepath.Clean(skipFile), string(os.PathSeparator))
 		if filePath == skipFile {

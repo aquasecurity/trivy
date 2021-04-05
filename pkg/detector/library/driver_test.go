@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	lib "github.com/aquasecurity/fanal/analyzer/library"
+	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
@@ -29,7 +29,7 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name:     "happy path",
 			fixtures: []string{"testdata/fixtures/php.yaml"},
-			libType:  lib.Composer,
+			libType:  ftypes.Composer,
 			args: args{
 				pkgName: "symfony/symfony",
 				pkgVer:  "4.2.6",
@@ -46,7 +46,7 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name:     "non-prefix buckets",
 			fixtures: []string{"testdata/fixtures/php-without-prefix.yaml"},
-			libType:  lib.Composer,
+			libType:  ftypes.Composer,
 			args: args{
 				pkgName: "symfony/symfony",
 				pkgVer:  "4.2.6",
@@ -63,7 +63,7 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name:     "no patched versions in the advisory",
 			fixtures: []string{"testdata/fixtures/php.yaml"},
-			libType:  lib.Composer,
+			libType:  ftypes.Composer,
 			args: args{
 				pkgName: "symfony/symfony",
 				pkgVer:  "4.4.6",
@@ -80,7 +80,7 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name:     "no vulnerable versions in the advisory",
 			fixtures: []string{"testdata/fixtures/ruby.yaml"},
-			libType:  lib.Bundler,
+			libType:  ftypes.Bundler,
 			args: args{
 				pkgName: "activesupport",
 				pkgVer:  "4.1.1",
@@ -97,7 +97,7 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name:     "no vulnerability",
 			fixtures: []string{"testdata/fixtures/php.yaml"},
-			libType:  lib.Composer,
+			libType:  ftypes.Composer,
 			args: args{
 				pkgName: "symfony/symfony",
 				pkgVer:  "4.4.7",

@@ -13,26 +13,19 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestOption_Init(t *testing.T) {
 	tests := []struct {
-		name         string
-		globalOption option.GlobalOption
-		dbOption     option.DBOption
-		imageOption  option.ImageOption
-		reportOption option.ReportOption
-		args         []string
-		logs         []string
-		want         Option
-		wantErr      string
+		name    string
+		args    []string
+		logs    []string
+		want    Option
+		wantErr string
 	}{
 		{
 			name: "happy path",
-			reportOption: option.ReportOption{
-				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-				VulnType:   []string{"os"},
-			},
 			args: []string{"--severity", "CRITICAL", "--vuln-type", "os", "--quiet", "alpine:3.10"},
 			want: Option{
 				GlobalOption: option.GlobalOption{
@@ -42,9 +35,28 @@ func TestOption_Init(t *testing.T) {
 					Target: "alpine:3.10",
 				},
 				ReportOption: option.ReportOption{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					VulnType:   []string{"os"},
-					Output:     os.Stdout,
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					VulnType:       []string{types.VulnTypeOS},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Output:         os.Stdout,
+				},
+			},
+		},
+		{
+			name: "config scanning",
+			args: []string{"--severity", "CRITICAL", "--security-checks", "config", "--quiet", "alpine:3.10"},
+			want: Option{
+				GlobalOption: option.GlobalOption{
+					Quiet: true,
+				},
+				ArtifactOption: option.ArtifactOption{
+					Target: "alpine:3.10",
+				},
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckConfig},
+					Output:         os.Stdout,
 				},
 			},
 		},
@@ -56,9 +68,10 @@ func TestOption_Init(t *testing.T) {
 					Reset: true,
 				},
 				ReportOption: option.ReportOption{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
 			},
 		},
@@ -70,9 +83,10 @@ func TestOption_Init(t *testing.T) {
 			},
 			want: Option{
 				ReportOption: option.ReportOption{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "centos:7",
@@ -87,9 +101,10 @@ func TestOption_Init(t *testing.T) {
 			},
 			want: Option{
 				ReportOption: option.ReportOption{
-					Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
+					Severities:     []dbTypes.Severity{dbTypes.SeverityLow},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "debian:buster",
@@ -105,10 +120,11 @@ func TestOption_Init(t *testing.T) {
 			},
 			want: Option{
 				ReportOption: option.ReportOption{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
-					Template:   "@contrib/gitlab.tpl",
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Template:       "@contrib/gitlab.tpl",
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
@@ -123,11 +139,12 @@ func TestOption_Init(t *testing.T) {
 			},
 			want: Option{
 				ReportOption: option.ReportOption{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
-					Template:   "@contrib/gitlab.tpl",
-					Format:     "json",
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Template:       "@contrib/gitlab.tpl",
+					Format:         "json",
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
@@ -142,10 +159,11 @@ func TestOption_Init(t *testing.T) {
 			},
 			want: Option{
 				ReportOption: option.ReportOption{
-					Severities: []dbTypes.Severity{dbTypes.SeverityMedium},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
-					Format:     "template",
+					Severities:     []dbTypes.Severity{dbTypes.SeverityMedium},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Format:         "template",
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
@@ -181,6 +199,7 @@ func TestOption_Init(t *testing.T) {
 			set.Bool("auto-refresh", false, "")
 			set.String("severity", "CRITICAL", "")
 			set.String("vuln-type", "os,library", "")
+			set.String("security-checks", "vuln", "")
 			set.String("only-update", "", "")
 			set.String("template", "", "")
 			set.String("format", "", "")

@@ -25,20 +25,24 @@ type options struct {
 	clock clock.Clock
 }
 
-type option func(*options)
+// Option is a functional option
+type Option func(*options)
 
-func WithBundleURL(url string) option {
+// WithBundleURL takes a URL to download OPA bundle
+func WithBundleURL(url string) Option {
 	return func(opts *options) {
 		opts.url = url
 	}
 }
 
-func WithClock(clock clock.Clock) option {
+// WithClock takes a clock
+func WithClock(clock clock.Clock) Option {
 	return func(opts *options) {
 		opts.clock = clock
 	}
 }
 
+// Metadata holds default policy metadata
 type Metadata struct {
 	Etag          string
 	LastUpdatedAt time.Time
@@ -50,7 +54,7 @@ type Client struct {
 }
 
 // NewClient is the factory method for policy client
-func NewClient(opts ...option) Client {
+func NewClient(opts ...Option) Client {
 	o := &options{
 		url:   bundleURL,
 		clock: clock.RealClock{},
@@ -64,6 +68,7 @@ func NewClient(opts ...option) Client {
 	}
 }
 
+// LoadDefaultPolicies loads default policies
 func (c Client) LoadDefaultPolicies() ([]string, error) {
 	f, err := os.Open(manifestPath())
 	if err != nil {
@@ -87,6 +92,7 @@ func (c Client) LoadDefaultPolicies() ([]string, error) {
 	return policyPaths, nil
 }
 
+// NeedsUpdate returns if the default policy should be updated
 func (c Client) NeedsUpdate() (string, bool) {
 	f, err := os.Open(metadataPath())
 	if err != nil {
@@ -109,6 +115,7 @@ func (c Client) NeedsUpdate() (string, bool) {
 
 }
 
+// DownloadDefaultPolicies download default policies from GitHub Pages
 func (c Client) DownloadDefaultPolicies(ctx context.Context, etag string) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodHead, c.opts.url, nil)
 	if err != nil {

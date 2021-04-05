@@ -5,26 +5,29 @@ import (
 	"os"
 	"testing"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
+
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestReportReportConfig_Init(t *testing.T) {
 	type fields struct {
-		output        string
-		Format        string
-		Template      string
-		vulnType      string
-		severities    string
-		IgnoreFile    string
-		IgnoreUnfixed bool
-		ExitCode      int
-		VulnType      []string
-		Output        *os.File
-		Severities    []dbTypes.Severity
+		output         string
+		Format         string
+		Template       string
+		vulnType       string
+		securityChecks string
+		severities     string
+		IgnoreFile     string
+		IgnoreUnfixed  bool
+		ExitCode       int
+		VulnType       []string
+		Output         *os.File
+		Severities     []dbTypes.Severity
 	}
 	tests := []struct {
 		name    string
@@ -37,83 +40,96 @@ func TestReportReportConfig_Init(t *testing.T) {
 		{
 			name: "happy path",
 			fields: fields{
-				severities: "CRITICAL",
-				vulnType:   "os",
+				severities:     "CRITICAL",
+				vulnType:       "os",
+				securityChecks: "vuln",
 			},
 			args: []string{"alpine:3.10"},
 			want: ReportOption{
-				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-				VulnType:   []string{"os"},
-				Output:     os.Stdout,
+				Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+				VulnType:       []string{types.VulnTypeOS},
+				SecurityChecks: []string{types.SecurityCheckVulnerability},
+				Output:         os.Stdout,
 			},
 		},
 		{
 			name: "happy path with an unknown severity",
 			fields: fields{
-				severities: "CRITICAL,INVALID",
-				vulnType:   "os,library",
+				severities:     "CRITICAL,INVALID",
+				vulnType:       "os,library",
+				securityChecks: "config",
 			},
 			args: []string{"centos:7"},
 			logs: []string{
 				"unknown severity option: unknown severity: INVALID",
 			},
 			want: ReportOption{
-				Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
-				VulnType:   []string{"os", "library"},
-				Output:     os.Stdout,
+				Severities:     []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
+				VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+				SecurityChecks: []string{types.SecurityCheckConfig},
+				Output:         os.Stdout,
 			},
 		},
 		{
 			name: "invalid option combination: --template enabled without --format",
 			fields: fields{
-				Template:   "@contrib/gitlab.tpl",
-				severities: "LOW",
+				Template:       "@contrib/gitlab.tpl",
+				severities:     "LOW",
+				vulnType:       "os",
+				securityChecks: "vuln",
 			},
 			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
 				"--template is ignored because --format template is not specified. Use --template option with --format template option.",
 			},
 			want: ReportOption{
-				Output:     os.Stdout,
-				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-				Template:   "@contrib/gitlab.tpl",
-				VulnType:   []string{""},
+				Output:         os.Stdout,
+				Severities:     []dbTypes.Severity{dbTypes.SeverityLow},
+				Template:       "@contrib/gitlab.tpl",
+				VulnType:       []string{types.VulnTypeOS},
+				SecurityChecks: []string{types.SecurityCheckVulnerability},
 			},
 		},
 		{
 			name: "invalid option combination: --template and --format json",
 			fields: fields{
-				Format:     "json",
-				Template:   "@contrib/gitlab.tpl",
-				severities: "LOW",
+				Format:         "json",
+				Template:       "@contrib/gitlab.tpl",
+				severities:     "LOW",
+				vulnType:       "os",
+				securityChecks: "config",
 			},
 			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
 				"--template is ignored because --format json is specified. Use --template option with --format template option.",
 			},
 			want: ReportOption{
-				Format:     "json",
-				Output:     os.Stdout,
-				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-				Template:   "@contrib/gitlab.tpl",
-				VulnType:   []string{""},
+				Format:         "json",
+				Output:         os.Stdout,
+				Severities:     []dbTypes.Severity{dbTypes.SeverityLow},
+				Template:       "@contrib/gitlab.tpl",
+				VulnType:       []string{types.VulnTypeOS},
+				SecurityChecks: []string{types.SecurityCheckConfig},
 			},
 		},
 		{
 			name: "invalid option combination: --format template without --template",
 			fields: fields{
-				Format:     "template",
-				severities: "LOW",
+				Format:         "template",
+				severities:     "LOW",
+				vulnType:       "os",
+				securityChecks: "vuln",
 			},
 			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
 				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
 			},
 			want: ReportOption{
-				Format:     "template",
-				Output:     os.Stdout,
-				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
-				VulnType:   []string{""},
+				Format:         "template",
+				Output:         os.Stdout,
+				Severities:     []dbTypes.Severity{dbTypes.SeverityLow},
+				VulnType:       []string{types.VulnTypeOS},
+				SecurityChecks: []string{types.SecurityCheckVulnerability},
 			},
 		},
 	}
@@ -126,15 +142,16 @@ func TestReportReportConfig_Init(t *testing.T) {
 			_ = set.Parse(tt.args)
 
 			c := &ReportOption{
-				output:        tt.fields.output,
-				Format:        tt.fields.Format,
-				Template:      tt.fields.Template,
-				vulnType:      tt.fields.vulnType,
-				severities:    tt.fields.severities,
-				IgnoreFile:    tt.fields.IgnoreFile,
-				IgnoreUnfixed: tt.fields.IgnoreUnfixed,
-				ExitCode:      tt.fields.ExitCode,
-				Output:        tt.fields.Output,
+				output:         tt.fields.output,
+				Format:         tt.fields.Format,
+				Template:       tt.fields.Template,
+				vulnType:       tt.fields.vulnType,
+				securityChecks: tt.fields.securityChecks,
+				severities:     tt.fields.severities,
+				IgnoreFile:     tt.fields.IgnoreFile,
+				IgnoreUnfixed:  tt.fields.IgnoreUnfixed,
+				ExitCode:       tt.fields.ExitCode,
+				Output:         tt.fields.Output,
 			}
 
 			err := c.Init(logger.Sugar())
@@ -152,10 +169,9 @@ func TestReportReportConfig_Init(t *testing.T) {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
-			default:
-				assert.NoError(t, err, tt.name)
 			}
 
+			assert.NoError(t, err, tt.name)
 			assert.Equal(t, &tt.want, c, tt.name)
 		})
 	}
