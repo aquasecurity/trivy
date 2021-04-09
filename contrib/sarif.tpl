@@ -27,10 +27,10 @@
               },
               "fullDescription": {
                 "text": {{ endWithPeriod (escapeString .Title) | printf "%q" }}
-              }
+              },
               "defaultConfiguration": {
                 "level": "{{ toSarifErrorLevel .Vulnerability.Severity }}"
-              },
+              }
               {{- with $help_uri := .PrimaryURL -}}
               ,
               {{ $help_uri | printf "\"helpUri\": %q," -}}
