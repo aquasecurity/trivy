@@ -19,6 +19,7 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -199,7 +200,35 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 		}
 		return escaped.String()
 	}
-
+	templateFuncMap["toSarifErrorLevel"] = func(severity string) string {
+		var sarifErrorLevel string
+		switch severity {
+		case "CRITICAL", "HIGH":
+			sarifErrorLevel = "error"
+		case "MEDIUM":
+			sarifErrorLevel = "warning"
+		case "LOW", "Unknown":
+			sarifErrorLevel = "note"
+		default:
+			sarifErrorLevel = "none"
+		}
+		return sarifErrorLevel
+	}
+	templateFuncMap["toSarifRuleName"] = func(vulnerabilityType string) string {
+		var ruleName string
+		switch vulnerabilityType {
+		case vulnerability.Ubuntu, vulnerability.Alpine, vulnerability.RedHat, vulnerability.RedHatOVAL,
+			vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
+			vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon,
+			vulnerability.CentOS:
+			ruleName = "Os Package Vulnerability "
+		case "npm", "yarn", "nuget", "pipenv", "poetry", "bundler", "cargo", "composer":
+			ruleName = "Programming Language Vulnerability "
+		default:
+			ruleName = "Other Vulnerability "
+		}
+		return ruleName + strings.Title(vulnerabilityType)
+	}
 	templateFuncMap["endWithPeriod"] = func(input string) string {
 		if !strings.HasSuffix(input, ".") {
 			input += "."

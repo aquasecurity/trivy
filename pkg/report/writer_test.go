@@ -404,16 +404,19 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
           "name": "Trivy",
           "informationUri": "https://github.com/aquasecurity/trivy",
           "fullName": "Trivy Vulnerability Scanner",
-          "version": "v0.15.0",
+          "version": "0.15.0",
           "rules": [
             {
-              "id": "[CRITICAL] CVE-1234-5678 foopackage",
-              "name": "dockerfile_scan",
+              "id": "CVE-1234-5678/foopackage",
+              "name": "Other Vulnerability Footype",
               "shortDescription": {
                 "text": "CVE-1234-5678 Package: foopackage"
               },
               "fullDescription": {
                 "text": "foovuln."
+              },
+              "defaultConfiguration": {
+                "level": "error"
               },
               "help": {
                 "text": "Vulnerability CVE-1234-5678\nSeverity: CRITICAL\nPackage: foopackage\nInstalled Version: 1.2.3\nFixed Version: 4.5.6\nLink: [CVE-1234-5678]()",
@@ -432,7 +435,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
       },
       "results": [
         {
-          "ruleId": "[CRITICAL] CVE-1234-5678 foopackage",
+          "ruleId": "CVE-1234-5678/foopackage",
           "ruleIndex": 0,
           "level": "error",
           "message": {
@@ -441,17 +444,18 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "Dockerfile"
-              },
-              "region": {
-                "startLine": 1,
-                "startColumn": 1,
-                "endColumn": 1
+                "uri": "footarget",
+                "uriBaseId": "ROOTPATH"
               }
             }
           }]
         }],
-      "columnKind": "utf16CodeUnits"
+      "columnKind": "utf16CodeUnits",
+      "originalUriBaseIds": {
+        "ROOTPATH": {
+          "uri": "/"
+        }
+      }
     }
   ]
 }`,
@@ -483,16 +487,19 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
           "name": "Trivy",
           "informationUri": "https://github.com/aquasecurity/trivy",
           "fullName": "Trivy Vulnerability Scanner",
-          "version": "v0.15.0",
+          "version": "0.15.0",
           "rules": [
             {
-              "id": "[CRITICAL] CVE-1234-5678 foopackage",
-              "name": "dockerfile_scan",
+              "id": "CVE-1234-5678/foopackage",
+              "name": "Other Vulnerability Footype",
               "shortDescription": {
                 "text": "CVE-1234-5678 Package: foopackage"
               },
               "fullDescription": {
                 "text": "foovuln."
+              },
+              "defaultConfiguration": {
+                "level": "error"
               },
               "helpUri": "https://avd.aquasec.com/nvd/cve-1234-5678",
               "help": {
@@ -512,7 +519,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
       },
       "results": [
         {
-          "ruleId": "[CRITICAL] CVE-1234-5678 foopackage",
+          "ruleId": "CVE-1234-5678/foopackage",
           "ruleIndex": 0,
           "level": "error",
           "message": {
@@ -521,17 +528,18 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "Dockerfile"
-              },
-              "region": {
-                "startLine": 1,
-                "startColumn": 1,
-                "endColumn": 1
+                "uri": "footarget",
+                "uriBaseId": "ROOTPATH"
               }
             }
           }]
         }],
-      "columnKind": "utf16CodeUnits"
+      "columnKind": "utf16CodeUnits",
+      "originalUriBaseIds": {
+        "ROOTPATH": {
+          "uri": "/"
+        }
+      }
     }
   ]
 }`,
