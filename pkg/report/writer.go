@@ -200,35 +200,8 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 		}
 		return escaped.String()
 	}
-	templateFuncMap["toSarifErrorLevel"] = func(severity string) string {
-		var sarifErrorLevel string
-		switch severity {
-		case "CRITICAL", "HIGH":
-			sarifErrorLevel = "error"
-		case "MEDIUM":
-			sarifErrorLevel = "warning"
-		case "LOW", "Unknown":
-			sarifErrorLevel = "note"
-		default:
-			sarifErrorLevel = "none"
-		}
-		return sarifErrorLevel
-	}
-	templateFuncMap["toSarifRuleName"] = func(vulnerabilityType string) string {
-		var ruleName string
-		switch vulnerabilityType {
-		case vulnerability.Ubuntu, vulnerability.Alpine, vulnerability.RedHat, vulnerability.RedHatOVAL,
-			vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
-			vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon,
-			vulnerability.CentOS:
-			ruleName = "Os Package Vulnerability "
-		case "npm", "yarn", "nuget", "pipenv", "poetry", "bundler", "cargo", "composer":
-			ruleName = "Programming Language Vulnerability "
-		default:
-			ruleName = "Other Vulnerability "
-		}
-		return ruleName + strings.Title(vulnerabilityType)
-	}
+	templateFuncMap["toSarifErrorLevel"] = toSarifErrorLevel
+	templateFuncMap["toSarifRuleName"] = toSarifRuleName
 	templateFuncMap["endWithPeriod"] = func(input string) string {
 		if !strings.HasSuffix(input, ".") {
 			input += "."
@@ -261,4 +234,35 @@ func (tw TemplateWriter) Write(results Results) error {
 		return xerrors.Errorf("failed to write with template: %w", err)
 	}
 	return nil
+}
+
+func toSarifRuleName(vulnerabilityType string) string {
+	var ruleName string
+	switch vulnerabilityType {
+	case vulnerability.Ubuntu, vulnerability.Alpine, vulnerability.RedHat, vulnerability.RedHatOVAL,
+		vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
+		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon,
+		vulnerability.CentOS:
+		ruleName = "Os Package Vulnerability "
+	case "npm", "yarn", "nuget", "pipenv", "poetry", "bundler", "cargo", "composer":
+		ruleName = "Programming Language Vulnerability "
+	default:
+		ruleName = "Other Vulnerability "
+	}
+	return ruleName + strings.Title(vulnerabilityType)
+}
+
+func toSarifErrorLevel(severity string) string {
+	var sarifErrorLevel string
+	switch severity {
+	case "CRITICAL", "HIGH":
+		sarifErrorLevel = "error"
+	case "MEDIUM":
+		sarifErrorLevel = "warning"
+	case "LOW", "Unknown":
+		sarifErrorLevel = "note"
+	default:
+		sarifErrorLevel = "none"
+	}
+	return sarifErrorLevel
 }
