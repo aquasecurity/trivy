@@ -26,11 +26,11 @@ rpm -ivh https://github.com/aquasecurity/trivy/releases/download/{{ git.tag }}/t
 Add repository to `/etc/apt/sources.list.d`.
 
 ```bash
-$ sudo apt-get install wget apt-transport-https gnupg lsb-release
-$ wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-$ echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
-$ sudo apt-get update
-$ sudo apt-get install trivy
+sudo apt-get install wget apt-transport-https gnupg lsb-release
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+sudo apt-get update
+sudo apt-get install trivy
 ```
 
 or
@@ -58,7 +58,7 @@ yay -Sy trivy-bin
 You can use homebrew on macOS and Linux.
 
 ```bash
-$ brew install aquasecurity/trivy/trivy
+brew install aquasecurity/trivy/trivy
 ```
 
 ## Nix/NixOS
@@ -68,7 +68,7 @@ You can use nix on Linux or macOS and on others unofficially.
 Note that trivy is currently only in the unstable channels.
 
 ```bash
-$ nix-env --install trivy
+nix-env --install trivy
 ```
 
 Or through your configuration on NixOS or with home-manager as usual
@@ -90,12 +90,12 @@ Make sure it has execution bits turned on.
 ## From source
 
 ```bash
-$ mkdir -p $GOPATH/src/github.com/aquasecurity
-$ cd $GOPATH/src/github.com/aquasecurity
-$ git clone --depth 1 --branch {{ git.tag }} https://github.com/aquasecurity/trivy
-$ cd trivy/cmd/trivy/
-$ export GO111MODULE=on
-$ go install
+mkdir -p $GOPATH/src/github.com/aquasecurity
+cd $GOPATH/src/github.com/aquasecurity
+git clone --depth 1 --branch {{ git.tag }} https://github.com/aquasecurity/trivy
+cd trivy/cmd/trivy/
+export GO111MODULE=on
+go install
 ```
 
 ## Docker
@@ -169,10 +169,10 @@ docker pull public.ecr.aws/aquasecurity/trivy:{{ git.tag[1:] }}
 ### Installing from the the Aqua Chart Repository
 
 ```
-$ helm repo add aquasecurity https://aquasecurity.github.io/helm-charts/
-$ helm repo update
-$ helm search repo trivy
-$ helm install my-trivy aquasecurity/trivy
+helm repo add aquasecurity https://aquasecurity.github.io/helm-charts/
+helm repo update
+helm search repo trivy
+helm install my-trivy aquasecurity/trivy
 ```
 
 ### Installing the Chart
@@ -180,7 +180,7 @@ $ helm install my-trivy aquasecurity/trivy
 To install the chart with the release name `my-release`:
 
 ```
-$ helm install my-release .
+helm install my-release .
 ```
 
 The command deploys Trivy on the Kubernetes cluster in the default configuration. The [Parameters](#parameters)
