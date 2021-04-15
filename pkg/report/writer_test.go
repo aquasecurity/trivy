@@ -408,7 +408,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
           "rules": [
             {
               "id": "CVE-1234-5678/foopackage",
-              "name": "Other Vulnerability Footype",
+              "name": "Other Vulnerability (Footype)",
               "shortDescription": {
                 "text": "CVE-1234-5678 Package: foopackage"
               },
@@ -491,7 +491,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
           "rules": [
             {
               "id": "CVE-1234-5678/foopackage",
-              "name": "Other Vulnerability Footype",
+              "name": "Other Vulnerability (Footype)",
               "shortDescription": {
                 "text": "CVE-1234-5678 Package: foopackage"
               },

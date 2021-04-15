@@ -14,91 +14,91 @@ func TestReportWriter_toSarifRuleName(t *testing.T) {
 	}{
 		{
 			vulnerabilityType: vulnerability.Ubuntu,
-			sarifRuleName:     "Os Package Vulnerability Ubuntu",
+			sarifRuleName:     "OS Package Vulnerability (Ubuntu)",
 		},
 		{
 			vulnerabilityType: vulnerability.Alpine,
-			sarifRuleName:     "Os Package Vulnerability Alpine",
+			sarifRuleName:     "OS Package Vulnerability (Alpine)",
 		},
 		{
 			vulnerabilityType: vulnerability.RedHat,
-			sarifRuleName:     "Os Package Vulnerability Redhat",
+			sarifRuleName:     "OS Package Vulnerability (Redhat)",
 		},
 		{
 			vulnerabilityType: vulnerability.RedHatOVAL,
-			sarifRuleName:     "Os Package Vulnerability Redhat-Oval",
+			sarifRuleName:     "OS Package Vulnerability (Redhat-Oval)",
 		},
 		{
 			vulnerabilityType: vulnerability.Debian,
-			sarifRuleName:     "Os Package Vulnerability Debian",
+			sarifRuleName:     "OS Package Vulnerability (Debian)",
 		},
 		{
 			vulnerabilityType: vulnerability.DebianOVAL,
-			sarifRuleName:     "Os Package Vulnerability Debian-Oval",
+			sarifRuleName:     "OS Package Vulnerability (Debian-Oval)",
 		},
 		{
 			vulnerabilityType: vulnerability.Fedora,
-			sarifRuleName:     "Os Package Vulnerability Fedora",
+			sarifRuleName:     "OS Package Vulnerability (Fedora)",
 		},
 		{
 			vulnerabilityType: vulnerability.Amazon,
-			sarifRuleName:     "Os Package Vulnerability Amazon",
+			sarifRuleName:     "OS Package Vulnerability (Amazon)",
 		},
 		{
 			vulnerabilityType: vulnerability.OracleOVAL,
-			sarifRuleName:     "Os Package Vulnerability Oracle-Oval",
+			sarifRuleName:     "OS Package Vulnerability (Oracle-Oval)",
 		},
 		{
 			vulnerabilityType: vulnerability.SuseCVRF,
-			sarifRuleName:     "Os Package Vulnerability Suse-Cvrf",
+			sarifRuleName:     "OS Package Vulnerability (Suse-Cvrf)",
 		},
 		{
 			vulnerabilityType: vulnerability.OpenSuseCVRF,
-			sarifRuleName:     "Os Package Vulnerability Opensuse-Cvrf",
+			sarifRuleName:     "OS Package Vulnerability (Opensuse-Cvrf)",
 		},
 		{
 			vulnerabilityType: vulnerability.Photon,
-			sarifRuleName:     "Os Package Vulnerability Photon",
+			sarifRuleName:     "OS Package Vulnerability (Photon)",
 		},
 		{
 			vulnerabilityType: vulnerability.CentOS,
-			sarifRuleName:     "Os Package Vulnerability Centos",
+			sarifRuleName:     "OS Package Vulnerability (Centos)",
 		},
 		{
 			vulnerabilityType: "npm",
-			sarifRuleName:     "Programming Language Vulnerability Npm",
+			sarifRuleName:     "Programming Language Vulnerability (Npm)",
 		},
 		{
 			vulnerabilityType: "yarn",
-			sarifRuleName:     "Programming Language Vulnerability Yarn",
+			sarifRuleName:     "Programming Language Vulnerability (Yarn)",
 		},
 		{
 			vulnerabilityType: "nuget",
-			sarifRuleName:     "Programming Language Vulnerability Nuget",
+			sarifRuleName:     "Programming Language Vulnerability (Nuget)",
 		},
 		{
 			vulnerabilityType: "pipenv",
-			sarifRuleName:     "Programming Language Vulnerability Pipenv",
+			sarifRuleName:     "Programming Language Vulnerability (Pipenv)",
 		},
 		{
 			vulnerabilityType: "poetry",
-			sarifRuleName:     "Programming Language Vulnerability Poetry",
+			sarifRuleName:     "Programming Language Vulnerability (Poetry)",
 		},
 		{
 			vulnerabilityType: "bundler",
-			sarifRuleName:     "Programming Language Vulnerability Bundler",
+			sarifRuleName:     "Programming Language Vulnerability (Bundler)",
 		},
 		{
 			vulnerabilityType: "cargo",
-			sarifRuleName:     "Programming Language Vulnerability Cargo",
+			sarifRuleName:     "Programming Language Vulnerability (Cargo)",
 		},
 		{
 			vulnerabilityType: "composer",
-			sarifRuleName:     "Programming Language Vulnerability Composer",
+			sarifRuleName:     "Programming Language Vulnerability (Composer)",
 		},
 		{
 			vulnerabilityType: "redis",
-			sarifRuleName:     "Other Vulnerability Redis",
+			sarifRuleName:     "Other Vulnerability (Redis)",
 		},
 	}
 	for _, tc := range tests {
@@ -131,7 +131,7 @@ func TestReportWriter_toSarifErrorLevel(t *testing.T) {
 			sarifErrorLevel: "note",
 		},
 		{
-			severity:        "Unknown",
+			severity:        "UNKNOWN",
 			sarifErrorLevel: "note",
 		},
 		{

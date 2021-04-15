@@ -12,7 +12,7 @@
           "rules": [
             {
               "id": "CVE-2019-1549/libcrypto1.1",
-              "name": "Os Package Vulnerability Alpine",
+              "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1549 Package: libcrypto1.1"
               },
@@ -38,7 +38,7 @@
             },
             {
               "id": "CVE-2019-1551/libcrypto1.1",
-              "name": "Os Package Vulnerability Alpine",
+              "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1551 Package: libcrypto1.1"
               },
@@ -64,7 +64,7 @@
             },
             {
               "id": "CVE-2019-1563/libcrypto1.1",
-              "name": "Os Package Vulnerability Alpine",
+              "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1563 Package: libcrypto1.1"
               },
@@ -90,7 +90,7 @@
             },
             {
               "id": "CVE-2019-1547/libcrypto1.1",
-              "name": "Os Package Vulnerability Alpine",
+              "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1547 Package: libcrypto1.1"
               },
@@ -116,7 +116,7 @@
             },
             {
               "id": "CVE-2019-1549/libssl1.1",
-              "name": "Os Package Vulnerability Alpine",
+              "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1549 Package: libssl1.1"
               },
@@ -142,7 +142,7 @@
             },
             {
               "id": "CVE-2019-1551/libssl1.1",
-              "name": "Os Package Vulnerability Alpine",
+              "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1551 Package: libssl1.1"
               },
@@ -168,7 +168,7 @@
             },
             {
               "id": "CVE-2019-1563/libssl1.1",
-              "name": "Os Package Vulnerability Alpine",
+              "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1563 Package: libssl1.1"
               },
@@ -194,7 +194,7 @@
             },
             {
               "id": "CVE-2019-1547/libssl1.1",
-              "name": "Os Package Vulnerability Alpine",
+              "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1547 Package: libssl1.1"
               },
