@@ -103,8 +103,7 @@ func TestReportWriter_toSarifRuleName(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.vulnerabilityType, func(t *testing.T) {
-			got := toSarifRuleName(tc.vulnerabilityType)
-			assert.Equal(t, tc.sarifRuleName, got, tc.vulnerabilityType)
+			assert.Equal(t, tc.sarifRuleName, toSarifRuleName(tc.vulnerabilityType), tc.vulnerabilityType)
 		})
 	}
 }
@@ -141,8 +140,7 @@ func TestReportWriter_toSarifErrorLevel(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.severity, func(t *testing.T) {
-			got := toSarifErrorLevel(tc.severity)
-			assert.Equal(t, tc.sarifErrorLevel, got, tc.severity)
+			assert.Equal(t, tc.sarifErrorLevel, toSarifErrorLevel(tc.severity), tc.severity)
 		})
 	}
 }
