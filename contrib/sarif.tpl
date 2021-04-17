@@ -75,7 +75,7 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "{{ $filePath }}",
+                "uri": "{{ toPathUri $filePath }}",
                 "uriBaseId": "ROOTPATH"
               }
             }

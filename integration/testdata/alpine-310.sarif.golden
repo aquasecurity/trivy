@@ -231,7 +231,7 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+                "uri": "testdata/fixtures/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
@@ -247,7 +247,7 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+                "uri": "testdata/fixtures/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
@@ -263,7 +263,7 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+                "uri": "testdata/fixtures/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
@@ -279,7 +279,7 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+                "uri": "testdata/fixtures/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
@@ -295,7 +295,7 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+                "uri": "testdata/fixtures/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
@@ -311,7 +311,7 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+                "uri": "testdata/fixtures/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
@@ -327,7 +327,7 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+                "uri": "testdata/fixtures/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
@@ -343,7 +343,7 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2)",
+                "uri": "testdata/fixtures/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }

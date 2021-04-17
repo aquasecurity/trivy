@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"strings"
 	"text/template"
 	"time"
@@ -26,6 +27,9 @@ import (
 
 // Now returns the current time
 var Now = time.Now
+
+// regex to extract file path in case string includes (distro:version)
+var re = regexp.MustCompile(`(?P<path>.+?)(?:\s*\((?:.*?)\).*?)?$`)
 
 // Results to hold list of Result
 type Results []Result
@@ -213,6 +217,14 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 	}
 	templateFuncMap["escapeString"] = func(input string) string {
 		return html.EscapeString(input)
+	}
+	templateFuncMap["toPathUri"] = func(input string) string {
+		var matches = re.FindStringSubmatch(input)
+		if matches != nil {
+			input = matches[re.SubexpIndex("path")]
+		}
+		input = strings.ReplaceAll(input, "\\", "/")
+		return input
 	}
 	templateFuncMap["getEnv"] = func(key string) string {
 		return os.Getenv(key)

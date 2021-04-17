@@ -374,11 +374,13 @@ func TestReportWriter_Template(t *testing.T) {
 func TestReportWriter_Template_SARIF(t *testing.T) {
 	testCases := []struct {
 		name          string
+		target        string
 		detectedVulns []types.DetectedVulnerability
 		want          string
 	}{
 		{
-			name: "no primary url",
+			name:   "no primary url",
+			target: "foo/target/alpine-310.tar.gz (alpine 3.10.2)",
 			detectedVulns: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "CVE-1234-5678",
@@ -444,7 +446,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "footarget",
+                "uri": "foo/target/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
@@ -461,7 +463,8 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
 }`,
 		},
 		{
-			name: "with primary url",
+			name:   "with primary url",
+			target: "rust-app\\Cargo.lock",
 			detectedVulns: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "CVE-1234-5678",
@@ -528,7 +531,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "footarget",
+                "uri": "rust-app/Cargo.lock",
                 "uriBaseId": "ROOTPATH"
               }
             }
@@ -555,7 +558,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
 
 			inputResults := report.Results{
 				report.Result{
-					Target:          "footarget",
+					Target:          tc.target,
 					Type:            "footype",
 					Vulnerabilities: tc.detectedVulns,
 				},
