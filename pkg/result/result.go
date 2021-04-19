@@ -49,7 +49,7 @@ var SuperSet = wire.NewSet(
 type Operation interface {
 	FillVulnerabilityInfo(vulns []types.DetectedVulnerability, reportType string)
 	Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
-		severities []dbTypes.Severity, ignoreUnfixed bool, ignoreFile, policy string) (
+		severities []dbTypes.Severity, ignoreUnfixed, showSuccesses bool, ignoreFile, policy string) (
 		[]types.DetectedVulnerability, []types.DetectedMisconfiguration, error)
 }
 
@@ -147,7 +147,7 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, source string) strin
 
 // Filter filter out the vulnerabilities
 func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
-	severities []dbTypes.Severity, ignoreUnfixed bool, ignoreFile, policyFile string) (
+	severities []dbTypes.Severity, ignoreUnfixed, showSuccesses bool, ignoreFile, policyFile string) (
 	[]types.DetectedVulnerability, []types.DetectedMisconfiguration, error) {
 	ignoredIDs := getIgnoredIDs(ignoreFile)
 
@@ -179,6 +179,8 @@ func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability,
 		for _, s := range severities {
 			if s.String() == misconf.Severity {
 				if utils.StringInSlice(misconf.ID, ignoredIDs) {
+					continue
+				} else if misconf.Status == types.StatusPassed && !showSuccesses {
 					continue
 				}
 				filteredMisconfs = append(filteredMisconfs, misconf)

@@ -305,7 +305,7 @@ func ConvertFromRPCMisconfResults(rpcResults []*common.MisconfResult) []ftypes.M
 		results = append(results, ftypes.MisconfResult{
 			Namespace: r.Namespace,
 			Message:   r.Message,
-			MisconfMetadata: ftypes.MisconfMetadata{
+			PolicyMetadata: ftypes.PolicyMetadata{
 				ID:       r.Id,
 				Type:     r.Type,
 				Title:    r.Title,

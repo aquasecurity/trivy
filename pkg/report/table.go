@@ -39,11 +39,10 @@ func (tw TableWriter) write(result Result) {
 
 	var total int
 	var severityCount map[string]int
-	var testCount map[types.MisconfStatus]int
 	if len(result.Vulnerabilities) != 0 {
 		total, severityCount = tw.writeVulnerabilities(table, result.Vulnerabilities)
 	} else if len(result.Misconfigurations) != 0 {
-		total, severityCount, testCount = tw.writeMisconfigurations(table, result.Misconfigurations)
+		severityCount = tw.writeMisconfigurations(table, result.Misconfigurations)
 	}
 
 	var severities []string
@@ -62,11 +61,12 @@ func (tw TableWriter) write(result Result) {
 
 	fmt.Printf("\n%s\n", result.Target)
 	fmt.Println(strings.Repeat("=", len(result.Target)))
-	if len(testCount) != 0 {
+	if len(result.Misconfigurations) > 0 {
 		// for misconfigurations
-		fmt.Printf("Tests: %d (PASSED: %d, FAILURE: %d, EXCEPTIONS: %d)\n", testCount[types.StatusFailure]+testCount[types.StatusPassed],
-			testCount[types.StatusPassed], testCount[types.StatusFailure], testCount[types.StatusException])
-		fmt.Printf("Failures: %d (%s)\n\n", total, strings.Join(results, ", "))
+		summary := result.MisconfSummary
+		fmt.Printf("Tests: %d (SUCCESSES: %d, FAILURES: %d, EXCEPTIONS: %d)\n",
+			summary.Successes+summary.Failures+summary.Exceptions, summary.Successes, summary.Failures, summary.Exceptions)
+		fmt.Printf("Failures: %d (%s)\n\n", summary.Failures, strings.Join(results, ", "))
 	} else {
 		// for vulnerabilities
 		fmt.Printf("Total: %d (%s)\n\n", total, strings.Join(results, ", "))
@@ -93,16 +93,15 @@ func (tw TableWriter) writeVulnerabilities(table *tablewriter.Table, vulns []typ
 	return len(vulns), severityCount
 }
 
-func (tw TableWriter) writeMisconfigurations(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) (
-	int, map[string]int, map[types.MisconfStatus]int) {
-	table.SetColWidth(60)
+func (tw TableWriter) writeMisconfigurations(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) map[string]int {
+	table.SetColWidth(40)
 	header := []string{"Type", "Misconf ID", "Title", "Severity", "Status", "Message"}
 	table.SetColumnAlignment([]int{tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT,
 		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT})
 	table.SetHeader(header)
-	severityCount, testCount := tw.setMisconfRows(table, misconfs)
+	severityCount := tw.setMisconfRows(table, misconfs)
 
-	return testCount[types.StatusFailure], severityCount, testCount
+	return severityCount
 }
 
 func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []types.DetectedVulnerability) map[string]int {
@@ -140,17 +139,14 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 	return severityCount
 }
 
-func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) (
-	map[string]int, map[types.MisconfStatus]int) {
+func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) map[string]int {
 	severityCount := map[string]int{}
-	testCount := map[types.MisconfStatus]int{}
 	for _, misconf := range misconfs {
 		if misconf.Status == types.StatusFailure {
 			severityCount[misconf.Severity]++
 			primaryURL := strings.TrimPrefix(misconf.PrimaryURL, "https://")
 			misconf.Message = fmt.Sprintf("%s -->%s", misconf.Message, primaryURL)
 		}
-		testCount[misconf.Status]++
 
 		var row []string
 		if tw.Output == os.Stdout {
@@ -167,5 +163,5 @@ func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.
 
 		table.Append(row)
 	}
-	return severityCount, testCount
+	return severityCount
 }

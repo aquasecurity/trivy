@@ -184,7 +184,7 @@ func filter(ctx context.Context, opt Option, results report.Results) (report.Res
 	for i := range results {
 		resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
 		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
-			opt.Severities, opt.IgnoreUnfixed, opt.IgnoreFile, opt.IgnorePolicy)
+			opt.Severities, opt.IgnoreUnfixed, opt.ShowSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return nil, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}

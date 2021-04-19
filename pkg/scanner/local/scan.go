@@ -232,23 +232,30 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 
 		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
 
+		var summary report.MisconfSummary
 		var detected []types.DetectedMisconfiguration
+
 		for _, f := range misconf.Failures {
+			summary.Failures++
 			detected = append(detected, toDetectedMisconfiguration(f, dbTypes.SeverityCritical, types.StatusFailure, misconf.Layer))
 		}
 		for _, w := range misconf.Warnings {
+			summary.Failures++
 			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityMedium, types.StatusFailure, misconf.Layer))
 		}
 		for _, w := range misconf.Successes {
+			summary.Successes++
 			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusPassed, misconf.Layer))
 		}
 		for _, w := range misconf.Exceptions {
+			summary.Exceptions++
 			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusException, misconf.Layer))
 		}
 
 		results = append(results, report.Result{
 			Target:            misconf.FilePath,
 			Type:              misconf.FileType,
+			MisconfSummary:    summary,
 			Misconfigurations: detected,
 		})
 	}
@@ -266,7 +273,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 	severity := defaultSeverity
 	sev, err := dbTypes.NewSeverity(res.Severity)
 	if err != nil {
-		log.Logger.Warnf("severity must be %s", dbTypes.SeverityNames)
+		log.Logger.Warnf("severity must be %s, but %s", dbTypes.SeverityNames, res.Severity)
 	} else {
 		severity = sev
 	}

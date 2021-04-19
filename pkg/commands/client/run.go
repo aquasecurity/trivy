@@ -68,7 +68,7 @@ func runWithContext(ctx context.Context, opt Option) error {
 	resultClient := initializeResultClient()
 	for i := range results {
 		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
-			opt.Severities, opt.IgnoreUnfixed, opt.IgnoreFile, opt.IgnorePolicy)
+			opt.Severities, opt.IgnoreUnfixed, opt.ShowSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return err
 		}

@@ -6,7 +6,8 @@ import (
 
 // ConfigOption holds the options for config scanning
 type ConfigOption struct {
-	FilePatterns []string
+	FilePatterns  []string
+	ShowSuccesses bool
 
 	// Rego
 	PolicyPaths      []string
@@ -17,6 +18,7 @@ type ConfigOption struct {
 // NewConfigOption is the factory method to return config scanning options
 func NewConfigOption(c *cli.Context) ConfigOption {
 	return ConfigOption{
+		ShowSuccesses:    c.Bool("show-successes"),
 		FilePatterns:     c.StringSlice("file-patterns"),
 		PolicyPaths:      c.StringSlice("config-policy"),
 		DataPaths:        c.StringSlice("config-data"),
