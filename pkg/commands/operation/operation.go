@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
@@ -104,7 +105,7 @@ func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) erro
 
 // InitDefaultPolicies downloads the default policies and loads them
 func InitDefaultPolicies(ctx context.Context) ([]string, error) {
-	client := initializePolicyClient()
+	client := policy.NewClient()
 	etag, needsUpdate := client.NeedsUpdate()
 	if needsUpdate {
 		if err := client.DownloadDefaultPolicies(ctx, etag); err != nil {

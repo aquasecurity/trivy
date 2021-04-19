@@ -1,0 +1,4 @@
+{
+    "revision": "1",
+    "roots": ["kubernetes", "docker"]
+}

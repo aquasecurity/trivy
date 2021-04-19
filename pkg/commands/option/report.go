@@ -54,7 +54,9 @@ func NewReportOption(c *cli.Context) ReportOption {
 }
 
 // Init initializes the ReportOption
-func (c *ReportOption) Init(logger *zap.SugaredLogger) (err error) {
+func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
+	var err error
+
 	if c.Template != "" {
 		if c.Format == "" {
 			logger.Warn("--template is ignored because --format template is not specified. Use --template option with --format template option.")
@@ -66,27 +68,20 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) (err error) {
 		logger.Warn("--format template is ignored because --template not is specified. Specify --template option when you use --format template.")
 	}
 
-	c.Severities = c.splitSeverity(logger, c.severities)
+	c.Severities = splitSeverity(logger, c.severities)
 
-	// Validate vulnerability types
-	for _, v := range strings.Split(c.vulnType, ",") {
-		if types.NewVulnType(v) == types.VulnTypeUnknown {
-			return xerrors.Errorf("unknown vulnerability type (%s)", v)
-		}
-		c.VulnType = append(c.VulnType, v)
+	if err = c.populateVulnTypes(); err != nil {
+		return xerrors.Errorf("vuln type: %w", err)
 	}
 
-	// Validate security checks
-	for _, v := range strings.Split(c.securityChecks, ",") {
-		if types.NewSecurityCheck(v) == types.SecurityCheckUnknown {
-			return xerrors.Errorf("unknown security check (%s)", v)
-		}
-		c.SecurityChecks = append(c.SecurityChecks, v)
+	if err = c.populateSecurityChecks(); err != nil {
+		return xerrors.Errorf("security checks: %w", err)
 	}
 
 	// for testability
 	c.severities = ""
 	c.vulnType = ""
+	c.securityChecks = ""
 
 	c.Output = os.Stdout
 	if c.output != "" {
@@ -98,7 +93,27 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) (err error) {
 	return nil
 }
 
-func (c *ReportOption) splitSeverity(logger *zap.SugaredLogger, severity string) []dbTypes.Severity {
+func (c *ReportOption) populateVulnTypes() error {
+	for _, v := range strings.Split(c.vulnType, ",") {
+		if types.NewVulnType(v) == types.VulnTypeUnknown {
+			return xerrors.Errorf("unknown vulnerability type (%s)", v)
+		}
+		c.VulnType = append(c.VulnType, v)
+	}
+	return nil
+}
+
+func (c *ReportOption) populateSecurityChecks() error {
+	for _, v := range strings.Split(c.securityChecks, ",") {
+		if types.NewSecurityCheck(v) == types.SecurityCheckUnknown {
+			return xerrors.Errorf("unknown security check (%s)", v)
+		}
+		c.SecurityChecks = append(c.SecurityChecks, v)
+	}
+	return nil
+}
+
+func splitSeverity(logger *zap.SugaredLogger, severity string) []dbTypes.Severity {
 	logger.Debugf("Severities: %s", severity)
 	var severities []dbTypes.Severity
 	for _, s := range strings.Split(severity, ",") {

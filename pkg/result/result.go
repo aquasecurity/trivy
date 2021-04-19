@@ -42,16 +42,7 @@ var (
 var SuperSet = wire.NewSet(
 	wire.Struct(new(db.Config)),
 	NewClient,
-	wire.Bind(new(Operation), new(Client)),
 )
-
-// Operation defines the result operations
-type Operation interface {
-	FillVulnerabilityInfo(vulns []types.DetectedVulnerability, reportType string)
-	Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
-		severities []dbTypes.Severity, ignoreUnfixed, showSuccesses bool, ignoreFile, policy string) (
-		[]types.DetectedVulnerability, []types.DetectedMisconfiguration, error)
-}
 
 // Client implements db operations
 type Client struct {
@@ -151,8 +142,24 @@ func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability,
 	[]types.DetectedVulnerability, []types.DetectedMisconfiguration, error) {
 	ignoredIDs := getIgnoredIDs(ignoreFile)
 
-	// Vulnerabilities
-	var filteredVulns []types.DetectedVulnerability
+	filteredVulns := filterVulnerabilities(vulns, severities, ignoreUnfixed, ignoredIDs)
+	filteredMisconfs := filterMisconfigurations(misconfs, severities, showSuccesses, ignoredIDs)
+
+	if policyFile != "" {
+		var err error
+		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, policyFile)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("failed to apply the policy: %w", err)
+		}
+	}
+	sort.Sort(types.BySeverity(filteredVulns))
+
+	return filteredVulns, filteredMisconfs, nil
+}
+
+func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
+	ignoreUnfixed bool, ignoredIDs []string) []types.DetectedVulnerability {
+	var filtered []types.DetectedVulnerability
 	for _, vuln := range vulns {
 		if vuln.Severity == "" {
 			vuln.Severity = dbTypes.SeverityUnknown.String()
@@ -166,14 +173,17 @@ func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability,
 				} else if utils.StringInSlice(vuln.VulnerabilityID, ignoredIDs) {
 					continue
 				}
-				filteredVulns = append(filteredVulns, vuln)
+				filtered = append(filtered, vuln)
 				break
 			}
 		}
 	}
+	return filtered
+}
 
-	// Misconfigurations
-	var filteredMisconfs []types.DetectedMisconfiguration
+func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,
+	showSuccesses bool, ignoredIDs []string) []types.DetectedMisconfiguration {
+	var filtered []types.DetectedMisconfiguration
 	for _, misconf := range misconfs {
 		// Filter misconfigurations by severity
 		for _, s := range severities {
@@ -183,22 +193,12 @@ func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability,
 				} else if misconf.Status == types.StatusPassed && !showSuccesses {
 					continue
 				}
-				filteredMisconfs = append(filteredMisconfs, misconf)
+				filtered = append(filtered, misconf)
 				break
 			}
 		}
 	}
-
-	if policyFile != "" {
-		var err error
-		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, policyFile)
-		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to apply the policy: %w", err)
-		}
-	}
-	sort.Sort(types.BySeverity(filteredVulns))
-
-	return filteredVulns, filteredMisconfs, nil
+	return filtered
 }
 
 func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,

@@ -28,11 +28,11 @@ var ScanSuperSet = wire.NewSet(
 // ScanServer implements the scanner
 type ScanServer struct {
 	localScanner scanner.Driver
-	resultClient result.Operation
+	resultClient result.Client
 }
 
 // NewScanServer is the factory method for scanner
-func NewScanServer(s scanner.Driver, vulnClient result.Operation) *ScanServer {
+func NewScanServer(s scanner.Driver, vulnClient result.Client) *ScanServer {
 	return &ScanServer{localScanner: s, resultClient: vulnClient}
 }
 

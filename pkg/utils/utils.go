@@ -28,7 +28,7 @@ func CacheDir() string {
 	return cacheDir
 }
 
-// SetCacheDir sets the tricy cacheDir
+// SetCacheDir sets the trivy cacheDir
 func SetCacheDir(dir string) {
 	cacheDir = dir
 }
