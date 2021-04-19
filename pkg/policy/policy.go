@@ -20,7 +20,7 @@ import (
 )
 
 // TODO: fix
-const bundleURL = "https://knqyf263.github.io/appshield/bundle.tar.gz"
+const bundleURL = "http://aquasecurity.github.io/aqua-policy-poc/bundle.tar.gz"
 
 // SuperSet binds the dependencies
 var SuperSet = wire.NewSet(
