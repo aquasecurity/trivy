@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	yarnPackageRegexp = regexp.MustCompile(`"?(?P<package>.+?)@.+`)
-	yarnVersionPrefix = `  version "`
+	yarnLocatorRegexp = regexp.MustCompile(`"?(?P<package>.+?)@(?:(?P<protocol>.+?):)?.+`)
+	yarnVersionRegexp = regexp.MustCompile(`\s+version:?\s+"?(?P<version>[^"]+)"?`)
 )
 
 type LockFile struct {
@@ -27,19 +27,44 @@ type Dependency struct {
 	Dependencies map[string]Dependency
 }
 
-func getPackageName(target string) (packagename string, err error) {
-	capture := yarnPackageRegexp.FindStringSubmatch(target)
+func parsePackageLocator(target string) (packagename, protocol string, err error) {
+	capture := yarnLocatorRegexp.FindStringSubmatch(target)
 	if len(capture) < 2 {
-		return "", xerrors.New("not package format")
+		return "", "", xerrors.New("not package format")
 	}
+	for i, group := range yarnLocatorRegexp.SubexpNames() {
+		switch group {
+		case "package":
+			packagename = capture[i]
+		case "protocol":
+			protocol = capture[i]
+		}
+	}
+	return
+}
 
+func getVersion(target string) (version string, err error) {
+	capture := yarnVersionRegexp.FindStringSubmatch(target)
+	if len(capture) < 2 {
+		return "", xerrors.New("not version")
+	}
 	return capture[len(capture)-1], nil
+}
+
+func validProtocol(protocol string) (valid bool) {
+	switch protocol {
+	// only scan npm packages
+	case "npm", "":
+		return true
+	}
+	return false
 }
 
 func Parse(r io.Reader) (libs []types.Library, err error) {
 	scanner := bufio.NewScanner(r)
 	unique := map[string]struct{}{}
 	var lib types.Library
+	var skipPackage bool
 	for scanner.Scan() {
 		line := scanner.Text()
 		if len(line) < 1 {
@@ -47,12 +72,15 @@ func Parse(r io.Reader) (libs []types.Library, err error) {
 		}
 
 		// parse version
-		if strings.HasPrefix(line, yarnVersionPrefix) {
+		var version string
+		if version, err = getVersion(line); err == nil {
+			if skipPackage {
+				continue
+			}
 			if lib.Name == "" {
 				return nil, xerrors.New("Invalid yarn.lock format")
 			}
 			// fetch between version prefix and last double-quote
-			version := line[11:(len(line) - 1)]
 			symbol := fmt.Sprintf("%s@%s", lib.Name, version)
 			if _, ok := unique[symbol]; ok {
 				lib = types.Library{}
@@ -65,11 +93,18 @@ func Parse(r io.Reader) (libs []types.Library, err error) {
 			unique[symbol] = struct{}{}
 			continue
 		}
-
+		// skip __metadata block
+		if skipPackage = strings.HasPrefix(line, "__metadata"); skipPackage {
+			continue
+		}
 		// packagename line start 1 char
 		if line[:1] != " " && line[:1] != "#" {
 			var name string
-			if name, err = getPackageName(line); err != nil {
+			var protocol string
+			if name, protocol, err = parsePackageLocator(line); err != nil {
+				continue
+			}
+			if skipPackage = !validProtocol(protocol); skipPackage {
 				continue
 			}
 			lib.Name = name
