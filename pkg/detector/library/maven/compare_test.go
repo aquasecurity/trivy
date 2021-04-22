@@ -76,7 +76,7 @@ func TestComparer_IsVulnerable(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "version soft requirements",
+			name: "version soft requirements happy",
 			args: args{
 				currentVersion: "1.2.3",
 				advisory: dbTypes.Advisory{
