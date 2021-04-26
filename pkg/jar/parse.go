@@ -37,6 +37,7 @@ var (
 
 type conf struct {
 	baseURL      string
+	client       *http.Client
 	rootFilePath string
 }
 
@@ -54,8 +55,14 @@ func WithFilePath(filePath string) Option {
 	}
 }
 
+func WithClient(client *http.Client) Option {
+	return func(c *conf) {
+		c.client = client
+	}
+}
+
 func Parse(r io.Reader, opts ...Option) ([]types.Library, error) {
-	c := conf{baseURL: baseURL}
+	c := conf{baseURL: baseURL, client: http.DefaultClient}
 	for _, opt := range opts {
 		opt(&c)
 	}
@@ -379,7 +386,7 @@ func exists(c conf, p properties) (bool, error) {
 	q.Set("rows", "1")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return false, xerrors.Errorf("http error: %w", err)
 	}
@@ -411,7 +418,7 @@ func searchBySHA1(c conf, data []byte) (properties, error) {
 	q.Set("wt", "json")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return properties{}, xerrors.Errorf("sha1 search error: %w", err)
 	}
@@ -453,7 +460,7 @@ func searchByArtifactID(c conf, artifactID string) (string, error) {
 	q.Set("wt", "json")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return "", xerrors.Errorf("artifactID search error: %w", err)
 	}
