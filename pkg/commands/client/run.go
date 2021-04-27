@@ -18,22 +18,26 @@ import (
 )
 
 // Run runs the scan
-func Run(cliCtx *cli.Context) error {
-	c, err := NewConfig(cliCtx)
+func Run(ctx *cli.Context) error {
+	c, err := NewConfig(ctx)
 	if err != nil {
 		return err
 	}
-	return run(c)
+	return run(ctx.Context, c)
 }
 
-func run(conf Config) error {
+func run(ctx context.Context, conf Config) error {
 	ctx, cancel := context.WithTimeout(context.Background(), conf.Timeout)
 	defer cancel()
 
-	return runWithContext(ctx, conf)
+	err := runWithTimeout(ctx, conf)
+	if xerrors.Is(err, context.DeadlineExceeded) {
+		log.Logger.Warn("Increase --timeout value")
+	}
+	return err
 }
 
-func runWithContext(ctx context.Context, conf Config) error {
+func runWithTimeout(ctx context.Context, conf Config) error {
 	if err := initialize(&conf); err != nil {
 		return xerrors.Errorf("initialize error: %w", err)
 	}

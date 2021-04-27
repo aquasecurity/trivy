@@ -26,14 +26,18 @@ var errSkipScan = errors.New("skip subsequent processes")
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration,
 	[]analyzer.Type) (scanner.Scanner, func(), error)
 
-func run(conf Config, initializeScanner InitializeScanner) error {
-	ctx, cancel := context.WithTimeout(context.Background(), conf.Timeout)
+func run(ctx context.Context, conf Config, initializeScanner InitializeScanner) error {
+	ctx, cancel := context.WithTimeout(ctx, conf.Timeout)
 	defer cancel()
 
-	return runWithContext(ctx, conf, initializeScanner)
+	err := runWithTimeout(ctx, conf, initializeScanner)
+	if xerrors.Is(err, context.DeadlineExceeded) {
+		log.Logger.Warn("Increase --timeout value")
+	}
+	return err
 }
 
-func runWithContext(ctx context.Context, conf Config, initializeScanner InitializeScanner) error {
+func runWithTimeout(ctx context.Context, conf Config, initializeScanner InitializeScanner) error {
 	if err := log.InitLogger(conf.Debug, conf.Quiet); err != nil {
 		l.Fatal(err)
 	}
