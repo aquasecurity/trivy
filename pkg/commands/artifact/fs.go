@@ -22,8 +22,8 @@ func filesystemScanner(ctx context.Context, dir string, ac cache.ArtifactCache, 
 }
 
 // FilesystemRun runs scan on filesystem
-func FilesystemRun(cliCtx *cli.Context) error {
-	c, err := NewConfig(cliCtx)
+func FilesystemRun(ctx *cli.Context) error {
+	c, err := NewConfig(ctx)
 	if err != nil {
 		return err
 	}
@@ -33,5 +33,5 @@ func FilesystemRun(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
 
-	return run(c, filesystemScanner)
+	return run(ctx.Context, c, filesystemScanner)
 }

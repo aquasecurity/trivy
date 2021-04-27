@@ -23,8 +23,8 @@ func repositoryScanner(ctx context.Context, dir string, ac cache.ArtifactCache, 
 }
 
 // RepositoryRun runs scan on repository
-func RepositoryRun(cliCtx *cli.Context) error {
-	c, err := NewConfig(cliCtx)
+func RepositoryRun(ctx *cli.Context) error {
+	c, err := NewConfig(ctx)
 	if err != nil {
 		return err
 	}
@@ -34,5 +34,5 @@ func RepositoryRun(cliCtx *cli.Context) error {
 		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
 
-	return run(c, repositoryScanner)
+	return run(ctx.Context, c, repositoryScanner)
 }
