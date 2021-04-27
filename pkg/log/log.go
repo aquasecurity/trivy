@@ -7,7 +7,15 @@ import (
 var Logger *zap.SugaredLogger
 
 func init() {
-	logger, _ := zap.NewProduction()
+	config := zap.Config{
+		Level:            zap.NewAtomicLevelAt(zap.DebugLevel),
+		Development:      false,
+		Encoding:         "console",
+		EncoderConfig:    zap.NewDevelopmentEncoderConfig(),
+		OutputPaths:      []string{"stderr"},
+		ErrorOutputPaths: []string{"stderr"},
+	}
+	logger, _ := config.Build()
 	Logger = logger.Sugar()
 }
 

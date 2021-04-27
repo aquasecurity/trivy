@@ -15,7 +15,9 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
+	"github.com/hashicorp/go-retryablehttp"
 	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
@@ -31,14 +33,15 @@ const (
 )
 
 var (
-	jarFileRegEx        = regexp.MustCompile(`^([a-zA-Z0-9\._-]*[^-*])-(\d\S*(?:-SNAPSHOT)?).jar$`)
+	jarFileRegEx = regexp.MustCompile(`^([a-zA-Z0-9\._-]*[^-*])-(\d\S*(?:-SNAPSHOT)?).jar$`)
+
 	ArtifactNotFoundErr = xerrors.New("no artifact found")
 )
 
 type conf struct {
 	baseURL      string
-	client       *http.Client
 	rootFilePath string
+	httpClient   *http.Client
 }
 
 type Option func(*conf)
@@ -55,14 +58,25 @@ func WithFilePath(filePath string) Option {
 	}
 }
 
-func WithClient(client *http.Client) Option {
+func WithHTTPClient(client *http.Client) Option {
 	return func(c *conf) {
-		c.client = client
+		c.httpClient = client
 	}
 }
 
 func Parse(r io.Reader, opts ...Option) ([]types.Library, error) {
-	c := conf{baseURL: baseURL, client: http.DefaultClient}
+	// for HTTP retry
+	retryClient := retryablehttp.NewClient()
+	retryClient.Logger = logger{}
+	retryClient.RetryWaitMin = 20 * time.Second
+	retryClient.RetryWaitMax = 5 * time.Minute
+	retryClient.RetryMax = 5
+	client := retryClient.StandardClient()
+
+	c := conf{
+		baseURL:    baseURL,
+		httpClient: client,
+	}
 	for _, opt := range opts {
 		opt(&c)
 	}
@@ -261,6 +275,12 @@ func parseManifest(f *zip.File) (manifest, error) {
 	for scanner.Scan() {
 		line := scanner.Text()
 
+		// Skip variables. e.g. Bundle-Name: %bundleName
+		ss := strings.Fields(line)
+		if len(ss) <= 1 || (len(ss) > 1 && strings.HasPrefix(ss[1], "%")) {
+			continue
+		}
+
 		// It is not determined which fields are present in each application.
 		// In some cases, none of them are included, in which case they cannot be detected.
 		switch {
@@ -376,7 +396,7 @@ func (m manifest) determineVersion() (string, error) {
 }
 
 func exists(c conf, p properties) (bool, error) {
-	req, err := http.NewRequest("GET", c.baseURL, nil)
+	req, err := http.NewRequest(http.MethodGet, c.baseURL, nil)
 	if err != nil {
 		return false, xerrors.Errorf("unable to initialize HTTP client: %w", err)
 	}
@@ -386,7 +406,7 @@ func exists(c conf, p properties) (bool, error) {
 	q.Set("rows", "1")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.client.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return false, xerrors.Errorf("http error: %w", err)
 	}
@@ -407,7 +427,7 @@ func searchBySHA1(c conf, data []byte) (properties, error) {
 	}
 	digest := hex.EncodeToString(h.Sum(nil))
 
-	req, err := http.NewRequest("GET", c.baseURL, nil)
+	req, err := http.NewRequest(http.MethodGet, c.baseURL, nil)
 	if err != nil {
 		return properties{}, xerrors.Errorf("unable to initialize HTTP client: %w", err)
 	}
@@ -418,11 +438,15 @@ func searchBySHA1(c conf, data []byte) (properties, error) {
 	q.Set("wt", "json")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.client.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return properties{}, xerrors.Errorf("sha1 search error: %w", err)
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return properties{}, xerrors.Errorf("status %s from %s", resp.Status, req.URL.String())
+	}
 
 	var res apiResponse
 	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
@@ -449,7 +473,7 @@ func searchBySHA1(c conf, data []byte) (properties, error) {
 }
 
 func searchByArtifactID(c conf, artifactID string) (string, error) {
-	req, err := http.NewRequest("GET", c.baseURL, nil)
+	req, err := http.NewRequest(http.MethodGet, c.baseURL, nil)
 	if err != nil {
 		return "", xerrors.Errorf("unable to initialize HTTP client: %w", err)
 	}
@@ -460,11 +484,15 @@ func searchByArtifactID(c conf, artifactID string) (string, error) {
 	q.Set("wt", "json")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.client.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return "", xerrors.Errorf("artifactID search error: %w", err)
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", xerrors.Errorf("status %s from %s", resp.Status, req.URL.String())
+	}
 
 	var res apiResponse
 	if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
