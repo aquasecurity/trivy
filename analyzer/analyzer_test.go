@@ -1,6 +1,7 @@
 package analyzer_test
 
 import (
+	"context"
 	"errors"
 	"io/ioutil"
 	"os"
@@ -9,16 +10,15 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
-
-	// Change the order in which "init()" is called intentionally
-	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
 	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
 	aos "github.com/aquasecurity/fanal/analyzer/os"
 	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
+	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
 	"github.com/aquasecurity/fanal/types"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
@@ -368,18 +368,20 @@ func TestAnalyzeFile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var wg sync.WaitGroup
+			limit := semaphore.NewWeighted(3)
+
 			got := new(analyzer.AnalysisResult)
 			a := analyzer.NewAnalyzer(tt.args.disabledAnalyzers)
-			err := a.AnalyzeFile(&wg, got, tt.args.filePath, tt.args.info, tt.args.opener)
+			err := a.AnalyzeFile(context.Background(), &wg, limit, got, tt.args.filePath, tt.args.info, tt.args.opener)
 
 			wg.Wait()
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
+
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
