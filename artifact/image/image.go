@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -17,6 +18,10 @@ import (
 	"github.com/aquasecurity/fanal/image"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/walker"
+)
+
+const (
+	parallel = 5
 )
 
 type Artifact struct {
@@ -86,9 +91,9 @@ func (a Artifact) inspect(ctx context.Context, imageID string, missingImage bool
 
 	var osFound types.OS
 	for _, d := range diffIDs {
-		go func(versionedDiffID string) {
+		go func(ctx context.Context, versionedDiffID string) {
 			diffID := cache.TrimVersionSuffix(versionedDiffID)
-			layerInfo, err := a.inspectLayer(diffID)
+			layerInfo, err := a.inspectLayer(ctx, diffID)
 			if err != nil {
 				errCh <- xerrors.Errorf("failed to analyze layer: %s : %w", diffID, err)
 				return
@@ -101,7 +106,7 @@ func (a Artifact) inspect(ctx context.Context, imageID string, missingImage bool
 				osFound = *layerInfo.OS
 			}
 			done <- struct{}{}
-		}(d)
+		}(ctx, d)
 	}
 
 	for range diffIDs {
@@ -124,7 +129,7 @@ func (a Artifact) inspect(ctx context.Context, imageID string, missingImage bool
 
 }
 
-func (a Artifact) inspectLayer(diffID string) (types.BlobInfo, error) {
+func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobInfo, error) {
 	layerDigest, r, err := a.uncompressedLayer(diffID)
 	if err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", diffID, err)
@@ -132,9 +137,10 @@ func (a Artifact) inspectLayer(diffID string) (types.BlobInfo, error) {
 
 	var wg sync.WaitGroup
 	result := new(analyzer.AnalysisResult)
+	limit := semaphore.NewWeighted(parallel)
 
 	opqDirs, whFiles, err := walker.WalkLayerTar(r, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		if err = a.analyzer.AnalyzeFile(&wg, result, filePath, info, opener); err != nil {
+		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, filePath, info, opener); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
 		return nil

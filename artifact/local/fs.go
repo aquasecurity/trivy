@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	digest "github.com/opencontainers/go-digest"
+	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -20,6 +21,10 @@ import (
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/walker"
+)
+
+const (
+	parallel = 10
 )
 
 type Artifact struct {
@@ -36,21 +41,23 @@ func NewArtifact(dir string, c cache.ArtifactCache, disabled []analyzer.Type) ar
 	}
 }
 
-func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
+func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
 	var wg sync.WaitGroup
 	result := new(analyzer.AnalysisResult)
+	limit := semaphore.NewWeighted(parallel)
+
 	err := walker.WalkDir(a.dir, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		filePath, err := filepath.Rel(a.dir, filePath)
 		if err != nil {
-			return err
+			return xerrors.Errorf("filepath rel (%s): %w", filePath, err)
 		}
-		if err = a.analyzer.AnalyzeFile(&wg, result, filePath, info, opener); err != nil {
-			return err
+		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, filePath, info, opener); err != nil {
+			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
 		}
 		return nil
 	})
 	if err != nil {
-		return types.ArtifactReference{}, err
+		return types.ArtifactReference{}, xerrors.Errorf("walk dir: %w", err)
 	}
 
 	// Wait for all the goroutine to finish.
