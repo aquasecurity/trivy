@@ -20,6 +20,10 @@ func Analyze(analyzerType, filePath string, content []byte, parse parser) (*anal
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
 
+	if len(parsedLibs) == 0 {
+		return nil, nil
+	}
+
 	return ToAnalysisResult(analyzerType, filePath, parsedLibs), nil
 }
 
