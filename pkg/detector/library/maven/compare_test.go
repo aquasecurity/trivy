@@ -65,6 +65,39 @@ func TestComparer_IsVulnerable(t *testing.T) {
 			want: true,
 		},
 		{
+			name: "version requirements",
+			args: args{
+				currentVersion: "1.2.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"(,1.2.3]"},
+					PatchedVersions:    []string{"1.2.4"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "version soft requirements happy",
+			args: args{
+				currentVersion: "1.2.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"1.2.3"},
+					PatchedVersions:    []string{"1.2.4"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "version soft requirements",
+			args: args{
+				currentVersion: "1.2.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"1.2.2"},
+					PatchedVersions:    []string{"1.2.4"},
+				},
+			},
+			want: false,
+		},
+		{
 			name: "invalid constraint",
 			args: args{
 				currentVersion: "1.2.3",
