@@ -18,6 +18,8 @@
     - packages.lock.json
 - Java
     - JAR/WAR/EAR files (*.jar, *.war, and *.ear)
+- Go
+    - Binaries built by Go
 
 The path of these files does not matter.
 
