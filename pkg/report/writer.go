@@ -18,6 +18,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer/library"
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -80,7 +81,8 @@ type TableWriter struct {
 // Write writes the result on standard output
 func (tw TableWriter) Write(results Results) error {
 	for _, result := range results {
-		if len(result.Vulnerabilities) == 0 {
+		// Skip zero vulnerabilities on Java archives (JAR/WAR/EAR)
+		if result.Type == library.Jar && len(result.Vulnerabilities) == 0 {
 			continue
 		}
 		tw.write(result)
