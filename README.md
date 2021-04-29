@@ -47,7 +47,7 @@ See [here](https://aquasecurity.github.io/trivy/latest/integrations/) for detail
 
 - Detect comprehensive vulnerabilities
   - OS packages (Alpine, **Red Hat Universal Base Image**, Red Hat Enterprise Linux, CentOS, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
-  - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, and Maven)
+  - **Application dependencies** (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, Maven, and Go)
 - Simple
   - Specify only an image name or artifact name
   - See [Quick Start](#quick-start) and [Examples](#examples)
