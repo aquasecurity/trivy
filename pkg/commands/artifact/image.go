@@ -32,21 +32,21 @@ func dockerScanner(ctx context.Context, imageName string, ac cache.ArtifactCache
 }
 
 // ImageRun runs scan on docker image
-func ImageRun(cliCtx *cli.Context) error {
-	c, err := NewConfig(cliCtx)
+func ImageRun(ctx *cli.Context) error {
+	c, err := NewConfig(ctx)
 	if err != nil {
 		return err
 	}
 
 	// initialize config
-	if err := c.Init(); err != nil {
+	if err = c.Init(); err != nil {
 		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
 
 	if c.Input != "" {
 		// scan tar file
-		return run(c, archiveScanner)
+		return run(ctx.Context, c, archiveScanner)
 	}
 
-	return run(c, dockerScanner)
+	return run(ctx.Context, c, dockerScanner)
 }
