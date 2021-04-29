@@ -70,7 +70,7 @@ func TestComparer_IsVulnerable(t *testing.T) {
 				currentVersion: "1.2.3",
 				advisory: dbTypes.Advisory{
 					VulnerableVersions: []string{"(,1.2.3]"},
-					PatchedVersions:    []string{">1.2.3"},
+					PatchedVersions:    []string{"1.2.4"},
 				},
 			},
 			want: true,
@@ -81,7 +81,7 @@ func TestComparer_IsVulnerable(t *testing.T) {
 				currentVersion: "1.2.3",
 				advisory: dbTypes.Advisory{
 					VulnerableVersions: []string{"1.2.3"},
-					PatchedVersions:    []string{">1.2.3"},
+					PatchedVersions:    []string{"1.2.4"},
 				},
 			},
 			want: true,
@@ -92,7 +92,7 @@ func TestComparer_IsVulnerable(t *testing.T) {
 				currentVersion: "1.2.3",
 				advisory: dbTypes.Advisory{
 					VulnerableVersions: []string{"1.2.2"},
-					PatchedVersions:    []string{">1.2.3"},
+					PatchedVersions:    []string{"1.2.4"},
 				},
 			},
 			want: false,
