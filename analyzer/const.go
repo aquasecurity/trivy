@@ -31,6 +31,7 @@ const (
 	TypePipenv
 	TypePoetry
 	TypeYarn
+	TypeGoBinary
 
 	// Image Config
 	TypeApkCommand

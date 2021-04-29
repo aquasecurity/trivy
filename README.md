@@ -10,7 +10,7 @@ Static Analysis Library for Containers
 - Detect OS
 - Extract OS packages
 - Extract libraries used by an application
-  - Bundler, Composer, npm, Yarn, Pipenv, Poetry, Cargo
+  - Bundler, Composer, npm, Yarn, Pipenv, Poetry, Cargo, Go Binary, Java Archive (JAR/WAR/EAR), NuGet
 
 ## Example
 See [`cmd/fanal/`](cmd/fanal)
@@ -126,6 +126,5 @@ func openStream(path string) (*os.File, error) {
 
 ## Notes
 When using `latest` tag, that image will be cached. After `latest` tag is updated, you need to clear cache.
-
 
 
