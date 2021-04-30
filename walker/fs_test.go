@@ -35,5 +35,6 @@ func TestWalkDir(t *testing.T) {
 	err = walker.WalkDir("testdata/fs", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		return errors.New("error")
 	})
-	require.EqualError(t, err, "failed to analyze file: error", "sad path")
+	require.NotNil(t, err)
+	require.Contains(t, err.Error(), "failed to analyze file: error", "sad path")
 }
