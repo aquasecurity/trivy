@@ -11,6 +11,7 @@ const (
 	Yarn     = "yarn"
 	Jar      = "jar"
 	GoBinary = "gobinary"
+	GoMod    = "gomod"
 )
 
 var (

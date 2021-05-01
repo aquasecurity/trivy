@@ -32,6 +32,7 @@ const (
 	TypePoetry
 	TypeYarn
 	TypeGoBinary
+	TypeGoMod
 
 	// Image Config
 	TypeApkCommand
