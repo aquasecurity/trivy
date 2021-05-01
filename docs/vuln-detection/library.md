@@ -19,7 +19,7 @@
 - Java
     - JAR/WAR/EAR files (*.jar, *.war, and *.ear)
 - Go
-    - Binaries built by Go
+    - Binaries built by Go (UPX-compressed binaries don't work)
 
 The path of these files does not matter.
 
