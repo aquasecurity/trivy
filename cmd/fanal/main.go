@@ -19,6 +19,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
 	_ "github.com/aquasecurity/fanal/analyzer/library/composer"
 	_ "github.com/aquasecurity/fanal/analyzer/library/gobinary"
+	_ "github.com/aquasecurity/fanal/analyzer/library/gomod"
 	_ "github.com/aquasecurity/fanal/analyzer/library/jar"
 	_ "github.com/aquasecurity/fanal/analyzer/library/npm"
 	_ "github.com/aquasecurity/fanal/analyzer/library/nuget"
