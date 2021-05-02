@@ -44,6 +44,11 @@ func NewDriver(libType string) (Driver, error) {
 			ecosystem:  vulnerability.Go,
 			advisories: []advisory{NewAdvisory(vulnerability.Go, comparer.GenericComparer{})},
 		}
+	case library.GoMod:
+		driver = Driver{
+			ecosystem:  vulnerability.Go,
+			advisories: []advisory{NewAdvisory(vulnerability.Go, comparer.GenericComparer{})},
+		}
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
 	}
