@@ -3,7 +3,6 @@ package artifact
 import (
 	"context"
 	"errors"
-	l "log"
 	"os"
 	"time"
 
@@ -33,16 +32,16 @@ type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.
 type InitCache func(c Option) (cache.Cache, error)
 
 // Run performs artifact scanning
-func Run(opt Option, initializeScanner InitializeScanner, initCache InitCache) error {
-	ctx, cancel := context.WithTimeout(context.Background(), opt.Timeout)
+func Run(ctx context.Context, opt Option, initializeScanner InitializeScanner, initCache InitCache) error {
+	ctx, cancel := context.WithTimeout(ctx, opt.Timeout)
 	defer cancel()
 
-	return runWithContext(ctx, opt, initializeScanner, initCache)
+	return runWithTimeout(ctx, opt, initializeScanner, initCache)
 }
 
-func runWithContext(ctx context.Context, opt Option, initializeScanner InitializeScanner, initCache InitCache) error {
+func runWithTimeout(ctx context.Context, opt Option, initializeScanner InitializeScanner, initCache InitCache) error {
 	if err := log.InitLogger(opt.Debug, opt.Quiet); err != nil {
-		l.Fatal(err)
+		return err
 	}
 
 	cacheClient, err := initCache(opt)

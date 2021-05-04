@@ -23,21 +23,22 @@ const defaultPolicyNamespace = "appshield"
 
 // Run runs the scan
 func Run(cliCtx *cli.Context) error {
-	c, err := NewOption(cliCtx)
+	opt, err := NewOption(cliCtx)
 	if err != nil {
-		return err
+		return xerrors.Errorf("option error: %w", err)
 	}
-	return run(c)
-}
 
-func run(opt Option) error {
-	ctx, cancel := context.WithTimeout(context.Background(), opt.Timeout)
+	ctx, cancel := context.WithTimeout(cliCtx.Context, opt.Timeout)
 	defer cancel()
 
-	return runWithContext(ctx, opt)
+	err = runWithTimeout(ctx, opt)
+	if xerrors.Is(err, context.DeadlineExceeded) {
+		log.Logger.Warn("Increase --timeout value")
+	}
+	return err
 }
 
-func runWithContext(ctx context.Context, opt Option) error {
+func runWithTimeout(ctx context.Context, opt Option) error {
 	if err := initialize(&opt); err != nil {
 		return xerrors.Errorf("initialize error: %w", err)
 	}

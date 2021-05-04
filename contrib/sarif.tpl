@@ -8,10 +8,11 @@
           "name": "Trivy",
           "informationUri": "https://github.com/aquasecurity/trivy",
           "fullName": "Trivy Vulnerability Scanner",
-          "version": "v0.15.0",
+          "version": "0.15.0",
           "rules": [
         {{- $t_first := true }}
         {{- range . }}
+            {{- $vulnerabilityType := .Type }}
             {{- range .Vulnerabilities -}}
               {{- if $t_first -}}
                 {{- $t_first = false -}}
@@ -19,13 +20,16 @@
                 ,
               {{- end }}
             {
-              "id": "[{{ .Vulnerability.Severity }}] {{ .VulnerabilityID }} {{ .PkgName }}",
-              "name": "dockerfile_scan",
+              "id": "{{ .VulnerabilityID }}/{{ .PkgName }}",
+              "name": "{{ toSarifRuleName $vulnerabilityType }}",
               "shortDescription": {
                 "text": {{ printf "%v Package: %v" .VulnerabilityID .PkgName | printf "%q" }}
               },
               "fullDescription": {
                 "text": {{ endWithPeriod (escapeString .Title) | printf "%q" }}
+              },
+              "defaultConfiguration": {
+                "level": "{{ toSarifErrorLevel .Vulnerability.Severity }}"
               }
               {{- with $help_uri := .PrimaryURL -}}
               ,
@@ -54,6 +58,7 @@
       "results": [
     {{- $t_first := true }}
     {{- range . }}
+        {{- $filePath := .Target }}
         {{- range $index, $vulnerability := .Vulnerabilities -}}
           {{- if $t_first -}}
             {{- $t_first = false -}}
@@ -61,21 +66,17 @@
             ,
           {{- end }}
         {
-          "ruleId": "[{{ $vulnerability.Vulnerability.Severity }}] {{ $vulnerability.VulnerabilityID }} {{ $vulnerability.PkgName }}",
+          "ruleId": "{{ $vulnerability.VulnerabilityID }}/{{ $vulnerability.PkgName }}",
           "ruleIndex": {{ $index }},
-          "level": "error",
+          "level": "{{ toSarifErrorLevel $vulnerability.Vulnerability.Severity }}",
           "message": {
             "text": {{ endWithPeriod (escapeString $vulnerability.Description) | printf "%q" }}
           },
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "Dockerfile"
-              },
-              "region": {
-                "startLine": 1,
-                "startColumn": 1,
-                "endColumn": 1
+                "uri": "{{ toPathUri $filePath }}",
+                "uriBaseId": "ROOTPATH"
               }
             }
           }]
@@ -83,7 +84,12 @@
         {{- end -}}
       {{- end -}}
       ],
-      "columnKind": "utf16CodeUnits"
+      "columnKind": "utf16CodeUnits",
+      "originalUriBaseIds": {
+        "ROOTPATH": {
+          "uri": "/"
+        }
+      }
     }
   ]
 }

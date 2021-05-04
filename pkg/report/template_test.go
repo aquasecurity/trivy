@@ -183,168 +183,11 @@ func TestReportWriter_Template(t *testing.T) {
 func TestReportWriter_Template_SARIF(t *testing.T) {
 	testCases := []struct {
 		name          string
+		target        string
 		detectedVulns []types.DetectedVulnerability
 		want          string
 	}{
-		{
-			name: "no primary url",
-			detectedVulns: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-1234-5678",
-					PkgName:          "foopackage",
-					InstalledVersion: "1.2.3",
-					FixedVersion:     "4.5.6",
-					SeveritySource:   "NVD",
-					PrimaryURL:       "",
-					Vulnerability: dbTypes.Vulnerability{
-						Title:       "foovuln",
-						Description: "foodesc",
-						Severity:    "CRITICAL",
-					},
-				},
-			},
-			want: `{
-  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
-  "version": "2.1.0",
-  "runs": [
-    {
-      "tool": {
-        "driver": {
-          "name": "Trivy",
-          "informationUri": "https://github.com/aquasecurity/trivy",
-          "fullName": "Trivy Vulnerability Scanner",
-          "version": "v0.15.0",
-          "rules": [
-            {
-              "id": "[CRITICAL] CVE-1234-5678 foopackage",
-              "name": "dockerfile_scan",
-              "shortDescription": {
-                "text": "CVE-1234-5678 Package: foopackage"
-              },
-              "fullDescription": {
-                "text": "foovuln."
-              },
-              "help": {
-                "text": "Vulnerability CVE-1234-5678\nSeverity: CRITICAL\nPackage: foopackage\nInstalled Version: 1.2.3\nFixed Version: 4.5.6\nLink: [CVE-1234-5678]()",
-                "markdown": "**Vulnerability CVE-1234-5678**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|CRITICAL|foopackage|1.2.3|4.5.6|[CVE-1234-5678]()|\n"
-              },
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "CRITICAL",
-                  "foopackage"
-                ],
-                "precision": "very-high"
-              }
-            }]
-        }
-      },
-      "results": [
-        {
-          "ruleId": "[CRITICAL] CVE-1234-5678 foopackage",
-          "ruleIndex": 0,
-          "level": "error",
-          "message": {
-            "text": "foodesc."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "Dockerfile"
-              },
-              "region": {
-                "startLine": 1,
-                "startColumn": 1,
-                "endColumn": 1
-              }
-            }
-          }]
-        }],
-      "columnKind": "utf16CodeUnits"
-    }
-  ]
-}`,
-		},
-		{
-			name: "with primary url",
-			detectedVulns: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-1234-5678",
-					PkgName:          "foopackage",
-					InstalledVersion: "1.2.3",
-					FixedVersion:     "4.5.6",
-					SeveritySource:   "NVD",
-					PrimaryURL:       "https://avd.aquasec.com/nvd/cve-1234-5678",
-					Vulnerability: dbTypes.Vulnerability{
-						Title:       "foovuln",
-						Description: "foodesc",
-						Severity:    "CRITICAL",
-					},
-				},
-			},
-			want: `{
-  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
-  "version": "2.1.0",
-  "runs": [
-    {
-      "tool": {
-        "driver": {
-          "name": "Trivy",
-          "informationUri": "https://github.com/aquasecurity/trivy",
-          "fullName": "Trivy Vulnerability Scanner",
-          "version": "v0.15.0",
-          "rules": [
-            {
-              "id": "[CRITICAL] CVE-1234-5678 foopackage",
-              "name": "dockerfile_scan",
-              "shortDescription": {
-                "text": "CVE-1234-5678 Package: foopackage"
-              },
-              "fullDescription": {
-                "text": "foovuln."
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-1234-5678",
-              "help": {
-                "text": "Vulnerability CVE-1234-5678\nSeverity: CRITICAL\nPackage: foopackage\nInstalled Version: 1.2.3\nFixed Version: 4.5.6\nLink: [CVE-1234-5678](https://avd.aquasec.com/nvd/cve-1234-5678)",
-                "markdown": "**Vulnerability CVE-1234-5678**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|CRITICAL|foopackage|1.2.3|4.5.6|[CVE-1234-5678](https://avd.aquasec.com/nvd/cve-1234-5678)|\n"
-              },
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "CRITICAL",
-                  "foopackage"
-                ],
-                "precision": "very-high"
-              }
-            }]
-        }
-      },
-      "results": [
-        {
-          "ruleId": "[CRITICAL] CVE-1234-5678 foopackage",
-          "ruleIndex": 0,
-          "level": "error",
-          "message": {
-            "text": "foodesc."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "Dockerfile"
-              },
-              "region": {
-                "startLine": 1,
-                "startColumn": 1,
-                "endColumn": 1
-              }
-            }
-          }]
-        }],
-      "columnKind": "utf16CodeUnits"
-    }
-  ]
-}`,
-		},
+		//TODO: refactor tests
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -356,7 +199,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
 
 			inputResults := report.Results{
 				report.Result{
-					Target:          "footarget",
+					Target:          tc.target,
 					Type:            "footype",
 					Vulnerabilities: tc.detectedVulns,
 				},

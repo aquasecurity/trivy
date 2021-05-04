@@ -26,6 +26,9 @@ builds:
       - goos: darwin
         goarch: 386
 
+release:
+    discussion_category_name: Announcements
+
 nfpms:
   -
     formats:
