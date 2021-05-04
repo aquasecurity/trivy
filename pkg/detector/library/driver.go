@@ -39,7 +39,7 @@ func NewDriver(libType string) (Driver, error) {
 		driver = newNugetDriver()
 	case ftypes.Jar:
 		driver = newMavenDriver()
-	case library.GoBinary:
+	case ftypes.GoBinary:
 		driver = Driver{
 			ecosystem:  vulnerability.Go,
 			advisories: []advisory{NewAdvisory(vulnerability.Go, comparer.GenericComparer{})},

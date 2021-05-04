@@ -8,8 +8,8 @@ import (
 )
 
 // ConfigRun runs scan on config files
-func ConfigRun(cliCtx *cli.Context) error {
-	opt, err := NewOption(cliCtx)
+func ConfigRun(ctx *cli.Context) error {
+	opt, err := NewOption(ctx)
 	if err != nil {
 		return xerrors.Errorf("option error: %w", err)
 	}
@@ -27,5 +27,5 @@ func ConfigRun(cliCtx *cli.Context) error {
 	opt.SkipUpdate = true
 
 	// Run filesystem command internally
-	return Run(opt, filesystemScanner, initFSCache)
+	return Run(ctx.Context, opt, filesystemScanner, initFSCache)
 }
