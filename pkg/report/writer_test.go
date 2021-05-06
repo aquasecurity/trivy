@@ -349,6 +349,29 @@ func TestReportWriter_Template(t *testing.T) {
 			template:      `{{ toLower (getEnv "AWS_ACCOUNT_ID") }} {{ getCurrentTime }}`,
 			expected:      `123456789012 2020-08-10T07:28:17.000958601Z`,
 		},
+		{
+			name: "happy path: deduplicate vulnerabilities based on VulnID and PackageName",
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2019-0000",
+					PkgName:         "foo",
+					Vulnerability: dbTypes.Vulnerability{
+						Description: "without period",
+						Severity:    dbTypes.SeverityCritical.String(),
+					},
+				},
+				{
+					VulnerabilityID: "CVE-2019-0000",
+					PkgName:         "foo",
+					Vulnerability: dbTypes.Vulnerability{
+						Description: "without period",
+						Severity:    dbTypes.SeverityCritical.String(),
+					},
+				},
+			},
+			template: `{{ $high := 0 }}{{ $critical := 0 }}{{ range . }}{{ range (deduplicateVulnerabilities .Vulnerabilities)}}{{ if eq .Severity "HIGH" }}{{ $high = add $high 1 }}{{ end }}{{ if eq .Severity "CRITICAL" }}{{ $critical = add $critical 1 }}{{ end }}{{ end }}Critical: {{ $critical }}, High: {{ $high }}{{ end }}`,
+			expected: `Critical: 1, High: 0`,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {

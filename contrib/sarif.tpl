@@ -13,7 +13,7 @@
         {{- $t_first := true }}
         {{- range . }}
             {{- $vulnerabilityType := .Type }}
-            {{- range .Vulnerabilities -}}
+            {{- range (deduplicateVulnerabilities .Vulnerabilities) -}}
               {{- if $t_first -}}
                 {{- $t_first = false -}}
               {{ else -}}
@@ -59,7 +59,7 @@
     {{- $t_first := true }}
     {{- range . }}
         {{- $filePath := .Target }}
-        {{- range $index, $vulnerability := .Vulnerabilities -}}
+        {{- range $index, $vulnerability := (deduplicateVulnerabilities .Vulnerabilities) -}}
           {{- if $t_first -}}
             {{- $t_first = false -}}
           {{ else -}}

@@ -234,6 +234,17 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 	templateFuncMap["getCurrentTime"] = func() string {
 		return Now().UTC().Format(time.RFC3339Nano)
 	}
+	templateFuncMap["deduplicateVulnerabilities"] = func(vulnerabilities []types.DetectedVulnerability) []types.DetectedVulnerability {
+		uniqueVulnerability := make(map[string]bool)
+		var uniqueVulnerabilities []types.DetectedVulnerability
+		for _, v := range vulnerabilities {
+			if _, ok := uniqueVulnerability[v.VulnerabilityID+"/"+v.PkgName]; !ok {
+				uniqueVulnerabilities = append(uniqueVulnerabilities, v)
+				uniqueVulnerability[v.VulnerabilityID+"/"+v.PkgName] = true
+			}
+		}
+		return uniqueVulnerabilities
+	}
 	tmpl, err := template.New("output template").Funcs(templateFuncMap).Parse(outputTemplate)
 	if err != nil {
 		return nil, xerrors.Errorf("error parsing template: %w", err)
