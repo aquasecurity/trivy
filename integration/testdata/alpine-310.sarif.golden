@@ -11,7 +11,7 @@
           "version": "0.15.0",
           "rules": [
             {
-              "id": "CVE-2019-1549/libcrypto1.1",
+              "id": "CVE-2019-1549/libcrypto1.1/1.1.1c-r0",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1549 Package: libcrypto1.1"
@@ -37,7 +37,7 @@
               }
             },
             {
-              "id": "CVE-2019-1551/libcrypto1.1",
+              "id": "CVE-2019-1551/libcrypto1.1/1.1.1c-r0",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1551 Package: libcrypto1.1"
@@ -63,7 +63,7 @@
               }
             },
             {
-              "id": "CVE-2019-1563/libcrypto1.1",
+              "id": "CVE-2019-1563/libcrypto1.1/1.1.1c-r0",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1563 Package: libcrypto1.1"
@@ -89,7 +89,7 @@
               }
             },
             {
-              "id": "CVE-2019-1547/libcrypto1.1",
+              "id": "CVE-2019-1547/libcrypto1.1/1.1.1c-r0",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1547 Package: libcrypto1.1"
@@ -115,7 +115,7 @@
               }
             },
             {
-              "id": "CVE-2019-1549/libssl1.1",
+              "id": "CVE-2019-1549/libssl1.1/1.1.1c-r0",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1549 Package: libssl1.1"
@@ -141,7 +141,7 @@
               }
             },
             {
-              "id": "CVE-2019-1551/libssl1.1",
+              "id": "CVE-2019-1551/libssl1.1/1.1.1c-r0",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1551 Package: libssl1.1"
@@ -167,7 +167,7 @@
               }
             },
             {
-              "id": "CVE-2019-1563/libssl1.1",
+              "id": "CVE-2019-1563/libssl1.1/1.1.1c-r0",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1563 Package: libssl1.1"
@@ -193,7 +193,7 @@
               }
             },
             {
-              "id": "CVE-2019-1547/libssl1.1",
+              "id": "CVE-2019-1547/libssl1.1/1.1.1c-r0",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1547 Package: libssl1.1"
@@ -222,7 +222,7 @@
       },
       "results": [
         {
-          "ruleId": "CVE-2019-1549/libcrypto1.1",
+          "ruleId": "CVE-2019-1549/libcrypto1.1/1.1.1c-r0",
           "ruleIndex": 0,
           "level": "warning",
           "message": {
@@ -238,7 +238,7 @@
           }]
         },
         {
-          "ruleId": "CVE-2019-1551/libcrypto1.1",
+          "ruleId": "CVE-2019-1551/libcrypto1.1/1.1.1c-r0",
           "ruleIndex": 1,
           "level": "warning",
           "message": {
@@ -254,7 +254,7 @@
           }]
         },
         {
-          "ruleId": "CVE-2019-1563/libcrypto1.1",
+          "ruleId": "CVE-2019-1563/libcrypto1.1/1.1.1c-r0",
           "ruleIndex": 2,
           "level": "warning",
           "message": {
@@ -270,7 +270,7 @@
           }]
         },
         {
-          "ruleId": "CVE-2019-1547/libcrypto1.1",
+          "ruleId": "CVE-2019-1547/libcrypto1.1/1.1.1c-r0",
           "ruleIndex": 3,
           "level": "note",
           "message": {
@@ -286,7 +286,7 @@
           }]
         },
         {
-          "ruleId": "CVE-2019-1549/libssl1.1",
+          "ruleId": "CVE-2019-1549/libssl1.1/1.1.1c-r0",
           "ruleIndex": 4,
           "level": "warning",
           "message": {
@@ -302,7 +302,7 @@
           }]
         },
         {
-          "ruleId": "CVE-2019-1551/libssl1.1",
+          "ruleId": "CVE-2019-1551/libssl1.1/1.1.1c-r0",
           "ruleIndex": 5,
           "level": "warning",
           "message": {
@@ -318,7 +318,7 @@
           }]
         },
         {
-          "ruleId": "CVE-2019-1563/libssl1.1",
+          "ruleId": "CVE-2019-1563/libssl1.1/1.1.1c-r0",
           "ruleIndex": 6,
           "level": "warning",
           "message": {
@@ -334,7 +334,7 @@
           }]
         },
         {
-          "ruleId": "CVE-2019-1547/libssl1.1",
+          "ruleId": "CVE-2019-1547/libssl1.1/1.1.1c-r0",
           "ruleIndex": 7,
           "level": "note",
           "message": {

@@ -20,7 +20,7 @@
                 ,
               {{- end }}
             {
-              "id": "{{ .VulnerabilityID }}/{{ .PkgName }}",
+              "id": "{{ .VulnerabilityID }}/{{ .PkgName }}/{{ .InstalledVersion }}",
               "name": "{{ toSarifRuleName $vulnerabilityType }}",
               "shortDescription": {
                 "text": {{ printf "%v Package: %v" .VulnerabilityID .PkgName | printf "%q" }}
@@ -66,7 +66,7 @@
             ,
           {{- end }}
         {
-          "ruleId": "{{ $vulnerability.VulnerabilityID }}/{{ $vulnerability.PkgName }}",
+          "ruleId": "{{ $vulnerability.VulnerabilityID }}/{{ $vulnerability.PkgName }}/{{ $vulnerability.InstalledVersion }}",
           "ruleIndex": {{ $index }},
           "level": "{{ toSarifErrorLevel $vulnerability.Vulnerability.Severity }}",
           "message": {
