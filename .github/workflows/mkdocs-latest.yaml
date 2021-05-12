@@ -1,5 +1,10 @@
 name: Deploy the latest documentation
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to be deployed
+        required: true
   push:
     tags:
       - "v*"
@@ -27,7 +32,11 @@ jobs:
         run: |
           git config user.name "knqyf263"
           git config user.email "knqyf263@gmail.com"
-      - name: Deploy the latest documents
+      - name: Deploy the latest documents from new tag push
+        if: ${{ github.event.inputs.version == '' }}
         run: |
           VERSION=$(echo ${{ github.ref }} | sed -e "s#refs/tags/##g")
           mike deploy --push --update-aliases $VERSION latest
+      - name: Deploy the latest documents from manual trigger
+        if: ${{ github.event.inputs.version != '' }}
+        run: mike deploy --push --update-aliases ${{ github.event.inputs.version }} latest
