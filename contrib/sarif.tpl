@@ -11,7 +11,7 @@
           "version": "0.15.0",
           "rules": [
         {{- $t_first := true }}
-        {{- range . }}
+        {{- range $result := . }}
             {{- $vulnerabilityType := .Type }}
             {{- range .Vulnerabilities -}}
               {{- if $t_first -}}
@@ -20,7 +20,7 @@
                 ,
               {{- end }}
             {
-              "id": "{{ .VulnerabilityID }}/{{ .PkgName }}/{{ .InstalledVersion }}",
+              "id": "{{ .VulnerabilityID }}/{{ escapeString (toPathUri $result.Target) }}/{{ .PkgName }}/{{ .InstalledVersion }}",
               "name": "{{ toSarifRuleName $vulnerabilityType }}",
               "shortDescription": {
                 "text": {{ printf "%v Package: %v" .VulnerabilityID .PkgName | printf "%q" }}
@@ -57,7 +57,7 @@
       },
       "results": [
     {{- $t_first := true }}
-    {{- range . }}
+    {{- range $result := . }}
         {{- $filePath := .Target }}
         {{- range $index, $vulnerability := .Vulnerabilities -}}
           {{- if $t_first -}}
@@ -66,7 +66,7 @@
             ,
           {{- end }}
         {
-          "ruleId": "{{ $vulnerability.VulnerabilityID }}/{{ $vulnerability.PkgName }}/{{ $vulnerability.InstalledVersion }}",
+          "ruleId": "{{ $vulnerability.VulnerabilityID }}/{{ escapeString (toPathUri $result.Target) }}/{{ $vulnerability.PkgName }}/{{ $vulnerability.InstalledVersion }}",
           "ruleIndex": {{ $index }},
           "level": "{{ toSarifErrorLevel $vulnerability.Vulnerability.Severity }}",
           "message": {
