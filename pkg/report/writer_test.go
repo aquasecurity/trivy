@@ -409,7 +409,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
           "version": "0.15.0",
           "rules": [
             {
-              "id": "CVE-1234-5678/foopackage/1.2.3",
+              "id": "foo/target/alpine-310.tar.gz (alpine 3.10.2): foopackage-1.2.3 CVE-1234-5678",
               "name": "Other Vulnerability (Footype)",
               "shortDescription": {
                 "text": "CVE-1234-5678 Package: foopackage"
@@ -437,7 +437,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
       },
       "results": [
         {
-          "ruleId": "CVE-1234-5678/foopackage/1.2.3",
+          "ruleId": "foo/target/alpine-310.tar.gz (alpine 3.10.2): foopackage-1.2.3 CVE-1234-5678",
           "ruleIndex": 0,
           "level": "error",
           "message": {
@@ -493,7 +493,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
           "version": "0.15.0",
           "rules": [
             {
-              "id": "CVE-1234-5678/foopackage/1.2.3",
+              "id": "rust-app\\Cargo.lock: foopackage-1.2.3 CVE-1234-5678",
               "name": "Other Vulnerability (Footype)",
               "shortDescription": {
                 "text": "CVE-1234-5678 Package: foopackage"
@@ -522,7 +522,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
       },
       "results": [
         {
-          "ruleId": "CVE-1234-5678/foopackage/1.2.3",
+          "ruleId": "rust-app\\Cargo.lock: foopackage-1.2.3 CVE-1234-5678",
           "ruleIndex": 0,
           "level": "error",
           "message": {
