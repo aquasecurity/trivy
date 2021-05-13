@@ -20,7 +20,7 @@
                 ,
               {{- end }}
             {
-              "id": "{{ .VulnerabilityID }}/{{ escapeString (toPathUri $result.Target) }}/{{ .PkgName }}/{{ .InstalledVersion }}",
+              "id": {{ printf "%s: %s-%s %s" $result.Target .PkgName .InstalledVersion .VulnerabilityID | toJson }},
               "name": "{{ toSarifRuleName $vulnerabilityType }}",
               "shortDescription": {
                 "text": {{ printf "%v Package: %v" .VulnerabilityID .PkgName | printf "%q" }}
@@ -66,7 +66,7 @@
             ,
           {{- end }}
         {
-          "ruleId": "{{ $vulnerability.VulnerabilityID }}/{{ escapeString (toPathUri $result.Target) }}/{{ $vulnerability.PkgName }}/{{ $vulnerability.InstalledVersion }}",
+          "ruleId": {{ printf "%s: %s-%s %s" $result.Target .PkgName .InstalledVersion .VulnerabilityID | toJson }},
           "ruleIndex": {{ $index }},
           "level": "{{ toSarifErrorLevel $vulnerability.Vulnerability.Severity }}",
           "message": {
