@@ -1,4 +1,4 @@
-package server_test
+package extendedconfig_test
 
 import (
 	"flag"
@@ -9,28 +9,31 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"github.com/aquasecurity/trivy/pkg/commands/config"
-	"github.com/aquasecurity/trivy/pkg/commands/server"
+	c "github.com/aquasecurity/trivy/pkg/commands/server/config"
+	ec "github.com/aquasecurity/trivy/pkg/commands/server/extendedconfig"
 )
 
 func TestNew(t *testing.T) {
 	tests := []struct {
 		name string
 		args []string
-		want server.Config
+		want ec.ExtendedConfig
 	}{
 		{
 			name: "happy path",
 			args: []string{"-quiet", "--no-progress", "--reset", "--skip-update", "--listen", "localhost:8080"},
-			want: server.Config{
-				GlobalConfig: config.GlobalConfig{
-					Quiet: true,
+			want: ec.ExtendedConfig{
+				Config: c.Config{
+					GlobalConfig: config.GlobalConfig{
+						Quiet: true,
+					},
+					DBConfig: config.DBConfig{
+						Reset:      true,
+						SkipUpdate: true,
+						NoProgress: true,
+					},
+					Listen: "localhost:8080",
 				},
-				DBConfig: config.DBConfig{
-					Reset:      true,
-					SkipUpdate: true,
-					NoProgress: true,
-				},
-				Listen: "localhost:8080",
 			},
 		},
 	}
@@ -47,17 +50,17 @@ func TestNew(t *testing.T) {
 			ctx := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
 
-			tt.want.GlobalConfig.Context = ctx
+			tt.want.Config.GlobalConfig.Context = ctx
 
-			got := server.NewConfig(ctx)
-			assert.Equal(t, tt.want.GlobalConfig.Quiet, got.Quiet, tt.name)
-			assert.Equal(t, tt.want.DBConfig, got.DBConfig, tt.name)
-			assert.Equal(t, tt.want.Listen, got.Listen, tt.name)
+			got := c.NewConfig(ctx)
+			assert.Equal(t, tt.want.Config.GlobalConfig.Quiet, got.Quiet, tt.name)
+			assert.Equal(t, tt.want.Config.DBConfig, got.DBConfig, tt.name)
+			assert.Equal(t, tt.want.Config.Listen, got.Listen, tt.name)
 		})
 	}
 }
 
-func TestConfig_Init(t *testing.T) {
+func TestExtendedConfig_Init(t *testing.T) {
 	tests := []struct {
 		name         string
 		globalConfig config.GlobalConfig
@@ -88,7 +91,7 @@ func TestConfig_Init(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &server.Config{
+			c := &c.Config{
 				DBConfig: tt.dbConfig,
 			}
 
