@@ -10,6 +10,7 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/library"
+	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/go-dep-parser/pkg/jar"
 )
 
@@ -31,7 +32,7 @@ func (a javaLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.
 		return nil, xerrors.Errorf("jar/war/ear parse error: %w", err)
 	}
 
-	return library.ToAnalysisResult(library.Jar, target.FilePath, libs), nil
+	return library.ToAnalysisResult(types.Jar, target.FilePath, libs), nil
 }
 
 func (a javaLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {

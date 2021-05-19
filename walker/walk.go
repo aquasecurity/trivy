@@ -6,12 +6,11 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 
-	"github.com/aquasecurity/fanal/analyzer/library"
 	"github.com/aquasecurity/fanal/utils"
 )
 
 var (
-	ignoreDirs       = []string{".git"}
+	ignoreDirs       = []string{".git", "node_modules", "vendor"}
 	ignoreSystemDirs = []string{"proc", "sys"}
 )
 
@@ -20,9 +19,6 @@ type WalkFunc func(filePath string, info os.FileInfo, opener analyzer.Opener) er
 func isIgnored(filePath string) bool {
 	filePath = strings.TrimLeft(filePath, "/")
 	for _, path := range strings.Split(filePath, utils.PathSeparator) {
-		if utils.StringInSlice(path, library.IgnoreDirs) {
-			return true
-		}
 		if utils.StringInSlice(path, ignoreDirs) {
 			return true
 		}

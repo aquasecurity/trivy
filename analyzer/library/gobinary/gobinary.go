@@ -7,6 +7,7 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/library"
+	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/go-dep-parser/pkg/gobinary"
 )
 
@@ -19,7 +20,7 @@ const version = 1
 type gobinaryLibraryAnalyzer struct{}
 
 func (a gobinaryLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	res, err := library.Analyze(library.GoBinary, target.FilePath, target.Content, gobinary.Parse)
+	res, err := library.Analyze(types.GoBinary, target.FilePath, target.Content, gobinary.Parse)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse %s: %w", target.FilePath, err)
 	}

@@ -29,14 +29,14 @@ func TestAnalyze(t *testing.T) {
 		{
 			name: "happy path",
 			args: args{
-				analyzerType: library.GoBinary,
+				analyzerType: types.GoBinary,
 				filePath:     "app/myweb",
 				content:      []byte("happy"),
 			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     library.GoBinary,
+						Type:     types.GoBinary,
 						FilePath: "app/myweb",
 						Libraries: []types.LibraryInfo{
 							{
@@ -53,7 +53,7 @@ func TestAnalyze(t *testing.T) {
 		{
 			name: "empty",
 			args: args{
-				analyzerType: library.GoBinary,
+				analyzerType: types.GoBinary,
 				filePath:     "app/myweb",
 				content:      []byte(""),
 			},
@@ -62,7 +62,7 @@ func TestAnalyze(t *testing.T) {
 		{
 			name: "sad path",
 			args: args{
-				analyzerType: library.Jar,
+				analyzerType: types.Jar,
 				filePath:     "app/myweb",
 				content:      []byte("sad"),
 			},

@@ -1,24 +1,42 @@
 package cache
 
 import (
+	"crypto/sha256"
+	"encoding/json"
 	"fmt"
-	"strings"
+
+	"golang.org/x/mod/sumdb/dirhash"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/fanal/analyzer/config"
 )
 
-const keySeparator = "/"
+func CalcKey(id string, versions map[string]int, opt *config.ScannerOption) (string, error) {
+	// Sort options for consistent results
+	opt.Sort()
 
-func WithVersionSuffix(key, version string) string {
-	// e.g. sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e
-	//   => sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e/11201101
-	return fmt.Sprintf("%s%s%s", key, keySeparator, version)
-}
+	h := sha256.New()
 
-func TrimVersionSuffix(versioned string) string {
-	// e.g.sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e/11201101
-	//  => sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e
-	ss := strings.Split(versioned, keySeparator)
-	if len(ss) < 2 {
-		return versioned
+	if _, err := h.Write([]byte(id)); err != nil {
+		return "", xerrors.Errorf("sha256 error: %w", err)
 	}
-	return ss[0]
+
+	if err := json.NewEncoder(h).Encode(versions); err != nil {
+		return "", xerrors.Errorf("json encode error: %w", err)
+	}
+
+	for _, paths := range [][]string{opt.PolicyPaths, opt.DataPaths} {
+		for _, p := range paths {
+			s, err := dirhash.HashDir(p, "", dirhash.DefaultHash)
+			if err != nil {
+				return "", xerrors.Errorf("hash dir (%s): %w", p, err)
+			}
+
+			if _, err = h.Write([]byte(s)); err != nil {
+				return "", xerrors.Errorf("sha256 write error: %w", err)
+			}
+		}
+	}
+
+	return fmt.Sprintf("sha256:%x", h.Sum(nil)), nil
 }

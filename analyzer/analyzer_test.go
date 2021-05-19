@@ -3,7 +3,7 @@ package analyzer_test
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"fmt"
 	"os"
 	"sync"
 	"testing"
@@ -14,12 +14,8 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
-	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
+	_ "github.com/aquasecurity/fanal/analyzer/all"
 	aos "github.com/aquasecurity/fanal/analyzer/os"
-	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
-	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
 	"github.com/aquasecurity/fanal/types"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
@@ -40,7 +36,7 @@ func (mockConfigAnalyzer) Analyze(targetOS types.OS, configBlob []byte) ([]types
 }
 
 func (mockConfigAnalyzer) Type() analyzer.Type {
-	return analyzer.Type(999)
+	return analyzer.Type("test")
 }
 
 func (mockConfigAnalyzer) Version() int {
@@ -253,8 +249,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 func TestAnalyzeFile(t *testing.T) {
 	type args struct {
 		filePath          string
-		info              os.FileInfo
-		opener            analyzer.Opener
+		testFilePath      string
 		disabledAnalyzers []analyzer.Type
 	}
 	tests := []struct {
@@ -266,10 +261,8 @@ func TestAnalyzeFile(t *testing.T) {
 		{
 			name: "happy path with os analyzer",
 			args: args{
-				filePath: "/etc/alpine-release",
-				opener: func() ([]byte, error) {
-					return ioutil.ReadFile("testdata/etc/alpine-release")
-				},
+				filePath:     "/etc/alpine-release",
+				testFilePath: "testdata/etc/alpine-release",
 			},
 			want: &analyzer.AnalysisResult{
 				OS: &types.OS{
@@ -281,10 +274,8 @@ func TestAnalyzeFile(t *testing.T) {
 		{
 			name: "happy path with disabled os analyzer",
 			args: args{
-				filePath: "/etc/alpine-release",
-				opener: func() ([]byte, error) {
-					return ioutil.ReadFile("testdata/etc/alpine-release")
-				},
+				filePath:          "/etc/alpine-release",
+				testFilePath:      "testdata/etc/alpine-release",
 				disabledAnalyzers: []analyzer.Type{analyzer.TypeAlpine},
 			},
 			want: &analyzer.AnalysisResult{},
@@ -292,10 +283,8 @@ func TestAnalyzeFile(t *testing.T) {
 		{
 			name: "happy path with package analyzer",
 			args: args{
-				filePath: "/lib/apk/db/installed",
-				opener: func() ([]byte, error) {
-					return ioutil.ReadFile("testdata/lib/apk/db/installed")
-				},
+				filePath:     "/lib/apk/db/installed",
+				testFilePath: "testdata/lib/apk/db/installed",
 			},
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
@@ -311,10 +300,8 @@ func TestAnalyzeFile(t *testing.T) {
 		{
 			name: "happy path with disabled package analyzer",
 			args: args{
-				filePath: "/lib/apk/db/installed",
-				opener: func() ([]byte, error) {
-					return ioutil.ReadFile("testdata/lib/apk/db/installed")
-				},
+				filePath:          "/lib/apk/db/installed",
+				testFilePath:      "testdata/lib/apk/db/installed",
 				disabledAnalyzers: []analyzer.Type{analyzer.TypeApk},
 			},
 			want: &analyzer.AnalysisResult{},
@@ -322,10 +309,8 @@ func TestAnalyzeFile(t *testing.T) {
 		{
 			name: "happy path with library analyzer",
 			args: args{
-				filePath: "/app/Gemfile.lock",
-				opener: func() ([]byte, error) {
-					return ioutil.ReadFile("testdata/app/Gemfile.lock")
-				},
+				filePath:     "/app/Gemfile.lock",
+				testFilePath: "testdata/app/Gemfile.lock",
 			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -347,20 +332,24 @@ func TestAnalyzeFile(t *testing.T) {
 		{
 			name: "happy path with invalid os information",
 			args: args{
-				filePath: "/etc/lsb-release",
-				opener: func() ([]byte, error) {
-					return []byte(`foo`), nil
-				},
+				filePath:     "/etc/lsb-release",
+				testFilePath: "testdata/etc/hostname",
+			},
+			want: &analyzer.AnalysisResult{},
+		},
+		{
+			name: "happy path with a directory",
+			args: args{
+				filePath:     "/etc/lsb-release",
+				testFilePath: "testdata/etc",
 			},
 			want: &analyzer.AnalysisResult{},
 		},
 		{
 			name: "sad path with opener error",
 			args: args{
-				filePath: "/lib/apk/db/installed",
-				opener: func() ([]byte, error) {
-					return nil, xerrors.New("error")
-				},
+				filePath:     "/lib/apk/db/installed",
+				testFilePath: "testdata/error",
 			},
 			wantErr: "unable to open a file (/lib/apk/db/installed)",
 		},
@@ -372,7 +361,17 @@ func TestAnalyzeFile(t *testing.T) {
 
 			got := new(analyzer.AnalysisResult)
 			a := analyzer.NewAnalyzer(tt.args.disabledAnalyzers)
-			err := a.AnalyzeFile(context.Background(), &wg, limit, got, tt.args.filePath, tt.args.info, tt.args.opener)
+
+			info, err := os.Stat(tt.args.testFilePath)
+			require.NoError(t, err)
+
+			ctx := context.Background()
+			err = a.AnalyzeFile(ctx, &wg, limit, got, tt.args.filePath, info, func() ([]byte, error) {
+				if tt.args.testFilePath == "testdata/error" {
+					return nil, xerrors.New("error")
+				}
+				return os.ReadFile(tt.args.testFilePath)
+			})
 
 			wg.Wait()
 			if tt.wantErr != "" {
@@ -485,23 +484,74 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 	tests := []struct {
 		name     string
 		disabled []analyzer.Type
-		want     string
+		want     map[string]int
 	}{
 		{
 			name:     "happy path",
 			disabled: []analyzer.Type{},
-			want:     "1111",
+			want: map[string]int{
+				"alpine":   1,
+				"amazon":   1,
+				"apk":      1,
+				"bundler":  1,
+				"cargo":    1,
+				"centos":   1,
+				"composer": 1,
+				"debian":   1,
+				"dpkg":     1,
+				"fedora":   1,
+				"gobinary": 1,
+				"gomod":    1,
+				"jar":      1,
+				"npm":      1,
+				"nuget":    1,
+				"oracle":   1,
+				"photon":   1,
+				"pipenv":   1,
+				"poetry":   1,
+				"redhat":   1,
+				"rpm":      1,
+				"suse":     1,
+				"ubuntu":   1,
+				"yarn":     1,
+			},
 		},
 		{
 			name:     "disable analyzers",
 			disabled: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeUbuntu},
-			want:     "0011",
+			want: map[string]int{
+				"alpine":   0,
+				"amazon":   1,
+				"apk":      1,
+				"bundler":  1,
+				"cargo":    1,
+				"centos":   1,
+				"composer": 1,
+				"debian":   1,
+				"dpkg":     1,
+				"fedora":   1,
+				"gobinary": 1,
+				"gomod":    1,
+				"jar":      1,
+				"npm":      1,
+				"nuget":    1,
+				"oracle":   1,
+				"photon":   1,
+				"pipenv":   1,
+				"poetry":   1,
+				"redhat":   1,
+				"rpm":      1,
+				"suse":     1,
+				"ubuntu":   0,
+				"yarn":     1,
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := analyzer.NewAnalyzer(tt.disabled)
 			got := a.AnalyzerVersions()
+			fmt.Printf("%v\n", got)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -511,17 +561,23 @@ func TestAnalyzer_ImageConfigAnalyzerVersions(t *testing.T) {
 	tests := []struct {
 		name     string
 		disabled []analyzer.Type
-		want     string
+		want     map[string]int
 	}{
 		{
 			name:     "happy path",
 			disabled: []analyzer.Type{},
-			want:     "11", // mockConfigAnalyzer is added
+			want: map[string]int{
+				"apk-command": 1,
+				"test":        1,
+			},
 		},
 		{
 			name:     "disable analyzers",
 			disabled: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeApkCommand},
-			want:     "01", // mockConfigAnalyzer is added
+			want: map[string]int{
+				"apk-command": 0,
+				"test":        1,
+			},
 		},
 	}
 	for _, tt := range tests {

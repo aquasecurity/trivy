@@ -1,32 +1,41 @@
-package toml
+package toml_test
 
 import (
 	"io/ioutil"
+	"regexp"
 	"testing"
 
-	"github.com/open-policy-agent/conftest/parser/toml"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/config"
+	"github.com/aquasecurity/fanal/analyzer/config/toml"
 	"github.com/aquasecurity/fanal/types"
 )
 
 func Test_tomlConfigAnalyzer_Analyze(t *testing.T) {
+	type args struct {
+		namespaces  []string
+		policyPaths []string
+	}
 	tests := []struct {
 		name      string
+		args      args
 		inputFile string
 		want      *analyzer.AnalysisResult
 		wantErr   string
 	}{
 		{
-			name:      "happy path",
+			name: "happy path",
+			args: args{
+				namespaces:  []string{"main"},
+				policyPaths: []string{"../testdata/kubernetes.rego"},
+			},
 			inputFile: "testdata/deployment.toml",
 			want: &analyzer.AnalysisResult{
 				Configs: []types.Config{
 					{
-						Type:     config.TOML,
+						Type:     "toml",
 						FilePath: "testdata/deployment.toml",
 						Content: map[string]interface{}{
 							"apiVersion": "apps/v1",
@@ -43,7 +52,37 @@ func Test_tomlConfigAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "broken TOML",
+			name: "deny",
+			args: args{
+				namespaces:  []string{"main"},
+				policyPaths: []string{"../testdata/kubernetes.rego"},
+			},
+			inputFile: "testdata/deployment_deny.toml",
+			want: &analyzer.AnalysisResult{
+				Configs: []types.Config{
+					{
+						Type:     "toml",
+						FilePath: "testdata/deployment_deny.toml",
+						Content: map[string]interface{}{
+							"apiVersion": "apps/v1",
+							"kind":       "Deployment",
+							"metadata": map[string]interface{}{
+								"name": "hello-kubernetes",
+							},
+							"spec": map[string]interface{}{
+								"replicas": int64(4),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "broken TOML",
+			args: args{
+				namespaces:  []string{"main"},
+				policyPaths: []string{"../testdata/kubernetes.rego"},
+			},
 			inputFile: "testdata/broken.toml",
 			wantErr:   "unmarshal toml",
 		},
@@ -53,9 +92,7 @@ func Test_tomlConfigAnalyzer_Analyze(t *testing.T) {
 			b, err := ioutil.ReadFile(tt.inputFile)
 			require.NoError(t, err)
 
-			a := tomlConfigAnalyzer{
-				parser: &toml.Parser{},
-			}
+			a := toml.NewConfigAnalyzer(nil)
 
 			got, err := a.Analyze(analyzer.AnalysisTarget{
 				FilePath: tt.inputFile,
@@ -75,9 +112,10 @@ func Test_tomlConfigAnalyzer_Analyze(t *testing.T) {
 
 func Test_tomlConfigAnalyzer_Required(t *testing.T) {
 	tests := []struct {
-		name     string
-		filePath string
-		want     bool
+		name        string
+		filePattern *regexp.Regexp
+		filePath    string
+		want        bool
 	}{
 		{
 			name:     "toml",
@@ -89,15 +127,27 @@ func Test_tomlConfigAnalyzer_Required(t *testing.T) {
 			filePath: "deployment.json",
 			want:     false,
 		},
+		{
+			name:        "file pattern",
+			filePattern: regexp.MustCompile(`foo*`),
+			filePath:    "foo_file",
+			want:        true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := tomlConfigAnalyzer{
-				parser: &toml.Parser{},
-			}
+			s := toml.NewConfigAnalyzer(tt.filePattern)
 
-			got := a.Required(tt.filePath, nil)
+			got := s.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func Test_tomlConfigAnalyzer_Type(t *testing.T) {
+	s := toml.NewConfigAnalyzer(nil)
+
+	want := analyzer.TypeTOML
+	got := s.Type()
+	assert.Equal(t, want, got)
 }

@@ -3,47 +3,56 @@ package docker
 import (
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
-	"github.com/open-policy-agent/conftest/parser/docker"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/config"
+	"github.com/aquasecurity/fanal/config/parser/dockerfile"
 	"github.com/aquasecurity/fanal/types"
 )
-
-func init() {
-	analyzer.RegisterAnalyzer(&dockerConfigAnalyzer{
-		parser: &docker.Parser{},
-	})
-}
 
 const version = 1
 
 var requiredFile = "Dockerfile"
 
-type dockerConfigAnalyzer struct {
-	parser *docker.Parser
+type ConfigAnalyzer struct {
+	parser      *dockerfile.Parser
+	filePattern *regexp.Regexp
 }
 
-func (a dockerConfigAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	var parsed interface{}
-	if err := a.parser.Unmarshal(target.Content, &parsed); err != nil {
+func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
+	return ConfigAnalyzer{
+		parser:      &dockerfile.Parser{},
+		filePattern: filePattern,
+	}
+}
+
+func (s ConfigAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+	parsed, err := s.parser.Parse(target.Content)
+	if err != nil {
 		return nil, xerrors.Errorf("unable to parse Dockerfile (%s): %w", target.FilePath, err)
 	}
+
 	return &analyzer.AnalysisResult{
-		Configs: []types.Config{{
-			Type:     config.Dockerfile,
-			FilePath: target.FilePath,
-			Content:  parsed,
-		}},
+		Configs: []types.Config{
+			{
+				Type:     types.Dockerfile,
+				FilePath: target.FilePath,
+				Content:  parsed,
+			},
+		},
 	}, nil
 }
 
 // Required does a case-insensitive check for filePath and returns true if
 // filePath equals/startsWith/hasExtension requiredFile
-func (a dockerConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (s ConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	if s.filePattern != nil && s.filePattern.MatchString(filePath) {
+		return true
+	}
+
 	base := filepath.Base(filePath)
 	ext := filepath.Ext(base)
 	if strings.EqualFold(base, requiredFile+ext) {
@@ -56,10 +65,10 @@ func (a dockerConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return false
 }
 
-func (a dockerConfigAnalyzer) Type() analyzer.Type {
+func (s ConfigAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeDockerfile
 }
 
-func (a dockerConfigAnalyzer) Version() int {
+func (s ConfigAnalyzer) Version() int {
 	return version
 }

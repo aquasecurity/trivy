@@ -3,44 +3,53 @@ package toml
 import (
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/open-policy-agent/conftest/parser/toml"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/types"
 )
-
-func init() {
-	analyzer.RegisterAnalyzer(&tomlConfigAnalyzer{
-		parser: &toml.Parser{},
-	})
-}
 
 const version = 1
 
 var requiredExts = []string{".toml"}
 
-type tomlConfigAnalyzer struct {
-	parser *toml.Parser
+type ConfigAnalyzer struct {
+	parser      *toml.Parser
+	filePattern *regexp.Regexp
 }
 
-func (a tomlConfigAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
+	return ConfigAnalyzer{
+		parser:      &toml.Parser{},
+		filePattern: filePattern,
+	}
+}
+
+func (a ConfigAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	var parsed interface{}
 	if err := a.parser.Unmarshal(target.Content, &parsed); err != nil {
 		return nil, xerrors.Errorf("unable to parse TOML (%s): %w", target.FilePath, err)
 	}
+
 	return &analyzer.AnalysisResult{
-		Configs: []types.Config{{
-			Type:     config.TOML,
-			FilePath: target.FilePath,
-			Content:  parsed,
-		}},
+		Configs: []types.Config{
+			{
+				Type:     types.TOML,
+				FilePath: target.FilePath,
+				Content:  parsed,
+			},
+		},
 	}, nil
 }
 
-func (a tomlConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a ConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	if a.filePattern != nil && a.filePattern.MatchString(filePath) {
+		return true
+	}
+
 	ext := filepath.Ext(filePath)
 	for _, required := range requiredExts {
 		if ext == required {
@@ -50,10 +59,10 @@ func (a tomlConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return false
 }
 
-func (a tomlConfigAnalyzer) Type() analyzer.Type {
+func (ConfigAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeTOML
 }
 
-func (a tomlConfigAnalyzer) Version() int {
+func (ConfigAnalyzer) Version() int {
 	return version
 }

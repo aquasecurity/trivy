@@ -6,7 +6,7 @@
 			"name": "hello-kubernetes"
 		},
 		"spec": {
-			"replicas": 3
+			"replicas": 4
 		}
 	},
 	{
@@ -16,7 +16,7 @@
 			"name": "hello-kubernetes"
 		},
 		"spec": {
-			"replicas": 3
+			"replicas": 5
 		}
 	}
 ]

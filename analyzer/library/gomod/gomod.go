@@ -8,6 +8,7 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/library"
+	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/utils"
 	"github.com/aquasecurity/go-dep-parser/pkg/gomod"
 )
@@ -23,7 +24,7 @@ var requiredFiles = []string{"go.sum"}
 type gomodAnalyzer struct{}
 
 func (a gomodAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	res, err := library.Analyze(library.GoMod, target.FilePath, target.Content, gomod.Parse)
+	res, err := library.Analyze(types.GoMod, target.FilePath, target.Content, gomod.Parse)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to analyze %s: %w", target.FilePath, err)
 	}

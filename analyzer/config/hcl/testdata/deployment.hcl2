@@ -4,5 +4,5 @@ metadata {
   name = "hello-kubernetes"
 }
 spec {
-  replicas = 3
+  replicas = 4
 }

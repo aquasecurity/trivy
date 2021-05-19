@@ -2,7 +2,6 @@ package analyzer
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"golang.org/x/xerrors"
 
 	aos "github.com/aquasecurity/fanal/analyzer/os"
+	"github.com/aquasecurity/fanal/log"
 	"github.com/aquasecurity/fanal/types"
 )
 
@@ -73,13 +73,24 @@ func (r *AnalysisResult) Sort() {
 		return r.PackageInfos[i].FilePath < r.PackageInfos[j].FilePath
 	})
 
+	for _, pi := range r.PackageInfos {
+		sort.Slice(pi.Packages, func(i, j int) bool {
+			return pi.Packages[i].Name < pi.Packages[j].Name
+		})
+	}
+
 	sort.Slice(r.Applications, func(i, j int) bool {
 		return r.Applications[i].FilePath < r.Applications[j].FilePath
 	})
 
-	sort.Slice(r.Configs, func(i, j int) bool {
-		return r.Configs[i].FilePath < r.Configs[j].FilePath
-	})
+	for _, app := range r.Applications {
+		sort.Slice(app.Libraries, func(i, j int) bool {
+			if app.Libraries[i].Library.Name != app.Libraries[j].Library.Name {
+				return app.Libraries[i].Library.Name < app.Libraries[j].Library.Name
+			}
+			return app.Libraries[i].Library.Version < app.Libraries[j].Library.Version
+		})
+	}
 }
 
 func (r *AnalysisResult) Merge(new *AnalysisResult) {
@@ -108,15 +119,15 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 		r.Applications = append(r.Applications, new.Applications...)
 	}
 
-	if len(new.Configs) > 0 {
-		r.Configs = append(r.Configs, new.Configs...)
+	for _, m := range new.Configs {
+		r.Configs = append(r.Configs, m)
 	}
 }
 
 type Analyzer struct {
-	drivers       []analyzer
-	configDrivers []configAnalyzer
-	disabled      []Type
+	drivers           []analyzer
+	configDrivers     []configAnalyzer
+	disabledAnalyzers []Type
 }
 
 func NewAnalyzer(disabledAnalyzers []Type) Analyzer {
@@ -137,56 +148,43 @@ func NewAnalyzer(disabledAnalyzers []Type) Analyzer {
 	}
 
 	return Analyzer{
-		drivers:       drivers,
-		configDrivers: configDrivers,
-		disabled:      disabledAnalyzers,
+		drivers:           drivers,
+		configDrivers:     configDrivers,
+		disabledAnalyzers: disabledAnalyzers,
 	}
 }
 
-// AnalyzerVersions returns analyzer version identifier used for cache suffixes.
-// e.g. alpine: 1, amazon: 3, debian: 2 => 132
-// When the amazon analyzer is disabled => 102
-func (a Analyzer) AnalyzerVersions() string {
-	// Sort analyzers for the consistent version identifier
-	sorted := make([]analyzer, len(analyzers))
-	copy(sorted, analyzers)
-	sort.Slice(sorted, func(i, j int) bool {
-		return sorted[i].Type() < sorted[j].Type()
-	})
-
-	var versions string
-	for _, s := range sorted {
-		if isDisabled(s.Type(), a.disabled) {
-			versions += "0"
+// AnalyzerVersions returns analyzer version identifier used for cache keys.
+func (a Analyzer) AnalyzerVersions() map[string]int {
+	versions := map[string]int{}
+	for _, aa := range analyzers {
+		if isDisabled(aa.Type(), a.disabledAnalyzers) {
+			versions[string(aa.Type())] = 0
 			continue
 		}
-		versions += fmt.Sprint(s.Version())
+		versions[string(aa.Type())] = aa.Version()
 	}
 	return versions
 }
 
-// ImageConfigAnalyzerVersions returns analyzer version identifier used for cache suffixes.
-func (a Analyzer) ImageConfigAnalyzerVersions() string {
-	// Sort image config analyzers for the consistent version identifier.
-	sorted := make([]configAnalyzer, len(configAnalyzers))
-	copy(sorted, configAnalyzers)
-	sort.Slice(sorted, func(i, j int) bool {
-		return sorted[i].Type() < sorted[j].Type()
-	})
-
-	var versions string
-	for _, s := range sorted {
-		if isDisabled(s.Type(), a.disabled) {
-			versions += "0"
+// ImageConfigAnalyzerVersions returns analyzer version identifier used for cache keys.
+func (a Analyzer) ImageConfigAnalyzerVersions() map[string]int {
+	versions := map[string]int{}
+	for _, ca := range configAnalyzers {
+		if isDisabled(ca.Type(), a.disabledAnalyzers) {
+			versions[string(ca.Type())] = 0
 			continue
 		}
-		versions += fmt.Sprint(s.Version())
+		versions[string(ca.Type())] = ca.Version()
 	}
 	return versions
 }
 
 func (a Analyzer) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted, result *AnalysisResult,
 	filePath string, info os.FileInfo, opener Opener) error {
+	if info.IsDir() {
+		return nil
+	}
 	for _, d := range a.drivers {
 		// filepath extracted from tar file doesn't have the prefix "/"
 		if !d.Required(strings.TrimLeft(filePath, "/"), info) {
@@ -207,7 +205,8 @@ func (a Analyzer) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *se
 			defer wg.Done()
 
 			ret, err := a.Analyze(target)
-			if err != nil {
+			if err != nil && !xerrors.Is(err, aos.AnalyzeOSError) {
+				log.Logger.Debugf("Analysis error: %s", err)
 				return
 			}
 			result.Merge(ret)
