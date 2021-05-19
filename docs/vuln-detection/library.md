@@ -10,7 +10,7 @@
 - PHP
     - composer.lock
 - Node.js
-    - package-lock.json
+    - package-lock.json (dev dependencies are excluded)
     - yarn.lock
 - Rust
     - Cargo.lock
