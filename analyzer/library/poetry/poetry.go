@@ -4,12 +4,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/aquasecurity/fanal/analyzer/library"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer/library"
+	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/utils"
 	"github.com/aquasecurity/go-dep-parser/pkg/poetry"
-	"golang.org/x/xerrors"
 )
 
 func init() {
@@ -23,7 +24,7 @@ var requiredFiles = []string{"poetry.lock"}
 type poetryLibraryAnalyzer struct{}
 
 func (a poetryLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	res, err := library.Analyze(library.Poetry, target.FilePath, target.Content, poetry.Parse)
+	res, err := library.Analyze(types.Poetry, target.FilePath, target.Content, poetry.Parse)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse poetry.lock: %w", err)
 	}

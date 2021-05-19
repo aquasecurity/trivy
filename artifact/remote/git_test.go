@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/cache"
 )
 
@@ -69,7 +70,7 @@ func TestNewArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, nil)
+			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, nil, config.ScannerOption{})
 			assert.Equal(t, tt.wantErr, err != nil)
 			defer cleanup()
 		})

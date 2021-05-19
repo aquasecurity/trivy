@@ -3,44 +3,53 @@ package json
 import (
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/open-policy-agent/conftest/parser/json"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/types"
 )
-
-func init() {
-	analyzer.RegisterAnalyzer(&jsonConfigAnalyzer{
-		parser: &json.Parser{},
-	})
-}
 
 const version = 1
 
 var requiredExts = []string{".json"}
 
-type jsonConfigAnalyzer struct {
-	parser *json.Parser
+type ConfigAnalyzer struct {
+	parser      *json.Parser
+	filePattern *regexp.Regexp
 }
 
-func (a jsonConfigAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
+	return ConfigAnalyzer{
+		parser:      &json.Parser{},
+		filePattern: filePattern,
+	}
+}
+
+func (a ConfigAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	var parsed interface{}
 	if err := a.parser.Unmarshal(target.Content, &parsed); err != nil {
 		return nil, xerrors.Errorf("unable to parse JSON (%s): %w", target.FilePath, err)
 	}
+
 	return &analyzer.AnalysisResult{
-		Configs: []types.Config{{
-			Type:     config.JSON,
-			FilePath: target.FilePath,
-			Content:  parsed,
-		}},
+		Configs: []types.Config{
+			{
+				Type:     types.JSON,
+				FilePath: target.FilePath,
+				Content:  parsed,
+			},
+		},
 	}, nil
 }
 
-func (a jsonConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a ConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	if a.filePattern != nil && a.filePattern.MatchString(filePath) {
+		return true
+	}
+
 	ext := filepath.Ext(filePath)
 	for _, required := range requiredExts {
 		if ext == required {
@@ -50,10 +59,10 @@ func (a jsonConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return false
 }
 
-func (a jsonConfigAnalyzer) Type() analyzer.Type {
+func (ConfigAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeJSON
 }
 
-func (a jsonConfigAnalyzer) Version() int {
+func (ConfigAnalyzer) Version() int {
 	return version
 }

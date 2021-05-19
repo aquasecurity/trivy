@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/library"
 	"github.com/aquasecurity/fanal/types"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
@@ -26,7 +25,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     library.Jar,
+						Type:     types.Jar,
 						FilePath: "testdata/test.war",
 						Libraries: []types.LibraryInfo{
 							{Library: godeptypes.Library{Name: "org.glassfish:javax.el", Version: "3.0.0"}},

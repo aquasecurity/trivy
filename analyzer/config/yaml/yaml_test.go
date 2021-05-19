@@ -1,32 +1,41 @@
-package yaml
+package yaml_test
 
 import (
 	"io/ioutil"
+	"regexp"
 	"testing"
 
-	"github.com/open-policy-agent/conftest/parser/yaml"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/config"
+	"github.com/aquasecurity/fanal/analyzer/config/yaml"
 	"github.com/aquasecurity/fanal/types"
 )
 
 func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
+	type args struct {
+		namespaces  []string
+		policyPaths []string
+	}
 	tests := []struct {
 		name      string
+		args      args
 		inputFile string
 		want      *analyzer.AnalysisResult
 		wantErr   string
 	}{
 		{
-			name:      "happy path",
+			name: "happy path",
+			args: args{
+				namespaces:  []string{"main"},
+				policyPaths: []string{"../testdata/kubernetes.rego"},
+			},
 			inputFile: "testdata/deployment.yaml",
 			want: &analyzer.AnalysisResult{
 				Configs: []types.Config{
 					{
-						Type:     config.YAML,
+						Type:     "yaml",
 						FilePath: "testdata/deployment.yaml",
 						Content: map[string]interface{}{
 							"apiVersion": "apps/v1",
@@ -35,7 +44,7 @@ func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
 								"name": "hello-kubernetes",
 							},
 							"spec": map[string]interface{}{
-								"replicas": float64(3),
+								"replicas": 3,
 							},
 						},
 					},
@@ -43,30 +52,65 @@ func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "happy path using anchors",
+			name: "deny",
+			args: args{
+				namespaces:  []string{"main"},
+				policyPaths: []string{"../testdata/kubernetes.rego"},
+			},
+			inputFile: "testdata/deployment_deny.yaml",
+			want: &analyzer.AnalysisResult{
+				OS:           (*types.OS)(nil),
+				PackageInfos: []types.PackageInfo(nil),
+				Applications: []types.Application(nil), Configs: []types.Config{
+					{
+						Type:     "yaml",
+						FilePath: "testdata/deployment_deny.yaml",
+						Content: map[string]interface{}{
+							"apiVersion": "apps/v1",
+							"kind":       "Deployment",
+							"metadata": map[string]interface{}{
+								"name": "hello-kubernetes",
+							},
+							"spec": map[string]interface{}{
+								"replicas": 4,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy path using anchors",
+			args: args{
+				namespaces:  []string{"main"},
+				policyPaths: []string{"testdata/deny.rego"},
+			},
 			inputFile: "testdata/anchor.yaml",
 			want: &analyzer.AnalysisResult{
+				OS:           (*types.OS)(nil),
+				PackageInfos: []types.PackageInfo(nil),
+				Applications: []types.Application(nil),
 				Configs: []types.Config{
 					{
-						Type:     config.YAML,
+						Type:     "yaml",
 						FilePath: "testdata/anchor.yaml",
 						Content: map[string]interface{}{
 							"default": map[string]interface{}{
 								"line": "single line",
 							},
-							"john": map[string]interface{}{
-								"john_name": "john",
-							},
 							"fred": map[string]interface{}{
 								"fred_name": "fred",
 							},
-							"main": map[string]interface{}{
-								"line": "single line",
-								"name": map[string]interface{}{
-									"john_name": "john",
-									"fred_name": "fred",
-								},
+							"john": map[string]interface{}{
+								"john_name": "john",
+							},
+							"main": map[interface{}]interface{}{
 								"comment": "multi\nline\n",
+								"line":    "single line",
+								"name": map[interface{}]interface{}{
+									"fred_name": "fred",
+									"john_name": "john",
+								},
 							},
 						},
 					},
@@ -74,38 +118,46 @@ func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "happy path using multiple yaml",
+			name: "multiple yaml",
+			args: args{
+				namespaces:  []string{"main"},
+				policyPaths: []string{"../testdata/kubernetes.rego"},
+			},
 			inputFile: "testdata/multiple.yaml",
 			want: &analyzer.AnalysisResult{
+				OS:           (*types.OS)(nil),
+				PackageInfos: []types.PackageInfo(nil),
+				Applications: []types.Application(nil),
 				Configs: []types.Config{
 					{
-						Type:     config.YAML,
+						Type:     "yaml",
 						FilePath: "testdata/multiple.yaml",
-						Content: []interface{}{
-							map[string]interface{}{
-								"apiVersion": "apps/v1",
-								"kind":       "Deployment",
-								"metadata": map[string]interface{}{
-									"name": "hello-kubernetes",
-								},
-								"spec": map[string]interface{}{
-									"replicas": float64(3),
-								},
+						Content: map[string]interface{}{
+							"apiVersion": "apps/v1",
+							"kind":       "Deployment",
+							"metadata": map[string]interface{}{
+								"name": "hello-kubernetes",
 							},
-							map[string]interface{}{
-								"apiVersion": "v1",
-								"kind":       "Service",
-								"metadata": map[string]interface{}{
-									"name": "hello-kubernetes",
+							"spec": map[string]interface{}{
+								"replicas": 4,
+							},
+						},
+					},
+					{
+						Type:     "yaml",
+						FilePath: "testdata/multiple.yaml",
+						Content: map[string]interface{}{
+							"apiVersion": "v1",
+							"kind":       "Service",
+							"metadata": map[string]interface{}{
+								"name": "hello-kubernetes",
+							},
+							"spec": map[string]interface{}{
+								"ports": []interface{}{map[string]interface{}{
+									"port":       80,
+									"protocol":   "TCP",
+									"targetPort": 8080,
 								},
-								"spec": map[string]interface{}{
-									"ports": []interface{}{
-										map[string]interface{}{
-											"protocol":   "TCP",
-											"port":       float64(80),
-											"targetPort": float64(8080),
-										},
-									},
 								},
 							},
 						},
@@ -114,12 +166,20 @@ func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "broken YAML",
+			name: "broken YAML",
+			args: args{
+				namespaces:  []string{"main"},
+				policyPaths: []string{"../testdata/kubernetes.rego"},
+			},
 			inputFile: "testdata/broken.yaml",
 			wantErr:   "unmarshal yaml",
 		},
 		{
-			name:      "invalid circular references yaml",
+			name: "invalid circular references yaml",
+			args: args{
+				namespaces:  []string{"main"},
+				policyPaths: []string{"../testdata/kubernetes.rego"},
+			},
 			inputFile: "testdata/circular_references.yaml",
 			wantErr:   "yaml: anchor 'circular' value contains itself",
 		},
@@ -129,9 +189,7 @@ func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
 			b, err := ioutil.ReadFile(tt.inputFile)
 			require.NoError(t, err)
 
-			a := yamlConfigAnalyzer{
-				parser: &yaml.Parser{},
-			}
+			a := yaml.NewConfigAnalyzer(nil)
 
 			got, err := a.Analyze(analyzer.AnalysisTarget{
 				FilePath: tt.inputFile,
@@ -151,9 +209,10 @@ func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
 
 func Test_yamlConfigAnalyzer_Required(t *testing.T) {
 	tests := []struct {
-		name     string
-		filePath string
-		want     bool
+		name        string
+		filePattern *regexp.Regexp
+		filePath    string
+		want        bool
 	}{
 		{
 			name:     "yaml",
@@ -170,15 +229,27 @@ func Test_yamlConfigAnalyzer_Required(t *testing.T) {
 			filePath: "deployment.json",
 			want:     false,
 		},
+		{
+			name:        "file pattern",
+			filePattern: regexp.MustCompile(`foo*`),
+			filePath:    "foo_file",
+			want:        true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := yamlConfigAnalyzer{
-				parser: &yaml.Parser{},
-			}
+			s := yaml.NewConfigAnalyzer(tt.filePattern)
 
-			got := a.Required(tt.filePath, nil)
+			got := s.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func Test_yamlConfigAnalyzer_Type(t *testing.T) {
+	s := yaml.NewConfigAnalyzer(nil)
+
+	want := analyzer.TypeYaml
+	got := s.Type()
+	assert.Equal(t, want, got)
 }

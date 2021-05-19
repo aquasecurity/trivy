@@ -1,15 +1,15 @@
-package docker
+package docker_test
 
 import (
 	"io/ioutil"
+	"regexp"
 	"testing"
 
-	"github.com/open-policy-agent/conftest/parser/docker"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/config"
+	"github.com/aquasecurity/fanal/analyzer/config/docker"
 	"github.com/aquasecurity/fanal/types"
 )
 
@@ -26,30 +26,46 @@ func Test_dockerConfigAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Configs: []types.Config{
 					{
-						Type:     config.Dockerfile,
+						Type:     types.Dockerfile,
 						FilePath: "testdata/Dockerfile.deployment",
-						Content: []interface{}{
-							[]interface{}{
-								map[string]interface{}{
-									"Cmd":    "from",
-									"SubCmd": "",
-									"JSON":   false,
-									"Flags":  []interface{}{},
-									"Value":  []interface{}{"foo"},
-								},
-								map[string]interface{}{
-									"Cmd":    "copy",
-									"SubCmd": "",
-									"JSON":   false,
-									"Flags":  []interface{}{},
-									"Value":  []interface{}{".", "/"},
-								},
-								map[string]interface{}{
-									"Cmd":    "run",
-									"SubCmd": "",
-									"JSON":   false,
-									"Flags":  []interface{}{},
-									"Value":  []interface{}{"echo hello"},
+						Content: map[string]interface{}{
+							"command": map[string]interface{}{
+								"foo": []interface{}{
+									map[string]interface{}{
+										"Cmd":       "from",
+										"Flags":     []interface{}{},
+										"JSON":      false,
+										"Original":  "FROM foo",
+										"Stage":     float64(0),
+										"StartLine": float64(1),
+										"EndLine":   float64(1),
+										"SubCmd":    "",
+										"Value":     []interface{}{"foo"},
+									},
+									map[string]interface{}{
+										"Cmd":       "copy",
+										"Flags":     []interface{}{},
+										"JSON":      false,
+										"Original":  "COPY . /",
+										"Stage":     float64(0),
+										"StartLine": float64(2),
+										"EndLine":   float64(2),
+										"SubCmd":    "",
+										"Value":     []interface{}{".", "/"},
+									},
+									map[string]interface{}{
+										"Cmd":       "run",
+										"Flags":     []interface{}{},
+										"JSON":      false,
+										"Original":  "RUN echo hello",
+										"Stage":     float64(0),
+										"StartLine": float64(3),
+										"EndLine":   float64(3),
+										"SubCmd":    "",
+										"Value": []interface{}{
+											"echo hello",
+										},
+									},
 								},
 							},
 						},
@@ -63,44 +79,68 @@ func Test_dockerConfigAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Configs: []types.Config{
 					{
-						Type:     config.Dockerfile,
+						Type:     types.Dockerfile,
 						FilePath: "testdata/Dockerfile.multistage",
-						Content: []interface{}{
-							[]interface{}{
-								map[string]interface{}{
-									"Cmd":    "from",
-									"SubCmd": "",
-									"JSON":   false,
-									"Flags":  []interface{}{},
-									"Value":  []interface{}{"foo", "AS", "build"},
+						Content: map[string]interface{}{
+							"command": map[string]interface{}{
+								"foo AS build": []interface{}{
+									map[string]interface{}{
+										"Cmd":       "from",
+										"Flags":     []interface{}{},
+										"JSON":      false,
+										"Original":  "FROM foo AS build",
+										"Stage":     float64(0),
+										"StartLine": float64(1),
+										"EndLine":   float64(1),
+										"SubCmd":    "",
+										"Value":     []interface{}{"foo", "AS", "build"},
+									},
+									map[string]interface{}{
+										"Cmd":       "copy",
+										"Flags":     []interface{}{},
+										"JSON":      false,
+										"Original":  "COPY . /",
+										"Stage":     float64(0),
+										"StartLine": float64(2),
+										"EndLine":   float64(2),
+										"SubCmd":    "",
+										"Value":     []interface{}{".", "/"},
+									},
+									map[string]interface{}{
+										"Cmd":       "run",
+										"Flags":     []interface{}{},
+										"JSON":      false,
+										"Original":  "RUN echo hello",
+										"Stage":     float64(0),
+										"StartLine": float64(3),
+										"EndLine":   float64(3),
+										"SubCmd":    "",
+										"Value":     []interface{}{"echo hello"},
+									},
 								},
-								map[string]interface{}{
-									"Cmd":    "copy",
-									"SubCmd": "",
-									"JSON":   false,
-									"Flags":  []interface{}{},
-									"Value":  []interface{}{".", "/"},
-								},
-								map[string]interface{}{
-									"Cmd":    "run",
-									"SubCmd": "",
-									"JSON":   false,
-									"Flags":  []interface{}{},
-									"Value":  []interface{}{"echo hello"},
-								},
-								map[string]interface{}{
-									"Cmd":    "from",
-									"SubCmd": "",
-									"JSON":   false,
-									"Flags":  []interface{}{},
-									"Value":  []interface{}{"scratch"},
-								},
-								map[string]interface{}{
-									"Cmd":    "copy",
-									"SubCmd": "",
-									"JSON":   false,
-									"Flags":  []interface{}{"--from=build"},
-									"Value":  []interface{}{"/bar", "/bar"},
+								"scratch ": []interface{}{
+									map[string]interface{}{
+										"Cmd":       "from",
+										"Flags":     []interface{}{},
+										"JSON":      false,
+										"Original":  "FROM scratch ",
+										"Stage":     float64(1),
+										"StartLine": float64(5),
+										"EndLine":   float64(5),
+										"SubCmd":    "",
+										"Value":     []interface{}{"scratch"},
+									},
+									map[string]interface{}{
+										"Cmd":       "copy",
+										"Flags":     []interface{}{"--from=build"},
+										"JSON":      false,
+										"Original":  "COPY --from=build /bar /bar",
+										"Stage":     float64(1),
+										"StartLine": float64(6),
+										"EndLine":   float64(6),
+										"SubCmd":    "",
+										"Value":     []interface{}{"/bar", "/bar"},
+									},
 								},
 							},
 						},
@@ -111,18 +151,16 @@ func Test_dockerConfigAnalyzer_Analyze(t *testing.T) {
 		{
 			name:      "broken Docker: env no value",
 			inputFile: "testdata/Dockerfile.broken",
-			wantErr:   "parse dockerfile: ENV must have two arguments",
+			wantErr:   "ENV must have two arguments",
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			b, err := ioutil.ReadFile(tt.inputFile)
 			require.NoError(t, err)
 
-			a := dockerConfigAnalyzer{
-				parser: &docker.Parser{},
-			}
-
+			a := docker.NewConfigAnalyzer(nil)
 			got, err := a.Analyze(analyzer.AnalysisTarget{
 				FilePath: tt.inputFile,
 				Content:  b,
@@ -141,9 +179,10 @@ func Test_dockerConfigAnalyzer_Analyze(t *testing.T) {
 
 func Test_dockerConfigAnalyzer_Required(t *testing.T) {
 	tests := []struct {
-		name     string
-		filePath string
-		want     bool
+		name        string
+		filePattern *regexp.Regexp
+		filePath    string
+		want        bool
 	}{
 		{
 			name:     "dockerfile",
@@ -195,24 +234,25 @@ func Test_dockerConfigAnalyzer_Required(t *testing.T) {
 			filePath: "deployment.json",
 			want:     false,
 		},
+		{
+			name:        "file pattern",
+			filePattern: regexp.MustCompile(`foo*`),
+			filePath:    "foo_file",
+			want:        true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := dockerConfigAnalyzer{
-				parser: &docker.Parser{},
-			}
-
-			got := a.Required(tt.filePath, nil)
+			s := docker.NewConfigAnalyzer(tt.filePattern)
+			got := s.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})
 	}
 }
 
 func Test_dockerConfigAnalyzer_Type(t *testing.T) {
+	s := docker.NewConfigAnalyzer(nil)
 	want := analyzer.TypeDockerfile
-	a := dockerConfigAnalyzer{
-		parser: &docker.Parser{},
-	}
-	got := a.Type()
+	got := s.Type()
 	assert.Equal(t, want, got)
 }

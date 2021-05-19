@@ -5,16 +5,19 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/aquasecurity/fanal/analyzer"
+	"golang.org/x/xerrors"
 
 	git "github.com/go-git/go-git/v5"
 
+	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/artifact/local"
 	"github.com/aquasecurity/fanal/cache"
 )
 
-func NewArtifact(rawurl string, c cache.ArtifactCache, disabled []analyzer.Type) (artifact.Artifact, func(), error) {
+func NewArtifact(rawurl string, c cache.ArtifactCache, disabled []analyzer.Type, opt config.ScannerOption) (
+	artifact.Artifact, func(), error) {
 	cleanup := func() {}
 
 	u, err := newURL(rawurl)
@@ -33,7 +36,7 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, disabled []analyzer.Type)
 		Depth:    1,
 	})
 	if err != nil {
-		return nil, cleanup, err
+		return nil, cleanup, xerrors.Errorf("git error: %w", err)
 	}
 
 	cleanup = func() {
@@ -43,7 +46,11 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, disabled []analyzer.Type)
 	// JAR/WAR/EAR doesn't need to be analyzed in git repositories.
 	disabled = append(disabled, analyzer.TypeJar)
 
-	return local.NewArtifact(tmpDir, c, disabled), cleanup, nil
+	art, err := local.NewArtifact(tmpDir, c, disabled, opt)
+	if err != nil {
+		return nil, cleanup, xerrors.Errorf("fs artifact: %w", err)
+	}
+	return art, cleanup, nil
 }
 
 func newURL(rawurl string) (*url.URL, error) {

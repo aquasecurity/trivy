@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/library"
 	"github.com/aquasecurity/fanal/types"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
@@ -27,7 +26,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     library.GoMod,
+						Type:     types.GoMod,
 						FilePath: "testdata/gomod_many.sum",
 						Libraries: []types.LibraryInfo{
 							{Library: godeptypes.Library{Name: "github.com/BurntSushi/toml", Version: "0.3.1"}},

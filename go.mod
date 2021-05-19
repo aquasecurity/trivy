@@ -1,6 +1,6 @@
 module github.com/aquasecurity/fanal
 
-go 1.13
+go 1.16
 
 require (
 	github.com/GoogleCloudPlatform/docker-credential-gcr v1.5.0
@@ -28,7 +28,10 @@ require (
 	github.com/knqyf263/nested v0.0.1
 	github.com/kylelemons/godebug v1.1.0
 	github.com/magefile/mage v1.11.0 // indirect
+	github.com/mitchellh/mapstructure v1.4.1
+	github.com/moby/buildkit v0.8.1
 	github.com/open-policy-agent/conftest v0.23.0
+	github.com/open-policy-agent/opa v0.25.2
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.0.2-0.20190823105129-775207bd45b6
 	github.com/saracen/walker v0.0.0-20191201085201-324a081bae7e
@@ -36,13 +39,16 @@ require (
 	github.com/sosedoff/gitkit v0.2.0
 	github.com/stretchr/testify v1.7.0
 	github.com/testcontainers/testcontainers-go v0.9.1-0.20210218153226-c8e070a2f18d
-	github.com/urfave/cli/v2 v2.2.0
+	github.com/urfave/cli/v2 v2.3.0
 	go.etcd.io/bbolt v1.3.5
 	go.opencensus.io v0.22.6 // indirect
+	go.uber.org/zap v1.16.0
+	golang.org/x/mod v0.3.0
 	golang.org/x/net v0.0.0-20210220033124-5f55cee0dc0d // indirect
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
 	golang.org/x/sys v0.0.0-20210220050731-9a76102bfb43 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/genproto v0.0.0-20210219173056-d891e3cb3b5b // indirect
 	google.golang.org/grpc v1.35.0 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )

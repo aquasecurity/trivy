@@ -13,9 +13,12 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/fanal/config/scanner"
 	"github.com/aquasecurity/fanal/image"
+	"github.com/aquasecurity/fanal/log"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/walker"
 )
@@ -25,17 +28,31 @@ const (
 )
 
 type Artifact struct {
-	image    image.Image
-	cache    cache.ArtifactCache
-	analyzer analyzer.Analyzer
+	image               image.Image
+	cache               cache.ArtifactCache
+	analyzer            analyzer.Analyzer
+	scanner             scanner.Scanner
+	configScannerOption config.ScannerOption
 }
 
-func NewArtifact(img image.Image, c cache.ArtifactCache, disabled []analyzer.Type) artifact.Artifact {
-	return Artifact{
-		image:    img,
-		cache:    c,
-		analyzer: analyzer.NewAnalyzer(disabled),
+func NewArtifact(img image.Image, c cache.ArtifactCache, disabled []analyzer.Type, opt config.ScannerOption) (artifact.Artifact, error) {
+	// Register config analyzers
+	if err := config.RegisterConfigAnalyzers(opt.FilePatterns); err != nil {
+		return nil, xerrors.Errorf("config scanner error: %w", err)
 	}
+
+	s, err := scanner.New(opt.Namespaces, opt.PolicyPaths, opt.DataPaths)
+	if err != nil {
+		return nil, xerrors.Errorf("scanner error: %w", err)
+	}
+
+	return Artifact{
+		image:               img,
+		cache:               c,
+		analyzer:            analyzer.NewAnalyzer(disabled),
+		scanner:             s,
+		configScannerOption: opt,
+	}, nil
 }
 
 func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
@@ -49,67 +66,87 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		return types.ArtifactReference{}, xerrors.Errorf("unable to get layer IDs: %w", err)
 	}
 
-	versionedImageID, versionedDiffIDs := a.withVersionSuffix(imageID, diffIDs)
+	// Debug
+	log.Logger.Debugf("Image ID: %s", imageID)
+	log.Logger.Debugf("Diff IDs: %v", diffIDs)
 
-	missingImage, missingLayers, err := a.cache.MissingBlobs(versionedImageID, versionedDiffIDs)
+	// Convert image ID and layer IDs to cache keys
+	imageKey, layerKeys, layerKeyMap, err := a.calcCacheKeys(imageID, diffIDs)
+	if err != nil {
+		return types.ArtifactReference{}, err
+	}
+
+	missingImage, missingLayers, err := a.cache.MissingBlobs(imageKey, layerKeys)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("unable to get missing layers: %w", err)
 	}
 
-	if err := a.inspect(ctx, versionedImageID, missingImage, missingLayers); err != nil {
+	missingImageKey := imageKey
+	if missingImage {
+		log.Logger.Debugf("Missing image ID: %s", imageID)
+	} else {
+		missingImageKey = ""
+	}
+
+	if err = a.inspect(ctx, missingImageKey, missingLayers, layerKeyMap); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
 	return types.ArtifactReference{
 		Name:        a.image.Name(),
-		ID:          versionedImageID,
-		BlobIDs:     versionedDiffIDs,
+		ID:          imageKey,
+		BlobIDs:     layerKeys,
 		RepoTags:    a.image.RepoTags(),
 		RepoDigests: a.image.RepoDigests(),
 	}, nil
 
 }
 
-func (a Artifact) withVersionSuffix(imageID string, diffIDs []string) (string, []string) {
-	// e.g. sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e
-	//   => sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e/1
-	imageID = cache.WithVersionSuffix(imageID, a.analyzer.ImageConfigAnalyzerVersions())
-
-	var blobIDs []string
-	for _, diffID := range diffIDs {
-		// e.g. sha256:0fcbbeeeb0d7fc5c06362d7a6717b999e605574c7210eff4f7418f6e9be9fbfe
-		//   => sha256:0fcbbeeeb0d7fc5c06362d7a6717b999e605574c7210eff4f7418f6e9be9fbfe/121110111321
-		blobID := cache.WithVersionSuffix(diffID, a.analyzer.AnalyzerVersions())
-		blobIDs = append(blobIDs, blobID)
+func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, map[string]string, error) {
+	// Pass an empty config scanner option so that the cache key can be the same, even when policies are updated.
+	imageKey, err := cache.CalcKey(imageID, a.analyzer.ImageConfigAnalyzerVersions(), &config.ScannerOption{})
+	if err != nil {
+		return "", nil, nil, err
 	}
-	return imageID, blobIDs
+
+	layerKeyMap := map[string]string{}
+	var layerKeys []string
+	for _, diffID := range diffIDs {
+		blobKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), &a.configScannerOption)
+		if err != nil {
+			return "", nil, nil, err
+		}
+		layerKeys = append(layerKeys, blobKey)
+		layerKeyMap[blobKey] = diffID
+	}
+	return imageKey, layerKeys, layerKeyMap, nil
 }
 
-func (a Artifact) inspect(ctx context.Context, imageID string, missingImage bool, diffIDs []string) error {
+func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys []string, layerKeyMap map[string]string) error {
 	done := make(chan struct{})
 	errCh := make(chan error)
 
 	var osFound types.OS
-	for _, d := range diffIDs {
-		go func(ctx context.Context, versionedDiffID string) {
-			diffID := cache.TrimVersionSuffix(versionedDiffID)
+	for _, k := range layerKeys {
+		go func(ctx context.Context, layerKey string) {
+			diffID := layerKeyMap[layerKey]
 			layerInfo, err := a.inspectLayer(ctx, diffID)
 			if err != nil {
 				errCh <- xerrors.Errorf("failed to analyze layer: %s : %w", diffID, err)
 				return
 			}
-			if err = a.cache.PutBlob(versionedDiffID, layerInfo); err != nil {
-				errCh <- xerrors.Errorf("failed to store layer: %s in cache: %w", diffID, err)
+			if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
+				errCh <- xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
 				return
 			}
 			if layerInfo.OS != nil {
 				osFound = *layerInfo.OS
 			}
 			done <- struct{}{}
-		}(ctx, d)
+		}(ctx, k)
 	}
 
-	for range diffIDs {
+	for range layerKeys {
 		select {
 		case <-done:
 		case err := <-errCh:
@@ -119,8 +156,9 @@ func (a Artifact) inspect(ctx context.Context, imageID string, missingImage bool
 		}
 	}
 
-	if missingImage {
-		if err := a.inspectConfig(imageID, osFound); err != nil {
+	if missingImage != "" {
+		log.Logger.Debugf("Missing image cache: %s", missingImage)
+		if err := a.inspectConfig(missingImage, osFound); err != nil {
 			return xerrors.Errorf("unable to analyze config: %w", err)
 		}
 	}
@@ -130,6 +168,8 @@ func (a Artifact) inspect(ctx context.Context, imageID string, missingImage bool
 }
 
 func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobInfo, error) {
+	log.Logger.Debugf("Missing diff ID: %s", diffID)
+
 	layerDigest, r, err := a.uncompressedLayer(diffID)
 	if err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", diffID, err)
@@ -152,18 +192,25 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobIn
 	// Wait for all the goroutine to finish.
 	wg.Wait()
 
+	// Sort the analysis result for consistent results
 	result.Sort()
 
+	// Scan config files
+	misconfs, err := a.scanner.ScanConfigs(ctx, result.Configs)
+	if err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("config scan error: %w", err)
+	}
+
 	layerInfo := types.BlobInfo{
-		SchemaVersion: types.BlobJSONSchemaVersion,
-		Digest:        layerDigest,
-		DiffID:        diffID,
-		OS:            result.OS,
-		PackageInfos:  result.PackageInfos,
-		Applications:  result.Applications,
-		Configs:       result.Configs,
-		OpaqueDirs:    opqDirs,
-		WhiteoutFiles: whFiles,
+		SchemaVersion:     types.BlobJSONSchemaVersion,
+		Digest:            layerDigest,
+		DiffID:            diffID,
+		OS:                result.OS,
+		PackageInfos:      result.PackageInfos,
+		Applications:      result.Applications,
+		Misconfigurations: misconfs,
+		OpaqueDirs:        opqDirs,
+		WhiteoutFiles:     whFiles,
 	}
 	return layerInfo, nil
 }

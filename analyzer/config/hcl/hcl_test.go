@@ -1,16 +1,15 @@
-package hcl
+package hcl_test
 
 import (
 	"io/ioutil"
+	"regexp"
 	"testing"
 
-	"github.com/open-policy-agent/conftest/parser/hcl1"
-	"github.com/open-policy-agent/conftest/parser/hcl2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/config"
+	"github.com/aquasecurity/fanal/analyzer/config/hcl"
 	"github.com/aquasecurity/fanal/types"
 )
 
@@ -27,19 +26,19 @@ func Test_hclConfigAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Configs: []types.Config{
 					{
-						Type:     config.HCL1,
+						Type:     types.HCL,
 						FilePath: "testdata/deployment.hcl1",
 						Content: map[string]interface{}{
 							"apiVersion": "apps/v1",
 							"kind":       "Deployment",
 							"metadata": []map[string]interface{}{
-								map[string]interface{}{
+								{
 									"name": "hello-kubernetes",
 								},
 							},
 							"spec": []map[string]interface{}{
-								map[string]interface{}{
-									"replicas": int(3),
+								{
+									"replicas": 3,
 								},
 							},
 						},
@@ -58,7 +57,7 @@ func Test_hclConfigAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Configs: []types.Config{
 					{
-						Type:     config.HCL2,
+						Type:     types.HCL,
 						FilePath: "testdata/deployment.hcl2",
 						Content: map[string]interface{}{
 							"apiVersion": "apps/v1",
@@ -67,7 +66,7 @@ func Test_hclConfigAnalyzer_Analyze(t *testing.T) {
 								"name": "hello-kubernetes",
 							},
 							"spec": map[string]interface{}{
-								"replicas": float64(3),
+								"replicas": float64(4),
 							},
 						},
 					},
@@ -85,18 +84,18 @@ func Test_hclConfigAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Configs: []types.Config{
 					{
-						Type:     config.HCL1,
+						Type:     types.HCL,
 						FilePath: "testdata/deprecated.hcl",
 						Content: map[string]interface{}{
 							"apiVersion": "apps/v1",
 							"kind":       "Deployment",
 							"metadata": []map[string]interface{}{
-								map[string]interface{}{
+								{
 									"name": "hello-kubernetes",
 								},
 							},
 							"spec": []map[string]interface{}{
-								map[string]interface{}{
+								{
 									"replicas": int(3),
 								},
 							},
@@ -106,15 +105,14 @@ func Test_hclConfigAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			b, err := ioutil.ReadFile(tt.inputFile)
 			require.NoError(t, err)
 
-			a := hclConfigAnalyzer{
-				hcl1Parser: &hcl1.Parser{},
-				hcl2Parser: &hcl2.Parser{},
-			}
+			a := hcl.NewConfigAnalyzer(nil)
+			require.NoError(t, err)
 
 			got, err := a.Analyze(analyzer.AnalysisTarget{
 				FilePath: tt.inputFile,
@@ -134,9 +132,10 @@ func Test_hclConfigAnalyzer_Analyze(t *testing.T) {
 
 func Test_hclConfigAnalyzer_Required(t *testing.T) {
 	tests := []struct {
-		name     string
-		filePath string
-		want     bool
+		name        string
+		filePattern *regexp.Regexp
+		filePath    string
+		want        bool
 	}{
 		{
 			name:     "hcl",
@@ -163,26 +162,24 @@ func Test_hclConfigAnalyzer_Required(t *testing.T) {
 			filePath: "deployment.json",
 			want:     false,
 		},
+		{
+			name:        "file pattern",
+			filePattern: regexp.MustCompile(`foo*`),
+			filePath:    "foo_file",
+			want:        true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := hclConfigAnalyzer{
-				hcl1Parser: &hcl1.Parser{},
-				hcl2Parser: &hcl2.Parser{},
-			}
-
-			got := a.Required(tt.filePath, nil)
+			s := hcl.NewConfigAnalyzer(tt.filePattern)
+			got := s.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})
 	}
 }
 func Test_hclConfigAnalyzer_Type(t *testing.T) {
+	s := hcl.NewConfigAnalyzer(nil)
 	want := analyzer.TypeHCL
-	a := hclConfigAnalyzer{
-		hcl1Parser: &hcl1.Parser{},
-		hcl2Parser: &hcl2.Parser{},
-	}
-
-	got := a.Type()
+	got := s.Type()
 	assert.Equal(t, want, got)
 }

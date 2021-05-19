@@ -4,14 +4,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/yarn"
-
-	"github.com/aquasecurity/fanal/utils"
-
-	"github.com/aquasecurity/fanal/analyzer/library"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"golang.org/x/xerrors"
+	"github.com/aquasecurity/fanal/analyzer/library"
+	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/fanal/utils"
+	"github.com/aquasecurity/go-dep-parser/pkg/yarn"
 )
 
 func init() {
@@ -25,7 +24,7 @@ var requiredFiles = []string{"yarn.lock"}
 type yarnLibraryAnalyzer struct{}
 
 func (a yarnLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	res, err := library.Analyze(library.Yarn, target.FilePath, target.Content, yarn.Parse)
+	res, err := library.Analyze(types.Yarn, target.FilePath, target.Content, yarn.Parse)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse yarn.lock: %w", err)
 	}

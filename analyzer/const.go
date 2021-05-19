@@ -1,46 +1,45 @@
 package analyzer
 
-type Type int
+type Type string
 
-// NOTE: Do not change the order of "Type" unnecessarily, as it will affect the cache.
 const (
 	// OS
-	TypeAlpine Type = iota + 1
-	TypeAmazon
-	TypeDebian
-	TypePhoton
-	TypeCentOS
-	TypeFedora
-	TypeOracle
-	TypeRedHatBase
-	TypeSUSE
-	TypeUbuntu
+	TypeAlpine     Type = "alpine"
+	TypeAmazon     Type = "amazon"
+	TypeDebian     Type = "debian"
+	TypePhoton     Type = "photon"
+	TypeCentOS     Type = "centos"
+	TypeFedora     Type = "fedora"
+	TypeOracle     Type = "oracle"
+	TypeRedHatBase Type = "redhat"
+	TypeSUSE       Type = "suse"
+	TypeUbuntu     Type = "ubuntu"
 
 	// OS Package
-	TypeApk
-	TypeDpkg
-	TypeRpm
+	TypeApk  Type = "apk"
+	TypeDpkg Type = "dpkg"
+	TypeRpm  Type = "rpm"
 
 	// Programming Language Package
-	TypeBundler
-	TypeCargo
-	TypeComposer
-	TypeJar
-	TypeNpm
-	TypeNuget
-	TypePipenv
-	TypePoetry
-	TypeYarn
-	TypeGoBinary
-	TypeGoMod
+	TypeBundler  Type = "bundler"
+	TypeCargo    Type = "cargo"
+	TypeComposer Type = "composer"
+	TypeJar      Type = "jar"
+	TypeNpm      Type = "npm"
+	TypeNuget    Type = "nuget"
+	TypePipenv   Type = "pipenv"
+	TypePoetry   Type = "poetry"
+	TypeYarn     Type = "yarn"
+	TypeGoBinary Type = "gobinary"
+	TypeGoMod    Type = "gomod"
 
 	// Image Config
-	TypeApkCommand
+	TypeApkCommand Type = "apk-command"
 
 	// Structured Config
-	TypeYaml
-	TypeTOML
-	TypeJSON
-	TypeDockerfile
-	TypeHCL
+	TypeYaml       Type = "yaml"
+	TypeTOML       Type = "toml"
+	TypeJSON       Type = "json"
+	TypeDockerfile Type = "dockerfile"
+	TypeHCL        Type = "hcl"
 )

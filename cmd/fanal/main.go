@@ -13,29 +13,8 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
-	_ "github.com/aquasecurity/fanal/analyzer/config/yaml"
-	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
-	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
-	_ "github.com/aquasecurity/fanal/analyzer/library/composer"
-	_ "github.com/aquasecurity/fanal/analyzer/library/gobinary"
-	_ "github.com/aquasecurity/fanal/analyzer/library/gomod"
-	_ "github.com/aquasecurity/fanal/analyzer/library/jar"
-	_ "github.com/aquasecurity/fanal/analyzer/library/npm"
-	_ "github.com/aquasecurity/fanal/analyzer/library/nuget"
-	_ "github.com/aquasecurity/fanal/analyzer/library/pipenv"
-	_ "github.com/aquasecurity/fanal/analyzer/library/poetry"
-	_ "github.com/aquasecurity/fanal/analyzer/library/yarn"
-	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
-	_ "github.com/aquasecurity/fanal/analyzer/os/amazonlinux"
-	_ "github.com/aquasecurity/fanal/analyzer/os/debian"
-	_ "github.com/aquasecurity/fanal/analyzer/os/photon"
-	_ "github.com/aquasecurity/fanal/analyzer/os/redhatbase"
-	_ "github.com/aquasecurity/fanal/analyzer/os/suse"
-	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpm"
+	_ "github.com/aquasecurity/fanal/analyzer/all"
+	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/applier"
 	"github.com/aquasecurity/fanal/artifact"
 	aimage "github.com/aquasecurity/fanal/artifact/image"
@@ -54,7 +33,6 @@ func main() {
 }
 
 func run() (err error) {
-	ctx := context.Background()
 	app := &cli.App{
 		Name:  "fanal",
 		Usage: "A library to analyze a container image, local filesystem and remote repository",
@@ -63,25 +41,37 @@ func run() (err error) {
 				Name:    "image",
 				Aliases: []string{"img"},
 				Usage:   "inspect a container image",
-				Action:  globalOption(ctx, imageAction),
+				Flags: []cli.Flag{
+					&cli.StringSliceFlag{
+						Name:  "conf-policy",
+						Usage: "policy paths",
+					},
+				},
+				Action: globalOption(imageAction),
 			},
 			{
 				Name:    "archive",
 				Aliases: []string{"ar"},
 				Usage:   "inspect an image archive",
-				Action:  globalOption(ctx, archiveAction),
+				Action:  globalOption(archiveAction),
 			},
 			{
 				Name:    "filesystem",
 				Aliases: []string{"fs"},
 				Usage:   "inspect a local directory",
-				Action:  globalOption(ctx, fsAction),
+				Flags: []cli.Flag{
+					&cli.StringSliceFlag{
+						Name:  "policy",
+						Usage: "policy paths",
+					},
+				},
+				Action: globalOption(fsAction),
 			},
 			{
 				Name:    "repository",
 				Aliases: []string{"repo"},
 				Usage:   "inspect a remote repository",
-				Action:  globalOption(ctx, repoAction),
+				Action:  globalOption(repoAction),
 			},
 		},
 		Flags: []cli.Flag{
@@ -97,7 +87,7 @@ func run() (err error) {
 	return app.Run(os.Args)
 }
 
-func globalOption(ctx context.Context, f func(context.Context, *cli.Context, cache.Cache) error) func(c *cli.Context) error {
+func globalOption(f func(*cli.Context, cache.Cache) error) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
 		cacheClient, err := initializeCache(c.String("cache"))
 		if err != nil {
@@ -112,7 +102,7 @@ func globalOption(ctx context.Context, f func(context.Context, *cli.Context, cac
 			}
 			return nil
 		}
-		return f(ctx, c, cacheClient)
+		return f(c, cacheClient)
 	}
 }
 
@@ -130,35 +120,43 @@ func initializeCache(backend string) (cache.Cache, error) {
 	return cacheClient, err
 }
 
-func imageAction(ctx context.Context, c *cli.Context, fsCache cache.Cache) error {
-	art, cleanup, err := imageArtifact(ctx, c.Args().First(), fsCache)
+func imageAction(c *cli.Context, fsCache cache.Cache) error {
+	art, cleanup, err := imageArtifact(c.Context, c.Args().First(), fsCache, config.ScannerOption{
+		PolicyPaths: c.StringSlice("conf-policy"),
+	})
 	if err != nil {
 		return err
 	}
 	defer cleanup()
-	return inspect(ctx, art, fsCache)
+	return inspect(c.Context, art, fsCache)
 }
 
-func archiveAction(ctx context.Context, c *cli.Context, fsCache cache.Cache) error {
+func archiveAction(c *cli.Context, fsCache cache.Cache) error {
 	art, err := archiveImageArtifact(c.Args().First(), fsCache)
 	if err != nil {
 		return err
 	}
-	return inspect(ctx, art, fsCache)
+	return inspect(c.Context, art, fsCache)
 }
 
-func fsAction(ctx context.Context, c *cli.Context, fsCache cache.Cache) error {
-	art := localArtifact(c.Args().First(), fsCache)
-	return inspect(ctx, art, fsCache)
+func fsAction(c *cli.Context, fsCache cache.Cache) error {
+	art, err := local.NewArtifact(c.Args().First(), fsCache, nil, config.ScannerOption{
+		PolicyPaths: c.StringSlice("policy"),
+	})
+	if err != nil {
+		return err
+	}
+
+	return inspect(c.Context, art, fsCache)
 }
 
-func repoAction(ctx context.Context, c *cli.Context, fsCache cache.Cache) error {
+func repoAction(c *cli.Context, fsCache cache.Cache) error {
 	art, cleanup, err := remoteArtifact(c.Args().First(), fsCache)
 	if err != nil {
 		return err
 	}
 	defer cleanup()
-	return inspect(ctx, art, fsCache)
+	return inspect(c.Context, art, fsCache)
 }
 
 func inspect(ctx context.Context, art artifact.Artifact, c cache.LocalArtifactCache) error {
@@ -185,20 +183,30 @@ func inspect(ctx context.Context, art artifact.Artifact, c cache.LocalArtifactCa
 	for _, app := range mergedLayer.Applications {
 		fmt.Printf("%s (%s): %d\n", app.Type, app.FilePath, len(app.Libraries))
 	}
+
+	if len(mergedLayer.Misconfigurations) > 0 {
+		fmt.Println("Misconfigurations:")
+	}
+	for _, misconf := range mergedLayer.Misconfigurations {
+		fmt.Printf("  %s: failures %d, warnings %d\n", misconf.FilePath, len(misconf.Failures), len(misconf.Warnings))
+	}
 	return nil
 }
 
-func imageArtifact(ctx context.Context, imageName string, c cache.ArtifactCache) (artifact.Artifact, func(), error) {
-	opt := types.DockerOption{
+func imageArtifact(ctx context.Context, imageName string, c cache.ArtifactCache, opt config.ScannerOption) (artifact.Artifact, func(), error) {
+	img, cleanup, err := image.NewDockerImage(ctx, imageName, types.DockerOption{
 		Timeout:  600 * time.Second,
 		SkipPing: true,
-	}
-
-	img, cleanup, err := image.NewDockerImage(ctx, imageName, opt)
+	})
 	if err != nil {
 		return nil, func() {}, err
 	}
-	return aimage.NewArtifact(img, c, nil), cleanup, nil
+
+	art, err := aimage.NewArtifact(img, c, nil, opt)
+	if err != nil {
+		return nil, func() {}, err
+	}
+	return art, cleanup, nil
 }
 
 func archiveImageArtifact(imagePath string, c cache.ArtifactCache) (artifact.Artifact, error) {
@@ -207,13 +215,13 @@ func archiveImageArtifact(imagePath string, c cache.ArtifactCache) (artifact.Art
 		return nil, err
 	}
 
-	return aimage.NewArtifact(img, c, nil), nil
-}
-
-func localArtifact(dir string, c cache.ArtifactCache) artifact.Artifact {
-	return local.NewArtifact(dir, c, nil)
+	art, err := aimage.NewArtifact(img, c, nil, config.ScannerOption{})
+	if err != nil {
+		return nil, err
+	}
+	return art, nil
 }
 
 func remoteArtifact(dir string, c cache.ArtifactCache) (artifact.Artifact, func(), error) {
-	return remote.NewArtifact(dir, c, nil)
+	return remote.NewArtifact(dir, c, nil, config.ScannerOption{})
 }

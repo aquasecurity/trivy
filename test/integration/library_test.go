@@ -15,24 +15,8 @@ import (
 	"testing"
 	"time"
 
-	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
-	_ "github.com/aquasecurity/fanal/analyzer/library/bundler"
-	_ "github.com/aquasecurity/fanal/analyzer/library/cargo"
-	_ "github.com/aquasecurity/fanal/analyzer/library/composer"
-	_ "github.com/aquasecurity/fanal/analyzer/library/npm"
-	_ "github.com/aquasecurity/fanal/analyzer/library/pipenv"
-	_ "github.com/aquasecurity/fanal/analyzer/library/poetry"
-	_ "github.com/aquasecurity/fanal/analyzer/library/yarn"
-	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
-	_ "github.com/aquasecurity/fanal/analyzer/os/amazonlinux"
-	_ "github.com/aquasecurity/fanal/analyzer/os/debian"
-	_ "github.com/aquasecurity/fanal/analyzer/os/photon"
-	_ "github.com/aquasecurity/fanal/analyzer/os/redhatbase"
-	_ "github.com/aquasecurity/fanal/analyzer/os/suse"
-	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/dpkg"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/rpm"
+	_ "github.com/aquasecurity/fanal/analyzer/all"
+	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/applier"
 	"github.com/aquasecurity/fanal/artifact"
 	aimage "github.com/aquasecurity/fanal/artifact/image"
@@ -142,7 +126,9 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 			require.NoError(t, err, tc.name)
 			defer cleanup()
 
-			ar := aimage.NewArtifact(img, c, nil)
+			ar, err := aimage.NewArtifact(img, c, nil, config.ScannerOption{})
+			require.NoError(t, err)
+
 			applier := applier.NewApplier(c)
 
 			// run tests twice, one without cache and with cache
@@ -190,7 +176,9 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			require.NoError(t, err, tc.name)
 			defer cleanup()
 
-			ar := aimage.NewArtifact(img, c, nil)
+			ar, err := aimage.NewArtifact(img, c, nil, config.ScannerOption{})
+			require.NoError(t, err)
+
 			applier := applier.NewApplier(c)
 
 			// run tests twice, one without cache and with cache
@@ -234,7 +222,9 @@ func TestFanal_Library_TarMode(t *testing.T) {
 			img, err := image.NewArchiveImage(tc.imageFile)
 			require.NoError(t, err, tc.name)
 
-			ar := aimage.NewArtifact(img, c, nil)
+			ar, err := aimage.NewArtifact(img, c, nil, config.ScannerOption{})
+			require.NoError(t, err)
+
 			applier := applier.NewApplier(c)
 
 			runChecks(t, ctx, ar, applier, tc)
