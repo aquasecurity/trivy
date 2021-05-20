@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/goutils v1.1.0 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20210501235003-c816628070c1
+	github.com/aquasecurity/fanal v0.0.0-20210519050514-051631be3f69
 	github.com/aquasecurity/go-dep-parser v0.0.0-20210427143403-3c97ccc53976
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -19,11 +19,12 @@ require (
 	github.com/docker/docker v20.10.3+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/elazarl/goproxy v0.0.0-20200809112317-0581fc3aee2d // indirect
+	github.com/fatih/color v1.10.0
 	github.com/go-redis/redis/v8 v8.4.0
 	github.com/goccy/go-yaml v1.8.2 // indirect
 	github.com/golang/protobuf v1.4.3
 	github.com/google/go-containerregistry v0.1.2
-	github.com/google/go-github/v28 v28.1.1
+	github.com/google/go-github/v33 v33.0.0
 	github.com/google/wire v0.4.0
 	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
 	github.com/hashicorp/go-getter v1.5.2
@@ -46,6 +47,7 @@ require (
 	github.com/urfave/cli/v2 v2.3.0
 	go.uber.org/zap v1.16.0
 	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect

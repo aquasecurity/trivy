@@ -1,26 +1,25 @@
-package config_test
+package option_test
 
 import (
 	"flag"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/urfave/cli/v2"
-
-	"github.com/aquasecurity/trivy/pkg/commands/config"
 )
 
 func TestNewGlobalConfig(t *testing.T) {
 	tests := []struct {
 		name string
 		args []string
-		want config.GlobalConfig
+		want option.GlobalOption
 	}{
 		{
 			name: "happy path",
 			args: []string{"--quiet", "--debug"},
-			want: config.GlobalConfig{
+			want: option.GlobalOption{
 				Quiet: true,
 				Debug: true,
 			},
@@ -36,7 +35,7 @@ func TestNewGlobalConfig(t *testing.T) {
 			c := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
 
-			got, err := config.NewGlobalConfig(c)
+			got, err := option.NewGlobalOption(c)
 			require.NoError(t, err, err)
 			assert.Equal(t, tt.want.Quiet, got.Quiet, tt.name)
 			assert.Equal(t, tt.want.Debug, got.Debug, tt.name)

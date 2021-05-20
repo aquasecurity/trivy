@@ -12,14 +12,15 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy-db/pkg/types"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/client"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	tdb "github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
 // VersionInfo holds the trivy DB version Info
@@ -56,7 +57,7 @@ var (
 	severityFlag = cli.StringFlag{
 		Name:    "severity",
 		Aliases: []string{"s"},
-		Value:   strings.Join(types.SeverityNames, ","),
+		Value:   strings.Join(dbTypes.SeverityNames, ","),
 		Usage:   "severities of vulnerabilities to be displayed (comma separated)",
 		EnvVars: []string{"TRIVY_SEVERITY"},
 	}
@@ -134,9 +135,16 @@ var (
 
 	vulnTypeFlag = cli.StringFlag{
 		Name:    "vuln-type",
-		Value:   "os,library",
+		Value:   strings.Join([]string{types.VulnTypeOS, types.VulnTypeLibrary}, ","),
 		Usage:   "comma-separated list of vulnerability types (os,library)",
 		EnvVars: []string{"TRIVY_VULN_TYPE"},
+	}
+
+	securityChecksFlag = cli.StringFlag{
+		Name:    "security-checks",
+		Value:   types.SecurityCheckVulnerability,
+		Usage:   "comma-separated list of what security issues to detect (vuln,config)",
+		EnvVars: []string{"TRIVY_SECURITY_CHECKS"},
 	}
 
 	cacheDirFlag = cli.StringFlag{
@@ -155,7 +163,7 @@ var (
 
 	ignoreFileFlag = cli.StringFlag{
 		Name:    "ignorefile",
-		Value:   vulnerability.DefaultIgnoreFile,
+		Value:   result.DefaultIgnoreFile,
 		Usage:   "specify .trivyignore file",
 		EnvVars: []string{"TRIVY_IGNOREFILE"},
 	}
@@ -210,6 +218,40 @@ var (
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
+	configPolicy = cli.StringSliceFlag{
+		Name:    "config-policy",
+		Usage:   "specify paths to the Rego policy files directory, applying config files",
+		EnvVars: []string{"TRIVY_CONFIG_POLICY"},
+	}
+
+	configPolicyAlias = cli.StringSliceFlag{
+		Name:    "policy",
+		Aliases: []string{"config-policy"},
+		Usage:   "specify paths to the Rego policy files directory, applying config files",
+		EnvVars: []string{"TRIVY_POLICY"},
+	}
+
+	filePatterns = cli.StringSliceFlag{
+		Name:    "file-patterns",
+		Usage:   "specify file patterns",
+		EnvVars: []string{"TRIVY_FILE_PATTERNS"},
+	}
+
+	policyNamespaces = cli.StringSliceFlag{
+		Name:    "policy-namespaces",
+		Aliases: []string{"namespaces"},
+		Usage:   "Rego namespaces",
+		Value:   cli.NewStringSlice("users"),
+		EnvVars: []string{"TRIVY_POLICY_NAMESPACES"},
+	}
+
+	showSuccesses = cli.BoolFlag{
+		Name:    "show-successes",
+		Usage:   "show successes",
+		Value:   false,
+		EnvVars: []string{"TRIVY_SHOW_SUCCESSES"},
+	}
+
 	globalFlags = []cli.Flag{
 		&quietFlag,
 		&debugFlag,
@@ -231,6 +273,7 @@ var (
 		&ignoreUnfixedFlag,
 		&removedPkgsFlag,
 		&vulnTypeFlag,
+		&securityChecksFlag,
 		&ignoreFileFlag,
 		&timeoutFlag,
 		&lightFlag,
@@ -239,6 +282,8 @@ var (
 		&skipFiles,
 		&skipDirs,
 		&cacheBackendFlag,
+		&configPolicy,
+		&policyNamespaces,
 	}
 
 	// deprecated options
@@ -284,6 +329,7 @@ func NewApp(version string) *cli.App {
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
+		NewConfigCommand(),
 		NewPluginCommand(),
 	}
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
@@ -405,6 +451,7 @@ func NewFilesystemCommand() *cli.Command {
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
+			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
 			&timeoutFlag,
@@ -413,6 +460,7 @@ func NewFilesystemCommand() *cli.Command {
 			&listAllPackages,
 			&skipFiles,
 			&skipDirs,
+			&configPolicy,
 		},
 	}
 }
@@ -437,6 +485,7 @@ func NewRepositoryCommand() *cli.Command {
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
+			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
 			&timeoutFlag,
@@ -468,9 +517,11 @@ func NewClientCommand() *cli.Command {
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
+			&securityChecksFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,
 			&ignorePolicy,
+			&configPolicy,
 
 			// original flags
 			&token,
@@ -516,12 +567,45 @@ func NewServerCommand() *cli.Command {
 	}
 }
 
+// NewConfigCommand adds config command
+func NewConfigCommand() *cli.Command {
+	return &cli.Command{
+		Name:      "config",
+		Aliases:   []string{"conf"},
+		ArgsUsage: "dir",
+		Usage:     "scan config files",
+		Action:    artifact.ConfigRun,
+		Flags: []cli.Flag{
+			&templateFlag,
+			&formatFlag,
+			&severityFlag,
+			&outputFlag,
+			&exitCodeFlag,
+			&skipUpdateFlag,
+			&clearCacheFlag,
+			&ignoreUnfixedFlag,
+			&ignoreFileFlag,
+			&cacheBackendFlag,
+			&timeoutFlag,
+			&noProgressFlag,
+			&ignorePolicy,
+			&skipFiles,
+			&skipDirs,
+			&configPolicyAlias,
+			&filePatterns,
+			&policyNamespaces,
+			&showSuccesses,
+		},
+	}
+}
+
 // NewPluginCommand is the factory method to add plugin command
 func NewPluginCommand() *cli.Command {
 	return &cli.Command{
-		Name:    "plugin",
-		Aliases: []string{"p"},
-		Usage:   "manage plugins",
+		Name:      "plugin",
+		Aliases:   []string{"p"},
+		ArgsUsage: "plugin_uri",
+		Usage:     "manage plugins",
 		Subcommands: cli.Commands{
 			{
 				Name:      "install",

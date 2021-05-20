@@ -3,7 +3,7 @@ package library
 import (
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer/library"
+	ftypes "github.com/aquasecurity/fanal/types"
 	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
@@ -25,21 +25,21 @@ type advisory interface {
 func NewDriver(libType string) (Driver, error) {
 	var driver Driver
 	switch libType {
-	case library.Bundler:
+	case ftypes.Bundler:
 		driver = newRubyGemsDriver()
-	case library.Cargo:
+	case ftypes.Cargo:
 		driver = newCargoDriver()
-	case library.Composer:
+	case ftypes.Composer:
 		driver = newComposerDriver()
-	case library.Npm, library.Yarn:
+	case ftypes.Npm, ftypes.Yarn:
 		driver = newNpmDriver()
-	case library.Pipenv, library.Poetry:
+	case ftypes.Pipenv, ftypes.Poetry:
 		driver = newPipDriver()
-	case library.NuGet:
+	case ftypes.NuGet:
 		driver = newNugetDriver()
-	case library.Jar:
+	case ftypes.Jar:
 		driver = newMavenDriver()
-	case library.GoBinary, library.GoMod:
+	case ftypes.GoBinary, ftypes.GoMod:
 		driver = Driver{
 			ecosystem:  vulnerability.Go,
 			advisories: []advisory{NewAdvisory(vulnerability.Go, comparer.GenericComparer{})},

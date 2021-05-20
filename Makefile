@@ -15,7 +15,7 @@ $(GOBIN)/wire:
 
 .PHONY: wire
 wire: $(GOBIN)/wire
-	wire gen ./pkg/... ./internal/...
+	wire gen ./pkg/...
 
 .PHONY: mock
 mock: $(GOBIN)/mockery

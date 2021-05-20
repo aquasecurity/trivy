@@ -4,85 +4,28 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/commands/config"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// Config holds the artifact config
-type Config struct {
-	config.GlobalConfig
-	config.ArtifactConfig
-	config.DBConfig
-	config.ImageConfig
-	config.ReportConfig
-	config.CacheConfig
-
-	// deprecated
-	onlyUpdate string
-	// deprecated
-	refresh bool
-	// deprecated
-	autoRefresh bool
-}
-
-// NewConfig is the factory method to return config
-func NewConfig(c *cli.Context) (Config, error) {
-	gc, err := config.NewGlobalConfig(c)
+// ConfigRun runs scan on config files
+func ConfigRun(ctx *cli.Context) error {
+	opt, err := NewOption(ctx)
 	if err != nil {
-		return Config{}, xerrors.Errorf("failed to initialize global options: %w", err)
+		return xerrors.Errorf("option error: %w", err)
 	}
 
-	return Config{
-		GlobalConfig:   gc,
-		ArtifactConfig: config.NewArtifactConfig(c),
-		DBConfig:       config.NewDBConfig(c),
-		ImageConfig:    config.NewImageConfig(c),
-		ReportConfig:   config.NewReportConfig(c),
-		CacheConfig:    config.NewCacheConfig(c),
-
-		onlyUpdate:  c.String("only-update"),
-		refresh:     c.Bool("refresh"),
-		autoRefresh: c.Bool("auto-refresh"),
-	}, nil
-}
-
-// Init initializes the artifact config
-func (c *Config) Init() error {
-	if c.onlyUpdate != "" || c.refresh || c.autoRefresh {
-		c.Logger.Warn("--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.")
+	// initialize options
+	if err = opt.Init(); err != nil {
+		return xerrors.Errorf("failed to initialize options: %w", err)
 	}
 
-	if err := c.initPreScanConfigs(); err != nil {
-		return err
-	}
+	// Scan only config files
+	opt.VulnType = nil
+	opt.SecurityChecks = []string{types.SecurityCheckConfig}
 
-	// --clear-cache, --download-db-only and --reset don't conduct the scan
-	if c.skipScan() {
-		return nil
-	}
+	// Skip downloading vulnerability DB
+	opt.SkipUpdate = true
 
-	if err := c.ArtifactConfig.Init(c.Context, c.Logger); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (c *Config) initPreScanConfigs() error {
-	if err := c.ReportConfig.Init(c.Logger); err != nil {
-		return err
-	}
-	if err := c.DBConfig.Init(); err != nil {
-		return err
-	}
-	if err := c.CacheConfig.Init(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (c *Config) skipScan() bool {
-	if c.ClearCache || c.DownloadDBOnly || c.Reset {
-		return true
-	}
-	return false
+	// Run filesystem command internally
+	return Run(ctx.Context, opt, filesystemScanner, initFSCache)
 }

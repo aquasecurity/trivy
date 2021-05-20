@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/urfave/cli/v2"
 
-	"github.com/aquasecurity/trivy/pkg/commands/config"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 )
 
@@ -22,10 +22,10 @@ func TestNew(t *testing.T) {
 			name: "happy path",
 			args: []string{"-quiet", "--no-progress", "--reset", "--skip-update", "--listen", "localhost:8080"},
 			want: server.Config{
-				GlobalConfig: config.GlobalConfig{
+				GlobalOption: option.GlobalOption{
 					Quiet: true,
 				},
-				DBConfig: config.DBConfig{
+				DBOption: option.DBOption{
 					Reset:      true,
 					SkipUpdate: true,
 					NoProgress: true,
@@ -47,11 +47,11 @@ func TestNew(t *testing.T) {
 			ctx := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
 
-			tt.want.GlobalConfig.Context = ctx
+			tt.want.GlobalOption.Context = ctx
 
 			got := server.NewConfig(ctx)
-			assert.Equal(t, tt.want.GlobalConfig.Quiet, got.Quiet, tt.name)
-			assert.Equal(t, tt.want.DBConfig, got.DBConfig, tt.name)
+			assert.Equal(t, tt.want.GlobalOption.Quiet, got.Quiet, tt.name)
+			assert.Equal(t, tt.want.DBOption, got.DBOption, tt.name)
 			assert.Equal(t, tt.want.Listen, got.Listen, tt.name)
 		})
 	}
@@ -60,8 +60,8 @@ func TestNew(t *testing.T) {
 func TestConfig_Init(t *testing.T) {
 	tests := []struct {
 		name         string
-		globalConfig config.GlobalConfig
-		dbConfig     config.DBConfig
+		globalConfig option.GlobalOption
+		dbConfig     option.DBOption
 		args         []string
 		wantErr      string
 	}{
@@ -71,14 +71,14 @@ func TestConfig_Init(t *testing.T) {
 		},
 		{
 			name: "happy path: reset",
-			dbConfig: config.DBConfig{
+			dbConfig: option.DBOption{
 				Reset: true,
 			},
 			args: []string{"alpine:3.10"},
 		},
 		{
 			name: "sad: skip and download db",
-			dbConfig: config.DBConfig{
+			dbConfig: option.DBOption{
 				SkipUpdate:     true,
 				DownloadDBOnly: true,
 			},
@@ -89,7 +89,7 @@ func TestConfig_Init(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &server.Config{
-				DBConfig: tt.dbConfig,
+				DBOption: tt.dbConfig,
 			}
 
 			err := c.Init()

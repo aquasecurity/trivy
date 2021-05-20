@@ -10,7 +10,6 @@ import (
 	aimage "github.com/aquasecurity/fanal/artifact/image"
 	flocal "github.com/aquasecurity/fanal/artifact/local"
 	"github.com/aquasecurity/fanal/artifact/remote"
-	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/image"
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -83,7 +82,8 @@ type Scanner struct {
 
 // Driver defines operations of scanner
 type Driver interface {
-	Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (results report.Results, osFound *ftypes.OS, eols bool, err error)
+	Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (
+		results report.Results, osFound *ftypes.OS, eols bool, err error)
 }
 
 // NewScanner is the factory method of Scanner
@@ -97,14 +97,6 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 	if err != nil {
 		return nil, xerrors.Errorf("failed analysis: %w", err)
 	}
-
-	// Debug information
-	var blobIDs []string
-	for _, b := range artifactInfo.BlobIDs {
-		blobIDs = append(blobIDs, cache.TrimVersionSuffix(b))
-	}
-	log.Logger.Debugf("Artifact ID: %s", cache.TrimVersionSuffix(artifactInfo.ID))
-	log.Logger.Debugf("Blob IDs: %v", blobIDs)
 
 	results, osFound, eosl, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {

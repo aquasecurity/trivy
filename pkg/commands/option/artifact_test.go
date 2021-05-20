@@ -1,10 +1,10 @@
-package config_test
+package option_test
 
 import (
 	"flag"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/commands/config"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/urfave/cli/v2"
@@ -12,18 +12,18 @@ import (
 	"go.uber.org/zap/zaptest/observer"
 )
 
-func TestArtifactConfig_Init(t *testing.T) {
+func TestArtifactOption_Init(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    []string
 		logs    []string
-		want    config.ArtifactConfig
+		want    option.ArtifactOption
 		wantErr string
 	}{
 		{
 			name: "happy path",
 			args: []string{"alpine:3.10"},
-			want: config.ArtifactConfig{
+			want: option.ArtifactOption{
 				Target: "alpine:3.10",
 			},
 		},
@@ -46,7 +46,7 @@ func TestArtifactConfig_Init(t *testing.T) {
 			ctx := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
 
-			c := config.NewArtifactConfig(ctx)
+			c := option.NewArtifactOption(ctx)
 
 			err := c.Init(ctx, logger.Sugar())
 
