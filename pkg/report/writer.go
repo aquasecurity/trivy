@@ -19,30 +19,17 @@ type Results []Result
 
 // Result to hold image scan results
 type Result struct {
-	Target            string                           `json:"Target"`
-	Type              string                           `json:"Type,omitempty"`
-	Packages          []ftypes.Package                 `json:"Packages,omitempty"`
-	Vulnerabilities   []types.DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
-	MisconfSummary    MisconfSummary                   `json:"MisconfSummary,omitempty"`
-	Misconfigurations []types.DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
+	Target          string                        `json:"Target"`
+	Type            string                        `json:"Type,omitempty"`
+	Packages        []ftypes.Package              `json:"Packages,omitempty"`
+	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities,omitempty"`
 }
 
-type MisconfSummary struct {
-	Successes  int
-	Failures   int
-	Exceptions int
-}
-
-// Failed returns whether the result includes any vulnerabilities or misconfigurations
+// Failed returns whether the result includes any vulnerabilities
 func (results Results) Failed() bool {
 	for _, r := range results {
 		if len(r.Vulnerabilities) > 0 {
 			return true
-		}
-		for _, m := range r.Misconfigurations {
-			if m.Status == types.StatusFailure {
-				return true
-			}
 		}
 	}
 	return false

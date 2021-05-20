@@ -16,7 +16,6 @@ type Option struct {
 	option.ArtifactOption
 	option.ImageOption
 	option.ReportOption
-	option.ConfigOption
 
 	RemoteAddr    string
 	token         string
@@ -39,7 +38,6 @@ func NewOption(c *cli.Context) (Option, error) {
 		ArtifactOption: option.NewArtifactOption(c),
 		ImageOption:    option.NewImageOption(c),
 		ReportOption:   option.NewReportOption(c),
-		ConfigOption:   option.NewConfigOption(c),
 		RemoteAddr:     c.String("remote"),
 		token:          c.String("token"),
 		tokenHeader:    c.String("token-header"),

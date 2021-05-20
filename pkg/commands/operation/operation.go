@@ -13,7 +13,6 @@ import (
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
@@ -101,23 +100,6 @@ func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) erro
 		return xerrors.Errorf("failed to show database info: %w", err)
 	}
 	return nil
-}
-
-// InitDefaultPolicies downloads the default policies and loads them
-func InitDefaultPolicies(ctx context.Context) ([]string, error) {
-	client := policy.NewClient()
-	etag, needsUpdate := client.NeedsUpdate()
-	if needsUpdate {
-		if err := client.DownloadDefaultPolicies(ctx, etag); err != nil {
-			return nil, xerrors.Errorf("failed to download policies: %w", err)
-		}
-	}
-
-	policyPaths, err := client.LoadDefaultPolicies()
-	if err != nil {
-		return nil, xerrors.Errorf("policy load error: %w", err)
-	}
-	return policyPaths, nil
 }
 
 func showDBInfo(cacheDir string) error {

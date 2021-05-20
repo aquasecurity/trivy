@@ -130,42 +130,6 @@ func TestReportWriter_Table(t *testing.T) {
 `,
 		},
 		{
-			name: "happy path misconfigurations",
-			results: report.Results{
-				{
-					Target: "test",
-					Misconfigurations: []types.DetectedMisconfiguration{
-						{
-							Type:       "Kubernetes Security Check",
-							ID:         "KSV001",
-							Title:      "Image tag ':latest' used",
-							Message:    "Message",
-							Severity:   "HIGH",
-							PrimaryURL: "https://avd.aquasec.com/appshield/ksv001",
-							Status:     types.StatusFailure,
-						},
-						{
-							Type:       "Kubernetes Security Check",
-							ID:         "KSV002",
-							Title:      "SYS_ADMIN capability added",
-							Message:    "Message",
-							Severity:   "CRITICAL",
-							PrimaryURL: "https://avd.aquasec.com/appshield/ksv002",
-							Status:     types.StatusFailure,
-						},
-					},
-				},
-			},
-			expectedOutput: `+---------------------------+------------+----------------------------+----------+--------+---------------------------------------------+
-|           TYPE            | MISCONF ID |           TITLE            | SEVERITY | STATUS |                   MESSAGE                   |
-+---------------------------+------------+----------------------------+----------+--------+---------------------------------------------+
-| Kubernetes Security Check |   KSV001   | Image tag ':latest' used   |   HIGH   |  FAIL  | Message -->avd.aquasec.com/appshield/ksv001 |
-+                           +------------+----------------------------+----------+        +---------------------------------------------+
-|                           |   KSV002   | SYS_ADMIN capability added | CRITICAL |        | Message -->avd.aquasec.com/appshield/ksv002 |
-+---------------------------+------------+----------------------------+----------+--------+---------------------------------------------+
-`,
-		},
-		{
 			name:           "no vulns",
 			expectedOutput: ``,
 		},

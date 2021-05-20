@@ -18,9 +18,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	tdb "github.com/aquasecurity/trivy/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
 // VersionInfo holds the trivy DB version Info
@@ -163,7 +163,7 @@ var (
 
 	ignoreFileFlag = cli.StringFlag{
 		Name:    "ignorefile",
-		Value:   result.DefaultIgnoreFile,
+		Value:   vulnerability.DefaultIgnoreFile,
 		Usage:   "specify .trivyignore file",
 		EnvVars: []string{"TRIVY_IGNOREFILE"},
 	}
@@ -218,40 +218,6 @@ var (
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
-	configPolicy = cli.StringSliceFlag{
-		Name:    "config-policy",
-		Usage:   "specify paths to the Rego policy files directory, applying config files",
-		EnvVars: []string{"TRIVY_CONFIG_POLICY"},
-	}
-
-	configPolicyAlias = cli.StringSliceFlag{
-		Name:    "policy",
-		Aliases: []string{"config-policy"},
-		Usage:   "specify paths to the Rego policy files directory, applying config files",
-		EnvVars: []string{"TRIVY_POLICY"},
-	}
-
-	filePatterns = cli.StringSliceFlag{
-		Name:    "file-patterns",
-		Usage:   "specify file patterns",
-		EnvVars: []string{"TRIVY_FILE_PATTERNS"},
-	}
-
-	policyNamespaces = cli.StringSliceFlag{
-		Name:    "policy-namespaces",
-		Aliases: []string{"namespaces"},
-		Usage:   "Rego namespaces",
-		Value:   cli.NewStringSlice("users"),
-		EnvVars: []string{"TRIVY_POLICY_NAMESPACES"},
-	}
-
-	showSuccesses = cli.BoolFlag{
-		Name:    "show-successes",
-		Usage:   "show successes",
-		Value:   false,
-		EnvVars: []string{"TRIVY_SHOW_SUCCESSES"},
-	}
-
 	globalFlags = []cli.Flag{
 		&quietFlag,
 		&debugFlag,
@@ -282,8 +248,6 @@ var (
 		&skipFiles,
 		&skipDirs,
 		&cacheBackendFlag,
-		&configPolicy,
-		&policyNamespaces,
 	}
 
 	// deprecated options
@@ -329,7 +293,6 @@ func NewApp(version string) *cli.App {
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
-		NewConfigCommand(),
 		NewPluginCommand(),
 	}
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
@@ -460,7 +423,6 @@ func NewFilesystemCommand() *cli.Command {
 			&listAllPackages,
 			&skipFiles,
 			&skipDirs,
-			&configPolicy,
 		},
 	}
 }
@@ -521,7 +483,6 @@ func NewClientCommand() *cli.Command {
 			&ignoreFileFlag,
 			&timeoutFlag,
 			&ignorePolicy,
-			&configPolicy,
 
 			// original flags
 			&token,
@@ -563,38 +524,6 @@ func NewServerCommand() *cli.Command {
 				Usage:   "listen address",
 				EnvVars: []string{"TRIVY_LISTEN"},
 			},
-		},
-	}
-}
-
-// NewConfigCommand adds config command
-func NewConfigCommand() *cli.Command {
-	return &cli.Command{
-		Name:      "config",
-		Aliases:   []string{"conf"},
-		ArgsUsage: "dir",
-		Usage:     "scan config files",
-		Action:    artifact.ConfigRun,
-		Flags: []cli.Flag{
-			&templateFlag,
-			&formatFlag,
-			&severityFlag,
-			&outputFlag,
-			&exitCodeFlag,
-			&skipUpdateFlag,
-			&clearCacheFlag,
-			&ignoreUnfixedFlag,
-			&ignoreFileFlag,
-			&cacheBackendFlag,
-			&timeoutFlag,
-			&noProgressFlag,
-			&ignorePolicy,
-			&skipFiles,
-			&skipDirs,
-			&configPolicyAlias,
-			&filePatterns,
-			&policyNamespaces,
-			&showSuccesses,
 		},
 	}
 }

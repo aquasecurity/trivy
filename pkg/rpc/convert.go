@@ -129,28 +129,6 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 	return rpcVulns
 }
 
-// ConvertToRPCMisconfs returns common.DetectedMisconfigurations
-func ConvertToRPCMisconfs(misconfs []types.DetectedMisconfiguration) []*common.DetectedMisconfiguration {
-	var rpcMisconfs []*common.DetectedMisconfiguration
-	for _, m := range misconfs {
-		severity, err := dbTypes.NewSeverity(m.Severity)
-		if err != nil {
-			log.Logger.Warn(err)
-		}
-
-		rpcMisconfs = append(rpcMisconfs, &common.DetectedMisconfiguration{
-			Type:       m.Type,
-			Id:         m.ID,
-			Title:      m.Title,
-			Message:    m.Message,
-			Severity:   common.Severity(severity),
-			PrimaryUrl: m.PrimaryURL,
-			Layer:      ConvertToRPCLayer(m.Layer),
-		})
-	}
-	return rpcMisconfs
-}
-
 // ConvertToRPCLayer returns common.Layer
 func ConvertToRPCLayer(layer ftypes.Layer) *common.Layer {
 	return &common.Layer{
@@ -164,10 +142,9 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 	var results []report.Result
 	for _, result := range rpcResults {
 		results = append(results, report.Result{
-			Target:            result.Target,
-			Vulnerabilities:   ConvertFromRPCVulns(result.Vulnerabilities),
-			Misconfigurations: ConvertFromRPCMisconfs(result.Misconfigurations),
-			Type:              result.Type,
+			Target:          result.Target,
+			Vulnerabilities: ConvertFromRPCVulns(result.Vulnerabilities),
+			Type:            result.Type,
 		})
 	}
 	return results
@@ -221,23 +198,6 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 	return vulns
 }
 
-// ConvertFromRPCMisconfs converts []*common.DetectedMisconfigurations to []types.DetectedMisconfiguration
-func ConvertFromRPCMisconfs(rpcMisconfs []*common.DetectedMisconfiguration) []types.DetectedMisconfiguration {
-	var misconfs []types.DetectedMisconfiguration
-	for _, rpcMisconf := range rpcMisconfs {
-		misconfs = append(misconfs, types.DetectedMisconfiguration{
-			Type:       rpcMisconf.Type,
-			ID:         rpcMisconf.Id,
-			Title:      rpcMisconf.Title,
-			Message:    rpcMisconf.Message,
-			Severity:   rpcMisconf.Severity.String(),
-			PrimaryURL: rpcMisconf.PrimaryUrl,
-			Layer:      ConvertFromRPCLayer(rpcMisconf.Layer),
-		})
-	}
-	return misconfs
-}
-
 // ConvertFromRPCLayer converts *common.Layer to fanal.Layer
 func ConvertFromRPCLayer(rpcLayer *common.Layer) ftypes.Layer {
 	return ftypes.Layer{
@@ -282,41 +242,6 @@ func ConvertFromRPCApplications(rpcApps []*common.Application) []ftypes.Applicat
 	return apps
 }
 
-// ConvertFromRPCMisconfigurations converts common.Misconfiguration to fanal.Misconfiguration
-func ConvertFromRPCMisconfigurations(rpcMisconfs []*common.Misconfiguration) []ftypes.Misconfiguration {
-	var misconfs []ftypes.Misconfiguration
-	for _, rpcMisconf := range rpcMisconfs {
-		misconfs = append(misconfs, ftypes.Misconfiguration{
-			FileType:   rpcMisconf.FileType,
-			FilePath:   rpcMisconf.FilePath,
-			Successes:  ConvertFromRPCMisconfResults(rpcMisconf.Successes),
-			Warnings:   ConvertFromRPCMisconfResults(rpcMisconf.Warnings),
-			Failures:   ConvertFromRPCMisconfResults(rpcMisconf.Failures),
-			Exceptions: ConvertFromRPCMisconfResults(rpcMisconf.Exceptions),
-			Layer:      ftypes.Layer{},
-		})
-	}
-	return misconfs
-}
-
-// ConvertFromRPCMisconfResults converts common.MisconfResult to fanal.MisconfResult
-func ConvertFromRPCMisconfResults(rpcResults []*common.MisconfResult) []ftypes.MisconfResult {
-	var results []ftypes.MisconfResult
-	for _, r := range rpcResults {
-		results = append(results, ftypes.MisconfResult{
-			Namespace: r.Namespace,
-			Message:   r.Message,
-			PolicyMetadata: ftypes.PolicyMetadata{
-				ID:       r.Id,
-				Type:     r.Type,
-				Title:    r.Title,
-				Severity: r.Severity,
-			},
-		})
-	}
-	return results
-}
-
 // ConvertFromRPCPutArtifactRequest converts cache.PutArtifactRequest to fanal.PutArtifactRequest
 func ConvertFromRPCPutArtifactRequest(req *cache.PutArtifactRequest) ftypes.ArtifactInfo {
 	created, _ := ptypes.Timestamp(req.ArtifactInfo.Created) // nolint: errcheck
@@ -333,15 +258,14 @@ func ConvertFromRPCPutArtifactRequest(req *cache.PutArtifactRequest) ftypes.Arti
 // ConvertFromRPCPutBlobRequest returns ftypes.BlobInfo
 func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 	return ftypes.BlobInfo{
-		SchemaVersion:     int(req.BlobInfo.SchemaVersion),
-		Digest:            req.BlobInfo.Digest,
-		DiffID:            req.BlobInfo.DiffId,
-		OS:                ConvertFromRPCOS(req.BlobInfo.Os),
-		PackageInfos:      ConvertFromRPCPackageInfos(req.BlobInfo.PackageInfos),
-		Applications:      ConvertFromRPCApplications(req.BlobInfo.Applications),
-		Misconfigurations: ConvertFromRPCMisconfigurations(req.BlobInfo.Misconfigurations),
-		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
-		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
+		SchemaVersion: int(req.BlobInfo.SchemaVersion),
+		Digest:        req.BlobInfo.Digest,
+		DiffID:        req.BlobInfo.DiffId,
+		OS:            ConvertFromRPCOS(req.BlobInfo.Os),
+		PackageInfos:  ConvertFromRPCPackageInfos(req.BlobInfo.PackageInfos),
+		Applications:  ConvertFromRPCApplications(req.BlobInfo.Applications),
+		OpaqueDirs:    req.BlobInfo.OpaqueDirs,
+		WhiteoutFiles: req.BlobInfo.WhiteoutFiles,
 	}
 }
 
@@ -402,49 +326,19 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 		})
 	}
 
-	var misconfigurations []*common.Misconfiguration
-	for _, m := range blobInfo.Misconfigurations {
-		misconfigurations = append(misconfigurations, &common.Misconfiguration{
-			FileType:   m.FileType,
-			FilePath:   m.FilePath,
-			Successes:  ConvertToMisconfResults(m.Successes),
-			Warnings:   ConvertToMisconfResults(m.Warnings),
-			Failures:   ConvertToMisconfResults(m.Failures),
-			Exceptions: ConvertToMisconfResults(m.Exceptions),
-		})
-
-	}
-
 	return &cache.PutBlobRequest{
 		DiffId: diffID,
 		BlobInfo: &cache.BlobInfo{
-			SchemaVersion:     ftypes.BlobJSONSchemaVersion,
-			Digest:            blobInfo.Digest,
-			DiffId:            blobInfo.DiffID,
-			Os:                ConvertToRPCOS(blobInfo.OS),
-			PackageInfos:      packageInfos,
-			Applications:      applications,
-			Misconfigurations: misconfigurations,
-			OpaqueDirs:        blobInfo.OpaqueDirs,
-			WhiteoutFiles:     blobInfo.WhiteoutFiles,
+			SchemaVersion: ftypes.BlobJSONSchemaVersion,
+			Digest:        blobInfo.Digest,
+			DiffId:        blobInfo.DiffID,
+			Os:            ConvertToRPCOS(blobInfo.OS),
+			PackageInfos:  packageInfos,
+			Applications:  applications,
+			OpaqueDirs:    blobInfo.OpaqueDirs,
+			WhiteoutFiles: blobInfo.WhiteoutFiles,
 		},
 	}
-}
-
-// ConvertToMisconfResults returns common.MisconfResult
-func ConvertToMisconfResults(results []ftypes.MisconfResult) []*common.MisconfResult {
-	var rpcResults []*common.MisconfResult
-	for _, r := range results {
-		rpcResults = append(rpcResults, &common.MisconfResult{
-			Namespace: r.Namespace,
-			Message:   r.Message,
-			Id:        r.ID,
-			Type:      r.Type,
-			Title:     r.Title,
-			Severity:  r.Severity,
-		})
-	}
-	return rpcResults
 }
 
 // ConvertToMissingBlobsRequest returns MissingBlobsRequest object
@@ -466,10 +360,9 @@ func ConvertToRPCScanResponse(results report.Results, os *ftypes.OS, eosl bool) 
 	var rpcResults []*scanner.Result
 	for _, result := range results {
 		rpcResults = append(rpcResults, &scanner.Result{
-			Target:            result.Target,
-			Type:              result.Type,
-			Vulnerabilities:   ConvertToRPCVulns(result.Vulnerabilities),
-			Misconfigurations: ConvertToRPCMisconfs(result.Misconfigurations),
+			Target:          result.Target,
+			Type:            result.Type,
+			Vulnerabilities: ConvertToRPCVulns(result.Vulnerabilities),
 		})
 	}
 

@@ -10,7 +10,6 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/cache"
-	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -68,13 +67,12 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 
 	resultClient := initializeResultClient()
 	for i := range results {
-		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
-			opt.Severities, opt.IgnoreUnfixed, opt.ShowSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
+		vulns, err := resultClient.Filter(ctx, results[i].Vulnerabilities,
+			opt.Severities, opt.IgnoreUnfixed, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
-			return err
+			return xerrors.Errorf("filter error: %w", err)
 		}
 		results[i].Vulnerabilities = vulns
-		results[i].Misconfigurations = misconfs
 	}
 
 	if err = report.WriteResults(opt.Format, opt.Output, opt.Severities, results, opt.Template, false); err != nil {
@@ -113,21 +111,10 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 		disabledAnalyzers = []analyzer.Type{}
 	}
 
-	// ScannerOptions is filled only when config scanning is enabled.
-	var configScannerOptions config.ScannerOption
-	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
-		defaultPolicyPaths, err := operation.InitDefaultPolicies(ctx)
-		if err != nil {
-			return scanner.Scanner{}, nil, xerrors.Errorf("failed to initialize default policies: %w", err)
-		}
-
-		configScannerOptions = config.ScannerOption{
-			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespace),
-			PolicyPaths:  append(opt.PolicyPaths, defaultPolicyPaths...),
-			DataPaths:    opt.DataPaths,
-			FilePatterns: opt.FilePatterns,
-		}
-	}
+	// TODO: fix the scanner option and enable config analyzers once we finalize the specification of config scanning.
+	configScannerOptions := config.ScannerOption{}
+	disabledAnalyzers = append(disabledAnalyzers, analyzer.TypeYaml, analyzer.TypeTOML, analyzer.TypeJSON,
+		analyzer.TypeDockerfile, analyzer.TypeHCL)
 
 	if opt.Input != "" {
 		// Scan tar file

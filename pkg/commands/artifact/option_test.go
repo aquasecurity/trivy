@@ -43,24 +43,6 @@ func TestOption_Init(t *testing.T) {
 			},
 		},
 		{
-			name: "config scanning",
-			args: []string{"--severity", "CRITICAL", "--security-checks", "config", "--quiet", "alpine:3.10"},
-			want: Option{
-				GlobalOption: option.GlobalOption{
-					Quiet: true,
-				},
-				ArtifactOption: option.ArtifactOption{
-					Target: "alpine:3.10",
-				},
-				ReportOption: option.ReportOption{
-					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
-					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckConfig},
-					Output:         os.Stdout,
-				},
-			},
-		},
-		{
 			name: "happy path: reset",
 			args: []string{"--reset"},
 			want: Option{
