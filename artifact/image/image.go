@@ -46,6 +46,9 @@ func NewArtifact(img image.Image, c cache.ArtifactCache, disabled []analyzer.Typ
 		return nil, xerrors.Errorf("scanner error: %w", err)
 	}
 
+	// Do not scan go.sum in container images, only scan go binaries
+	disabled = append(disabled, analyzer.TypeGoMod)
+
 	return Artifact{
 		image:               img,
 		cache:               c,
