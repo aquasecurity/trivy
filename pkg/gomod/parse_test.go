@@ -22,6 +22,10 @@ func TestParse(t *testing.T) {
 			want: GoModNormal,
 		},
 		{
+			file: "testdata/gomod_emptyline.sum",
+			want: GoModEmptyLine,
+		},
+		{
 			file: "testdata/gomod_many.sum",
 			want: GoModMany,
 		},

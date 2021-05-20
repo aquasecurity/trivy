@@ -14,6 +14,12 @@ var (
 		{"golang.org/x/xerrors", "0.0.0-20200804184101-5ec99f83aff1"},
 	}
 
+	// https://github.com/uudashr/gopkgs/blob/616744904701ef01d868da4b66aad0e6856c361d/v2/go.sum
+	GoModEmptyLine = []types.Library{
+		{"github.com/karrick/godirwalk", "1.12.0"},
+		{"github.com/pkg/errors", "0.8.1"},
+	}
+
 	// docker run --name gomod --rm -it golang:1.15 bash
 	// export USER=gomod
 	// mkdir repo

@@ -16,8 +16,12 @@ func Parse(r io.Reader) ([]types.Library, error) {
 
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
-		line := scanner.Text()
+		line := strings.TrimSpace(scanner.Text())
 		s := strings.Fields(line)
+		if len(s) < 2 {
+			continue
+		}
+
 		// go.sum records and sorts all non-major versions
 		// with the latest version as last entry
 		uniqueLibs[s[0]] = strings.TrimSuffix(strings.TrimPrefix(s[1], "v"), "/go.mod")
