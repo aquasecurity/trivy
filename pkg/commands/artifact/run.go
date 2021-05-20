@@ -20,8 +20,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-const defaultPolicyNamespace = "appshield"
-
 var errSkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanner type to define initialize function signature

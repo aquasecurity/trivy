@@ -18,8 +18,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-const defaultPolicyNamespace = "appshield"
-
 // Run runs the scan
 func Run(cliCtx *cli.Context) error {
 	opt, err := NewOption(cliCtx)
