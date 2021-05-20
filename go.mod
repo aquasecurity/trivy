@@ -7,7 +7,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.16 // indirect
 	github.com/Microsoft/hcsshim v0.8.14 // indirect
 	github.com/alicebob/miniredis/v2 v2.14.1
-	github.com/aquasecurity/go-dep-parser v0.0.0-20210427143403-3c97ccc53976
+	github.com/aquasecurity/go-dep-parser v0.0.0-20210520015931-0dd56983cc62
 	github.com/aquasecurity/testdocker v0.0.0-20210106133225-0b17fe083674
 	github.com/aws/aws-sdk-go v1.31.6
 	github.com/containerd/cgroups v0.0.0-20210114181951-8a68de567b68 // indirect
