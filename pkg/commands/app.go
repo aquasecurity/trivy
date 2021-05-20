@@ -145,6 +145,7 @@ var (
 		Value:   types.SecurityCheckVulnerability,
 		Usage:   "comma-separated list of what security issues to detect (vuln,config)",
 		EnvVars: []string{"TRIVY_SECURITY_CHECKS"},
+		Hidden:  true,
 	}
 
 	cacheDirFlag = cli.StringFlag{
