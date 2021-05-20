@@ -7,7 +7,8 @@ import (
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/log"
+	flog "github.com/aquasecurity/fanal/log"
+	dlog "github.com/aquasecurity/go-dep-parser/pkg/log"
 )
 
 var (
@@ -30,7 +31,10 @@ func InitLogger(debug, disable bool) (err error) {
 	}
 
 	// Set logger for go-dep-parser
-	log.SetLogger(Logger)
+	dlog.SetLogger(Logger)
+
+	// Set logger for fanal
+	flog.SetLogger(Logger)
 
 	return nil
 

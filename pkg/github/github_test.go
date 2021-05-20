@@ -13,12 +13,10 @@ import (
 	"testing"
 	"time"
 
-	"golang.org/x/xerrors"
-
+	"github.com/google/go-github/v33/github"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/google/go-github/v28/github"
 	"github.com/stretchr/testify/mock"
+	"golang.org/x/xerrors"
 )
 
 type MockRepository struct {
@@ -96,7 +94,7 @@ func TestClient_DownloadDB(t *testing.T) {
 								PublishedAt: &github.Timestamp{
 									Time: time.Date(2020, 1, 1, 1, 59, 59, 0, time.UTC),
 								},
-								Assets: []github.ReleaseAsset{
+								Assets: []*github.ReleaseAsset{
 									{
 										ID:   github.Int64(200),
 										Name: github.String("trivy.db.gz"),
@@ -109,7 +107,7 @@ func TestClient_DownloadDB(t *testing.T) {
 								PublishedAt: &github.Timestamp{
 									Time: time.Date(2020, 12, 31, 23, 59, 59, 0, time.UTC),
 								},
-								Assets: []github.ReleaseAsset{
+								Assets: []*github.ReleaseAsset{
 									{
 										ID:   github.Int64(100),
 										Name: github.String("trivy.db.gz"),
@@ -143,7 +141,7 @@ func TestClient_DownloadDB(t *testing.T) {
 								PublishedAt: &github.Timestamp{
 									Time: time.Date(2020, 12, 31, 23, 59, 59, 0, time.UTC),
 								},
-								Assets: []github.ReleaseAsset{
+								Assets: []*github.ReleaseAsset{
 									{
 										ID:   github.Int64(100),
 										Name: github.String("trivy.db.gz"),
@@ -177,7 +175,7 @@ func TestClient_DownloadDB(t *testing.T) {
 								PublishedAt: &github.Timestamp{
 									Time: time.Date(2019, 10, 1, 23, 59, 59, 0, time.UTC),
 								},
-								Assets: []github.ReleaseAsset{
+								Assets: []*github.ReleaseAsset{
 									{
 										ID:   github.Int64(100),
 										Name: github.String("trivy.db.gz"),
@@ -191,7 +189,7 @@ func TestClient_DownloadDB(t *testing.T) {
 								PublishedAt: &github.Timestamp{
 									Time: time.Date(2019, 10, 2, 0, 59, 59, 0, time.UTC),
 								},
-								Assets: []github.ReleaseAsset{
+								Assets: []*github.ReleaseAsset{
 									{
 										ID:   github.Int64(300),
 										Name: github.String("trivy.db.gz"),
@@ -204,7 +202,7 @@ func TestClient_DownloadDB(t *testing.T) {
 								PublishedAt: &github.Timestamp{
 									Time: time.Date(2019, 10, 1, 22, 59, 59, 0, time.UTC),
 								},
-								Assets: []github.ReleaseAsset{
+								Assets: []*github.ReleaseAsset{
 									{
 										ID:   github.Int64(200),
 										Name: github.String("trivy.db.gz"),
@@ -255,7 +253,7 @@ func TestClient_DownloadDB(t *testing.T) {
 								PublishedAt: &github.Timestamp{
 									Time: time.Date(2019, 10, 1, 22, 59, 59, 0, time.UTC),
 								},
-								Assets: []github.ReleaseAsset{
+								Assets: []*github.ReleaseAsset{
 									{
 										ID:   github.Int64(200),
 										Name: github.String("trivy.db.gz"),
@@ -310,7 +308,7 @@ func TestClient_DownloadDB(t *testing.T) {
 								PublishedAt: &github.Timestamp{
 									Time: time.Date(2020, 12, 31, 23, 59, 59, 0, time.UTC),
 								},
-								Assets: []github.ReleaseAsset{
+								Assets: []*github.ReleaseAsset{
 									{
 										ID:   github.Int64(100),
 										Name: github.String("trivy.db.gz"),
@@ -350,7 +348,7 @@ func TestClient_DownloadDB(t *testing.T) {
 								PublishedAt: &github.Timestamp{
 									Time: time.Date(2020, 12, 31, 23, 59, 59, 0, time.UTC),
 								},
-								Assets: []github.ReleaseAsset{
+								Assets: []*github.ReleaseAsset{
 									{
 										ID:   github.Int64(100),
 										Name: github.String("trivy.db.gz"),
@@ -385,7 +383,7 @@ func TestClient_DownloadDB(t *testing.T) {
 								PublishedAt: &github.Timestamp{
 									Time: time.Date(2020, 12, 31, 23, 59, 59, 0, time.UTC),
 								},
-								Assets: []github.ReleaseAsset{
+								Assets: []*github.ReleaseAsset{
 									{
 										ID:   github.Int64(100),
 										Name: github.String("trivy.db.gz"),

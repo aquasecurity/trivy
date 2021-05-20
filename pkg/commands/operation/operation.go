@@ -51,8 +51,8 @@ func (c Cache) Reset() (err error) {
 	if err := c.ClearDB(); err != nil {
 		return xerrors.Errorf("failed to clear the database: %w", err)
 	}
-	if err := c.ClearImages(); err != nil {
-		return xerrors.Errorf("failed to clear the image cache: %w", err)
+	if err := c.ClearArtifacts(); err != nil {
+		return xerrors.Errorf("failed to clear the artifact cache: %w", err)
 	}
 	return nil
 }
@@ -66,9 +66,9 @@ func (c Cache) ClearDB() (err error) {
 	return nil
 }
 
-// ClearImages clears the cache images
-func (c Cache) ClearImages() error {
-	log.Logger.Info("Removing image caches...")
+// ClearArtifacts clears the artifact cache
+func (c Cache) ClearArtifacts() error {
+	log.Logger.Info("Removing artifact caches...")
 	if err := c.Clear(); err != nil {
 		return xerrors.Errorf("failed to remove the cache: %w", err)
 	}
@@ -96,7 +96,7 @@ func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) erro
 	}
 
 	// for debug
-	if err := showDBInfo(cacheDir); err != nil {
+	if err = showDBInfo(cacheDir); err != nil {
 		return xerrors.Errorf("failed to show database info: %w", err)
 	}
 	return nil

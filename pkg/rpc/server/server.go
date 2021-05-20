@@ -28,24 +28,27 @@ var ScanSuperSet = wire.NewSet(
 // ScanServer implements the scanner
 type ScanServer struct {
 	localScanner scanner.Driver
-	vulnClient   vulnerability.Operation
+	resultClient vulnerability.Client
 }
 
 // NewScanServer is the factory method for scanner
-func NewScanServer(s scanner.Driver, vulnClient vulnerability.Operation) *ScanServer {
-	return &ScanServer{localScanner: s, vulnClient: vulnClient}
+func NewScanServer(s scanner.Driver, vulnClient vulnerability.Client) *ScanServer {
+	return &ScanServer{localScanner: s, resultClient: vulnClient}
 }
 
 // Scan scans and return response
 func (s *ScanServer) Scan(_ context.Context, in *rpcScanner.ScanRequest) (*rpcScanner.ScanResponse, error) {
-	options := types.ScanOptions{VulnType: in.Options.VulnType}
+	options := types.ScanOptions{
+		VulnType:       in.Options.VulnType,
+		SecurityChecks: in.Options.SecurityChecks,
+	}
 	results, os, eosl, err := s.localScanner.Scan(in.Target, in.ArtifactId, in.BlobIds, options)
 	if err != nil {
 		return nil, xerrors.Errorf("failed scan, %s: %w", in.Target, err)
 	}
 
 	for i := range results {
-		s.vulnClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
+		s.resultClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
 	}
 	return rpc.ConvertToRPCScanResponse(results, os, eosl), nil
 }

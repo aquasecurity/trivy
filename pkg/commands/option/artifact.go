@@ -1,4 +1,4 @@
-package config
+package option
 
 import (
 	"os"
@@ -9,8 +9,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// ArtifactConfig holds the config for a artifact scanning
-type ArtifactConfig struct {
+// ArtifactOption holds the options for an artifact scanning
+type ArtifactOption struct {
 	Input      string
 	Timeout    time.Duration
 	ClearCache bool
@@ -22,9 +22,9 @@ type ArtifactConfig struct {
 	Target string
 }
 
-// NewArtifactConfig is the factory method to return artifact config
-func NewArtifactConfig(c *cli.Context) ArtifactConfig {
-	return ArtifactConfig{
+// NewArtifactOption is the factory method to return artifact option
+func NewArtifactOption(c *cli.Context) ArtifactOption {
+	return ArtifactOption{
 		Input:      c.String("input"),
 		Timeout:    c.Duration("timeout"),
 		ClearCache: c.Bool("clear-cache"),
@@ -34,7 +34,7 @@ func NewArtifactConfig(c *cli.Context) ArtifactConfig {
 }
 
 // Init initialize the CLI context for artifact scanning
-func (c *ArtifactConfig) Init(ctx *cli.Context, logger *zap.SugaredLogger) (err error) {
+func (c *ArtifactOption) Init(ctx *cli.Context, logger *zap.SugaredLogger) (err error) {
 	if c.Input == "" && ctx.Args().Len() == 0 {
 		logger.Debug(`trivy requires at least 1 argument or --input option`)
 		_ = cli.ShowSubcommandHelp(ctx) // nolint: errcheck

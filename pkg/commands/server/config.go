@@ -3,14 +3,14 @@ package server
 import (
 	"github.com/urfave/cli/v2"
 
-	"github.com/aquasecurity/trivy/pkg/commands/config"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 )
 
 // Config holds the Trivy config
 type Config struct {
-	config.GlobalConfig
-	config.DBConfig
-	config.CacheConfig
+	option.GlobalOption
+	option.DBOption
+	option.CacheOption
 
 	Listen      string
 	Token       string
@@ -20,11 +20,11 @@ type Config struct {
 // NewConfig is the factory method to return config
 func NewConfig(c *cli.Context) Config {
 	// the error is ignored because logger is unnecessary
-	gc, _ := config.NewGlobalConfig(c) // nolint: errcheck
+	gc, _ := option.NewGlobalOption(c) // nolint: errcheck
 	return Config{
-		GlobalConfig: gc,
-		DBConfig:     config.NewDBConfig(c),
-		CacheConfig:  config.NewCacheConfig(c),
+		GlobalOption: gc,
+		DBOption:     option.NewDBOption(c),
+		CacheOption:  option.NewCacheOption(c),
 
 		Listen:      c.String("listen"),
 		Token:       c.String("token"),
@@ -34,10 +34,10 @@ func NewConfig(c *cli.Context) Config {
 
 // Init initializes the config
 func (c *Config) Init() (err error) {
-	if err := c.DBConfig.Init(); err != nil {
+	if err := c.DBOption.Init(); err != nil {
 		return err
 	}
-	if err := c.CacheConfig.Init(); err != nil {
+	if err := c.CacheOption.Init(); err != nil {
 		return err
 	}
 

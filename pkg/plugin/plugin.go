@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 	"runtime"
 
-	getter "github.com/hashicorp/go-getter"
 	"golang.org/x/xerrors"
 	yaml "gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/trivy/pkg/downloader"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -116,7 +116,7 @@ func (p Plugin) install(ctx context.Context, dst, pwd string) error {
 	}
 
 	log.Logger.Debugf("Downloading the execution file from %s...", platform.URI)
-	if err = download(ctx, platform.URI, dst, pwd); err != nil {
+	if err = downloader.Download(ctx, platform.URI, dst, pwd); err != nil {
 		return xerrors.Errorf("unable to download the execution file (%s): %w", platform.URI, err)
 	}
 	return nil
@@ -147,7 +147,7 @@ func Install(ctx context.Context, url string, force bool) (Plugin, error) {
 	}
 
 	log.Logger.Infof("Installing the plugin from %s...", url)
-	tempDir, err := downloadToTempDir(ctx, url)
+	tempDir, err := downloader.DownloadToTempDir(ctx, url)
 	if err != nil {
 		return Plugin{}, xerrors.Errorf("download failed: %w", err)
 	}
@@ -180,51 +180,6 @@ func Install(ctx context.Context, url string, force bool) (Plugin, error) {
 func Uninstall(name string) error {
 	pluginDir := filepath.Join(dir(), name)
 	return os.RemoveAll(pluginDir)
-}
-
-func downloadToTempDir(ctx context.Context, url string) (string, error) {
-	tempDir, err := os.MkdirTemp("", "trivy-plugin")
-	if err != nil {
-		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
-	}
-
-	pwd, err := os.Getwd()
-	if err != nil {
-		return "", xerrors.Errorf("unable to get the current dir: %w", err)
-	}
-
-	if err = download(ctx, url, tempDir, pwd); err != nil {
-		return "", xerrors.Errorf("download error: %w", err)
-	}
-
-	return tempDir, nil
-}
-
-func download(ctx context.Context, src, dst, pwd string) error {
-	// go-getter doesn't allow the dst directory already exists if the src is directory.
-	_ = os.RemoveAll(dst)
-
-	var opts []getter.ClientOption
-
-	// Overwrite the file getter so that a file will be copied
-	getter.Getters["file"] = &getter.FileGetter{Copy: true}
-
-	// Build the client
-	client := &getter.Client{
-		Ctx:     ctx,
-		Src:     src,
-		Dst:     dst,
-		Pwd:     pwd,
-		Getters: getter.Getters,
-		Mode:    getter.ClientModeAny,
-		Options: opts,
-	}
-
-	if err := client.Get(); err != nil {
-		return xerrors.Errorf("failed to download: %w", err)
-	}
-
-	return nil
 }
 
 // LoadAll loads all plugins

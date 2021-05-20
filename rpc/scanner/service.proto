@@ -17,7 +17,8 @@ message ScanRequest {
 }
 
 message ScanOptions {
-  repeated string vuln_type = 1;
+  repeated string vuln_type       = 1;
+  repeated string security_checks = 2;
 }
 
 message ScanResponse {

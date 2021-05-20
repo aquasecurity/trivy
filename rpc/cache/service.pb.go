@@ -7,8 +7,8 @@ import (
 	fmt "fmt"
 	common "github.com/aquasecurity/trivy/rpc/common"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/empty"
-	timestamp "github.com/golang/protobuf/ptypes/timestamp"
+	_ "google.golang.org/protobuf/types/known/emptypb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	math "math"
 )
 
@@ -24,15 +24,15 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type ArtifactInfo struct {
-	SchemaVersion        int32                `protobuf:"varint,1,opt,name=schema_version,json=schemaVersion,proto3" json:"schema_version,omitempty"`
-	Architecture         string               `protobuf:"bytes,2,opt,name=architecture,proto3" json:"architecture,omitempty"`
-	Created              *timestamp.Timestamp `protobuf:"bytes,3,opt,name=created,proto3" json:"created,omitempty"`
-	DockerVersion        string               `protobuf:"bytes,4,opt,name=docker_version,json=dockerVersion,proto3" json:"docker_version,omitempty"`
-	Os                   string               `protobuf:"bytes,5,opt,name=os,proto3" json:"os,omitempty"`
-	HistoryPackages      []*common.Package    `protobuf:"bytes,6,rep,name=history_packages,json=historyPackages,proto3" json:"history_packages,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
-	XXX_unrecognized     []byte               `json:"-"`
-	XXX_sizecache        int32                `json:"-"`
+	SchemaVersion        int32                  `protobuf:"varint,1,opt,name=schema_version,json=schemaVersion,proto3" json:"schema_version,omitempty"`
+	Architecture         string                 `protobuf:"bytes,2,opt,name=architecture,proto3" json:"architecture,omitempty"`
+	Created              *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=created,proto3" json:"created,omitempty"`
+	DockerVersion        string                 `protobuf:"bytes,4,opt,name=docker_version,json=dockerVersion,proto3" json:"docker_version,omitempty"`
+	Os                   string                 `protobuf:"bytes,5,opt,name=os,proto3" json:"os,omitempty"`
+	HistoryPackages      []*common.Package      `protobuf:"bytes,6,rep,name=history_packages,json=historyPackages,proto3" json:"history_packages,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
 }
 
 func (m *ArtifactInfo) Reset()         { *m = ArtifactInfo{} }
@@ -74,7 +74,7 @@ func (m *ArtifactInfo) GetArchitecture() string {
 	return ""
 }
 
-func (m *ArtifactInfo) GetCreated() *timestamp.Timestamp {
+func (m *ArtifactInfo) GetCreated() *timestamppb.Timestamp {
 	if m != nil {
 		return m.Created
 	}

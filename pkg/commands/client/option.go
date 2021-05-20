@@ -7,15 +7,15 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/commands/config"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 )
 
-// Config holds the Trivy client config
-type Config struct {
-	config.GlobalConfig
-	config.ArtifactConfig
-	config.ImageConfig
-	config.ReportConfig
+// Option holds the Trivy client options
+type Option struct {
+	option.GlobalOption
+	option.ArtifactOption
+	option.ImageOption
+	option.ReportOption
 
 	RemoteAddr    string
 	token         string
@@ -26,18 +26,18 @@ type Config struct {
 	CustomHeaders http.Header
 }
 
-// NewConfig is the factory method for Config
-func NewConfig(c *cli.Context) (Config, error) {
-	gc, err := config.NewGlobalConfig(c)
+// NewOption is the factory method for Option
+func NewOption(c *cli.Context) (Option, error) {
+	gc, err := option.NewGlobalOption(c)
 	if err != nil {
-		return Config{}, xerrors.Errorf("failed to initialize global options: %w", err)
+		return Option{}, xerrors.Errorf("failed to initialize global options: %w", err)
 	}
 
-	return Config{
-		GlobalConfig:   gc,
-		ArtifactConfig: config.NewArtifactConfig(c),
-		ImageConfig:    config.NewImageConfig(c),
-		ReportConfig:   config.NewReportConfig(c),
+	return Option{
+		GlobalOption:   gc,
+		ArtifactOption: option.NewArtifactOption(c),
+		ImageOption:    option.NewImageOption(c),
+		ReportOption:   option.NewReportOption(c),
 		RemoteAddr:     c.String("remote"),
 		token:          c.String("token"),
 		tokenHeader:    c.String("token-header"),
@@ -45,8 +45,8 @@ func NewConfig(c *cli.Context) (Config, error) {
 	}, nil
 }
 
-// Init initializes the config
-func (c *Config) Init() (err error) {
+// Init initializes the options
+func (c *Option) Init() (err error) {
 	// --clear-cache doesn't conduct the scan
 	if c.ClearCache {
 		return nil
@@ -59,11 +59,11 @@ func (c *Config) Init() (err error) {
 		c.CustomHeaders.Set(c.tokenHeader, c.token)
 	}
 
-	if err := c.ReportConfig.Init(c.Logger); err != nil {
+	if err := c.ReportOption.Init(c.Logger); err != nil {
 		return err
 	}
 
-	if err := c.ArtifactConfig.Init(c.Context, c.Logger); err != nil {
+	if err := c.ArtifactOption.Init(c.Context, c.Logger); err != nil {
 		return err
 	}
 
