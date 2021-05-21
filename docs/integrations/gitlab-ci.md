@@ -79,7 +79,7 @@ container_scanning:
     # Prints full report
     - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress "$FULL_IMAGE_NAME"
     # Fails on high and critical vulnerabilities
-    - time trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress "$FULL_IMAGE_NAME"
+    - time trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL,HIGH --no-progress "$FULL_IMAGE_NAME"
   cache:
     paths:
       - .trivycache/
