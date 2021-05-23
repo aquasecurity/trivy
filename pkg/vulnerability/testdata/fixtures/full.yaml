@@ -1,0 +1,59 @@
+- bucket: vulnerability
+  pairs:
+    - key: CVE-2019-0001
+      value:
+        Title: dos
+        Description: dos vulnerability
+        Severity: MEDIUM
+        References:
+          - http://example.com
+        LastModifiedDate: "2020-01-01T01:01:00Z"
+        PublishedDate: "2001-01-01T01:01:00Z"
+    - key: CVE-2019-0002
+      value:
+        Title: dos
+        Description: dos vulnerability
+        Severity: UNKNOWN
+        VendorSeverity:
+          nvd: 1
+        References:
+          - http://example.com
+        LastModifiedDate: "2020-01-01T01:01:00Z"
+        PublishedDate: "2001-01-01T01:01:00Z"
+    - key: CVE-2019-0003
+      value:
+        Title: dos
+        Description: dos vulnerability
+        References:
+          - http://example.com
+    - key: CVE-2019-0004
+      value:
+        Title: dos
+        Description: dos vulnerability
+        Severity: MEDIUM
+        VendorSeverity:
+          redhat: 1
+        CVSS:
+          nvd:
+            V2Vector: AV:N/AC:L/Au:N/C:P/I:P/A:P
+            V2Score: 4.5
+            V3Vector: CVSS:3.0/PR:N/UI:N/S:U/C:H/I:H/A:H
+            V3Score: 5.6
+          redhat:
+            V2Vector: AV:N/AC:M/Au:N/C:N/I:P/A:N
+            V2Score: 7.8
+            V3Vector: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+            V3Score: 9.8
+        References:
+          - http://example.com
+        CweIDs:
+          - CWE-311
+    - key: CVE-2019-0005
+      value:
+        Title: COVID-19
+        Description: a nasty virus vulnerability for humans
+        Severity: MEDIUM
+        VendorSeverity:
+          python-safety-db: 4
+        References:
+          - "https://www.who.int/emergencies/diseases/novel-coronavirus-2019"

@@ -117,10 +117,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			Description:      vuln.Description,
 			Severity:         common.Severity(severity),
 			References:       vuln.References,
-			Layer: &common.Layer{
-				Digest: vuln.Layer.Digest,
-				DiffId: vuln.Layer.DiffID,
-			},
+			Layer:            ConvertToRPCLayer(vuln.Layer),
 			Cvss:             cvssMap,
 			SeveritySource:   vuln.SeveritySource,
 			CweIds:           vuln.CweIDs,
@@ -132,63 +129,81 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 	return rpcVulns
 }
 
+// ConvertToRPCLayer returns common.Layer
+func ConvertToRPCLayer(layer ftypes.Layer) *common.Layer {
+	return &common.Layer{
+		Digest: layer.Digest,
+		DiffId: layer.DiffID,
+	}
+}
+
 // ConvertFromRPCResults converts scanner.Result to report.Result
 func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 	var results []report.Result
 	for _, result := range rpcResults {
-		var vulns []types.DetectedVulnerability
-		for _, vuln := range result.Vulnerabilities {
-			severity := dbTypes.Severity(vuln.Severity)
-			cvssMap := make(dbTypes.VendorCVSS) // This is needed because protobuf generates a map[string]*CVSS type
-			for vendor, vendorSeverity := range vuln.Cvss {
-				cvssMap[vendor] = dbTypes.CVSS{
-					V2Vector: vendorSeverity.V2Vector,
-					V3Vector: vendorSeverity.V3Vector,
-					V2Score:  vendorSeverity.V2Score,
-					V3Score:  vendorSeverity.V3Score,
-				}
-			}
-
-			var lastModifiedDate, publishedDate *time.Time
-			if vuln.LastModifiedDate != nil {
-				t, _ := ptypes.Timestamp(vuln.LastModifiedDate) // nolint: errcheck
-				lastModifiedDate = &t
-			}
-			if vuln.PublishedDate != nil {
-				t, _ := ptypes.Timestamp(vuln.PublishedDate) // nolint: errcheck
-				publishedDate = &t
-			}
-
-			vulns = append(vulns, types.DetectedVulnerability{
-				VulnerabilityID:  vuln.VulnerabilityId,
-				PkgName:          vuln.PkgName,
-				InstalledVersion: vuln.InstalledVersion,
-				FixedVersion:     vuln.FixedVersion,
-				Vulnerability: dbTypes.Vulnerability{
-					Title:            vuln.Title,
-					Description:      vuln.Description,
-					Severity:         severity.String(),
-					CVSS:             cvssMap,
-					References:       vuln.References,
-					CweIDs:           vuln.CweIds,
-					LastModifiedDate: lastModifiedDate,
-					PublishedDate:    publishedDate,
-				},
-				Layer: ftypes.Layer{
-					Digest: vuln.Layer.Digest,
-					DiffID: vuln.Layer.DiffId,
-				},
-				SeveritySource: vuln.SeveritySource,
-				PrimaryURL:     vuln.PrimaryUrl,
-			})
-		}
 		results = append(results, report.Result{
 			Target:          result.Target,
-			Vulnerabilities: vulns,
+			Vulnerabilities: ConvertFromRPCVulns(result.Vulnerabilities),
 			Type:            result.Type,
 		})
 	}
 	return results
+}
+
+// ConvertFromRPCVulns converts []*common.Vulnerability to []types.DetectedVulnerability
+func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulnerability {
+	var vulns []types.DetectedVulnerability
+	for _, vuln := range rpcVulns {
+		severity := dbTypes.Severity(vuln.Severity)
+		cvssMap := make(dbTypes.VendorCVSS) // This is needed because protobuf generates a map[string]*CVSS type
+		for vendor, vendorSeverity := range vuln.Cvss {
+			cvssMap[vendor] = dbTypes.CVSS{
+				V2Vector: vendorSeverity.V2Vector,
+				V3Vector: vendorSeverity.V3Vector,
+				V2Score:  vendorSeverity.V2Score,
+				V3Score:  vendorSeverity.V3Score,
+			}
+		}
+
+		var lastModifiedDate, publishedDate *time.Time
+		if vuln.LastModifiedDate != nil {
+			t, _ := ptypes.Timestamp(vuln.LastModifiedDate) // nolint: errcheck
+			lastModifiedDate = &t
+		}
+		if vuln.PublishedDate != nil {
+			t, _ := ptypes.Timestamp(vuln.PublishedDate) // nolint: errcheck
+			publishedDate = &t
+		}
+
+		vulns = append(vulns, types.DetectedVulnerability{
+			VulnerabilityID:  vuln.VulnerabilityId,
+			PkgName:          vuln.PkgName,
+			InstalledVersion: vuln.InstalledVersion,
+			FixedVersion:     vuln.FixedVersion,
+			Vulnerability: dbTypes.Vulnerability{
+				Title:            vuln.Title,
+				Description:      vuln.Description,
+				Severity:         severity.String(),
+				CVSS:             cvssMap,
+				References:       vuln.References,
+				CweIDs:           vuln.CweIds,
+				LastModifiedDate: lastModifiedDate,
+				PublishedDate:    publishedDate,
+			},
+			Layer:          ConvertFromRPCLayer(vuln.Layer),
+			SeveritySource: vuln.SeveritySource,
+			PrimaryURL:     vuln.PrimaryUrl,
+		})
+	}
+	return vulns
+}
+
+// ConvertFromRPCLayer converts *common.Layer to fanal.Layer
+func ConvertFromRPCLayer(rpcLayer *common.Layer) ftypes.Layer {
+	return ftypes.Layer{
+		Digest: rpcLayer.Digest,
+		DiffID: rpcLayer.DiffId,
+	}
 }
 
 // ConvertFromRPCOS converts common.OS to fanal.OS
@@ -286,9 +301,9 @@ func ConvertToRPCArtifactInfo(imageID string, imageInfo ftypes.ArtifactInfo) *ca
 }
 
 // ConvertToRPCBlobInfo returns PutBlobRequest
-func ConvertToRPCBlobInfo(diffID string, layerInfo ftypes.BlobInfo) *cache.PutBlobRequest {
+func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlobRequest {
 	var packageInfos []*common.PackageInfo
-	for _, pkgInfo := range layerInfo.PackageInfos {
+	for _, pkgInfo := range blobInfo.PackageInfos {
 		packageInfos = append(packageInfos, &common.PackageInfo{
 			FilePath: pkgInfo.FilePath,
 			Packages: ConvertToRPCPkgs(pkgInfo.Packages),
@@ -296,7 +311,7 @@ func ConvertToRPCBlobInfo(diffID string, layerInfo ftypes.BlobInfo) *cache.PutBl
 	}
 
 	var applications []*common.Application
-	for _, app := range layerInfo.Applications {
+	for _, app := range blobInfo.Applications {
 		var libs []*common.Library
 		for _, lib := range app.Libraries {
 			libs = append(libs, &common.Library{
@@ -315,13 +330,13 @@ func ConvertToRPCBlobInfo(diffID string, layerInfo ftypes.BlobInfo) *cache.PutBl
 		DiffId: diffID,
 		BlobInfo: &cache.BlobInfo{
 			SchemaVersion: ftypes.BlobJSONSchemaVersion,
-			Digest:        layerInfo.Digest,
-			DiffId:        layerInfo.DiffID,
-			Os:            ConvertToRPCOS(layerInfo.OS),
+			Digest:        blobInfo.Digest,
+			DiffId:        blobInfo.DiffID,
+			Os:            ConvertToRPCOS(blobInfo.OS),
 			PackageInfos:  packageInfos,
 			Applications:  applications,
-			OpaqueDirs:    layerInfo.OpaqueDirs,
-			WhiteoutFiles: layerInfo.WhiteoutFiles,
+			OpaqueDirs:    blobInfo.OpaqueDirs,
+			WhiteoutFiles: blobInfo.WhiteoutFiles,
 		},
 	}
 }
@@ -346,8 +361,8 @@ func ConvertToRPCScanResponse(results report.Results, os *ftypes.OS, eosl bool) 
 	for _, result := range results {
 		rpcResults = append(rpcResults, &scanner.Result{
 			Target:          result.Target,
-			Vulnerabilities: ConvertToRPCVulns(result.Vulnerabilities),
 			Type:            result.Type,
+			Vulnerabilities: ConvertToRPCVulns(result.Vulnerabilities),
 		})
 	}
 

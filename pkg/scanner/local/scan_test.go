@@ -4,19 +4,15 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/aquasecurity/fanal/analyzer/library"
-
-	"github.com/aquasecurity/trivy-db/pkg/db"
-
-	"github.com/aquasecurity/trivy/pkg/dbtest"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	ftypes "github.com/aquasecurity/fanal/types"
 	dtypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/dbtest"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -44,7 +40,10 @@ func TestScanner_Scan(t *testing.T) {
 			args: args{
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
+				options: types.ScanOptions{
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
@@ -68,7 +67,7 @@ func TestScanner_Scan(t *testing.T) {
 						},
 						Applications: []ftypes.Application{
 							{
-								Type:     library.Bundler,
+								Type:     ftypes.Bundler,
 								FilePath: "/app/Gemfile.lock",
 								Libraries: []ftypes.LibraryInfo{
 									{
@@ -156,7 +155,11 @@ func TestScanner_Scan(t *testing.T) {
 			args: args{
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				options:  types.ScanOptions{VulnType: []string{"os", "library"}, ListAllPackages: true},
+				options: types.ScanOptions{
+					VulnType:        []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks:  []string{types.SecurityCheckVulnerability},
+					ListAllPackages: true,
+				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
@@ -307,7 +310,10 @@ func TestScanner_Scan(t *testing.T) {
 			args: args{
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
+				options: types.ScanOptions{
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
@@ -358,7 +364,10 @@ func TestScanner_Scan(t *testing.T) {
 			args: args{
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
+				options: types.ScanOptions{
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
@@ -431,7 +440,10 @@ func TestScanner_Scan(t *testing.T) {
 			args: args{
 				target:   "fedora:27",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
+				options: types.ScanOptions{
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
@@ -499,7 +511,10 @@ func TestScanner_Scan(t *testing.T) {
 			args: args{
 				target:   "busybox:latest",
 				layerIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
-				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
+				options: types.ScanOptions{
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
@@ -521,7 +536,10 @@ func TestScanner_Scan(t *testing.T) {
 			args: args{
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				options:  types.ScanOptions{VulnType: []string{"library"}},
+				options: types.ScanOptions{
+					VulnType:       []string{types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
@@ -609,8 +627,9 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType:        []string{"library"},
-					SkipDirectories: []string{"/usr/lib/ruby/gems"},
+					VulnType:       []string{types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					SkipDirs:       []string{"/usr/lib/ruby/gems", "/app/k8s"},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -683,7 +702,10 @@ func TestScanner_Scan(t *testing.T) {
 			args: args{
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
+				options: types.ScanOptions{
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
@@ -701,7 +723,10 @@ func TestScanner_Scan(t *testing.T) {
 			args: args{
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				options:  types.ScanOptions{VulnType: []string{"os", "library"}},
+				options: types.ScanOptions{
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
@@ -753,7 +778,10 @@ func TestScanner_Scan(t *testing.T) {
 			args: args{
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				options:  types.ScanOptions{VulnType: []string{"library"}},
+				options: types.ScanOptions{
+					VulnType:       []string{types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+				},
 			},
 			fixtures: []string{"testdata/fixtures/sad.yaml"},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
@@ -829,9 +857,9 @@ func TestScanner_Scan(t *testing.T) {
 
 func Test_skipped(t *testing.T) {
 	type args struct {
-		filePath        string
-		skipFiles       []string
-		skipDirectories []string
+		filePath  string
+		skipFiles []string
+		skipDirs  []string
 	}
 	tests := []struct {
 		name string
@@ -841,24 +869,24 @@ func Test_skipped(t *testing.T) {
 		{
 			name: "no skip directory",
 			args: args{
-				filePath:        "app/Gemfile.lock",
-				skipDirectories: []string{},
+				filePath: "app/Gemfile.lock",
+				skipDirs: []string{},
 			},
 			want: false,
 		},
 		{
 			name: "skip directory with the leading slash",
 			args: args{
-				filePath:        "app/Gemfile.lock",
-				skipDirectories: []string{"/app"},
+				filePath: "app/Gemfile.lock",
+				skipDirs: []string{"/app"},
 			},
 			want: true,
 		},
 		{
 			name: "skip directory without a slash",
 			args: args{
-				filePath:        "usr/lib/ruby/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock",
-				skipDirectories: []string{"/usr/lib/ruby"},
+				filePath: "usr/lib/ruby/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock",
+				skipDirs: []string{"/usr/lib/ruby"},
 			},
 			want: true,
 		},
@@ -881,15 +909,15 @@ func Test_skipped(t *testing.T) {
 		{
 			name: "not skipped",
 			args: args{
-				filePath:        "usr/lib/ruby/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock",
-				skipDirectories: []string{"lib/ruby"},
+				filePath: "usr/lib/ruby/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock",
+				skipDirs: []string{"lib/ruby"},
 			},
 			want: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := skipped(tt.args.filePath, tt.args.skipFiles, tt.args.skipDirectories)
+			got := skipped(tt.args.filePath, tt.args.skipFiles, tt.args.skipDirs)
 			assert.Equal(t, tt.want, got)
 		})
 	}

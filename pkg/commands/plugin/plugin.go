@@ -6,7 +6,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/commands/config"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 )
@@ -105,7 +105,7 @@ func LoadCommands() cli.Commands {
 }
 
 func initLogger(ctx *cli.Context) error {
-	conf, err := config.NewGlobalConfig(ctx)
+	conf, err := option.NewGlobalOption(ctx)
 	if err != nil {
 		return xerrors.Errorf("config error: %w", err)
 	}

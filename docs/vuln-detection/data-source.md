@@ -18,3 +18,6 @@
     - https://github.com/advisories?query=ecosystem%3Anuget
 - Java
     - https://github.com/advisories?query=ecosystem%3Amaven
+    - https://gitlab.com/gitlab-org/advisories-community
+- Go
+    - https://gitlab.com/gitlab-org/advisories-community

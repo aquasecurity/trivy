@@ -4,7 +4,6 @@ import (
 	"flag"
 	"net/http"
 	"os"
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,38 +13,33 @@ import (
 	"go.uber.org/zap/zaptest/observer"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/commands/config"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestConfig_Init(t *testing.T) {
 	tests := []struct {
-		name         string
-		globalConfig config.GlobalConfig
-		imageConfig  config.ImageConfig
-		reportConfig config.ReportConfig
-		args         []string
-		logs         []string
-		want         Config
-		wantErr      string
+		name    string
+		args    []string
+		logs    []string
+		want    Option
+		wantErr string
 	}{
 		{
 			name: "happy path",
-			reportConfig: config.ReportConfig{
-				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-				VulnType:   []string{"os"},
-			},
 			args: []string{"--severity", "CRITICAL", "--vuln-type", "os", "--quiet", "alpine:3.10"},
-			want: Config{
-				GlobalConfig: config.GlobalConfig{
+			want: Option{
+				GlobalOption: option.GlobalOption{
 					Quiet: true,
 				},
-				ArtifactConfig: config.ArtifactConfig{
+				ArtifactOption: option.ArtifactOption{
 					Target: "alpine:3.10",
 				},
-				ReportConfig: config.ReportConfig{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					VulnType:   []string{"os"},
-					Output:     os.Stdout,
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					VulnType:       []string{types.VulnTypeOS},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Output:         os.Stdout,
 				},
 				CustomHeaders: http.Header{},
 			},
@@ -53,13 +47,14 @@ func TestConfig_Init(t *testing.T) {
 		{
 			name: "happy path with token and token header",
 			args: []string{"--token", "secret", "--token-header", "X-Trivy-Token", "alpine:3.11"},
-			want: Config{
-				ReportConfig: config.ReportConfig{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
+			want: Option{
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
-				ArtifactConfig: config.ArtifactConfig{
+				ArtifactOption: option.ArtifactOption{
 					Target: "alpine:3.11",
 				},
 				token:       "secret",
@@ -72,13 +67,14 @@ func TestConfig_Init(t *testing.T) {
 		{
 			name: "happy path with good custom headers",
 			args: []string{"--custom-headers", "foo:bar", "alpine:3.11"},
-			want: Config{
-				ReportConfig: config.ReportConfig{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
+			want: Option{
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
-				ArtifactConfig: config.ArtifactConfig{
+				ArtifactOption: option.ArtifactOption{
 					Target: "alpine:3.11",
 				},
 				customHeaders: []string{"foo:bar"},
@@ -90,13 +86,14 @@ func TestConfig_Init(t *testing.T) {
 		{
 			name: "happy path with bad custom headers",
 			args: []string{"--custom-headers", "foobaz", "alpine:3.11"},
-			want: Config{
-				ReportConfig: config.ReportConfig{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
+			want: Option{
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
-				ArtifactConfig: config.ArtifactConfig{
+				ArtifactOption: option.ArtifactOption{
 					Target: "alpine:3.11",
 				},
 				customHeaders: []string{"foobaz"},
@@ -109,13 +106,14 @@ func TestConfig_Init(t *testing.T) {
 			logs: []string{
 				"unknown severity option: unknown severity: INVALID",
 			},
-			want: Config{
-				ReportConfig: config.ReportConfig{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
+			want: Option{
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
-				ArtifactConfig: config.ArtifactConfig{
+				ArtifactOption: option.ArtifactOption{
 					Target: "centos:7",
 				},
 				CustomHeaders: http.Header{},
@@ -127,14 +125,15 @@ func TestConfig_Init(t *testing.T) {
 			logs: []string{
 				"--template is ignored because --format template is not specified. Use --template option with --format template option.",
 			},
-			want: Config{
-				ReportConfig: config.ReportConfig{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
-					Template:   "@contrib/gitlab.tpl",
+			want: Option{
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Template:       "@contrib/gitlab.tpl",
 				},
-				ArtifactConfig: config.ArtifactConfig{
+				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
 				CustomHeaders: http.Header{},
@@ -146,15 +145,16 @@ func TestConfig_Init(t *testing.T) {
 			logs: []string{
 				"--template is ignored because --format json is specified. Use --template option with --format template option.",
 			},
-			want: Config{
-				ReportConfig: config.ReportConfig{
-					Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
-					Template:   "@contrib/gitlab.tpl",
-					Format:     "json",
+			want: Option{
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Template:       "@contrib/gitlab.tpl",
+					Format:         "json",
 				},
-				ArtifactConfig: config.ArtifactConfig{
+				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
 				CustomHeaders: http.Header{},
@@ -166,14 +166,15 @@ func TestConfig_Init(t *testing.T) {
 			logs: []string{
 				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
 			},
-			want: Config{
-				ReportConfig: config.ReportConfig{
-					Severities: []dbTypes.Severity{dbTypes.SeverityMedium},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
-					Format:     "template",
+			want: Option{
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityMedium},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Format:         "template",
 				},
-				ArtifactConfig: config.ArtifactConfig{
+				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
 				CustomHeaders: http.Header{},
@@ -185,14 +186,15 @@ func TestConfig_Init(t *testing.T) {
 			logs: []string{
 				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
 			},
-			want: Config{
-				ReportConfig: config.ReportConfig{
-					Severities: []dbTypes.Severity{dbTypes.SeverityMedium},
-					Output:     os.Stdout,
-					VulnType:   []string{"os", "library"},
-					Format:     "template",
+			want: Option{
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityMedium},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Format:         "template",
 				},
-				ArtifactConfig: config.ArtifactConfig{
+				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
 				CustomHeaders: http.Header{},
@@ -219,6 +221,7 @@ func TestConfig_Init(t *testing.T) {
 			set.Bool("clear-cache", false, "")
 			set.String("severity", "CRITICAL", "")
 			set.String("vuln-type", "os,library", "")
+			set.String("security-checks", "vuln", "")
 			set.String("template", "", "")
 			set.String("format", "", "")
 			set.String("token", "", "")
@@ -228,10 +231,10 @@ func TestConfig_Init(t *testing.T) {
 			ctx := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
 
-			c, err := NewConfig(ctx)
+			c, err := NewOption(ctx)
 			require.NoError(t, err, err)
 
-			c.GlobalConfig.Logger = logger.Sugar()
+			c.GlobalOption.Logger = logger.Sugar()
 			err = c.Init()
 
 			// tests log messages
@@ -251,8 +254,8 @@ func TestConfig_Init(t *testing.T) {
 				assert.NoError(t, err, tt.name)
 			}
 
-			tt.want.GlobalConfig.Context = ctx
-			tt.want.GlobalConfig.Logger = logger.Sugar()
+			tt.want.GlobalOption.Context = ctx
+			tt.want.GlobalOption.Logger = logger.Sugar()
 			assert.Equal(t, tt.want, c, tt.name)
 		})
 	}
@@ -280,9 +283,8 @@ func Test_splitCustomHeaders(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := splitCustomHeaders(tt.args.headers); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("splitCustomHeaders() = %v, want %v", got, tt.want)
-			}
+			got := splitCustomHeaders(tt.args.headers)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

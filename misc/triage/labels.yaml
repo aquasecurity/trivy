@@ -40,6 +40,9 @@ labels:
 - name: lifecycle/stale
   color: "795548"
   description: Denotes an issue or PR has remained open with no activity and will be auto-closed.
+- name: lifecycle/active
+  color: "1d76db"
+  description: Indicates that an issue or PR is actively being worked on by a contributor.
 
 # priority
 - name: priority/critical-urgent

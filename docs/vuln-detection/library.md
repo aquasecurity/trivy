@@ -10,7 +10,7 @@
 - PHP
     - composer.lock
 - Node.js
-    - package-lock.json
+    - package-lock.json (dev dependencies are excluded)
     - yarn.lock
 - Rust
     - Cargo.lock
@@ -18,6 +18,9 @@
     - packages.lock.json
 - Java
     - JAR/WAR/EAR files (*.jar, *.war, and *.ear)
+- Go
+    - Binaries built by Go (UPX-compressed binaries don't work)
+    - go.sum
 
 The path of these files does not matter.
 

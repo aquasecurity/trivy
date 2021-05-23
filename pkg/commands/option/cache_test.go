@@ -1,4 +1,4 @@
-package config_test
+package option_test
 
 import (
 	"flag"
@@ -7,21 +7,27 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/urfave/cli/v2"
 
-	"github.com/aquasecurity/trivy/pkg/commands/config"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 )
 
-func TestNewDBConfig(t *testing.T) {
+func TestNewCacheOption(t *testing.T) {
 	tests := []struct {
 		name string
 		args []string
-		want config.DBConfig
+		want option.CacheOption
 	}{
 		{
 			name: "happy path",
-			args: []string{"--reset", "--skip-update"},
-			want: config.DBConfig{
-				Reset:      true,
-				SkipUpdate: true,
+			args: []string{"--cache-backend", "redis://localhost:6379"},
+			want: option.CacheOption{
+				CacheBackend: "redis://localhost:6379",
+			},
+		},
+		{
+			name: "default",
+			args: []string{},
+			want: option.CacheOption{
+				CacheBackend: "fs",
 			},
 		},
 	}
@@ -29,24 +35,20 @@ func TestNewDBConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			app := &cli.App{}
 			set := flag.NewFlagSet("test", 0)
-			set.Bool("reset", false, "")
-			set.Bool("skip-update", false, "")
+			set.String("cache-backend", "fs", "")
 
 			c := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
 
-			got := config.NewDBConfig(c)
+			got := option.NewCacheOption(c)
 			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
 }
 
-func TestDBConfig_Init(t *testing.T) {
+func TestCacheOption_Init(t *testing.T) {
 	type fields struct {
-		Reset          bool
-		DownloadDBOnly bool
-		SkipUpdate     bool
-		Light          bool
+		backend string
 	}
 	tests := []struct {
 		name    string
@@ -54,27 +56,29 @@ func TestDBConfig_Init(t *testing.T) {
 		wantErr string
 	}{
 		{
-			name: "happy path",
+			name: "fs",
 			fields: fields{
-				Light: true,
+				backend: "fs",
+			},
+		},
+		{
+			name: "redis",
+			fields: fields{
+				backend: "redis://localhost:6379",
 			},
 		},
 		{
 			name: "sad path",
 			fields: fields{
-				DownloadDBOnly: true,
-				SkipUpdate:     true,
+				backend: "unknown://",
 			},
-			wantErr: "--skip-update and --download-db-only options can not be specified both",
+			wantErr: "unsupported cache backend: unknown://",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &config.DBConfig{
-				Reset:          tt.fields.Reset,
-				DownloadDBOnly: tt.fields.DownloadDBOnly,
-				SkipUpdate:     tt.fields.SkipUpdate,
-				Light:          tt.fields.Light,
+			c := &option.CacheOption{
+				CacheBackend: tt.fields.backend,
 			}
 
 			err := c.Init()

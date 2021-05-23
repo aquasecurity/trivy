@@ -9,6 +9,7 @@ import (
 	"github.com/google/wire"
 
 	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
@@ -16,18 +17,20 @@ import (
 )
 
 func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders,
-	url client.RemoteURL, timeout time.Duration, disabled []analyzer.Type) (scanner.Scanner, func(), error) {
+	url client.RemoteURL, timeout time.Duration, disabled []analyzer.Type, configScannerOption config.ScannerOption) (
+	scanner.Scanner, func(), error) {
 	wire.Build(scanner.RemoteDockerSet)
 	return scanner.Scanner{}, nil, nil
 }
 
-func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders,
-	url client.RemoteURL, timeout time.Duration, disabled []analyzer.Type) (scanner.Scanner, error) {
+func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
+	customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration, disabled []analyzer.Type,
+	configScannerOption config.ScannerOption) (scanner.Scanner, error) {
 	wire.Build(scanner.RemoteArchiveSet)
 	return scanner.Scanner{}, nil
 }
 
-func initializeVulnerabilityClient() vulnerability.Client {
+func initializeResultClient() vulnerability.Client {
 	wire.Build(vulnerability.SuperSet)
 	return vulnerability.Client{}
 }

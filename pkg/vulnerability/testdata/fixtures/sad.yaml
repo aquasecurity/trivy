@@ -1,0 +1,6 @@
+- bucket: vulnerability
+  pairs:
+    - key: CVE-2019-0001
+      value:
+        Title:
+          - aaa

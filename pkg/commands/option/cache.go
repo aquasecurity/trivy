@@ -1,4 +1,4 @@
-package config
+package option
 
 import (
 	"strings"
@@ -7,20 +7,20 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// CacheConfig holds the config for cache
-type CacheConfig struct {
+// CacheOption holds the options for cache
+type CacheOption struct {
 	CacheBackend string
 }
 
-// NewCacheConfig returns an instance of CacheConfig
-func NewCacheConfig(c *cli.Context) CacheConfig {
-	return CacheConfig{
+// NewCacheOption returns an instance of CacheOption
+func NewCacheOption(c *cli.Context) CacheOption {
+	return CacheOption{
 		CacheBackend: c.String("cache-backend"),
 	}
 }
 
-// Init initialize the CacheConfig
-func (c *CacheConfig) Init() error {
+// Init initialize the CacheOption
+func (c *CacheOption) Init() error {
 	// "redis://" or "fs" are allowed for now
 	// An empty value is also allowed for testability
 	if !strings.HasPrefix(c.CacheBackend, "redis://") &&

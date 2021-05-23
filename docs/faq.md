@@ -1,5 +1,9 @@
 # FAQ
 
+## Scan
+### analyze error: timeout: context deadline exceeded
+Your scan may time out. Java takes a particularly long time to scan. Try increasing the value of the ---timeout option such as `--timeout 15m`.
+
 ## Homebrew
 ### Error: Your macOS keychain GitHub credentials do not have sufficient scope!
 

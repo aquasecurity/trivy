@@ -12,12 +12,13 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy-db/pkg/types"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/client"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	tdb "github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
@@ -56,7 +57,7 @@ var (
 	severityFlag = cli.StringFlag{
 		Name:    "severity",
 		Aliases: []string{"s"},
-		Value:   strings.Join(types.SeverityNames, ","),
+		Value:   strings.Join(dbTypes.SeverityNames, ","),
 		Usage:   "severities of vulnerabilities to be displayed (comma separated)",
 		EnvVars: []string{"TRIVY_SEVERITY"},
 	}
@@ -134,9 +135,17 @@ var (
 
 	vulnTypeFlag = cli.StringFlag{
 		Name:    "vuln-type",
-		Value:   "os,library",
+		Value:   strings.Join([]string{types.VulnTypeOS, types.VulnTypeLibrary}, ","),
 		Usage:   "comma-separated list of vulnerability types (os,library)",
 		EnvVars: []string{"TRIVY_VULN_TYPE"},
+	}
+
+	securityChecksFlag = cli.StringFlag{
+		Name:    "security-checks",
+		Value:   types.SecurityCheckVulnerability,
+		Usage:   "comma-separated list of what security issues to detect (vuln,config)",
+		EnvVars: []string{"TRIVY_SECURITY_CHECKS"},
+		Hidden:  true,
 	}
 
 	cacheDirFlag = cli.StringFlag{
@@ -198,15 +207,15 @@ var (
 		EnvVars: []string{"TRIVY_LIST_ALL_PKGS"},
 	}
 
-	skipFiles = cli.StringFlag{
+	skipFiles = cli.StringSliceFlag{
 		Name:    "skip-files",
-		Usage:   "specify the file path to skip traversal",
+		Usage:   "specify the file paths to skip traversal",
 		EnvVars: []string{"TRIVY_SKIP_FILES"},
 	}
 
-	skipDirectories = cli.StringFlag{
+	skipDirs = cli.StringSliceFlag{
 		Name:    "skip-dirs",
-		Usage:   "specify the directory where the traversal is skipped",
+		Usage:   "specify the directories where the traversal is skipped",
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
@@ -231,13 +240,14 @@ var (
 		&ignoreUnfixedFlag,
 		&removedPkgsFlag,
 		&vulnTypeFlag,
+		&securityChecksFlag,
 		&ignoreFileFlag,
 		&timeoutFlag,
 		&lightFlag,
 		&ignorePolicy,
 		&listAllPackages,
 		&skipFiles,
-		&skipDirectories,
+		&skipDirs,
 		&cacheBackendFlag,
 	}
 
@@ -308,6 +318,10 @@ func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
 			stringFlag := *pf
 			stringFlag.Hidden = hidden
 			f = &stringFlag
+		case *cli.StringSliceFlag:
+			stringSliceFlag := *pf
+			stringSliceFlag.Hidden = hidden
+			f = &stringSliceFlag
 		case *cli.BoolFlag:
 			boolFlag := *pf
 			boolFlag.Hidden = hidden
@@ -401,6 +415,7 @@ func NewFilesystemCommand() *cli.Command {
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
+			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
 			&timeoutFlag,
@@ -408,7 +423,7 @@ func NewFilesystemCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&skipFiles,
-			&skipDirectories,
+			&skipDirs,
 		},
 	}
 }
@@ -433,6 +448,7 @@ func NewRepositoryCommand() *cli.Command {
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
+			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
 			&timeoutFlag,
@@ -440,7 +456,7 @@ func NewRepositoryCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&skipFiles,
-			&skipDirectories,
+			&skipDirs,
 		},
 	}
 }
@@ -464,6 +480,7 @@ func NewClientCommand() *cli.Command {
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
+			&securityChecksFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,
 			&ignorePolicy,
@@ -515,9 +532,10 @@ func NewServerCommand() *cli.Command {
 // NewPluginCommand is the factory method to add plugin command
 func NewPluginCommand() *cli.Command {
 	return &cli.Command{
-		Name:    "plugin",
-		Aliases: []string{"p"},
-		Usage:   "manage plugins",
+		Name:      "plugin",
+		Aliases:   []string{"p"},
+		ArgsUsage: "plugin_uri",
+		Usage:     "manage plugins",
 		Subcommands: cli.Commands{
 			{
 				Name:      "install",

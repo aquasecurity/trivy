@@ -8,6 +8,7 @@ package artifact
 import (
 	"context"
 	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/applier"
 	image2 "github.com/aquasecurity/fanal/artifact/image"
 	local2 "github.com/aquasecurity/fanal/artifact/local"
@@ -25,7 +26,7 @@ import (
 
 // Injectors from inject.go:
 
-func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, timeout time.Duration, disableAnalyzers []analyzer.Type) (scanner.Scanner, func(), error) {
+func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, timeout time.Duration, disableAnalyzers []analyzer.Type, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	localScanner := local.NewScanner(applierApplier, detector)
@@ -37,14 +38,18 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
-	artifact := image2.NewArtifact(imageImage, artifactCache, disableAnalyzers)
+	artifact, err := image2.NewArtifact(imageImage, artifactCache, disableAnalyzers, configScannerOption)
+	if err != nil {
+		cleanup()
+		return scanner.Scanner{}, nil, err
+	}
 	scannerScanner := scanner.NewScanner(localScanner, artifact)
 	return scannerScanner, func() {
 		cleanup()
 	}, nil
 }
 
-func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, timeout time.Duration, disableAnalyzers []analyzer.Type) (scanner.Scanner, error) {
+func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, timeout time.Duration, disableAnalyzers []analyzer.Type, configScannerOption config.ScannerOption) (scanner.Scanner, error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	localScanner := local.NewScanner(applierApplier, detector)
@@ -52,26 +57,32 @@ func initializeArchiveScanner(ctx context.Context, filePath string, artifactCach
 	if err != nil {
 		return scanner.Scanner{}, err
 	}
-	artifact := image2.NewArtifact(imageImage, artifactCache, disableAnalyzers)
+	artifact, err := image2.NewArtifact(imageImage, artifactCache, disableAnalyzers, configScannerOption)
+	if err != nil {
+		return scanner.Scanner{}, err
+	}
 	scannerScanner := scanner.NewScanner(localScanner, artifact)
 	return scannerScanner, nil
 }
 
-func initializeFilesystemScanner(ctx context.Context, dir string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, disableAnalyzers []analyzer.Type) (scanner.Scanner, func(), error) {
+func initializeFilesystemScanner(ctx context.Context, dir string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, disableAnalyzers []analyzer.Type, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	localScanner := local.NewScanner(applierApplier, detector)
-	artifact := local2.NewArtifact(dir, artifactCache, disableAnalyzers)
+	artifact, err := local2.NewArtifact(dir, artifactCache, disableAnalyzers, configScannerOption)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
 	scannerScanner := scanner.NewScanner(localScanner, artifact)
 	return scannerScanner, func() {
 	}, nil
 }
 
-func initializeRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, disableAnalyzers []analyzer.Type) (scanner.Scanner, func(), error) {
+func initializeRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, disableAnalyzers []analyzer.Type, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	localScanner := local.NewScanner(applierApplier, detector)
-	artifact, cleanup, err := remote.NewArtifact(url, artifactCache, disableAnalyzers)
+	artifact, cleanup, err := remote.NewArtifact(url, artifactCache, disableAnalyzers, configScannerOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -81,8 +92,8 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	}, nil
 }
 
-func initializeVulnerabilityClient() vulnerability.Client {
-	config := db.Config{}
-	client := vulnerability.NewClient(config)
+func initializeResultClient() vulnerability.Client {
+	dbConfig := db.Config{}
+	client := vulnerability.NewClient(dbConfig)
 	return client
 }

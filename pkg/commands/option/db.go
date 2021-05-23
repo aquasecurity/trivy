@@ -1,12 +1,12 @@
-package config
+package option
 
 import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 )
 
-// DBConfig holds the config for trivy DB
-type DBConfig struct {
+// DBOption holds the options for trivy DB
+type DBOption struct {
 	Reset          bool
 	DownloadDBOnly bool
 	SkipUpdate     bool
@@ -14,9 +14,9 @@ type DBConfig struct {
 	NoProgress     bool
 }
 
-// NewDBConfig is the factory method to return the DBConfig
-func NewDBConfig(c *cli.Context) DBConfig {
-	return DBConfig{
+// NewDBOption is the factory method to return the DBOption
+func NewDBOption(c *cli.Context) DBOption {
+	return DBOption{
 		Reset:          c.Bool("reset"),
 		DownloadDBOnly: c.Bool("download-db-only"),
 		SkipUpdate:     c.Bool("skip-update"),
@@ -25,8 +25,8 @@ func NewDBConfig(c *cli.Context) DBConfig {
 	}
 }
 
-// Init initialize the DBConfig
-func (c *DBConfig) Init() (err error) {
+// Init initialize the DBOption
+func (c *DBOption) Init() (err error) {
 	if c.SkipUpdate && c.DownloadDBOnly {
 		return xerrors.New("--skip-update and --download-db-only options can not be specified both")
 	}
