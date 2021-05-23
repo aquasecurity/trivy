@@ -2,7 +2,7 @@ name: Scan
 on: [push, pull_request]
 jobs:
   build:
-    name: Scan repo
+    name: Scan Go vulnerabilities
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout code
