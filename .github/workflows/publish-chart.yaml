@@ -33,7 +33,7 @@ jobs:
         continue-on-error: true
         ## Upload the tar in the Releases repository
         run: |
-          ./cr upload -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} --token ${{ secrets.ORG_GITHUB_TOKEN }} -p .cr-release-packages
+          ./cr upload -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} --token ${{ secrets.ORG_REPO_TOKEN }} -p .cr-release-packages
       - name: Index helm chart
         run: |
           ./cr index -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} -c https://${{ env.GH_OWNER }}.github.io/${{ env.HELM_REP }}/ -i index.yaml
@@ -41,7 +41,7 @@ jobs:
       - name: Push index file
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
-          API_TOKEN_GITHUB: ${{ secrets.ORG_GITHUB_TOKEN }}
+          API_TOKEN_GITHUB: ${{ secrets.ORG_REPO_TOKEN }}
         with:
           source_file: 'index.yaml'
           destination_repo: '${{ env.GH_OWNER }}/${{ env.HELM_REP }}'
