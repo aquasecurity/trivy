@@ -4,7 +4,6 @@
 [![GitHub Release][release-img]][release]
 [![Go Report Card](https://goreportcard.com/badge/github.com/aquasecurity/trivy)](https://goreportcard.com/report/github.com/aquasecurity/trivy)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)][license]
-[![codecov](https://codecov.io/gh/aquasecurity/trivy/branch/main/graph/badge.svg)](https://codecov.io/gh/aquasecurity/trivy)
 [![GitHub All Releases][github-all-releases-img]][release]
 ![Docker Pulls][docker-pulls]
 
