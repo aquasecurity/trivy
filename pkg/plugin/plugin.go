@@ -25,6 +25,7 @@ var (
 
 	officialPlugins = map[string]string{
 		"kubectl": "github.com/aquasecurity/trivy-plugin-kubectl",
+		"aqua":    "github.com/aquasecurity/trivy-plugin-aqua",
 	}
 )
 
