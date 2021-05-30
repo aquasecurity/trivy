@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/binary"
+	"errors"
 	"io"
 	"strings"
 
@@ -29,14 +30,32 @@ func Parse(r io.Reader) ([]types.Library, error) {
 	for scanner.Scan() {
 		line := scanner.Text()
 		ss := strings.Fields(line)
-		if len(ss) != 4 {
+
+		// Since we only use "dep" and "=>" which are both at least 3 column, skip if
+		// length is shorter.
+		if len(ss) < 3 {
 			continue
 		}
 
-		libs = append(libs, types.Library{
-			Name:    ss[1],
-			Version: ss[2],
-		})
+		switch ss[0] {
+		case "dep":
+			libs = append(libs, types.Library{
+				Name:    ss[1],
+				Version: ss[2],
+			})
+		case "=>":
+			// replace replaces the previous entry
+			if len(libs) == 0 {
+				return nil, errors.New("replace directive without prior dependency declaration")
+			}
+			prev := len(libs) - 1
+			libs[prev] = types.Library{
+				Name:    ss[1],
+				Version: ss[2],
+			}
+		default:
+			continue
+		}
 	}
 
 	return libs, nil

@@ -72,6 +72,20 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name:      "with replace directive",
+			inputFile: "testdata/replace.elf",
+			want: []types.Library{
+				{
+					Name:    "github.com/davecgh/go-spew",
+					Version: "v1.1.1",
+				},
+				{
+					Name:    "github.com/go-sql-driver/mysql",
+					Version: "v1.5.0",
+				},
+			},
+		},
+		{
 			name:      "sad path",
 			inputFile: "testdata/dummy",
 			wantErr:   "unrecognized executable format",
