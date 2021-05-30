@@ -71,7 +71,7 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
 			opt.Severities, opt.IgnoreUnfixed, opt.ShowSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
-			return err
+			return xerrors.Errorf("filter error: %w", err)
 		}
 		results[i].Vulnerabilities = vulns
 		results[i].Misconfigurations = misconfs

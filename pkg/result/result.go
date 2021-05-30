@@ -3,6 +3,7 @@ package result
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"sort"
@@ -159,26 +160,34 @@ func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability,
 
 func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
 	ignoreUnfixed bool, ignoredIDs []string) []types.DetectedVulnerability {
-	var filtered []types.DetectedVulnerability
+	uniqVulns := make(map[string]types.DetectedVulnerability)
 	for _, vuln := range vulns {
 		if vuln.Severity == "" {
 			vuln.Severity = dbTypes.SeverityUnknown.String()
 		}
 		// Filter vulnerabilities by severity
 		for _, s := range severities {
-			if s.String() == vuln.Severity {
-				// Ignore unfixed vulnerabilities
-				if ignoreUnfixed && vuln.FixedVersion == "" {
-					continue
-				} else if utils.StringInSlice(vuln.VulnerabilityID, ignoredIDs) {
-					continue
-				}
-				filtered = append(filtered, vuln)
-				break
+			if s.String() != vuln.Severity {
+				continue
 			}
+
+			// Ignore unfixed vulnerabilities
+			if ignoreUnfixed && vuln.FixedVersion == "" {
+				continue
+			} else if utils.StringInSlice(vuln.VulnerabilityID, ignoredIDs) {
+				continue
+			}
+
+			// Check if there is a duplicate vulnerability
+			key := fmt.Sprintf("%s/%s/%s", vuln.VulnerabilityID, vuln.PkgName, vuln.InstalledVersion)
+			if old, ok := uniqVulns[key]; ok && !shouldOverwrite(old, vuln) {
+				continue
+			}
+			uniqVulns[key] = vuln
+			break
 		}
 	}
-	return filtered
+	return toSlice(uniqVulns)
 }
 
 func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,
@@ -199,6 +208,16 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 		}
 	}
 	return filtered
+}
+
+func toSlice(uniqVulns map[string]types.DetectedVulnerability) []types.DetectedVulnerability {
+	// Convert map to slice
+	var vulnerabilities []types.DetectedVulnerability
+	for _, vuln := range uniqVulns {
+		vulnerabilities = append(vulnerabilities, vuln)
+	}
+
+	return vulnerabilities
 }
 
 func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
@@ -278,4 +297,9 @@ func getIgnoredIDs(ignoreFile string) []string {
 		ignoredIDs = append(ignoredIDs, line)
 	}
 	return ignoredIDs
+}
+
+func shouldOverwrite(old, new types.DetectedVulnerability) bool {
+	// The same vulnerability must be picked always.
+	return old.FixedVersion < new.FixedVersion
 }

@@ -1,0 +1,23 @@
+name: Scan
+on: [push, pull_request]
+jobs:
+  build:
+    name: Scan Go vulnerabilities
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Trivy vulnerability scanner to scan for Critical Vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          exit-code: '1'
+          severity: 'CRITICAL'
+
+      - name: Run Trivy vulnerability scanner to scan for Medium and High Vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          exit-code: '0'
+          severity: 'HIGH,MEDIUM'

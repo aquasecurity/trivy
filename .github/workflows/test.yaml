@@ -23,11 +23,6 @@ jobs:
       - name: Run unit tests
         run: make test
 
-      - name: Upload code coverage
-        uses: codecov/codecov-action@v1
-        with:
-          files: ./coverage.txt
-
   integration:
     name: Integration Test
     runs-on: ubuntu-latest

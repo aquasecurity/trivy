@@ -583,12 +583,140 @@ func TestClient_Filter(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "happy path with duplicates, one with empty fixed version",
+			args: args{
+				vulns: []types.DetectedVulnerability{
+					{
+						VulnerabilityID:  "CVE-2019-0001",
+						PkgName:          "foo",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityLow.String(),
+						},
+					},
+					{
+						VulnerabilityID:  "CVE-2019-0001",
+						PkgName:          "foo",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "1.2.4",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityLow.String(),
+						},
+					},
+					{
+						VulnerabilityID:  "CVE-2019-0002",
+						PkgName:          "bar",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "1.2.4",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityCritical.String(),
+						},
+					},
+					{
+						VulnerabilityID:  "CVE-2019-0002",
+						PkgName:          "bar",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "1.2.5",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityCritical.String(),
+						},
+					},
+					{
+						VulnerabilityID:  "CVE-2018-0001",
+						PkgName:          "baz",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityHigh.String(),
+						},
+					},
+					{
+						VulnerabilityID:  "CVE-2018-0001",
+						PkgName:          "bar",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityCritical.String(),
+						},
+					},
+					{
+						VulnerabilityID:  "CVE-2018-0002",
+						PkgName:          "bar",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: "",
+						},
+					},
+					{
+						VulnerabilityID:  "CVE-2018-0002",
+						PkgName:          "bar",
+						InstalledVersion: "2.0.0",
+						FixedVersion:     "",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: "",
+						},
+					},
+				},
+				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
+				ignoreUnfixed: false,
+			},
+			wantVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2018-0001",
+					PkgName:          "bar",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityCritical.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2019-0002",
+					PkgName:          "bar",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.5",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityCritical.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2018-0002",
+					PkgName:          "bar",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityUnknown.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2018-0002",
+					PkgName:          "bar",
+					InstalledVersion: "2.0.0",
+					FixedVersion:     "",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityUnknown.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2018-0001",
+					PkgName:          "baz",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := Client{}
 			gotVulns, gotMisconfs, err := c.Filter(context.Background(), tt.args.vulns, tt.args.misconfs,
-				tt.args.severities, tt.args.ignoreUnfixed, tt.args.ignoreFile, tt.args.policyFile)
+				tt.args.severities, tt.args.ignoreUnfixed, false, tt.args.ignoreFile, tt.args.policyFile)
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantVulns, gotVulns)
 			assert.Equal(t, tt.wantMisconfs, gotMisconfs)

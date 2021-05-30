@@ -732,7 +732,7 @@ func TestScanner_Scan(t *testing.T) {
 								Warnings: []ftypes.MisconfResult{
 									{
 										Namespace: "main.kubernetes.id300",
-										MisconfMetadata: ftypes.MisconfMetadata{
+										PolicyMetadata: ftypes.PolicyMetadata{
 											ID:       "ID300",
 											Type:     "Kubernetes Security Check",
 											Title:    "Bad Deployment",
@@ -743,7 +743,7 @@ func TestScanner_Scan(t *testing.T) {
 								Exceptions: ftypes.MisconfResults{
 									{
 										Namespace: "main.kubernetes.id100",
-										MisconfMetadata: ftypes.MisconfMetadata{
+										PolicyMetadata: ftypes.PolicyMetadata{
 											ID:       "ID100",
 											Type:     "Kubernetes Security Check",
 											Title:    "Bad Deployment",
@@ -761,7 +761,7 @@ func TestScanner_Scan(t *testing.T) {
 								Successes: []ftypes.MisconfResult{
 									{
 										Namespace: "main.kubernetes.id200",
-										MisconfMetadata: ftypes.MisconfMetadata{
+										PolicyMetadata: ftypes.PolicyMetadata{
 											ID:       "ID200",
 											Type:     "Kubernetes Security Check",
 											Title:    "Bad Deployment",
@@ -773,7 +773,7 @@ func TestScanner_Scan(t *testing.T) {
 									{
 										Namespace: "main.kubernetes.id100",
 										Message:   "something bad",
-										MisconfMetadata: ftypes.MisconfMetadata{
+										PolicyMetadata: ftypes.PolicyMetadata{
 											ID:       "ID100",
 											Type:     "Kubernetes Security Check",
 											Title:    "Bad Deployment",
