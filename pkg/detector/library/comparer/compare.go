@@ -33,6 +33,10 @@ func IsVulnerable(pkgVer string, advisory dbTypes.Advisory, match matchVersion) 
 		}
 	}
 
+	// If a fixed version is empty, we should detect it anyway.
+	if len(advisory.PatchedVersions) > 0 && advisory.PatchedVersions[0] == "" {
+		return true
+	}
 	secureVersions := append(advisory.PatchedVersions, advisory.UnaffectedVersions...)
 	if len(secureVersions) == 0 {
 		// the version matches vulnerable versions and patched/unaffected versions are not provided
