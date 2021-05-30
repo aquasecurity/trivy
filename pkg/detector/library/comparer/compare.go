@@ -22,7 +22,7 @@ func IsVulnerable(pkgVer string, advisory dbTypes.Advisory, match matchVersion) 
 	var matched bool
 	var err error
 
-	if len(advisory.VulnerableVersions) != 0 {
+	if len(advisory.VulnerableVersions) != 0 && advisory.VulnerableVersions[0] != "" {
 		matched, err = match(pkgVer, strings.Join(advisory.VulnerableVersions, " || "))
 		if err != nil {
 			log.Logger.Warn(err)
