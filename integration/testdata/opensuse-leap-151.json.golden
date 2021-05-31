@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/opensuse-leap-151.tar.gz (opensuse.leap 15.1)",
     "Class": "os-pkgs",
     "Type": "opensuse.leap",
+    "Size":1.0589952e+08,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "openSUSE-SU-2019:2596-1",

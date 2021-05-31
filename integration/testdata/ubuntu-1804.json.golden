@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/ubuntu-1804.tar.gz (ubuntu 18.04)",
     "Class": "os-pkgs",
     "Type": "ubuntu",
+    "Size":6.6571264e+07,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-18276",

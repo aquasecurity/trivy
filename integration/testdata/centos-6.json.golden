@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/centos-6.tar.gz (centos 6.10)",
     "Class": "os-pkgs",
     "Type": "centos",
+    "Size":2.01540608e+08,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2015-5186",

@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/amazon-2.tar.gz (amazon 2 (Karoo))",
     "Class": "os-pkgs",
     "Type": "amazon",
+    "Size":1.6885248e+08,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-5481",
