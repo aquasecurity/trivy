@@ -1,7 +1,6 @@
 # GitLab CI
 
-```
-$ cat .gitlab-ci.yml
+```yaml
 stages:
   - test
 
@@ -94,3 +93,59 @@ container_scanning:
 
 [example]: https://gitlab.com/aquasecurity/trivy-ci-test/pipelines
 [repository]: https://github.com/aquasecurity/trivy-ci-test
+
+### Gitlab CI alternative template
+
+Depending on the edition of gitlab you have or your desired workflow, the
+container scanning template may not meet your needs. As an addition to the
+above container scanning template, a template for
+[code climate](https://docs.gitlab.com/ee/user/project/merge_requests/code_quality.html)
+has been included. The key things to update from the above examples are
+the `template` and `report` type. An updated example is below.
+
+```yaml
+stages:
+  - test
+
+trivy:
+  stage: test
+  image: docker:stable
+  services:
+    - name: docker:dind
+      entrypoint: ["env", "-u", "DOCKER_HOST"]
+      command: ["dockerd-entrypoint.sh"]
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+    # See https://github.com/docker-library/docker/pull/166
+    DOCKER_TLS_CERTDIR: ""
+    IMAGE: trivy-ci-test:$CI_COMMIT_SHA
+  before_script:
+    - export TRIVY_VERSION=$(wget -qO - "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+    - echo $TRIVY_VERSION
+    - wget --no-verbose https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz -O - | tar -zxvf -
+  allow_failure: true
+  script:
+    # Build image
+    - docker build -t $IMAGE .
+    # Build report
+    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab-codeclimate.tpl" -o gl-codeclimate.json $IMAGE
+  cache:
+    paths:
+      - .trivycache/
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/ (Container Scanning report is available on GitLab EE Ultimate or GitLab.com Gold)
+  artifacts:
+    paths:
+      gl-codeclimate.json
+    reports:
+      codequality: gl-codeclimate.json
+```
+
+Currently gitlab only supports a single code quality report. There is an
+open [feature request](https://gitlab.com/gitlab-org/gitlab/-/issues/9014)
+to support multiple reports. Until this has been implemented, if you
+already have a code quality report in your pipeline, you can use
+`jq` to combine reports. Depending on how you name your artifacts, it may
+be necessary to rename the artifact if you want to reuse the name. To then
+combine the previous artifact with the output of trivy, the following `jq`
+command can be used, `jq -s 'add' prev-codeclimate.json trivy-codeclimate.json > gl-codeclimate.json`.
