@@ -17,7 +17,7 @@
         
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.5+insiders-2.9.1">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.6+insiders-2.9.1">
     
     
       
@@ -25,10 +25,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.9501b472.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.92048cb8.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.77b964be.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.73e53a79.min.css">
         
       
       
@@ -758,6 +758,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#gitlab-ci-alternative-template" class="md-nav__link">
+    Gitlab CI alternative template
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1311,6 +1318,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#gitlab-ci-alternative-template" class="md-nav__link">
+    Gitlab CI alternative template
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1324,45 +1338,45 @@
               
                 
                 
+                
                 <h1 id="gitlab-ci">GitLab CI</h1>
-<div class="highlight"><pre><span></span><code>$ cat .gitlab-ci.yml
-stages:
-  - test
+<div class="highlight"><pre><span></span><code><span class="nt">stages</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">test</span>
 
-trivy:
-  stage: test
-  image: docker:stable
-  services:
-    - name: docker:dind
-      entrypoint: [&quot;env&quot;, &quot;-u&quot;, &quot;DOCKER_HOST&quot;]
-      command: [&quot;dockerd-entrypoint.sh&quot;]
-  variables:
-    DOCKER_HOST: tcp://docker:2375/
-    DOCKER_DRIVER: overlay2
-    # See https://github.com/docker-library/docker/pull/166
-    DOCKER_TLS_CERTDIR: &quot;&quot;
-    IMAGE: trivy-ci-test:$CI_COMMIT_SHA
-  before_script:
-    - export TRIVY_VERSION=$(wget -qO - &quot;https://api.github.com/repos/aquasecurity/trivy/releases/latest&quot; | grep &#39;&quot;tag_name&quot;:&#39; | sed -E &#39;s/.*&quot;v([^&quot;]+)&quot;.*/\1/&#39;)
-    - echo $TRIVY_VERSION
-    - wget --no-verbose https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz -O - | tar -zxvf -
-  allow_failure: true
-  script:
-    # Build image
-    - docker build -t $IMAGE .
-    # Build report
-    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template &quot;@contrib/gitlab.tpl&quot; -o gl-container-scanning-report.json $IMAGE
-    # Print report
-    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE
-    # Fail on severe vulnerabilities
-    - ./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE
-  cache:
-    paths:
-      - .trivycache/
-  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/ (Container Scanning report is available on GitLab EE Ultimate or GitLab.com Gold)
-  artifacts:
-    reports:
-      container_scanning: gl-container-scanning-report.json
+<span class="nt">trivy</span><span class="p">:</span>
+  <span class="nt">stage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test</span>
+  <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker:stable</span>
+  <span class="nt">services</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker:dind</span>
+      <span class="nt">entrypoint</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;env&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;-u&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;DOCKER_HOST&quot;</span><span class="p p-Indicator">]</span>
+      <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;dockerd-entrypoint.sh&quot;</span><span class="p p-Indicator">]</span>
+  <span class="nt">variables</span><span class="p">:</span>
+    <span class="nt">DOCKER_HOST</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">tcp://docker:2375/</span>
+    <span class="nt">DOCKER_DRIVER</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">overlay2</span>
+    <span class="c1"># See https://github.com/docker-library/docker/pull/166</span>
+    <span class="nt">DOCKER_TLS_CERTDIR</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+    <span class="nt">IMAGE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">trivy-ci-test:$CI_COMMIT_SHA</span>
+  <span class="nt">before_script</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">export TRIVY_VERSION=$(wget -qO - &quot;https://api.github.com/repos/aquasecurity/trivy/releases/latest&quot; | grep &#39;&quot;tag_name&quot;:&#39; | sed -E &#39;s/.*&quot;v([^&quot;]+)&quot;.*/\1/&#39;)</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo $TRIVY_VERSION</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">wget --no-verbose https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz -O - | tar -zxvf -</span>
+  <span class="nt">allow_failure</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="nt">script</span><span class="p">:</span>
+    <span class="c1"># Build image</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker build -t $IMAGE .</span>
+    <span class="c1"># Build report</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template &quot;@contrib/gitlab.tpl&quot; -o gl-container-scanning-report.json $IMAGE</span>
+    <span class="c1"># Print report</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE</span>
+    <span class="c1"># Fail on severe vulnerabilities</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE</span>
+  <span class="nt">cache</span><span class="p">:</span>
+    <span class="nt">paths</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">.trivycache/</span>
+  <span class="c1"># Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/ (Container Scanning report is available on GitLab EE Ultimate or GitLab.com Gold)</span>
+  <span class="nt">artifacts</span><span class="p">:</span>
+    <span class="nt">reports</span><span class="p">:</span>
+      <span class="nt">container_scanning</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gl-container-scanning-report.json</span>
 </code></pre></div>
 <p><a href="https://gitlab.com/aquasecurity/trivy-ci-test/pipelines">Example</a>
 <a href="https://github.com/aquasecurity/trivy-ci-test">Repository</a></p>
@@ -1410,6 +1424,57 @@ with the container image.</p>
   <span class="nt">tags</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker-runner</span>
 </code></pre></div>
+<h3 id="gitlab-ci-alternative-template">Gitlab CI alternative template</h3>
+<p>Depending on the edition of gitlab you have or your desired workflow, the
+container scanning template may not meet your needs. As an addition to the
+above container scanning template, a template for
+<a href="https://docs.gitlab.com/ee/user/project/merge_requests/code_quality.html">code climate</a>
+has been included. The key things to update from the above examples are
+the <code>template</code> and <code>report</code> type. An updated example is below.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">stages</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">test</span>
+
+<span class="nt">trivy</span><span class="p">:</span>
+  <span class="nt">stage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test</span>
+  <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker:stable</span>
+  <span class="nt">services</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker:dind</span>
+      <span class="nt">entrypoint</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;env&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;-u&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;DOCKER_HOST&quot;</span><span class="p p-Indicator">]</span>
+      <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;dockerd-entrypoint.sh&quot;</span><span class="p p-Indicator">]</span>
+  <span class="nt">variables</span><span class="p">:</span>
+    <span class="nt">DOCKER_HOST</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">tcp://docker:2375/</span>
+    <span class="nt">DOCKER_DRIVER</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">overlay2</span>
+    <span class="c1"># See https://github.com/docker-library/docker/pull/166</span>
+    <span class="nt">DOCKER_TLS_CERTDIR</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+    <span class="nt">IMAGE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">trivy-ci-test:$CI_COMMIT_SHA</span>
+  <span class="nt">before_script</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">export TRIVY_VERSION=$(wget -qO - &quot;https://api.github.com/repos/aquasecurity/trivy/releases/latest&quot; | grep &#39;&quot;tag_name&quot;:&#39; | sed -E &#39;s/.*&quot;v([^&quot;]+)&quot;.*/\1/&#39;)</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo $TRIVY_VERSION</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">wget --no-verbose https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz -O - | tar -zxvf -</span>
+  <span class="nt">allow_failure</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="nt">script</span><span class="p">:</span>
+    <span class="c1"># Build image</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker build -t $IMAGE .</span>
+    <span class="c1"># Build report</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template &quot;@contrib/gitlab-codeclimate.tpl&quot; -o gl-codeclimate.json $IMAGE</span>
+  <span class="nt">cache</span><span class="p">:</span>
+    <span class="nt">paths</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">.trivycache/</span>
+  <span class="c1"># Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/ (Container Scanning report is available on GitLab EE Ultimate or GitLab.com Gold)</span>
+  <span class="nt">artifacts</span><span class="p">:</span>
+    <span class="nt">paths</span><span class="p">:</span>
+      <span class="l l-Scalar l-Scalar-Plain">gl-codeclimate.json</span>
+    <span class="nt">reports</span><span class="p">:</span>
+      <span class="nt">codequality</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gl-codeclimate.json</span>
+</code></pre></div>
+<p>Currently gitlab only supports a single code quality report. There is an
+open <a href="https://gitlab.com/gitlab-org/gitlab/-/issues/9014">feature request</a>
+to support multiple reports. Until this has been implemented, if you
+already have a code quality report in your pipeline, you can use
+<code>jq</code> to combine reports. Depending on how you name your artifacts, it may
+be necessary to rename the artifact if you want to reuse the name. To then
+combine the previous artifact with the output of trivy, the following <code>jq</code>
+command can be used, <code>jq -s 'add' prev-codeclimate.json trivy-codeclimate.json &gt; gl-codeclimate.json</code>.</p>
                 
               
               
@@ -1476,10 +1541,10 @@ with the container image.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.4c32c4e3.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.df8cae7d.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.08adbded.min.js"></script>
+      <script src="../../assets/javascripts/bundle.0c4ae912.min.js"></script>
       
     
   </body>
