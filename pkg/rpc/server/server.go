@@ -41,6 +41,7 @@ func (s *ScanServer) Scan(_ context.Context, in *rpcScanner.ScanRequest) (*rpcSc
 	options := types.ScanOptions{
 		VulnType:       in.Options.VulnType,
 		SecurityChecks: in.Options.SecurityChecks,
+		ListAllPackages: in.Options.ListAllPackages,
 	}
 	results, os, eosl, err := s.localScanner.Scan(in.Target, in.ArtifactId, in.BlobIds, options)
 	if err != nil {

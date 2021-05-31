@@ -58,6 +58,7 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 			Options: &rpc.ScanOptions{
 				VulnType:       options.VulnType,
 				SecurityChecks: options.SecurityChecks,
+				ListAllPackages: options.ListAllPackages,
 			},
 		})
 		return err
