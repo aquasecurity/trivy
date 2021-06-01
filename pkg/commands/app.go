@@ -219,6 +219,12 @@ var (
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
+	analyzeOnlyFlag = cli.BoolFlag{
+		Name:    "analyze-only",
+		Usage:   "enabling this option will output all scanned resource without vulnerabilities",
+		EnvVars: []string{"TRIVY_ANALYZE_ONLY"},
+	}
+
 	globalFlags = []cli.Flag{
 		&quietFlag,
 		&debugFlag,
@@ -249,6 +255,7 @@ var (
 		&skipFiles,
 		&skipDirs,
 		&cacheBackendFlag,
+		&analyzeOnlyFlag,
 	}
 
 	// deprecated options
@@ -424,6 +431,7 @@ func NewFilesystemCommand() *cli.Command {
 			&listAllPackages,
 			&skipFiles,
 			&skipDirs,
+			&analyzeOnlyFlag,
 		},
 	}
 }
@@ -457,6 +465,7 @@ func NewRepositoryCommand() *cli.Command {
 			&listAllPackages,
 			&skipFiles,
 			&skipDirs,
+			&analyzeOnlyFlag,
 		},
 	}
 }

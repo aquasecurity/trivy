@@ -11,25 +11,24 @@ import (
 
 // ArtifactOption holds the options for an artifact scanning
 type ArtifactOption struct {
-	Input      string
-	Timeout    time.Duration
-	ClearCache bool
-
-	SkipDirs  []string
-	SkipFiles []string
-
-	// this field is populated in Init()
-	Target string
+	SkipDirs    []string
+	SkipFiles   []string
+	Input       string
+	Target      string // this field is populated in Init()
+	Timeout     time.Duration
+	ClearCache  bool
+	AnalyzeOnly bool
 }
 
 // NewArtifactOption is the factory method to return artifact option
 func NewArtifactOption(c *cli.Context) ArtifactOption {
 	return ArtifactOption{
-		Input:      c.String("input"),
-		Timeout:    c.Duration("timeout"),
-		ClearCache: c.Bool("clear-cache"),
-		SkipFiles:  c.StringSlice("skip-files"),
-		SkipDirs:   c.StringSlice("skip-dirs"),
+		Input:       c.String("input"),
+		Timeout:     c.Duration("timeout"),
+		ClearCache:  c.Bool("clear-cache"),
+		SkipFiles:   c.StringSlice("skip-files"),
+		SkipDirs:    c.StringSlice("skip-dirs"),
+		AnalyzeOnly: c.Bool("analyze-only"),
 	}
 }
 
