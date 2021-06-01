@@ -71,6 +71,10 @@ func (s Scanner) Scan(target, versionedArtifactID string, versionedBlobIDs []str
 	var eosl bool
 	var results report.Results
 
+	if options.AnalyseOnly {
+		return s.onlyResources(results, artifactDetail, target, options), artifactDetail.OS, eosl, nil
+	}
+
 	// Scan OS packages and programming language dependencies
 	if utils.StringInSlice(types.SecurityCheckVulnerability, options.SecurityChecks) {
 		var vulnResults report.Results
@@ -82,6 +86,41 @@ func (s Scanner) Scan(target, versionedArtifactID string, versionedBlobIDs []str
 	}
 
 	return results, artifactDetail.OS, eosl, nil
+}
+
+func (s Scanner) onlyResources(results report.Results, artifactDetail ftypes.ArtifactDetail, target string, options types.ScanOptions) report.Results {
+	// collect os packages
+	if artifactDetail.OS != nil {
+		results = append(results, report.Result{
+			Target:   fmt.Sprintf("%s (%s %s)", target, artifactDetail.OS.Family, artifactDetail.OS.Name),
+			Type:     artifactDetail.OS.Family,
+			Packages: artifactDetail.Packages,
+		})
+	}
+	// collect libraries
+	for _, app := range artifactDetail.Applications {
+		if len(app.Libraries) == 0 {
+			continue
+		}
+		if skipped(app.FilePath, options.SkipFiles, options.SkipDirs) {
+			continue
+		}
+
+		var pkgs []ftypes.Package
+		for _, lib := range app.Libraries {
+			pkgs = append(pkgs, ftypes.Package{
+				Name:    lib.Library.Name,
+				Version: lib.Library.Version,
+				Layer:   lib.Layer,
+			})
+		}
+		results = append(results, report.Result{
+			Target:   app.FilePath,
+			Type:     app.Type,
+			Packages: pkgs,
+		})
+	}
+	return results
 }
 
 func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (

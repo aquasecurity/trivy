@@ -137,6 +137,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		ListAllPackages:     opt.ListAllPkgs,
 		SkipFiles:           opt.SkipFiles,
 		SkipDirs:            opt.SkipDirs,
+		AnalyseOnly:         opt.AnalyseOnly,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
