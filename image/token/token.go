@@ -4,8 +4,7 @@ import (
 	"context"
 
 	"github.com/aquasecurity/fanal/image/token/ecr"
-	"github.com/aquasecurity/fanal/image/token/gcr"
-
+	"github.com/aquasecurity/fanal/image/token/google"
 	"github.com/google/go-containerregistry/pkg/authn"
 
 	"github.com/aquasecurity/fanal/types"
@@ -16,7 +15,7 @@ var (
 )
 
 func init() {
-	RegisterRegistry(&gcr.GCR{})
+	RegisterRegistry(&google.Registry{})
 	RegisterRegistry(&ecr.ECR{})
 }
 

@@ -1,4 +1,4 @@
-package gcr
+package google
 
 import (
 	"reflect"
@@ -15,7 +15,7 @@ func TestCheckOptions(t *testing.T) {
 	var tests = map[string]struct {
 		domain  string
 		opt     types.DockerOption
-		gcr     *GCR
+		gcr     *Registry
 		wantErr error
 	}{
 		"InvalidURL": {
@@ -26,17 +26,17 @@ func TestCheckOptions(t *testing.T) {
 		"NoOption": {
 			domain: "gcr.io",
 			opt:    types.DockerOption{},
-			gcr:    &GCR{domain: "gcr.io"},
+			gcr:    &Registry{domain: "gcr.io"},
 		},
 		"CredOption": {
 			domain: "gcr.io",
 			opt:    types.DockerOption{GcpCredPath: "/path/to/file.json"},
-			gcr:    &GCR{domain: "gcr.io", Store: store.NewGCRCredStore("/path/to/file.json")},
+			gcr:    &Registry{domain: "gcr.io", Store: store.NewGCRCredStore("/path/to/file.json")},
 		},
 	}
 
 	for testname, v := range tests {
-		g := &GCR{}
+		g := &Registry{}
 		err := g.CheckOptions(v.domain, v.opt)
 		if v.wantErr != nil {
 			if err == nil {
