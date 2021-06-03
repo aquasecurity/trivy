@@ -17,8 +17,9 @@ message ScanRequest {
 }
 
 message ScanOptions {
-  repeated string vuln_type       = 1;
-  repeated string security_checks = 2;
+  repeated string vuln_type         = 1;
+  repeated string security_checks   = 2;
+  bool            list_all_packages = 3;
 }
 
 message ScanResponse {
@@ -32,4 +33,5 @@ message Result {
   string   target                               = 1;
   repeated common.Vulnerability vulnerabilities = 2;
   string                        type            = 3;
+  repeated common.Package       packages        = 4;
 }

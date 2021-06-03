@@ -14,14 +14,13 @@ import (
 type Option struct {
 	option.GlobalOption
 	option.ArtifactOption
+	ListAllPkgs bool
 	option.ImageOption
 	option.ReportOption
-
 	RemoteAddr    string
 	token         string
 	tokenHeader   string
 	customHeaders []string
-
 	// this field is populated in Init()
 	CustomHeaders http.Header
 }
@@ -42,6 +41,7 @@ func NewOption(c *cli.Context) (Option, error) {
 		token:          c.String("token"),
 		tokenHeader:    c.String("token-header"),
 		customHeaders:  c.StringSlice("custom-headers"),
+		ListAllPkgs:    c.Bool("list-all-pkgs"),
 	}, nil
 }
 

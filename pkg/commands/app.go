@@ -484,7 +484,7 @@ func NewClientCommand() *cli.Command {
 			&ignoreFileFlag,
 			&timeoutFlag,
 			&ignorePolicy,
-
+			&listAllPackages,
 			// original flags
 			&token,
 			&tokenHeader,

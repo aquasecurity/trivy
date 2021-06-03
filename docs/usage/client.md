@@ -21,6 +21,7 @@ OPTIONS:
    --ignorefile value          specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
    --timeout value             timeout (default: 5m0s) [$TRIVY_TIMEOUT]
    --ignore-policy value       specify the Rego file to evaluate each vulnerability [$TRIVY_IGNORE_POLICY]
+   --list-all-pkgs             enabling the option will output all packages regardless of vulnerability (default: false) [$TRIVY_LIST_ALL_PKGS]
    --token value               for authentication [$TRIVY_TOKEN]
    --token-header value        specify a header name for token (default: "Trivy-Token") [$TRIVY_TOKEN_HEADER]
    --remote value              server address (default: "http://localhost:4954") [$TRIVY_REMOTE]
