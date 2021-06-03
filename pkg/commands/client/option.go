@@ -14,17 +14,15 @@ import (
 type Option struct {
 	option.GlobalOption
 	option.ArtifactOption
+	ListAllPkgs bool
 	option.ImageOption
 	option.ReportOption
-
 	RemoteAddr    string
 	token         string
 	tokenHeader   string
 	customHeaders []string
-
 	// this field is populated in Init()
-	CustomHeaders   http.Header
-	ListAllPackages bool
+	CustomHeaders http.Header
 }
 
 // NewOption is the factory method for Option
@@ -35,15 +33,15 @@ func NewOption(c *cli.Context) (Option, error) {
 	}
 
 	return Option{
-		GlobalOption:    gc,
-		ArtifactOption:  option.NewArtifactOption(c),
-		ImageOption:     option.NewImageOption(c),
-		ReportOption:    option.NewReportOption(c),
-		RemoteAddr:      c.String("remote"),
-		token:           c.String("token"),
-		tokenHeader:     c.String("token-header"),
-		customHeaders:   c.StringSlice("custom-headers"),
-		ListAllPackages: c.Bool("list-all-pkgs"),
+		GlobalOption:   gc,
+		ArtifactOption: option.NewArtifactOption(c),
+		ImageOption:    option.NewImageOption(c),
+		ReportOption:   option.NewReportOption(c),
+		RemoteAddr:     c.String("remote"),
+		token:          c.String("token"),
+		tokenHeader:    c.String("token-header"),
+		customHeaders:  c.StringSlice("custom-headers"),
+		ListAllPkgs:    c.Bool("list-all-pkgs"),
 	}, nil
 }
 
