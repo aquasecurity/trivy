@@ -319,7 +319,7 @@ func TestClient_Filter(t *testing.T) {
 		severities    []dbTypes.Severity
 		ignoreUnfixed bool
 		ignoreFile    string
-		policyFile    string
+		policyFiles    []string
 	}
 	tests := []struct {
 		name               string
@@ -576,7 +576,7 @@ func TestClient_Filter(t *testing.T) {
 				},
 				severities:    []dbTypes.Severity{dbTypes.SeverityLow},
 				ignoreUnfixed: false,
-				policyFile:    "./testdata/test.rego",
+				policyFiles:    []string{"./testdata/test.rego"},
 			},
 			wantVulns: []types.DetectedVulnerability{
 				{
@@ -589,6 +589,46 @@ func TestClient_Filter(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			name: "happy path with multiply policy files",
+			args: args{
+				vulns: []types.DetectedVulnerability{
+					{
+						VulnerabilityID:  "CVE-2019-0001",
+						PkgName:          "foo",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "1.2.4",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityLow.String(),
+						},
+					},
+					{
+						// this vulnerability is ignored
+						VulnerabilityID:  "CVE-2019-0002",
+						PkgName:          "foo",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "1.2.4",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityLow.String(),
+						},
+					},
+					{
+						// this vulnerability is ignored
+						VulnerabilityID:  "CVE-2019-0003",
+						PkgName:          "foo",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "1.2.4",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityLow.String(),
+						},
+					},
+				},
+				severities:    []dbTypes.Severity{dbTypes.SeverityLow},
+				ignoreUnfixed: false,
+				policyFiles:    []string{"./testdata/test.rego", "./testdata/test2.rego"},
+			},
+			wantVulns: nil,
 		},
 		{
 			name: "happy path with duplicates, one with empty fixed version",
@@ -723,7 +763,7 @@ func TestClient_Filter(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := Client{}
 			gotVulns, gotMisconfSummary, gotMisconfs, err := c.Filter(context.Background(), tt.args.vulns, tt.args.misconfs,
-				tt.args.severities, tt.args.ignoreUnfixed, false, tt.args.ignoreFile, tt.args.policyFile)
+				tt.args.severities, tt.args.ignoreUnfixed, false, tt.args.ignoreFile, tt.args.policyFiles)
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantVulns, gotVulns)
 			assert.Equal(t, tt.wantMisconfSummary, gotMisconfSummary)

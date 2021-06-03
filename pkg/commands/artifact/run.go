@@ -193,7 +193,7 @@ func filter(ctx context.Context, opt Option, report pkgReport.Report) (pkgReport
 	for i := range results {
 		resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
 		vulns, misconfSummary, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
-			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, opt.IgnoreFile, opt.IgnorePolicy)
+			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, opt.IgnoreFile, opt.IgnorePolicies)
 		if err != nil {
 			return pkgReport.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
