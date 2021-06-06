@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/NYTimes/gziphandler"
 	"github.com/google/wire"
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
@@ -86,11 +87,13 @@ func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 
 	mux := http.NewServeMux()
 
-	scanHandler := rpcScanner.NewScannerServer(initializeScanServer(serverCache), nil)
-	mux.Handle(rpcScanner.ScannerPathPrefix, withToken(withWaitGroup(scanHandler), token, tokenHeader))
+	scanServer := rpcScanner.NewScannerServer(initializeScanServer(serverCache), nil)
+	scanHandler := withToken(withWaitGroup(scanServer), token, tokenHeader)
+	mux.Handle(rpcScanner.ScannerPathPrefix, gziphandler.GzipHandler(scanHandler))
 
-	layerHandler := rpcCache.NewCacheServer(NewCacheServer(serverCache), nil)
-	mux.Handle(rpcCache.CachePathPrefix, withToken(withWaitGroup(layerHandler), token, tokenHeader))
+	layerServer := rpcCache.NewCacheServer(NewCacheServer(serverCache), nil)
+	layerHandler := withToken(withWaitGroup(layerServer), token, tokenHeader)
+	mux.Handle(rpcCache.CachePathPrefix, gziphandler.GzipHandler(layerHandler))
 
 	mux.HandleFunc("/healthz", func(rw http.ResponseWriter, r *http.Request) {
 		if _, err := rw.Write([]byte("ok")); err != nil {
