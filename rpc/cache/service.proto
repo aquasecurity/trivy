@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package trivy.cache.v1;
-option  go_package = "cache";
+option  go_package = "github.com/aquasecurity/trivy/rpc/cache;cache";
 
 import "google/protobuf/timestamp.proto";
 import "github.com/aquasecurity/trivy/rpc/common/service.proto";

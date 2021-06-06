@@ -3,7 +3,7 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 
 package trivy.common;
-option  go_package = "common";
+option  go_package = "github.com/aquasecurity/trivy/rpc/common;common";
 
 message OS {
   string family = 1;
