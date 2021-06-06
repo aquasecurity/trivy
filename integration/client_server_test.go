@@ -89,6 +89,16 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/alpine-310.gitlab.golden",
 		},
 		{
+			name: "alpine 3.10 integration with gitlab-codequality template",
+			testArgs: args{
+				Format:       "template",
+				TemplatePath: "@../contrib/gitlab-codequality.tpl",
+				Version:      "dev",
+				Input:        "testdata/fixtures/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.gitlab-codequality.golden",
+		},
+		{
 			name: "alpine 3.10 integration with sarif template",
 			testArgs: args{
 				Format:       "template",

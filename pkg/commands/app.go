@@ -522,6 +522,7 @@ func NewClientCommand() *cli.Command {
 			&timeoutFlag,
 			&ignorePolicy,
 			&configPolicy,
+			&listAllPackages,
 
 			// original flags
 			&token,

@@ -168,6 +168,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 			Vulnerabilities:   ConvertFromRPCVulns(result.Vulnerabilities),
 			Misconfigurations: ConvertFromRPCMisconfs(result.Misconfigurations),
 			Type:              result.Type,
+			Packages:          ConvertFromRPCPkgs(result.Packages),
 		})
 	}
 	return results
@@ -470,6 +471,7 @@ func ConvertToRPCScanResponse(results report.Results, os *ftypes.OS, eosl bool) 
 			Type:              result.Type,
 			Vulnerabilities:   ConvertToRPCVulns(result.Vulnerabilities),
 			Misconfigurations: ConvertToRPCMisconfs(result.Misconfigurations),
+			Packages:          ConvertToRPCPkgs(result.Packages),
 		})
 	}
 

@@ -18,11 +18,11 @@ type Option struct {
 	option.ReportOption
 	option.ConfigOption
 
+	ListAllPkgs   bool
 	RemoteAddr    string
 	token         string
 	tokenHeader   string
 	customHeaders []string
-
 	// this field is populated in Init()
 	CustomHeaders http.Header
 }
@@ -40,6 +40,7 @@ func NewOption(c *cli.Context) (Option, error) {
 		ImageOption:    option.NewImageOption(c),
 		ReportOption:   option.NewReportOption(c),
 		ConfigOption:   option.NewConfigOption(c),
+		ListAllPkgs:    c.Bool("list-all-pkgs"),
 		RemoteAddr:     c.String("remote"),
 		token:          c.String("token"),
 		tokenHeader:    c.String("token-header"),
