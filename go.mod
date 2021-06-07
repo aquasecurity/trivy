@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/Masterminds/goutils v1.1.0 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible
+	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
 	github.com/aquasecurity/fanal v0.0.0-20210520034323-54c5a82e861f
 	github.com/aquasecurity/go-dep-parser v0.0.0-20210520015931-0dd56983cc62
