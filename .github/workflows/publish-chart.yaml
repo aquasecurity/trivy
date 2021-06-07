@@ -4,13 +4,15 @@ on:
     branches: [main]
     paths:
       - 'helm/trivy/**'
+    tags:
+      - "v*"
   workflow_dispatch:
 env:
   HELM_REP: helm-charts
   GH_OWNER: aquasecurity
   CHART_DIR: helm/trivy
 jobs:
-  release:
+  publish:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -20,20 +22,24 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v1
         with:
-          version: v3.5.0
+          version: v3.6.0
       - name: Install chart-releaser
+        env:
+          VERSION: 1.2.1
         run: |
-          wget https://github.com/helm/chart-releaser/releases/download/v1.1.1/chart-releaser_1.1.1_linux_amd64.tar.gz
-          tar xzvf chart-releaser_1.1.1_linux_amd64.tar.gz cr
+          wget "https://github.com/helm/chart-releaser/releases/download/v${VERSION}/chart-releaser_${VERSION}_linux_amd64.tar.gz"
+          tar xzvf chart-releaser_${VERSION}_linux_amd64.tar.gz cr          
       - name: Package helm chart
         run: |
-          ./cr package ${{ env.CHART_DIR }}
+          RELEASE=$(echo ${{ github.ref }} | sed -e "s#refs/tags/##g" | sed -e 's/^v//')
+          echo "Release ${RELEASE}"
+          helm package --app-version=${RELEASE} --version=${RELEASE} ${{ env.CHART_DIR }} -d .cr-release-packages
       - name: Upload helm chart
         # Failed with upload the same version: https://github.com/helm/chart-releaser/issues/101
         continue-on-error: true
         ## Upload the tar in the Releases repository
         run: |
-          ./cr upload -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} --token ${{ secrets.ORG_REPO_TOKEN }} -p .cr-release-packages
+          ./cr upload -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} --token ${{ secrets.ORG_REPO_TOKEN }}
       - name: Index helm chart
         run: |
           ./cr index -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} -c https://${{ env.GH_OWNER }}.github.io/${{ env.HELM_REP }}/ -i index.yaml
