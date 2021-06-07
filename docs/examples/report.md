@@ -202,6 +202,6 @@ $ trivy image --format template --template "@contrib/html.tpl" -o report.html go
 ```
 
 [action]: https://github.com/aquasecurity/trivy-action
-[asff]: https://github.com/aquasecurity/trivy/tree/main/docs/integration/security-hub.md
+[asff]: https://github.com/aquasecurity/trivy/blob/main/docs/integrations/aws-security-hub.md
 [sarif]: https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/managing-results-from-code-scanning
 [sprig]: http://masterminds.github.io/sprig/
