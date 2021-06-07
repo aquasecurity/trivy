@@ -17,7 +17,7 @@
         
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.6+insiders-2.9.1">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.7+insiders-2.9.2">
     
     
       
@@ -46,6 +46,8 @@
     
     
       
+
+
     
     
   </head>
@@ -1624,7 +1626,7 @@ As an example you can summarize the different classes of issues:</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format template --template &quot;@contrib/sarif.tpl&quot; -o report.sarif  golang:1.12-alpine
 </code></pre></div>
 This SARIF format can be uploaded to GitHub code scanning results, and there is a <a href="https://github.com/aquasecurity/trivy-action">Trivy GitHub Action</a> for automating this process.</p>
-<p>Trivy also supports an <a href="https://github.com/aquasecurity/trivy/tree/main/docs/integration/security-hub.md">ASFF template for reporting findings to AWS Security Hub</a></p>
+<p>Trivy also supports an <a href="https://github.com/aquasecurity/trivy/blob/main/docs/integrations/aws-security-hub.md">ASFF template for reporting findings to AWS Security Hub</a></p>
 <h4 id="html">HTML</h4>
 <div class="highlight"><pre><span></span><code>$ trivy image --format template --template &quot;@contrib/html.tpl&quot; -o report.html golang:1.12-alpine
 </code></pre></div>
@@ -1647,7 +1649,8 @@ This SARIF format can be uploaded to GitHub code scanning results, and there is 
   
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
-        <a href="../filter/" class="md-footer__link md-footer__link--prev" rel="prev">
+        
+        <a href="../filter/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Vulnerability Filtering" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -1662,7 +1665,8 @@ This SARIF format can be uploaded to GitHub code scanning results, and there is 
         </a>
       
       
-        <a href="../db/" class="md-footer__link md-footer__link--next" rel="next">
+        
+        <a href="../db/" class="md-footer__link md-footer__link--next" aria-label="Next: Vulnerability DB" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
@@ -1694,10 +1698,10 @@ This SARIF format can be uploaded to GitHub code scanning results, and there is 
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.df8cae7d.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.df8cae7d.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.0c4ae912.min.js"></script>
+      <script src="../../assets/javascripts/bundle.82217815.min.js"></script>
       
     
   </body>
