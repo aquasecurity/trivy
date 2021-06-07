@@ -99,6 +99,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
   hosts:
     - host: trivy.example.com
+  path: "/"
   tls: []
   #  - secretName: trivy-example-tls
   #    hosts:
