@@ -20,14 +20,8 @@ import (
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbFile "github.com/aquasecurity/trivy/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/log"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
-
-func TestMain(m *testing.M) {
-	_ = log.InitLogger(false, false)
-	os.Exit(m.Run())
-}
 
 func Test_dbWorker_update(t *testing.T) {
 	timeNextUpdate := time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC)

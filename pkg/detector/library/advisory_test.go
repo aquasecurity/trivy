@@ -1,7 +1,6 @@
 package library_test
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,11 +8,11 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 func TestAdvisory_DetectVulnerabilities(t *testing.T) {
@@ -98,8 +97,7 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Initialize DB
-			dir := utils.InitTestDB(t, tt.fixtures)
-			defer os.RemoveAll(dir)
+			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
 			adv := library.NewAdvisory(tt.ecosystem, tt.comparer)

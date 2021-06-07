@@ -3,20 +3,12 @@ package client
 import (
 	"context"
 	"net/http"
-	"os"
 	"testing"
 
 	"github.com/twitchtv/twirp"
 
-	"github.com/aquasecurity/trivy/pkg/log"
-
 	"github.com/stretchr/testify/assert"
 )
-
-func TestMain(m *testing.M) {
-	_ = log.InitLogger(false, true)
-	os.Exit(m.Run())
-}
 
 func TestWithCustomHeaders(t *testing.T) {
 	type args struct {

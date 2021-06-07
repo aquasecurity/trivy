@@ -8,19 +8,17 @@ import (
 	"sync"
 	"time"
 
+	"github.com/NYTimes/gziphandler"
 	"github.com/google/wire"
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/internal/server/config"
 	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
-	"github.com/aquasecurity/trivy/rpc/detector"
-	rpcDetector "github.com/aquasecurity/trivy/rpc/detector"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
@@ -30,26 +28,46 @@ var DBWorkerSuperSet = wire.NewSet(
 	newDBWorker,
 )
 
+// Server represents Trivy server
+type Server struct {
+	appVersion  string
+	addr        string
+	cacheDir    string
+	token       string
+	tokenHeader string
+}
+
+// NewServer returns an instance of Server
+func NewServer(appVersion, addr, cacheDir, token, tokenHeader string) Server {
+	return Server{
+		appVersion:  appVersion,
+		addr:        addr,
+		cacheDir:    cacheDir,
+		token:       token,
+		tokenHeader: tokenHeader,
+	}
+}
+
 // ListenAndServe starts Trivy server
-func ListenAndServe(c config.Config, serverCache cache.Cache) error {
+func (s Server) ListenAndServe(serverCache cache.Cache) error {
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
-		worker := initializeDBWorker(c.CacheDir, true)
+		worker := initializeDBWorker(s.cacheDir, true)
 		ctx := context.Background()
 		for {
 			time.Sleep(1 * time.Hour)
-			if err := worker.update(ctx, c.AppVersion, c.CacheDir, dbUpdateWg, requestWg); err != nil {
+			if err := worker.update(ctx, s.appVersion, s.cacheDir, dbUpdateWg, requestWg); err != nil {
 				log.Logger.Errorf("%+v\n", err)
 			}
 		}
 	}()
 
-	mux := newServeMux(serverCache, dbUpdateWg, requestWg, c.Token, c.TokenHeader)
-	log.Logger.Infof("Listening %s...", c.Listen)
+	mux := newServeMux(serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader)
+	log.Logger.Infof("Listening %s...", s.addr)
 
-	return http.ListenAndServe(c.Listen, mux)
+	return http.ListenAndServe(s.addr, mux)
 }
 
 func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup, token, tokenHeader string) *http.ServeMux {
@@ -69,19 +87,13 @@ func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 
 	mux := http.NewServeMux()
 
-	scanHandler := rpcScanner.NewScannerServer(initializeScanServer(serverCache), nil)
-	mux.Handle(rpcScanner.ScannerPathPrefix, withToken(withWaitGroup(scanHandler), token, tokenHeader))
+	scanServer := rpcScanner.NewScannerServer(initializeScanServer(serverCache), nil)
+	scanHandler := withToken(withWaitGroup(scanServer), token, tokenHeader)
+	mux.Handle(rpcScanner.ScannerPathPrefix, gziphandler.GzipHandler(scanHandler))
 
-	layerHandler := rpcCache.NewCacheServer(NewCacheServer(serverCache), nil)
-	mux.Handle(rpcCache.CachePathPrefix, withToken(withWaitGroup(layerHandler), token, tokenHeader))
-
-	// osHandler is for backward compatibility
-	osHandler := rpcDetector.NewOSDetectorServer(initializeOspkgServer(), nil)
-	mux.Handle(rpcDetector.OSDetectorPathPrefix, withToken(withWaitGroup(osHandler), token, tokenHeader))
-
-	// libHandler is for backward compatibility
-	libHandler := rpcDetector.NewLibDetectorServer(initializeLibServer(), nil)
-	mux.Handle(rpcDetector.LibDetectorPathPrefix, withToken(withWaitGroup(libHandler), token, tokenHeader))
+	layerServer := rpcCache.NewCacheServer(NewCacheServer(serverCache), nil)
+	layerHandler := withToken(withWaitGroup(layerServer), token, tokenHeader)
+	mux.Handle(rpcCache.CachePathPrefix, gziphandler.GzipHandler(layerHandler))
 
 	mux.HandleFunc("/healthz", func(rw http.ResponseWriter, r *http.Request) {
 		if _, err := rw.Write([]byte("ok")); err != nil {
@@ -95,7 +107,7 @@ func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 func withToken(base http.Handler, token, tokenHeader string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if token != "" && token != r.Header.Get(tokenHeader) {
-			detector.WriteError(w, twirp.NewError(twirp.Unauthenticated, "invalid token"))
+			rpcScanner.WriteError(w, twirp.NewError(twirp.Unauthenticated, "invalid token"))
 			return
 		}
 		base.ServeHTTP(w, r)

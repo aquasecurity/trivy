@@ -82,7 +82,8 @@ type Scanner struct {
 
 // Driver defines operations of scanner
 type Driver interface {
-	Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (results report.Results, osFound *ftypes.OS, eols bool, err error)
+	Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (
+		results report.Results, osFound *ftypes.OS, eols bool, err error)
 }
 
 // NewScanner is the factory method of Scanner
@@ -96,9 +97,6 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 	if err != nil {
 		return report.Report{}, xerrors.Errorf("failed analysis: %w", err)
 	}
-
-	log.Logger.Debugf("Artifact ID: %s", artifactInfo.ID)
-	log.Logger.Debugf("Blob IDs: %v", artifactInfo.BlobIDs)
 
 	results, osFound, eosl, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {

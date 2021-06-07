@@ -6,6 +6,9 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/xerrors"
+
+	flog "github.com/aquasecurity/fanal/log"
+	dlog "github.com/aquasecurity/go-dep-parser/pkg/log"
 )
 
 var (
@@ -14,13 +17,25 @@ var (
 	debugOption bool
 )
 
+func init() {
+	// Set the default logger
+	Logger, _ = NewLogger(false, false) // nolint: errcheck
+}
+
 // InitLogger initialize the logger variable
 func InitLogger(debug, disable bool) (err error) {
 	debugOption = debug
 	Logger, err = NewLogger(debug, disable)
 	if err != nil {
-		return xerrors.Errorf("error in new logger: %w", err)
+		return xerrors.Errorf("failed to initialize a logger: %w", err)
 	}
+
+	// Set logger for go-dep-parser
+	dlog.SetLogger(Logger)
+
+	// Set logger for fanal
+	flog.SetLogger(Logger)
+
 	return nil
 
 }

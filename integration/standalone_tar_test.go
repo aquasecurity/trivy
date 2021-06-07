@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/internal"
+	"github.com/aquasecurity/trivy/pkg/commands"
 )
 
 func TestRun_WithTar(t *testing.T) {
@@ -378,7 +378,7 @@ func TestRun_WithTar(t *testing.T) {
 	defer os.RemoveAll(cacheDir)
 
 	// Setup CLI App
-	app := internal.NewApp("dev")
+	app := commands.NewApp("dev")
 	app.Writer = ioutil.Discard
 
 	for _, c := range cases {
@@ -413,10 +413,15 @@ func TestRun_WithTar(t *testing.T) {
 			}
 
 			if len(c.testArgs.SkipFiles) != 0 {
-				osArgs = append(osArgs, "--skip-files", strings.Join(c.testArgs.SkipFiles, ","))
+				for _, skipFile := range c.testArgs.SkipFiles {
+					osArgs = append(osArgs, "--skip-files", skipFile)
+				}
 			}
+
 			if len(c.testArgs.SkipDirs) != 0 {
-				osArgs = append(osArgs, "--skip-dirs", strings.Join(c.testArgs.SkipDirs, ","))
+				for _, skipDir := range c.testArgs.SkipDirs {
+					osArgs = append(osArgs, "--skip-dirs", skipDir)
+				}
 			}
 
 			// Setup the output file

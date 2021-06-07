@@ -24,7 +24,7 @@ import (
 
 	_ "github.com/aquasecurity/fanal/analyzer"
 	testdocker "github.com/aquasecurity/trivy/integration/docker"
-	"github.com/aquasecurity/trivy/internal"
+	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/report"
 )
 
@@ -254,7 +254,7 @@ func scan(imageRef name.Reference, baseDir, goldenFile string, opt registryOptio
 	defer unsetEnv()
 
 	// Setup CLI App
-	app := internal.NewApp("dev")
+	app := commands.NewApp("dev")
 	app.Writer = ioutil.Discard
 
 	osArgs := []string{"trivy", "--cache-dir", cacheDir, "--format", "json", "--skip-update", "--output", outputFile, imageRef.Name()}

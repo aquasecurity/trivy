@@ -4,6 +4,10 @@
 *.dll
 *.so
 *.dylib
+trivy
+
+## chart release
+.cr-release-packages
 
 # Test binary, build with `go test -c`
 *.test

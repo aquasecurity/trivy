@@ -16,8 +16,10 @@ import (
 	"github.com/aquasecurity/fanal/cache"
 	ftypes "github.com/aquasecurity/fanal/types"
 	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -37,15 +39,16 @@ func TestScanServer_Scan(t *testing.T) {
 		in *rpcScanner.ScanRequest
 	}
 	tests := []struct {
-		name                string
-		args                args
-		scanExpectation     scanner.DriverScanExpectation
-		fillInfoExpectation vulnerability.OperationFillInfoExpectation
-		want                *rpcScanner.ScanResponse
-		wantErr             string
+		name            string
+		fixtures        []string
+		args            args
+		scanExpectation scanner.DriverScanExpectation
+		want            *rpcScanner.ScanResponse
+		wantErr         string
 	}{
 		{
-			name: "happy path",
+			name:     "happy path",
+			fixtures: []string{"testdata/fixtures/vulnerability.yaml"},
 			args: args{
 				in: &rpcScanner.ScanRequest{
 					Target:     "alpine:3.11",
@@ -70,7 +73,6 @@ func TestScanServer_Scan(t *testing.T) {
 									PkgName:          "musl",
 									InstalledVersion: "1.2.3",
 									FixedVersion:     "1.2.4",
-									SeveritySource:   "nvd",
 									Vulnerability: dbTypes.Vulnerability{
 										LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
 										PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
@@ -84,24 +86,6 @@ func TestScanServer_Scan(t *testing.T) {
 						Family: "alpine",
 						Name:   "3.11",
 					},
-				},
-			},
-			fillInfoExpectation: vulnerability.OperationFillInfoExpectation{
-				Args: vulnerability.OperationFillInfoArgs{
-					Vulns: []types.DetectedVulnerability{
-						{
-							VulnerabilityID:  "CVE-2019-0001",
-							PkgName:          "musl",
-							InstalledVersion: "1.2.3",
-							FixedVersion:     "1.2.4",
-							Vulnerability: dbTypes.Vulnerability{
-								LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
-								PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
-							},
-							SeveritySource: "nvd",
-						},
-					},
-					ReportType: "alpine",
 				},
 			},
 			want: &rpcScanner.ScanResponse{
@@ -119,9 +103,14 @@ func TestScanServer_Scan(t *testing.T) {
 								PkgName:          "musl",
 								InstalledVersion: "1.2.3",
 								FixedVersion:     "1.2.4",
+								Severity:         common.Severity_MEDIUM,
 								SeveritySource:   "nvd",
 								Layer:            &common.Layer{},
-								Cvss:             make(map[string]*common.CVSS),
+								Cvss:             map[string]*common.CVSS{},
+								PrimaryUrl:       "https://avd.aquasec.com/nvd/cve-2019-0001",
+								Title:            "dos",
+								Description:      "dos vulnerability",
+								References:       []string{"http://example.com"},
 								LastModifiedDate: &timestamp.Timestamp{
 									Seconds: 1577840460,
 								},
@@ -161,13 +150,13 @@ func TestScanServer_Scan(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			dbtest.InitDB(t, tt.fixtures)
+			defer db.Close()
+
 			mockDriver := new(scanner.MockDriver)
 			mockDriver.ApplyScanExpectation(tt.scanExpectation)
 
-			mockVulnClient := new(vulnerability.MockOperation)
-			mockVulnClient.ApplyFillInfoExpectation(tt.fillInfoExpectation)
-
-			s := NewScanServer(mockDriver, mockVulnClient)
+			s := NewScanServer(mockDriver, vulnerability.NewClient(db.Config{}))
 			got, err := s.Scan(context.Background(), tt.args.in)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)

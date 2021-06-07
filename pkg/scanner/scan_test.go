@@ -3,7 +3,6 @@ package scanner
 import (
 	"context"
 	"errors"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,16 +10,9 @@ import (
 
 	"github.com/aquasecurity/fanal/artifact"
 	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
-
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	code := m.Run()
-	os.Exit(code)
-}
 
 func TestScanner_ScanArtifact(t *testing.T) {
 	type args struct {

@@ -36,6 +36,22 @@ spec:
       securityContext:
 {{ toYaml .Values.podSecurityContext | indent 8 }}
       {{- end }}
+      {{- if .Values.image.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+      {{- end }}
       containers:
         - name: main
           image: {{ template "trivy.imageRef" . }}
@@ -51,11 +67,15 @@ spec:
               value: "0.0.0.0:{{ .Values.service.port | default 4954 }}"
             - name: "TRIVY_CACHE_DIR"
               value: "/home/scanner/.cache/trivy"
+            {{- if .Values.trivy.cache.redis.enabled }}
+            - name: "TRIVY_CACHE_BACKEND"
+              value: {{ .Values.trivy.cache.redis.url | quote }}
+            {{- end }}
             - name: "TRIVY_DEBUG"
               value: {{ .Values.trivy.debugMode | default false | quote }}
             - name: "TRIVY_SKIP_UPDATE"
               value: {{ .Values.trivy.skipUpdate | default false | quote }}
-            - name: "TRIVY_GITHUB_TOKEN"
+            - name: "GITHUB_TOKEN"
               valueFrom:
                 secretKeyRef:
                   name: {{ include "trivy.fullname" . }}

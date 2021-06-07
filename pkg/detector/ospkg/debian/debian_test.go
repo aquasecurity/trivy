@@ -1,14 +1,12 @@
 package debian
 
 import (
-	"os"
 	"testing"
 	"time"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -51,11 +49,6 @@ func (mdc MockDebianConfig) Get(a string, b string) ([]dbTypes.Advisory, error) 
 	return []dbTypes.Advisory{}, nil
 }
 
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	os.Exit(m.Run())
-}
-
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	vectors := map[string]struct {
 		now       time.Time
@@ -86,6 +79,24 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			osFamily:  "debian",
 			osVersion: "9",
 			expected:  true,
+		},
+		"debian9 eol ends": {
+			now:       time.Date(2022, 7, 31, 23, 59, 59, 0, time.UTC),
+			osFamily:  "debian",
+			osVersion: "9",
+			expected:  false,
+		},
+		"debian10": {
+			now:       time.Date(2020, 7, 31, 23, 59, 59, 0, time.UTC),
+			osFamily:  "debian",
+			osVersion: "10",
+			expected:  true,
+		},
+		"debian10 eol ends": {
+			now:       time.Date(2024, 7, 31, 23, 59, 59, 0, time.UTC),
+			osFamily:  "debian",
+			osVersion: "10",
+			expected:  false,
 		},
 		"unknown": {
 			now:       time.Date(2020, 7, 31, 23, 59, 59, 0, time.UTC),
