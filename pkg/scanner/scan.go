@@ -108,7 +108,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 	}
 
 	return report.Report{
-		ImageID:     artifactInfo.ID,
+		ArtifactID:  artifactInfo.ID,
 		RepoTags:    artifactInfo.RepoTags,
 		RepoDigests: artifactInfo.RepoDigests,
 		Results:     results,

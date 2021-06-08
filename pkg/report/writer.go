@@ -16,10 +16,10 @@ var Now = time.Now
 
 // Report represents a scan result
 type Report struct {
-	ImageID     string
-	RepoTags    []string
-	RepoDigests []string
-	Results     Results
+	ArtifactID  string   `json:",omitempty"`
+	RepoTags    []string `json:",omitempty"`
+	RepoDigests []string `json:",omitempty"`
+	Results     Results  `json:",omitempty"`
 }
 
 // Results to hold list of Result
