@@ -22,8 +22,8 @@ type TableWriter struct {
 }
 
 // Write writes the result on standard output
-func (tw TableWriter) Write(results Results) error {
-	for _, result := range results {
+func (tw TableWriter) Write(report Report) error {
+	for _, result := range report.Results {
 		// Skip zero vulnerabilities on Java archives (JAR/WAR/EAR)
 		if result.Type == ftypes.Jar && len(result.Vulnerabilities) == 0 {
 			continue

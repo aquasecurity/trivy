@@ -92,20 +92,25 @@ func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
 }
 
 // ScanArtifact scans the artifacts and returns results
-func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (report.Results, error) {
+func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (report.Report, error) {
 	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {
-		return nil, xerrors.Errorf("failed analysis: %w", err)
+		return report.Report{}, xerrors.Errorf("failed analysis: %w", err)
 	}
 
 	results, osFound, eosl, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
-		return nil, xerrors.Errorf("scan failed: %w", err)
+		return report.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 	if eosl {
 		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
 		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
 	}
 
-	return results, nil
+	return report.Report{
+		ArtifactID:  artifactInfo.ID,
+		RepoTags:    artifactInfo.RepoTags,
+		RepoDigests: artifactInfo.RepoDigests,
+		Results:     results,
+	}, nil
 }

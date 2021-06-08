@@ -14,7 +14,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
+	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -62,21 +62,21 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		defer db.Close()
 	}
 
-	results, err := scan(ctx, opt, initializeScanner, cacheClient)
+	report, err := scan(ctx, opt, initializeScanner, cacheClient)
 	if err != nil {
 		return xerrors.Errorf("scan error: %w", err)
 	}
 
-	results, err = filter(ctx, opt, results)
+	report, err = filter(ctx, opt, report)
 	if err != nil {
 		return xerrors.Errorf("filter error: %w", err)
 	}
 
-	if err = report.WriteResults(opt.Format, opt.Output, opt.Severities, results, opt.Template, opt.Light); err != nil {
+	if err = pkgReport.Write(opt.Format, opt.Output, opt.Severities, report, opt.Template, opt.Light); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	exit(opt, results)
+	exit(opt, report.Results)
 
 	return nil
 }
@@ -124,7 +124,7 @@ func initDB(c Option) error {
 }
 
 func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, cacheClient cache.Cache) (
-	report.Results, error) {
+	pkgReport.Report, error) {
 	target := opt.Target
 	if opt.Input != "" {
 		target = opt.Input
@@ -154,32 +154,33 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Timeout,
 		disabledAnalyzers, configScannerOptions)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to initialize a scanner: %w", err)
+		return pkgReport.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
 	defer cleanup()
 
-	results, err := s.ScanArtifact(ctx, scanOptions)
+	report, err := s.ScanArtifact(ctx, scanOptions)
 	if err != nil {
-		return nil, xerrors.Errorf("image scan failed: %w", err)
+		return pkgReport.Report{}, xerrors.Errorf("image scan failed: %w", err)
 	}
-	return results, nil
+	return report, nil
 }
 
-func filter(ctx context.Context, opt Option, results report.Results) (report.Results, error) {
+func filter(ctx context.Context, opt Option, report pkgReport.Report) (pkgReport.Report, error) {
 	resultClient := initializeResultClient()
+	results := report.Results
 	for i := range results {
 		resultClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
 		vulns, err := resultClient.Filter(ctx, results[i].Vulnerabilities,
 			opt.Severities, opt.IgnoreUnfixed, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
-			return nil, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
+			return pkgReport.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 		results[i].Vulnerabilities = vulns
 	}
-	return results, nil
+	return report, nil
 }
 
-func exit(c Option, results report.Results) {
+func exit(c Option, results pkgReport.Results) {
 	if c.ExitCode != 0 && results.Failed() {
 		os.Exit(c.ExitCode)
 	}

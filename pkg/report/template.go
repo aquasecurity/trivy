@@ -13,10 +13,10 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-
 	"github.com/Masterminds/sprig"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 )
 
 // regex to extract file path in case string includes (distro:version)
@@ -83,8 +83,8 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 }
 
 // Write writes result
-func (tw TemplateWriter) Write(results Results) error {
-	err := tw.Template.Execute(tw.Output, results)
+func (tw TemplateWriter) Write(report Report) error {
+	err := tw.Template.Execute(tw.Output, report.Results)
 	if err != nil {
 		return xerrors.Errorf("failed to write with template: %w", err)
 	}
