@@ -20,9 +20,9 @@ type JSONWriter struct {
 func (jw JSONWriter) Write(report Report) error {
 	var v interface{} = report
 	if os.Getenv("TRIVY_NEW_JSON_SCHEMA") == "" {
-		// When migrating to the new JSON schema, TRIVY_NEW_JSON_SCHEMA will be removed.
-		log.Logger.Warnf("DEPRECATED: the current JSON schema is deprecated, check %s for more info.",
-			"https://github.com/aquasecurity/trivy/discussions/[TODO]")
+		// After migrating to the new JSON schema, TRIVY_NEW_JSON_SCHEMA will be removed.
+		log.Logger.Warnf("DEPRECATED: the current JSON schema is deprecated, check %s for more information.",
+			"https://github.com/aquasecurity/trivy/discussions/1050")
 		v = report.Results
 	}
 
