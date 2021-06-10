@@ -26,7 +26,7 @@
         "CreatedAt": "{{ getCurrentTime }}",
         "UpdatedAt": "{{ getCurrentTime }}",
         "Severity": {
-            "Label": "{{ .Severity }}"
+            "Label": "{{ $severity }}"
         },
         "Title": "Trivy found a vulnerability to {{ .VulnerabilityID }} in container {{ $target }}",
         "Description": {{ escapeString $description | printf "%q" }},
