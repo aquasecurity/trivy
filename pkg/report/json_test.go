@@ -62,14 +62,16 @@ func TestReportWriter_JSON(t *testing.T) {
 			jsonWritten := bytes.Buffer{}
 			jw.Output = &jsonWritten
 
-			inputResults := report.Results{
-				{
-					Target:          "foojson",
-					Vulnerabilities: tc.detectedVulns,
+			inputResults := report.Report{
+				Results: report.Results{
+					{
+						Target:          "foojson",
+						Vulnerabilities: tc.detectedVulns,
+					},
 				},
 			}
 
-			err := report.WriteResults("json", &jsonWritten, nil, inputResults, "", false)
+			err := report.Write("json", &jsonWritten, nil, inputResults, "", false)
 			assert.NoError(t, err)
 
 			writtenResults := report.Results{}

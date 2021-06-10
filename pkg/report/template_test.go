@@ -166,15 +166,17 @@ func TestReportWriter_Template(t *testing.T) {
 			}
 			os.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			tmplWritten := bytes.Buffer{}
-			inputResults := report.Results{
-				{
-					Target:          "foojunit",
-					Type:            "test",
-					Vulnerabilities: tc.detectedVulns,
+			inputReport := report.Report{
+				Results: report.Results{
+					{
+						Target:          "foojunit",
+						Type:            "test",
+						Vulnerabilities: tc.detectedVulns,
+					},
 				},
 			}
 
-			assert.NoError(t, report.WriteResults("template", &tmplWritten, nil, inputResults, tc.template, false))
+			assert.NoError(t, report.Write("template", &tmplWritten, nil, inputReport, tc.template, false))
 			assert.Equal(t, tc.expected, tmplWritten.String())
 		})
 	}
@@ -197,14 +199,16 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
 			template, err := ioutil.ReadFile(templateFile)
 			require.NoError(t, err, tc.name)
 
-			inputResults := report.Results{
-				report.Result{
-					Target:          tc.target,
-					Type:            "footype",
-					Vulnerabilities: tc.detectedVulns,
+			inputReport := report.Report{
+				Results: report.Results{
+					{
+						Target:          tc.target,
+						Type:            "footype",
+						Vulnerabilities: tc.detectedVulns,
+					},
 				},
 			}
-			assert.NoError(t, report.WriteResults("template", &got, nil, inputResults, string(template), false), tc.name)
+			assert.NoError(t, report.Write("template", &got, nil, inputReport, string(template), false), tc.name)
 			assert.JSONEq(t, tc.want, got.String(), tc.name)
 		})
 	}

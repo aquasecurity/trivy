@@ -14,10 +14,18 @@ import (
 // Now returns the current time
 var Now = time.Now
 
+// Report represents a scan result
+type Report struct {
+	ArtifactID  string   `json:",omitempty"`
+	RepoTags    []string `json:",omitempty"`
+	RepoDigests []string `json:",omitempty"`
+	Results     Results  `json:",omitempty"`
+}
+
 // Results to hold list of Result
 type Results []Result
 
-// Result to hold image scan results
+// Result holds a target and detected vulnerabilities
 type Result struct {
 	Target            string                           `json:"Target"`
 	Type              string                           `json:"Type,omitempty"`
@@ -48,8 +56,9 @@ func (results Results) Failed() bool {
 	return false
 }
 
-// WriteResults writes the result to output, format as passed in argument
-func WriteResults(format string, output io.Writer, severities []dbTypes.Severity, results Results, outputTemplate string, light bool) error {
+// Write writes the result to output, format as passed in argument
+func Write(format string, output io.Writer, severities []dbTypes.Severity, report Report,
+	outputTemplate string, light bool) error {
 	var writer Writer
 	switch format {
 	case "table":
@@ -65,7 +74,7 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 		return xerrors.Errorf("unknown format: %v", format)
 	}
 
-	if err := writer.Write(results); err != nil {
+	if err := writer.Write(report); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
 	return nil
@@ -73,5 +82,5 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 
 // Writer defines the result write operation
 type Writer interface {
-	Write(Results) error
+	Write(Report) error
 }

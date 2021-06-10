@@ -8,21 +8,10 @@
 {{- else -}}
   ,
 {{- end -}}
-{{- $trivyProductSev := 0 -}}
-{{- $trivyNormalizedSev := 0 -}}
-{{- if eq .Severity "LOW" -}}
-    {{- $trivyProductSev = 1 -}}
-    {{- $trivyNormalizedSev = 10 -}}
-  {{- else if eq .Severity "MEDIUM" -}}
-    {{- $trivyProductSev = 4 -}}
-    {{- $trivyNormalizedSev = 40 -}}
-  {{- else if eq .Severity "HIGH" -}}
-    {{- $trivyProductSev = 7 -}}
-    {{- $trivyNormalizedSev = 70 -}}
-  {{- else if eq .Severity "CRITICAL" -}}
-    {{- $trivyProductSev = 9 -}}
-    {{- $trivyNormalizedSev = 90 -}}
-{{- end }}
+{{- $severity := .Severity -}}
+{{- if eq $severity "UNKNOWN" -}}
+{{- $severity = "INFORMATIONAL" -}}
+{{- end -}}
 {{- $description := .Description -}}
 {{- if gt (len $description ) 1021 -}}
     {{- $description = (slice $description 0 1021) | printf "%v .." -}}
@@ -37,8 +26,7 @@
         "CreatedAt": "{{ getCurrentTime }}",
         "UpdatedAt": "{{ getCurrentTime }}",
         "Severity": {
-            "Product": {{ $trivyProductSev }},
-            "Normalized": {{ $trivyNormalizedSev }}
+            "Label": "{{ $severity }}"
         },
         "Title": "Trivy found a vulnerability to {{ .VulnerabilityID }} in container {{ $target }}",
         "Description": {{ escapeString $description | printf "%q" }},

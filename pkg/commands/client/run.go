@@ -12,7 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
+	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -62,12 +62,13 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	results, err := s.ScanArtifact(ctx, scanOptions)
+	report, err := s.ScanArtifact(ctx, scanOptions)
 	if err != nil {
 		return xerrors.Errorf("error in image scan: %w", err)
 	}
 
 	resultClient := initializeResultClient()
+	results := report.Results
 	for i := range results {
 		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
 			opt.Severities, opt.IgnoreUnfixed, opt.ShowSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
@@ -78,7 +79,7 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 		results[i].Misconfigurations = misconfs
 	}
 
-	if err = report.WriteResults(opt.Format, opt.Output, opt.Severities, results, opt.Template, false); err != nil {
+	if err = pkgReport.Write(opt.Format, opt.Output, opt.Severities, report, opt.Template, false); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
@@ -150,7 +151,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	return s, cleanup, nil
 }
 
-func exit(c Option, results report.Results) {
+func exit(c Option, results pkgReport.Results) {
 	if c.ExitCode != 0 {
 		for _, result := range results {
 			if len(result.Vulnerabilities) > 0 {
