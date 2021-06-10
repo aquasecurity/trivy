@@ -153,7 +153,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
 		defaultPolicyPaths, err := operation.InitDefaultPolicies(ctx)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to initialize default policies: %w", err)
+			return pkgReport.Report{}, xerrors.Errorf("failed to initialize default policies: %w", err)
 		}
 
 		configScannerOptions = config.ScannerOption{
