@@ -58,6 +58,7 @@ message Vulnerability {
   string                    primary_url        = 14;
   google.protobuf.Timestamp published_date     = 15;
   google.protobuf.Timestamp last_modified_date = 16;
+  map<string, AdvisoryDetails> advisory_details = 17;
 }
 
 message Layer {
@@ -78,4 +79,12 @@ message CVSS {
   string v3_vector = 2;
   double v2_score  = 3;
   double v3_score  = 4;
+}
+
+message AdvisoryForVuln{
+  string id = 1;
+  string severity = 2;
+}
+message AdvisoryDetails {
+  repeated AdvisoryForVuln advisories = 1;
 }

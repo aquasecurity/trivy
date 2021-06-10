@@ -99,6 +99,18 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			}
 		}
 
+		advisoryMap := make(map[string]*common.AdvisoryDetails)
+		for vendor, advisories := range vuln.AdvisoryDetails {
+			advisoryDetails := &common.AdvisoryDetails{}
+			for _, advisory := range advisories {
+				advisoryDetails.Advisories = append(advisoryDetails.Advisories, &common.AdvisoryForVuln{
+					Id:       advisory.Id,
+					Severity: advisory.Severity,
+				})
+			}
+			advisoryMap[vendor] = advisoryDetails
+		}
+
 		var lastModifiedDate, publishedDate *timestamp.Timestamp
 		if vuln.LastModifiedDate != nil {
 			lastModifiedDate, _ = ptypes.TimestampProto(*vuln.LastModifiedDate) // nolint: errcheck
@@ -119,6 +131,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			References:       vuln.References,
 			Layer:            ConvertToRPCLayer(vuln.Layer),
 			Cvss:             cvssMap,
+			AdvisoryDetails:  advisoryMap,
 			SeveritySource:   vuln.SeveritySource,
 			CweIds:           vuln.CweIDs,
 			PrimaryUrl:       vuln.PrimaryURL,
@@ -166,6 +179,18 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			}
 		}
 
+		advisoryMap := make(dbTypes.AdvisoryDetails)
+		for vendor, advisories := range vuln.AdvisoryDetails {
+			var advisoryDetails []dbTypes.AdvisoryForVuln
+			for _, advisory := range advisories.Advisories {
+				advisoryDetails = append(advisoryDetails, dbTypes.AdvisoryForVuln{
+					Id:       advisory.Id,
+					Severity: advisory.Severity,
+				})
+			}
+			advisoryMap[vendor] = advisoryDetails
+		}
+
 		var lastModifiedDate, publishedDate *time.Time
 		if vuln.LastModifiedDate != nil {
 			t, _ := ptypes.Timestamp(vuln.LastModifiedDate) // nolint: errcheck
@@ -186,6 +211,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				Description:      vuln.Description,
 				Severity:         severity.String(),
 				CVSS:             cvssMap,
+				AdvisoryDetails:  advisoryMap,
 				References:       vuln.References,
 				CweIDs:           vuln.CweIds,
 				LastModifiedDate: lastModifiedDate,
