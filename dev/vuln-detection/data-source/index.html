@@ -17,7 +17,7 @@
         
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.7+insiders-2.9.2">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.8+insiders-2.9.2">
     
     
       
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#data-sources" class="md-skip">
+        <a href="#os" class="md-skip">
           Skip to content
         </a>
       
@@ -1282,46 +1282,178 @@
                 
                 
                 
-                <h1 id="data-sources">Data Sources</h1>
-<ul>
-<li>PHP<ul>
-<li>https://github.com/FriendsOfPHP/security-advisories</li>
-<li>https://github.com/advisories?query=ecosystem%3Acomposer</li>
-</ul>
-</li>
-<li>Python<ul>
-<li>https://github.com/pyupio/safety-db</li>
-<li>https://github.com/advisories?query=ecosystem%3Apip</li>
-</ul>
-</li>
-<li>Ruby<ul>
-<li>https://github.com/rubysec/ruby-advisory-db</li>
-<li>https://github.com/advisories?query=ecosystem%3Arubygems</li>
-</ul>
-</li>
-<li>Node.js<ul>
-<li>https://github.com/nodejs/security-wg</li>
-<li>https://github.com/advisories?query=ecosystem%3Anpm</li>
-</ul>
-</li>
-<li>Rust<ul>
-<li>https://github.com/RustSec/advisory-db</li>
-</ul>
-</li>
-<li>.NET<ul>
-<li>https://github.com/advisories?query=ecosystem%3Anuget</li>
-</ul>
-</li>
-<li>Java<ul>
-<li>https://github.com/advisories?query=ecosystem%3Amaven</li>
-<li>https://gitlab.com/gitlab-org/advisories-community</li>
-</ul>
-</li>
-<li>Go<ul>
-<li>https://gitlab.com/gitlab-org/advisories-community</li>
-</ul>
-</li>
-</ul>
+                <h1 id="os">OS</h1>
+<table>
+<thead>
+<tr>
+<th>OS</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arch Linux</td>
+<td><a href="https://security.archlinux.org/">Vulnerable Issues</a></td>
+</tr>
+<tr>
+<td>Alpine Linux</td>
+<td><a href="https://secdb.alpinelinux.org/">secdb</a></td>
+</tr>
+<tr>
+<td>Amazon Linux 1</td>
+<td><a href="https://alas.aws.amazon.com/">Amazon Linux Security Center</a></td>
+</tr>
+<tr>
+<td>Amazon Linux 2</td>
+<td><a href="https://alas.aws.amazon.com/alas2.html">Amazon Linux Security Center</a></td>
+</tr>
+<tr>
+<td>Debian</td>
+<td><a href="https://security-tracker.debian.org/tracker/">Security Bug Tracker</a></td>
+</tr>
+<tr>
+<td></td>
+<td><a href="https://www.debian.org/security/oval/">OVAL</a></td>
+</tr>
+<tr>
+<td>Ubuntu</td>
+<td><a href="https://ubuntu.com/security/cve">Ubuntu CVE Tracker</a></td>
+</tr>
+<tr>
+<td>RHEL/CentOS</td>
+<td><a href="https://www.redhat.com/security/data/oval/v2/">OVAL</a></td>
+</tr>
+<tr>
+<td></td>
+<td><a href="https://www.redhat.com/security/data/metrics/">Security Data</a></td>
+</tr>
+<tr>
+<td>Oracle Linux</td>
+<td><a href="https://linux.oracle.com/security/oval/">OVAL</a></td>
+</tr>
+<tr>
+<td>OpenSUSE/SLES</td>
+<td><a href="http://ftp.suse.com/pub/projects/security/cvrf/">CVRF</a></td>
+</tr>
+<tr>
+<td>Photon OS</td>
+<td><a href="https://packages.vmware.com/photon/photon_cve_metadata/">Photon Security Advisory</a></td>
+</tr>
+</tbody>
+</table>
+<h1 id="programming-language">Programming Language</h1>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>Source</th>
+<th align="center">Commercial Use</th>
+<th align="center">Delay *1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PHP</td>
+<td><a href="https://github.com/FriendsOfPHP/security-advisories">PHP Security Advisories Database</a></td>
+<td align="center">✅</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td></td>
+<td><a href="https://github.com/advisories?query=ecosystem%3Acomposer">GitHub Advisory Database (Composer)</a></td>
+<td align="center">✅</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td>Python</td>
+<td><a href="https://github.com/pyupio/safety-db">Safety DB</a></td>
+<td align="center">❌</td>
+<td align="center">1 month</td>
+</tr>
+<tr>
+<td></td>
+<td><a href="https://github.com/advisories?query=ecosystem%3Apip">GitHub Advisory Database (pip)</a></td>
+<td align="center">✅</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td>Ruby</td>
+<td><a href="https://github.com/rubysec/ruby-advisory-db">Ruby Advisory Database</a></td>
+<td align="center">❌ (partially)</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td></td>
+<td><a href="https://github.com/advisories?query=ecosystem%3Arubygems">GitHub Advisory Database (RubyGems)</a></td>
+<td align="center">✅</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td>Node.js</td>
+<td><a href="https://github.com/nodejs/security-wg">Ecosystem Security Working Group</a></td>
+<td align="center">✅</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td></td>
+<td><a href="https://github.com/advisories?query=ecosystem%3Anpm">GitHub Advisory Database (npm)</a></td>
+<td align="center">✅</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td>Java</td>
+<td><a href="https://gitlab.com/gitlab-org/advisories-community">GitLab Advisories Community</a></td>
+<td align="center">✅</td>
+<td align="center">1 month</td>
+</tr>
+<tr>
+<td></td>
+<td><a href="https://github.com/advisories?query=ecosystem%3Amaven">GitHub Advisory Database (Maven)</a></td>
+<td align="center">✅</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td>Go</td>
+<td><a href="https://gitlab.com/gitlab-org/advisories-community">GitLab Advisories Community</a></td>
+<td align="center">✅</td>
+<td align="center">1 month</td>
+</tr>
+<tr>
+<td></td>
+<td><a href="https://github.com/golang/vulndb">The Go Vulnerability Database</a></td>
+<td align="center">✅</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td>Rust</td>
+<td><a href="https://github.com/advisories?query=ecosystem%3Anuget">RustSec Advisory Database</a></td>
+<td align="center">✅</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td>.NET</td>
+<td><a href="https://github.com/RustSec/advisory-db">GitHub Advisory Database (NuGet)</a></td>
+<td align="center">✅</td>
+<td align="center">-</td>
+</tr>
+</tbody>
+</table>
+<p>*1: Intentional delay between vulnerability disclosure and registration in the DB</p>
+<h1 id="others">Others</h1>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>National Vulnerability Database</td>
+<td><a href="https://nvd.nist.gov/">NVD</a></td>
+</tr>
+</tbody>
+</table>
                 
               
               
