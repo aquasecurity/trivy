@@ -1,19 +1,19 @@
 # OS
 
-| OS             | Source                                                                              |  
+| OS             | Source                                                                              |
 | ---------------| ------------------------------------------------------------------------------------|
-| Arch Linux     | [Vulnerable Issues](https://security.archlinux.org/)                                | 
-| Alpine Linux   | [secdb](https://secdb.alpinelinux.org/)                                             | 
-| Amazon Linux 1 | [Amazon Linux Security Center](https://alas.aws.amazon.com/)                        | 
-| Amazon Linux 2 | [Amazon Linux Security Center](https://alas.aws.amazon.com/alas2.html)              | 
-| Debian         | [Security Bug Tracker](https://security-tracker.debian.org/tracker/)                | 
-|                | [OVAL](https://www.debian.org/security/oval/)                                       | 
-| Ubuntu         | [Ubuntu CVE Tracker](https://ubuntu.com/security/cve)                               | 
-| RHEL/CentOS    | [OVAL](https://www.redhat.com/security/data/oval/v2/)                               | 
-|                | [Security Data](https://www.redhat.com/security/data/metrics/)                               | 
-| Oracle Linux   | [OVAL](https://linux.oracle.com/security/oval/)                                     | 
-| OpenSUSE/SLES	 | [CVRF](http://ftp.suse.com/pub/projects/security/cvrf/)                             | 
-| Photon OS      | [Photon Security Advisory](https://packages.vmware.com/photon/photon_cve_metadata/) | 
+| Arch Linux     | [Vulnerable Issues](https://security.archlinux.org/)                                |
+| Alpine Linux   | [secdb](https://secdb.alpinelinux.org/)                                             |
+| Amazon Linux 1 | [Amazon Linux Security Center](https://alas.aws.amazon.com/)                        |
+| Amazon Linux 2 | [Amazon Linux Security Center](https://alas.aws.amazon.com/alas2.html)              |
+| Debian         | [Security Bug Tracker](https://security-tracker.debian.org/tracker/)                |
+|                | [OVAL](https://www.debian.org/security/oval/)                                       |
+| Ubuntu         | [Ubuntu CVE Tracker](https://ubuntu.com/security/cve)                               |
+| RHEL/CentOS    | [OVAL](https://www.redhat.com/security/data/oval/v2/)                               |
+|                | [Security Data](https://www.redhat.com/security/data/metrics/)                      |
+| Oracle Linux   | [OVAL](https://linux.oracle.com/security/oval/)                                     |
+| OpenSUSE/SLES	 | [CVRF](http://ftp.suse.com/pub/projects/security/cvrf/)                             |
+| Photon OS      | [Photon Security Advisory](https://packages.vmware.com/photon/photon_cve_metadata/) |
 
 # Programming Language
 
