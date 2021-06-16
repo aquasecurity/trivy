@@ -5,11 +5,14 @@ labels:
 # kind
 - name: kind/api-change
   color: e11d21
-  description: Categorizes issue or PR as related to adding, removing, or otherwise changing an API
+  description: Categorizes issue or PR as related to adding, removing, or otherwise changing an API.
 - name: kind/bug
   color: e11d21
   from: bug
   description: Categorizes issue or PR as related to a bug.
+- name: kind/security-advisory
+  color: e11d21
+  description: Categorizes issue or PR as related to security advisories.
 - name: kind/cleanup
   color: c7def8
   description: Categorizes issue or PR as related to cleaning up code, process, or technical debt.
