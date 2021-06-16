@@ -65,7 +65,7 @@ clean:
 	rm -rf integration/testdata/fixtures/
 
 $(GOBIN)/labeler:
-	GO111MODULE=off go get github.com/knqyf263/labeler
+	go install github.com/knqyf263/labeler@latest
 
 .PHONY: label
 label: $(GOBIN)/labeler
