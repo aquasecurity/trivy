@@ -23,6 +23,7 @@ type Report struct {
 	Results      Results             `json:",omitempty"`
 }
 
+// Metadata represents a metadata of artifact
 type Metadata struct {
 	Size int64      `json:",omitempty"`
 	OS   *ftypes.OS `json:",omitempty"`
