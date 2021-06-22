@@ -16,10 +16,20 @@ var Now = time.Now
 
 // Report represents a scan result
 type Report struct {
-	ArtifactID  string   `json:",omitempty"`
+	ArtifactName string              `json:",omitempty"`
+	ArtifactID   string              `json:",omitempty"`
+	ArtifactType ftypes.ArtifactType `json:",omitempty"`
+	Metadata     Metadata            `json:",omitempty"`
+	Results      Results             `json:",omitempty"`
+}
+
+type Metadata struct {
+	Size int64      `json:",omitempty"`
+	OS   *ftypes.OS `json:",omitempty"`
+
+	// Container image
 	RepoTags    []string `json:",omitempty"`
 	RepoDigests []string `json:",omitempty"`
-	Results     Results  `json:",omitempty"`
 }
 
 // Results to hold list of Result
@@ -52,6 +62,8 @@ func Write(format string, output io.Writer, severities []dbTypes.Severity, repor
 		writer = &TableWriter{Output: output, Light: light, Severities: severities}
 	case "json":
 		writer = &JSONWriter{Output: output}
+	case "cyclonedx":
+		writer = &CycloneDXWriter{Output: output}
 	case "template":
 		var err error
 		if writer, err = NewTemplateWriter(output, outputTemplate); err != nil {

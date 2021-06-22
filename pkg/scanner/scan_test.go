@@ -90,9 +90,16 @@ func TestScanner_ScanArtifact(t *testing.T) {
 				},
 			},
 			want: report.Report{
-				ArtifactID:  "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-				RepoTags:    []string{"alpine:3.11"},
-				RepoDigests: []string{"alpine@sha256:0bd0e9e03a022c3b0226667621da84fc9bf562a9056130424b5bfbd8bcb0397f"},
+				ArtifactName: "alpine:3.11",
+				ArtifactID:   "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
+				Metadata: report.Metadata{
+					OS: &ftypes.OS{
+						Family: "alpine",
+						Name:   "3.10",
+					},
+					RepoTags:    []string{"alpine:3.11"},
+					RepoDigests: []string{"alpine@sha256:0bd0e9e03a022c3b0226667621da84fc9bf562a9056130424b5bfbd8bcb0397f"},
+				},
 				Results: report.Results{
 					{
 						Target: "alpine:3.11",
