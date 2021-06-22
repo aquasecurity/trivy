@@ -27,6 +27,8 @@ builds:
         goarch: 386
 
 release:
+    extra_files:
+      - glob: ./bom.json
     discussion_category_name: Announcements
 
 nfpms:
