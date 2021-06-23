@@ -60,6 +60,20 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 	return pkgs
 }
 
+// ConvertFromRPCMalwares returns list of malware package objects
+func ConvertFromRPCMalwares(rpcMalwares []*scanner.Malware) []report.Malware {
+	var malwares []report.Malware
+	for _, m := range rpcMalwares {
+		malwares = append(malwares, report.Malware{
+			Source:   m.Source,
+			Malware:  m.Malware,
+			Hash:     m.Hash,
+			Filepath: m.Filepath,
+		})
+	}
+	return malwares
+}
+
 // ConvertFromRPCLibraries returns list of Fanal library
 func ConvertFromRPCLibraries(rpcLibs []*common.Library) []ftypes.Package {
 	var pkgs []ftypes.Package
@@ -190,6 +204,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 			Class:             report.ResultClass(result.Class),
 			Type:              result.Type,
 			Packages:          ConvertFromRPCPkgs(result.Packages),
+			CustomResources:   ConvertFromRPCCustomResources(result.CustomResources),
 		})
 	}
 	return results
@@ -347,6 +362,19 @@ func ConvertFromRPCMisconfResults(rpcResults []*common.MisconfResult) []ftypes.M
 	return results
 }
 
+// ConvertFromRPCCustomResources converts array of cache.CustomResource to fanal.CustomResource
+func ConvertFromRPCCustomResources(rpcCustomResources []*cache.CustomResource) []ftypes.CustomResource {
+	var resources []ftypes.CustomResource
+	for _, res := range rpcCustomResources {
+		resources = append(resources, ftypes.CustomResource{
+			Type:     res.Type,
+			FilePath: res.Filepath,
+			Info:     DecodeToMap(res.Info),
+		})
+	}
+	return resources
+}
+
 // ConvertFromRPCPutArtifactRequest converts cache.PutArtifactRequest to fanal.PutArtifactRequest
 func ConvertFromRPCPutArtifactRequest(req *cache.PutArtifactRequest) ftypes.ArtifactInfo {
 	created, _ := ptypes.Timestamp(req.ArtifactInfo.Created) // nolint: errcheck
@@ -372,6 +400,7 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		Misconfigurations: ConvertFromRPCMisconfigurations(req.BlobInfo.Misconfigurations),
 		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
 		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
+		CustomResources:   ConvertFromRPCCustomResources(req.BlobInfo.CustomResources),
 	}
 }
 
@@ -444,7 +473,19 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 			Failures:   ConvertToMisconfResults(m.Failures),
 			Exceptions: ConvertToMisconfResults(m.Exceptions),
 		})
+	}
+	var customResources []*cache.CustomResource
+	for _, res := range blobInfo.CustomResources {
+		info, err := structpb.NewStruct(res.Info)
+		if err != nil {
 
+		} else {
+			customResources = append(customResources, &cache.CustomResource{
+				Type:     res.Type,
+				Filepath: res.FilePath,
+				Info:     info,
+			})
+		}
 	}
 
 	return &cache.PutBlobRequest{
@@ -459,6 +500,7 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 			Misconfigurations: misconfigurations,
 			OpaqueDirs:        blobInfo.OpaqueDirs,
 			WhiteoutFiles:     blobInfo.WhiteoutFiles,
+			CustomResources:   customResources,
 		},
 	}
 }

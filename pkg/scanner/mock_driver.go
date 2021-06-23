@@ -100,3 +100,7 @@ func (_m *MockDriver) Scan(target string, artifactKey string, blobKeys []string,
 
 	return r0, r1, r2
 }
+
+func (_m *MockDriver) GetCache() fanaltypes.CacheType {
+	return fanaltypes.BuiltInCache
+}

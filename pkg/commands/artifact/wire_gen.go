@@ -38,12 +38,12 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
-	artifactArtifact, err := image2.NewArtifact(typesImage, artifactCache, artifactOption, configScannerOption)
+	artifactArtifact, err := image2.NewArtifact(typesImage, []cache.ArtifactCache{artifactCache}, artifactOption, configScannerOption)
 	if err != nil {
 		cleanup()
 		return scanner.Scanner{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(localScanner, artifactArtifact)
+	scannerScanner := scanner.NewScanner([]scanner.Driver{localScanner}, artifact)
 	return scannerScanner, func() {
 		cleanup()
 	}, nil
@@ -57,11 +57,11 @@ func initializeArchiveScanner(ctx context.Context, filePath string, artifactCach
 	if err != nil {
 		return scanner.Scanner{}, err
 	}
-	artifactArtifact, err := image2.NewArtifact(typesImage, artifactCache, artifactOption, configScannerOption)
+	artifactArtifact, err := image2.NewArtifact(typesImage, []cache.ArtifactCache{artifactCache}, artifactOption, configScannerOption)
 	if err != nil {
 		return scanner.Scanner{}, err
 	}
-	scannerScanner := scanner.NewScanner(localScanner, artifactArtifact)
+	scannerScanner := scanner.NewScanner([]scanner.Driver{localScanner}, artifact)
 	return scannerScanner, nil
 }
 
@@ -73,7 +73,7 @@ func initializeFilesystemScanner(ctx context.Context, dir string, artifactCache 
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(localScanner, artifactArtifact)
+	scannerScanner := scanner.NewScanner([]scanner.Driver{localScanner}, artifact)
 	return scannerScanner, func() {
 	}, nil
 }
@@ -86,7 +86,7 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
-	scannerScanner := scanner.NewScanner(localScanner, artifactArtifact)
+	scannerScanner := scanner.NewScanner([]scanner.Driver{localScanner}, artifact)
 	return scannerScanner, func() {
 		cleanup()
 	}, nil

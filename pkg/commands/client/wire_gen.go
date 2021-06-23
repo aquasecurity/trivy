@@ -33,12 +33,12 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
-	artifactArtifact, err := image2.NewArtifact(typesImage, artifactCache, artifactOption, configScannerOption)
+	artifactArtifact, err := image2.NewArtifact(typesImage, []cache.ArtifactCache{artifactCache}, artifactOption, configScannerOption)
 	if err != nil {
 		cleanup()
 		return scanner.Scanner{}, nil, err
 	}
-	scanner2 := scanner.NewScanner(clientScanner, artifactArtifact)
+	scanner2 := scanner.NewScanner([]scanner.Driver{scanner.Driver(clientScanner)}, artifact)
 	return scanner2, func() {
 		cleanup()
 	}, nil
@@ -51,7 +51,7 @@ func initializeArchiveScanner(ctx context.Context, filePath string, artifactCach
 	if err != nil {
 		return scanner.Scanner{}, err
 	}
-	artifactArtifact, err := image2.NewArtifact(typesImage, artifactCache, artifactOption, configScannerOption)
+	artifactArtifact, err := image2.NewArtifact(typesImage, []cache.ArtifactCache{artifactCache}, artifactOption, configScannerOption)
 	if err != nil {
 		return scanner.Scanner{}, err
 	}

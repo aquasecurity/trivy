@@ -56,11 +56,11 @@ func (s *ScanServer) Scan(_ context.Context, in *rpcScanner.ScanRequest) (*rpcSc
 
 // CacheServer implements the cache
 type CacheServer struct {
-	cache cache.Cache
+	cache cache.ArtifactCache
 }
 
 // NewCacheServer is the facotry method for cacheServer
-func NewCacheServer(c cache.Cache) *CacheServer {
+func NewCacheServer(c cache.ArtifactCache) *CacheServer {
 	return &CacheServer{cache: c}
 }
 

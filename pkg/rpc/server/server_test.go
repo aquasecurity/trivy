@@ -252,9 +252,8 @@ func TestCacheServer_PutArtifact(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockCache := new(mockCache)
+			mockCache := new(cache.MockArtifactCache)
 			mockCache.ApplyPutArtifactExpectation(tt.putImage)
-
 			s := NewCacheServer(mockCache)
 			got, err := s.PutArtifact(context.Background(), tt.args.in)
 
@@ -463,7 +462,7 @@ func TestCacheServer_PutBlob(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockCache := new(mockCache)
+			mockCache := new(cache.MockArtifactCache)
 			mockCache.ApplyPutBlobExpectation(tt.putLayer)
 
 			s := NewCacheServer(mockCache)
@@ -521,7 +520,7 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockCache := new(mockCache)
+			mockCache := new(cache.MockArtifactCache)
 			mockCache.ApplyMissingBlobsExpectations(tt.getArtifactCacheMissingBlobsExpectations)
 
 			s := NewCacheServer(mockCache)
@@ -535,7 +534,7 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 			}
 
 			assert.Equal(t, tt.want, got)
-			mockCache.MockArtifactCache.AssertExpectations(t)
+			mockCache.AssertExpectations(t)
 		})
 	}
 }
