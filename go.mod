@@ -2,6 +2,11 @@ module github.com/aquasecurity/trivy
 
 go 1.16
 
+replace (
+	github.com/aquasecurity/fanal => ../fanal
+	github.com/aquasecurity/trivy-db => github.com/tonaim/trivy-db v0.0.0-20210616184026-f8f1fcf1ab54
+)
+
 require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible
@@ -44,7 +49,7 @@ require (
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/testcontainers/testcontainers-go v0.9.1-0.20210218153226-c8e070a2f18d
-	github.com/twitchtv/twirp v8.0.0+incompatible
+	github.com/twitchtv/twirp v7.2.0+incompatible
 	github.com/urfave/cli/v2 v2.3.0
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20201216223049-8b5274cf687f // indirect

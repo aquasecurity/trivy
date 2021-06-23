@@ -6,6 +6,7 @@ option  go_package = "github.com/aquasecurity/trivy/rpc/cache;cache";
 import "google/protobuf/timestamp.proto";
 import "github.com/aquasecurity/trivy/rpc/common/service.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
 
 service Cache {
   rpc PutArtifact(PutArtifactRequest) returns (google.protobuf.Empty);
@@ -27,15 +28,22 @@ message PutArtifactRequest {
   ArtifactInfo artifact_info = 2;
 }
 
+message CustomResource {
+  string                 type     = 1;
+  string                 filepath = 2;
+  google.protobuf.Struct info     = 3;
+}
+
 message BlobInfo {
-  int32     schema_version                   = 1;
-  common.OS os                               = 2;
-  repeated common.PackageInfo package_infos  = 3;
-  repeated common.Application applications   = 4;
-  repeated string             opaque_dirs    = 5;
-  repeated string             whiteout_files = 6;
-  string                      digest         = 7;
-  string                      diff_id        = 8;
+  int32     schema_version                     = 1;
+  common.OS os                                 = 2;
+  repeated common.PackageInfo package_infos    = 3;
+  repeated common.Application applications     = 4;
+  repeated string             opaque_dirs      = 5;
+  repeated string             whiteout_files   = 6;
+  string                      digest           = 7;
+  string                      diff_id          = 8;
+  repeated CustomResource     custom_resources = 9;
 }
 
 message PutBlobRequest {
@@ -56,4 +64,12 @@ message MissingBlobsRequest {
 message MissingBlobsResponse {
   bool            missing_artifact = 1;
   repeated string missing_blob_ids = 2;
+}
+
+message GetBlobRequest {
+  string blob_id = 1;
+}
+
+message GetBlobResponse {
+  BlobInfo blob_info = 1;
 }

@@ -36,6 +36,7 @@ var SuperSet = wire.NewSet(
 // Applier defines operation to scan image layers
 type Applier interface {
 	ApplyLayers(artifactID string, blobIDs []string) (detail ftypes.ArtifactDetail, err error)
+	GetCache() ftypes.CacheType
 }
 
 // OspkgDetector defines operation to detect OS vulnerabilities
@@ -52,6 +53,11 @@ type Scanner struct {
 // NewScanner is the factory method for Scanner
 func NewScanner(applier Applier, ospkgDetector OspkgDetector) Scanner {
 	return Scanner{applier: applier, ospkgDetector: ospkgDetector}
+}
+
+// GetCache returns applier cache
+func (s Scanner) GetCache() ftypes.CacheType {
+	return s.applier.GetCache()
 }
 
 // Scan scans the artifact and return results.

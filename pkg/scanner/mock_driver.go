@@ -108,3 +108,7 @@ func (_m *MockDriver) Scan(target string, imageID string, layerIDs []string, opt
 
 	return r0, r1, r2, r3
 }
+
+func (_m *MockDriver) GetCache() fanaltypes.CacheType {
+	return fanaltypes.BuiltInCache
+}

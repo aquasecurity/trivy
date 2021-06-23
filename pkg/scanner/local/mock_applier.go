@@ -50,6 +50,10 @@ func (_m *MockApplier) ApplyApplyLayersExpectations(expectations []ApplierApplyL
 	}
 }
 
+func (_m *MockApplier) GetCache() types.CacheType {
+	return types.BuiltInCache
+}
+
 // ApplyLayers provides a mock function with given fields: artifactID, blobIDs
 func (_m *MockApplier) ApplyLayers(artifactID string, blobIDs []string) (types.ArtifactDetail, error) {
 	ret := _m.Called(artifactID, blobIDs)

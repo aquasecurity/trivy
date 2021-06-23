@@ -22,6 +22,14 @@ type Report struct {
 	Results     Results  `json:",omitempty"`
 }
 
+// Malware represents malware information
+type Malware struct {
+	Filepath string `json:"filepath,omitempty"`
+	Malware  string `json:"malware,omitempty"`
+	Hash     string `json:"hash,omitempty"`
+	Source   string `json:"source,omitempty"`
+}
+
 // Results to hold list of Result
 type Results []Result
 
@@ -31,6 +39,7 @@ type Result struct {
 	Type            string                        `json:"Type,omitempty"`
 	Packages        []ftypes.Package              `json:"Packages,omitempty"`
 	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities,omitempty"`
+	Malwares        []Malware                     `json:"Malwares,omitempty"`
 }
 
 // Failed returns whether the result includes any vulnerabilities

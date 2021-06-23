@@ -44,6 +44,15 @@ func NewScanner(customHeaders CustomHeaders, s rpc.Scanner) Scanner {
 	return Scanner{customHeaders: customHeaders, client: s}
 }
 
+// GetCache return cache for the scanner
+func (s Scanner) GetCache() ftypes.CacheType {
+	cacheType := http.Header(s.customHeaders).Get("cacheType")
+	if cacheType == "" {
+		return ftypes.BuiltInCache
+	}
+	return ftypes.CacheType(cacheType)
+}
+
 // Scan scans the image
 func (s Scanner) Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (report.Results, *ftypes.OS, bool, error) {
 	ctx := WithCustomHeaders(context.Background(), http.Header(s.customHeaders))

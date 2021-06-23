@@ -22,7 +22,7 @@ import (
 // StandaloneSuperSet is used in the standalone mode
 var StandaloneSuperSet = wire.NewSet(
 	local.SuperSet,
-	wire.Bind(new(Driver), new(local.Scanner)),
+	wire.Bind(new([]Driver), new([]local.Scanner)),
 	NewScanner,
 )
 
@@ -76,7 +76,7 @@ var RemoteArchiveSet = wire.NewSet(
 
 // Scanner implements the Artifact and Driver operations
 type Scanner struct {
-	driver   Driver
+	drivers  []Driver
 	artifact artifact.Artifact
 }
 
@@ -84,11 +84,12 @@ type Scanner struct {
 type Driver interface {
 	Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (
 		results report.Results, osFound *ftypes.OS, eols bool, err error)
+	GetCache() ftypes.CacheType
 }
 
 // NewScanner is the factory method of Scanner
-func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
-	return Scanner{driver: driver, artifact: ar}
+func NewScanner(drivers []Driver, ar artifact.Artifact) Scanner {
+	return Scanner{drivers: drivers, artifact: ar}
 }
 
 // ScanArtifact scans the artifacts and returns results
@@ -97,14 +98,18 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 	if err != nil {
 		return report.Report{}, xerrors.Errorf("failed analysis: %w", err)
 	}
+	results := report.Results{}
+	for _, driver := range s.drivers {
+		driverResults, osFound, eosl, err := driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs[driver.GetCache()], options)
+		if err != nil {
+			return report.Report{}, xerrors.Errorf("scan failed: %w", err)
+		}
+		if eosl {
+			log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
+			log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
+		}
 
-	results, osFound, eosl, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
-	if err != nil {
-		return report.Report{}, xerrors.Errorf("scan failed: %w", err)
-	}
-	if eosl {
-		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
-		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
+		results = append(results, driverResults...)
 	}
 
 	return report.Report{
