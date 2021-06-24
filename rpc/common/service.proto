@@ -58,6 +58,7 @@ message Vulnerability {
   string                    primary_url        = 14;
   google.protobuf.Timestamp published_date     = 15;
   google.protobuf.Timestamp last_modified_date = 16;
+  int64                     hid                = 17;
 }
 
 message Layer {
