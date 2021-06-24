@@ -5,6 +5,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
@@ -53,6 +54,20 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 		})
 	}
 	return pkgs
+}
+
+// ConvertFromRPCMalwares returns list of malware package objects
+func ConvertFromRPCMalwares(rpcMalwares []*scanner.Malware) []report.Malware {
+	var malwares []report.Malware
+	for _, m := range rpcMalwares {
+		malwares = append(malwares, report.Malware{
+			Source:   m.Source,
+			Malware:  m.Malware,
+			Hash:     m.Hash,
+			Filepath: m.Filepath,
+		})
+	}
+	return malwares
 }
 
 // ConvertFromRPCLibraries returns list of Fanal library
@@ -146,6 +161,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 			Vulnerabilities: ConvertFromRPCVulns(result.Vulnerabilities),
 			Type:            result.Type,
 			Packages:        ConvertFromRPCPkgs(result.Packages),
+			Malwares:        ConvertFromRPCMalwares(result.Malwares),
 		})
 	}
 	return results
@@ -243,6 +259,19 @@ func ConvertFromRPCApplications(rpcApps []*common.Application) []ftypes.Applicat
 	return apps
 }
 
+// ConvertFromRPCCustomResources converts array of cache.CustomResource to fanal.CustomResource
+func ConvertFromRPCCustomResources(rpcCustomResources []*cache.CustomResource) []ftypes.CustomResource {
+	var resources []ftypes.CustomResource
+	for _, res := range rpcCustomResources {
+		resources = append(resources, ftypes.CustomResource{
+			Type:     res.Type,
+			FilePath: res.Filepath,
+			Info:     DecodeToMap(res.Info),
+		})
+	}
+	return resources
+}
+
 // ConvertFromRPCPutArtifactRequest converts cache.PutArtifactRequest to fanal.PutArtifactRequest
 func ConvertFromRPCPutArtifactRequest(req *cache.PutArtifactRequest) ftypes.ArtifactInfo {
 	created, _ := ptypes.Timestamp(req.ArtifactInfo.Created) // nolint: errcheck
@@ -259,14 +288,15 @@ func ConvertFromRPCPutArtifactRequest(req *cache.PutArtifactRequest) ftypes.Arti
 // ConvertFromRPCPutBlobRequest returns ftypes.BlobInfo
 func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 	return ftypes.BlobInfo{
-		SchemaVersion: int(req.BlobInfo.SchemaVersion),
-		Digest:        req.BlobInfo.Digest,
-		DiffID:        req.BlobInfo.DiffId,
-		OS:            ConvertFromRPCOS(req.BlobInfo.Os),
-		PackageInfos:  ConvertFromRPCPackageInfos(req.BlobInfo.PackageInfos),
-		Applications:  ConvertFromRPCApplications(req.BlobInfo.Applications),
-		OpaqueDirs:    req.BlobInfo.OpaqueDirs,
-		WhiteoutFiles: req.BlobInfo.WhiteoutFiles,
+		SchemaVersion:   int(req.BlobInfo.SchemaVersion),
+		Digest:          req.BlobInfo.Digest,
+		DiffID:          req.BlobInfo.DiffId,
+		OS:              ConvertFromRPCOS(req.BlobInfo.Os),
+		PackageInfos:    ConvertFromRPCPackageInfos(req.BlobInfo.PackageInfos),
+		Applications:    ConvertFromRPCApplications(req.BlobInfo.Applications),
+		OpaqueDirs:      req.BlobInfo.OpaqueDirs,
+		WhiteoutFiles:   req.BlobInfo.WhiteoutFiles,
+		CustomResources: ConvertFromRPCCustomResources(req.BlobInfo.CustomResources),
 	}
 }
 
@@ -327,17 +357,32 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 		})
 	}
 
+	var customResources []*cache.CustomResource
+	for _, res := range blobInfo.CustomResources {
+		info, err := structpb.NewStruct(res.Info)
+		if err != nil {
+
+		} else {
+			customResources = append(customResources, &cache.CustomResource{
+				Type:     res.Type,
+				Filepath: res.FilePath,
+				Info:     info,
+			})
+		}
+	}
+
 	return &cache.PutBlobRequest{
 		DiffId: diffID,
 		BlobInfo: &cache.BlobInfo{
-			SchemaVersion: ftypes.BlobJSONSchemaVersion,
-			Digest:        blobInfo.Digest,
-			DiffId:        blobInfo.DiffID,
-			Os:            ConvertToRPCOS(blobInfo.OS),
-			PackageInfos:  packageInfos,
-			Applications:  applications,
-			OpaqueDirs:    blobInfo.OpaqueDirs,
-			WhiteoutFiles: blobInfo.WhiteoutFiles,
+			SchemaVersion:   ftypes.BlobJSONSchemaVersion,
+			Digest:          blobInfo.Digest,
+			DiffId:          blobInfo.DiffID,
+			Os:              ConvertToRPCOS(blobInfo.OS),
+			PackageInfos:    packageInfos,
+			Applications:    applications,
+			OpaqueDirs:      blobInfo.OpaqueDirs,
+			WhiteoutFiles:   blobInfo.WhiteoutFiles,
+			CustomResources: customResources,
 		},
 	}
 }

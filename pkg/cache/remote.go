@@ -15,8 +15,9 @@ import (
 
 // RemoteCache implements remote cache
 type RemoteCache struct {
-	ctx    context.Context // for custom header
-	client rpcCache.Cache
+	ctx       context.Context // for custom header
+	client    rpcCache.Cache
+	cacheType types.CacheType
 }
 
 // RemoteURL to hold remote host
@@ -26,7 +27,14 @@ type RemoteURL string
 func NewRemoteCache(url RemoteURL, customHeaders http.Header) cache.ArtifactCache {
 	ctx := client.WithCustomHeaders(context.Background(), customHeaders)
 	c := rpcCache.NewCacheProtobufClient(string(url), &http.Client{})
-	return &RemoteCache{ctx: ctx, client: c}
+	return &RemoteCache{ctx: ctx, client: c, cacheType: types.BuiltInCache}
+}
+
+// NewRemoteCustomCache is the factory method for RemoteCache with custom cache
+func NewRemoteCustomCache(url RemoteURL, customHeaders http.Header, cacheType types.CacheType) cache.ArtifactCache {
+	ctx := client.WithCustomHeaders(context.Background(), customHeaders)
+	c := rpcCache.NewCacheProtobufClient(string(url), &http.Client{})
+	return &RemoteCache{ctx: ctx, client: c, cacheType: cacheType}
 }
 
 // PutArtifact sends artifact to remote client
@@ -54,4 +62,9 @@ func (c RemoteCache) MissingBlobs(imageID string, layerIDs []string) (bool, []st
 		return false, nil, xerrors.Errorf("unable to fetch missing layers: %w", err)
 	}
 	return layers.MissingArtifact, layers.MissingBlobIds, nil
+}
+
+// Type returns cache name/type
+func (c RemoteCache) Type() types.CacheType {
+	return c.cacheType
 }
