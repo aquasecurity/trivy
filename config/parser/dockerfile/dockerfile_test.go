@@ -21,7 +21,7 @@ func TestParser_Parse(t *testing.T) {
 			name:      "happy path",
 			inputFile: "testdata/Dockerfile",
 			want: map[string]interface{}{
-				"command": map[string]interface{}{
+				"stages": map[string]interface{}{
 					"foo": []interface{}{
 						map[string]interface{}{
 							"Cmd":       "from",
@@ -64,7 +64,7 @@ func TestParser_Parse(t *testing.T) {
 			name:      "multi stage",
 			inputFile: "testdata/Dockerfile.multi",
 			want: map[string]interface{}{
-				"command": map[string]interface{}{
+				"stages": map[string]interface{}{
 					"golang:1.16 AS builder": []interface{}{
 						map[string]interface{}{
 							"Cmd":       "from",
