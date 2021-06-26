@@ -11,12 +11,11 @@ import (
 )
 
 // Parser is a Dockerfile parser
-type Parser struct {
-}
+type Parser struct{}
 
-// Resource Separates the list of commands by file
+// Resource holds a list of stages
 type Resource struct {
-	CommandList map[string][]Command `json:"command"`
+	Stages map[string][]Command `json:"stages"`
 }
 
 // Command is the struct for each dockerfile command
@@ -82,7 +81,7 @@ func (p *Parser) Parse(contents []byte) (interface{}, error) {
 	}
 
 	var resource Resource
-	resource.CommandList = from
+	resource.Stages = from
 
 	j, err := json.Marshal(resource)
 	if err != nil {

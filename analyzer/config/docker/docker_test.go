@@ -29,7 +29,7 @@ func Test_dockerConfigAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Dockerfile,
 						FilePath: "testdata/Dockerfile.deployment",
 						Content: map[string]interface{}{
-							"command": map[string]interface{}{
+							"stages": map[string]interface{}{
 								"foo": []interface{}{
 									map[string]interface{}{
 										"Cmd":       "from",
@@ -82,7 +82,7 @@ func Test_dockerConfigAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Dockerfile,
 						FilePath: "testdata/Dockerfile.multistage",
 						Content: map[string]interface{}{
-							"command": map[string]interface{}{
+							"stages": map[string]interface{}{
 								"foo AS build": []interface{}{
 									map[string]interface{}{
 										"Cmd":       "from",
