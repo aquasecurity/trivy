@@ -43,3 +43,11 @@ func IsGzip(f *bufio.Reader) bool {
 	}
 	return buf[0] == 0x1F && buf[1] == 0x8B && buf[2] == 0x8
 }
+
+func Keys(m map[string]struct{}) []string {
+	var keys []string
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
+}

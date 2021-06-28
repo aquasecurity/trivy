@@ -61,6 +61,11 @@ func run() (err error) {
 				Usage:   "inspect a local directory",
 				Flags: []cli.Flag{
 					&cli.StringSliceFlag{
+						Name:  "namespace",
+						Usage: "namespaces",
+						Value: cli.NewStringSlice("appshield"),
+					},
+					&cli.StringSliceFlag{
 						Name:  "policy",
 						Usage: "policy paths",
 					},
@@ -141,6 +146,7 @@ func archiveAction(c *cli.Context, fsCache cache.Cache) error {
 
 func fsAction(c *cli.Context, fsCache cache.Cache) error {
 	art, err := local.NewArtifact(c.Args().First(), fsCache, nil, config.ScannerOption{
+		Namespaces:  []string{"appshield"},
 		PolicyPaths: c.StringSlice("policy"),
 	})
 	if err != nil {
@@ -189,6 +195,9 @@ func inspect(ctx context.Context, art artifact.Artifact, c cache.LocalArtifactCa
 	}
 	for _, misconf := range mergedLayer.Misconfigurations {
 		fmt.Printf("  %s: failures %d, warnings %d\n", misconf.FilePath, len(misconf.Failures), len(misconf.Warnings))
+		for _, failure := range misconf.Failures {
+			fmt.Printf("    %s: %s\n", failure.ID, failure.Message)
+		}
 	}
 	return nil
 }

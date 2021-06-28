@@ -11,14 +11,12 @@ __rego_metadata__ := {
 }
 
 __rego_input__ := {
-	"selector": {"types": ["kubernetes"]},
 	"combine": true,
+	"selector": [{"type": "kubernetes"}],
 }
 
 warn[res] {
 	input[i].contents.kind == "Deployment"
 	services.ports[_] == 22
-	res := {
-		"msg": sprintf("deny combined %s", [input[i].contents.metadata.name]),
-	}
+	res := {"msg": sprintf("deny combined %s", [input[i].contents.metadata.name])}
 }
