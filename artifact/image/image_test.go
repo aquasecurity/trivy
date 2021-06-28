@@ -100,6 +100,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: types.ArtifactReference{
 				Name:    "../../test/testdata/alpine-311.tar.gz",
+				Type:    types.ArtifactContainerImage,
 				ID:      "sha256:cdb49675542ff0051aaf7bab6c7a81b6fe275a7dd57d1e0317724a51edb7d6a6",
 				BlobIDs: []string{"sha256:c49e98b78d17b37b5e7e2e1032ebf9fa1b7d0b7f7998e37b2f0918739a6ffd7f"},
 			},
@@ -298,6 +299,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: types.ArtifactReference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
+				Type: types.ArtifactContainerImage,
 				ID:   "sha256:1a0f2e0e3a3ca6bf77692726db8b41793f3ac4edb7b64dd21a93d217ad8257e8",
 				BlobIDs: []string{
 					"sha256:9e39642ee1f76879f7a9bec9b89f1bdb94ec160ba7d66be9aa20a9bc7046470f",
@@ -380,6 +382,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: types.ArtifactReference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
+				Type: types.ArtifactContainerImage,
 				ID:   "sha256:1a0f2e0e3a3ca6bf77692726db8b41793f3ac4edb7b64dd21a93d217ad8257e8",
 				BlobIDs: []string{
 					"sha256:465b29fdf2037fa14e5a48a6c0f9908ad573ef4e4760bbed36aff614231600e5",

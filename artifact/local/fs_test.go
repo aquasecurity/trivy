@@ -57,6 +57,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: types.ArtifactReference{
 				Name: "host",
+				Type: types.ArtifactFilesystem,
 				ID:   "sha256:42410764f3db892ca04760b45c6a6ff4b27f62fc333eb53a1a6a0b81080a22fa",
 				BlobIDs: []string{
 					"sha256:42410764f3db892ca04760b45c6a6ff4b27f62fc333eb53a1a6a0b81080a22fa",
@@ -81,6 +82,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: types.ArtifactReference{
 				Name: "host",
+				Type: types.ArtifactFilesystem,
 				ID:   "sha256:e02b0ed1535b913fa6518b1d68defc60f1e7e68061d4332db39208eb08094c82",
 				BlobIDs: []string{
 					"sha256:e02b0ed1535b913fa6518b1d68defc60f1e7e68061d4332db39208eb08094c82",

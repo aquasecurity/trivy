@@ -125,6 +125,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 
 	return types.ArtifactReference{
 		Name:    hostName,
+		Type:    types.ArtifactFilesystem,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
 	}, nil

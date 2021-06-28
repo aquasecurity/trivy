@@ -58,9 +58,19 @@ type Config struct {
 	Content  interface{}
 }
 
+// ArtifactType represents a type of artifact
+type ArtifactType string
+
+const (
+	ArtifactContainerImage   ArtifactType = "container_image"
+	ArtifactFilesystem       ArtifactType = "filesystem"
+	ArtifactRemoteRepository ArtifactType = "repository"
+)
+
 // ArtifactReference represents a reference of container image, local filesystem and repository
 type ArtifactReference struct {
 	Name        string // image name, tar file name, directory or repository name
+	Type        ArtifactType
 	ID          string
 	BlobIDs     []string
 	RepoTags    []string
