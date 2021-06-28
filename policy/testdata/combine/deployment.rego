@@ -11,8 +11,8 @@ __rego_metadata__ := {
 }
 
 __rego_input__ := {
-	"selector": {"types": ["kubernetes"]},
 	"combine": false,
+	"selector": [{"type": "kubernetes"}],
 }
 
 warn[msg] {

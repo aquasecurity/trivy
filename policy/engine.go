@@ -196,13 +196,13 @@ func (e *Engine) Check(ctx context.Context, configs []types.Config, namespaces [
 		}
 
 		var selectedConfigs []types.Config
-		if len(inputOption.Selector.Types) > 0 {
+		if len(inputOption.Selectors) > 0 {
 			// Pass only the config files that match the selector types
-			for _, t := range inputOption.Selector.Types {
+			for _, t := range uniqueSelectorTypes(inputOption.Selectors) {
 				selectedConfigs = append(selectedConfigs, typedConfigs[t]...)
 			}
 		} else {
-			// When the 'types' is not specified, it means '*'.
+			// When the 'selector' is not specified, it means '*'.
 			selectedConfigs = configs
 		}
 
@@ -664,6 +664,14 @@ func removeRulePrefix(rule string) string {
 	rule = strings.TrimPrefix(rule, "warn_")
 
 	return rule
+}
+
+func uniqueSelectorTypes(selectors []types.PolicyInputSelector) []string {
+	selectorTypes := map[string]struct{}{}
+	for _, s := range selectors {
+		selectorTypes[s.Type] = struct{}{}
+	}
+	return utils.Keys(selectorTypes)
 }
 
 func uniqueResults(results []types.MisconfResult) []types.MisconfResult {
