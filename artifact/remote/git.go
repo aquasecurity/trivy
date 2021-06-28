@@ -1,20 +1,26 @@
 package remote
 
 import (
+	"context"
 	"io/ioutil"
 	"net/url"
 	"os"
 
-	"golang.org/x/xerrors"
-
 	git "github.com/go-git/go-git/v5"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/artifact/local"
 	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/fanal/types"
 )
+
+type Artifact struct {
+	url   string
+	local artifact.Artifact
+}
 
 func NewArtifact(rawurl string, c cache.ArtifactCache, disabled []analyzer.Type, opt config.ScannerOption) (
 	artifact.Artifact, func(), error) {
@@ -50,7 +56,23 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, disabled []analyzer.Type,
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("fs artifact: %w", err)
 	}
-	return art, cleanup, nil
+
+	return Artifact{
+		url:   rawurl,
+		local: art,
+	}, cleanup, nil
+}
+
+func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
+	ref, err := a.local.Inspect(ctx)
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("remote repository error: %w", err)
+	}
+
+	ref.Name = a.url
+	ref.Type = types.ArtifactRemoteRepository
+
+	return ref, nil
 }
 
 func newURL(rawurl string) (*url.URL, error) {
