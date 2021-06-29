@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
@@ -221,7 +220,7 @@ func (e *Engine) Check(ctx context.Context, configs []types.Config, namespaces [
 		}
 	}
 
-	return toMisconfigurations(uniqMisconfs), nil
+	return types.ToMisconfigurations(uniqMisconfs), nil
 }
 
 func (e Engine) check(ctx context.Context, currentNamespace string, rules []string, configs []types.Config,
@@ -674,20 +673,6 @@ func uniqueSelectorTypes(selectors []types.PolicyInputSelector) []string {
 	return utils.Keys(selectorTypes)
 }
 
-func uniqueResults(results []types.MisconfResult) []types.MisconfResult {
-	uniq := map[string]types.MisconfResult{}
-	for _, result := range results {
-		key := fmt.Sprintf("%s::%s::%s", result.ID, result.Namespace, result.Message)
-		uniq[key] = result
-	}
-
-	var uniqResults []types.MisconfResult
-	for _, s := range uniq {
-		uniqResults = append(uniqResults, s)
-	}
-	return uniqResults
-}
-
 func underNamespaces(current string, namespaces []string) bool {
 	// e.g.
 	//  current: 'main',     namespaces: []string{'main'}     => true
@@ -699,32 +684,6 @@ func underNamespaces(current string, namespaces []string) bool {
 		}
 	}
 	return false
-}
-
-func toMisconfigurations(misconfs map[string]types.Misconfiguration) []types.Misconfiguration {
-	var results []types.Misconfiguration
-	for _, misconf := range misconfs {
-		// Remove duplicates
-		misconf.Successes = uniqueResults(misconf.Successes)
-
-		// Sort results
-		sort.Sort(misconf.Successes)
-		sort.Sort(misconf.Warnings)
-		sort.Sort(misconf.Failures)
-		sort.Sort(misconf.Exceptions)
-
-		results = append(results, misconf)
-	}
-
-	// Sort misconfigurations
-	sort.Slice(results, func(i, j int) bool {
-		if results[i].FileType != results[j].FileType {
-			return results[i].FileType < results[j].FileType
-		}
-		return results[i].FilePath < results[j].FilePath
-	})
-
-	return results
 }
 
 func mergeMisconfs(a, b types.Misconfiguration) types.Misconfiguration {

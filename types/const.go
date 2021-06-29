@@ -25,6 +25,7 @@ const (
 	TOML           = "toml"
 	Dockerfile     = "dockerfile"
 	HCL            = "hcl"
+	Terraform      = "terraform"
 	Kubernetes     = "kubernetes"
 	CloudFormation = "cloudformation"
 	Ansible        = "ansible"

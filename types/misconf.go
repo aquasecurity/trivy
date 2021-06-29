@@ -1,5 +1,10 @@
 package types
 
+import (
+	"fmt"
+	"sort"
+)
+
 type Misconfiguration struct {
 	FileType   string         `json:",omitempty"`
 	FilePath   string         `json:",omitempty"`
@@ -52,4 +57,44 @@ func (r MisconfResults) Less(i, j int) bool {
 		return r[i].Severity < r[j].Severity
 	}
 	return r[i].Message < r[j].Message
+}
+
+func ToMisconfigurations(misconfs map[string]Misconfiguration) []Misconfiguration {
+	var results []Misconfiguration
+	for _, misconf := range misconfs {
+		// Remove duplicates
+		misconf.Successes = uniqueResults(misconf.Successes)
+
+		// Sort results
+		sort.Sort(misconf.Successes)
+		sort.Sort(misconf.Warnings)
+		sort.Sort(misconf.Failures)
+		sort.Sort(misconf.Exceptions)
+
+		results = append(results, misconf)
+	}
+
+	// Sort misconfigurations
+	sort.Slice(results, func(i, j int) bool {
+		if results[i].FileType != results[j].FileType {
+			return results[i].FileType < results[j].FileType
+		}
+		return results[i].FilePath < results[j].FilePath
+	})
+
+	return results
+}
+
+func uniqueResults(results []MisconfResult) []MisconfResult {
+	uniq := map[string]MisconfResult{}
+	for _, result := range results {
+		key := fmt.Sprintf("%s::%s::%s", result.ID, result.Namespace, result.Message)
+		uniq[key] = result
+	}
+
+	var uniqResults []MisconfResult
+	for _, s := range uniq {
+		uniqResults = append(uniqResults, s)
+	}
+	return uniqResults
 }

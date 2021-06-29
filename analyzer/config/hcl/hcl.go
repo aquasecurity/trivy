@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/hashicorp/go-multierror"
+	multierror "github.com/hashicorp/go-multierror"
 	"github.com/open-policy-agent/conftest/parser/hcl1"
 	"github.com/open-policy-agent/conftest/parser/hcl2"
 	"golang.org/x/xerrors"
@@ -16,7 +16,7 @@ import (
 
 const version = 1
 
-var requiredExts = []string{".hcl", ".hcl1", ".hcl2", ".tf"}
+var requiredExts = []string{".hcl", ".hcl1", ".hcl2"}
 
 type ConfigAnalyzer struct {
 	hcl1Parser  *hcl1.Parser

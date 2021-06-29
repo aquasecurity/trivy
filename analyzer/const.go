@@ -42,4 +42,5 @@ const (
 	TypeJSON       Type = "json"
 	TypeDockerfile Type = "dockerfile"
 	TypeHCL        Type = "hcl"
+	TypeTerraform  Type = "terraform"
 )

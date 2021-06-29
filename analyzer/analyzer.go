@@ -28,6 +28,7 @@ var (
 )
 
 type AnalysisTarget struct {
+	Dir      string
 	FilePath string
 	Content  []byte
 }
@@ -181,7 +182,7 @@ func (a Analyzer) ImageConfigAnalyzerVersions() map[string]int {
 }
 
 func (a Analyzer) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted, result *AnalysisResult,
-	filePath string, info os.FileInfo, opener Opener) error {
+	dir, filePath string, info os.FileInfo, opener Opener) error {
 	if info.IsDir() {
 		return nil
 	}
@@ -210,7 +211,7 @@ func (a Analyzer) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *se
 				return
 			}
 			result.Merge(ret)
-		}(d, AnalysisTarget{FilePath: filePath, Content: b})
+		}(d, AnalysisTarget{Dir: dir, FilePath: filePath, Content: b})
 	}
 	return nil
 }

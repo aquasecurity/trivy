@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/fanal/types"
 )
 
-func Test_hclConfigAnalyzer_Analyze(t *testing.T) {
+func TestConfigAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
@@ -130,7 +130,7 @@ func Test_hclConfigAnalyzer_Analyze(t *testing.T) {
 	}
 }
 
-func Test_hclConfigAnalyzer_Required(t *testing.T) {
+func TestConfigAnalyzer_Required(t *testing.T) {
 	tests := []struct {
 		name        string
 		filePattern *regexp.Regexp
@@ -153,11 +153,6 @@ func Test_hclConfigAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
-			name:     "tf",
-			filePath: "deployment.tf",
-			want:     true,
-		},
-		{
 			name:     "json",
 			filePath: "deployment.json",
 			want:     false,
@@ -177,7 +172,7 @@ func Test_hclConfigAnalyzer_Required(t *testing.T) {
 		})
 	}
 }
-func Test_hclConfigAnalyzer_Type(t *testing.T) {
+func TestConfigAnalyzer_Type(t *testing.T) {
 	s := hcl.NewConfigAnalyzer(nil)
 	want := analyzer.TypeHCL
 	got := s.Type()

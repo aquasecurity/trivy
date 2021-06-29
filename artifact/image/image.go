@@ -41,7 +41,7 @@ func NewArtifact(img image.Image, c cache.ArtifactCache, disabled []analyzer.Typ
 		return nil, xerrors.Errorf("config scanner error: %w", err)
 	}
 
-	s, err := scanner.New(opt.Namespaces, opt.PolicyPaths, opt.DataPaths)
+	s, err := scanner.New("", opt.Namespaces, opt.PolicyPaths, opt.DataPaths)
 	if err != nil {
 		return nil, xerrors.Errorf("scanner error: %w", err)
 	}
@@ -186,7 +186,7 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobIn
 	limit := semaphore.NewWeighted(parallel)
 
 	opqDirs, whFiles, err := walker.WalkLayerTar(cr, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, filePath, info, opener); err != nil {
+		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
 		return nil
