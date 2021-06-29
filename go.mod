@@ -9,7 +9,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.14.1
 	github.com/aquasecurity/go-dep-parser v0.0.0-20210520015931-0dd56983cc62
 	github.com/aquasecurity/testdocker v0.0.0-20210106133225-0b17fe083674
-	github.com/aws/aws-sdk-go v1.31.6
+	github.com/aws/aws-sdk-go v1.37.0
 	github.com/containerd/cgroups v0.0.0-20210114181951-8a68de567b68 // indirect
 	github.com/containerd/containerd v1.4.3 // indirect
 	github.com/containerd/continuity v0.0.0-20210208174643-50096c924a4e // indirect
@@ -21,7 +21,9 @@ require (
 	github.com/go-redis/redis/v8 v8.4.0
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/go-containerregistry v0.1.2
-	github.com/hashicorp/go-multierror v1.1.0
+	github.com/hashicorp/errwrap v1.1.0 // indirect
+	github.com/hashicorp/go-hclog v0.15.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpmdb v0.0.0-20201215100354-a9e3110d8ee1
@@ -39,14 +41,14 @@ require (
 	github.com/sosedoff/gitkit v0.2.0
 	github.com/stretchr/testify v1.7.0
 	github.com/testcontainers/testcontainers-go v0.9.1-0.20210218153226-c8e070a2f18d
+	github.com/tfsec/tfsec v0.40.7-0.20210629072544-d8b8d646671d
 	github.com/urfave/cli/v2 v2.3.0
 	go.etcd.io/bbolt v1.3.5
 	go.opencensus.io v0.22.6 // indirect
 	go.uber.org/zap v1.16.0
 	golang.org/x/mod v0.3.0
-	golang.org/x/net v0.0.0-20210220033124-5f55cee0dc0d // indirect
+	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43 // indirect
 	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
-	golang.org/x/sys v0.0.0-20210220050731-9a76102bfb43 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/genproto v0.0.0-20210219173056-d891e3cb3b5b // indirect
 	google.golang.org/grpc v1.35.0 // indirect

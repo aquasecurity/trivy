@@ -17,25 +17,31 @@ func TestScanner_ScanConfig(t *testing.T) {
 	// check for misconfigurations in implementations
 	tests := []struct {
 		name        string
+		rootDir     string
 		policyPaths []string
 		dataPaths   []string
-		configType  string
-		content     interface{}
+		configs     []types.Config
 		namespaces  []string
 		want        types.Misconfiguration
 		wantErr     string
 	}{
 		{
 			name:        "happy path",
+			rootDir:     "testdata",
 			policyPaths: []string{"testdata/valid/100.rego"},
-			configType:  types.Kubernetes,
-			content: map[string]interface{}{
-				"apiVersion": "apps/v1",
-				"kind":       "Deployment",
+			namespaces:  []string{"testdata"},
+			configs: []types.Config{
+				{
+					Type:     types.Kubernetes,
+					FilePath: "deployment.yaml",
+					Content: map[string]interface{}{
+						"apiVersion": "apps/v1",
+						"kind":       "Deployment",
+					},
+				},
 			},
-			namespaces: []string{"testdata"},
 			want: types.Misconfiguration{
-				FileType: "kubernetes",
+				FileType: types.Kubernetes,
 				FilePath: "deployment.yaml",
 				Failures: []types.MisconfResult{
 					{
@@ -52,16 +58,98 @@ func TestScanner_ScanConfig(t *testing.T) {
 			},
 		},
 		{
+			name:    "terraform",
+			rootDir: "testdata",
+			configs: []types.Config{
+				{
+					Type:     types.Terraform,
+					FilePath: "testdata/main.tf",
+				},
+			},
+			want: types.Misconfiguration{
+				FileType: types.Terraform,
+				FilePath: "main.tf",
+				Successes: []types.MisconfResult{
+					{
+						Message: "Resource 'aws_security_group_rule.my-rule' passed check: An egress security group rule allows traffic to /0.",
+						PolicyMetadata: types.PolicyMetadata{
+							Type:     "Terraform Security Check powered by tfsec",
+							ID:       "AWS007",
+							Severity: "UNKNOWN",
+						},
+					},
+					{
+						Message: `Resource 'variable.enableEncryption' passed check: Potentially sensitive data stored in "default" value of variable.`,
+						PolicyMetadata: types.PolicyMetadata{
+							Type:     "Terraform Security Check powered by tfsec",
+							ID:       "GEN001",
+							Severity: "CRITICAL",
+						},
+					},
+					{
+						Message: `Resource 'aws_security_group_rule.my-rule' passed check: Potentially sensitive data stored in block attribute.`,
+						PolicyMetadata: types.PolicyMetadata{
+							Type:     "Terraform Security Check powered by tfsec",
+							ID:       "GEN003",
+							Severity: "CRITICAL",
+						},
+					},
+					{
+						Message: `Resource 'azurerm_managed_disk.source' passed check: Potentially sensitive data stored in block attribute.`,
+						PolicyMetadata: types.PolicyMetadata{
+							Type:     "Terraform Security Check powered by tfsec",
+							ID:       "GEN003",
+							Severity: "CRITICAL",
+						},
+					},
+				},
+				Failures: []types.MisconfResult{
+					{
+						Message: "Resource 'aws_security_group_rule.my-rule' defines a fully open ingress security group rule.",
+						PolicyMetadata: types.PolicyMetadata{
+							Type:     "Terraform Security Check powered by tfsec",
+							Title:    "An ingress security group rule allows traffic from /0.",
+							ID:       "AWS006",
+							Severity: "MEDIUM",
+						},
+					},
+					{
+						Message: "Resource 'aws_security_group_rule.my-rule' should include a description for auditing purposes.",
+						PolicyMetadata: types.PolicyMetadata{
+							Type:     "Terraform Security Check powered by tfsec",
+							Title:    "Missing description for security group/security group rule.",
+							ID:       "AWS018",
+							Severity: "HIGH",
+						},
+					},
+					{
+						Message: "Resource 'azurerm_managed_disk.source' defines an unencrypted managed disk.",
+						PolicyMetadata: types.PolicyMetadata{
+							Type:     "Terraform Security Check powered by tfsec",
+							Title:    "Unencrypted managed disk.",
+							ID:       "AZU003",
+							Severity: "HIGH",
+						},
+					},
+				},
+			},
+		},
+		{
 			name:        "happy path with multiple policies",
 			policyPaths: []string{"testdata/valid/"},
-			configType:  types.Kubernetes,
-			content: map[string]interface{}{
-				"apiVersion": "apps/v1",
-				"kind":       "Deployment",
+			namespaces:  []string{"testdata"},
+			configs: []types.Config{
+				{
+					Type:     types.Kubernetes,
+					FilePath: "deployment.yaml",
+					Content: map[string]interface{}{
+						"apiVersion": "apps/v1",
+						"kind":       "Deployment",
+					},
+				},
 			},
-			namespaces: []string{"testdata"},
 			want: types.Misconfiguration{
-				FileType:  "kubernetes",
+				FileType:  types.Kubernetes,
 				FilePath:  "deployment.yaml",
 				Successes: types.MisconfResults(nil),
 				Warnings:  types.MisconfResults(nil),
@@ -88,22 +176,22 @@ func TestScanner_ScanConfig(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s, err := scanner.New(tt.namespaces, tt.policyPaths, tt.dataPaths)
+			s, err := scanner.New(tt.rootDir, tt.namespaces, tt.policyPaths, tt.dataPaths)
 			require.NoError(t, err)
 
-			got, err := s.ScanConfigs(context.Background(), []types.Config{{tt.configType, "deployment.yaml", tt.content}})
+			got, err := s.ScanConfigs(context.Background(), tt.configs)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				assert.Nil(t, got)
 				return
 			}
+			require.NoError(t, err)
 
 			sort.Slice(got[0].Failures, func(i, j int) bool {
 				return got[0].Failures[i].Namespace < got[0].Failures[j].Namespace
 			})
 
-			require.NoError(t, err)
 			assert.Equal(t, tt.want, got[0])
 		})
 	}

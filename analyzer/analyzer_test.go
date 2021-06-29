@@ -366,7 +366,7 @@ func TestAnalyzeFile(t *testing.T) {
 			require.NoError(t, err)
 
 			ctx := context.Background()
-			err = a.AnalyzeFile(ctx, &wg, limit, got, tt.args.filePath, info, func() ([]byte, error) {
+			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info, func() ([]byte, error) {
 				if tt.args.testFilePath == "testdata/error" {
 					return nil, xerrors.New("error")
 				}
