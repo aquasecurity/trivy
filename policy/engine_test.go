@@ -136,6 +136,44 @@ func TestEngine_Check(t *testing.T) {
 			},
 		},
 		{
+			name:        "multiple deny",
+			policyPaths: []string{"testdata/multiple_deny"},
+			args: args{
+				configs: []types.Config{
+					{
+						Type:     types.Kubernetes,
+						FilePath: "deployment.yaml",
+						Content: map[string]interface{}{
+							"apiVersion": "apps/v1",
+							"kind":       "Deployment",
+							"metadata": map[string]interface{}{
+								"name": "test",
+							},
+						},
+					},
+				},
+				namespaces: []string{"testdata", "dummy"},
+			},
+			want: []types.Misconfiguration{
+				{
+					FileType: types.Kubernetes,
+					FilePath: "deployment.yaml",
+					Failures: []types.MisconfResult{
+						{
+							Namespace: "testdata.xyz_100",
+							Message:   "deny test",
+							PolicyMetadata: types.PolicyMetadata{
+								ID:       "XYZ-100",
+								Type:     "Kubernetes Security Check",
+								Title:    "Something Bad",
+								Severity: "LOW",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:        "combined files",
 			policyPaths: []string{"testdata/combine"},
 			dataPaths:   []string{"testdata/data"},
