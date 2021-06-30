@@ -85,6 +85,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				Layer:            pkg.Layer,
+				Hid:              adv.Hid,
 			}
 			vulns = append(vulns, vuln)
 		}
@@ -105,6 +106,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 					InstalledVersion: installed,
 					FixedVersion:     fixedVersion.String(),
 					Layer:            pkg.Layer,
+					Hid:              adv.Hid,
 				}
 				vulns = append(vulns, vuln)
 			}

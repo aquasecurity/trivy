@@ -124,6 +124,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			PrimaryUrl:       vuln.PrimaryURL,
 			LastModifiedDate: lastModifiedDate,
 			PublishedDate:    publishedDate,
+			Hid:              vuln.Hid,
 		})
 	}
 	return rpcVulns
@@ -194,6 +195,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: vuln.SeveritySource,
 			PrimaryURL:     vuln.PrimaryUrl,
+			Hid:            vuln.Hid,
 		})
 	}
 	return vulns
