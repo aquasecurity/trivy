@@ -23,6 +23,11 @@ import (
 	"github.com/aquasecurity/fanal/utils"
 )
 
+var (
+	warningRegex = regexp.MustCompile("^warn(_[a-zA-Z0-9]+)*$")
+	failureRegex = regexp.MustCompile("^(deny|violation)(_[a-zA-Z0-9]+)*$")
+)
+
 // Engine represents the policy engine.
 type Engine struct {
 	modules  map[string]*ast.Module
@@ -186,14 +191,6 @@ func (e *Engine) Check(ctx context.Context, configs []types.Config, namespaces [
 			return nil, xerrors.Errorf("failed to query input option: %w", err)
 		}
 
-		var rules []string
-		for r := range module.Rules {
-			currentRule := module.Rules[r].Head.Name.String()
-			if isFailure(currentRule) || isWarning(currentRule) {
-				rules = append(rules, currentRule)
-			}
-		}
-
 		var selectedConfigs []types.Config
 		if len(inputOption.Selectors) > 0 {
 			// Pass only the config files that match the selector types
@@ -204,6 +201,9 @@ func (e *Engine) Check(ctx context.Context, configs []types.Config, namespaces [
 			// When the 'selector' is not specified, it means '*'.
 			selectedConfigs = configs
 		}
+
+		// Extract deny and warn rules
+		rules := entrypoints(module)
 
 		var result map[string]types.Misconfiguration
 		if inputOption.Combine {
@@ -626,6 +626,17 @@ func (e *Engine) queryInputOption(ctx context.Context, namespace string) (types.
 	return inputOption, nil
 }
 
+func entrypoints(module *ast.Module) []string {
+	uniqRules := map[string]struct{}{}
+	for r := range module.Rules {
+		currentRule := module.Rules[r].Head.Name.String()
+		if isFailure(currentRule) || isWarning(currentRule) {
+			uniqRules[currentRule] = struct{}{}
+		}
+	}
+	return utils.Keys(uniqRules)
+}
+
 func parseResult(r map[string]interface{}) (string, string, error) {
 	// Policies that return metadata (e.g. deny[{"msg": msg}])
 	if _, ok := r["msg"]; !ok {
@@ -646,12 +657,10 @@ func parseResult(r map[string]interface{}) (string, string, error) {
 }
 
 func isWarning(rule string) bool {
-	warningRegex := regexp.MustCompile("^warn(_[a-zA-Z0-9]+)*$")
 	return warningRegex.MatchString(rule)
 }
 
 func isFailure(rule string) bool {
-	failureRegex := regexp.MustCompile("^(deny|violation)(_[a-zA-Z0-9]+)*$")
 	return failureRegex.MatchString(rule)
 }
 
