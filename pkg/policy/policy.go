@@ -3,11 +3,15 @@ package policy
 import (
 	"context"
 	"encoding/json"
-	"net/http"
+	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/google/go-containerregistry/pkg/name"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/open-policy-agent/opa/bundle"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
@@ -17,21 +21,24 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-// TODO: fix
-const bundleURL = "http://aquasecurity.github.io/aqua-policy-poc/bundle.tar.gz"
+const (
+	bundleVersion    = 1
+	bundleRepository = "ghcr.io/aquasecurity/appshield"
+	layerMediaType   = "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
+)
 
 type options struct {
-	url   string
+	img   v1.Image
 	clock clock.Clock
 }
 
 // Option is a functional option
 type Option func(*options)
 
-// WithBundleURL takes a URL to download OPA bundle
-func WithBundleURL(url string) Option {
+// WithImage takes an OCI v1 Image
+func WithImage(img v1.Image) Option {
 	return func(opts *options) {
-		opts.url = url
+		opts.img = img
 	}
 }
 
@@ -44,32 +51,47 @@ func WithClock(clock clock.Clock) Option {
 
 // Metadata holds default policy metadata
 type Metadata struct {
-	Etag          string
-	LastUpdatedAt time.Time
+	Digest           string
+	LastDownloadedAt time.Time
 }
 
 // Client implements policy operations
 type Client struct {
-	opts options
+	img   v1.Image
+	clock clock.Clock
 }
 
 // NewClient is the factory method for policy client
-func NewClient(opts ...Option) Client {
+func NewClient(opts ...Option) (Client, error) {
 	o := &options{
-		url:   bundleURL,
 		clock: clock.RealClock{},
 	}
 
 	for _, opt := range opts {
 		opt(o)
 	}
-	return Client{
-		opts: *o,
+
+	if o.img == nil {
+		repo := fmt.Sprintf("%s:%d", bundleRepository, bundleVersion)
+		ref, err := name.ParseReference(repo)
+		if err != nil {
+			return Client{}, xerrors.Errorf("repository name error (%s): %w", repo, err)
+		}
+
+		o.img, err = remote.Image(ref)
+		if err != nil {
+			return Client{}, xerrors.Errorf("OCI repository error: %w", err)
+		}
 	}
+
+	return Client{
+		img:   o.img,
+		clock: o.clock,
+	}, nil
 }
 
-// LoadDefaultPolicies loads default policies
-func (c Client) LoadDefaultPolicies() ([]string, error) {
+// LoadBuiltinPolicies loads default policies
+func (c Client) LoadBuiltinPolicies() ([]string, error) {
 	f, err := os.Open(manifestPath())
 	if err != nil {
 		return nil, xerrors.Errorf("manifest file open error (%s): %w", manifestPath(), err)
@@ -80,6 +102,8 @@ func (c Client) LoadDefaultPolicies() ([]string, error) {
 		return nil, xerrors.Errorf("json decode error (%s): %w", manifestPath(), err)
 	}
 
+	// If the "roots" field is not included in the manifest it defaults to [""]
+	// which means that ALL data and policy must come from the bundle.
 	if manifest.Roots == nil || len(*manifest.Roots) == 0 {
 		return []string{contentDir()}, nil
 	}
@@ -93,72 +117,110 @@ func (c Client) LoadDefaultPolicies() ([]string, error) {
 }
 
 // NeedsUpdate returns if the default policy should be updated
-func (c Client) NeedsUpdate() (string, bool) {
+func (c Client) NeedsUpdate() (bool, error) {
 	f, err := os.Open(metadataPath())
 	if err != nil {
 		log.Logger.Debugf("Failed to open the policy metadata: %s", err)
-		return "", true
+		return true, nil
 	}
 
 	var meta Metadata
 	if err = json.NewDecoder(f).Decode(&meta); err != nil {
-		log.Logger.Warnf("Policy JSON decode error: %s", err)
-		return "", true
+		log.Logger.Warnf("Policy metadata decode error: %s", err)
+		return true, nil
 	}
 
-	// Update if it's been a day since the last update.
-	if c.opts.clock.Now().After(meta.LastUpdatedAt.Add(24 * time.Hour)) {
-		return meta.Etag, true
+	// No need to update if it's been within a day since the last update.
+	if c.clock.Now().Before(meta.LastDownloadedAt.Add(24 * time.Hour)) {
+		return false, nil
 	}
 
-	return "", false
+	digest, err := c.img.Digest()
+	if err != nil {
+		return false, xerrors.Errorf("digest error: %w", err)
+	}
 
+	if meta.Digest != digest.String() {
+		return true, nil
+	}
+
+	return false, nil
 }
 
-// DownloadDefaultPolicies download default policies from GitHub Pages
-func (c Client) DownloadDefaultPolicies(ctx context.Context, etag string) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodHead, c.opts.url, nil)
+// DownloadBuiltinPolicies download default policies from GitHub Pages
+func (c Client) DownloadBuiltinPolicies(ctx context.Context) error {
+	layers, err := c.img.Layers()
 	if err != nil {
-		return xerrors.Errorf("http client error: %w", err)
+		return xerrors.Errorf("OCI layer error: %w", err)
 	}
-	req.Header.Set("If-None-Match", etag)
 
-	client := new(http.Client)
-	resp, err := client.Do(req)
+	if len(layers) != 1 {
+		return xerrors.Errorf("OPA bundle must be a single layer: %w", err)
+	}
+
+	bundleLayer := layers[0]
+	mediaType, err := bundleLayer.MediaType()
 	if err != nil {
-		return xerrors.Errorf("http request error: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusNotModified {
-		log.Logger.Info("The default policies has not been updated")
-		return nil
+		return xerrors.Errorf("media type error: %w", err)
 	}
 
-	log.Logger.Info("Need to update the default policies")
-	log.Logger.Info("Downloading the default policies...")
+	if mediaType != layerMediaType {
+		return xerrors.Errorf("unacceptable media type: %s", mediaType)
+	}
+
+	// Take the first layer as OPA bundle
+	rc, err := bundleLayer.Compressed()
+	if err != nil {
+		return xerrors.Errorf("failed to fetch a layer: %w", err)
+	}
+	defer rc.Close()
+
+	// https://github.com/hashicorp/go-getter/issues/326
+	f, err := os.CreateTemp("", "bundle-*.tar.gz")
+	if err != nil {
+		return xerrors.Errorf("failed to create a temp dir: %w", err)
+	}
+	defer func() {
+		_ = f.Close()
+		_ = os.Remove(f.Name())
+	}()
+
+	// Download bundle.tar.gz into a temporal file
+	if _, err = io.Copy(f, rc); err != nil {
+		return xerrors.Errorf("copy error: %w", err)
+	}
+
+	// Decompress bundle.tar.gz and copy into the cache dir
 	dst := contentDir()
-	if err = downloader.Download(ctx, c.opts.url, dst, dst); err != nil {
+	if err = downloader.Download(ctx, f.Name(), dst, dst); err != nil {
 		return xerrors.Errorf("policy download error: %w", err)
 	}
 
-	if err = c.updateMetadata(resp.Header.Get("etag"), c.opts.clock.Now()); err != nil {
+	digest, err := c.img.Digest()
+	if err != nil {
+		return xerrors.Errorf("digest error: %w", err)
+	}
+	log.Logger.Debugf("Digest of the builtin policies: %s", digest)
+
+	// Update metadata.json with the new digest and the current date
+	if err = c.updateMetadata(digest.String(), c.clock.Now()); err != nil {
 		return xerrors.Errorf("unable to update the policy metadata: %w", err)
 	}
 
 	return nil
 }
 
-func (c Client) updateMetadata(etag string, now time.Time) error {
+func (c Client) updateMetadata(digest string, now time.Time) error {
 	meta := Metadata{
-		Etag:          etag,
-		LastUpdatedAt: now,
+		Digest:           digest,
+		LastDownloadedAt: now,
 	}
 
 	f, err := os.Create(metadataPath())
 	if err != nil {
 		return xerrors.Errorf("failed to open a policy manifest: %w", err)
 	}
+	defer f.Close()
 
 	if err = json.NewEncoder(f).Encode(meta); err != nil {
 		return xerrors.Errorf("json encode error: %w", err)

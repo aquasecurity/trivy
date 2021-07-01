@@ -151,14 +151,14 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
-		defaultPolicyPaths, err := operation.InitDefaultPolicies(ctx)
+		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx)
 		if err != nil {
-			return pkgReport.Report{}, xerrors.Errorf("failed to initialize default policies: %w", err)
+			return pkgReport.Report{}, xerrors.Errorf("failed to initialize builtin policies: %w", err)
 		}
 
 		configScannerOptions = config.ScannerOption{
 			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespace),
-			PolicyPaths:  append(opt.PolicyPaths, defaultPolicyPaths...),
+			PolicyPaths:  append(opt.PolicyPaths, builtinPolicyPaths...),
 			DataPaths:    opt.DataPaths,
 			FilePatterns: opt.FilePatterns,
 		}
