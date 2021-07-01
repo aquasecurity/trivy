@@ -8,6 +8,7 @@ import (
 type ImageOption struct {
 	ScanRemovedPkgs bool
 	ListAllPkgs     bool
+	IgnoreEOLOS     bool
 }
 
 // NewImageOption is the factory method to return ImageOption
@@ -15,5 +16,6 @@ func NewImageOption(c *cli.Context) ImageOption {
 	return ImageOption{
 		ScanRemovedPkgs: c.Bool("removed-pkgs"),
 		ListAllPkgs:     c.Bool("list-all-pkgs"),
+		IgnoreEOLOS:     c.Bool("ignore-eol-os"),
 	}
 }

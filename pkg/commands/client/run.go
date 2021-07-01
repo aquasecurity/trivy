@@ -56,6 +56,7 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 		SecurityChecks:      opt.SecurityChecks,
 		ScanRemovedPackages: opt.ScanRemovedPkgs,
 		ListAllPackages:     opt.ListAllPkgs,
+		IgnoreEOLOS:         opt.ImageOption.IgnoreEOLOS,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 

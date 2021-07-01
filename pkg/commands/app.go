@@ -76,6 +76,13 @@ var (
 		EnvVars: []string{"TRIVY_EXIT_CODE"},
 	}
 
+	ignoreEOLOSFlag = cli.BoolFlag{
+		Name:    "ignore-eol-os",
+		Usage:   "ignore eol os",
+		Value:   true,
+		EnvVars: []string{"TRIVY_IGNORE_EOL_OS"},
+	}
+
 	skipUpdateFlag = cli.BoolFlag{
 		Name:    "skip-update",
 		Usage:   "skip db update",
@@ -232,6 +239,7 @@ var (
 		&severityFlag,
 		&outputFlag,
 		&exitCodeFlag,
+		&ignoreEOLOSFlag,
 		&skipUpdateFlag,
 		&downloadDBOnlyFlag,
 		&resetFlag,
