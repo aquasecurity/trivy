@@ -103,8 +103,12 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 		return report.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 	if eosl {
-		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
-		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
+		if options.IgnoreEOLOS {
+			log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
+			log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
+		} else {
+			log.Logger.Fatalf("This OS version is no longer supported by the distribution: %s %s. The vulnerability detection is insufficient because security updates are not provided", osFound.Family, osFound.Name)
+		}
 	}
 
 	return report.Report{
