@@ -14,7 +14,7 @@
 {{- end -}}
 {{- $description := .Description -}}
 {{- if gt (len $description ) 1021 -}}
-    {{- $description = (slice $description 0 1021) | printf "%v .." -}}
+    {{- $description = (substr 0 1021 $description) | printf "%v .." -}}
 {{- end}}
     {
         "SchemaVersion": "2018-10-08",

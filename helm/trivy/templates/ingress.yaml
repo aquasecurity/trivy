@@ -27,7 +27,7 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
-          - path: /
+          - path: {{ $.Values.ingress.path }}
             backend:
               serviceName: {{ $fullName }}
               servicePort: {{ $.Values.service.port -}}

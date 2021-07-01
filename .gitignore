@@ -24,3 +24,6 @@ thumbs.db
 # test fixtures
 coverage.txt
 integration/testdata/fixtures/
+
+# SBOMs generated during CI
+/bom.json
