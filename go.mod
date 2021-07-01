@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20210602054043-49bfafe39808
+	github.com/aquasecurity/fanal v0.0.0-20210630073218-8099f7a30368
 	github.com/aquasecurity/go-dep-parser v0.0.0-20210520015931-0dd56983cc62
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -37,7 +37,7 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/mitchellh/copystructure v1.1.1 // indirect
-	github.com/olekukonko/tablewriter v0.0.4
+	github.com/olekukonko/tablewriter v0.0.5
 	github.com/open-policy-agent/opa v0.25.2
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/smartystreets/assertions v1.2.0 // indirect
@@ -48,7 +48,6 @@ require (
 	github.com/twitchtv/twirp v8.0.0+incompatible
 	github.com/urfave/cli/v2 v2.3.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20201216223049-8b5274cf687f // indirect
 	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
