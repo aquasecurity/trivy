@@ -4,8 +4,9 @@ package types
 type ScanOptions struct {
 	VulnType            []string
 	SecurityChecks      []string
-	ScanRemovedPackages bool
-	ListAllPackages     bool
 	SkipFiles           []string
 	SkipDirs            []string
+	ScanRemovedPackages bool
+	ListAllPackages     bool
+	AnalyzeOnly         bool
 }
