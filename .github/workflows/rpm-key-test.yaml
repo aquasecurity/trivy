@@ -1,4 +1,4 @@
-name: Release
+name: RPM Signing test
 on:
   push:
 
@@ -58,15 +58,11 @@ jobs:
           git config --global user.name "syedshameersarwar"
       - name: Import RPM GPG key
         run: echo -e "${{ secrets.RPM_GPG_KEY }}" > private.pgp && echo ${{ secrets.RPM_PASSPHRASE }} | gpg --batch --import private.pgp && rm private.pgp
-      - name: Check gpg keys for testing rpm
-        run: gpg --list-keys
       - name: Create rpm repository
         env:
           PASSPHRASE: ${{ secrets.RPM_PASSPHRASE }}
         run: ci/deploy-rpm.sh
       - name: Import DEB GPG key
         run: echo -e "${{ secrets.GPG_KEY }}" | gpg --import
-      - name: Check gpg keys for testing deb
-        run: gpg --list-keys
       - name: Create deb repository
         run: ci/deploy-deb.sh

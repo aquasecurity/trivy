@@ -80,9 +80,13 @@ jobs:
         run: |
           git config --global user.email "knqyf263@gmail.com"
           git config --global user.name "Teppei Fukuda"
+      - name: Import RPM GPG key
+        run: echo -e "${{ secrets.RPM_GPG_KEY }}" > private.pgp && echo ${{ secrets.RPM_PASSPHRASE }} | gpg --batch --import private.pgp && rm private.pgp
       - name: Create rpm repository
+        env:
+          PASSPHRASE: ${{ secrets.RPM_PASSPHRASE }}
         run: ci/deploy-rpm.sh
-      - name: Import GPG key
+      - name: Import DEB GPG key
         run: echo -e "${{ secrets.GPG_KEY }}" | gpg --import
       - name: Create deb repository
         run: ci/deploy-deb.sh
