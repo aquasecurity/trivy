@@ -16,8 +16,8 @@ import (
 )
 
 var (
-	analyzers       []analyzer
-	configAnalyzers []configAnalyzer
+	analyzers       = map[Type]analyzer{}
+	configAnalyzers = map[Type]configAnalyzer{}
 
 	// ErrUnknownOS occurs when unknown OS is analyzed.
 	ErrUnknownOS = xerrors.New("unknown OS")
@@ -48,11 +48,11 @@ type configAnalyzer interface {
 }
 
 func RegisterAnalyzer(analyzer analyzer) {
-	analyzers = append(analyzers, analyzer)
+	analyzers[analyzer.Type()] = analyzer
 }
 
 func RegisterConfigAnalyzer(analyzer configAnalyzer) {
-	configAnalyzers = append(configAnalyzers, analyzer)
+	configAnalyzers[analyzer.Type()] = analyzer
 }
 
 type Opener func() ([]byte, error)
@@ -133,16 +133,16 @@ type Analyzer struct {
 
 func NewAnalyzer(disabledAnalyzers []Type) Analyzer {
 	var drivers []analyzer
-	for _, a := range analyzers {
-		if isDisabled(a.Type(), disabledAnalyzers) {
+	for analyzerType, a := range analyzers {
+		if isDisabled(analyzerType, disabledAnalyzers) {
 			continue
 		}
 		drivers = append(drivers, a)
 	}
 
 	var configDrivers []configAnalyzer
-	for _, a := range configAnalyzers {
-		if isDisabled(a.Type(), disabledAnalyzers) {
+	for analyzerType, a := range configAnalyzers {
+		if isDisabled(analyzerType, disabledAnalyzers) {
 			continue
 		}
 		configDrivers = append(configDrivers, a)
@@ -158,12 +158,12 @@ func NewAnalyzer(disabledAnalyzers []Type) Analyzer {
 // AnalyzerVersions returns analyzer version identifier used for cache keys.
 func (a Analyzer) AnalyzerVersions() map[string]int {
 	versions := map[string]int{}
-	for _, aa := range analyzers {
-		if isDisabled(aa.Type(), a.disabledAnalyzers) {
-			versions[string(aa.Type())] = 0
+	for analyzerType, aa := range analyzers {
+		if isDisabled(analyzerType, a.disabledAnalyzers) {
+			versions[string(analyzerType)] = 0
 			continue
 		}
-		versions[string(aa.Type())] = aa.Version()
+		versions[string(analyzerType)] = aa.Version()
 	}
 	return versions
 }
