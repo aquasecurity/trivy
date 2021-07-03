@@ -6,8 +6,8 @@ env:
   GO_VERSION: "1.16"
   GH_USER: "aqua-bot"
 jobs:
-  release:
-    name: Release
+  sign:
+    name: signing
     runs-on: ubuntu-18.04 # 20.04 doesn't provide createrepo for now
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
