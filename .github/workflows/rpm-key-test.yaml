@@ -57,7 +57,7 @@ jobs:
           git config --global user.email "syedshameersarwar@gmail.com"
           git config --global user.name "syedshameersarwar"
       - name: Import RPM GPG key
-        run: echo -e "${{ secrets.RPM_GPG_KEY }}" > private.gpg && echo ${{ secrets.RPM_PASSPHRASE }} | gpg --batch --import private.pgp && rm private.pgp
+        run: echo -e "${{ secrets.RPM_GPG_KEY }}" > private.pgp && echo ${{ secrets.RPM_PASSPHRASE }} | gpg --batch --import private.pgp && rm private.pgp
       - name: Check gpg keys for testing rpm
         run: gpg --list-keys
       - name: Create rpm repository
