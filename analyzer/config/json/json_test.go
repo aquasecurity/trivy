@@ -166,6 +166,11 @@ func Test_jsonConfigAnalyzer_Required(t *testing.T) {
 			want:     false,
 		},
 		{
+			name:     "npm json",
+			filePath: "package-lock.json",
+			want:     false,
+		},
+		{
 			name:        "file pattern",
 			filePattern: regexp.MustCompile(`foo*`),
 			filePath:    "foo_file",
