@@ -139,12 +139,12 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, source string) strin
 
 // Filter filter out the vulnerabilities
 func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
-	severities []dbTypes.Severity, ignoreUnfixed, showSuccesses bool, ignoreFile, policyFile string) (
+	severities []dbTypes.Severity, ignoreUnfixed, includeSuccesses bool, ignoreFile, policyFile string) (
 	[]types.DetectedVulnerability, []types.DetectedMisconfiguration, error) {
 	ignoredIDs := getIgnoredIDs(ignoreFile)
 
 	filteredVulns := filterVulnerabilities(vulns, severities, ignoreUnfixed, ignoredIDs)
-	filteredMisconfs := filterMisconfigurations(misconfs, severities, showSuccesses, ignoredIDs)
+	filteredMisconfs := filterMisconfigurations(misconfs, severities, includeSuccesses, ignoredIDs)
 
 	if policyFile != "" {
 		var err error
@@ -191,7 +191,7 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 }
 
 func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,
-	showSuccesses bool, ignoredIDs []string) []types.DetectedMisconfiguration {
+	includeSuccesses bool, ignoredIDs []string) []types.DetectedMisconfiguration {
 	var filtered []types.DetectedMisconfiguration
 	for _, misconf := range misconfs {
 		// Filter misconfigurations by severity
@@ -199,7 +199,7 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 			if s.String() == misconf.Severity {
 				if utils.StringInSlice(misconf.ID, ignoredIDs) {
 					continue
-				} else if misconf.Status == types.StatusPassed && !showSuccesses {
+				} else if misconf.Status == types.StatusPassed && !includeSuccesses {
 					continue
 				}
 				filtered = append(filtered, misconf)

@@ -71,7 +71,7 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 	results := report.Results
 	for i := range results {
 		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
-			opt.Severities, opt.IgnoreUnfixed, opt.ShowSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
+			opt.Severities, opt.IgnoreUnfixed, opt.IncludeSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return xerrors.Errorf("filter error: %w", err)
 		}
@@ -79,7 +79,7 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 		results[i].Misconfigurations = misconfs
 	}
 
-	if err = pkgReport.Write(opt.Format, opt.Output, opt.Severities, report, opt.Template, false); err != nil {
+	if err = pkgReport.Write(opt.Format, opt.Output, opt.Severities, report, opt.Template, false, opt.IncludeSuccesses); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 

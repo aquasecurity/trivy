@@ -74,7 +74,7 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		return xerrors.Errorf("filter error: %w", err)
 	}
 
-	if err = pkgReport.Write(opt.Format, opt.Output, opt.Severities, report, opt.Template, opt.Light); err != nil {
+	if err = pkgReport.Write(opt.Format, opt.Output, opt.Severities, report, opt.Template, opt.Light, opt.IncludeSuccesses); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
@@ -184,7 +184,7 @@ func filter(ctx context.Context, opt Option, report pkgReport.Report) (pkgReport
 	for i := range results {
 		resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
 		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
-			opt.Severities, opt.IgnoreUnfixed, opt.ShowSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
+			opt.Severities, opt.IgnoreUnfixed, opt.IncludeSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return pkgReport.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}

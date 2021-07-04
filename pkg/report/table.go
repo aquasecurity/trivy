@@ -17,9 +17,10 @@ import (
 
 // TableWriter implements Writer and output in tabular form
 type TableWriter struct {
-	Severities []dbTypes.Severity
-	Output     io.Writer
-	Light      bool
+	Severities       []dbTypes.Severity
+	Output           io.Writer
+	Light            bool
+	IncludeSuccesses bool
 }
 
 // Write writes the result on standard output
@@ -95,9 +96,19 @@ func (tw TableWriter) writeVulnerabilities(table *tablewriter.Table, vulns []typ
 
 func (tw TableWriter) writeMisconfigurations(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) map[string]int {
 	table.SetColWidth(40)
+
+	alignment := []int{tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT,
+		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT}
 	header := []string{"Type", "Misconf ID", "Title", "Severity", "Status", "Message"}
-	table.SetColumnAlignment([]int{tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT,
-		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT})
+
+	if !tw.IncludeSuccesses {
+		// Remove status
+		statusPos := 4
+		alignment = append(alignment[:statusPos], alignment[statusPos+1:]...)
+		header = append(header[:statusPos], header[statusPos+1:]...)
+	}
+
+	table.SetColumnAlignment(alignment)
 	table.SetHeader(header)
 	severityCount := tw.setMisconfRows(table, misconfs)
 
@@ -159,6 +170,11 @@ func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.
 			}
 		} else {
 			row = []string{misconf.Type, misconf.ID, misconf.Title, misconf.Severity, string(misconf.Status), misconf.Message}
+		}
+
+		if !tw.IncludeSuccesses {
+			// Remove status
+			row = append(row[:4], row[5:]...)
 		}
 
 		table.Append(row)

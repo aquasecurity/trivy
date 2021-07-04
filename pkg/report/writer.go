@@ -69,11 +69,16 @@ func (results Results) Failed() bool {
 
 // Write writes the result to output, format as passed in argument
 func Write(format string, output io.Writer, severities []dbTypes.Severity, report Report,
-	outputTemplate string, light bool) error {
+	outputTemplate string, light, includeSuccesses bool) error {
 	var writer Writer
 	switch format {
 	case "table":
-		writer = &TableWriter{Output: output, Light: light, Severities: severities}
+		writer = &TableWriter{
+			Output:           output,
+			Severities:       severities,
+			Light:            light,
+			IncludeSuccesses: includeSuccesses,
+		}
 	case "json":
 		writer = &JSONWriter{Output: output}
 	case "template":

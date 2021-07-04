@@ -245,11 +245,11 @@ var (
 		EnvVars: []string{"TRIVY_POLICY_NAMESPACES"},
 	}
 
-	showSuccesses = cli.BoolFlag{
-		Name:    "show-successes",
-		Usage:   "show successes",
+	includeSuccesses = cli.BoolFlag{
+		Name:    "include-successes",
+		Usage:   "include successes of misconfigurations",
 		Value:   false,
-		EnvVars: []string{"TRIVY_SHOW_SUCCESSES"},
+		EnvVars: []string{"TRIVY_INCLUDE_SUCCESSES"},
 	}
 
 	globalFlags = []cli.Flag{
@@ -595,7 +595,7 @@ func NewConfigCommand() *cli.Command {
 			&configPolicyAlias,
 			&filePatterns,
 			&policyNamespaces,
-			&showSuccesses,
+			&includeSuccesses,
 		},
 	}
 }
