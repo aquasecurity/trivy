@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/commands"
 )
@@ -372,10 +371,8 @@ func TestRun_WithTar(t *testing.T) {
 		},
 	}
 
-	// Copy DB file
-	cacheDir, err := gunzipDB()
-	require.NoError(t, err)
-	defer os.RemoveAll(cacheDir)
+	// Set up testing DB
+	cacheDir := gunzipDB(t)
 
 	// Setup CLI App
 	app := commands.NewApp("dev")

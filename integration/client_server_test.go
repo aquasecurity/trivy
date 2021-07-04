@@ -484,9 +484,8 @@ func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 	t.Helper()
 	version := "dev"
 
-	// Copy DB file
-	cacheDir, err := gunzipDB()
-	assert.NoError(t, err)
+	// Set up testing DB
+	cacheDir := gunzipDB(t)
 
 	port, err := getFreePort()
 	assert.NoError(t, err)
