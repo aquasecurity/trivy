@@ -78,7 +78,7 @@ var (
 
 	skipUpdateFlag = cli.BoolFlag{
 		Name:    "skip-update",
-		Usage:   "skip db update",
+		Usage:   "skip updating vulnerability database and builtin policies for misconfigurations",
 		EnvVars: []string{"TRIVY_SKIP_UPDATE"},
 	}
 

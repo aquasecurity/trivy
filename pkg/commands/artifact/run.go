@@ -151,7 +151,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
-		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx)
+		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.SkipUpdate)
 		if err != nil {
 			return pkgReport.Report{}, xerrors.Errorf("failed to initialize builtin policies: %w", err)
 		}

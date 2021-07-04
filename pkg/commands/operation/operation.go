@@ -104,15 +104,18 @@ func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) erro
 }
 
 // InitBuiltinPolicies downloads the builtin policies and loads them
-func InitBuiltinPolicies(ctx context.Context) ([]string, error) {
+func InitBuiltinPolicies(ctx context.Context, skipUpdate bool) ([]string, error) {
 	client, err := policy.NewClient()
 	if err != nil {
 		return nil, xerrors.Errorf("policy client error: %w", err)
 	}
 
-	needsUpdate, err := client.NeedsUpdate()
-	if err != nil {
-		return nil, xerrors.Errorf("unable to check if builtin policies need to be updated: %w", err)
+	needsUpdate := false
+	if !skipUpdate {
+		needsUpdate, err = client.NeedsUpdate()
+		if err != nil {
+			return nil, xerrors.Errorf("unable to check if builtin policies need to be updated: %w", err)
+		}
 	}
 
 	if needsUpdate {
@@ -125,6 +128,10 @@ func InitBuiltinPolicies(ctx context.Context) ([]string, error) {
 
 	policyPaths, err := client.LoadBuiltinPolicies()
 	if err != nil {
+		if skipUpdate {
+			log.Logger.Info("No builtin policies were loaded")
+			return nil, nil
+		}
 		return nil, xerrors.Errorf("policy load error: %w", err)
 	}
 	return policyPaths, nil
