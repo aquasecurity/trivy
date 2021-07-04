@@ -168,6 +168,25 @@ func (c Client) DownloadBuiltinPolicies(ctx context.Context) error {
 		return xerrors.Errorf("unacceptable media type: %s", mediaType)
 	}
 
+	if err = c.downloadBuiltinPolicies(ctx, bundleLayer); err != nil {
+		return xerrors.Errorf("download error: %w", err)
+	}
+
+	digest, err := c.img.Digest()
+	if err != nil {
+		return xerrors.Errorf("digest error: %w", err)
+	}
+	log.Logger.Debugf("Digest of the builtin policies: %s", digest)
+
+	// Update metadata.json with the new digest and the current date
+	if err = c.updateMetadata(digest.String(), c.clock.Now()); err != nil {
+		return xerrors.Errorf("unable to update the policy metadata: %w", err)
+	}
+
+	return nil
+}
+
+func (c Client) downloadBuiltinPolicies(ctx context.Context, bundleLayer v1.Layer) error {
 	// Take the first layer as OPA bundle
 	rc, err := bundleLayer.Compressed()
 	if err != nil {
@@ -194,17 +213,6 @@ func (c Client) DownloadBuiltinPolicies(ctx context.Context) error {
 	dst := contentDir()
 	if err = downloader.Download(ctx, f.Name(), dst, dst); err != nil {
 		return xerrors.Errorf("policy download error: %w", err)
-	}
-
-	digest, err := c.img.Digest()
-	if err != nil {
-		return xerrors.Errorf("digest error: %w", err)
-	}
-	log.Logger.Debugf("Digest of the builtin policies: %s", digest)
-
-	// Update metadata.json with the new digest and the current date
-	if err = c.updateMetadata(digest.String(), c.clock.Now()); err != nil {
-		return xerrors.Errorf("unable to update the policy metadata: %w", err)
 	}
 
 	return nil
