@@ -42,7 +42,7 @@ type Result struct {
 	Type              string                           `json:"Type,omitempty"`
 	Packages          []ftypes.Package                 `json:"Packages,omitempty"`
 	Vulnerabilities   []types.DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
-	MisconfSummary    MisconfSummary                   `json:"MisconfSummary,omitempty"`
+	MisconfSummary    *MisconfSummary                  `json:"MisconfSummary,omitempty"`
 	Misconfigurations []types.DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
 }
 

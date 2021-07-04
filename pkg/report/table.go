@@ -62,7 +62,7 @@ func (tw TableWriter) write(result Result) {
 
 	fmt.Printf("\n%s\n", result.Target)
 	fmt.Println(strings.Repeat("=", len(result.Target)))
-	if len(result.Misconfigurations) > 0 {
+	if result.MisconfSummary != nil {
 		// for misconfigurations
 		summary := result.MisconfSummary
 		fmt.Printf("Tests: %d (SUCCESSES: %d, FAILURES: %d, EXCEPTIONS: %d)\n",

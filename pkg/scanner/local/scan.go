@@ -232,7 +232,7 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 
 		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
 
-		var summary report.MisconfSummary
+		summary := new(report.MisconfSummary)
 		var detected []types.DetectedMisconfiguration
 
 		for _, f := range misconf.Failures {
