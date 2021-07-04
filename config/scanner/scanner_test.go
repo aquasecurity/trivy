@@ -75,7 +75,7 @@ func TestScanner_ScanConfig(t *testing.T) {
 						PolicyMetadata: types.PolicyMetadata{
 							Type:     "Terraform Security Check powered by tfsec",
 							ID:       "AWS007",
-							Severity: "UNKNOWN",
+							Severity: "MEDIUM",
 						},
 					},
 					{

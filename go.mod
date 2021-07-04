@@ -41,7 +41,7 @@ require (
 	github.com/sosedoff/gitkit v0.2.0
 	github.com/stretchr/testify v1.7.0
 	github.com/testcontainers/testcontainers-go v0.9.1-0.20210218153226-c8e070a2f18d
-	github.com/tfsec/tfsec v0.40.7-0.20210629072544-d8b8d646671d
+	github.com/tfsec/tfsec v0.40.8-0.20210702100641-956c4f18a1b8
 	github.com/urfave/cli/v2 v2.3.0
 	go.etcd.io/bbolt v1.3.5
 	go.opencensus.io v0.22.6 // indirect
