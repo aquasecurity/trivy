@@ -6,7 +6,7 @@ __rego_metadata__ := {
 	"id": "XYZ-100",
 	"title": "Bad Deployment",
 	"version": "v1.0.0",
-	"severity": "HIGH",
+	"severity": "High",
 	"type": "Kubernetes Security Check",
 }
 

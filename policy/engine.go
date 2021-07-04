@@ -593,6 +593,9 @@ func (e *Engine) queryMetadata(ctx context.Context, namespace string) (types.Pol
 		return types.PolicyMetadata{}, xerrors.Errorf("decode error: %w", err)
 	}
 
+	// e.g. Low -> LOW
+	metadata.Severity = strings.ToUpper(metadata.Severity)
+
 	return metadata, nil
 }
 
@@ -617,7 +620,6 @@ func (e *Engine) queryInputOption(ctx context.Context, namespace string) (types.
 		return types.PolicyInputOption{}, xerrors.New("'__rego_input__' must be map")
 	}
 
-	// Set default values
 	var inputOption types.PolicyInputOption
 	if err = mapstructure.Decode(result, &inputOption); err != nil {
 		return types.PolicyInputOption{}, xerrors.Errorf("decode error: %w", err)
