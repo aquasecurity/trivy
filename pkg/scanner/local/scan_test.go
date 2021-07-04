@@ -793,6 +793,11 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "/app/configs/deployment.yaml",
 					Type:   ftypes.Kubernetes,
+					MisconfSummary: report.MisconfSummary{
+						Successes:  1,
+						Failures:   1,
+						Exceptions: 0,
+					},
 					Misconfigurations: []types.DetectedMisconfiguration{
 						{
 							Type:       "Kubernetes Security Check",
@@ -823,6 +828,11 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "/app/configs/pod.yaml",
 					Type:   ftypes.Kubernetes,
+					MisconfSummary: report.MisconfSummary{
+						Successes:  0,
+						Failures:   1,
+						Exceptions: 1,
+					},
 					Misconfigurations: []types.DetectedMisconfiguration{
 						{
 							Type:       "Kubernetes Security Check",

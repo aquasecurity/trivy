@@ -176,7 +176,7 @@ func TestReportWriter_Template(t *testing.T) {
 				},
 			}
 
-			assert.NoError(t, report.Write("template", &tmplWritten, nil, inputReport, tc.template, false))
+			assert.NoError(t, report.Write("template", &tmplWritten, nil, inputReport, tc.template, false, false))
 			assert.Equal(t, tc.expected, tmplWritten.String())
 		})
 	}
@@ -208,7 +208,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
 					},
 				},
 			}
-			assert.NoError(t, report.Write("template", &got, nil, inputReport, string(template), false), tc.name)
+			assert.NoError(t, report.Write("template", &got, nil, inputReport, string(template), false, false), tc.name)
 			assert.JSONEq(t, tc.want, got.String(), tc.name)
 		})
 	}
