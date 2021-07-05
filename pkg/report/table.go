@@ -155,8 +155,10 @@ func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.
 	for _, misconf := range misconfs {
 		if misconf.Status == types.StatusFailure {
 			severityCount[misconf.Severity]++
-			primaryURL := strings.TrimPrefix(misconf.PrimaryURL, "https://")
-			misconf.Message = fmt.Sprintf("%s -->%s", misconf.Message, primaryURL)
+			if misconf.PrimaryURL != "" {
+				primaryURL := strings.TrimPrefix(misconf.PrimaryURL, "https://")
+				misconf.Message = fmt.Sprintf("%s -->%s", misconf.Message, primaryURL)
+			}
 		}
 
 		var row []string

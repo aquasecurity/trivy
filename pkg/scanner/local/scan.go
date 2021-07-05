@@ -283,13 +283,18 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		msg = "No issues found"
 	}
 
+	var primaryURL string
+	if strings.HasPrefix(res.Namespace, "appshield.") {
+		primaryURL = fmt.Sprintf("https://avd.aquasec.com/appshield/%s", strings.ToLower(res.ID))
+	}
+
 	return types.DetectedMisconfiguration{
 		ID:         res.ID,
 		Title:      res.Title,
 		Type:       res.Type,
 		Message:    msg,
 		Severity:   severity.String(),
-		PrimaryURL: fmt.Sprintf("https://avd.aquasec.com/appshield/%s", strings.ToLower(res.ID)),
+		PrimaryURL: primaryURL,
 		Status:     status,
 		Layer:      layer,
 	}
