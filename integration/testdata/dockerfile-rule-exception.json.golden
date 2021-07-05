@@ -1,0 +1,25 @@
+[
+  {
+    "Target": "Dockerfile",
+    "Type": "dockerfile",
+    "MisconfSummary": {
+      "Successes": 0,
+      "Failures": 0,
+      "Exceptions": 1
+    },
+    "Misconfigurations": [
+      {
+        "Type": "Dockerfile Security Check",
+        "ID": "DS002",
+        "Title": "Image user should not be 'root'",
+        "Message": "data.appshield.dockerfile.DS002.exception[_][_] == \"\"",
+        "Severity": "HIGH",
+        "PrimaryURL": "https://avd.aquasec.com/appshield/ds002",
+        "Status": "EXCEPTION",
+        "Layer": {
+          "DiffID": "sha256:8deb193255df87176d204546e01e27c5b3796ecdd09672911e1d998faafac0c4"
+        }
+      }
+    ]
+  }
+]
