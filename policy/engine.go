@@ -669,6 +669,10 @@ func isFailure(rule string) bool {
 // When matching rules for exceptions, only the name of the rule
 // is queried, so the severity prefix must be removed.
 func removeRulePrefix(rule string) string {
+	if rule == "violation" || rule == "deny" || rule == "warn" {
+		return ""
+	}
+
 	rule = strings.TrimPrefix(rule, "violation_")
 	rule = strings.TrimPrefix(rule, "deny_")
 	rule = strings.TrimPrefix(rule, "warn_")
