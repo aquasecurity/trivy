@@ -1,6 +1,6 @@
 [
   {
-    "Target": "testdata/fixtures/ubi-7.tar.gz (redhat 7.7)",
+    "Target": "testdata/fixtures/images/ubi-7.tar.gz (redhat 7.7)",
     "Type": "redhat",
     "Vulnerabilities": [
       {

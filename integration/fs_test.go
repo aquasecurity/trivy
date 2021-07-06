@@ -67,13 +67,9 @@ func TestFilesystem(t *testing.T) {
 	// Set up testing DB
 	cacheDir := gunzipDB(t)
 
-	// Setup CLI App
-	app := commands.NewApp("dev")
-	app.Writer = io.Discard
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs := []string{"trivy", "--cache-dir", cacheDir, "fs", "--skip-update",
+			osArgs := []string{"trivy", "--cache-dir", cacheDir, "fs", "--skip-db-update", "--skip-policy-update",
 				"--format", "json", "--security-checks", tt.args.securityChecks}
 
 			if len(tt.args.policyPaths) != 0 {
@@ -81,11 +77,13 @@ func TestFilesystem(t *testing.T) {
 					osArgs = append(osArgs, "--config-policy", policyPath)
 				}
 			}
+
 			if len(tt.args.severity) != 0 {
 				osArgs = append(osArgs,
 					[]string{"--severity", strings.Join(tt.args.severity, ",")}...,
 				)
 			}
+
 			if len(tt.args.ignoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
 				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.args.ignoreIDs, "\n")), 0444)
@@ -107,6 +105,10 @@ func TestFilesystem(t *testing.T) {
 
 			osArgs = append(osArgs, "--output", outputFile)
 			osArgs = append(osArgs, tt.args.input)
+
+			// Setup CLI App
+			app := commands.NewApp("dev")
+			app.Writer = io.Discard
 
 			// Run "trivy fs"
 			assert.Nil(t, app.Run(osArgs))

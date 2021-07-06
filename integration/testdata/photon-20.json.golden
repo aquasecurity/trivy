@@ -1,6 +1,6 @@
 [
   {
-    "Target": "testdata/fixtures/photon-20.tar.gz (photon 2.0)",
+    "Target": "testdata/fixtures/images/photon-20.tar.gz (photon 2.0)",
     "Type": "photon",
     "Vulnerabilities": [
       {

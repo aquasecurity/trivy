@@ -1,6 +1,6 @@
 [
   {
-    "Target": "testdata/fixtures/ubuntu-1804.tar.gz (ubuntu 18.04)",
+    "Target": "testdata/fixtures/images/ubuntu-1804.tar.gz (ubuntu 18.04)",
     "Type": "ubuntu",
     "Vulnerabilities": [
       {

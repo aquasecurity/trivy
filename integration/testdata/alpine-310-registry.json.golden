@@ -1,6 +1,6 @@
 [
   {
-    "Target": "localhost:32799/alpine:3.10 (alpine 3.10.2)",
+    "Target": "localhost:55015/alpine:3.10 (alpine 3.10.2)",
     "Type": "alpine",
     "Vulnerabilities": [
       {

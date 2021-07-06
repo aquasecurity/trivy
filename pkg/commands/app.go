@@ -286,11 +286,11 @@ var (
 		&lightFlag,
 		&ignorePolicy,
 		&listAllPackages,
-		&skipFiles,
-		&skipDirs,
 		&cacheBackendFlag,
-		&configPolicy,
-		&policyNamespaces,
+		stringSliceFlag(skipFiles),
+		stringSliceFlag(skipDirs),
+		stringSliceFlag(configPolicy),
+		stringSliceFlag(policyNamespaces),
 	}
 
 	// deprecated options
@@ -466,9 +466,9 @@ func NewFilesystemCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
-			&skipFiles,
-			&skipDirs,
-			&configPolicy,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+			stringSliceFlag(configPolicy),
 		},
 	}
 }
@@ -501,8 +501,8 @@ func NewRepositoryCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
-			&skipFiles,
-			&skipDirs,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
 		},
 	}
 }
@@ -530,7 +530,7 @@ func NewClientCommand() *cli.Command {
 			&ignoreFileFlag,
 			&timeoutFlag,
 			&ignorePolicy,
-			&configPolicy,
+			stringSliceFlag(configPolicy),
 			&listAllPackages,
 
 			// original flags
@@ -599,11 +599,11 @@ func NewConfigCommand() *cli.Command {
 			&timeoutFlag,
 			&noProgressFlag,
 			&ignorePolicy,
-			&skipFiles,
-			&skipDirs,
-			&configPolicyAlias,
-			&filePatterns,
-			&policyNamespaces,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+			stringSliceFlag(configPolicyAlias),
+			stringSliceFlag(filePatterns),
+			stringSliceFlag(policyNamespaces),
 			&includeSuccesses,
 		},
 	}
@@ -640,4 +640,11 @@ func NewPluginCommand() *cli.Command {
 			},
 		},
 	}
+}
+
+// StringSliceFlag is defined globally. When the app runs multiple times,
+// the previous value will be retained and it causes unexpected results.
+// The flag value is copied through this function to prevent the issue.
+func stringSliceFlag(f cli.StringSliceFlag) *cli.StringSliceFlag {
+	return &f
 }
