@@ -146,7 +146,7 @@ func TestRegistry(t *testing.T) {
 		{
 			name:      "happy path with username/password",
 			imageName: "alpine:3.10",
-			imageFile: "testdata/fixtures/alpine-310.tar.gz",
+			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
 			option: registryOption{
 				AuthURL:  authURL,
 				Username: authUsername,
@@ -157,7 +157,7 @@ func TestRegistry(t *testing.T) {
 		{
 			name:      "happy path with registry token",
 			imageName: "alpine:3.10",
-			imageFile: "testdata/fixtures/alpine-310.tar.gz",
+			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
 			option: registryOption{
 				AuthURL:       authURL,
 				Username:      authUsername,
@@ -169,7 +169,7 @@ func TestRegistry(t *testing.T) {
 		{
 			name:      "sad path",
 			imageName: "alpine:3.10",
-			imageFile: "testdata/fixtures/alpine-310.tar.gz",
+			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
 			wantErr:   "unsupported status code 401; body: Auth failed",
 		},
 	}
