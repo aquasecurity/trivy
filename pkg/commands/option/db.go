@@ -28,7 +28,7 @@ func NewDBOption(c *cli.Context) DBOption {
 // Init initialize the DBOption
 func (c *DBOption) Init() (err error) {
 	if c.SkipDBUpdate && c.DownloadDBOnly {
-		return xerrors.New("--skip-update and --download-db-only options can not be specified both")
+		return xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
 	}
 	return nil
 }

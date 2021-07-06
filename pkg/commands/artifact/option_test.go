@@ -172,8 +172,8 @@ func TestOption_Init(t *testing.T) {
 		},
 		{
 			name:    "sad: skip and download db",
-			args:    []string{"--skip-update", "--download-db-only", "alpine:3.10"},
-			wantErr: "--skip-update and --download-db-only options can not be specified both",
+			args:    []string{"--skip-db-update", "--download-db-only", "alpine:3.10"},
+			wantErr: "--skip-db-update and --download-db-only options can not be specified both",
 		},
 		{
 			name: "sad: multiple image names",
@@ -194,7 +194,7 @@ func TestOption_Init(t *testing.T) {
 			set.Bool("quiet", false, "")
 			set.Bool("no-progress", false, "")
 			set.Bool("reset", false, "")
-			set.Bool("skip-update", false, "")
+			set.Bool("skip-db-update", false, "")
 			set.Bool("download-db-only", false, "")
 			set.Bool("auto-refresh", false, "")
 			set.String("severity", "CRITICAL", "")

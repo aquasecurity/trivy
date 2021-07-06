@@ -760,7 +760,7 @@ func TestScanner_Scan(t *testing.T) {
 								FilePath: "/app/configs/deployment.yaml",
 								Successes: []ftypes.MisconfResult{
 									{
-										Namespace: "main.kubernetes.id200",
+										Namespace: "appshield.kubernetes.id200",
 										PolicyMetadata: ftypes.PolicyMetadata{
 											ID:       "ID200",
 											Type:     "Kubernetes Security Check",
@@ -800,13 +800,12 @@ func TestScanner_Scan(t *testing.T) {
 					},
 					Misconfigurations: []types.DetectedMisconfiguration{
 						{
-							Type:       "Kubernetes Security Check",
-							ID:         "ID100",
-							Title:      "Bad Deployment",
-							Message:    "something bad",
-							Severity:   "HIGH",
-							PrimaryURL: "https://avd.aquasec.com/appshield/id100",
-							Status:     types.StatusFailure,
+							Type:     "Kubernetes Security Check",
+							ID:       "ID100",
+							Title:    "Bad Deployment",
+							Message:  "something bad",
+							Severity: "HIGH",
+							Status:   types.StatusFailure,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
@@ -835,25 +834,23 @@ func TestScanner_Scan(t *testing.T) {
 					},
 					Misconfigurations: []types.DetectedMisconfiguration{
 						{
-							Type:       "Kubernetes Security Check",
-							ID:         "ID300",
-							Title:      "Bad Deployment",
-							Message:    "No issues found",
-							Severity:   "MEDIUM",
-							PrimaryURL: "https://avd.aquasec.com/appshield/id300",
-							Status:     types.StatusFailure,
+							Type:     "Kubernetes Security Check",
+							ID:       "ID300",
+							Title:    "Bad Deployment",
+							Message:  "No issues found",
+							Severity: "MEDIUM",
+							Status:   types.StatusFailure,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
 						},
 						{
-							Type:       "Kubernetes Security Check",
-							ID:         "ID100",
-							Title:      "Bad Deployment",
-							Message:    "No issues found",
-							Severity:   "HIGH",
-							PrimaryURL: "https://avd.aquasec.com/appshield/id100",
-							Status:     types.StatusException,
+							Type:     "Kubernetes Security Check",
+							ID:       "ID100",
+							Title:    "Bad Deployment",
+							Message:  "No issues found",
+							Severity: "HIGH",
+							Status:   types.StatusException,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
