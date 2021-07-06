@@ -8,6 +8,7 @@ import (
 type ConfigOption struct {
 	FilePatterns     []string
 	IncludeSuccesses bool
+	SkipPolicyUpdate bool
 
 	// Rego
 	PolicyPaths      []string
@@ -19,6 +20,7 @@ type ConfigOption struct {
 func NewConfigOption(c *cli.Context) ConfigOption {
 	return ConfigOption{
 		IncludeSuccesses: c.Bool("include-successes"),
+		SkipPolicyUpdate: c.Bool("skip-policy-update"),
 		FilePatterns:     c.StringSlice("file-patterns"),
 		PolicyPaths:      c.StringSlice("config-policy"),
 		DataPaths:        c.StringSlice("config-data"),

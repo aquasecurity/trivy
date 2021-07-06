@@ -19,8 +19,8 @@ func TestNewDBOption(t *testing.T) {
 			name: "happy path",
 			args: []string{"--reset", "--skip-update"},
 			want: option.DBOption{
-				Reset:      true,
-				SkipUpdate: true,
+				Reset:        true,
+				SkipDBUpdate: true,
 			},
 		},
 	}
@@ -72,7 +72,7 @@ func TestDBOption_Init(t *testing.T) {
 			c := &option.DBOption{
 				Reset:          tt.fields.Reset,
 				DownloadDBOnly: tt.fields.DownloadDBOnly,
-				SkipUpdate:     tt.fields.SkipUpdate,
+				SkipDBUpdate:   tt.fields.SkipUpdate,
 				Light:          tt.fields.Light,
 			}
 

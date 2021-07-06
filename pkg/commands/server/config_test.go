@@ -26,9 +26,9 @@ func TestNew(t *testing.T) {
 					Quiet: true,
 				},
 				DBOption: option.DBOption{
-					Reset:      true,
-					SkipUpdate: true,
-					NoProgress: true,
+					Reset:        true,
+					SkipDBUpdate: true,
+					NoProgress:   true,
 				},
 				Listen: "localhost:8080",
 			},
@@ -79,7 +79,7 @@ func TestConfig_Init(t *testing.T) {
 		{
 			name: "sad: skip and download db",
 			dbConfig: option.DBOption{
-				SkipUpdate:     true,
+				SkipDBUpdate:   true,
 				DownloadDBOnly: true,
 			},
 			args:    []string{"alpine:3.10"},

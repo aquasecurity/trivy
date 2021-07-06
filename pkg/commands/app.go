@@ -76,10 +76,17 @@ var (
 		EnvVars: []string{"TRIVY_EXIT_CODE"},
 	}
 
-	skipUpdateFlag = cli.BoolFlag{
-		Name:    "skip-update",
-		Usage:   "skip updating vulnerability database and builtin policies for misconfigurations",
-		EnvVars: []string{"TRIVY_SKIP_UPDATE"},
+	skipDBUpdateFlag = cli.BoolFlag{
+		Name:    "skip-db-update",
+		Aliases: []string{"skip-update"},
+		Usage:   "skip updating vulnerability database",
+		EnvVars: []string{"TRIVY_SKIP_UPDATE", "TRIVY_SKIP_DB_UPDATE"},
+	}
+
+	skipPolicyUpdateFlag = cli.BoolFlag{
+		Name:    "skip-policy-update",
+		Usage:   "skip updating builtin policies",
+		EnvVars: []string{"TRIVY_SKIP_POLICY_UPDATE"},
 	}
 
 	downloadDBOnlyFlag = cli.BoolFlag{
@@ -265,7 +272,7 @@ var (
 		&severityFlag,
 		&outputFlag,
 		&exitCodeFlag,
-		&skipUpdateFlag,
+		&skipDBUpdateFlag,
 		&downloadDBOnlyFlag,
 		&resetFlag,
 		&clearCacheFlag,
@@ -446,7 +453,8 @@ func NewFilesystemCommand() *cli.Command {
 			&severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
-			&skipUpdateFlag,
+			&skipDBUpdateFlag,
+			&skipPolicyUpdateFlag,
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
@@ -480,7 +488,8 @@ func NewRepositoryCommand() *cli.Command {
 			&severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
-			&skipUpdateFlag,
+			&skipDBUpdateFlag,
+			&skipPolicyUpdateFlag,
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
@@ -550,7 +559,7 @@ func NewServerCommand() *cli.Command {
 		Usage:   "server mode",
 		Action:  server.Run,
 		Flags: []cli.Flag{
-			&skipUpdateFlag,
+			&skipDBUpdateFlag,
 			&downloadDBOnlyFlag,
 			&resetFlag,
 			&cacheBackendFlag,
@@ -582,7 +591,7 @@ func NewConfigCommand() *cli.Command {
 			&severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
-			&skipUpdateFlag,
+			&skipPolicyUpdateFlag,
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&ignoreFileFlag,
