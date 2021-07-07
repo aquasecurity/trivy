@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/open-policy-agent/conftest/parser/toml"
+	"github.com/BurntSushi/toml"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -17,20 +17,18 @@ const version = 1
 var requiredExts = []string{".toml"}
 
 type ConfigAnalyzer struct {
-	parser      *toml.Parser
 	filePattern *regexp.Regexp
 }
 
 func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
 	return ConfigAnalyzer{
-		parser:      &toml.Parser{},
 		filePattern: filePattern,
 	}
 }
 
 func (a ConfigAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	var parsed interface{}
-	if err := a.parser.Unmarshal(target.Content, &parsed); err != nil {
+	if err := toml.Unmarshal(target.Content, &parsed); err != nil {
 		return nil, xerrors.Errorf("unable to parse TOML (%s): %w", target.FilePath, err)
 	}
 

@@ -3,6 +3,7 @@ module github.com/aquasecurity/fanal
 go 1.16
 
 require (
+	github.com/BurntSushi/toml v0.3.1
 	github.com/GoogleCloudPlatform/docker-credential-gcr v1.5.0
 	github.com/Microsoft/go-winio v0.4.16 // indirect
 	github.com/Microsoft/hcsshim v0.8.14 // indirect
@@ -24,6 +25,7 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-hclog v0.15.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1
+	github.com/hashicorp/hcl v1.0.0
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpmdb v0.0.0-20201215100354-a9e3110d8ee1
@@ -32,7 +34,6 @@ require (
 	github.com/magefile/mage v1.11.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/moby/buildkit v0.8.1
-	github.com/open-policy-agent/conftest v0.23.0
 	github.com/open-policy-agent/opa v0.25.2
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.0.2-0.20190823105129-775207bd45b6
@@ -42,6 +43,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/testcontainers/testcontainers-go v0.9.1-0.20210218153226-c8e070a2f18d
 	github.com/tfsec/tfsec v0.40.8-0.20210702100641-956c4f18a1b8
+	github.com/tmccombs/hcl2json v0.3.1
 	github.com/urfave/cli/v2 v2.3.0
 	go.etcd.io/bbolt v1.3.5
 	go.opencensus.io v0.22.6 // indirect

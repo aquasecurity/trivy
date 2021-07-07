@@ -121,7 +121,7 @@ func Test_jsonConfigAnalyzer_Analyze(t *testing.T) {
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
 			inputFile: "testdata/broken.json",
-			wantErr:   "unmarshal json",
+			wantErr:   "unable to parse JSON",
 		},
 	}
 
