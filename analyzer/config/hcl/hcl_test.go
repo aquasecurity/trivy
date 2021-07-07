@@ -1,7 +1,7 @@
 package hcl_test
 
 import (
-	"io/ioutil"
+	"os"
 	"regexp"
 	"testing"
 
@@ -108,7 +108,7 @@ func TestConfigAnalyzer_Analyze(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := ioutil.ReadFile(tt.inputFile)
+			b, err := os.ReadFile(tt.inputFile)
 			require.NoError(t, err)
 
 			a := hcl.NewConfigAnalyzer(nil)
