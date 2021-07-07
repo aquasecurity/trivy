@@ -4,14 +4,17 @@ import ftypes "github.com/aquasecurity/fanal/types"
 
 // DetectedMisconfiguration holds detected misconfigurations
 type DetectedMisconfiguration struct {
-	Type       string        `json:",omitempty"`
-	ID         string        `json:",omitempty"`
-	Title      string        `json:",omitempty"`
-	Message    string        `json:",omitempty"`
-	Severity   string        `json:",omitempty"`
-	PrimaryURL string        `json:",omitempty"`
-	Status     MisconfStatus `json:",omitempty"`
-	Layer      ftypes.Layer  `json:",omitempty"`
+	Type        string        `json:",omitempty"`
+	ID          string        `json:",omitempty"`
+	Title       string        `json:",omitempty"`
+	Description string        `json:",omitempty"`
+	Message     string        `json:",omitempty"`
+	Resolution  string        `json:",omitempty"`
+	Severity    string        `json:",omitempty"`
+	PrimaryURL  string        `json:",omitempty"`
+	References  []string      `json:",omitempty"`
+	Status      MisconfStatus `json:",omitempty"`
+	Layer       ftypes.Layer  `json:",omitempty"`
 }
 
 // MisconfStatus represents a status of misconfiguration
