@@ -1,17 +1,16 @@
 package hcl
 
 import (
-	"encoding/json"
 	"os"
 	"path/filepath"
 	"regexp"
 
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl"
-	"github.com/tmccombs/hcl2json/convert"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/config/parser/hcl2"
 	"github.com/aquasecurity/fanal/types"
 )
 
@@ -52,32 +51,19 @@ func (a ConfigAnalyzer) analyze(target analyzer.AnalysisTarget) (interface{}, er
 	var errs error
 	var parsed interface{}
 
-	if err := a.unmarshalHCL2(target.Content, &parsed); err != nil {
-		errs = multierror.Append(errs, xerrors.Errorf("unable to parse HCL2 (%a): %w", target.FilePath, err))
+	if err := hcl2.Unmarshal(target.Content, &parsed); err != nil {
+		errs = multierror.Append(errs, xerrors.Errorf("unable to parse HCL2 (%s): %w", target.FilePath, err))
 	} else {
 		return parsed, nil
 	}
 
 	if err := hcl.Unmarshal(target.Content, &parsed); err != nil {
-		errs = multierror.Append(errs, xerrors.Errorf("unable to parse HCL1 (%a): %w", target.FilePath, err))
+		errs = multierror.Append(errs, xerrors.Errorf("unable to parse HCL1 (%s): %w", target.FilePath, err))
 	} else {
 		return parsed, nil
 	}
 
 	return nil, errs
-}
-
-func (a ConfigAnalyzer) unmarshalHCL2(b []byte, v interface{}) error {
-	hclBytes, err := convert.Bytes(b, "", convert.Options{})
-	if err != nil {
-		return xerrors.Errorf("convert hcl2 to bytes: %w", err)
-	}
-
-	if err = json.Unmarshal(hclBytes, v); err != nil {
-		return xerrors.Errorf("unmarshal hcl2: %w", err)
-	}
-
-	return nil
 }
 
 func (a ConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
