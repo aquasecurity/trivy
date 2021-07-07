@@ -1,6 +1,7 @@
 [
   {
     "Target": "package-lock.json",
+    "Class": "lang-pkgs",
     "Type": "npm",
     "Vulnerabilities": [
       {

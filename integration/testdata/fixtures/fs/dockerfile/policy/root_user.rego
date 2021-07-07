@@ -10,6 +10,7 @@ __rego_metadata__ := {
 	"type": "Dockerfile Security Check",
 	"description": "It is a good practice to run the container as a non-root user.",
 	"recommended_actions": "Add 'USER <non root user name>' line to the Dockerfile",
+	"url": "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/"
 }
 
 __rego_input__ := {
