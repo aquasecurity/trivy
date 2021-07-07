@@ -36,9 +36,18 @@ type Metadata struct {
 // Results to hold list of Result
 type Results []Result
 
+type ResultClass string
+
+const (
+	ClassOSPkg   = "os-pkgs"
+	ClassLibrary = "lang-pkgs"
+	ClassConfig  = "config"
+)
+
 // Result holds a target and detected vulnerabilities
 type Result struct {
 	Target            string                           `json:"Target"`
+	Class             ResultClass                      `json:"Class,omitempty"`
 	Type              string                           `json:"Type,omitempty"`
 	Packages          []ftypes.Package                 `json:"Packages,omitempty"`
 	Vulnerabilities   []types.DetectedVulnerability    `json:"Vulnerabilities,omitempty"`

@@ -162,6 +162,7 @@ func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []fty
 	result := &report.Result{
 		Target:          artifactDetail,
 		Vulnerabilities: vulns,
+		Class:           report.ClassOSPkg,
 		Type:            osFamily,
 	}
 	return result, eosl, nil
@@ -198,6 +199,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		libReport := report.Result{
 			Target:          app.FilePath,
 			Vulnerabilities: vulns,
+			Class:           report.ClassLibrary,
 			Type:            app.Type,
 		}
 		if options.ListAllPackages {
@@ -254,6 +256,7 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 
 		results = append(results, report.Result{
 			Target:            misconf.FilePath,
+			Class:             report.ClassConfig,
 			Type:              misconf.FileType,
 			MisconfSummary:    summary,
 			Misconfigurations: detected,
