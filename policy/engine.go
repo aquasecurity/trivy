@@ -589,6 +589,13 @@ func (e *Engine) queryMetadata(ctx context.Context, namespace string) (types.Pol
 		return types.PolicyMetadata{}, xerrors.New("'__rego_metadata__' must be map")
 	}
 
+	// TODO: we need to convert string to slice until AVD supports an array of urls
+	if v, ok := result["url"]; ok {
+		if reference, ok := v.(string); ok {
+			result["references"] = []string{reference}
+		}
+	}
+
 	if err = mapstructure.Decode(result, &metadata); err != nil {
 		return types.PolicyMetadata{}, xerrors.Errorf("decode error: %w", err)
 	}
