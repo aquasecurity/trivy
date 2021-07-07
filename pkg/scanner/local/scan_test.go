@@ -127,7 +127,8 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Type: vulnerability.Alpine,
+					Class: report.ClassOSPkg,
+					Type:  vulnerability.Alpine,
 				},
 				{
 					Target: "/app/Gemfile.lock",
@@ -142,7 +143,8 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Type: "bundler",
+					Class: report.ClassLangPkg,
+					Type:  ftypes.Bundler,
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -273,7 +275,8 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Type: vulnerability.Alpine,
+					Class: report.ClassOSPkg,
+					Type:  vulnerability.Alpine,
 				},
 				{
 					Target: "/app/Gemfile.lock",
@@ -297,7 +300,8 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Type: "bundler",
+					Class: report.ClassLangPkg,
+					Type:  ftypes.Bundler,
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -354,7 +358,8 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Type: "bundler",
+					Class: report.ClassLangPkg,
+					Type:  "bundler",
 				},
 			},
 			wantOS: &ftypes.OS{},
@@ -412,6 +417,7 @@ func TestScanner_Scan(t *testing.T) {
 			wantResults: report.Results{
 				{
 					Target: "alpine:latest (alpine 3.11)",
+					Class:  report.ClassOSPkg,
 					Type:   vulnerability.Alpine,
 				},
 				{
@@ -427,7 +433,8 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Type: "bundler",
+					Class: report.ClassLangPkg,
+					Type:  "bundler",
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -498,7 +505,8 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Type: "bundler",
+					Class: report.ClassLangPkg,
+					Type:  ftypes.Bundler,
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -598,7 +606,8 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Type: "bundler",
+					Class: report.ClassLangPkg,
+					Type:  ftypes.Bundler,
 				},
 				{
 					Target: "/app/composer-lock.json",
@@ -613,7 +622,8 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Type: "composer",
+					Class: report.ClassLangPkg,
+					Type:  ftypes.Composer,
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -701,7 +711,8 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Type: "composer",
+					Class: report.ClassLangPkg,
+					Type:  ftypes.Composer,
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -792,6 +803,7 @@ func TestScanner_Scan(t *testing.T) {
 			wantResults: report.Results{
 				{
 					Target: "/app/configs/deployment.yaml",
+					Class:  report.ClassConfig,
 					Type:   ftypes.Kubernetes,
 					MisconfSummary: &report.MisconfSummary{
 						Successes:  1,
@@ -817,7 +829,10 @@ func TestScanner_Scan(t *testing.T) {
 							Message:    "No issues found",
 							Severity:   "MEDIUM",
 							PrimaryURL: "https://avd.aquasec.com/appshield/id200",
-							Status:     types.StatusPassed,
+							References: []string{
+								"https://avd.aquasec.com/appshield/id200",
+							},
+							Status: types.StatusPassed,
 							Layer: ftypes.Layer{
 								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 							},
@@ -826,6 +841,7 @@ func TestScanner_Scan(t *testing.T) {
 				},
 				{
 					Target: "/app/configs/pod.yaml",
+					Class:  report.ClassConfig,
 					Type:   ftypes.Kubernetes,
 					MisconfSummary: &report.MisconfSummary{
 						Successes:  0,

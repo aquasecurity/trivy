@@ -40,7 +40,7 @@ type ResultClass string
 
 const (
 	ClassOSPkg   = "os-pkgs"
-	ClassLibrary = "lang-pkgs"
+	ClassLangPkg = "lang-pkgs"
 	ClassConfig  = "config"
 )
 

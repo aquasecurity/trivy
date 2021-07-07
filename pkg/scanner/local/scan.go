@@ -199,7 +199,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		libReport := report.Result{
 			Target:          app.FilePath,
 			Vulnerabilities: vulns,
-			Class:           report.ClassLibrary,
+			Class:           report.ClassLangPkg,
 			Type:            app.Type,
 		}
 		if options.ListAllPackages {
