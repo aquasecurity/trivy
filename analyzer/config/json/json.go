@@ -1,11 +1,11 @@
 package json
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"regexp"
 
-	"github.com/open-policy-agent/conftest/parser/json"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -20,20 +20,18 @@ var (
 )
 
 type ConfigAnalyzer struct {
-	parser      *json.Parser
 	filePattern *regexp.Regexp
 }
 
 func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
 	return ConfigAnalyzer{
-		parser:      &json.Parser{},
 		filePattern: filePattern,
 	}
 }
 
 func (a ConfigAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	var parsed interface{}
-	if err := a.parser.Unmarshal(target.Content, &parsed); err != nil {
+	if err := json.Unmarshal(target.Content, &parsed); err != nil {
 		return nil, xerrors.Errorf("unable to parse JSON (%s): %w", target.FilePath, err)
 	}
 

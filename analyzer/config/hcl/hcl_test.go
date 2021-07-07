@@ -49,7 +49,7 @@ func TestConfigAnalyzer_Analyze(t *testing.T) {
 		{
 			name:      "HCL1: broken",
 			inputFile: "testdata/broken.hcl1",
-			wantErr:   "unmarshal hcl",
+			wantErr:   "unable to parse HCL2",
 		},
 		{
 			name:      "HCL2: happy path",

@@ -84,7 +84,7 @@ func Test_tomlConfigAnalyzer_Analyze(t *testing.T) {
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
 			inputFile: "testdata/broken.toml",
-			wantErr:   "unmarshal toml",
+			wantErr:   "unable to parse TOML",
 		},
 	}
 	for _, tt := range tests {
