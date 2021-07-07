@@ -127,10 +127,13 @@ func (s Scanner) scanTerraformByTFSec(files []types.Config) ([]types.Misconfigur
 		misconfResult := types.MisconfResult{
 			Message: result.Description,
 			PolicyMetadata: types.PolicyMetadata{
-				ID:       result.RuleID,
-				Type:     "Terraform Security Check powered by tfsec",
-				Title:    result.RuleSummary,
-				Severity: severityFromTFSec(result.RuleID, result.Severity),
+				ID:                 result.RuleID,
+				Type:               "Terraform Security Check powered by tfsec",
+				Title:              result.RuleSummary,
+				Description:        result.Impact,
+				Severity:           severityFromTFSec(result.RuleID, result.Severity),
+				RecommendedActions: result.Resolution,
+				References:         result.Links,
 			},
 		}
 
