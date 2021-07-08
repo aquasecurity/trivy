@@ -469,6 +469,7 @@ func NewFilesystemCommand() *cli.Command {
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
+			&policyNamespaces,
 		},
 	}
 }

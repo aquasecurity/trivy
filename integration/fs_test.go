@@ -20,6 +20,7 @@ func TestFilesystem(t *testing.T) {
 		severity       []string
 		ignoreIDs      []string
 		policyPaths    []string
+		namespaces     []string
 		input          string
 	}
 	tests := []struct {
@@ -62,6 +63,16 @@ func TestFilesystem(t *testing.T) {
 			},
 			golden: "testdata/dockerfile-namespace-exception.json.golden",
 		},
+		{
+			name: "dockerfile with custom policies",
+			args: args{
+				securityChecks: "config",
+				policyPaths:    []string{"testdata/fixtures/fs/custom-policy/policy"},
+				namespaces:     []string{"user"},
+				input:          "testdata/fixtures/fs/custom-policy",
+			},
+			golden: "testdata/dockerfile-custom-policies.json.golden",
+		},
 	}
 
 	// Set up testing DB
@@ -75,6 +86,12 @@ func TestFilesystem(t *testing.T) {
 			if len(tt.args.policyPaths) != 0 {
 				for _, policyPath := range tt.args.policyPaths {
 					osArgs = append(osArgs, "--config-policy", policyPath)
+				}
+			}
+
+			if len(tt.args.namespaces) != 0 {
+				for _, namespace := range tt.args.namespaces {
+					osArgs = append(osArgs, "--policy-namespaces", namespace)
 				}
 			}
 
