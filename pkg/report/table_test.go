@@ -158,7 +158,7 @@ func TestReportWriter_Table(t *testing.T) {
 				},
 			},
 			expectedOutput: `+---------------------------+------------+----------------------------+----------+------------------------------------------+
-|           TYPE            | MISCONF ID |           TITLE            | SEVERITY |                 MESSAGE                  |
+|           TYPE            | MISCONF ID |           CHECK            | SEVERITY |                 MESSAGE                  |
 +---------------------------+------------+----------------------------+----------+------------------------------------------+
 | Kubernetes Security Check |   KSV001   | Image tag ':latest' used   |   HIGH   | Message                                  |
 |                           |            |                            |          | -->avd.aquasec.com/appshield/ksv001      |
@@ -197,7 +197,7 @@ func TestReportWriter_Table(t *testing.T) {
 				},
 			},
 			expectedOutput: `+---------------------------+------------+----------------------------+----------+--------+------------------------------------------+
-|           TYPE            | MISCONF ID |           TITLE            | SEVERITY | STATUS |                 MESSAGE                  |
+|           TYPE            | MISCONF ID |           CHECK            | SEVERITY | STATUS |                 MESSAGE                  |
 +---------------------------+------------+----------------------------+----------+--------+------------------------------------------+
 | Kubernetes Security Check |   KSV001   | Image tag ':latest' used   |   HIGH   |  FAIL  | Message                                  |
 |                           |            |                            |          |        | -->avd.aquasec.com/appshield/ksv001      |

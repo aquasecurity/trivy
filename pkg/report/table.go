@@ -104,7 +104,7 @@ func (tw TableWriter) writeMisconfigurations(table *tablewriter.Table, misconfs 
 
 	alignment := []int{tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT,
 		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT}
-	header := []string{"Type", "Misconf ID", "Title", "Severity", "Status", "Message"}
+	header := []string{"Type", "Misconf ID", "Check", "Severity", "Status", "Message"}
 
 	if !tw.IncludeSuccesses {
 		// Remove status
