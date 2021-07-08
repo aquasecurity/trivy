@@ -9,6 +9,7 @@ type DetectedMisconfiguration struct {
 	Title       string        `json:",omitempty"`
 	Description string        `json:",omitempty"`
 	Message     string        `json:",omitempty"`
+	Namespace   string        `json:",omitempty"`
 	Resolution  string        `json:",omitempty"`
 	Severity    string        `json:",omitempty"`
 	PrimaryURL  string        `json:",omitempty"`

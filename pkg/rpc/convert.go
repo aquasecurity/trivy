@@ -139,13 +139,18 @@ func ConvertToRPCMisconfs(misconfs []types.DetectedMisconfiguration) []*common.D
 		}
 
 		rpcMisconfs = append(rpcMisconfs, &common.DetectedMisconfiguration{
-			Type:       m.Type,
-			Id:         m.ID,
-			Title:      m.Title,
-			Message:    m.Message,
-			Severity:   common.Severity(severity),
-			PrimaryUrl: m.PrimaryURL,
-			Layer:      ConvertToRPCLayer(m.Layer),
+			Type:        m.Type,
+			Id:          m.ID,
+			Title:       m.Title,
+			Description: m.Description,
+			Message:     m.Message,
+			Namespace:   m.Namespace,
+			Resolution:  m.Resolution,
+			Severity:    common.Severity(severity),
+			PrimaryUrl:  m.PrimaryURL,
+			References:  m.References,
+			Status:      string(m.Status),
+			Layer:       ConvertToRPCLayer(m.Layer),
 		})
 	}
 	return rpcMisconfs
@@ -228,13 +233,18 @@ func ConvertFromRPCMisconfs(rpcMisconfs []*common.DetectedMisconfiguration) []ty
 	var misconfs []types.DetectedMisconfiguration
 	for _, rpcMisconf := range rpcMisconfs {
 		misconfs = append(misconfs, types.DetectedMisconfiguration{
-			Type:       rpcMisconf.Type,
-			ID:         rpcMisconf.Id,
-			Title:      rpcMisconf.Title,
-			Message:    rpcMisconf.Message,
-			Severity:   rpcMisconf.Severity.String(),
-			PrimaryURL: rpcMisconf.PrimaryUrl,
-			Layer:      ConvertFromRPCLayer(rpcMisconf.Layer),
+			Type:        rpcMisconf.Type,
+			ID:          rpcMisconf.Id,
+			Title:       rpcMisconf.Title,
+			Description: rpcMisconf.Description,
+			Message:     rpcMisconf.Message,
+			Namespace:   rpcMisconf.Namespace,
+			Resolution:  rpcMisconf.Resolution,
+			Severity:    rpcMisconf.Severity.String(),
+			PrimaryURL:  rpcMisconf.PrimaryUrl,
+			References:  rpcMisconf.References,
+			Status:      types.MisconfStatus(rpcMisconf.Status),
+			Layer:       ConvertFromRPCLayer(rpcMisconf.Layer),
 		})
 	}
 	return misconfs

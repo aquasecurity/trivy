@@ -61,13 +61,18 @@ message MisconfResult {
 }
 
 message DetectedMisconfiguration {
-  string   type        = 1;
-  string   id          = 2;
-  string   title       = 3;
-  string   message     = 4;
-  Severity severity    = 5;
-  string   primary_url = 6;
-  Layer    layer       = 7;
+  string type                 = 1;
+  string id                   = 2;
+  string title                = 3;
+  string description          = 4;
+  string message              = 5;
+  string namespace            = 6;
+  string          resolution  = 7;
+  Severity        severity    = 8;
+  string          primary_url = 9;
+  repeated string references  = 10;
+  string          status      = 11;
+  Layer           layer       = 12;
 }
 
 message Vulnerability {

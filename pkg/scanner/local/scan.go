@@ -306,6 +306,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		Description: res.Description,
 		Message:     msg,
 		Resolution:  res.RecommendedActions,
+		Namespace:   res.Namespace,
 		Severity:    severity.String(),
 		PrimaryURL:  primaryURL,
 		References:  res.References,
