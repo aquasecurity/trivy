@@ -15,6 +15,7 @@
         "Title": "Image user should not be 'root'",
         "Description": "It is a good practice to run the container as a non-root user.",
         "Message": "data.appshield.dockerfile.DS002.exception[_][_] == \"\"",
+        "Namespace": "appshield.dockerfile.DS002",
         "Resolution": "Add 'USER \u003cnon root user name\u003e' line to the Dockerfile",
         "Severity": "HIGH",
         "PrimaryURL": "https://avd.aquasec.com/appshield/ds002",
