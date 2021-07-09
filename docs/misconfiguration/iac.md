@@ -10,38 +10,29 @@ $ trivy config [YOUR_IaC_DIRECTORY]
 
 Then, Trivy pulls builtin policies from GitHub Container Registry as OCI artifact and scans IaC files with those policies.
 
-For example:
-
-```
-$ ls build/
-Dockerfile
-$ trivy config ./build
-```
-
-<details>
-<summary>Result</summary>
-
-```
-2021-07-09T10:06:29.188+0300    INFO    Need to update the builtin policies
-2021-07-09T10:06:29.188+0300    INFO    Downloading the builtin policies...
-2021-07-09T10:06:30.520+0300    INFO    Detected config files: 1
-
-Dockerfile (dockerfile)
-=======================
-Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
-Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
-
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-|           TYPE            | MISCONF ID |        CHECK         | SEVERITY |                 MESSAGE                  |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-| Dockerfile Security Check |   DS002    | Image user is 'root' |   HIGH   | Last USER command in                     |
-|                           |            |                      |          | Dockerfile should not be 'root'          |
-|                           |            |                      |          | -->avd.aquasec.com/appshield/ds002       |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-```
-
-</details>
-
+!!! example
+    ```
+    $ ls build/
+    Dockerfile
+    $ trivy config ./build
+    2021-07-09T10:06:29.188+0300    INFO    Need to update the builtin policies
+    2021-07-09T10:06:29.188+0300    INFO    Downloading the builtin policies...
+    2021-07-09T10:06:30.520+0300    INFO    Detected config files: 1
+    
+    Dockerfile (dockerfile)
+    =======================
+    Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
+    Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+    
+    +---------------------------+------------+----------------------+----------+------------------------------------------+
+    |           TYPE            | MISCONF ID |        CHECK         | SEVERITY |                 MESSAGE                  |
+    +---------------------------+------------+----------------------+----------+------------------------------------------+
+    | Dockerfile Security Check |   DS002    | Image user is 'root' |   HIGH   | Last USER command in                     |
+    |                           |            |                      |          | Dockerfile should not be 'root'          |
+    |                           |            |                      |          | -->avd.aquasec.com/appshield/ds002       |
+    +---------------------------+------------+----------------------+----------+------------------------------------------+
+    ```
+    
 ## Type detection
 The specified directory can contain mixed types of IaC files.
 Trivy automatically detects config types and applies relevant policies.
@@ -138,25 +129,26 @@ Failures: 9 (HIGH: 6, CRITICAL: 1)
 
 You can see the config type next to each file name.
 
-``` bash
-Dockerfile (dockerfile)
-=======================
-Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
-Failures: 1 (HIGH: 1, CRITICAL: 0)
-
-...
-
-deployment.yaml (kubernetes)
-============================
-Tests: 28 (SUCCESSES: 15, FAILURES: 13, EXCEPTIONS: 0)
-Failures: 13 (HIGH: 1, CRITICAL: 0)
-
-...
-
-main.tf (terraform)
-===================
-Tests: 23 (SUCCESSES: 14, FAILURES: 9, EXCEPTIONS: 0)
-Failures: 9 (HIGH: 6, CRITICAL: 1)
-
-...
-```
+!!! example
+    ``` bash
+    Dockerfile (dockerfile)
+    =======================
+    Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
+    Failures: 1 (HIGH: 1, CRITICAL: 0)
+    
+    ...
+    
+    deployment.yaml (kubernetes)
+    ============================
+    Tests: 28 (SUCCESSES: 15, FAILURES: 13, EXCEPTIONS: 0)
+    Failures: 13 (HIGH: 1, CRITICAL: 0)
+    
+    ...
+    
+    main.tf (terraform)
+    ===================
+    Tests: 23 (SUCCESSES: 14, FAILURES: 9, EXCEPTIONS: 0)
+    Failures: 9 (HIGH: 6, CRITICAL: 1)
+    
+    ...
+    ```

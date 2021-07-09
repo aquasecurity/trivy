@@ -43,13 +43,17 @@ nav:
           - Others: vulnerability/examples/others.md
   - Misconfiguration:
       - Scanning:
+        - Overview: misconfiguration/index.md
         - Infrastructure as Code: misconfiguration/iac.md
         - Filesystem: misconfiguration/filesystem.md
       - Policy:
           - Builtin Policies: misconfiguration/policy/builtin.md
           - Custom Policies: misconfiguration/policy/custom.md
+      - Advanced:
+          - Exceptions: misconfiguration/advanced/exceptions.md
+          - Testing: misconfiguration/advanced/testing.md
   - Advanced:
-      - advanced/index.md
+      - Overview: advanced/index.md
       - Plugins: advanced/plugins.md
       - Air-Gapped Environment: advanced/air-gap.md
       - Integrations:
@@ -94,6 +98,10 @@ markdown_extensions:
   - footnotes
   - attr_list
   - pymdownx.tabbed
+  - def_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
 
 extra:
   generator: false

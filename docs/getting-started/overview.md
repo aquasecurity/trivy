@@ -2,8 +2,8 @@
 
 Trivy detects two types of security issues:
 
-- Vulnerabilities
-- Misconfigurations
+- [Vulnerabilities](../vulnerability/scanning/index.md)
+- [Misconfigurations](../misconfiguration/index.md)
 
 Trivy can scan three different artifacts:
 

@@ -12,6 +12,8 @@ Only Terraform's policies are currently powered by [tfsec](https://github.com/tf
 | Dockerfile     | [AppShield](https://github.com/aquasecurity/appshield/tree/master/docker)           |
 | Terraform      | [tfsec](https://tfsec.dev/docs/aws/home/)                                           |
 
+CloudFormation and Ansible are coming soon.
+
 ## Policy Distribution
 AppShield policies are destributed as OPA bundle on [GitHub Container Registry](https://github.com/aquasecurity/appshield/pkgs/container/appshield) (GHCR).
 When misconfiguration detection is enabled, Trivy pulls OPA bundle from GHCR as OCI artifact and stores it in the cache.
