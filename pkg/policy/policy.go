@@ -25,6 +25,7 @@ const (
 	bundleVersion    = 1
 	bundleRepository = "ghcr.io/aquasecurity/appshield"
 	layerMediaType   = "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
+	updateInterval   = 24 * time.Hour
 )
 
 type options struct {
@@ -131,7 +132,7 @@ func (c Client) NeedsUpdate() (bool, error) {
 	}
 
 	// No need to update if it's been within a day since the last update.
-	if c.clock.Now().Before(meta.LastDownloadedAt.Add(24 * time.Hour)) {
+	if c.clock.Now().Before(meta.LastDownloadedAt.Add(updateInterval)) {
 		return false, nil
 	}
 
