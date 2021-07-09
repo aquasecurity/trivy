@@ -169,7 +169,7 @@ func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []fty
 }
 
 func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOptions) (report.Results, error) {
-	log.Logger.Infof("Number of PL dependency files: %d", len(apps))
+	log.Logger.Infof("Number of language-specific files: %d", len(apps))
 	if len(apps) == 0 {
 		return nil, nil
 	}
