@@ -225,6 +225,7 @@ var (
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
+	// For misconfigurations
 	configPolicy = cli.StringSliceFlag{
 		Name:    "config-policy",
 		Usage:   "specify paths to the Rego policy files directory, applying config files",
@@ -236,6 +237,19 @@ var (
 		Aliases: []string{"config-policy"},
 		Usage:   "specify paths to the Rego policy files directory, applying config files",
 		EnvVars: []string{"TRIVY_POLICY"},
+	}
+
+	configData = cli.StringSliceFlag{
+		Name:    "config-data",
+		Usage:   "specify paths from which data for the Rego policies will be recursively loaded",
+		EnvVars: []string{"TRIVY_CONFIG_DATA"},
+	}
+
+	configDataAlias = cli.StringSliceFlag{
+		Name:    "data",
+		Aliases: []string{"config-data"},
+		Usage:   "specify paths from which data for the Rego policies will be recursively loaded",
+		EnvVars: []string{"TRIVY_DATA"},
 	}
 
 	filePatterns = cli.StringSliceFlag{
@@ -259,6 +273,7 @@ var (
 		EnvVars: []string{"TRIVY_INCLUDE_SUCCESSES"},
 	}
 
+	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
 		&debugFlag,
@@ -469,6 +484,7 @@ func NewFilesystemCommand() *cli.Command {
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
+			stringSliceFlag(configData),
 			&policyNamespaces,
 		},
 	}
@@ -600,6 +616,7 @@ func NewConfigCommand() *cli.Command {
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicyAlias),
+			stringSliceFlag(configDataAlias),
 			stringSliceFlag(filePatterns),
 			stringSliceFlag(policyNamespaces),
 			&includeSuccesses,
