@@ -28,14 +28,15 @@ message PutArtifactRequest {
 }
 
 message BlobInfo {
-  int32     schema_version                   = 1;
-  common.OS os                               = 2;
-  repeated common.PackageInfo package_infos  = 3;
-  repeated common.Application applications   = 4;
-  repeated string             opaque_dirs    = 5;
-  repeated string             whiteout_files = 6;
-  string                      digest         = 7;
-  string                      diff_id        = 8;
+  int32     schema_version                           = 1;
+  common.OS os                                       = 2;
+  repeated common.PackageInfo package_infos          = 3;
+  repeated common.Application applications           = 4;
+  repeated common.Misconfiguration misconfigurations = 9;
+  repeated string                  opaque_dirs       = 5;
+  repeated string                  whiteout_files    = 6;
+  string                           digest            = 7;
+  string                           diff_id           = 8;
 }
 
 message PutBlobRequest {

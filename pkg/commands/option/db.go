@@ -9,7 +9,7 @@ import (
 type DBOption struct {
 	Reset          bool
 	DownloadDBOnly bool
-	SkipUpdate     bool
+	SkipDBUpdate   bool
 	Light          bool
 	NoProgress     bool
 }
@@ -19,7 +19,7 @@ func NewDBOption(c *cli.Context) DBOption {
 	return DBOption{
 		Reset:          c.Bool("reset"),
 		DownloadDBOnly: c.Bool("download-db-only"),
-		SkipUpdate:     c.Bool("skip-update"),
+		SkipDBUpdate:   c.Bool("skip-db-update"),
 		Light:          c.Bool("light"),
 		NoProgress:     c.Bool("no-progress"),
 	}
@@ -27,8 +27,8 @@ func NewDBOption(c *cli.Context) DBOption {
 
 // Init initialize the DBOption
 func (c *DBOption) Init() (err error) {
-	if c.SkipUpdate && c.DownloadDBOnly {
-		return xerrors.New("--skip-update and --download-db-only options can not be specified both")
+	if c.SkipDBUpdate && c.DownloadDBOnly {
+		return xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
 	}
 	return nil
 }

@@ -18,9 +18,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	tdb "github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
 // VersionInfo holds the trivy DB version Info
@@ -76,10 +76,17 @@ var (
 		EnvVars: []string{"TRIVY_EXIT_CODE"},
 	}
 
-	skipUpdateFlag = cli.BoolFlag{
-		Name:    "skip-update",
-		Usage:   "skip db update",
-		EnvVars: []string{"TRIVY_SKIP_UPDATE"},
+	skipDBUpdateFlag = cli.BoolFlag{
+		Name:    "skip-db-update",
+		Aliases: []string{"skip-update"},
+		Usage:   "skip updating vulnerability database",
+		EnvVars: []string{"TRIVY_SKIP_UPDATE", "TRIVY_SKIP_DB_UPDATE"},
+	}
+
+	skipPolicyUpdateFlag = cli.BoolFlag{
+		Name:    "skip-policy-update",
+		Usage:   "skip updating builtin policies",
+		EnvVars: []string{"TRIVY_SKIP_POLICY_UPDATE"},
 	}
 
 	downloadDBOnlyFlag = cli.BoolFlag{
@@ -145,7 +152,6 @@ var (
 		Value:   types.SecurityCheckVulnerability,
 		Usage:   "comma-separated list of what security issues to detect (vuln,config)",
 		EnvVars: []string{"TRIVY_SECURITY_CHECKS"},
-		Hidden:  true,
 	}
 
 	cacheDirFlag = cli.StringFlag{
@@ -164,7 +170,7 @@ var (
 
 	ignoreFileFlag = cli.StringFlag{
 		Name:    "ignorefile",
-		Value:   vulnerability.DefaultIgnoreFile,
+		Value:   result.DefaultIgnoreFile,
 		Usage:   "specify .trivyignore file",
 		EnvVars: []string{"TRIVY_IGNOREFILE"},
 	}
@@ -219,6 +225,40 @@ var (
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
+	configPolicy = cli.StringSliceFlag{
+		Name:    "config-policy",
+		Usage:   "specify paths to the Rego policy files directory, applying config files",
+		EnvVars: []string{"TRIVY_CONFIG_POLICY"},
+	}
+
+	configPolicyAlias = cli.StringSliceFlag{
+		Name:    "policy",
+		Aliases: []string{"config-policy"},
+		Usage:   "specify paths to the Rego policy files directory, applying config files",
+		EnvVars: []string{"TRIVY_POLICY"},
+	}
+
+	filePatterns = cli.StringSliceFlag{
+		Name:    "file-patterns",
+		Usage:   "specify file patterns",
+		EnvVars: []string{"TRIVY_FILE_PATTERNS"},
+	}
+
+	policyNamespaces = cli.StringSliceFlag{
+		Name:    "policy-namespaces",
+		Aliases: []string{"namespaces"},
+		Usage:   "Rego namespaces",
+		Value:   cli.NewStringSlice("users"),
+		EnvVars: []string{"TRIVY_POLICY_NAMESPACES"},
+	}
+
+	includeSuccesses = cli.BoolFlag{
+		Name:    "include-successes",
+		Usage:   "include successes of misconfigurations",
+		Value:   false,
+		EnvVars: []string{"TRIVY_INCLUDE_SUCCESSES"},
+	}
+
 	globalFlags = []cli.Flag{
 		&quietFlag,
 		&debugFlag,
@@ -232,7 +272,7 @@ var (
 		&severityFlag,
 		&outputFlag,
 		&exitCodeFlag,
-		&skipUpdateFlag,
+		&skipDBUpdateFlag,
 		&downloadDBOnlyFlag,
 		&resetFlag,
 		&clearCacheFlag,
@@ -246,9 +286,11 @@ var (
 		&lightFlag,
 		&ignorePolicy,
 		&listAllPackages,
-		&skipFiles,
-		&skipDirs,
 		&cacheBackendFlag,
+		stringSliceFlag(skipFiles),
+		stringSliceFlag(skipDirs),
+		stringSliceFlag(configPolicy),
+		stringSliceFlag(policyNamespaces),
 	}
 
 	// deprecated options
@@ -294,6 +336,7 @@ func NewApp(version string) *cli.App {
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
+		NewConfigCommand(),
 		NewPluginCommand(),
 	}
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
@@ -410,7 +453,8 @@ func NewFilesystemCommand() *cli.Command {
 			&severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
-			&skipUpdateFlag,
+			&skipDBUpdateFlag,
+			&skipPolicyUpdateFlag,
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
@@ -422,8 +466,10 @@ func NewFilesystemCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
-			&skipFiles,
-			&skipDirs,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+			stringSliceFlag(configPolicy),
+			&policyNamespaces,
 		},
 	}
 }
@@ -443,7 +489,8 @@ func NewRepositoryCommand() *cli.Command {
 			&severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
-			&skipUpdateFlag,
+			&skipDBUpdateFlag,
+			&skipPolicyUpdateFlag,
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
@@ -455,8 +502,8 @@ func NewRepositoryCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
-			&skipFiles,
-			&skipDirs,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
 		},
 	}
 }
@@ -484,7 +531,9 @@ func NewClientCommand() *cli.Command {
 			&ignoreFileFlag,
 			&timeoutFlag,
 			&ignorePolicy,
+			stringSliceFlag(configPolicy),
 			&listAllPackages,
+
 			// original flags
 			&token,
 			&tokenHeader,
@@ -511,7 +560,7 @@ func NewServerCommand() *cli.Command {
 		Usage:   "server mode",
 		Action:  server.Run,
 		Flags: []cli.Flag{
-			&skipUpdateFlag,
+			&skipDBUpdateFlag,
 			&downloadDBOnlyFlag,
 			&resetFlag,
 			&cacheBackendFlag,
@@ -525,6 +574,38 @@ func NewServerCommand() *cli.Command {
 				Usage:   "listen address",
 				EnvVars: []string{"TRIVY_LISTEN"},
 			},
+		},
+	}
+}
+
+// NewConfigCommand adds config command
+func NewConfigCommand() *cli.Command {
+	return &cli.Command{
+		Name:      "config",
+		Aliases:   []string{"conf"},
+		ArgsUsage: "dir",
+		Usage:     "scan config files",
+		Action:    artifact.ConfigRun,
+		Flags: []cli.Flag{
+			&templateFlag,
+			&formatFlag,
+			&severityFlag,
+			&outputFlag,
+			&exitCodeFlag,
+			&skipPolicyUpdateFlag,
+			&clearCacheFlag,
+			&ignoreUnfixedFlag,
+			&ignoreFileFlag,
+			&cacheBackendFlag,
+			&timeoutFlag,
+			&noProgressFlag,
+			&ignorePolicy,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+			stringSliceFlag(configPolicyAlias),
+			stringSliceFlag(filePatterns),
+			stringSliceFlag(policyNamespaces),
+			&includeSuccesses,
 		},
 	}
 }
@@ -560,4 +641,11 @@ func NewPluginCommand() *cli.Command {
 			},
 		},
 	}
+}
+
+// StringSliceFlag is defined globally. When the app runs multiple times,
+// the previous value will be retained and it causes unexpected results.
+// The flag value is copied through this function to prevent the issue.
+func stringSliceFlag(f cli.StringSliceFlag) *cli.StringSliceFlag {
+	return &f
 }

@@ -13,10 +13,11 @@ import (
 
 func TestReportWriter_Table(t *testing.T) {
 	testCases := []struct {
-		name           string
-		results        report.Results
-		expectedOutput string
-		light          bool
+		name             string
+		results          report.Results
+		expectedOutput   string
+		light            bool
+		includeSuccesses bool
 	}{
 		{
 			name: "happy path full",
@@ -130,6 +131,82 @@ func TestReportWriter_Table(t *testing.T) {
 `,
 		},
 		{
+			name: "happy path misconfigurations",
+			results: report.Results{
+				{
+					Target: "test",
+					Misconfigurations: []types.DetectedMisconfiguration{
+						{
+							Type:       "Kubernetes Security Check",
+							ID:         "KSV001",
+							Title:      "Image tag ':latest' used",
+							Message:    "Message",
+							Severity:   "HIGH",
+							PrimaryURL: "https://avd.aquasec.com/appshield/ksv001",
+							Status:     types.StatusFailure,
+						},
+						{
+							Type:       "Kubernetes Security Check",
+							ID:         "KSV002",
+							Title:      "SYS_ADMIN capability added",
+							Message:    "Message",
+							Severity:   "CRITICAL",
+							PrimaryURL: "https://avd.aquasec.com/appshield/ksv002",
+							Status:     types.StatusFailure,
+						},
+					},
+				},
+			},
+			expectedOutput: `+---------------------------+------------+----------------------------+----------+------------------------------------------+
+|           TYPE            | MISCONF ID |           CHECK            | SEVERITY |                 MESSAGE                  |
++---------------------------+------------+----------------------------+----------+------------------------------------------+
+| Kubernetes Security Check |   KSV001   | Image tag ':latest' used   |   HIGH   | Message                                  |
+|                           |            |                            |          | -->avd.aquasec.com/appshield/ksv001      |
++                           +------------+----------------------------+----------+------------------------------------------+
+|                           |   KSV002   | SYS_ADMIN capability added | CRITICAL | Message                                  |
+|                           |            |                            |          | -->avd.aquasec.com/appshield/ksv002      |
++---------------------------+------------+----------------------------+----------+------------------------------------------+
+`,
+		},
+		{
+			name:             "happy path misconfigurations with successes",
+			includeSuccesses: true,
+			results: report.Results{
+				{
+					Target: "test",
+					Misconfigurations: []types.DetectedMisconfiguration{
+						{
+							Type:       "Kubernetes Security Check",
+							ID:         "KSV001",
+							Title:      "Image tag ':latest' used",
+							Message:    "Message",
+							Severity:   "HIGH",
+							PrimaryURL: "https://avd.aquasec.com/appshield/ksv001",
+							Status:     types.StatusFailure,
+						},
+						{
+							Type:       "Kubernetes Security Check",
+							ID:         "KSV002",
+							Title:      "SYS_ADMIN capability added",
+							Message:    "Message",
+							Severity:   "CRITICAL",
+							PrimaryURL: "https://avd.aquasec.com/appshield/ksv002",
+							Status:     types.StatusPassed,
+						},
+					},
+				},
+			},
+			expectedOutput: `+---------------------------+------------+----------------------------+----------+--------+------------------------------------------+
+|           TYPE            | MISCONF ID |           CHECK            | SEVERITY | STATUS |                 MESSAGE                  |
++---------------------------+------------+----------------------------+----------+--------+------------------------------------------+
+| Kubernetes Security Check |   KSV001   | Image tag ':latest' used   |   HIGH   |  FAIL  | Message                                  |
+|                           |            |                            |          |        | -->avd.aquasec.com/appshield/ksv001      |
++                           +------------+----------------------------+----------+--------+------------------------------------------+
+|                           |   KSV002   | SYS_ADMIN capability added | CRITICAL |  PASS  | Message                                  |
++---------------------------+------------+----------------------------+----------+--------+------------------------------------------+
+`,
+		},
+		{
 			name:           "no vulns",
 			expectedOutput: ``,
 		},
@@ -138,7 +215,9 @@ func TestReportWriter_Table(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tableWritten := bytes.Buffer{}
-			assert.NoError(t, report.Write("table", &tableWritten, nil, report.Report{Results: tc.results}, "", tc.light), tc.name)
+			err := report.Write("table", &tableWritten, nil, report.Report{Results: tc.results},
+				"", tc.light, tc.includeSuccesses)
+			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})
 	}

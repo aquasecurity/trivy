@@ -1,6 +1,7 @@
 [
   {
-    "Target": "testdata/fixtures/opensuse-leap-423.tar.gz (opensuse.leap 42.3)",
+    "Target": "testdata/fixtures/images/opensuse-leap-423.tar.gz (opensuse.leap 42.3)",
+    "Class": "os-pkgs",
     "Type": "opensuse.leap"
   }
 ]

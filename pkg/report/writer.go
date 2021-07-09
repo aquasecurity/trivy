@@ -36,19 +36,41 @@ type Metadata struct {
 // Results to hold list of Result
 type Results []Result
 
+type ResultClass string
+
+const (
+	ClassOSPkg   = "os-pkgs"
+	ClassLangPkg = "lang-pkgs"
+	ClassConfig  = "config"
+)
+
 // Result holds a target and detected vulnerabilities
 type Result struct {
-	Target          string                        `json:"Target"`
-	Type            string                        `json:"Type,omitempty"`
-	Packages        []ftypes.Package              `json:"Packages,omitempty"`
-	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities,omitempty"`
+	Target            string                           `json:"Target"`
+	Class             ResultClass                      `json:"Class,omitempty"`
+	Type              string                           `json:"Type,omitempty"`
+	Packages          []ftypes.Package                 `json:"Packages,omitempty"`
+	Vulnerabilities   []types.DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
+	MisconfSummary    *MisconfSummary                  `json:"MisconfSummary,omitempty"`
+	Misconfigurations []types.DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
 }
 
-// Failed returns whether the result includes any vulnerabilities
+type MisconfSummary struct {
+	Successes  int
+	Failures   int
+	Exceptions int
+}
+
+// Failed returns whether the result includes any vulnerabilities or misconfigurations
 func (results Results) Failed() bool {
 	for _, r := range results {
 		if len(r.Vulnerabilities) > 0 {
 			return true
+		}
+		for _, m := range r.Misconfigurations {
+			if m.Status == types.StatusFailure {
+				return true
+			}
 		}
 	}
 	return false
@@ -56,11 +78,16 @@ func (results Results) Failed() bool {
 
 // Write writes the result to output, format as passed in argument
 func Write(format string, output io.Writer, severities []dbTypes.Severity, report Report,
-	outputTemplate string, light bool) error {
+	outputTemplate string, light, includeSuccesses bool) error {
 	var writer Writer
 	switch format {
 	case "table":
-		writer = &TableWriter{Output: output, Light: light, Severities: severities}
+		writer = &TableWriter{
+			Output:           output,
+			Severities:       severities,
+			Light:            light,
+			IncludeSuccesses: includeSuccesses,
+		}
 	case "json":
 		writer = &JSONWriter{Output: output}
 	case "template":

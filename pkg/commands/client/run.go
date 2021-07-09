@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -17,6 +18,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
+
+const defaultPolicyNamespace = "appshield"
 
 // Run runs the scan
 func Run(cliCtx *cli.Context) error {
@@ -67,15 +70,16 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 	resultClient := initializeResultClient()
 	results := report.Results
 	for i := range results {
-		vulns, err := resultClient.Filter(ctx, results[i].Vulnerabilities,
-			opt.Severities, opt.IgnoreUnfixed, opt.IgnoreFile, opt.IgnorePolicy)
+		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
+			opt.Severities, opt.IgnoreUnfixed, opt.IncludeSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return xerrors.Errorf("filter error: %w", err)
 		}
 		results[i].Vulnerabilities = vulns
+		results[i].Misconfigurations = misconfs
 	}
 
-	if err = pkgReport.Write(opt.Format, opt.Output, opt.Severities, report, opt.Template, false); err != nil {
+	if err = pkgReport.Write(opt.Format, opt.Output, opt.Severities, report, opt.Template, false, opt.IncludeSuccesses); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
@@ -111,10 +115,21 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 		disabledAnalyzers = []analyzer.Type{}
 	}
 
-	// TODO: fix the scanner option and enable config analyzers once we finalize the specification of config scanning.
-	configScannerOptions := config.ScannerOption{}
-	disabledAnalyzers = append(disabledAnalyzers, analyzer.TypeYaml, analyzer.TypeTOML, analyzer.TypeJSON,
-		analyzer.TypeDockerfile, analyzer.TypeHCL)
+	// ScannerOptions is filled only when config scanning is enabled.
+	var configScannerOptions config.ScannerOption
+	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
+		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, false)
+		if err != nil {
+			return scanner.Scanner{}, nil, xerrors.Errorf("failed to initialize default policies: %w", err)
+		}
+
+		configScannerOptions = config.ScannerOption{
+			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespace),
+			PolicyPaths:  append(opt.PolicyPaths, builtinPolicyPaths...),
+			DataPaths:    opt.DataPaths,
+			FilePatterns: opt.FilePatterns,
+		}
+	}
 
 	if opt.Input != "" {
 		// Scan tar file

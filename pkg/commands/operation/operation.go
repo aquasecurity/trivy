@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
@@ -100,6 +101,40 @@ func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) erro
 		return xerrors.Errorf("failed to show database info: %w", err)
 	}
 	return nil
+}
+
+// InitBuiltinPolicies downloads the builtin policies and loads them
+func InitBuiltinPolicies(ctx context.Context, skipUpdate bool) ([]string, error) {
+	client, err := policy.NewClient()
+	if err != nil {
+		return nil, xerrors.Errorf("policy client error: %w", err)
+	}
+
+	needsUpdate := false
+	if !skipUpdate {
+		needsUpdate, err = client.NeedsUpdate()
+		if err != nil {
+			return nil, xerrors.Errorf("unable to check if builtin policies need to be updated: %w", err)
+		}
+	}
+
+	if needsUpdate {
+		log.Logger.Info("Need to update the builtin policies")
+		log.Logger.Info("Downloading the builtin policies...")
+		if err = client.DownloadBuiltinPolicies(ctx); err != nil {
+			return nil, xerrors.Errorf("failed to download builtin policies: %w", err)
+		}
+	}
+
+	policyPaths, err := client.LoadBuiltinPolicies()
+	if err != nil {
+		if skipUpdate {
+			log.Logger.Info("No builtin policies were loaded")
+			return nil, nil
+		}
+		return nil, xerrors.Errorf("policy load error: %w", err)
+	}
+	return policyPaths, nil
 }
 
 func showDBInfo(cacheDir string) error {

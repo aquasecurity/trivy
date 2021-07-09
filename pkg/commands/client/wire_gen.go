@@ -13,10 +13,10 @@ import (
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/image"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	"time"
 )
 
@@ -59,8 +59,8 @@ func initializeArchiveScanner(ctx context.Context, filePath string, artifactCach
 	return scanner2, nil
 }
 
-func initializeResultClient() vulnerability.Client {
+func initializeResultClient() result.Client {
 	dbConfig := db.Config{}
-	vulnerabilityClient := vulnerability.NewClient(dbConfig)
-	return vulnerabilityClient
+	resultClient := result.NewClient(dbConfig)
+	return resultClient
 }

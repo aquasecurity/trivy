@@ -17,10 +17,10 @@ func TestNewDBOption(t *testing.T) {
 	}{
 		{
 			name: "happy path",
-			args: []string{"--reset", "--skip-update"},
+			args: []string{"--reset", "--skip-db-update"},
 			want: option.DBOption{
-				Reset:      true,
-				SkipUpdate: true,
+				Reset:        true,
+				SkipDBUpdate: true,
 			},
 		},
 	}
@@ -29,7 +29,7 @@ func TestNewDBOption(t *testing.T) {
 			app := &cli.App{}
 			set := flag.NewFlagSet("test", 0)
 			set.Bool("reset", false, "")
-			set.Bool("skip-update", false, "")
+			set.Bool("skip-db-update", false, "")
 
 			c := cli.NewContext(app, set, nil)
 			_ = set.Parse(tt.args)
@@ -64,7 +64,7 @@ func TestDBOption_Init(t *testing.T) {
 				DownloadDBOnly: true,
 				SkipUpdate:     true,
 			},
-			wantErr: "--skip-update and --download-db-only options can not be specified both",
+			wantErr: "--skip-db-update and --download-db-only options can not be specified both",
 		},
 	}
 	for _, tt := range tests {
@@ -72,7 +72,7 @@ func TestDBOption_Init(t *testing.T) {
 			c := &option.DBOption{
 				Reset:          tt.fields.Reset,
 				DownloadDBOnly: tt.fields.DownloadDBOnly,
-				SkipUpdate:     tt.fields.SkipUpdate,
+				SkipDBUpdate:   tt.fields.SkipUpdate,
 				Light:          tt.fields.Light,
 			}
 

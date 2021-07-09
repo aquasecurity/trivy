@@ -33,11 +33,11 @@ $(GOBIN)/golangci-lint:
 test:
 	go test -v -short -coverprofile=coverage.txt -covermode=atomic ./...
 
-integration/testdata/fixtures/*.tar.gz:
-	git clone https://github.com/aquasecurity/trivy-test-images.git integration/testdata/fixtures
+integration/testdata/fixtures/images/*.tar.gz:
+	git clone https://github.com/aquasecurity/trivy-test-images.git integration/testdata/fixtures/images
 
 .PHONY: test-integration
-test-integration: integration/testdata/fixtures/*.tar.gz
+test-integration: integration/testdata/fixtures/images/*.tar.gz
 	go test -v -tags=integration ./integration/...
 
 .PHONY: lint
@@ -62,7 +62,7 @@ install:
 
 .PHONY: clean
 clean:
-	rm -rf integration/testdata/fixtures/
+	rm -rf integration/testdata/fixtures/images
 
 $(GOBIN)/labeler:
 	go install github.com/knqyf263/labeler@latest

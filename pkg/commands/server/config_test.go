@@ -20,15 +20,15 @@ func TestNew(t *testing.T) {
 	}{
 		{
 			name: "happy path",
-			args: []string{"-quiet", "--no-progress", "--reset", "--skip-update", "--listen", "localhost:8080"},
+			args: []string{"-quiet", "--no-progress", "--reset", "--skip-db-update", "--listen", "localhost:8080"},
 			want: server.Config{
 				GlobalOption: option.GlobalOption{
 					Quiet: true,
 				},
 				DBOption: option.DBOption{
-					Reset:      true,
-					SkipUpdate: true,
-					NoProgress: true,
+					Reset:        true,
+					SkipDBUpdate: true,
+					NoProgress:   true,
 				},
 				Listen: "localhost:8080",
 			},
@@ -41,7 +41,7 @@ func TestNew(t *testing.T) {
 			set.Bool("quiet", false, "")
 			set.Bool("no-progress", false, "")
 			set.Bool("reset", false, "")
-			set.Bool("skip-update", false, "")
+			set.Bool("skip-db-update", false, "")
 			set.String("listen", "", "")
 
 			ctx := cli.NewContext(app, set, nil)
@@ -79,11 +79,11 @@ func TestConfig_Init(t *testing.T) {
 		{
 			name: "sad: skip and download db",
 			dbConfig: option.DBOption{
-				SkipUpdate:     true,
+				SkipDBUpdate:   true,
 				DownloadDBOnly: true,
 			},
 			args:    []string{"alpine:3.10"},
-			wantErr: "--skip-update and --download-db-only options can not be specified both",
+			wantErr: "--skip-db-update and --download-db-only options can not be specified both",
 		},
 	}
 	for _, tt := range tests {

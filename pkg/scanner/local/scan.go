@@ -16,6 +16,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/all"
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -79,6 +80,12 @@ func (s Scanner) Scan(target, versionedArtifactID string, versionedBlobIDs []str
 			return nil, nil, false, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 		}
 		results = append(results, vulnResults...)
+	}
+
+	// Scan IaC config files
+	if utils.StringInSlice(types.SecurityCheckConfig, options.SecurityChecks) {
+		configResults := s.misconfsToResults(artifactDetail.Misconfigurations, options)
+		results = append(results, configResults...)
 	}
 
 	return results, artifactDetail.OS, eosl, nil
@@ -155,6 +162,7 @@ func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []fty
 	result := &report.Result{
 		Target:          artifactDetail,
 		Vulnerabilities: vulns,
+		Class:           report.ClassOSPkg,
 		Type:            osFamily,
 	}
 	return result, eosl, nil
@@ -191,6 +199,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		libReport := report.Result{
 			Target:          app.FilePath,
 			Vulnerabilities: vulns,
+			Class:           report.ClassLangPkg,
 			Type:            app.Type,
 		}
 		if options.ListAllPackages {
@@ -213,6 +222,97 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		return results[i].Target < results[j].Target
 	})
 	return results, nil
+}
+
+func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) report.Results {
+	log.Logger.Infof("Detected config files: %d", len(misconfs))
+	var results report.Results
+	for _, misconf := range misconfs {
+		if skipped(misconf.FilePath, options.SkipFiles, options.SkipDirs) {
+			continue
+		}
+
+		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
+
+		summary := new(report.MisconfSummary)
+		var detected []types.DetectedMisconfiguration
+
+		for _, f := range misconf.Failures {
+			summary.Failures++
+			detected = append(detected, toDetectedMisconfiguration(f, dbTypes.SeverityCritical, types.StatusFailure, misconf.Layer))
+		}
+		for _, w := range misconf.Warnings {
+			summary.Failures++
+			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityMedium, types.StatusFailure, misconf.Layer))
+		}
+		for _, w := range misconf.Successes {
+			summary.Successes++
+			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusPassed, misconf.Layer))
+		}
+		for _, w := range misconf.Exceptions {
+			summary.Exceptions++
+			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusException, misconf.Layer))
+		}
+
+		results = append(results, report.Result{
+			Target:            misconf.FilePath,
+			Class:             report.ClassConfig,
+			Type:              misconf.FileType,
+			MisconfSummary:    summary,
+			Misconfigurations: detected,
+		})
+	}
+
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].Target < results[j].Target
+	})
+
+	return results
+}
+
+func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbTypes.Severity,
+	status types.MisconfStatus, layer ftypes.Layer) types.DetectedMisconfiguration {
+
+	severity := defaultSeverity
+	sev, err := dbTypes.NewSeverity(res.Severity)
+	if err != nil {
+		log.Logger.Warnf("severity must be %s, but %s", dbTypes.SeverityNames, res.Severity)
+	} else {
+		severity = sev
+	}
+
+	msg := strings.TrimSpace(res.Message)
+	if msg == "" {
+		msg = "No issues found"
+	}
+
+	var primaryURL string
+	if strings.HasPrefix(res.Namespace, "appshield.") {
+		primaryURL = fmt.Sprintf("https://avd.aquasec.com/appshield/%s", strings.ToLower(res.ID))
+		res.References = append(res.References, primaryURL)
+	} else if strings.Contains(res.Type, "tfsec") {
+		for _, ref := range res.References {
+			if strings.HasPrefix(ref, "https://tfsec.dev/docs/") {
+				primaryURL = ref
+				break
+			}
+		}
+	}
+
+	return types.DetectedMisconfiguration{
+		ID:          res.ID,
+		Type:        res.Type,
+		Title:       res.Title,
+		Description: res.Description,
+		Message:     msg,
+		Resolution:  res.RecommendedActions,
+		Namespace:   res.Namespace,
+		Severity:    severity.String(),
+		PrimaryURL:  primaryURL,
+		References:  res.References,
+		Status:      status,
+		Layer:       layer,
+	}
 }
 
 func skipped(filePath string, skipFiles, skipDirs []string) bool {

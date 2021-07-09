@@ -1,4 +1,4 @@
-package vulnerability
+package result
 
 import (
 	"context"
@@ -223,7 +223,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 				dbc: db.Config{},
 			}
 
-			c.FillInfo(tt.args.vulns, tt.args.reportType)
+			c.FillVulnerabilityInfo(tt.args.vulns, tt.args.reportType)
 			assert.Equal(t, tt.expectedVulnerabilities, tt.args.vulns, tt.name)
 		})
 	}
@@ -314,15 +314,17 @@ func TestClient_getPrimaryURL(t *testing.T) {
 func TestClient_Filter(t *testing.T) {
 	type args struct {
 		vulns         []types.DetectedVulnerability
+		misconfs      []types.DetectedMisconfiguration
 		severities    []dbTypes.Severity
 		ignoreUnfixed bool
 		ignoreFile    string
 		policyFile    string
 	}
 	tests := []struct {
-		name      string
-		args      args
-		wantVulns []types.DetectedVulnerability
+		name         string
+		args         args
+		wantVulns    []types.DetectedVulnerability
+		wantMisconfs []types.DetectedMisconfiguration
 	}{
 		{
 			name: "happy path",
@@ -374,6 +376,24 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 				},
+				misconfs: []types.DetectedMisconfiguration{
+					{
+						Type:     ftypes.Kubernetes,
+						ID:       "ID100",
+						Title:    "Bad Deployment",
+						Message:  "something bad",
+						Severity: dbTypes.SeverityCritical.String(),
+						Status:   types.StatusFailure,
+					},
+					{
+						Type:     ftypes.Kubernetes,
+						ID:       "ID200",
+						Title:    "Bad Pod",
+						Message:  "something bad",
+						Severity: dbTypes.SeverityMedium.String(),
+						Status:   types.StatusPassed,
+					},
+				},
 				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
 				ignoreUnfixed: false,
 			},
@@ -413,6 +433,16 @@ func TestClient_Filter(t *testing.T) {
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
 					},
+				},
+			},
+			wantMisconfs: []types.DetectedMisconfiguration{
+				{
+					Type:     ftypes.Kubernetes,
+					ID:       "ID100",
+					Title:    "Bad Deployment",
+					Message:  "something bad",
+					Severity: dbTypes.SeverityCritical.String(),
+					Status:   types.StatusFailure,
 				},
 			},
 		},
@@ -475,6 +505,16 @@ func TestClient_Filter(t *testing.T) {
 						Vulnerability: dbTypes.Vulnerability{
 							Severity: dbTypes.SeverityLow.String(),
 						},
+					},
+				},
+				misconfs: []types.DetectedMisconfiguration{
+					{
+						Type:     ftypes.Kubernetes,
+						ID:       "ID100",
+						Title:    "Bad Deployment",
+						Message:  "something bad",
+						Severity: dbTypes.SeverityLow.String(),
+						Status:   types.StatusFailure,
 					},
 				},
 				severities:    []dbTypes.Severity{dbTypes.SeverityLow},
@@ -675,9 +715,11 @@ func TestClient_Filter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := Client{}
-			gotVulns, err := c.Filter(context.Background(), tt.args.vulns, tt.args.severities, tt.args.ignoreUnfixed, tt.args.ignoreFile, tt.args.policyFile)
+			gotVulns, gotMisconfs, err := c.Filter(context.Background(), tt.args.vulns, tt.args.misconfs,
+				tt.args.severities, tt.args.ignoreUnfixed, false, tt.args.ignoreFile, tt.args.policyFile)
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantVulns, gotVulns)
+			assert.Equal(t, tt.wantMisconfs, gotMisconfs)
 		})
 	}
 }

@@ -20,6 +20,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
+const defaultPolicyNamespace = "appshield"
+
 var errSkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanner type to define initialize function signature
@@ -72,7 +74,7 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		return xerrors.Errorf("filter error: %w", err)
 	}
 
-	if err = pkgReport.Write(opt.Format, opt.Output, opt.Severities, report, opt.Template, opt.Light); err != nil {
+	if err = pkgReport.Write(opt.Format, opt.Output, opt.Severities, report, opt.Template, opt.Light, opt.IncludeSuccesses); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
@@ -109,7 +111,7 @@ func initFSCache(c Option) (cache.Cache, error) {
 func initDB(c Option) error {
 	// download the database file
 	noProgress := c.Quiet || c.NoProgress
-	if err := operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.Light, c.SkipUpdate); err != nil {
+	if err := operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.Light, c.SkipDBUpdate); err != nil {
 		return err
 	}
 
@@ -146,10 +148,21 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		disabledAnalyzers = []analyzer.Type{}
 	}
 
-	// TODO: fix the scanner option and enable config analyzers once we finalize the specification of config scanning.
-	configScannerOptions := config.ScannerOption{}
-	disabledAnalyzers = append(disabledAnalyzers, analyzer.TypeYaml, analyzer.TypeTOML, analyzer.TypeJSON,
-		analyzer.TypeDockerfile, analyzer.TypeHCL)
+	// ScannerOptions is filled only when config scanning is enabled.
+	var configScannerOptions config.ScannerOption
+	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
+		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.SkipPolicyUpdate)
+		if err != nil {
+			return pkgReport.Report{}, xerrors.Errorf("failed to initialize builtin policies: %w", err)
+		}
+
+		configScannerOptions = config.ScannerOption{
+			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespace),
+			PolicyPaths:  append(opt.PolicyPaths, builtinPolicyPaths...),
+			DataPaths:    opt.DataPaths,
+			FilePatterns: opt.FilePatterns,
+		}
+	}
 
 	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Timeout,
 		disabledAnalyzers, configScannerOptions)
@@ -169,13 +182,14 @@ func filter(ctx context.Context, opt Option, report pkgReport.Report) (pkgReport
 	resultClient := initializeResultClient()
 	results := report.Results
 	for i := range results {
-		resultClient.FillInfo(results[i].Vulnerabilities, results[i].Type)
-		vulns, err := resultClient.Filter(ctx, results[i].Vulnerabilities,
-			opt.Severities, opt.IgnoreUnfixed, opt.IgnoreFile, opt.IgnorePolicy)
+		resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
+		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
+			opt.Severities, opt.IgnoreUnfixed, opt.IncludeSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return pkgReport.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 		results[i].Vulnerabilities = vulns
+		results[i].Misconfigurations = misconfs
 	}
 	return report, nil
 }

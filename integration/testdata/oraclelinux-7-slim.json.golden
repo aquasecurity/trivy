@@ -1,6 +1,7 @@
 [
   {
-    "Target": "testdata/fixtures/oraclelinux-7-slim.tar.gz (oracle 7.6)",
+    "Target": "testdata/fixtures/images/oraclelinux-7-slim.tar.gz (oracle 7.6)",
+    "Class": "os-pkgs",
     "Type": "oracle",
     "Vulnerabilities": [
       {

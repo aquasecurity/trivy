@@ -146,7 +146,7 @@ func TestRegistry(t *testing.T) {
 		{
 			name:      "happy path with username/password",
 			imageName: "alpine:3.10",
-			imageFile: "testdata/fixtures/alpine-310.tar.gz",
+			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
 			option: registryOption{
 				AuthURL:  authURL,
 				Username: authUsername,
@@ -157,7 +157,7 @@ func TestRegistry(t *testing.T) {
 		{
 			name:      "happy path with registry token",
 			imageName: "alpine:3.10",
-			imageFile: "testdata/fixtures/alpine-310.tar.gz",
+			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
 			option: registryOption{
 				AuthURL:       authURL,
 				Username:      authUsername,
@@ -169,7 +169,7 @@ func TestRegistry(t *testing.T) {
 		{
 			name:      "sad path",
 			imageName: "alpine:3.10",
-			imageFile: "testdata/fixtures/alpine-310.tar.gz",
+			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
 			wantErr:   "unsupported status code 401; body: Auth failed",
 		},
 	}
@@ -188,7 +188,7 @@ func TestRegistry(t *testing.T) {
 			require.NoError(t, err)
 
 			// 2. Scan it
-			resultFile, cleanup, err := scan(imageRef, baseDir, tc.golden, tc.option)
+			resultFile, cleanup, err := scan(t, imageRef, baseDir, tc.golden, tc.option)
 
 			if tc.wantErr != "" {
 				require.NotNil(t, err)
@@ -220,15 +220,11 @@ func TestRegistry(t *testing.T) {
 	}
 }
 
-func scan(imageRef name.Reference, baseDir, goldenFile string, opt registryOption) (string, func(), error) {
+func scan(t *testing.T, imageRef name.Reference, baseDir, goldenFile string, opt registryOption) (string, func(), error) {
 	cleanup := func() {}
 
-	// Copy DB file
-	cacheDir, err := gunzipDB()
-	if err != nil {
-		return "", cleanup, err
-	}
-	defer os.RemoveAll(cacheDir)
+	// Set up testing DB
+	cacheDir := gunzipDB(t)
 
 	// Setup the output file
 	var outputFile string
@@ -248,7 +244,7 @@ func scan(imageRef name.Reference, baseDir, goldenFile string, opt registryOptio
 	}
 
 	// Setup env
-	if err = setupEnv(imageRef, baseDir, opt); err != nil {
+	if err := setupEnv(imageRef, baseDir, opt); err != nil {
 		return "", cleanup, err
 	}
 	defer unsetEnv()
@@ -260,7 +256,7 @@ func scan(imageRef name.Reference, baseDir, goldenFile string, opt registryOptio
 	osArgs := []string{"trivy", "--cache-dir", cacheDir, "--format", "json", "--skip-update", "--output", outputFile, imageRef.Name()}
 
 	// Run Trivy
-	if err = app.Run(osArgs); err != nil {
+	if err := app.Run(osArgs); err != nil {
 		return "", cleanup, err
 	}
 	return outputFile, cleanup, nil

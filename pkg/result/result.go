@@ -1,4 +1,4 @@
-package vulnerability
+package result
 
 import (
 	"bufio"
@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	// DefaultIgnoreFile is the file name to be ignored
+	// DefaultIgnoreFile is the file name to be evaluated
 	DefaultIgnoreFile = ".trivyignore"
 )
 
@@ -43,15 +43,7 @@ var (
 var SuperSet = wire.NewSet(
 	wire.Struct(new(db.Config)),
 	NewClient,
-	wire.Bind(new(Operation), new(Client)),
 )
-
-// Operation defines the vulnerability operations
-type Operation interface {
-	FillInfo(vulns []types.DetectedVulnerability, reportType string)
-	Filter(ctx context.Context, vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
-		ignoreUnfixed bool, ignoreFile string, policy string) ([]types.DetectedVulnerability, error)
-}
 
 // Client implements db operations
 type Client struct {
@@ -63,8 +55,8 @@ func NewClient(dbc db.Config) Client {
 	return Client{dbc: dbc}
 }
 
-// FillInfo fills extra info in vulnerability objects
-func (c Client) FillInfo(vulns []types.DetectedVulnerability, reportType string) {
+// FillVulnerabilityInfo fills extra info in vulnerability objects
+func (c Client) FillVulnerabilityInfo(vulns []types.DetectedVulnerability, reportType string) {
 	var err error
 
 	for i := range vulns {
@@ -146,25 +138,28 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, source string) strin
 }
 
 // Filter filter out the vulnerabilities
-func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
-	ignoreUnfixed bool, ignoreFile string, policyFile string) ([]types.DetectedVulnerability, error) {
+func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
+	severities []dbTypes.Severity, ignoreUnfixed, includeSuccesses bool, ignoreFile, policyFile string) (
+	[]types.DetectedVulnerability, []types.DetectedMisconfiguration, error) {
 	ignoredIDs := getIgnoredIDs(ignoreFile)
 
-	vulnerabilities := filterVulnerabilities(vulns, severities, ignoredIDs, ignoreUnfixed)
+	filteredVulns := filterVulnerabilities(vulns, severities, ignoreUnfixed, ignoredIDs)
+	filteredMisconfs := filterMisconfigurations(misconfs, severities, includeSuccesses, ignoredIDs)
 
 	if policyFile != "" {
 		var err error
-		vulnerabilities, err = applyPolicy(ctx, vulnerabilities, policyFile)
+		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, policyFile)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to apply the policy: %w", err)
+			return nil, nil, xerrors.Errorf("failed to apply the policy: %w", err)
 		}
 	}
-	sort.Sort(types.BySeverity(vulnerabilities))
-	return vulnerabilities, nil
+	sort.Sort(types.BySeverity(filteredVulns))
+
+	return filteredVulns, filteredMisconfs, nil
 }
 
-func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity, ignoredIDs []string,
-	ignoreUnfixed bool) []types.DetectedVulnerability {
+func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
+	ignoreUnfixed bool, ignoredIDs []string) []types.DetectedVulnerability {
 	uniqVulns := make(map[string]types.DetectedVulnerability)
 	for _, vuln := range vulns {
 		if vuln.Severity == "" {
@@ -192,8 +187,27 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 			break
 		}
 	}
-
 	return toSlice(uniqVulns)
+}
+
+func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,
+	includeSuccesses bool, ignoredIDs []string) []types.DetectedMisconfiguration {
+	var filtered []types.DetectedMisconfiguration
+	for _, misconf := range misconfs {
+		// Filter misconfigurations by severity
+		for _, s := range severities {
+			if s.String() == misconf.Severity {
+				if utils.StringInSlice(misconf.ID, ignoredIDs) {
+					continue
+				} else if misconf.Status == types.StatusPassed && !includeSuccesses {
+					continue
+				}
+				filtered = append(filtered, misconf)
+				break
+			}
+		}
+	}
+	return filtered
 }
 
 func toSlice(uniqVulns map[string]types.DetectedVulnerability) []types.DetectedVulnerability {
@@ -206,10 +220,11 @@ func toSlice(uniqVulns map[string]types.DetectedVulnerability) []types.DetectedV
 	return vulnerabilities
 }
 
-func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, policyFile string) ([]types.DetectedVulnerability, error) {
+func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
+	policyFile string) ([]types.DetectedVulnerability, []types.DetectedMisconfiguration, error) {
 	policy, err := ioutil.ReadFile(policyFile)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to read the policy file: %w", err)
+		return nil, nil, xerrors.Errorf("unable to read the policy file: %w", err)
 	}
 
 	query, err := rego.New(
@@ -218,30 +233,50 @@ func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, polic
 		rego.Module("trivy.rego", string(policy)),
 	).PrepareForEval(ctx)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to prepare for eval: %w", err)
+		return nil, nil, xerrors.Errorf("unable to prepare for eval: %w", err)
 	}
 
-	var filtered []types.DetectedVulnerability
+	// Vulnerabilities
+	var filteredVulns []types.DetectedVulnerability
 	for _, vuln := range vulns {
-		results, err := query.Eval(ctx, rego.EvalInput(vuln))
+		ignored, err := evaluate(ctx, query, vuln)
 		if err != nil {
-			return nil, xerrors.Errorf("unable to evaluate the policy: %w", err)
-		} else if len(results) == 0 {
-			// Handle undefined result.
-			filtered = append(filtered, vuln)
+			return nil, nil, err
+		}
+		if ignored {
 			continue
 		}
-		ignore, ok := results[0].Expressions[0].Value.(bool)
-		if !ok {
-			// Handle unexpected result type.
-			return nil, xerrors.New("the policy must return boolean")
-		}
-		if ignore {
-			continue
-		}
-		filtered = append(filtered, vuln)
+		filteredVulns = append(filteredVulns, vuln)
 	}
-	return filtered, nil
+
+	// Misconfigurations
+	var filteredMisconfs []types.DetectedMisconfiguration
+	for _, misconf := range misconfs {
+		ignored, err := evaluate(ctx, query, misconf)
+		if err != nil {
+			return nil, nil, err
+		}
+		if ignored {
+			continue
+		}
+		filteredMisconfs = append(filteredMisconfs, misconf)
+	}
+	return filteredVulns, filteredMisconfs, nil
+}
+func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface{}) (bool, error) {
+	results, err := query.Eval(ctx, rego.EvalInput(input))
+	if err != nil {
+		return false, xerrors.Errorf("unable to evaluate the policy: %w", err)
+	} else if len(results) == 0 {
+		// Handle undefined result.
+		return false, nil
+	}
+	ignore, ok := results[0].Expressions[0].Value.(bool)
+	if !ok {
+		// Handle unexpected result type.
+		return false, xerrors.New("the policy must return boolean")
+	}
+	return ignore, nil
 }
 
 func getIgnoredIDs(ignoreFile string) []string {

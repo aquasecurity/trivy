@@ -1,0 +1,33 @@
+[
+  {
+    "Target": "Dockerfile",
+    "Class": "config",
+    "Type": "dockerfile",
+    "MisconfSummary": {
+      "Successes": 0,
+      "Failures": 1,
+      "Exceptions": 0
+    },
+    "Misconfigurations": [
+      {
+        "Type": "Dockerfile Security Check",
+        "ID": "DS002",
+        "Title": "Image user should not be 'root'",
+        "Description": "It is a good practice to run the container as a non-root user.",
+        "Message": "Specify at least 1 USER command in Dockerfile",
+        "Namespace": "appshield.dockerfile.DS002",
+        "Resolution": "Add 'USER \u003cnon root user name\u003e' line to the Dockerfile",
+        "Severity": "HIGH",
+        "PrimaryURL": "https://avd.aquasec.com/appshield/ds002",
+        "References": [
+          "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
+          "https://avd.aquasec.com/appshield/ds002"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+          "DiffID": "sha256:0b78fcf040212c52c2fb86e2d5b1a63483d5ab07bd905f0009326329691f49aa"
+        }
+      }
+    ]
+  }
+]
