@@ -1,5 +1,10 @@
 # GitLab CI
 
+_From GitLab 14 and forward, Trivy will be the default scanning tool for containers.
+This means that all auto-devops jobs or scripts using the GitLab provided container
+scanning templates will automatically use Trivy._
+
+
 ```yaml
 stages:
   - test
@@ -149,3 +154,93 @@ already have a code quality report in your pipeline, you can use
 be necessary to rename the artifact if you want to reuse the name. To then
 combine the previous artifact with the output of trivy, the following `jq`
 command can be used, `jq -s 'add' prev-codeclimate.json trivy-codeclimate.json > gl-codeclimate.json`.
+
+### GitLab CI remote Trivy server
+
+Trivy can run as a server, allowing clients to connect to it and test images without
+having to download any database and keeping the cache intact. This might sometimes be a 
+preferable way of doing it.
+
+The following example makes use of a remote Trivy server:
+
+```yaml
+stages:
+  - scan
+
+image_scan.trivy.remote:
+  stage: scan
+  image:
+    name: docker.io/aquasec/trivy:latest
+    entrypoint:
+      - ""
+  variables:
+    GIT_STRATEGY: none
+    SCANNING_IMAGE_NAME: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}"
+    TRIVY_TEMPLATE: "/contrib/gitlab.tpl"
+  script:
+    - trivy client --remote=${TRIVY_ENDPOINT} --template "@/contrib/gitlab.tpl" --format=template ${SCANNING_IMAGE_NAME} 
+    - trivy client --exit-code 1 --remote=${TRIVY_ENDPOINT} --severity HIGH,CRITICAL -o table ${SCANNING_IMAGE_NAME}
+  artifacts:
+    reports:
+      container_scanning: gl-container-scanning-report.json
+```
+
+_Note:  
+If you don't want **everyone** to have access to your trivy server, be sure
+to secure it with something like `basic auth`, making it easy for the client
+to reach the server (with basic auth in the uri) and secure enough for the public
+net!_
+
+### GitLab CI dependency scanning
+
+Trivy is not only a tool for image scanning, it also has the ability to scan the 
+local file system for dependencies as well!  
+Due to the template engine in Trivy, we can easily produce a dependency scan 
+file for gitlab as well.
+
+The following script will automatically start and scan for dependencies when finding
+a file which Trivy can scan:
+
+```yaml
+stages:
+  - test
+
+ds_scan.trivy:
+  stage:
+    - test
+  variables:
+    TRIVY_CACHE_DIR: "${CI_PROJECT_DIR}/.trivycache"
+    TRIVY_VULN_TYPE: "library"
+  before_script:
+    - mkdir -p ${TRIVY_CACHE_DIR}
+    - trivy --download-db-only --cache-dir ${TRIVY_CACHE_DIR}
+  script:
+    - trivy fs --exit-code 0 --format template --template "@/contrib/gitlab-ds.tpl" -o "${CI_PROJECT_DIR}/gl-dependency-scanning-report.json" ./
+    - trivy fs --exit-code 1 --severity HIGH,CRITICAL -o table ./
+  cache:
+    paths:
+      - .trivycache/
+  rules:
+    - if: $DEPENDENCY_SCANNING_DISABLED
+      when: never
+    - exists:
+        - '{composer.lock,*/composer.lock,*/*/composer.lock}'
+        - '{poetry.lock,*/poetry.lock,*/*/poetry.lock}'
+        - '{yarn.lock,*/yarn.lock,*/*/yarn.lock}'
+        - '{Cargo.lock,*/Cargo.lock,*/*/Cargo.lock}'
+        - '{packages.lock.json,*/packages.lock.json,*/*/packages.lock.json}'
+        - '{package-lock.json,*/package-lock.json,*/*/package-lock.json}'
+        - '{Gemfile.lock,*/Gemfile.lock,*/*/Gemfile.lock}'
+        - '{Pipfile.lock,*/Pipfile.lock,*/*/Pipfile.lock}'
+        - '{*.jar,*/*.jar,*/*/*.jar}'
+        - '{*.war,*/*.war,*/*/*.war}'
+        - '{*.ear,*/*.ear,*/*/*.ear}'
+      when: always
+    - when: never
+  artifacts:
+    reports:
+      dependency_scanning: gl-dependency-scanning-report.json
+```
+
+It's worth to note that the dependency scanning does currently not produce any 
+"remediations" in the output, but it will list any dependencies and detected vulnerabilities.
