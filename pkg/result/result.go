@@ -199,7 +199,8 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 			if s.String() == misconf.Severity {
 				if utils.StringInSlice(misconf.ID, ignoredIDs) {
 					continue
-				} else if misconf.Status == types.StatusPassed && !includeSuccesses {
+				} else if !includeSuccesses &&
+					(misconf.Status == types.StatusPassed || misconf.Status == types.StatusException) {
 					continue
 				}
 				filtered = append(filtered, misconf)
