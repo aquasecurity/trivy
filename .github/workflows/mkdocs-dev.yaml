@@ -4,8 +4,8 @@ on:
     paths:
       - 'docs/**'
       - mkdocs.yml
-    branches:
-      - main
+        #    branches:
+        #      - main
 jobs:
   deploy:
     name: Deploy the dev documentation
