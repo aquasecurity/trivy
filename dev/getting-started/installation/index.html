@@ -11,24 +11,24 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/getting-started/installation/">
       
       
         
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.9+insiders-2.9.2">
     
     
       
-        <title>Trivy</title>
+        <title>Installation - Trivy</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.086df014.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.086df014.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.73e53a79.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.73e53a79.min.css">
         
       
       
@@ -61,12 +61,17 @@
     <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
   
     
-    <script>function __scope(t,e="."){return new URL(e,location).pathname+"."+t}function __get(t,e=localStorage,n){return JSON.parse(e.getItem(__scope(t,n)))}function __set(t,e,n=localStorage,o){try{n.setItem(__scope(t,o),JSON.stringify(e))}catch(t){}}</script>
+    <script>function __scope(t,e="../.."){return new URL(e,location).pathname+"."+t}function __get(t,e=localStorage,n){return JSON.parse(e.getItem(__scope(t,n)))}function __set(t,e,n=localStorage,o){try{n.setItem(__scope(t,o),JSON.stringify(e))}catch(t){}}</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#installation" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -86,9 +91,9 @@
 
 <header class="md-header md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="imgs/logo-white.svg" alt="logo">
+  <img src="../../imgs/logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -104,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              HOME
+              Installation
             
           </span>
         </div>
@@ -172,12 +177,10 @@
         
   
   
-    
-  
 
 
   <li class="md-tabs__item">
-    <a href="." class="md-tabs__link md-tabs__link--active">
+    <a href="../.." class="md-tabs__link">
       HOME
     </a>
   </li>
@@ -186,13 +189,15 @@
         
   
   
+    
+  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="getting-started/overview/" class="md-tabs__link">
+      <a href="../overview/" class="md-tabs__link md-tabs__link--active">
         Getting started
       </a>
     </li>
@@ -213,7 +218,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="vulnerability/scanning/" class="md-tabs__link">
+      <a href="../../vulnerability/scanning/" class="md-tabs__link">
         Vulnerability
       </a>
     </li>
@@ -236,7 +241,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="misconfiguration/iac/" class="md-tabs__link">
+      <a href="../../misconfiguration/iac/" class="md-tabs__link">
         Misconfiguration
       </a>
     </li>
@@ -254,7 +259,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="advanced/" class="md-tabs__link">
+      <a href="../../advanced/" class="md-tabs__link">
         Advanced
       </a>
     </li>
@@ -278,9 +283,7 @@
           
             
               
-                
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
@@ -290,9 +293,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="imgs/logo-white.svg" alt="logo">
+  <img src="../../imgs/logo-white.svg" alt="logo">
 
     </a>
     Trivy
@@ -319,19 +322,11 @@
 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
         HOME
       </a>
-      
     </li>
   
 
@@ -342,12 +337,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
       
       
       
@@ -370,7 +367,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/overview/" class="md-nav__link">
+      <a href="../overview/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -382,11 +379,161 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="getting-started/installation/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Installation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Installation
       </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#rhelcentos" class="md-nav__link">
+    RHEL/CentOS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debianubuntu" class="md-nav__link">
+    Debian/Ubuntu
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arch-linux" class="md-nav__link">
+    Arch Linux
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#homebrew" class="md-nav__link">
+    Homebrew
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nixnixos" class="md-nav__link">
+    Nix/NixOS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-script" class="md-nav__link">
+    Install Script
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#binary" class="md-nav__link">
+    Binary
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-source" class="md-nav__link">
+    From source
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    Docker
+  </a>
+  
+    <nav class="md-nav" aria-label="Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-hub" class="md-nav__link">
+    Docker Hub
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#github-container-registry" class="md-nav__link">
+    GitHub Container Registry
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amazon-ecr-public" class="md-nav__link">
+    Amazon ECR Public
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helm" class="md-nav__link">
+    Helm
+  </a>
+  
+    <nav class="md-nav" aria-label="Helm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installing-from-the-the-aqua-chart-repository" class="md-nav__link">
+    Installing from the the Aqua Chart Repository
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-the-chart" class="md-nav__link">
+    Installing the Chart
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -398,7 +545,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/quickstart/" class="md-nav__link">
+      <a href="../quickstart/" class="md-nav__link">
         Quick Start
       </a>
     </li>
@@ -412,7 +559,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/troubleshooting/" class="md-nav__link">
+      <a href="../troubleshooting/" class="md-nav__link">
         Troubleshooting
       </a>
     </li>
@@ -426,7 +573,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/further/" class="md-nav__link">
+      <a href="../further/" class="md-nav__link">
         Further Reading
       </a>
     </li>
@@ -440,7 +587,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/credit/" class="md-nav__link">
+      <a href="../credit/" class="md-nav__link">
         Credits
       </a>
     </li>
@@ -508,7 +655,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/cli/" class="md-nav__link">
+      <a href="../cli/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -522,7 +669,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/cli/image/" class="md-nav__link">
+      <a href="../cli/image/" class="md-nav__link">
         Image
       </a>
     </li>
@@ -536,7 +683,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/cli/config/" class="md-nav__link">
+      <a href="../cli/config/" class="md-nav__link">
         Config
       </a>
     </li>
@@ -550,7 +697,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/cli/fs/" class="md-nav__link">
+      <a href="../cli/fs/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -564,7 +711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/cli/repo/" class="md-nav__link">
+      <a href="../cli/repo/" class="md-nav__link">
         Repository
       </a>
     </li>
@@ -578,7 +725,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/cli/client/" class="md-nav__link">
+      <a href="../cli/client/" class="md-nav__link">
         Client
       </a>
     </li>
@@ -592,7 +739,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/cli/server/" class="md-nav__link">
+      <a href="../cli/server/" class="md-nav__link">
         Server
       </a>
     </li>
@@ -682,7 +829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="vulnerability/scanning/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -696,7 +843,7 @@
   
   
     <li class="md-nav__item">
-      <a href="vulnerability/scanning/image/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/image/" class="md-nav__link">
         Container Image
       </a>
     </li>
@@ -710,7 +857,7 @@
   
   
     <li class="md-nav__item">
-      <a href="vulnerability/scanning/filesystem/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -724,7 +871,7 @@
   
   
     <li class="md-nav__item">
-      <a href="vulnerability/scanning/git-repository/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/git-repository/" class="md-nav__link">
         Git Repository
       </a>
     </li>
@@ -773,7 +920,7 @@
   
   
     <li class="md-nav__item">
-      <a href="vulnerability/detection/os/" class="md-nav__link">
+      <a href="../../vulnerability/detection/os/" class="md-nav__link">
         OS Packages
       </a>
     </li>
@@ -787,7 +934,7 @@
   
   
     <li class="md-nav__item">
-      <a href="vulnerability/detection/language/" class="md-nav__link">
+      <a href="../../vulnerability/detection/language/" class="md-nav__link">
         Language-specific Packages
       </a>
     </li>
@@ -801,7 +948,7 @@
   
   
     <li class="md-nav__item">
-      <a href="vulnerability/detection/data-source/" class="md-nav__link">
+      <a href="../../vulnerability/detection/data-source/" class="md-nav__link">
         Data Sources
       </a>
     </li>
@@ -815,7 +962,7 @@
   
   
     <li class="md-nav__item">
-      <a href="vulnerability/detection/supported/" class="md-nav__link">
+      <a href="../../vulnerability/detection/supported/" class="md-nav__link">
         Supported
       </a>
     </li>
@@ -864,7 +1011,7 @@
   
   
     <li class="md-nav__item">
-      <a href="vulnerability/examples/filter/" class="md-nav__link">
+      <a href="../../vulnerability/examples/filter/" class="md-nav__link">
         Vulnerability Filtering
       </a>
     </li>
@@ -878,7 +1025,7 @@
   
   
     <li class="md-nav__item">
-      <a href="vulnerability/examples/report/" class="md-nav__link">
+      <a href="../../vulnerability/examples/report/" class="md-nav__link">
         Report Formats
       </a>
     </li>
@@ -892,7 +1039,7 @@
   
   
     <li class="md-nav__item">
-      <a href="vulnerability/examples/db/" class="md-nav__link">
+      <a href="../../vulnerability/examples/db/" class="md-nav__link">
         Vulnerability DB
       </a>
     </li>
@@ -906,7 +1053,7 @@
   
   
     <li class="md-nav__item">
-      <a href="vulnerability/examples/cache/" class="md-nav__link">
+      <a href="../../vulnerability/examples/cache/" class="md-nav__link">
         Cache
       </a>
     </li>
@@ -920,7 +1067,7 @@
   
   
     <li class="md-nav__item">
-      <a href="vulnerability/examples/others/" class="md-nav__link">
+      <a href="../../vulnerability/examples/others/" class="md-nav__link">
         Others
       </a>
     </li>
@@ -1003,7 +1150,7 @@
   
   
     <li class="md-nav__item">
-      <a href="misconfiguration/iac/" class="md-nav__link">
+      <a href="../../misconfiguration/iac/" class="md-nav__link">
         Infrastructure as Code
       </a>
     </li>
@@ -1017,7 +1164,7 @@
   
   
     <li class="md-nav__item">
-      <a href="misconfiguration/filesystem/" class="md-nav__link">
+      <a href="../../misconfiguration/filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -1066,7 +1213,7 @@
   
   
     <li class="md-nav__item">
-      <a href="misconfiguration/policy/builtin/" class="md-nav__link">
+      <a href="../../misconfiguration/policy/builtin/" class="md-nav__link">
         Builtin Policies
       </a>
     </li>
@@ -1080,7 +1227,7 @@
   
   
     <li class="md-nav__item">
-      <a href="misconfiguration/policy/custom/" class="md-nav__link">
+      <a href="../../misconfiguration/policy/custom/" class="md-nav__link">
         Custom Policies
       </a>
     </li>
@@ -1135,7 +1282,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/" class="md-nav__link">
+      <a href="../../advanced/" class="md-nav__link">
         Index
       </a>
     </li>
@@ -1149,7 +1296,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/plugins/" class="md-nav__link">
+      <a href="../../advanced/plugins/" class="md-nav__link">
         Plugins
       </a>
     </li>
@@ -1163,7 +1310,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/air-gap/" class="md-nav__link">
+      <a href="../../advanced/air-gap/" class="md-nav__link">
         Air-Gapped Environment
       </a>
     </li>
@@ -1205,7 +1352,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/integrations/" class="md-nav__link">
+      <a href="../../advanced/integrations/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1219,7 +1366,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/integrations/github-actions/" class="md-nav__link">
+      <a href="../../advanced/integrations/github-actions/" class="md-nav__link">
         GitHub Actions
       </a>
     </li>
@@ -1233,7 +1380,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/integrations/circleci/" class="md-nav__link">
+      <a href="../../advanced/integrations/circleci/" class="md-nav__link">
         CircleCI
       </a>
     </li>
@@ -1247,7 +1394,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/integrations/travis-ci/" class="md-nav__link">
+      <a href="../../advanced/integrations/travis-ci/" class="md-nav__link">
         Travis CI
       </a>
     </li>
@@ -1261,7 +1408,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/integrations/gitlab-ci/" class="md-nav__link">
+      <a href="../../advanced/integrations/gitlab-ci/" class="md-nav__link">
         GitLab CI
       </a>
     </li>
@@ -1275,7 +1422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/integrations/aws-codepipeline/" class="md-nav__link">
+      <a href="../../advanced/integrations/aws-codepipeline/" class="md-nav__link">
         AWS CodePipeline
       </a>
     </li>
@@ -1289,7 +1436,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/integrations/aws-security-hub/" class="md-nav__link">
+      <a href="../../advanced/integrations/aws-security-hub/" class="md-nav__link">
         AWS Security Hub
       </a>
     </li>
@@ -1338,7 +1485,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/container/embed-in-dockerfile/" class="md-nav__link">
+      <a href="../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
         Embed in Dockerfile
       </a>
     </li>
@@ -1352,7 +1499,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/container/unpacked-filesystem/" class="md-nav__link">
+      <a href="../../advanced/container/unpacked-filesystem/" class="md-nav__link">
         Unpacked container image filesystem
       </a>
     </li>
@@ -1366,7 +1513,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/container/oci/" class="md-nav__link">
+      <a href="../../advanced/container/oci/" class="md-nav__link">
         OCI Image
       </a>
     </li>
@@ -1380,7 +1527,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/container/podman/" class="md-nav__link">
+      <a href="../../advanced/container/podman/" class="md-nav__link">
         Podman
       </a>
     </li>
@@ -1420,7 +1567,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/private-registries/" class="md-nav__link">
+      <a href="../../advanced/private-registries/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1434,7 +1581,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/private-registries/docker-hub/" class="md-nav__link">
+      <a href="../../advanced/private-registries/docker-hub/" class="md-nav__link">
         Docker Hub
       </a>
     </li>
@@ -1448,7 +1595,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/private-registries/ecr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/ecr/" class="md-nav__link">
         AWS ECR (Elastic Container Registry)
       </a>
     </li>
@@ -1462,7 +1609,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/private-registries/gcr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/gcr/" class="md-nav__link">
         GCR (Google Container Registry)
       </a>
     </li>
@@ -1476,7 +1623,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/private-registries/self/" class="md-nav__link">
+      <a href="../../advanced/private-registries/self/" class="md-nav__link">
         Self-Hosted
       </a>
     </li>
@@ -1532,7 +1679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/modes/standalone/" class="md-nav__link">
+      <a href="../../advanced/modes/standalone/" class="md-nav__link">
         Standalone
       </a>
     </li>
@@ -1546,7 +1693,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/modes/client-server/" class="md-nav__link">
+      <a href="../../advanced/modes/client-server/" class="md-nav__link">
         Client/Server
       </a>
     </li>
@@ -1595,7 +1742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/contrib/help-wanted/" class="md-nav__link">
+      <a href="../../advanced/contrib/help-wanted/" class="md-nav__link">
         Help Wanted
       </a>
     </li>
@@ -1609,7 +1756,7 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced/contrib/triage/" class="md-nav__link">
+      <a href="../../advanced/contrib/triage/" class="md-nav__link">
         Triage
       </a>
     </li>
@@ -1637,6 +1784,148 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#rhelcentos" class="md-nav__link">
+    RHEL/CentOS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debianubuntu" class="md-nav__link">
+    Debian/Ubuntu
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arch-linux" class="md-nav__link">
+    Arch Linux
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#homebrew" class="md-nav__link">
+    Homebrew
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nixnixos" class="md-nav__link">
+    Nix/NixOS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-script" class="md-nav__link">
+    Install Script
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#binary" class="md-nav__link">
+    Binary
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-source" class="md-nav__link">
+    From source
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    Docker
+  </a>
+  
+    <nav class="md-nav" aria-label="Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-hub" class="md-nav__link">
+    Docker Hub
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#github-container-registry" class="md-nav__link">
+    GitHub Container Registry
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amazon-ecr-public" class="md-nav__link">
+    Amazon ECR Public
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helm" class="md-nav__link">
+    Helm
+  </a>
+  
+    <nav class="md-nav" aria-label="Helm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installing-from-the-the-aqua-chart-repository" class="md-nav__link">
+    Installing from the the Aqua Chart Repository
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-the-chart" class="md-nav__link">
+    Installing the Chart
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content" data-md-component="content">
             <article class="md-content__inner md-typeset">
@@ -1644,29 +1933,143 @@
                 
                 
                 
-                  <h1>HOME</h1>
-                
-                <p><img align="left" alt="logo" src="imgs/logo.png" /></p>
-<p><code>Trivy</code> (<code>tri</code> pronounced like <strong>tri</strong>gger, <code>vy</code> pronounced like en<strong>vy</strong>) is a simple and comprehensive <a href="vulnerability/scanning">vulnerability</a>/misconfiguration scanner for containers and other artifacts.
-A software vulnerability is a glitch, flaw, or weakness present in the software or in an Operating System.
-<code>Trivy</code> detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and language-specific packages (Bundler, Composer, npm, yarn, etc.).
-In addition, <code>Trivy</code> scans IaC config files such as Terraform and Kubernetes, to detect potential configuration issues that expose your deployments to the risk of attack.
-<code>Trivy</code> is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify a target such as an image name of the container.</p>
-<p><img src="imgs/overview.png" width="900"></p>
-<figure style="text-aligh: center">
-  <img src="imgs/vuln-demo.gif" width="1000">
-  <figcaption>Demo: Vulnerability Detection</figcaption>
-</figure>
-
-<figure style="text-aligh: center">
-  <img src="imgs/misconf-demo.gif" width="1000">
-  <figcaption>Demo: Misconfiguration Detection</figcaption>
-</figure>
-
-<div style="text-align: center">
+                <h1 id="installation">Installation</h1>
+<h2 id="rhelcentos">RHEL/CentOS</h2>
+<div class="tabbed-set" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">Repository</label><div class="tabbed-content">
+<p>Add repository setting to <code>/etc/yum.repos.d</code>.</p>
+<div class="highlight"><pre><span></span><code>$ sudo vim /etc/yum.repos.d/trivy.repo
+<span class="o">[</span>trivy<span class="o">]</span>
+<span class="nv">name</span><span class="o">=</span>Trivy repository
+<span class="nv">baseurl</span><span class="o">=</span>https://aquasecurity.github.io/trivy-repo/rpm/releases/<span class="nv">$releasever</span>/<span class="nv">$basearch</span>/
+<span class="nv">gpgcheck</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">enabled</span><span class="o">=</span><span class="m">1</span>
+$ sudo yum -y update
+$ sudo yum -y install trivy
+</code></pre></div>
 </div>
-                
-                  
+<input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><label for="__tabbed_1_2">RPM</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code>rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.rpm
+</code></pre></div>
+</div>
+</div>
+<h2 id="debianubuntu">Debian/Ubuntu</h2>
+<div class="tabbed-set" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">Repository</label><div class="tabbed-content">
+<p>Add repository setting to <code>/etc/apt/sources.list.d</code>.</p>
+<div class="highlight"><pre><span></span><code>sudo apt-get install wget apt-transport-https gnupg lsb-release
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key <span class="p">|</span> sudo apt-key add -
+<span class="nb">echo</span> deb https://aquasecurity.github.io/trivy-repo/deb <span class="k">$(</span>lsb_release -sc<span class="k">)</span> main <span class="p">|</span> sudo tee -a /etc/apt/sources.list.d/trivy.list
+sudo apt-get update
+sudo apt-get install trivy
+</code></pre></div>
+</div>
+<input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><label for="__tabbed_2_2">DEB</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code>wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb
+sudo dpkg -i trivy_0.18.3_Linux-64bit.deb
+</code></pre></div>
+</div>
+</div>
+<h2 id="arch-linux">Arch Linux</h2>
+<p>Package trivy-bin can be installed from the Arch User Repository. Examples:</p>
+<div class="tabbed-set" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><label for="__tabbed_3_1">pikaur</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code>pikaur -Sy trivy-bin
+</code></pre></div>
+</div>
+<input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><label for="__tabbed_3_2">yay</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code>yay -Sy trivy-bin
+</code></pre></div>
+</div>
+</div>
+<h2 id="homebrew">Homebrew</h2>
+<p>You can use homebrew on macOS and Linux.</p>
+<div class="highlight"><pre><span></span><code>brew install aquasecurity/trivy/trivy
+</code></pre></div>
+<h2 id="nixnixos">Nix/NixOS</h2>
+<p>You can use nix on Linux or macOS and on others unofficially.</p>
+<p>Note that trivy is currently only in the unstable channels.</p>
+<div class="highlight"><pre><span></span><code>nix-env --install trivy
+</code></pre></div>
+<p>Or through your configuration on NixOS or with home-manager as usual</p>
+<h2 id="install-script">Install Script</h2>
+<p>This script downloads Trivy binary based on your OS and architecture.</p>
+<div class="highlight"><pre><span></span><code>curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh <span class="p">|</span> sh -s -- -b /usr/local/bin v0.18.3
+</code></pre></div>
+<h2 id="binary">Binary</h2>
+<p>Download the archive file for your operating system/architecture from <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.18.3">here</a>. 
+Unpack the archive, and put the binary somewhere in your <code>$PATH</code> (on UNIX-y systems, /usr/local/bin or the like).
+Make sure it has execution bits turned on.</p>
+<h2 id="from-source">From source</h2>
+<div class="highlight"><pre><span></span><code>mkdir -p <span class="nv">$GOPATH</span>/src/github.com/aquasecurity
+<span class="nb">cd</span> <span class="nv">$GOPATH</span>/src/github.com/aquasecurity
+git clone --depth <span class="m">1</span> --branch v0.18.3 https://github.com/aquasecurity/trivy
+<span class="nb">cd</span> trivy/cmd/trivy/
+<span class="nb">export</span> <span class="nv">GO111MODULE</span><span class="o">=</span>on
+go install
+</code></pre></div>
+<h2 id="docker">Docker</h2>
+<h3 id="docker-hub">Docker Hub</h3>
+<p>Replace [YOUR_CACHE_DIR] with the cache directory on your machine.</p>
+<div class="highlight"><pre><span></span><code>docker pull aquasec/trivy:0.18.3
+</code></pre></div>
+<p>Example:</p>
+<div class="tabbed-set" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">Linux</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code>docker run --rm -v <span class="o">[</span>YOUR_CACHE_DIR<span class="o">]</span>:/root/.cache/ aquasec/trivy:0.18.3 <span class="o">[</span>YOUR_IMAGE_NAME<span class="o">]</span>
+</code></pre></div>
+</div>
+<input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><label for="__tabbed_4_2">macOS</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code>yay -Sy trivy-bin
+docker run --rm -v <span class="nv">$HOME</span>/Library/Caches:/root/.cache/ aquasec/trivy:0.18.3 python:3.4-alpine
+</code></pre></div>
+</div>
+</div>
+<p>If you would like to scan the image on your host machine, you need to mount <code>docker.sock</code>.</p>
+<div class="highlight"><pre><span></span><code>docker run --rm -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
+    -v <span class="nv">$HOME</span>/Library/Caches:/root/.cache/ aquasec/trivy:0.18.3 python:3.4-alpine
+</code></pre></div>
+<p>Please re-pull latest <code>aquasec/trivy</code> if an error occurred.</p>
+<details>
+<summary>Result</summary>
+
+<div class="highlight"><pre><span></span><code><span class="m">2019</span>-05-16T01:20:43.180+0900    INFO    Updating vulnerability database...
+<span class="m">2019</span>-05-16T01:20:53.029+0900    INFO    Detecting Alpine vulnerabilities...
+
+python:3.4-alpine3.9 <span class="o">(</span>alpine <span class="m">3</span>.9.2<span class="o">)</span>
+<span class="o">===================================</span>
+Total: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">1</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+<span class="p">|</span> LIBRARY <span class="p">|</span> VULNERABILITY ID <span class="p">|</span> SEVERITY <span class="p">|</span> INSTALLED VERSION <span class="p">|</span> FIXED VERSION <span class="p">|</span>             TITLE              <span class="p">|</span>
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+<span class="p">|</span> openssl <span class="p">|</span> CVE-2019-1543    <span class="p">|</span> MEDIUM   <span class="p">|</span> <span class="m">1</span>.1.1a-r1         <span class="p">|</span> <span class="m">1</span>.1.1b-r1     <span class="p">|</span> openssl: ChaCha20-Poly1305     <span class="p">|</span>
+<span class="p">|</span>         <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> with long nonces               <span class="p">|</span>
++---------+------------------+----------+-------------------+---------------+--------------------------------+
+</code></pre></div>
+
+</details>
+
+<h3 id="github-container-registry">GitHub Container Registry</h3>
+<p>The same image is hosted on <a href="https://github.com/orgs/aquasecurity/packages/container/package/trivy">GitHub Container Registry</a> as well.</p>
+<div class="highlight"><pre><span></span><code>docker pull ghcr.io/aquasecurity/trivy:0.18.3
+</code></pre></div>
+<h3 id="amazon-ecr-public">Amazon ECR Public</h3>
+<p>The same image is hosted on <a href="https://gallery.ecr.aws/aquasecurity/trivy">Amazon ECR Public</a> as well.</p>
+<div class="highlight"><pre><span></span><code>docker pull public.ecr.aws/aquasecurity/trivy:0.18.3
+</code></pre></div>
+<h2 id="helm">Helm</h2>
+<h3 id="installing-from-the-the-aqua-chart-repository">Installing from the the Aqua Chart Repository</h3>
+<div class="highlight"><pre><span></span><code>helm repo add aquasecurity https://aquasecurity.github.io/helm-charts/
+helm repo update
+helm search repo trivy
+helm install my-trivy aquasecurity/trivy
+</code></pre></div>
+<h3 id="installing-the-chart">Installing the Chart</h3>
+<p>To install the chart with the release name <code>my-release</code>:</p>
+<div class="highlight"><pre><span></span><code>helm install my-release .
+</code></pre></div>
+<p>The command deploys Trivy on the Kubernetes cluster in the default configuration. The <a href="#parameters">Parameters</a>
+section lists the parameters that can be configured during installation.</p>
+<blockquote>
+<p><strong>Tip</strong>: List all releases using <code>helm list</code>.</p>
+</blockquote>
                 
               
               
@@ -1686,15 +2089,30 @@ In addition, <code>Trivy</code> scans IaC config files such as Terraform and Kub
   
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
+        
+        <a href="../overview/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Overview
+            </div>
+          </div>
+        </a>
+      
       
         
-        <a href="getting-started/overview/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview" rel="next">
+        <a href="../quickstart/" class="md-footer__link md-footer__link--next" aria-label="Next: Quick Start" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Overview
+              Quick Start
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -1720,10 +2138,10 @@ In addition, <code>Trivy</code> scans IaC config files such as Terraform and Kub
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.ae6eae72.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.ae6eae72.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="assets/javascripts/bundle.bc2488c3.min.js"></script>
+      <script src="../../assets/javascripts/bundle.bc2488c3.min.js"></script>
       
     
   </body>
