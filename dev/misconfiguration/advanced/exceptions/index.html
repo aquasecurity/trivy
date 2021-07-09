@@ -1140,6 +1140,20 @@
               
   
   
+  
+    <li class="md-nav__item">
+      <a href="../combine/" class="md-nav__link">
+        Combine
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -1865,15 +1879,20 @@ You can get the package names in <a href="https://github.com/aquasecurity/appshi
 <h2 id="namespace-based-exceptions">Namespace-based exceptions</h2>
 <p>You might want to disable builtin policies partially or fully.
 For those occasions, you can use namespace-based exceptions.
-Rule-based exceptions are also written in Rego, and allow you to specify packages where you want to disable.</p>
-<p>Packages returned by <code>exception</code> will be exempted.
+Namespace-based exceptions are also written in Rego, and allow you to specify packages where you want to disable.</p>
+<p>The package name must be <code>namespace.exceptions</code>.
+Packages returned by <code>exception</code> will be exempted.
 <code>data.namespaces</code> includes all package names.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code>exception[ns] {
-    ns := data.namespaces[_]
-    startswith(ns, &quot;appshield.dockerfile&quot;)
-}
+<div class="highlight"><pre><span></span><code>    package namespace.exceptions
+
+    import data.namespaces
+
+    exception[ns] {
+        ns := data.namespaces[_]
+        startswith(ns, &quot;appshield&quot;)
+    }
 </code></pre></div>
 </div>
 <p>This example exempts all builtin policies for Kubernetes.</p>
@@ -1897,7 +1916,7 @@ Rule-based exceptions are also written in Rego, and allow you to specify package
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../../policy/custom/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Custom Policies" rel="prev">
+        <a href="../combine/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Combine" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -1906,7 +1925,7 @@ Rule-based exceptions are also written in Rego, and allow you to specify package
               <span class="md-footer__direction">
                 Previous
               </span>
-              Custom Policies
+              Combine
             </div>
           </div>
         </a>

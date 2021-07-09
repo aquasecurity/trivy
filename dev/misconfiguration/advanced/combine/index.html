@@ -11,7 +11,7 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/vulnerability/examples/cache/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/misconfiguration/advanced/combine/">
       
       
         
@@ -21,7 +21,7 @@
     
     
       
-        <title>Cache - Trivy</title>
+        <title>Combine - Trivy</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cache" class="md-skip">
+        <a href="#combined-input" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Cache
+              Combine
             
           </span>
         </div>
@@ -205,8 +205,6 @@
         
   
   
-    
-  
 
 
   
@@ -218,7 +216,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../scanning/" class="md-tabs__link md-tabs__link--active">
+      <a href="../../../vulnerability/scanning/" class="md-tabs__link">
         Vulnerability
       </a>
     </li>
@@ -230,6 +228,8 @@
         
   
   
+    
+  
 
 
   
@@ -241,7 +241,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../misconfiguration/" class="md-tabs__link">
+      <a href="../../" class="md-tabs__link md-tabs__link--active">
         Misconfiguration
       </a>
     </li>
@@ -621,14 +621,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
       
       
       
@@ -679,7 +677,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../scanning/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -693,7 +691,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../scanning/image/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/image/" class="md-nav__link">
         Container Image
       </a>
     </li>
@@ -707,7 +705,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../scanning/filesystem/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -721,7 +719,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../scanning/git-repository/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/git-repository/" class="md-nav__link">
         Git Repository
       </a>
     </li>
@@ -770,7 +768,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../detection/os/" class="md-nav__link">
+      <a href="../../../vulnerability/detection/os/" class="md-nav__link">
         OS Packages
       </a>
     </li>
@@ -784,7 +782,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../detection/language/" class="md-nav__link">
+      <a href="../../../vulnerability/detection/language/" class="md-nav__link">
         Language-specific Packages
       </a>
     </li>
@@ -798,7 +796,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../detection/data-source/" class="md-nav__link">
+      <a href="../../../vulnerability/detection/data-source/" class="md-nav__link">
         Data Sources
       </a>
     </li>
@@ -812,7 +810,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../detection/supported/" class="md-nav__link">
+      <a href="../../../vulnerability/detection/supported/" class="md-nav__link">
         Supported
       </a>
     </li>
@@ -831,16 +829,14 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" >
       
       
       
@@ -863,7 +859,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../filter/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/filter/" class="md-nav__link">
         Vulnerability Filtering
       </a>
     </li>
@@ -877,7 +873,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../report/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/report/" class="md-nav__link">
         Report Formats
       </a>
     </li>
@@ -891,7 +887,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../db/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/db/" class="md-nav__link">
         Vulnerability DB
       </a>
     </li>
@@ -903,65 +899,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Cache
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../vulnerability/examples/cache/" class="md-nav__link">
         Cache
       </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#clear-caches" class="md-nav__link">
-    Clear Caches
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cache-directory" class="md-nav__link">
-    Cache Directory
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cache-backend" class="md-nav__link">
-    Cache Backend
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -973,7 +915,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../others/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/others/" class="md-nav__link">
         Others
       </a>
     </li>
@@ -1000,12 +942,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
       
       
       
@@ -1056,7 +1000,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/" class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1070,7 +1014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/iac/" class="md-nav__link">
+      <a href="../../iac/" class="md-nav__link">
         Infrastructure as Code
       </a>
     </li>
@@ -1084,7 +1028,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/filesystem/" class="md-nav__link">
+      <a href="../../filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -1133,7 +1077,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/policy/builtin/" class="md-nav__link">
+      <a href="../../policy/builtin/" class="md-nav__link">
         Builtin Policies
       </a>
     </li>
@@ -1147,7 +1091,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/policy/custom/" class="md-nav__link">
+      <a href="../../policy/custom/" class="md-nav__link">
         Custom Policies
       </a>
     </li>
@@ -1166,14 +1110,16 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" checked>
       
       
       
@@ -1194,11 +1140,58 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../../misconfiguration/advanced/combine/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Combine
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Combine
       </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#return-value" class="md-nav__link">
+    Return value
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1210,7 +1203,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/advanced/exceptions/" class="md-nav__link">
+      <a href="../exceptions/" class="md-nav__link">
         Exceptions
       </a>
     </li>
@@ -1224,7 +1217,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/advanced/testing/" class="md-nav__link">
+      <a href="../testing/" class="md-nav__link">
         Testing
       </a>
     </li>
@@ -1800,22 +1793,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#clear-caches" class="md-nav__link">
-    Clear Caches
+  <a href="#overview" class="md-nav__link">
+    Overview
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#cache-directory" class="md-nav__link">
-    Cache Directory
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cache-backend" class="md-nav__link">
-    Cache Backend
+  <a href="#return-value" class="md-nav__link">
+    Return value
   </a>
   
 </li>
@@ -1834,38 +1820,40 @@
                 
                 
                 
-                <h1 id="cache">Cache</h1>
-<h2 id="clear-caches">Clear Caches</h2>
-<p>The <code>--clear-cache</code> option removes caches.</p>
-<p><strong>The scan is not performed.</strong></p>
-<div class="highlight"><pre><span></span><code>$ trivy image --clear-cache
+                <h1 id="combined-input">Combined input</h1>
+<h2 id="overview">Overview</h2>
+<p>You might want to compare multiple values from different configurations simultaneously.
+When <code>combine</code> is set to true, all config files under the specified directory are combined into one input data structure.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>__rego_input__ := {
+    &quot;combine&quot;: false,
+}
 </code></pre></div>
-<details>
-<summary>Result</summary>
-
-<div class="highlight"><pre><span></span><code>2019-11-15T15:13:26.209+0200    INFO    Reopening vulnerability DB
-2019-11-15T15:13:26.209+0200    INFO    Removing image caches...
-</code></pre></div>
-
-</details>
-
-<h2 id="cache-directory">Cache Directory</h2>
-<p>Specify where the cache is stored with <code>--cache-dir</code>.</p>
-<div class="highlight"><pre><span></span><code>$ trivy --cache-dir /tmp/trivy/ image python:3.4-alpine3.9
-</code></pre></div>
-<h2 id="cache-backend">Cache Backend</h2>
-<div class="admonition warning">
-<p class="admonition-title">EXPERIMENTAL</p>
-<p>This feature might change without preserving backwards compatibility.</p>
 </div>
-<p>Trivy supports local filesystem and Redis as the cache backend. This option is useful especially for client/server mode.</p>
-<p>Two options:
-- <code>fs</code>
-    - the cache path can be specified by <code>--cache-dir</code>
-- <code>redis://</code>
-    - <code>redis://[HOST]:[PORT]</code></p>
-<div class="highlight"><pre><span></span><code>$ trivy server --cache-backend redis://localhost:6379
+<p>The structure is an array where each element is a map with two keys: a path key with the relative file path of the file being evaluated and a contents key containing the actual document.
+Now you can ensure that duplicate values match across the entirety of your configuration files.</p>
+<h2 id="return-value">Return value</h2>
+<p>The <code>deny</code> entrypoint must return an object with two keys</p>
+<dl>
+<dt><code>filepath</code> (required)</dt>
+<dd>the relative file path of the file being evaluated</dd>
+<dt><code>msg</code> (required)</dt>
+<dd>the message describing an issue</dd>
+</dl>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>deny[res] {
+    resource := input[i].contents
+    ... some logic ...
+
+    res := {
+        &quot;filepath&quot;: input[i].path,
+        &quot;msg&quot;: &quot;something bad&quot;,
+    }
+}
 </code></pre></div>
+</div>
                 
               
               
@@ -1886,7 +1874,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../db/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Vulnerability DB" rel="prev">
+        <a href="../../policy/custom/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Custom Policies" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -1895,20 +1883,20 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              Vulnerability DB
+              Custom Policies
             </div>
           </div>
         </a>
       
       
         
-        <a href="../others/" class="md-footer__link md-footer__link--next" aria-label="Next: Others" rel="next">
+        <a href="../exceptions/" class="md-footer__link md-footer__link--next" aria-label="Next: Exceptions" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Others
+              Exceptions
             </div>
           </div>
           <div class="md-footer__button md-icon">
