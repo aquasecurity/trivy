@@ -241,7 +241,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="./" class="md-tabs__link md-tabs__link--active">
+      <a href="../" class="md-tabs__link md-tabs__link--active">
         Misconfiguration
       </a>
     </li>
@@ -1000,6 +1000,20 @@
               
   
   
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -1141,6 +1155,69 @@
 
             
           
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3">
+          Advanced
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Advanced" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_3">
+          <span class="md-nav__icon md-icon"></span>
+          Advanced
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/exceptions/" class="md-nav__link">
+        Exceptions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -1182,7 +1259,7 @@
   
     <li class="md-nav__item">
       <a href="../../advanced/" class="md-nav__link">
-        Index
+        Overview
       </a>
     </li>
   
@@ -1735,15 +1812,12 @@
 <div class="highlight"><pre><span></span><code>$ trivy config <span class="o">[</span>YOUR_IaC_DIRECTORY<span class="o">]</span>
 </code></pre></div>
 <p>Then, Trivy pulls builtin policies from GitHub Container Registry as OCI artifact and scans IaC files with those policies.</p>
-<p>For example:</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code>$ ls build/
 Dockerfile
 $ trivy config ./build
-</code></pre></div>
-<details>
-<summary>Result</summary>
-
-<div class="highlight"><pre><span></span><code>2021-07-09T10:06:29.188+0300    INFO    Need to update the builtin policies
+2021-07-09T10:06:29.188+0300    INFO    Need to update the builtin policies
 2021-07-09T10:06:29.188+0300    INFO    Downloading the builtin policies...
 2021-07-09T10:06:30.520+0300    INFO    Detected config files: 1
 
@@ -1760,9 +1834,7 @@ Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 |                           |            |                      |          | --&gt;avd.aquasec.com/appshield/ds002       |
 +---------------------------+------------+----------------------+----------+------------------------------------------+
 </code></pre></div>
-
-</details>
-
+</div>
 <h2 id="type-detection">Type detection</h2>
 <p>The specified directory can contain mixed types of IaC files.
 Trivy automatically detects config types and applies relevant policies.</p>
@@ -1853,6 +1925,8 @@ Failures: 9 (HIGH: 6, CRITICAL: 1)
 </details>
 
 <p>You can see the config type next to each file name.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code>Dockerfile <span class="o">(</span>dockerfile<span class="o">)</span>
 <span class="o">=======================</span>
 Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class="m">22</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
@@ -1874,6 +1948,7 @@ Failures: <span class="m">9</span> <span class="o">(</span>HIGH: <span class="m"
 
 ...
 </code></pre></div>
+</div>
                 
               
               
@@ -1894,7 +1969,7 @@ Failures: <span class="m">9</span> <span class="o">(</span>HIGH: <span class="m"
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../../vulnerability/examples/others/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Others" rel="prev">
+        <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -1903,7 +1978,7 @@ Failures: <span class="m">9</span> <span class="o">(</span>HIGH: <span class="m"
               <span class="md-footer__direction">
                 Previous
               </span>
-              Others
+              Overview
             </div>
           </div>
         </a>

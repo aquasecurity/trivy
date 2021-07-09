@@ -236,7 +236,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="misconfiguration/iac/" class="md-tabs__link">
+      <a href="misconfiguration/" class="md-tabs__link">
         Misconfiguration
       </a>
     </li>
@@ -1003,6 +1003,20 @@
   
   
     <li class="md-nav__item">
+      <a href="misconfiguration/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="misconfiguration/iac/" class="md-nav__link">
         Infrastructure as Code
       </a>
@@ -1095,6 +1109,69 @@
 
             
           
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3">
+          Advanced
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Advanced" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_3">
+          <span class="md-nav__icon md-icon"></span>
+          Advanced
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="misconfiguration/advanced/exceptions/" class="md-nav__link">
+        Exceptions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="misconfiguration/advanced/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -1136,7 +1213,7 @@
   
     <li class="md-nav__item">
       <a href="advanced/" class="md-nav__link">
-        Index
+        Overview
       </a>
     </li>
   
@@ -1644,15 +1721,20 @@
                 
                 
                 
-                  <h1>HOME</h1>
-                
                 <p><img align="left" alt="logo" src="imgs/logo.png" /></p>
 <p><code>Trivy</code> (<code>tri</code> pronounced like <strong>tri</strong>gger, <code>vy</code> pronounced like en<strong>vy</strong>) is a simple and comprehensive <a href="vulnerability/scanning">vulnerability</a>/misconfiguration scanner for containers and other artifacts.
 A software vulnerability is a glitch, flaw, or weakness present in the software or in an Operating System.
 <code>Trivy</code> detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and language-specific packages (Bundler, Composer, npm, yarn, etc.).
-In addition, <code>Trivy</code> scans IaC config files such as Terraform and Kubernetes, to detect potential configuration issues that expose your deployments to the risk of attack.
+In addition, <code>Trivy</code> scans Infrastructure as Code (IaC) files such as Terraform and Kubernetes, to detect potential configuration issues that expose your deployments to the risk of attack.
 <code>Trivy</code> is easy to use. Just install the binary and you're ready to scan. All you need to do for scanning is to specify a target such as an image name of the container.</p>
-<p><img src="imgs/overview.png" width="900"></p>
+<div style="text-align: center">
+    <img src="imgs/overview.png" width="800">
+</div>
+
+<div style="text-align: center; margin-top: 150px">
+    <h1 id="demo">Demo</h1>
+</div>
+
 <figure style="text-aligh: center">
   <img src="imgs/vuln-demo.gif" width="1000">
   <figcaption>Demo: Vulnerability Detection</figcaption>
@@ -1662,9 +1744,6 @@ In addition, <code>Trivy</code> scans IaC config files such as Terraform and Kub
   <img src="imgs/misconf-demo.gif" width="1000">
   <figcaption>Demo: Misconfiguration Detection</figcaption>
 </figure>
-
-<div style="text-align: center">
-</div>
                 
                   
                 

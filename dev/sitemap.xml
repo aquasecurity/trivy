@@ -201,6 +201,16 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/advanced/exceptions/</loc>
+         <lastmod>2021-07-09</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/advanced/testing/</loc>
+         <lastmod>2021-07-09</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/policy/builtin/</loc>
          <lastmod>2021-07-09</lastmod>
          <changefreq>daily</changefreq>

@@ -11,7 +11,7 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/advanced/modes/client-server/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/misconfiguration/advanced/testing/">
       
       
         
@@ -21,7 +21,7 @@
     
     
       
-        <title>Client/Server - Trivy</title>
+        <title>Testing - Trivy</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#clientserver" class="md-skip">
+        <a href="#testing" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Client/Server
+              Testing
             
           </span>
         </div>
@@ -228,6 +228,8 @@
         
   
   
+    
+  
 
 
   
@@ -239,7 +241,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../misconfiguration/" class="md-tabs__link">
+      <a href="../../" class="md-tabs__link md-tabs__link--active">
         Misconfiguration
       </a>
     </li>
@@ -251,15 +253,13 @@
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../../" class="md-tabs__link md-tabs__link--active">
+      <a href="../../../advanced/" class="md-tabs__link">
         Advanced
       </a>
     </li>
@@ -942,12 +942,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
       
       
       
@@ -998,7 +1000,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/" class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1012,7 +1014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/iac/" class="md-nav__link">
+      <a href="../../iac/" class="md-nav__link">
         Infrastructure as Code
       </a>
     </li>
@@ -1026,7 +1028,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/filesystem/" class="md-nav__link">
+      <a href="../../filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -1075,7 +1077,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/policy/builtin/" class="md-nav__link">
+      <a href="../../policy/builtin/" class="md-nav__link">
         Builtin Policies
       </a>
     </li>
@@ -1089,7 +1091,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/policy/custom/" class="md-nav__link">
+      <a href="../../policy/custom/" class="md-nav__link">
         Custom Policies
       </a>
     </li>
@@ -1108,14 +1110,16 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" checked>
       
       
       
@@ -1138,7 +1142,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/advanced/exceptions/" class="md-nav__link">
+      <a href="../exceptions/" class="md-nav__link">
         Exceptions
       </a>
     </li>
@@ -1150,11 +1154,51 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../../misconfiguration/advanced/testing/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Testing
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Testing
       </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#rego-testing" class="md-nav__link">
+    Rego testing
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1179,14 +1223,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
       
       
       
@@ -1209,7 +1251,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../" class="md-nav__link">
+      <a href="../../../advanced/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1223,7 +1265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../plugins/" class="md-nav__link">
+      <a href="../../../advanced/plugins/" class="md-nav__link">
         Plugins
       </a>
     </li>
@@ -1237,7 +1279,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../air-gap/" class="md-nav__link">
+      <a href="../../../advanced/air-gap/" class="md-nav__link">
         Air-Gapped Environment
       </a>
     </li>
@@ -1279,7 +1321,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../integrations/" class="md-nav__link">
+      <a href="../../../advanced/integrations/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1293,7 +1335,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../integrations/github-actions/" class="md-nav__link">
+      <a href="../../../advanced/integrations/github-actions/" class="md-nav__link">
         GitHub Actions
       </a>
     </li>
@@ -1307,7 +1349,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../integrations/circleci/" class="md-nav__link">
+      <a href="../../../advanced/integrations/circleci/" class="md-nav__link">
         CircleCI
       </a>
     </li>
@@ -1321,7 +1363,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../integrations/travis-ci/" class="md-nav__link">
+      <a href="../../../advanced/integrations/travis-ci/" class="md-nav__link">
         Travis CI
       </a>
     </li>
@@ -1335,7 +1377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../integrations/gitlab-ci/" class="md-nav__link">
+      <a href="../../../advanced/integrations/gitlab-ci/" class="md-nav__link">
         GitLab CI
       </a>
     </li>
@@ -1349,7 +1391,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../integrations/aws-codepipeline/" class="md-nav__link">
+      <a href="../../../advanced/integrations/aws-codepipeline/" class="md-nav__link">
         AWS CodePipeline
       </a>
     </li>
@@ -1363,7 +1405,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../integrations/aws-security-hub/" class="md-nav__link">
+      <a href="../../../advanced/integrations/aws-security-hub/" class="md-nav__link">
         AWS Security Hub
       </a>
     </li>
@@ -1412,7 +1454,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../container/embed-in-dockerfile/" class="md-nav__link">
+      <a href="../../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
         Embed in Dockerfile
       </a>
     </li>
@@ -1426,7 +1468,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../container/unpacked-filesystem/" class="md-nav__link">
+      <a href="../../../advanced/container/unpacked-filesystem/" class="md-nav__link">
         Unpacked container image filesystem
       </a>
     </li>
@@ -1440,7 +1482,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../container/oci/" class="md-nav__link">
+      <a href="../../../advanced/container/oci/" class="md-nav__link">
         OCI Image
       </a>
     </li>
@@ -1454,7 +1496,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../container/podman/" class="md-nav__link">
+      <a href="../../../advanced/container/podman/" class="md-nav__link">
         Podman
       </a>
     </li>
@@ -1494,7 +1536,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../private-registries/" class="md-nav__link">
+      <a href="../../../advanced/private-registries/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1508,7 +1550,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../private-registries/docker-hub/" class="md-nav__link">
+      <a href="../../../advanced/private-registries/docker-hub/" class="md-nav__link">
         Docker Hub
       </a>
     </li>
@@ -1522,7 +1564,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../private-registries/ecr/" class="md-nav__link">
+      <a href="../../../advanced/private-registries/ecr/" class="md-nav__link">
         AWS ECR (Elastic Container Registry)
       </a>
     </li>
@@ -1536,7 +1578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../private-registries/gcr/" class="md-nav__link">
+      <a href="../../../advanced/private-registries/gcr/" class="md-nav__link">
         GCR (Google Container Registry)
       </a>
     </li>
@@ -1550,7 +1592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../private-registries/self/" class="md-nav__link">
+      <a href="../../../advanced/private-registries/self/" class="md-nav__link">
         Self-Hosted
       </a>
     </li>
@@ -1576,16 +1618,14 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_6" type="checkbox" id="__nav_5_6" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_6" type="checkbox" id="__nav_5_6" >
       
       
       
@@ -1608,7 +1648,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../standalone/" class="md-nav__link">
+      <a href="../../../advanced/modes/standalone/" class="md-nav__link">
         Standalone
       </a>
     </li>
@@ -1620,72 +1660,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Client/Server
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../advanced/modes/client-server/" class="md-nav__link">
         Client/Server
       </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#client" class="md-nav__link">
-    Client
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#authentication" class="md-nav__link">
-    Authentication
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#architecture" class="md-nav__link">
-    Architecture
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1732,7 +1711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../contrib/help-wanted/" class="md-nav__link">
+      <a href="../../../advanced/contrib/help-wanted/" class="md-nav__link">
         Help Wanted
       </a>
     </li>
@@ -1746,7 +1725,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../contrib/triage/" class="md-nav__link">
+      <a href="../../../advanced/contrib/triage/" class="md-nav__link">
         Triage
       </a>
     </li>
@@ -1793,29 +1772,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#client" class="md-nav__link">
-    Client
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#authentication" class="md-nav__link">
-    Authentication
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#architecture" class="md-nav__link">
-    Architecture
+  <a href="#rego-testing" class="md-nav__link">
+    Rego testing
   </a>
   
 </li>
@@ -1834,48 +1792,28 @@
                 
                 
                 
-                <h1 id="clientserver">Client/Server</h1>
-<p>Trivy has client/server mode. Trivy server has vulnerability database and Trivy client doesn't have to download vulnerability database. It is useful if you want to scan images at multiple locations and do not want to download the database at every location.</p>
-<h2 id="server">Server</h2>
-<p>At first, you need to launch Trivy server. It downloads vulnerability database automatically and continue to fetch the latest DB in the background.
-<div class="highlight"><pre><span></span><code>$ trivy server --listen localhost:8080
-2019-12-12T15:17:06.551+0200    INFO    Need to update DB
-2019-12-12T15:17:56.706+0200    INFO    Reopening DB...
-2019-12-12T15:17:56.707+0200    INFO    Listening localhost:8080...
-</code></pre></div></p>
-<p>If you want to accept a connection from outside, you have to specify <code>0.0.0.0</code> or your ip address, not <code>localhost</code>.</p>
-<div class="highlight"><pre><span></span><code>$ trivy server --listen 0.0.0.0:8080
-</code></pre></div>
-<h2 id="client">Client</h2>
-<p>Then, specify the remote address.
-<div class="highlight"><pre><span></span><code>$ trivy client --remote http://localhost:8080 alpine:3.10
-</code></pre></div></p>
-<details>
-<summary>Result</summary>
+                <h1 id="testing">Testing</h1>
+<p>It is highly recommended to write tests after creating custom policies.</p>
+<h2 id="rego-testing">Rego testing</h2>
+<p>To help you verify the correctness of your custom policies, OPA gives you a framework that you can use to write tests for your policies. 
+By writing tests for your custom policies you can speed up the development process of new rules and reduce the amount of time it takes to modify rules as requirements evolve.</p>
+<p>For more details, see <a href="https://www.openpolicyagent.org/docs/latest/policy-testing/">Policy Testing</a>.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>package user.dockerfile.ID002
 
-<div class="highlight"><pre><span></span><code>alpine:3.10 (alpine 3.10.2)
-===========================
-Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
+test_add_denied {
+    r := deny with input as {&quot;stages&quot;: {&quot;alpine:3.13&quot;: [
+        {&quot;Cmd&quot;: &quot;add&quot;, &quot;Value&quot;: [&quot;/target/resources.tar.gz&quot;, &quot;resources.jar&quot;]},
+        {&quot;Cmd&quot;: &quot;add&quot;, &quot;Value&quot;: [&quot;/target/app.jar&quot;, &quot;app.jar&quot;]},
+    ]}}
 
-+---------+------------------+----------+-------------------+---------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |
-+---------+------------------+----------+-------------------+---------------+
-| openssl | CVE-2019-1549    | MEDIUM   | 1.1.1c-r0         | 1.1.1d-r0     |
-+         +------------------+          +                   +               +
-|         | CVE-2019-1563    |          |                   |               |
-+         +------------------+----------+                   +               +
-|         | CVE-2019-1547    | LOW      |                   |               |
-+---------+------------------+----------+-------------------+---------------+
+    count(r) == 1
+    r[_] == &quot;Consider using &#39;COPY /target/app.jar app.jar&#39; command instead of &#39;ADD /target/app.jar app.jar&#39;&quot;
+}
 </code></pre></div>
-</details>
-
-<h2 id="authentication">Authentication</h2>
-<div class="highlight"><pre><span></span><code>$ trivy server --listen localhost:8080 --token dummy
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>$ trivy client --remote http://localhost:8080 --token dummy alpine:3.10
-</code></pre></div>
-<h2 id="architecture">Architecture</h2>
-<p><img alt="architecture" src="../../../imgs/client-server.png" /></p>
+</div>
+<p>To write tests for custom policies, you can refer to tests under <a href="https://github.com/aquasecurity/appshield">AppShield</a>.</p>
                 
               
               
@@ -1896,7 +1834,7 @@ Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../standalone/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Standalone" rel="prev">
+        <a href="../exceptions/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Exceptions" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -1905,20 +1843,20 @@ Total: 3 (UNKNOWN: 0, LOW: 1, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
               <span class="md-footer__direction">
                 Previous
               </span>
-              Standalone
+              Exceptions
             </div>
           </div>
         </a>
       
       
         
-        <a href="../../contrib/help-wanted/" class="md-footer__link md-footer__link--next" aria-label="Next: Help Wanted" rel="next">
+        <a href="../../../advanced/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Help Wanted
+              Overview
             </div>
           </div>
           <div class="md-footer__button md-icon">
