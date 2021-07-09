@@ -50,6 +50,7 @@ nav:
           - Builtin Policies: misconfiguration/policy/builtin.md
           - Custom Policies: misconfiguration/policy/custom.md
       - Advanced:
+          - Combine: misconfiguration/advanced/combine.md
           - Exceptions: misconfiguration/advanced/exceptions.md
           - Testing: misconfiguration/advanced/testing.md
   - Advanced:

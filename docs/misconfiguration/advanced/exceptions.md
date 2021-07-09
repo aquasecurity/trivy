@@ -67,18 +67,23 @@ You can get the package names in [AppShield repository](https://github.com/aquas
 ## Namespace-based exceptions
 You might want to disable builtin policies partially or fully.
 For those occasions, you can use namespace-based exceptions.
-Rule-based exceptions are also written in Rego, and allow you to specify packages where you want to disable.
+Namespace-based exceptions are also written in Rego, and allow you to specify packages where you want to disable.
 
+The package name must be `namespace.exceptions`.
 Packages returned by `exception` will be exempted.
 `data.namespaces` includes all package names.
 
 
 !!! example
     ``` rego
-    exception[ns] {
-        ns := data.namespaces[_]
-        startswith(ns, "appshield.dockerfile")
-    }
+        package namespace.exceptions
+        
+        import data.namespaces
+        
+        exception[ns] {
+            ns := data.namespaces[_]
+            startswith(ns, "appshield")
+        }
     ```
 
 This example exempts all builtin policies for Kubernetes.

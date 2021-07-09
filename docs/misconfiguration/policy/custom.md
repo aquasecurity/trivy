@@ -163,7 +163,7 @@ All fields under `__rego_input` are optional.
     ```
 
 `combine` (boolean)
-:   TODO
+: The details is [here](../advanced/combine.md)  
 
 `selector` (array)
 :   This option filters the input by config types. 
