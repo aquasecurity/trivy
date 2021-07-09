@@ -37,7 +37,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 ## Scan Misconfigurations
 
-Simply specify a directory containing IaC config files such as Terraform and Dockerfile.
+Simply specify a directory containing IaC files such as Terraform and Dockerfile.
 
 ```
 $ trivy config [IAC_CONFIG_DIR]

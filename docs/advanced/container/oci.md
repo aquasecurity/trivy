@@ -1,6 +1,6 @@
-# OCI
+# OCI Image
 
-An image directory compliant with "Open Container Image Layout Specification".
+An image directory compliant with [Open Container Image Layout Specification](https://github.com/opencontainers/image-spec/blob/master/spec.md).
 
 Buildah:
 

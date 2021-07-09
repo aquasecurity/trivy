@@ -41,6 +41,13 @@ nav:
           - Vulnerability DB: vulnerability/examples/db.md
           - Cache: vulnerability/examples/cache.md
           - Others: vulnerability/examples/others.md
+  - Misconfiguration:
+      - Scanning:
+        - Infrastructure as Code: misconfiguration/iac.md
+        - Filesystem: misconfiguration/filesystem.md
+      - Policy:
+          - Builtin Policies: misconfiguration/policy/builtin.md
+          - Custom Policies: misconfiguration/policy/custom.md
   - Advanced:
       - advanced/index.md
       - Plugins: advanced/plugins.md
@@ -56,7 +63,7 @@ nav:
       - Container Image:
           - Embed in Dockerfile: advanced/container/embed-in-dockerfile.md
           - Unpacked container image filesystem: advanced/container/unpacked-filesystem.md
-          - OCI : advanced/container/oci.md
+          - OCI Image: advanced/container/oci.md
           - Podman: advanced/container/podman.md
           - Private Docker Registries:
               - Overview: advanced/private-registries/index.md
