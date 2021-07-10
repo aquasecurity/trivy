@@ -17,7 +17,7 @@ jobs:
       - name: Lint
         uses: golangci/golangci-lint-action@v2
         with:
-          version: v1.39
+          version: v1.41
           args: --deadline=30m
 
       - name: Run unit tests

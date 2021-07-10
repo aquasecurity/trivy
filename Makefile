@@ -27,7 +27,7 @@ deps:
 	go mod tidy
 
 $(GOBIN)/golangci-lint:
-	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.21.0
+	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.41.1
 
 .PHONY: test
 test:
@@ -42,7 +42,7 @@ test-integration: integration/testdata/fixtures/images/*.tar.gz
 
 .PHONY: lint
 lint: $(GOBIN)/golangci-lint
-	$(GOBIN)/golangci-lint run
+	$(GOBIN)/golangci-lint run --timeout 5m
 
 .PHONY: fmt
 fmt:
