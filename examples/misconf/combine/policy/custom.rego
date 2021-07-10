@@ -1,4 +1,4 @@
-package user.kubernetes.ID001
+package user.kubernetes.ID003
 
 __rego_metadata__ := {
     "id": "ID003",

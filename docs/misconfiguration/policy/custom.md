@@ -176,12 +176,5 @@ All fields under `__rego_input` are optional.
         If the configuration type is identified, the type will be overwritten, even if the file is genera format such as JSON or YAML.  
         For example, `deployment.yaml` will be handled as `kubernetes`, not `yaml`.
 
-## Data
-Custom policies may require additional data in order to determine an answer.
-
-For example, an allowed list of resources that can be created. Instead of hardcoding this information inside of your policy, Trivy allows passing paths to data files with the --data flag.
-
-
 ## Examples
-- [Custom policies](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/custom-policy)
-- [Custom data](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/custom-data)
+- [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/custom-policy)

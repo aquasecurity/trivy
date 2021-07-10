@@ -1,8 +1,8 @@
-# Builtin Policies
+# Built-in Policies
 
 ## Policy Sources
 
-Builtin policies are mainly written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/).
+Built-in policies are mainly written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/).
 Those policies are managed under [AppShield repository](https://github.com/aquasecurity/appshield).
 Only Terraform's policies are currently powered by [tfsec](https://github.com/tfsec/tfsec).
 

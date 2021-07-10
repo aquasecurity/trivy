@@ -47,8 +47,13 @@ nav:
         - Infrastructure as Code: misconfiguration/iac.md
         - Filesystem: misconfiguration/filesystem.md
       - Policy:
-          - Builtin Policies: misconfiguration/policy/builtin.md
+          - Built-in Policies: misconfiguration/policy/builtin.md
           - Custom Policies: misconfiguration/policy/custom.md
+      - Examples:
+          - Policy: misconfiguration/examples/policy.md
+          - Filtering: misconfiguration/examples/filter.md
+          - Report Formats: misconfiguration/examples/report.md
+          - Others: misconfiguration/examples/others.md
       - Advanced:
           - Combine: misconfiguration/advanced/combine.md
           - Exceptions: misconfiguration/advanced/exceptions.md

@@ -8,15 +8,15 @@ Simply specify a directory containing IaC files such as Terraform and Dockerfile
 $ trivy config [YOUR_IaC_DIRECTORY]
 ```
 
-Then, Trivy pulls builtin policies from GitHub Container Registry as OCI artifact and scans IaC files with those policies.
+Then, Trivy pulls built-in policies from GitHub Container Registry as OCI artifact and scans IaC files with those policies.
 
 !!! example
     ```
     $ ls build/
     Dockerfile
     $ trivy config ./build
-    2021-07-09T10:06:29.188+0300    INFO    Need to update the builtin policies
-    2021-07-09T10:06:29.188+0300    INFO    Downloading the builtin policies...
+    2021-07-09T10:06:29.188+0300    INFO    Need to update the built-in policies
+    2021-07-09T10:06:29.188+0300    INFO    Downloading the built-in policies...
     2021-07-09T10:06:30.520+0300    INFO    Detected config files: 1
     
     Dockerfile (dockerfile)
@@ -49,8 +49,8 @@ $ trivy conf --severith HIGH,CRITICAL ./iac
 <summary>Result</summary>
 
 ```
-2021-07-09T11:51:08.212+0300    INFO    Need to update the builtin policies
-2021-07-09T11:51:08.212+0300    INFO    Downloading the builtin policies...
+2021-07-09T11:51:08.212+0300    INFO    Need to update the built-in policies
+2021-07-09T11:51:08.212+0300    INFO    Downloading the built-in policies...
 2021-07-09T11:51:09.527+0300    INFO    Detected config files: 3
 
 Dockerfile (dockerfile)

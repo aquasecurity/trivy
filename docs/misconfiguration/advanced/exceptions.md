@@ -2,7 +2,7 @@
 Trivy supports two types of exceptions.
 
 !!! info
-    Exceptions can be applied to builtin policies as well as custom policies.
+    Exceptions can be applied to built-in policies as well as custom policies.
 
 ## Rule-based exceptions
 There might be cases where rules might not apply under certain circumstances.
@@ -48,7 +48,7 @@ The above would provide an exception from `deny_foo` and `deny_bar`.
     }
     ```
 
-If you want to apply rule-based exceptions to builtin policies, you have to define the exception under the same package.
+If you want to apply rule-based exceptions to built-in policies, you have to define the exception under the same package.
 
 !!! example
     ``` rego
@@ -66,7 +66,7 @@ You can get the package names in [AppShield repository](https://github.com/aquas
 For more details, see [the example](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/rule-exception)
 
 ## Namespace-based exceptions
-You might want to disable builtin policies partially or fully.
+You might want to disable built-in policies partially or fully.
 For those occasions, you can use namespace-based exceptions.
 Namespace-based exceptions are also written in Rego, and allow you to specify packages where you want to disable.
 
@@ -87,6 +87,6 @@ Packages returned by `exception` will be exempted.
         }
     ```
 
-This example exempts all builtin policies for Kubernetes.
+This example exempts all built-in policies for Kubernetes.
 
 For more details, see [the example](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/namespace-exception)

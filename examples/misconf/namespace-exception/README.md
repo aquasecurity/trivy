@@ -1,6 +1,6 @@
 # Namespace-based exceptions
 `policy/k8s_exception.rego` exempts all policies with `appshield.kubernetes` prefix.
-It means all builtin policies for Kubernetes are disabled.
+It means all built-in policies for Kubernetes are disabled.
 
 ``` bash
 $ trivy conf --severity HIGH,CRITICAL --policy ./policy ./configs

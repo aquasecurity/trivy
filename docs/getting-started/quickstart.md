@@ -55,8 +55,8 @@ $ trivy config ./build
 <summary>Result</summary>
 
 ```
-2021-07-09T10:06:29.188+0300    INFO    Need to update the builtin policies
-2021-07-09T10:06:29.188+0300    INFO    Downloading the builtin policies...
+2021-07-09T10:06:29.188+0300    INFO    Need to update the built-in policies
+2021-07-09T10:06:29.188+0300    INFO    Downloading the built-in policies...
 2021-07-09T10:06:30.520+0300    INFO    Detected config files: 1
 
 Dockerfile (dockerfile)

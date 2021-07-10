@@ -177,7 +177,7 @@ func (c Client) DownloadBuiltinPolicies(ctx context.Context) error {
 	if err != nil {
 		return xerrors.Errorf("digest error: %w", err)
 	}
-	log.Logger.Debugf("Digest of the builtin policies: %s", digest)
+	log.Logger.Debugf("Digest of the built-in policies: %s", digest)
 
 	// Update metadata.json with the new digest and the current date
 	if err = c.updateMetadata(digest.String(), c.clock.Now()); err != nil {

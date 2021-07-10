@@ -85,7 +85,7 @@ var (
 
 	skipPolicyUpdateFlag = cli.BoolFlag{
 		Name:    "skip-policy-update",
-		Usage:   "skip updating builtin policies",
+		Usage:   "skip updating built-in policies",
 		EnvVars: []string{"TRIVY_SKIP_POLICY_UPDATE"},
 	}
 
@@ -609,16 +609,16 @@ func NewConfigCommand() *cli.Command {
 			&outputFlag,
 			&exitCodeFlag,
 			&skipPolicyUpdateFlag,
+			&resetFlag,
 			&clearCacheFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,
-			&ignorePolicy,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicyAlias),
 			stringSliceFlag(configDataAlias),
-			stringSliceFlag(filePatterns),
 			stringSliceFlag(policyNamespaces),
+			stringSliceFlag(filePatterns),
 			&includeSuccesses,
 		},
 	}
