@@ -71,19 +71,6 @@ func NewClient(opts ...Option) (Client, error) {
 		opt(o)
 	}
 
-	if o.img == nil {
-		repo := fmt.Sprintf("%s:%d", bundleRepository, bundleVersion)
-		ref, err := name.ParseReference(repo)
-		if err != nil {
-			return Client{}, xerrors.Errorf("repository name error (%s): %w", repo, err)
-		}
-
-		o.img, err = remote.Image(ref)
-		if err != nil {
-			return Client{}, xerrors.Errorf("OCI repository error: %w", err)
-		}
-	}
-
 	return Client{
 		img:   o.img,
 		clock: o.clock,
@@ -133,6 +120,19 @@ func (c Client) NeedsUpdate() (bool, error) {
 	// No need to update if it's been within a day since the last update.
 	if c.clock.Now().Before(meta.LastDownloadedAt.Add(24 * time.Hour)) {
 		return false, nil
+	}
+
+	if c.img == nil {
+		repo := fmt.Sprintf("%s:%d", bundleRepository, bundleVersion)
+		ref, err := name.ParseReference(repo)
+		if err != nil {
+			return false, xerrors.Errorf("repository name error (%s): %w", repo, err)
+		}
+
+		c.img, err = remote.Image(ref)
+		if err != nil {
+			return false, xerrors.Errorf("OCI repository error: %w", err)
+		}
 	}
 
 	digest, err := c.img.Digest()
