@@ -41,7 +41,7 @@ You can use the `--skip-policy-update` option to skip it.
 If you skip it the first time, the built-in policies will not be loaded.
 
 !!! note
-Even if you specify the option the first time, it will be loaded as Terraform policies are written in Go.
+    Even if you specify the option the first time, it will be loaded as Terraform policies are written in Go.
 
 ```
 trivy conf --skip-policy-update examples/misconf/mixed                                                                                           [~/src/github.com/aquasecurity/trivy]
