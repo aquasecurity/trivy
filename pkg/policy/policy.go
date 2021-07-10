@@ -71,19 +71,6 @@ func NewClient(opts ...Option) (Client, error) {
 		opt(o)
 	}
 
-	if o.img == nil {
-		repo := fmt.Sprintf("%s:%d", bundleRepository, bundleVersion)
-		ref, err := name.ParseReference(repo)
-		if err != nil {
-			return Client{}, xerrors.Errorf("repository name error (%s): %w", repo, err)
-		}
-
-		o.img, err = remote.Image(ref)
-		if err != nil {
-			return Client{}, xerrors.Errorf("OCI repository error: %w", err)
-		}
-	}
-
 	return Client{
 		img:   o.img,
 		clock: o.clock,
@@ -135,6 +122,19 @@ func (c Client) NeedsUpdate() (bool, error) {
 		return false, nil
 	}
 
+	if c.img == nil {
+		repo := fmt.Sprintf("%s:%d", bundleRepository, bundleVersion)
+		ref, err := name.ParseReference(repo)
+		if err != nil {
+			return false, xerrors.Errorf("repository name error (%s): %w", repo, err)
+		}
+
+		c.img, err = remote.Image(ref)
+		if err != nil {
+			return false, xerrors.Errorf("OCI repository error: %w", err)
+		}
+	}
+
 	digest, err := c.img.Digest()
 	if err != nil {
 		return false, xerrors.Errorf("digest error: %w", err)
@@ -144,7 +144,15 @@ func (c Client) NeedsUpdate() (bool, error) {
 		return true, nil
 	}
 
+	// Update DownloadedAt with the current time.
+	// Otherwise, if there are no updates in the remote registry,
+	// the digest will be fetched every time even after this.
+	if err = c.updateMetadata(meta.Digest, time.Now()); err != nil {
+		return false, xerrors.Errorf("unable to update the policy metadata: %w", err)
+	}
+
 	return false, nil
+
 }
 
 // DownloadBuiltinPolicies download default policies from GitHub Pages
