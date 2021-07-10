@@ -1,25 +1,23 @@
 package user.kubernetes.ID003
 
 __rego_metadata__ := {
-    "id": "ID003",
-    "title": "Servide does not target Pod",
-    "severity": "CRITICAL",
-    "type": "Kubernetes Custom Check",
-    "description": "Service selector does not match any Pod label",
+	"id": "ID003",
+	"title": "Servide does not target Pod",
+	"severity": "CRITICAL",
+	"type": "Kubernetes Custom Check",
+	"description": "Service selector does not match any Pod label",
 }
 
 __rego_input__ := {
-    "combine": true,
-    "selector": [
-        {"type": "kubernetes"},
-    ],
+	"combine": true,
+	"selector": [{"type": "kubernetes"}],
 }
 
 deny[res] {
-    service := input[i].contents
-    service.kind == "Service"
-    value := service.spec.selector[key]
-    not match_label(key, value)
+	service := input[i].contents
+	service.kind == "Service"
+	value := service.spec.selector[key]
+	not match_label(key, value)
 
 	res := {
 		"filepath": input[i].path,
