@@ -183,4 +183,5 @@ For example, an allowed list of resources that can be created. Instead of hardco
 
 
 ## Examples
-TODO
+- [Custom policies](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/custom-policy)
+- [Custom data](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/custom-data)

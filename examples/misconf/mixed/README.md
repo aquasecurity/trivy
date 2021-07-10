@@ -1,4 +1,4 @@
-# Mixed
+# Mixed config files
 `configs` dir contains multiple types of IaC files.
 Trivy identifies config types and passes the input to the appropriate policies.
 

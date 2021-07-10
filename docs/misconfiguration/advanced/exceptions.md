@@ -63,6 +63,7 @@ If you want to apply rule-based exceptions to builtin policies, you have to defi
 This exception is applied to [KSV012](https://github.com/aquasecurity/appshield/blob/57bccc1897b2500a731415bda3990b0d4fbc959e/kubernetes/policies/pss/restricted/3_runs_as_root.rego) in AppShield.
 You can get the package names in [AppShield repository](https://github.com/aquasecurity/appshield/) or the JSON output from Trivy.
 
+For more details, see [the example](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/rule-exception)
 
 ## Namespace-based exceptions
 You might want to disable builtin policies partially or fully.
@@ -87,3 +88,5 @@ Packages returned by `exception` will be exempted.
     ```
 
 This example exempts all builtin policies for Kubernetes.
+
+For more details, see [the example](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/namespace-exception)

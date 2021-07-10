@@ -152,3 +152,6 @@ You can see the config type next to each file name.
     
     ...
     ```
+
+## Example
+See [here](https://github.com/aquasecurity/trivy/tree/125c457517f05b6498bc68eaeec6e683dd36c49a/examples/misconf/mixed)

@@ -7,7 +7,6 @@ __rego_metadata__ := {
     "title": "Disallowed ports exposed",
     "severity": "HIGH",
     "type": "Docker Custom Check",
-    "description": "Vulnerable ports are exposed.",
 }
 
 __rego_input__ := {

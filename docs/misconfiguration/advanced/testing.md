@@ -22,4 +22,66 @@ For more details, see [Policy Testing](https://www.openpolicyagent.org/docs/late
     }
     ```
 
-To write tests for custom policies, you can refer to tests under [AppShield](https://github.com/aquasecurity/appshield).
+To write tests for custom policies, you can refer to existing tests under [AppShield](https://github.com/aquasecurity/appshield).
+
+## Go testing
+[Fanal](https://github.com/aquasecurity/fanal) which is a core library of Trivy can be imported as a Go library.
+You can scan config files in Go and test your custom policies using Go's testing methods, such as [table-driven tests](https://github.com/golang/go/wiki/TableDrivenTests).
+This allows you to use the actual configuration file as input, making it easy to prepare test data and ensure that your custom policies work in practice.
+
+In particular, Dockerfile and HCL need to be converted to structural data as input, which may be different from the expected input format.
+
+!!! tip
+    We recommend writing OPA and Go tests both since they have different roles, like unit tests and integration tests.
+
+The following example stores allowed and denied configuration files in a directory.
+`Successes` contains the result of successes, and `Failures` contains the result of failures.
+
+``` go
+{
+	name:  "disallowed ports",
+	input: "configs/",
+	fields: fields{
+		policyPaths: []string{"policy"},
+		dataPaths:   []string{"data"},
+		namespaces:  []string{"user"},
+	},
+	want: []types.Misconfiguration{
+		{
+			FileType: types.Dockerfile,
+			FilePath: "Dockerfile.allowed",
+			Successes: types.MisconfResults{
+				{
+					Namespace: "user.dockerfile.ID002",
+					PolicyMetadata: types.PolicyMetadata{
+						ID:          "ID002",
+						Type:        "Docker Custom Check",
+						Title:       "Disallowed ports exposed",
+						Severity:    "HIGH",
+					},
+				},
+			},
+		},
+		{
+			FileType: types.Dockerfile,
+			FilePath: "Dockerfile.denied",
+			Failures: types.MisconfResults{
+				{
+					Namespace: "user.dockerfile.ID002",
+					Message:   "Port 23 should not be exposed",
+					PolicyMetadata: types.PolicyMetadata{
+						ID:          "ID002",
+						Type:        "Docker Custom Check",
+						Title:       "Disallowed ports exposed",
+						Severity:    "HIGH",
+					},
+				},
+			},
+		},
+	},
+},
+```
+
+`Dockerfile.allowed` has one successful result in `Successes`, while `Dockerfile.denied` has one failure result in `Failures`.
+
+For more details, see [this example](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/go-testing)
