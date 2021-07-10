@@ -2,13 +2,9 @@
 
 [Teppei Fukuda][knqyf263] (knqyf263)
 
-# Special Thanks to 
+# Contributors
 
-- [Tomoya Amachi][tomoyamachi]
-- [Masahiro Fujimura][masahiro331]
-- [Naoki Harima][XapiMa]
+Thanks to all [contributors][contributors]
 
-[tomoyamachi]: https://github.com/tomoyamachi
-[masahiro331]: https://github.com/masahiro331
-[XapiMa]: https://github.com/XapiMa
 [knqyf263]: https://github.com/knqyf263
+[contributors]: https://github.com/aquasecurity/trivy/graphs/contributors

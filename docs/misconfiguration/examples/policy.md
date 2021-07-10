@@ -11,7 +11,7 @@ trivy conf --policy custom-policy/policy --policy combine/policy --namespaces us
 
 For more details, see [Custom Policies](../policy/custom.md).
 
-!!! note
+!!! tip
     You also need to specify `--namespaces` option.
 
 ## Pass custom data

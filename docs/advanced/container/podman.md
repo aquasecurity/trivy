@@ -5,7 +5,8 @@
 
 Scan your image in Podman (>=2.0) running locally. The remote Podman is not supported.
 Before performing Trivy commands, you must enable the podman.sock systemd service on your machine.
-For more details, see [here][sock]
+For more details, see [here][sock].
+
 
 ```bash
 $ systemctl --user enable --now podman.socket

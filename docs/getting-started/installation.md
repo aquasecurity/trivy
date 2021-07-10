@@ -46,7 +46,7 @@
 
 
 ## Arch Linux
-Package trivy-bin can be installed from the Arch User Repository. Examples:
+Package trivy-bin can be installed from the Arch User Repository.
 
 === "pikaur"
 
@@ -166,11 +166,10 @@ The same image is hosted on [GitHub Container Registry][registry] as well.
 docker pull ghcr.io/aquasecurity/trivy:{{ git.tag[1:] }}
 ```
 
-[registry]: https://github.com/orgs/aquasecurity/packages/container/package/trivy
 
 ### Amazon ECR Public
 
-The same image is hosted on [Amazon ECR Public](https://gallery.ecr.aws/aquasecurity/trivy) as well.
+The same image is hosted on [Amazon ECR Public][ecr] as well.
 
 ```bash
 docker pull public.ecr.aws/aquasecurity/trivy:{{ git.tag[1:] }}
@@ -193,7 +192,11 @@ To install the chart with the release name `my-release`:
 helm install my-release .
 ```
 
-The command deploys Trivy on the Kubernetes cluster in the default configuration. The [Parameters](#parameters)
+The command deploys Trivy on the Kubernetes cluster in the default configuration. The [Parameters][helm]
 section lists the parameters that can be configured during installation.
 
 > **Tip**: List all releases using `helm list`.
+
+[ecr]: https://gallery.ecr.aws/aquasecurity/trivy
+[registry]: https://github.com/orgs/aquasecurity/packages/container/package/trivy
+[helm]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/helm/trivy

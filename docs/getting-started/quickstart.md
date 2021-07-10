@@ -35,12 +35,14 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 </details>
 
+For more details, see [here][vulnerability].
+
 ## Scan Misconfigurations
 
 Simply specify a directory containing IaC files such as Terraform and Dockerfile.
 
 ```
-$ trivy config [IAC_CONFIG_DIR]
+$ trivy config [YOUR_IAC_DIR]
 ```
 
 For example:
@@ -74,3 +76,8 @@ Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 ```
 
 </details>
+
+For more details, see [here][misconf].
+
+[vulnerability]: ../vulnerability/scanning/index.md
+[misconf]: ../misconfiguration/index.md
