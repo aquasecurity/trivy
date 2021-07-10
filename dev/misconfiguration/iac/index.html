@@ -1134,7 +1134,7 @@
   
     <li class="md-nav__item">
       <a href="../policy/builtin/" class="md-nav__link">
-        Builtin Policies
+        Built-in Policies
       </a>
     </li>
   
@@ -1179,12 +1179,103 @@
       
       
         <label class="md-nav__link" for="__nav_4_3">
+          Examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Examples" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_3">
+          <span class="md-nav__icon md-icon"></span>
+          Examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/policy/" class="md-nav__link">
+        Policy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/filter/" class="md-nav__link">
+        Filtering
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/report/" class="md-nav__link">
+        Report Formats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/others/" class="md-nav__link">
+        Others
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_4" type="checkbox" id="__nav_4_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_4">
           Advanced
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Advanced" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_3">
+        <label class="md-nav__title" for="__nav_4_4">
           <span class="md-nav__icon md-icon"></span>
           Advanced
         </label>
@@ -1839,14 +1930,14 @@
 <p>Simply specify a directory containing IaC files such as Terraform and Dockerfile.</p>
 <div class="highlight"><pre><span></span><code>$ trivy config <span class="o">[</span>YOUR_IaC_DIRECTORY<span class="o">]</span>
 </code></pre></div>
-<p>Then, Trivy pulls builtin policies from GitHub Container Registry as OCI artifact and scans IaC files with those policies.</p>
+<p>Then, Trivy pulls built-in policies from GitHub Container Registry as OCI artifact and scans IaC files with those policies.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code>$ ls build/
 Dockerfile
 $ trivy config ./build
-2021-07-09T10:06:29.188+0300    INFO    Need to update the builtin policies
-2021-07-09T10:06:29.188+0300    INFO    Downloading the builtin policies...
+2021-07-09T10:06:29.188+0300    INFO    Need to update the built-in policies
+2021-07-09T10:06:29.188+0300    INFO    Downloading the built-in policies...
 2021-07-09T10:06:30.520+0300    INFO    Detected config files: 1
 
 Dockerfile (dockerfile)
@@ -1874,8 +1965,8 @@ $ trivy conf --severith HIGH,CRITICAL ./iac
 <details>
 <summary>Result</summary>
 
-<div class="highlight"><pre><span></span><code>2021-07-09T11:51:08.212+0300    INFO    Need to update the builtin policies
-2021-07-09T11:51:08.212+0300    INFO    Downloading the builtin policies...
+<div class="highlight"><pre><span></span><code>2021-07-09T11:51:08.212+0300    INFO    Need to update the built-in policies
+2021-07-09T11:51:08.212+0300    INFO    Downloading the built-in policies...
 2021-07-09T11:51:09.527+0300    INFO    Detected config files: 3
 
 Dockerfile (dockerfile)

@@ -11,7 +11,7 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/misconfiguration/policy/custom/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/misconfiguration/examples/filter/">
       
       
         
@@ -21,7 +21,7 @@
     
     
       
-        <title>Custom Policies - Trivy</title>
+        <title>Filtering - Trivy</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#custom-policies" class="md-skip">
+        <a href="#filter-misconfigurations" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Custom Policies
+              Filtering
             
           </span>
         </div>
@@ -1047,16 +1047,14 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" >
       
       
       
@@ -1079,7 +1077,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../builtin/" class="md-nav__link">
+      <a href="../../policy/builtin/" class="md-nav__link">
         Built-in Policies
       </a>
     </li>
@@ -1091,119 +1089,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Custom Policies
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../policy/custom/" class="md-nav__link">
         Custom Policies
       </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    Overview
-  </a>
-  
-    <nav class="md-nav" aria-label="Overview">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#general-file-formats" class="md-nav__link">
-    General file formats
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#iac-file-formats" class="md-nav__link">
-    IaC file formats
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#rego-format" class="md-nav__link">
-    Rego format
-  </a>
-  
-    <nav class="md-nav" aria-label="Rego format">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#top-level" class="md-nav__link">
-    Top level
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#package" class="md-nav__link">
-    Package
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#metadata" class="md-nav__link">
-    Metadata
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#input" class="md-nav__link">
-    Input
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1220,14 +1110,16 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" checked>
       
       
       
@@ -1250,7 +1142,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/policy/" class="md-nav__link">
+      <a href="../policy/" class="md-nav__link">
         Policy
       </a>
     </li>
@@ -1262,11 +1154,72 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../examples/filter/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Filtering
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Filtering
       </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#by-severity" class="md-nav__link">
+    By Severity
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#by-misconfiguration-ids" class="md-nav__link">
+    By Misconfiguration IDs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#by-exceptions" class="md-nav__link">
+    By Exceptions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show-successes" class="md-nav__link">
+    Show Successes
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1278,7 +1231,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/report/" class="md-nav__link">
+      <a href="../report/" class="md-nav__link">
         Report Formats
       </a>
     </li>
@@ -1292,7 +1245,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/others/" class="md-nav__link">
+      <a href="../others/" class="md-nav__link">
         Others
       </a>
     </li>
@@ -1945,76 +1898,29 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    Overview
+  <a href="#by-severity" class="md-nav__link">
+    By Severity
   </a>
-  
-    <nav class="md-nav" aria-label="Overview">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#general-file-formats" class="md-nav__link">
-    General file formats
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#iac-file-formats" class="md-nav__link">
-    IaC file formats
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#rego-format" class="md-nav__link">
-    Rego format
+  <a href="#by-misconfiguration-ids" class="md-nav__link">
+    By Misconfiguration IDs
   </a>
-  
-    <nav class="md-nav" aria-label="Rego format">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#top-level" class="md-nav__link">
-    Top level
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#package" class="md-nav__link">
-    Package
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#metadata" class="md-nav__link">
-    Metadata
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#input" class="md-nav__link">
-    Input
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
+  <a href="#by-exceptions" class="md-nav__link">
+    By Exceptions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show-successes" class="md-nav__link">
+    Show Successes
   </a>
   
 </li>
@@ -2033,263 +1939,202 @@
                 
                 
                 
-                <h1 id="custom-policies">Custom Policies</h1>
-<h2 id="overview">Overview</h2>
-<p>You can write custom policies in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a>.
-Once you fisnish writing custom policies, you can pass the directory where those policies are stored with <code>--policy</code> option.</p>
-<div class="highlight"><pre><span></span><code>trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
+                <h1 id="filter-misconfigurations">Filter Misconfigurations</h1>
+<h2 id="by-severity">By Severity</h2>
+<p>Use <code>--severity</code> option.</p>
+<div class="highlight"><pre><span></span><code>trivy conf --severity HIGH,CRITICAL examples/misconf/mixed
 </code></pre></div>
-<p>As for <code>--namespaces</code> option, the detail is described as below.</p>
-<h3 id="general-file-formats">General file formats</h3>
-<p>If a file name matches the following file patterns, Trivy will parse the file and pass it as input to your Rego policy.</p>
-<table>
-<thead>
-<tr>
-<th>File format</th>
-<th>File pattern</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>JSON</td>
-<td><code>*.json</code></td>
-</tr>
-<tr>
-<td>YAML</td>
-<td><code>*.yaml</code></td>
-</tr>
-<tr>
-<td>TOML</td>
-<td><code>*.toml</code></td>
-</tr>
-<tr>
-<td>HCL</td>
-<td><code>*.hcl</code>, <code>*.hcl1</code>, and <code>*.hcl2</code></td>
-</tr>
-<tr>
-<td>Dockerfile</td>
-<td><code>Dockerfile</code>, <code>Dockerfile.*</code>, and <code>*.Dockerfile</code></td>
-</tr>
-</tbody>
-</table>
-<h3 id="iac-file-formats">IaC file formats</h3>
-<p>In the above general file formats, Trivy automatically identifies the following types of configuration files:</p>
-<ul>
-<li>Ansible (YAML)</li>
-<li>CloudFormation (JSON/YAML)</li>
-<li>Kubernetes (JSON/YAML)</li>
-</ul>
-<p>This is useful for filtering inputs, as described below.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Custom policies do not support Terraform at the moment.</p>
-</div>
-<h2 id="rego-format">Rego format</h2>
-<p>A single package must contain only one policy.</p>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code>package user.kubernetes.ID001
+<details>
+<summary>Result</summary>
 
-__rego_metadata__ := {
-    &quot;id&quot;: &quot;ID001&quot;,
-    &quot;title&quot;: &quot;Deployment not allowed&quot;,
-    &quot;severity&quot;: &quot;LOW&quot;,
-    &quot;type&quot;: &quot;Custom Kubernetes Check&quot;,
-    &quot;description&quot;: &quot;Deployments are not allowed because of some reasons.&quot;,
-}
+<div class="highlight"><pre><span></span><code><span class="m">2021</span>-07-10T17:37:13.267+0300    INFO    Detected config files: <span class="m">4</span>
 
-__rego_input__ := {
-    &quot;selector&quot;: [
-        {&quot;type&quot;: &quot;kubernetes&quot;},
-    ],
-}
+configs/Dockerfile <span class="o">(</span>dockerfile<span class="o">)</span>
+<span class="o">===============================</span>
+Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class="m">21</span>, FAILURES: <span class="m">2</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">2</span> <span class="o">(</span>HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
-deny[msg] {
-    input.kind == &quot;Deployment&quot;
-    msg = sprintf(&quot;Found deployment &#39;%s&#39; but deployments are not allowed&quot;, [input.metadata.name])
-}
-</code></pre></div>
-</div>
-<p>In this example, ID001 "Deployment not allowed" is defined under <code>user.kubernetes.ID001</code>.
-If you add a new custom policy, it must be defined under a new package like <code>user.kubernetes.ID002</code>.</p>
-<h3 id="top-level">Top level</h3>
-<dl>
-<dt><code>package</code> (required)</dt>
-<dd>
-<ul>
-<li>MUST follow the Rego's <a href="https://www.openpolicyagent.org/docs/latest/policy-language/#packages">specification</a></li>
-<li>MUST be unique per policy</li>
-<li>SHOULD include policy id for uniqueness</li>
-<li>MAY include the group name such as <code>kubernetes</code> for clarity<ul>
-<li>Group name has no effect on policy evaluation</li>
-</ul>
-</li>
-</ul>
-</dd>
-<dt><code>__rego_metadata__</code> (optional)</dt>
-<dd>
-<ul>
-<li>SHOULD be defined for clarity since these values will be displayed in the scan results</li>
-</ul>
-</dd>
-<dt><code>__rego_input__</code> (optional)</dt>
-<dd>
-<ul>
-<li>MAY be defined when you want to specify input format</li>
-</ul>
-</dd>
-<dt><code>deny</code> (required)</dt>
-<dd>
-<ul>
-<li>SHOULD be <code>deny</code> or start with <code>deny_</code><ul>
-<li>Although <code>warn</code>, <code>warn_*</code>, <code>violation</code>, <code>violation_</code> also work for compatibility, <code>deny</code> is recommended as severity can be defined in <code>__rego_metadata__</code>.</li>
-</ul>
-</li>
-<li>SHOULD return <code>string</code><ul>
-<li>Although <code>object</code> with <code>msg</code> field is accepted, other fields are dropped and <code>string</code> is recommended.</li>
-<li>e.g. <code>{"msg": "deny message", "details": "something"}</code></li>
-</ul>
-</li>
-</ul>
-</dd>
-</dl>
-<h3 id="package">Package</h3>
-<p>A package name must be unique per policy.</p>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code>package user.kubernetes.ID001
-</code></pre></div>
-</div>
-<p>By default, only <code>appshield.*</code> packages will be evaluated.
-If you define custom packages, you have to specify the package prefix via <code>--namespaces</code> option. </p>
-<div class="highlight"><pre><span></span><code>trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
-</code></pre></div>
-<p>In this case, <code>user.*</code> will be evaluated.
-Any package prefixes such as <code>main</code> and <code>user</code> are allowed.</p>
-<h3 id="metadata">Metadata</h3>
-<p>Custom policy can define metadata.</p>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code>__rego_metadata__ := {
-    &quot;id&quot;: &quot;ID001&quot;,
-    &quot;title&quot;: &quot;Deployment not allowed&quot;,
-    &quot;severity&quot;: &quot;LOW&quot;,
-    &quot;type&quot;: &quot;Custom Kubernetes Check&quot;,
-    &quot;description&quot;: &quot;Deployments are not allowed because of some reasons.&quot;,
-    &quot;recommended_actions&quot;: &quot;Remove Deployment&quot;,
-    &quot;url&quot;: &quot;https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits&quot;,
-}
-</code></pre></div>
-</div>
-<p>All fields under <code>__rego_metadata__</code> are optional.</p>
-<table>
-<thead>
-<tr>
-<th>Field name</th>
-<th>Allowed values</th>
-<th align="center">Default value</th>
-<th align="center">In table</th>
-<th align="center">In JSON</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>id</td>
-<td>Any characters</td>
-<td align="center">N/A</td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
-</tr>
-<tr>
-<td>title</td>
-<td>Any characters</td>
-<td align="center">N/A</td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
-</tr>
-<tr>
-<td>severity</td>
-<td><code>LOW</code>, <code>MEDIUM</code>, <code>HIGH</code>, <code>CRITICAL</code></td>
-<td align="center">UNKNOWN</td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
-</tr>
-<tr>
-<td>type</td>
-<td>Any characters</td>
-<td align="center">N/A</td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
-</tr>
-<tr>
-<td>description</td>
-<td>Any characters</td>
-<td align="center"></td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
-</tr>
-<tr>
-<td>recommended_actions</td>
-<td>Any characters</td>
-<td align="center"></td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
-</tr>
-<tr>
-<td>url</td>
-<td>Any characters</td>
-<td align="center"></td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
-</tr>
-</tbody>
-</table>
-<p>Some fields are displayed in scan results.</p>
-<div class="highlight"><pre><span></span><code>deployment.yaml <span class="o">(</span>kubernetes<span class="o">)</span>
-<span class="o">============================</span>
++---------------------------+------------+----------------------+----------+------------------------------------------+
+<span class="p">|</span>           TYPE            <span class="p">|</span> MISCONF ID <span class="p">|</span>        CHECK         <span class="p">|</span> SEVERITY <span class="p">|</span>                 MESSAGE                  <span class="p">|</span>
++---------------------------+------------+----------------------+----------+------------------------------------------+
+<span class="p">|</span> Dockerfile Security Check <span class="p">|</span>   DS002    <span class="p">|</span> Image user is <span class="s1">&#39;root&#39;</span> <span class="p">|</span>   HIGH   <span class="p">|</span> Specify at least <span class="m">1</span> USER                  <span class="p">|</span>
+<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                      <span class="p">|</span>          <span class="p">|</span> <span class="nb">command</span> <span class="k">in</span> Dockerfile with               <span class="p">|</span>
+<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                      <span class="p">|</span>          <span class="p">|</span> non-root user as argument                <span class="p">|</span>
+<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                      <span class="p">|</span>          <span class="p">|</span> --&gt;avd.aquasec.com/appshield/ds002       <span class="p">|</span>
++---------------------------+------------+----------------------+----------+------------------------------------------+
+
+configs/deployment.yaml <span class="o">(</span>kubernetes<span class="o">)</span>
+<span class="o">====================================</span>
 Tests: <span class="m">28</span> <span class="o">(</span>SUCCESSES: <span class="m">14</span>, FAILURES: <span class="m">14</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
-Failures: <span class="m">14</span> <span class="o">(</span>HIGH: <span class="m">1</span><span class="o">)</span>
+Failures: <span class="m">14</span> <span class="o">(</span>HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
 +---------------------------+------------+-------------------------------------+----------+------------------------------------------+
 <span class="p">|</span>           TYPE            <span class="p">|</span> MISCONF ID <span class="p">|</span>                CHECK                <span class="p">|</span> SEVERITY <span class="p">|</span>                 MESSAGE                  <span class="p">|</span>
 +---------------------------+------------+-------------------------------------+----------+------------------------------------------+
-<span class="p">|</span> Custom Kubernetes Check   <span class="p">|</span>   ID001    <span class="p">|</span> Deployment not allowed              <span class="p">|</span>   LOW    <span class="p">|</span> Found deployment <span class="s1">&#39;test&#39;</span> but deployments  <span class="p">|</span>
-<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                                     <span class="p">|</span>          <span class="p">|</span> are not allowed                          <span class="p">|</span>
+<span class="p">|</span> Kubernetes Security Check <span class="p">|</span>   KSV006   <span class="p">|</span> docker.sock is mounted to container <span class="p">|</span>   HIGH   <span class="p">|</span> Deployment <span class="s1">&#39;hello-kubernetes&#39;</span> should     <span class="p">|</span>
+<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                                     <span class="p">|</span>          <span class="p">|</span> not specify <span class="s1">&#39;/var/run/docker.socker&#39;</span> <span class="k">in</span>  <span class="p">|</span>
+<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                                     <span class="p">|</span>          <span class="p">|</span> <span class="s1">&#39;spec.template.volumes.hostPath.path&#39;</span>    <span class="p">|</span>
+<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                                     <span class="p">|</span>          <span class="p">|</span> --&gt;avd.aquasec.com/appshield/ksv006      <span class="p">|</span>
 +---------------------------+------------+-------------------------------------+----------+------------------------------------------+
+
+configs/main.tf <span class="o">(</span>terraform<span class="o">)</span>
+<span class="o">===========================</span>
+Tests: <span class="m">19</span> <span class="o">(</span>SUCCESSES: <span class="m">11</span>, FAILURES: <span class="m">8</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">8</span> <span class="o">(</span>HIGH: <span class="m">6</span>, CRITICAL: <span class="m">1</span><span class="o">)</span>
+
++------------------------------------------+------------+------------------------------------------+----------+--------------------------------------------------------+
+<span class="p">|</span>                   TYPE                   <span class="p">|</span> MISCONF ID <span class="p">|</span>                  CHECK                   <span class="p">|</span> SEVERITY <span class="p">|</span>                        MESSAGE                         <span class="p">|</span>
++------------------------------------------+------------+------------------------------------------+----------+--------------------------------------------------------+
+<span class="p">|</span>   Terraform Security Check powered by    <span class="p">|</span>   AWS003   <span class="p">|</span> AWS Classic resource usage.              <span class="p">|</span>   HIGH   <span class="p">|</span> Resource                                               <span class="p">|</span>
+<span class="p">|</span>                  tfsec                   <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> <span class="s1">&#39;aws_db_security_group.my-group&#39;</span>                       <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> uses EC2 Classic. Use a VPC instead.                   <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> --&gt;tfsec.dev/docs/aws/AWS003/                          <span class="p">|</span>
++                                          +------------+------------------------------------------+----------+--------------------------------------------------------+
+<span class="p">|</span>                                          <span class="p">|</span>   AWS004   <span class="p">|</span> Use of plain HTTP.                       <span class="p">|</span> CRITICAL <span class="p">|</span> Resource                                               <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> <span class="s1">&#39;aws_alb_listener.my-alb-listener&#39;</span>                     <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> uses plain HTTP instead of HTTPS.                      <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> --&gt;tfsec.dev/docs/aws/AWS004/                          <span class="p">|</span>
++                                          +------------+------------------------------------------+----------+--------------------------------------------------------+
+<span class="p">|</span>                                          <span class="p">|</span>   AWS018   <span class="p">|</span> Missing description <span class="k">for</span> security         <span class="p">|</span>   HIGH   <span class="p">|</span> Resource                                               <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span> group/security group rule.               <span class="p">|</span>          <span class="p">|</span> <span class="s1">&#39;aws_security_group_rule.my-rule&#39;</span> should               <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> include a description <span class="k">for</span> auditing                     <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> purposes. --&gt;tfsec.dev/docs/aws/AWS018/                <span class="p">|</span>
++                                          +------------+------------------------------------------+          +--------------------------------------------------------+
+<span class="p">|</span>                                          <span class="p">|</span>   AWS025   <span class="p">|</span> API Gateway domain name uses outdated    <span class="p">|</span>          <span class="p">|</span> Resource                                               <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span> SSL/TLS protocols.                       <span class="p">|</span>          <span class="p">|</span> <span class="s1">&#39;aws_api_gateway_domain_name.empty_security_policy&#39;</span>    <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> defines outdated SSL/TLS policies <span class="o">(</span>not using           <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> TLS_1_2<span class="o">)</span>. --&gt;tfsec.dev/docs/aws/AWS025/                <span class="p">|</span>
++                                          +            +                                          +          +--------------------------------------------------------+
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> Resource                                               <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> <span class="s1">&#39;aws_api_gateway_domain_name.missing_security_policy&#39;</span>  <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> should include security_policy <span class="o">(</span>defauls to outdated    <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> SSL/TLS policy<span class="o">)</span>. --&gt;tfsec.dev/docs/aws/AWS025/         <span class="p">|</span>
++                                          +            +                                          +          +--------------------------------------------------------+
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> Resource                                               <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> <span class="s1">&#39;aws_api_gateway_domain_name.outdated_security_policy&#39;</span> <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> defines outdated SSL/TLS policies <span class="o">(</span>not using TLS_1_2<span class="o">)</span>. <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> --&gt;tfsec.dev/docs/aws/AWS025/                          <span class="p">|</span>
++                                          +------------+------------------------------------------+          +--------------------------------------------------------+
+<span class="p">|</span>                                          <span class="p">|</span>   AZU003   <span class="p">|</span> Unencrypted managed disk.                <span class="p">|</span>          <span class="p">|</span> Resource <span class="s1">&#39;azurerm_managed_disk.source&#39;</span>                 <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> defines an unencrypted managed disk.                   <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                                          <span class="p">|</span>          <span class="p">|</span> --&gt;tfsec.dev/docs/azure/AZU003/                        <span class="p">|</span>
++------------------------------------------+------------+------------------------------------------+----------+--------------------------------------------------------+
+
+configs/variables.tf <span class="o">(</span>terraform<span class="o">)</span>
+<span class="o">================================</span>
+Tests: <span class="m">1</span> <span class="o">(</span>SUCCESSES: <span class="m">1</span>, FAILURES: <span class="m">0</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">0</span> <span class="o">(</span>HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 </code></pre></div>
-<h3 id="input">Input</h3>
-<p>You can specify input format via <code>__rego_input__</code>.
-All fields under <code>__rego_input</code> are optional.</p>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code>__rego_input__ := {
-    &quot;combine&quot;: false,
-    &quot;selector&quot;: [
-        {&quot;type&quot;: &quot;kubernetes&quot;},
-    ],
-}
+
+</details>
+
+<h2 id="by-misconfiguration-ids">By Misconfiguration IDs</h2>
+<p>Use <code>.trivyignore</code>.</p>
+<div class="highlight"><pre><span></span><code>$ cat .trivyignore
+<span class="c1"># Accept the risk</span>
+AWS003
+AWS018
+AWS025
+
+$ trivy conf --severity HIGH,CRITICAL examples/misconf/mixed
 </code></pre></div>
-</div>
-<dl>
-<dt><code>combine</code> (boolean)</dt>
-<dd>The details is <a href="../../advanced/combine/">here</a>  </dd>
-<dt><code>selector</code> (array)</dt>
-<dd>
-<p>This option filters the input by config types. 
-In the above example, Trivy passes only Kubernetes files to this policy.
-Even if Dockerfile exists in the specified directory, it will not be passed to the policy as input.</p>
-<p><code>type</code> accepts <code>kubernetes</code>, <code>dockerfile</code>, <code>ansible</code>, <code>cloudformation</code>, <code>json</code>, <code>yaml</code>, toml<code>, or</code>hcl`.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If the configuration type is identified, the type will be overwritten, even if the file is genera format such as JSON or YAML.<br />
-For example, <code>deployment.yaml</code> will be handled as <code>kubernetes</code>, not <code>yaml</code>.</p>
-</div>
-</dd>
-</dl>
-<h2 id="examples">Examples</h2>
-<ul>
-<li><a href="https://github.com/aquasecurity/trivy/tree/a57cc23567e35e1d201350cc6b9b48156be9f9fc/examples/misconf/custom-policy">here</a></li>
-</ul>
+<details>
+<summary>Result</summary>
+
+<div class="highlight"><pre><span></span><code><span class="m">2021</span>-07-10T17:38:51.306+0300    INFO    Detected config files: <span class="m">4</span>
+
+configs/Dockerfile <span class="o">(</span>dockerfile<span class="o">)</span>
+<span class="o">===============================</span>
+Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class="m">21</span>, FAILURES: <span class="m">2</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">2</span> <span class="o">(</span>HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
++---------------------------+------------+----------------------+----------+------------------------------------------+
+<span class="p">|</span>           TYPE            <span class="p">|</span> MISCONF ID <span class="p">|</span>        CHECK         <span class="p">|</span> SEVERITY <span class="p">|</span>                 MESSAGE                  <span class="p">|</span>
++---------------------------+------------+----------------------+----------+------------------------------------------+
+<span class="p">|</span> Dockerfile Security Check <span class="p">|</span>   DS002    <span class="p">|</span> Image user is <span class="s1">&#39;root&#39;</span> <span class="p">|</span>   HIGH   <span class="p">|</span> Specify at least <span class="m">1</span> USER                  <span class="p">|</span>
+<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                      <span class="p">|</span>          <span class="p">|</span> <span class="nb">command</span> <span class="k">in</span> Dockerfile with               <span class="p">|</span>
+<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                      <span class="p">|</span>          <span class="p">|</span> non-root user as argument                <span class="p">|</span>
+<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                      <span class="p">|</span>          <span class="p">|</span> --&gt;avd.aquasec.com/appshield/ds002       <span class="p">|</span>
++---------------------------+------------+----------------------+----------+------------------------------------------+
+
+configs/deployment.yaml <span class="o">(</span>kubernetes<span class="o">)</span>
+<span class="o">====================================</span>
+Tests: <span class="m">28</span> <span class="o">(</span>SUCCESSES: <span class="m">14</span>, FAILURES: <span class="m">14</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">14</span> <span class="o">(</span>HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
++---------------------------+------------+-------------------------------------+----------+------------------------------------------+
+<span class="p">|</span>           TYPE            <span class="p">|</span> MISCONF ID <span class="p">|</span>                CHECK                <span class="p">|</span> SEVERITY <span class="p">|</span>                 MESSAGE                  <span class="p">|</span>
++---------------------------+------------+-------------------------------------+----------+------------------------------------------+
+<span class="p">|</span> Kubernetes Security Check <span class="p">|</span>   KSV006   <span class="p">|</span> docker.sock is mounted to container <span class="p">|</span>   HIGH   <span class="p">|</span> Deployment <span class="s1">&#39;hello-kubernetes&#39;</span> should     <span class="p">|</span>
+<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                                     <span class="p">|</span>          <span class="p">|</span> not specify <span class="s1">&#39;/var/run/docker.socker&#39;</span> <span class="k">in</span>  <span class="p">|</span>
+<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                                     <span class="p">|</span>          <span class="p">|</span> <span class="s1">&#39;spec.template.volumes.hostPath.path&#39;</span>    <span class="p">|</span>
+<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                                     <span class="p">|</span>          <span class="p">|</span> --&gt;avd.aquasec.com/appshield/ksv006      <span class="p">|</span>
++---------------------------+------------+-------------------------------------+----------+------------------------------------------+
+
+configs/main.tf <span class="o">(</span>terraform<span class="o">)</span>
+<span class="o">===========================</span>
+Tests: <span class="m">19</span> <span class="o">(</span>SUCCESSES: <span class="m">11</span>, FAILURES: <span class="m">8</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">8</span> <span class="o">(</span>HIGH: <span class="m">1</span>, CRITICAL: <span class="m">1</span><span class="o">)</span>
+
++------------------------------------------+------------+---------------------------+----------+------------------------------------------+
+<span class="p">|</span>                   TYPE                   <span class="p">|</span> MISCONF ID <span class="p">|</span>           CHECK           <span class="p">|</span> SEVERITY <span class="p">|</span>                 MESSAGE                  <span class="p">|</span>
++------------------------------------------+------------+---------------------------+----------+------------------------------------------+
+<span class="p">|</span>   Terraform Security Check powered by    <span class="p">|</span>   AWS004   <span class="p">|</span> Use of plain HTTP.        <span class="p">|</span> CRITICAL <span class="p">|</span> Resource                                 <span class="p">|</span>
+<span class="p">|</span>                  tfsec                   <span class="p">|</span>            <span class="p">|</span>                           <span class="p">|</span>          <span class="p">|</span> <span class="s1">&#39;aws_alb_listener.my-alb-listener&#39;</span>       <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                           <span class="p">|</span>          <span class="p">|</span> uses plain HTTP instead of HTTPS.        <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                           <span class="p">|</span>          <span class="p">|</span> --&gt;tfsec.dev/docs/aws/AWS004/            <span class="p">|</span>
++                                          +------------+---------------------------+----------+------------------------------------------+
+<span class="p">|</span>                                          <span class="p">|</span>   AZU003   <span class="p">|</span> Unencrypted managed disk. <span class="p">|</span>   HIGH   <span class="p">|</span> Resource <span class="s1">&#39;azurerm_managed_disk.source&#39;</span>   <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                           <span class="p">|</span>          <span class="p">|</span> defines an unencrypted managed disk.     <span class="p">|</span>
+<span class="p">|</span>                                          <span class="p">|</span>            <span class="p">|</span>                           <span class="p">|</span>          <span class="p">|</span> --&gt;tfsec.dev/docs/azure/AZU003/          <span class="p">|</span>
++------------------------------------------+------------+---------------------------+----------+------------------------------------------+
+
+configs/variables.tf <span class="o">(</span>terraform<span class="o">)</span>
+<span class="o">================================</span>
+Tests: <span class="m">1</span> <span class="o">(</span>SUCCESSES: <span class="m">1</span>, FAILURES: <span class="m">0</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">0</span> <span class="o">(</span>HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+</code></pre></div>
+
+</details>
+
+<h2 id="by-exceptions">By Exceptions</h2>
+<p>See <a href="../../advanced/exceptions/">Exceptions</a></p>
+<h2 id="show-successes">Show Successes</h2>
+<p>Use <code>--include-successes</code> option to show successes as well as failures.</p>
+<div class="highlight"><pre><span></span><code>trivy conf --severity CRITICAL --include-successes examples/misconf/mixed
+</code></pre></div>
+<details>
+<summary>Result</summary>
+<div class="highlight"><pre><span></span><code>2021-07-10T17:44:02.049+0300    INFO    Detected config files: 4
+
+configs/Dockerfile (dockerfile)
+===============================
+Tests: 23 (SUCCESSES: 21, FAILURES: 2, EXCEPTIONS: 0)
+Failures: 2 (CRITICAL: 0)
+
++---------------------------+------------+------------------------------------------+----------+--------+-----------------+
+|           TYPE            | MISCONF ID |                  CHECK                   | SEVERITY | STATUS |     MESSAGE     |
++---------------------------+------------+------------------------------------------+----------+--------+-----------------+
+| Dockerfile Security Check |   DS006    | COPY &#39;--from&#39; refers to the current      | CRITICAL |  PASS  | No issues found |
+|                           |            | image                                    |          |        |                 |
++                           +------------+------------------------------------------+          +        +                 +
+|                           |   DS007    | Multiple ENTRYPOINT instructions are     |          |        |                 |
+|                           |            | listed                                   |          |        |                 |
++                           +------------+------------------------------------------+          +        +                 +
+|                           |   DS008    | Exposed port is out of range             |          |        |                 |
++                           +------------+------------------------------------------+          +        +                 +
+|                           |   DS010    | &#39;sudo&#39; is used                           |          |        |                 |
++                           +------------+------------------------------------------+          +        +                 +
+|                           |   DS011    | COPY with more than two arguments is not |          |        |                 |
+|                           |            | ending with slash                        |          |        |                 |
++                           +------------+------------------------------------------+          +        +                 +
+|                           |   DS012    | Duplicate aliases are defined in         |          |        |                 |
+|                           |            | different FROMs                          |          |        |                 |
++---------------------------+------------+------------------------------------------+----------+--------+-----------------+
+
+...
+</code></pre></div>
+</details>
                 
               
               
@@ -2310,7 +2155,7 @@ For example, <code>deployment.yaml</code> will be handled as <code>kubernetes</c
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../builtin/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Built-in Policies" rel="prev">
+        <a href="../policy/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Policy" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -2319,20 +2164,20 @@ For example, <code>deployment.yaml</code> will be handled as <code>kubernetes</c
               <span class="md-footer__direction">
                 Previous
               </span>
-              Built-in Policies
+              Policy
             </div>
           </div>
         </a>
       
       
         
-        <a href="../../examples/policy/" class="md-footer__link md-footer__link--next" aria-label="Next: Policy" rel="next">
+        <a href="../report/" class="md-footer__link md-footer__link--next" aria-label="Next: Report Formats" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Policy
+              Report Formats
             </div>
           </div>
           <div class="md-footer__button md-icon">
