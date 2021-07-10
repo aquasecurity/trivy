@@ -144,7 +144,15 @@ func (c Client) NeedsUpdate() (bool, error) {
 		return true, nil
 	}
 
+	// Update DownloadedAt with the current time.
+	// Otherwise, if there are no updates in the remote registry,
+	// the digest will be fetched every time even after this.
+	if err = c.updateMetadata(meta.Digest, time.Now()); err != nil {
+		return false, xerrors.Errorf("unable to update the policy metadata: %w", err)
+	}
+
 	return false, nil
+
 }
 
 // DownloadBuiltinPolicies download default policies from GitHub Pages
