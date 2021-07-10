@@ -1903,27 +1903,27 @@
 </ul>
 <p>Trivy can scan three different artifacts:</p>
 <ul>
-<li><a href="./scanning/image.md">Container Images</a></li>
-<li><a href="./scanning/filesystem.md">Filesystem</a></li>
-<li><a href="./scanning/git-repository.md">Git Repositories</a></li>
+<li><a href="../../vulnerability/scanning/image/">Container Images</a></li>
+<li><a href="../../vulnerability/scanning/filesystem/">Filesystem</a></li>
+<li><a href="../../vulnerability/scanning/git-repository/">Git Repositories</a></li>
 </ul>
 <p>Trivy can be run in two different modes:</p>
 <ul>
-<li><a href="./modes/standalone.md">Standalone</a></li>
-<li><a href="./modes/client-server.md">Client/Server</a></li>
+<li><a href="../../advanced/modes/standalone/">Standalone</a></li>
+<li><a href="../../advanced/modes/client-server/">Client/Server</a></li>
 </ul>
 <p>It is designed to be used in CI. Before pushing to a container registry or deploying your application, you can scan your local container image and other artifacts easily.
-See <a href="./integrations/index.md">here</a> for details.</p>
+See <a href="../../advanced/integrations/">Integrations</a> for details.</p>
 <h2 id="features">Features</h2>
 <ul>
 <li>Detect comprehensive vulnerabilities<ul>
-<li>OS packages (Alpine, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)</li>
-<li><strong>Language-specific packages</strong> (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, Maven, and Go)</li>
+<li><a href="../../vulnerability/detection/os/">OS packages</a> (Alpine, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)</li>
+<li><a href="../../vulnerability/detection/language/"><strong>Language-specific packages</strong></a> (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, Maven, and Go)</li>
 </ul>
 </li>
 <li>Detect IaC misconfigurations<ul>
 <li><strong>Out of the box</strong><ul>
-<li>A wide variety of built-in policies are provided</li>
+<li>A wide variety of <a href="../../misconfiguration/policy/builtin/">built-in policies</a> are provided</li>
 </ul>
 </li>
 <li>Supported IaC configs<ul>
@@ -1932,11 +1932,12 @@ See <a href="./integrations/index.md">here</a> for details.</p>
 <li>Terraform</li>
 </ul>
 </li>
+<li>Support custom policies</li>
 </ul>
 </li>
 <li>Simple<ul>
 <li>Specify only an image name, a directory containing IaC configs, or an artifact name</li>
-<li>See <a href="../quickstart/">Quick Start</a> and <a href="examples/index.md">Examples</a></li>
+<li>See <a href="../quickstart/">Quick Start</a></li>
 </ul>
 </li>
 <li>Fast<ul>
@@ -1945,7 +1946,7 @@ See <a href="./integrations/index.md">here</a> for details.</p>
 </ul>
 </li>
 <li>Easy installation<ul>
-<li><code>apt-get install</code>, <code>yum install</code> and <code>brew install</code> is possible (See <a href="getting-started/installation.md">Installation</a>)</li>
+<li><code>apt-get install</code>, <code>yum install</code> and <code>brew install</code> is possible (See <a href="../installation/">Installation</a>)</li>
 <li><strong>No pre-requisites</strong> such as installation of DB, libraries, etc.</li>
 </ul>
 </li>
@@ -1956,13 +1957,13 @@ See <a href="./integrations/index.md">here</a> for details.</p>
 </li>
 <li>DevSecOps<ul>
 <li><strong>Suitable for CI</strong> such as Travis CI, CircleCI, Jenkins, GitLab CI, etc.</li>
-<li>See <a href="integrations/index.md">CI Example</a></li>
+<li>See <a href="../../advanced/integrations/">CI Example</a></li>
 </ul>
 </li>
 <li>Support multiple formats<ul>
 <li>container image<ul>
 <li>A local image in Docker Engine which is running as a daemon</li>
-<li>A local image in Podman (&gt;=2.0) which is exposing a socket</li>
+<li>A local image in <a href="../../advanced/container/podman/">Podman</a> (&gt;=2.0) which is exposing a socket</li>
 <li>A remote image in Docker Registry such as Docker Hub, ECR, GCR and ACR</li>
 <li>A tar archive stored in the <code>docker save</code> / <code>podman save</code> formatted file</li>
 <li>An image directory compliant with <a href="https://github.com/opencontainers/image-spec">OCI Image Format</a></li>

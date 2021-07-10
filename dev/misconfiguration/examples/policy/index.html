@@ -1947,8 +1947,8 @@ This can be repeated for specifying multiple directories.</p>
 trivy conf --policy custom-policy/policy --policy combine/policy --namespaces user misconf/mixed
 </code></pre></div>
 <p>For more details, see <a href="../../policy/custom/">Custom Policies</a>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>You also need to specify <code>--namespaces</code> option.</p>
 </div>
 <h2 id="pass-custom-data">Pass custom data</h2>
@@ -1971,8 +1971,8 @@ You can use the <code>--skip-policy-update</code> option to skip it.
 If you skip it the first time, the built-in policies will not be loaded.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-</div>
 <p>Even if you specify the option the first time, it will be loaded as Terraform policies are written in Go.</p>
+</div>
 <div class="highlight"><pre><span></span><code>trivy conf --skip-policy-update examples/misconf/mixed                                                                                           [~/src/github.com/aquasecurity/trivy]
 </code></pre></div>
 <details>
