@@ -1936,7 +1936,9 @@ When <code>combine</code> is set to true, all config files under the specified d
 }
 </code></pre></div>
 </div>
-<p>The structure is an array where each element is a map with two keys: a path key with the relative file path of the file being evaluated and a contents key containing the actual document.
+<p>In "combine" mode, the <code>input</code> document becomes an array, where each element is an object with two fields:
+- <code>"path": "path/to/file"</code>: the relative file path of the respective file
+- <code>"contents": ...</code>: the parsed content of the respective file
 Now you can ensure that duplicate values match across the entirety of your configuration files.</p>
 <h2 id="return-value">Return value</h2>
 <p>The <code>deny</code> entrypoint must return an object with two keys</p>
@@ -1960,7 +1962,7 @@ Now you can ensure that duplicate values match across the entirety of your confi
 </code></pre></div>
 </div>
 <h2 id="example">Example</h2>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/f3ec1597ad1a9f26c0d7ab7f3f80b27bdd5de2f2/examples/misconf/combine">here</a></p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/69f1aaaab7db4304174eed37ae39f2c15e864651/examples/misconf/combine">here</a></p>
                 
               
               
