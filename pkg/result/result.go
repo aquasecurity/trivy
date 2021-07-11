@@ -204,14 +204,7 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 					continue
 				}
 
-				switch misconf.Status {
-				case types.StatusFailure:
-					summary.Failures++
-				case types.StatusPassed:
-					summary.Successes++
-				case types.StatusException:
-					summary.Exceptions++
-				}
+				summarize(misconf.Status, summary)
 
 				if misconf.Status != types.StatusFailure && !includeSuccesses {
 					continue
@@ -227,6 +220,17 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 	}
 
 	return summary, filtered
+}
+
+func summarize(status types.MisconfStatus, summary *report.MisconfSummary) {
+	switch status {
+	case types.StatusFailure:
+		summary.Failures++
+	case types.StatusPassed:
+		summary.Successes++
+	case types.StatusException:
+		summary.Exceptions++
+	}
 }
 
 func toSlice(uniqVulns map[string]types.DetectedVulnerability) []types.DetectedVulnerability {
