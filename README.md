@@ -11,6 +11,7 @@ Scanner for vulnerabilities in container images, file systems, and Git repositor
 </p>
 
 [![GitHub Release][release-img]][release]
+[![Test][test-img]][test]
 [![Go Report Card][go-report-img]][go-report]
 [![License: Apache-2.0][license-img]][license]
 [![GitHub All Releases][github-all-releases-img]][release]
@@ -192,6 +193,8 @@ Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 # Documentation
 The official documentation, which provides detailed installation, configuration, and quick start guides, is available at https://aquasecurity.github.io/trivy/.
 
+[test]: https://github.com/aquasecurity/trivy/actions/workflows/test.yaml
+[test-img]: https://github.com/aquasecurity/trivy/actions/workflows/test.yaml/badge.svg
 [go-report]: https://goreportcard.com/report/github.com/aquasecurity/trivy
 [go-report-img]: https://goreportcard.com/badge/github.com/aquasecurity/trivy
 [release]: https://github.com/aquasecurity/trivy/releases
