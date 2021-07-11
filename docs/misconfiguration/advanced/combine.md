@@ -11,7 +11,9 @@ When `combine` is set to true, all config files under the specified directory ar
     }
     ```
 
-The structure is an array where each element is a map with two keys: a path key with the relative file path of the file being evaluated and a contents key containing the actual document.
+In "combine" mode, the `input` document becomes an array, where each element is an object with two fields:
+- `"path": "path/to/file"`: the relative file path of the respective file
+- `"contents": ...`: the parsed content of the respective file
 Now you can ensure that duplicate values match across the entirety of your configuration files.
 
 ## Return value
