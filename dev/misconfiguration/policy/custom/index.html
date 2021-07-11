@@ -1134,15 +1134,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#general-file-formats" class="md-nav__link">
-    General file formats
+  <a href="#file-formats" class="md-nav__link">
+    File formats
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#iac-file-formats" class="md-nav__link">
-    IaC file formats
+  <a href="#configuration-languages" class="md-nav__link">
+    Configuration languages
   </a>
   
 </li>
@@ -1161,8 +1161,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#top-level" class="md-nav__link">
-    Top level
+  <a href="#policy-structure" class="md-nav__link">
+    Policy structure
   </a>
   
 </li>
@@ -1953,15 +1953,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#general-file-formats" class="md-nav__link">
-    General file formats
+  <a href="#file-formats" class="md-nav__link">
+    File formats
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#iac-file-formats" class="md-nav__link">
-    IaC file formats
+  <a href="#configuration-languages" class="md-nav__link">
+    Configuration languages
   </a>
   
 </li>
@@ -1980,8 +1980,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#top-level" class="md-nav__link">
-    Top level
+  <a href="#policy-structure" class="md-nav__link">
+    Policy structure
   </a>
   
 </li>
@@ -2040,7 +2040,7 @@ Once you fisnish writing custom policies, you can pass the directory where those
 <div class="highlight"><pre><span></span><code>trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
 </code></pre></div>
 <p>As for <code>--namespaces</code> option, the detail is described as below.</p>
-<h3 id="general-file-formats">General file formats</h3>
+<h3 id="file-formats">File formats</h3>
 <p>If a file name matches the following file patterns, Trivy will parse the file and pass it as input to your Rego policy.</p>
 <table>
 <thead>
@@ -2072,7 +2072,7 @@ Once you fisnish writing custom policies, you can pass the directory where those
 </tr>
 </tbody>
 </table>
-<h3 id="iac-file-formats">IaC file formats</h3>
+<h3 id="configuration-languages">Configuration languages</h3>
 <p>In the above general file formats, Trivy automatically identifies the following types of configuration files:</p>
 <ul>
 <li>Ansible (YAML)</li>
@@ -2112,7 +2112,7 @@ deny[msg] {
 </div>
 <p>In this example, ID001 "Deployment not allowed" is defined under <code>user.kubernetes.ID001</code>.
 If you add a new custom policy, it must be defined under a new package like <code>user.kubernetes.ID002</code>.</p>
-<h3 id="top-level">Top level</h3>
+<h3 id="policy-structure">Policy structure</h3>
 <dl>
 <dt><code>package</code> (required)</dt>
 <dd>
@@ -2167,7 +2167,7 @@ If you define custom packages, you have to specify the package prefix via <code>
 <p>In this case, <code>user.*</code> will be evaluated.
 Any package prefixes such as <code>main</code> and <code>user</code> are allowed.</p>
 <h3 id="metadata">Metadata</h3>
-<p>Custom policy can define metadata.</p>
+<p>Metadata helps enrich Trivy's scan results with useful information.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code>__rego_metadata__ := {
@@ -2278,7 +2278,7 @@ All fields under <code>__rego_input</code> are optional.</p>
 <p>This option filters the input by config types. 
 In the above example, Trivy passes only Kubernetes files to this policy.
 Even if Dockerfile exists in the specified directory, it will not be passed to the policy as input.</p>
-<p><code>type</code> accepts <code>kubernetes</code>, <code>dockerfile</code>, <code>ansible</code>, <code>cloudformation</code>, <code>json</code>, <code>yaml</code>, toml<code>, or</code>hcl`.</p>
+<p><code>type</code> accepts <code>kubernetes</code>, <code>dockerfile</code>, <code>ansible</code>, <code>cloudformation</code>, <code>json</code>, <code>yaml</code>, <code>toml</code>, or <code>hcl</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If the configuration type is identified, the type will be overwritten, even if the file is genera format such as JSON or YAML.<br />
@@ -2288,7 +2288,7 @@ For example, <code>deployment.yaml</code> will be handled as <code>kubernetes</c
 </dl>
 <h2 id="examples">Examples</h2>
 <ul>
-<li><a href="https://github.com/aquasecurity/trivy/tree/56fb0871892f953f5b83e2860158a0b0abf13492/examples/misconf/custom-policy">here</a></li>
+<li><a href="https://github.com/aquasecurity/trivy/tree/f3ec1597ad1a9f26c0d7ab7f3f80b27bdd5de2f2/examples/misconf/custom-policy">here</a></li>
 </ul>
                 
               
