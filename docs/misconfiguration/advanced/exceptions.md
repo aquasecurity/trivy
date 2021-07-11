@@ -1,15 +1,42 @@
 # Exceptions
+Exceptions lets you to specify cases where you allow policy violations.
 Trivy supports two types of exceptions.
 
 !!! info
     Exceptions can be applied to built-in policies as well as custom policies.
 
-## Rule-based exceptions
-There might be cases where rules might not apply under certain circumstances.
-For those occasions, you can use rule-based exceptions. 
-Rule-based exceptions are also written in Rego, and allow you to specify policies for when a given `deny` rule does not apply.
+## Namespace-based exceptions
+There are some cases where you need to disable built-in policies partially or fully.
+Namespace-based exceptions lets you rough choose which individual packages to exempt.
 
-Inputs matched by the exception will be exempted from the rules specified in rules, prefixed by `deny_`:
+To use namespace-based exceptions, create a Rego rule with the name `exception` that returns the package names to exempt.
+The `exception` rule must be defined under `namespace.exceptions`.
+`data.namespaces` includes all package names.
+
+
+!!! example
+    ``` rego
+    package namespace.exceptions
+
+    import data.namespaces
+        
+    exception[ns] {
+        ns := data.namespaces[_]
+        startswith(ns, "appshield")
+    }
+    ```
+
+This example exempts all built-in policies for Kubernetes.
+
+For more details, see [an example][ns-example].
+
+## Rule-based exceptions
+There are some cases where you need more flexibility and granularity in defining which cases to exempt.
+Rule-based exceptions lets you granularly choose which individual rules to exempt, while also declaring under which conditions to exempt them.
+
+To use rule-based exceptions, create a Rego rule with the name `exception` that returns the rule name suffixes to exempt, prefixed by `deny_` (for example, returning `foo` will exempt `deny_foo`). 
+The rule can make any other assertion, for example, on the input or data documents. 
+This is useful to specify the exemption for a specific case.
 
 Note that if you specify the empty string, the exception will match all rules named `deny`.
 
@@ -60,33 +87,12 @@ If you want to apply rule-based exceptions to built-in policies, you have to def
     }
     ```
 
-This exception is applied to [KSV012](https://github.com/aquasecurity/appshield/blob/57bccc1897b2500a731415bda3990b0d4fbc959e/kubernetes/policies/pss/restricted/3_runs_as_root.rego) in AppShield.
-You can get the package names in [AppShield repository](https://github.com/aquasecurity/appshield/) or the JSON output from Trivy.
+This exception is applied to [KSV012][ksv012] in AppShield.
+You can get the package names in [AppShield repository][appshield] or the JSON output from Trivy.
 
-For more details, see [the example](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/rule-exception)
+For more details, see [an example][rule-example].
 
-## Namespace-based exceptions
-You might want to disable built-in policies partially or fully.
-For those occasions, you can use namespace-based exceptions.
-Namespace-based exceptions are also written in Rego, and allow you to specify packages where you want to disable.
-
-The package name must be `namespace.exceptions`.
-Packages returned by `exception` will be exempted.
-`data.namespaces` includes all package names.
-
-
-!!! example
-    ``` rego
-        package namespace.exceptions
-        
-        import data.namespaces
-        
-        exception[ns] {
-            ns := data.namespaces[_]
-            startswith(ns, "appshield")
-        }
-    ```
-
-This example exempts all built-in policies for Kubernetes.
-
-For more details, see [the example](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/namespace-exception)
+[ns-example]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/namespace-exception
+[rule-example]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/rule-exception
+[ksv012]: https://github.com/aquasecurity/appshield/blob/57bccc1897b2500a731415bda3990b0d4fbc959e/kubernetes/policies/pss/restricted/3_runs_as_root.rego
+[appshield]: https://github.com/aquasecurity/appshield/
