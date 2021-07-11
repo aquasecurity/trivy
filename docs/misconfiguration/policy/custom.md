@@ -10,7 +10,7 @@ trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_d
 
 As for `--namespaces` option, the detail is described as below.
 
-### General file formats
+### File formats
 If a file name matches the following file patterns, Trivy will parse the file and pass it as input to your Rego policy.
 
 | File format    | File pattern                                     |
@@ -21,7 +21,7 @@ If a file name matches the following file patterns, Trivy will parse the file an
 | HCL            | `*.hcl`, `*.hcl1`, and `*.hcl2`                  |
 | Dockerfile     | `Dockerfile`, `Dockerfile.*`, and `*.Dockerfile` |
 
-### IaC file formats
+### Configuration languages
 In the above general file formats, Trivy automatically identifies the following types of configuration files:
 
 - Ansible (YAML)
@@ -63,7 +63,7 @@ A single package must contain only one policy.
 In this example, ID001 "Deployment not allowed" is defined under `user.kubernetes.ID001`.
 If you add a new custom policy, it must be defined under a new package like `user.kubernetes.ID002`.
 
-### Top level
+### Policy structure
 
 `package` (required)
 :   - MUST follow the Rego's [specification](https://www.openpolicyagent.org/docs/latest/policy-language/#packages)
@@ -105,7 +105,7 @@ In this case, `user.*` will be evaluated.
 Any package prefixes such as `main` and `user` are allowed.
 
 ### Metadata
-Custom policy can define metadata.
+Metadata helps enrich Trivy's scan results with useful information.
 
 !!!example
     ``` rego
@@ -170,7 +170,7 @@ All fields under `__rego_input` are optional.
     In the above example, Trivy passes only Kubernetes files to this policy.
     Even if Dockerfile exists in the specified directory, it will not be passed to the policy as input.
 
-    `type` accepts `kubernetes`, `dockerfile`, `ansible`, `cloudformation`, `json`, `yaml`, toml`, or `hcl`.
+    `type` accepts `kubernetes`, `dockerfile`, `ansible`, `cloudformation`, `json`, `yaml`, `toml`, or `hcl`.
 
     !!! note
         If the configuration type is identified, the type will be overwritten, even if the file is genera format such as JSON or YAML.  
