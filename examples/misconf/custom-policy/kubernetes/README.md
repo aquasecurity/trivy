@@ -1,7 +1,4 @@
-# Custom policies
-The custom policy is defined in `user.kubernetes.ID001` package.
-You need to pass the package prefix you want to evaluate through `--namespaces` option.
-In this case, the package prefix should be `user`, `user.kuberntes`, or `user.kubernetes.ID001`.
+# Kubernetes
 
 ```
 $ trivy conf --severity HIGH,CRITICAL --policy ./policy --namespaces user ./configs
