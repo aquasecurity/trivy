@@ -24,8 +24,8 @@ type TableWriter struct {
 	Light bool
 
 	// For misconfigurations
-	IncludeSuccesses bool
-	Trace            bool
+	IncludeNonFailures bool
+	Trace              bool
 }
 
 // Write writes the result on standard output
@@ -125,7 +125,7 @@ func (tw TableWriter) writeMisconfigurations(table *tablewriter.Table, misconfs 
 		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT}
 	header := []string{"Type", "Misconf ID", "Check", "Severity", "Status", "Message"}
 
-	if !tw.IncludeSuccesses {
+	if !tw.IncludeNonFailures {
 		// Remove status
 		statusPos := 4
 		alignment = append(alignment[:statusPos], alignment[statusPos+1:]...)
@@ -185,20 +185,24 @@ func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.
 			}
 		}
 
-		var row []string
+		severity := misconf.Severity
+		status := string(misconf.Status)
 		if tw.Output == os.Stdout {
-			if misconf.Status == types.StatusPassed {
-				row = []string{misconf.Type, misconf.ID, misconf.Title, color.New(color.FgGreen).Sprint(misconf.Severity),
-					color.New(color.FgGreen).Sprint(misconf.Status), misconf.Message}
-			} else {
-				row = []string{misconf.Type, misconf.ID, misconf.Title, dbTypes.ColorizeSeverity(misconf.Severity),
-					color.New(color.FgRed).Sprint(misconf.Status), misconf.Message}
+			switch misconf.Status {
+			case types.StatusPassed:
+				severity = color.New(color.FgGreen).Sprint(misconf.Severity)
+				status = color.New(color.FgGreen).Sprint(misconf.Status)
+			case types.StatusException:
+				severity = color.New(color.FgMagenta).Sprint(misconf.Severity)
+				status = color.New(color.FgMagenta).Sprint(misconf.Status)
+			case types.StatusFailure:
+				severity = dbTypes.ColorizeSeverity(severity)
+				status = color.New(color.FgRed).Sprint(misconf.Status)
 			}
-		} else {
-			row = []string{misconf.Type, misconf.ID, misconf.Title, misconf.Severity, string(misconf.Status), misconf.Message}
 		}
 
-		if !tw.IncludeSuccesses {
+		row := []string{misconf.Type, misconf.ID, misconf.Title, severity, status, misconf.Message}
+		if !tw.IncludeNonFailures {
 			// Remove status
 			row = append(row[:4], row[5:]...)
 		}

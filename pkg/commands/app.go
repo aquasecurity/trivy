@@ -252,11 +252,11 @@ var (
 		EnvVars: []string{"TRIVY_POLICY_NAMESPACES"},
 	}
 
-	includeSuccesses = cli.BoolFlag{
-		Name:    "include-successes",
-		Usage:   "include successes of misconfigurations",
+	includeNonFailures = cli.BoolFlag{
+		Name:    "include-non-failures",
+		Usage:   "include successes and exceptions",
 		Value:   false,
-		EnvVars: []string{"TRIVY_INCLUDE_SUCCESSES"},
+		EnvVars: []string{"TRIVY_INCLUDE_NON_FAILURES"},
 	}
 
 	traceFlag = cli.BoolFlag{
@@ -297,8 +297,6 @@ var (
 		&cacheBackendFlag,
 		stringSliceFlag(skipFiles),
 		stringSliceFlag(skipDirs),
-		stringSliceFlag(configPolicy),
-		stringSliceFlag(policyNamespaces),
 	}
 
 	// deprecated options
@@ -477,7 +475,7 @@ func NewFilesystemCommand() *cli.Command {
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
-			&policyNamespaces,
+			stringSliceFlag(policyNamespaces),
 		},
 	}
 }
@@ -613,7 +611,7 @@ func NewConfigCommand() *cli.Command {
 			stringSliceFlag(configPolicyAlias),
 			stringSliceFlag(filePatterns),
 			stringSliceFlag(policyNamespaces),
-			&includeSuccesses,
+			&includeNonFailures,
 			&traceFlag,
 		},
 	}
