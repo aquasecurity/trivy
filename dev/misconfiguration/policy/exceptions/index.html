@@ -11,7 +11,7 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/misconfiguration/examples/others/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/misconfiguration/policy/exceptions/">
       
       
         
@@ -21,7 +21,7 @@
     
     
       
-        <title>Others - Trivy</title>
+        <title>Exceptions - Trivy</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#others" class="md-skip">
+        <a href="#exceptions" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Others
+              Exceptions
             
           </span>
         </div>
@@ -1047,14 +1047,16 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" checked>
       
       
       
@@ -1077,101 +1079,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../policy/builtin/" class="md-nav__link">
+      <a href="../builtin/" class="md-nav__link">
         Built-in Policies
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../policy/custom/" class="md-nav__link">
-        Custom Policies
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-    
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" checked>
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_4_3">
-          Examples
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Examples" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_3">
-          <span class="md-nav__icon md-icon"></span>
-          Examples
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../policy/" class="md-nav__link">
-        Policy
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../filter/" class="md-nav__link">
-        Filtering
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../report/" class="md-nav__link">
-        Report Formats
       </a>
     </li>
   
@@ -1194,12 +1103,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Others
+          Exceptions
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Others
+        Exceptions
       </a>
       
         
@@ -1217,8 +1126,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#file-patterns" class="md-nav__link">
-    File patterns
+  <a href="#namespace-based-exceptions" class="md-nav__link">
+    Namespace-based exceptions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rule-based-exceptions" class="md-nav__link">
+    Rule-based exceptions
   </a>
   
 </li>
@@ -1250,20 +1166,20 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_4" type="checkbox" id="__nav_4_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_4">
-          Advanced
+        <label class="md-nav__link" for="__nav_4_3">
+          Custom Policies
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Advanced" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_4">
+      <nav class="md-nav" aria-label="Custom Policies" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_3">
           <span class="md-nav__icon md-icon"></span>
-          Advanced
+          Custom Policies
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1273,7 +1189,35 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/combine/" class="md-nav__link">
+      <a href="../../custom/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../custom/data/" class="md-nav__link">
+        Data
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../custom/combine/" class="md-nav__link">
         Combine
       </a>
     </li>
@@ -1287,8 +1231,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/exceptions/" class="md-nav__link">
-        Exceptions
+      <a href="../../custom/testing/" class="md-nav__link">
+        Testing
       </a>
     </li>
   
@@ -1301,8 +1245,113 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/testing/" class="md-nav__link">
-        Testing
+      <a href="../../custom/debug/" class="md-nav__link">
+        Debugging Policies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../custom/examples/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_4" type="checkbox" id="__nav_4_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_4">
+          Options
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Options" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_4">
+          <span class="md-nav__icon md-icon"></span>
+          Options
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../options/policy/" class="md-nav__link">
+        Policy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../options/filter/" class="md-nav__link">
+        Filtering
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../options/report/" class="md-nav__link">
+        Report Formats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../options/others/" class="md-nav__link">
+        Others
       </a>
     </li>
   
@@ -1877,8 +1926,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#file-patterns" class="md-nav__link">
-    File patterns
+  <a href="#namespace-based-exceptions" class="md-nav__link">
+    Namespace-based exceptions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rule-based-exceptions" class="md-nav__link">
+    Rule-based exceptions
   </a>
   
 </li>
@@ -1897,26 +1953,85 @@
                 
                 
                 
-                <h1 id="others">Others</h1>
-<div class="admonition hint">
-<p class="admonition-title">Hint</p>
-<p>See also <a href="../../../vulnerability/examples/others/">Others</a> in Vulnerability section.</p>
+                <h1 id="exceptions">Exceptions</h1>
+<p>Exceptions lets you to specify cases where you allow policy violations.
+Trivy supports two types of exceptions.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Exceptions can be applied to built-in policies as well as custom policies.</p>
 </div>
-<h2 id="file-patterns">File patterns</h2>
-<p>When a directory is given as an input, Trivy will recursively look for and test all files based on file patterns.
-The default file patterns are  <a href="../../policy/custom/">here</a>.</p>
-<p>In addition to the default file patterns, the <code>--file-patterns</code> option takes regexp patterns to look for your files.
-For example, it may be useful when your file name of Dockerfile doesn't match the default patterns.</p>
-<p>This can be repeated for specifying multiple file patterns.
-Allowed values are here:</p>
-<ul>
-<li>dockerfile</li>
-<li>yaml</li>
-<li>json</li>
-<li>toml</li>
-<li>hcl</li>
-</ul>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/1c9fddb847c89159918743f11c9eec3817f32901/examples/misconf/file-patterns">an example</a></p>
+<h2 id="namespace-based-exceptions">Namespace-based exceptions</h2>
+<p>There are some cases where you need to disable built-in policies partially or fully.
+Namespace-based exceptions lets you rough choose which individual packages to exempt.</p>
+<p>To use namespace-based exceptions, create a Rego rule with the name <code>exception</code> that returns the package names to exempt.
+The <code>exception</code> rule must be defined under <code>namespace.exceptions</code>.
+<code>data.namespaces</code> includes all package names.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>package namespace.exceptions
+
+import data.namespaces
+
+exception[ns] {
+    ns := data.namespaces[_]
+    startswith(ns, &quot;appshield&quot;)
+}
+</code></pre></div>
+</div>
+<p>This example exempts all built-in policies for Kubernetes.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/a844871665c461ff64e4389b86dc9db43e9c3a27/examples/misconf/namespace-exception">an example</a>.</p>
+<h2 id="rule-based-exceptions">Rule-based exceptions</h2>
+<p>There are some cases where you need more flexibility and granularity in defining which cases to exempt.
+Rule-based exceptions lets you granularly choose which individual rules to exempt, while also declaring under which conditions to exempt them.</p>
+<p>To use rule-based exceptions, create a Rego rule with the name <code>exception</code> that returns the rule name suffixes to exempt, prefixed by <code>deny_</code> (for example, returning <code>foo</code> will exempt <code>deny_foo</code>). 
+The rule can make any other assertion, for example, on the input or data documents. 
+This is useful to specify the exemption for a specific case.</p>
+<p>Note that if you specify the empty string, the exception will match all rules named <code>deny</code>.</p>
+<div class="highlight"><pre><span></span><code>exception[rules] {
+    # Logic
+
+    rules = [&quot;foo&quot;,&quot;bar&quot;]
+}
+</code></pre></div>
+<p>The above would provide an exception from <code>deny_foo</code> and <code>deny_bar</code>.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>package user.kubernetes.ID100
+
+__rego_metadata := {
+    &quot;id&quot;: &quot;ID100&quot;,
+    &quot;title&quot;: &quot;Deployment not allowed&quot;,
+    &quot;severity&quot;: &quot;HIGH&quot;,
+    &quot;type&quot;: &quot;Kubernetes Custom Check&quot;,
+}
+
+deny_deployment[msg] {
+    input.kind == &quot;Deployment&quot;
+    msg = sprintf(&quot;Found deployment &#39;%s&#39; but deployments are not allowed&quot;, [name])
+}
+
+exception[rules] {
+    input.kind == &quot;Deployment&quot;
+    input.metadata.name == &quot;allow-deployment&quot;
+
+    rules := [&quot;deployment&quot;]
+}
+</code></pre></div>
+</div>
+<p>If you want to apply rule-based exceptions to built-in policies, you have to define the exception under the same package.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>package appshield.kubernetes.KSV012
+
+exception[rules] {
+    input.metadata.name == &quot;can-run-as-root&quot;
+    rules := [&quot;&quot;]
+}
+</code></pre></div>
+</div>
+<p>This exception is applied to <a href="https://github.com/aquasecurity/appshield/blob/57bccc1897b2500a731415bda3990b0d4fbc959e/kubernetes/policies/pss/restricted/3_runs_as_root.rego">KSV012</a> in AppShield.
+You can get the package names in <a href="https://github.com/aquasecurity/appshield/">AppShield repository</a> or the JSON output from Trivy.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/a844871665c461ff64e4389b86dc9db43e9c3a27/examples/misconf/rule-exception">an example</a>.</p>
                 
               
               
@@ -1937,7 +2052,7 @@ Allowed values are here:</p>
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../report/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Report Formats" rel="prev">
+        <a href="../builtin/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Built-in Policies" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -1946,20 +2061,20 @@ Allowed values are here:</p>
               <span class="md-footer__direction">
                 Previous
               </span>
-              Report Formats
+              Built-in Policies
             </div>
           </div>
         </a>
       
       
         
-        <a href="../../advanced/combine/" class="md-footer__link md-footer__link--next" aria-label="Next: Combine" rel="next">
+        <a href="../../custom/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Combine
+              Overview
             </div>
           </div>
           <div class="md-footer__button md-icon">

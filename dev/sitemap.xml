@@ -201,37 +201,52 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/advanced/combine/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/custom/</loc>
          <lastmod>2021-07-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/advanced/exceptions/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/custom/combine/</loc>
          <lastmod>2021-07-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/advanced/testing/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/custom/data/</loc>
          <lastmod>2021-07-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/examples/filter/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/custom/debug/</loc>
          <lastmod>2021-07-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/examples/others/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/custom/examples/</loc>
          <lastmod>2021-07-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/examples/policy/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/custom/testing/</loc>
          <lastmod>2021-07-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/examples/report/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/options/filter/</loc>
+         <lastmod>2021-07-11</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/options/others/</loc>
+         <lastmod>2021-07-11</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/options/policy/</loc>
+         <lastmod>2021-07-11</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/options/report/</loc>
          <lastmod>2021-07-11</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -241,12 +256,7 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/policy/custom/</loc>
-         <lastmod>2021-07-11</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/policy/data/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/policy/exceptions/</loc>
          <lastmod>2021-07-11</lastmod>
          <changefreq>daily</changefreq>
     </url>

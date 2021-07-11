@@ -11,7 +11,7 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/misconfiguration/policy/data/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/misconfiguration/custom/combine/">
       
       
         
@@ -21,7 +21,7 @@
     
     
       
-        <title>Custom Data - Trivy</title>
+        <title>Combine - Trivy</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#custom-data" class="md-skip">
+        <a href="#combined-input" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Custom Data
+              Combine
             
           </span>
         </div>
@@ -228,6 +228,8 @@
         
   
   
+    
+  
 
 
   
@@ -239,7 +241,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../" class="md-tabs__link">
+      <a href="../../" class="md-tabs__link md-tabs__link--active">
         Misconfiguration
       </a>
     </li>
@@ -940,12 +942,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
       
       
       
@@ -1073,7 +1077,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../builtin/" class="md-nav__link">
+      <a href="../../policy/builtin/" class="md-nav__link">
         Built-in Policies
       </a>
     </li>
@@ -1087,8 +1091,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../custom/" class="md-nav__link">
-        Custom Policies
+      <a href="../../policy/exceptions/" class="md-nav__link">
+        Exceptions
       </a>
     </li>
   
@@ -1106,27 +1110,29 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" checked>
       
       
       
       
         <label class="md-nav__link" for="__nav_4_3">
-          Examples
+          Custom Policies
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Examples" data-md-level="2">
+      <nav class="md-nav" aria-label="Custom Policies" data-md-level="2">
         <label class="md-nav__title" for="__nav_4_3">
           <span class="md-nav__icon md-icon"></span>
-          Examples
+          Custom Policies
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1136,8 +1142,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/policy/" class="md-nav__link">
-        Policy
+      <a href="../" class="md-nav__link">
+        Overview
       </a>
     </li>
   
@@ -1150,8 +1156,83 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/filter/" class="md-nav__link">
-        Filtering
+      <a href="../data/" class="md-nav__link">
+        Data
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Combine
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Combine
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#return-value" class="md-nav__link">
+    Return value
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        Testing
       </a>
     </li>
   
@@ -1164,8 +1245,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/report/" class="md-nav__link">
-        Report Formats
+      <a href="../debug/" class="md-nav__link">
+        Debugging Policies
       </a>
     </li>
   
@@ -1178,8 +1259,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/others/" class="md-nav__link">
-        Others
+      <a href="../examples/" class="md-nav__link">
+        Examples
       </a>
     </li>
   
@@ -1210,14 +1291,14 @@
       
       
         <label class="md-nav__link" for="__nav_4_4">
-          Advanced
+          Options
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Advanced" data-md-level="2">
+      <nav class="md-nav" aria-label="Options" data-md-level="2">
         <label class="md-nav__title" for="__nav_4_4">
           <span class="md-nav__icon md-icon"></span>
-          Advanced
+          Options
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1227,8 +1308,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/combine/" class="md-nav__link">
-        Combine
+      <a href="../../options/policy/" class="md-nav__link">
+        Policy
       </a>
     </li>
   
@@ -1241,8 +1322,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/exceptions/" class="md-nav__link">
-        Exceptions
+      <a href="../../options/filter/" class="md-nav__link">
+        Filtering
       </a>
     </li>
   
@@ -1255,8 +1336,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/testing/" class="md-nav__link">
-        Testing
+      <a href="../../options/report/" class="md-nav__link">
+        Report Formats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../options/others/" class="md-nav__link">
+        Others
       </a>
     </li>
   
@@ -1838,8 +1933,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
+  <a href="#return-value" class="md-nav__link">
+    Return value
   </a>
   
 </li>
@@ -1858,12 +1953,45 @@
                 
                 
                 
-                <h1 id="custom-data">Custom Data</h1>
+                <h1 id="combined-input">Combined input</h1>
 <h2 id="overview">Overview</h2>
-<p>Custom policies may require additional data in order to determine an answer.</p>
-<p>For example, an allowed list of resources that can be created. Instead of hardcoding this information inside of your policy, Trivy allows passing paths to data files with the --data flag.</p>
-<h2 id="examples">Examples</h2>
-<p><a href="https://github.com/aquasecurity/trivy/tree/1c9fddb847c89159918743f11c9eec3817f32901/examples/misconf/custom-data">here</a></p>
+<p>Trivy usually scans each configuration file individually. 
+Sometimes it might be useful to compare values from different configuration files simultaneously.</p>
+<p>When <code>combine</code> is set to true, all config files under the specified directory are combined into one input data structure.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>__rego_input__ := {
+    &quot;combine&quot;: false,
+}
+</code></pre></div>
+</div>
+<p>In "combine" mode, the <code>input</code> document becomes an array, where each element is an object with two fields:</p>
+<ul>
+<li><code>"path": "path/to/file"</code>: the relative file path of the respective file</li>
+<li><code>"contents": ...</code>: the parsed content of the respective file</li>
+</ul>
+<p>Now you can ensure that duplicate values match across the entirety of your configuration files.</p>
+<h2 id="return-value">Return value</h2>
+<p>In "combine" mode, the <code>deny</code> entrypoint must return an object with two keys</p>
+<dl>
+<dt><code>filepath</code> (required)</dt>
+<dd>the relative file path of the file being evaluated</dd>
+<dt><code>msg</code> (required)</dt>
+<dd>the message describing an issue</dd>
+</dl>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>deny[res] {
+    resource := input[i].contents
+    ... some logic ...
+
+    res := {
+        &quot;filepath&quot;: input[i].path,
+        &quot;msg&quot;: &quot;something bad&quot;,
+    }
+}
+</code></pre></div>
+</div>
                 
               
               
@@ -1880,6 +2008,41 @@
       
         
 <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../data/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Data" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Data
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../testing/" class="md-footer__link md-footer__link--next" aria-label="Next: Testing" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Testing
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">

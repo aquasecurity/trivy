@@ -11,24 +11,24 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/misconfiguration/advanced/combine/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/misconfiguration/custom/">
       
       
         
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.10+insiders-2.10.0">
     
     
       
-        <title>Combine - Trivy</title>
+        <title>Overview - Trivy</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.204e8399.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.204e8399.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.73e53a79.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.73e53a79.min.css">
         
       
       
@@ -44,7 +44,7 @@
     
     
     
-    <script>function __md_scope(t,e="../../.."){return new URL(e,location).pathname+"."+t}function __md_get(t,e=localStorage,_){return JSON.parse(e.getItem(__md_scope(t,_)))}function __md_set(t,e,_=localStorage,n){try{_.setItem(__md_scope(t,n),JSON.stringify(e))}catch(t){}}</script>
+    <script>function __md_scope(t,e="../.."){return new URL(e,location).pathname+"."+t}function __md_get(t,e=localStorage,_){return JSON.parse(e.getItem(__md_scope(t,_)))}function __md_set(t,e,_=localStorage,n){try{_.setItem(__md_scope(t,n),JSON.stringify(e))}catch(t){}}</script>
     
       
 
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#combined-input" class="md-skip">
+        <a href="#custom-policies" class="md-skip">
           Skip to content
         </a>
       
@@ -91,9 +91,9 @@
 
 <header class="md-header md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../../imgs/logo-white.svg" alt="logo">
+  <img src="../../imgs/logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Combine
+              Overview
             
           </span>
         </div>
@@ -180,7 +180,7 @@
 
 
   <li class="md-tabs__item">
-    <a href="../../.." class="md-tabs__link">
+    <a href="../.." class="md-tabs__link">
       HOME
     </a>
   </li>
@@ -195,7 +195,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../getting-started/overview/" class="md-tabs__link">
+      <a href="../../getting-started/overview/" class="md-tabs__link">
         Getting started
       </a>
     </li>
@@ -216,7 +216,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../vulnerability/scanning/" class="md-tabs__link">
+      <a href="../../vulnerability/scanning/" class="md-tabs__link">
         Vulnerability
       </a>
     </li>
@@ -241,7 +241,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../" class="md-tabs__link md-tabs__link--active">
+      <a href="../" class="md-tabs__link md-tabs__link--active">
         Misconfiguration
       </a>
     </li>
@@ -259,7 +259,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../advanced/" class="md-tabs__link">
+      <a href="../../advanced/" class="md-tabs__link">
         Advanced
       </a>
     </li>
@@ -293,9 +293,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../../imgs/logo-white.svg" alt="logo">
+  <img src="../../imgs/logo-white.svg" alt="logo">
 
     </a>
     Trivy
@@ -324,7 +324,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         HOME
       </a>
     </li>
@@ -365,7 +365,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/overview/" class="md-nav__link">
+      <a href="../../getting-started/overview/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -379,7 +379,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/installation/" class="md-nav__link">
+      <a href="../../getting-started/installation/" class="md-nav__link">
         Installation
       </a>
     </li>
@@ -393,7 +393,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/quickstart/" class="md-nav__link">
+      <a href="../../getting-started/quickstart/" class="md-nav__link">
         Quick Start
       </a>
     </li>
@@ -407,7 +407,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/troubleshooting/" class="md-nav__link">
+      <a href="../../getting-started/troubleshooting/" class="md-nav__link">
         Troubleshooting
       </a>
     </li>
@@ -421,7 +421,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/further/" class="md-nav__link">
+      <a href="../../getting-started/further/" class="md-nav__link">
         Further Reading
       </a>
     </li>
@@ -435,7 +435,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/credit/" class="md-nav__link">
+      <a href="../../getting-started/credit/" class="md-nav__link">
         Credits
       </a>
     </li>
@@ -503,7 +503,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/cli/" class="md-nav__link">
+      <a href="../../getting-started/cli/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -517,7 +517,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/cli/image/" class="md-nav__link">
+      <a href="../../getting-started/cli/image/" class="md-nav__link">
         Image
       </a>
     </li>
@@ -531,7 +531,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/cli/config/" class="md-nav__link">
+      <a href="../../getting-started/cli/config/" class="md-nav__link">
         Config
       </a>
     </li>
@@ -545,7 +545,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/cli/fs/" class="md-nav__link">
+      <a href="../../getting-started/cli/fs/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -559,7 +559,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/cli/repo/" class="md-nav__link">
+      <a href="../../getting-started/cli/repo/" class="md-nav__link">
         Repository
       </a>
     </li>
@@ -573,7 +573,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/cli/client/" class="md-nav__link">
+      <a href="../../getting-started/cli/client/" class="md-nav__link">
         Client
       </a>
     </li>
@@ -587,7 +587,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/cli/server/" class="md-nav__link">
+      <a href="../../getting-started/cli/server/" class="md-nav__link">
         Server
       </a>
     </li>
@@ -677,7 +677,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -691,7 +691,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/image/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/image/" class="md-nav__link">
         Container Image
       </a>
     </li>
@@ -705,7 +705,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/filesystem/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -719,7 +719,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/git-repository/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/git-repository/" class="md-nav__link">
         Git Repository
       </a>
     </li>
@@ -768,7 +768,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/os/" class="md-nav__link">
+      <a href="../../vulnerability/detection/os/" class="md-nav__link">
         OS Packages
       </a>
     </li>
@@ -782,7 +782,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/language/" class="md-nav__link">
+      <a href="../../vulnerability/detection/language/" class="md-nav__link">
         Language-specific Packages
       </a>
     </li>
@@ -796,7 +796,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/data-source/" class="md-nav__link">
+      <a href="../../vulnerability/detection/data-source/" class="md-nav__link">
         Data Sources
       </a>
     </li>
@@ -810,7 +810,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/supported/" class="md-nav__link">
+      <a href="../../vulnerability/detection/supported/" class="md-nav__link">
         Supported
       </a>
     </li>
@@ -859,7 +859,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/filter/" class="md-nav__link">
+      <a href="../../vulnerability/examples/filter/" class="md-nav__link">
         Vulnerability Filtering
       </a>
     </li>
@@ -873,7 +873,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/report/" class="md-nav__link">
+      <a href="../../vulnerability/examples/report/" class="md-nav__link">
         Report Formats
       </a>
     </li>
@@ -887,7 +887,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/db/" class="md-nav__link">
+      <a href="../../vulnerability/examples/db/" class="md-nav__link">
         Vulnerability DB
       </a>
     </li>
@@ -901,7 +901,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/cache/" class="md-nav__link">
+      <a href="../../vulnerability/examples/cache/" class="md-nav__link">
         Cache
       </a>
     </li>
@@ -915,7 +915,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/others/" class="md-nav__link">
+      <a href="../../vulnerability/examples/others/" class="md-nav__link">
         Others
       </a>
     </li>
@@ -1000,7 +1000,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1014,7 +1014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../iac/" class="md-nav__link">
+      <a href="../iac/" class="md-nav__link">
         Infrastructure as Code
       </a>
     </li>
@@ -1028,7 +1028,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../filesystem/" class="md-nav__link">
+      <a href="../filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -1077,7 +1077,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../policy/builtin/" class="md-nav__link">
+      <a href="../policy/builtin/" class="md-nav__link">
         Built-in Policies
       </a>
     </li>
@@ -1091,99 +1091,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../policy/custom/" class="md-nav__link">
-        Custom Policies
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_4_3">
-          Examples
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Examples" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_3">
-          <span class="md-nav__icon md-icon"></span>
-          Examples
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../examples/policy/" class="md-nav__link">
-        Policy
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../examples/filter/" class="md-nav__link">
-        Filtering
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../examples/report/" class="md-nav__link">
-        Report Formats
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../examples/others/" class="md-nav__link">
-        Others
+      <a href="../policy/exceptions/" class="md-nav__link">
+        Exceptions
       </a>
     </li>
   
@@ -1210,20 +1119,20 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_4" type="checkbox" id="__nav_4_4" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_4">
-          Advanced
+        <label class="md-nav__link" for="__nav_4_3">
+          Custom Policies
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Advanced" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_4">
+      <nav class="md-nav" aria-label="Custom Policies" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_3">
           <span class="md-nav__icon md-icon"></span>
-          Advanced
+          Custom Policies
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1243,12 +1152,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Combine
+          Overview
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Combine
+        Overview
       </a>
       
         
@@ -1270,19 +1179,66 @@
     Overview
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#return-value" class="md-nav__link">
-    Return value
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file-formats" class="md-nav__link">
+    File formats
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-languages" class="md-nav__link">
+    Configuration languages
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    Example
+  <a href="#rego-format" class="md-nav__link">
+    Rego format
   </a>
+  
+    <nav class="md-nav" aria-label="Rego format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy-structure" class="md-nav__link">
+    Policy structure
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#package" class="md-nav__link">
+    Package
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    Metadata
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input" class="md-nav__link">
+    Input
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1301,8 +1257,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../exceptions/" class="md-nav__link">
-        Exceptions
+      <a href="data/" class="md-nav__link">
+        Data
       </a>
     </li>
   
@@ -1315,8 +1271,141 @@
   
   
     <li class="md-nav__item">
-      <a href="../testing/" class="md-nav__link">
+      <a href="combine/" class="md-nav__link">
+        Combine
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="testing/" class="md-nav__link">
         Testing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="debug/" class="md-nav__link">
+        Debugging Policies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="examples/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_4" type="checkbox" id="__nav_4_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_4">
+          Options
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Options" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_4">
+          <span class="md-nav__icon md-icon"></span>
+          Options
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../options/policy/" class="md-nav__link">
+        Policy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../options/filter/" class="md-nav__link">
+        Filtering
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../options/report/" class="md-nav__link">
+        Report Formats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../options/others/" class="md-nav__link">
+        Others
       </a>
     </li>
   
@@ -1370,7 +1459,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/" class="md-nav__link">
+      <a href="../../advanced/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1384,7 +1473,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/plugins/" class="md-nav__link">
+      <a href="../../advanced/plugins/" class="md-nav__link">
         Plugins
       </a>
     </li>
@@ -1398,7 +1487,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/air-gap/" class="md-nav__link">
+      <a href="../../advanced/air-gap/" class="md-nav__link">
         Air-Gapped Environment
       </a>
     </li>
@@ -1440,7 +1529,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/integrations/" class="md-nav__link">
+      <a href="../../advanced/integrations/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1454,7 +1543,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/integrations/github-actions/" class="md-nav__link">
+      <a href="../../advanced/integrations/github-actions/" class="md-nav__link">
         GitHub Actions
       </a>
     </li>
@@ -1468,7 +1557,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/integrations/circleci/" class="md-nav__link">
+      <a href="../../advanced/integrations/circleci/" class="md-nav__link">
         CircleCI
       </a>
     </li>
@@ -1482,7 +1571,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/integrations/travis-ci/" class="md-nav__link">
+      <a href="../../advanced/integrations/travis-ci/" class="md-nav__link">
         Travis CI
       </a>
     </li>
@@ -1496,7 +1585,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/integrations/gitlab-ci/" class="md-nav__link">
+      <a href="../../advanced/integrations/gitlab-ci/" class="md-nav__link">
         GitLab CI
       </a>
     </li>
@@ -1510,7 +1599,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/integrations/aws-codepipeline/" class="md-nav__link">
+      <a href="../../advanced/integrations/aws-codepipeline/" class="md-nav__link">
         AWS CodePipeline
       </a>
     </li>
@@ -1524,7 +1613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/integrations/aws-security-hub/" class="md-nav__link">
+      <a href="../../advanced/integrations/aws-security-hub/" class="md-nav__link">
         AWS Security Hub
       </a>
     </li>
@@ -1573,7 +1662,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
+      <a href="../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
         Embed in Dockerfile
       </a>
     </li>
@@ -1587,7 +1676,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/unpacked-filesystem/" class="md-nav__link">
+      <a href="../../advanced/container/unpacked-filesystem/" class="md-nav__link">
         Unpacked container image filesystem
       </a>
     </li>
@@ -1601,7 +1690,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/oci/" class="md-nav__link">
+      <a href="../../advanced/container/oci/" class="md-nav__link">
         OCI Image
       </a>
     </li>
@@ -1615,7 +1704,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/podman/" class="md-nav__link">
+      <a href="../../advanced/container/podman/" class="md-nav__link">
         Podman
       </a>
     </li>
@@ -1655,7 +1744,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/" class="md-nav__link">
+      <a href="../../advanced/private-registries/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1669,7 +1758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/docker-hub/" class="md-nav__link">
+      <a href="../../advanced/private-registries/docker-hub/" class="md-nav__link">
         Docker Hub
       </a>
     </li>
@@ -1683,7 +1772,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/ecr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/ecr/" class="md-nav__link">
         AWS ECR (Elastic Container Registry)
       </a>
     </li>
@@ -1697,7 +1786,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/gcr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/gcr/" class="md-nav__link">
         GCR (Google Container Registry)
       </a>
     </li>
@@ -1711,7 +1800,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/self/" class="md-nav__link">
+      <a href="../../advanced/private-registries/self/" class="md-nav__link">
         Self-Hosted
       </a>
     </li>
@@ -1767,7 +1856,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/modes/standalone/" class="md-nav__link">
+      <a href="../../advanced/modes/standalone/" class="md-nav__link">
         Standalone
       </a>
     </li>
@@ -1781,7 +1870,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/modes/client-server/" class="md-nav__link">
+      <a href="../../advanced/modes/client-server/" class="md-nav__link">
         Client/Server
       </a>
     </li>
@@ -1830,7 +1919,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/contrib/help-wanted/" class="md-nav__link">
+      <a href="../../advanced/contrib/help-wanted/" class="md-nav__link">
         Help Wanted
       </a>
     </li>
@@ -1844,7 +1933,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/contrib/triage/" class="md-nav__link">
+      <a href="../../advanced/contrib/triage/" class="md-nav__link">
         Triage
       </a>
     </li>
@@ -1895,19 +1984,66 @@
     Overview
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#return-value" class="md-nav__link">
-    Return value
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file-formats" class="md-nav__link">
+    File formats
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-languages" class="md-nav__link">
+    Configuration languages
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    Example
+  <a href="#rego-format" class="md-nav__link">
+    Rego format
   </a>
+  
+    <nav class="md-nav" aria-label="Rego format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy-structure" class="md-nav__link">
+    Policy structure
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#package" class="md-nav__link">
+    Package
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    Metadata
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input" class="md-nav__link">
+    Input
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1925,47 +2061,261 @@
                 
                 
                 
-                <h1 id="combined-input">Combined input</h1>
+                <h1 id="custom-policies">Custom Policies</h1>
 <h2 id="overview">Overview</h2>
-<p>Trivy usually scans each configuration file individually. 
-Sometimes it might be useful to compare values from different configuration files simultaneously.</p>
-<p>When <code>combine</code> is set to true, all config files under the specified directory are combined into one input data structure.</p>
+<p>You can write custom policies in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a>.
+Once you fisnish writing custom policies, you can pass the directory where those policies are stored with <code>--policy</code> option.</p>
+<div class="highlight"><pre><span></span><code>trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
+</code></pre></div>
+<p>As for <code>--namespaces</code> option, the detail is described as below.</p>
+<h3 id="file-formats">File formats</h3>
+<p>If a file name matches the following file patterns, Trivy will parse the file and pass it as input to your Rego policy.</p>
+<table>
+<thead>
+<tr>
+<th>File format</th>
+<th>File pattern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JSON</td>
+<td><code>*.json</code></td>
+</tr>
+<tr>
+<td>YAML</td>
+<td><code>*.yaml</code></td>
+</tr>
+<tr>
+<td>TOML</td>
+<td><code>*.toml</code></td>
+</tr>
+<tr>
+<td>HCL</td>
+<td><code>*.hcl</code>, <code>*.hcl1</code>, and <code>*.hcl2</code></td>
+</tr>
+<tr>
+<td>Dockerfile</td>
+<td><code>Dockerfile</code>, <code>Dockerfile.*</code>, and <code>*.Dockerfile</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="configuration-languages">Configuration languages</h3>
+<p>In the above general file formats, Trivy automatically identifies the following types of configuration files:</p>
+<ul>
+<li>Ansible (YAML)</li>
+<li>CloudFormation (JSON/YAML)</li>
+<li>Kubernetes (JSON/YAML)</li>
+</ul>
+<p>This is useful for filtering inputs, as described below.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Custom policies do not support Terraform at the moment.</p>
+</div>
+<h2 id="rego-format">Rego format</h2>
+<p>A single package must contain only one policy.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>package user.kubernetes.ID001
+
+__rego_metadata__ := {
+    &quot;id&quot;: &quot;ID001&quot;,
+    &quot;title&quot;: &quot;Deployment not allowed&quot;,
+    &quot;severity&quot;: &quot;LOW&quot;,
+    &quot;type&quot;: &quot;Custom Kubernetes Check&quot;,
+    &quot;description&quot;: &quot;Deployments are not allowed because of some reasons.&quot;,
+}
+
+__rego_input__ := {
+    &quot;selector&quot;: [
+        {&quot;type&quot;: &quot;kubernetes&quot;},
+    ],
+}
+
+deny[msg] {
+    input.kind == &quot;Deployment&quot;
+    msg = sprintf(&quot;Found deployment &#39;%s&#39; but deployments are not allowed&quot;, [input.metadata.name])
+}
+</code></pre></div>
+</div>
+<p>In this example, ID001 "Deployment not allowed" is defined under <code>user.kubernetes.ID001</code>.
+If you add a new custom policy, it must be defined under a new package like <code>user.kubernetes.ID002</code>.</p>
+<h3 id="policy-structure">Policy structure</h3>
+<dl>
+<dt><code>package</code> (required)</dt>
+<dd>
+<ul>
+<li>MUST follow the Rego's <a href="https://www.openpolicyagent.org/docs/latest/policy-language/#packages">specification</a></li>
+<li>MUST be unique per policy</li>
+<li>SHOULD include policy id for uniqueness</li>
+<li>MAY include the group name such as <code>kubernetes</code> for clarity<ul>
+<li>Group name has no effect on policy evaluation</li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt><code>__rego_metadata__</code> (optional)</dt>
+<dd>
+<ul>
+<li>SHOULD be defined for clarity since these values will be displayed in the scan results</li>
+</ul>
+</dd>
+<dt><code>__rego_input__</code> (optional)</dt>
+<dd>
+<ul>
+<li>MAY be defined when you want to specify input format</li>
+</ul>
+</dd>
+<dt><code>deny</code> (required)</dt>
+<dd>
+<ul>
+<li>SHOULD be <code>deny</code> or start with <code>deny_</code><ul>
+<li>Although <code>warn</code>, <code>warn_*</code>, <code>violation</code>, <code>violation_</code> also work for compatibility, <code>deny</code> is recommended as severity can be defined in <code>__rego_metadata__</code>.</li>
+</ul>
+</li>
+<li>SHOULD return <code>string</code><ul>
+<li>Although <code>object</code> with <code>msg</code> field is accepted, other fields are dropped and <code>string</code> is recommended.</li>
+<li>e.g. <code>{"msg": "deny message", "details": "something"}</code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+<h3 id="package">Package</h3>
+<p>A package name must be unique per policy.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>package user.kubernetes.ID001
+</code></pre></div>
+</div>
+<p>By default, only <code>appshield.*</code> packages will be evaluated.
+If you define custom packages, you have to specify the package prefix via <code>--namespaces</code> option. </p>
+<div class="highlight"><pre><span></span><code>trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
+</code></pre></div>
+<p>In this case, <code>user.*</code> will be evaluated.
+Any package prefixes such as <code>main</code> and <code>user</code> are allowed.</p>
+<h3 id="metadata">Metadata</h3>
+<p>Metadata helps enrich Trivy's scan results with useful information.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>__rego_metadata__ := {
+    &quot;id&quot;: &quot;ID001&quot;,
+    &quot;title&quot;: &quot;Deployment not allowed&quot;,
+    &quot;severity&quot;: &quot;LOW&quot;,
+    &quot;type&quot;: &quot;Custom Kubernetes Check&quot;,
+    &quot;description&quot;: &quot;Deployments are not allowed because of some reasons.&quot;,
+    &quot;recommended_actions&quot;: &quot;Remove Deployment&quot;,
+    &quot;url&quot;: &quot;https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits&quot;,
+}
+</code></pre></div>
+</div>
+<p>All fields under <code>__rego_metadata__</code> are optional.</p>
+<table>
+<thead>
+<tr>
+<th>Field name</th>
+<th>Allowed values</th>
+<th align="center">Default value</th>
+<th align="center">In table</th>
+<th align="center">In JSON</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>Any characters</td>
+<td align="center">N/A</td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+</tr>
+<tr>
+<td>title</td>
+<td>Any characters</td>
+<td align="center">N/A</td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+</tr>
+<tr>
+<td>severity</td>
+<td><code>LOW</code>, <code>MEDIUM</code>, <code>HIGH</code>, <code>CRITICAL</code></td>
+<td align="center">UNKNOWN</td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+</tr>
+<tr>
+<td>type</td>
+<td>Any characters</td>
+<td align="center">N/A</td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Any characters</td>
+<td align="center"></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+</tr>
+<tr>
+<td>recommended_actions</td>
+<td>Any characters</td>
+<td align="center"></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+</tr>
+<tr>
+<td>url</td>
+<td>Any characters</td>
+<td align="center"></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+</tr>
+</tbody>
+</table>
+<p>Some fields are displayed in scan results.</p>
+<div class="highlight"><pre><span></span><code>deployment.yaml <span class="o">(</span>kubernetes<span class="o">)</span>
+<span class="o">============================</span>
+Tests: <span class="m">28</span> <span class="o">(</span>SUCCESSES: <span class="m">14</span>, FAILURES: <span class="m">14</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">14</span> <span class="o">(</span>HIGH: <span class="m">1</span><span class="o">)</span>
+
++---------------------------+------------+-------------------------------------+----------+------------------------------------------+
+<span class="p">|</span>           TYPE            <span class="p">|</span> MISCONF ID <span class="p">|</span>                CHECK                <span class="p">|</span> SEVERITY <span class="p">|</span>                 MESSAGE                  <span class="p">|</span>
++---------------------------+------------+-------------------------------------+----------+------------------------------------------+
+<span class="p">|</span> Custom Kubernetes Check   <span class="p">|</span>   ID001    <span class="p">|</span> Deployment not allowed              <span class="p">|</span>   LOW    <span class="p">|</span> Found deployment <span class="s1">&#39;test&#39;</span> but deployments  <span class="p">|</span>
+<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                                     <span class="p">|</span>          <span class="p">|</span> are not allowed                          <span class="p">|</span>
++---------------------------+------------+-------------------------------------+----------+------------------------------------------+
+</code></pre></div>
+<h3 id="input">Input</h3>
+<p>You can specify input format via <code>__rego_input__</code>.
+All fields under <code>__rego_input</code> are optional.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code>__rego_input__ := {
     &quot;combine&quot;: false,
+    &quot;selector&quot;: [
+        {&quot;type&quot;: &quot;kubernetes&quot;},
+    ],
 }
 </code></pre></div>
 </div>
-<p>In "combine" mode, the <code>input</code> document becomes an array, where each element is an object with two fields:</p>
-<ul>
-<li><code>"path": "path/to/file"</code>: the relative file path of the respective file</li>
-<li><code>"contents": ...</code>: the parsed content of the respective file</li>
-</ul>
-<p>Now you can ensure that duplicate values match across the entirety of your configuration files.</p>
-<h2 id="return-value">Return value</h2>
-<p>In "combine" mode, the <code>deny</code> entrypoint must return an object with two keys</p>
 <dl>
-<dt><code>filepath</code> (required)</dt>
-<dd>the relative file path of the file being evaluated</dd>
-<dt><code>msg</code> (required)</dt>
-<dd>the message describing an issue</dd>
-</dl>
+<dt><code>combine</code> (boolean)</dt>
+<dd>The details is <a href="combine/">here</a>.</dd>
+<dt><code>selector</code> (array)</dt>
+<dd>
+<p>This option filters the input by file formats or configuration languages. 
+In the above example, Trivy passes only Kubernetes files to this policy.
+Even if Dockerfile exists in the specified directory, it will not be passed to the policy as input.</p>
+<p>When configuration language such as Kubernetes is not identified, file format such as JSON will be used as <code>type</code>.
+When configuration language is identified, it will overwrite <code>type</code>.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code>deny[res] {
-    resource := input[i].contents
-    ... some logic ...
-
-    res := {
-        &quot;filepath&quot;: input[i].path,
-        &quot;msg&quot;: &quot;something bad&quot;,
-    }
-}
-</code></pre></div>
+<p><code>pod.yaml</code> including Kubernetes Pod will be handled as <code>kubernetes</code>, not <code>yaml</code>.
+<code>type</code> is overwritten by <code>kubernetes</code> from <code>yaml</code>.</p>
 </div>
-<h2 id="example">Example</h2>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/1c9fddb847c89159918743f11c9eec3817f32901/examples/misconf/combine">here</a></p>
+<p><code>type</code> accepts <code>kubernetes</code>, <code>dockerfile</code>, <code>ansible</code>, <code>cloudformation</code>, <code>json</code>, <code>yaml</code>, <code>toml</code>, or <code>hcl</code>.</p>
+</dd>
+</dl>
                 
               
               
@@ -1986,7 +2336,7 @@ Sometimes it might be useful to compare values from different configuration file
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../../examples/others/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Others" rel="prev">
+        <a href="../policy/exceptions/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Exceptions" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -1995,20 +2345,20 @@ Sometimes it might be useful to compare values from different configuration file
               <span class="md-footer__direction">
                 Previous
               </span>
-              Others
+              Exceptions
             </div>
           </div>
         </a>
       
       
         
-        <a href="../exceptions/" class="md-footer__link md-footer__link--next" aria-label="Next: Exceptions" rel="next">
+        <a href="data/" class="md-footer__link md-footer__link--next" aria-label="Next: Data" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Exceptions
+              Data
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -2035,10 +2385,10 @@ Sometimes it might be useful to compare values from different configuration file
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.74af7bc3.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.74af7bc3.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.b748f191.min.js"></script>
+      <script src="../../assets/javascripts/bundle.b748f191.min.js"></script>
       
     
   </body>
