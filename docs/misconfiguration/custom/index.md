@@ -1,7 +1,7 @@
 # Custom Policies
 
 ## Overview
-You can write custom policies in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/).
+You can write custom policies in [Rego][rego].
 Once you fisnish writing custom policies, you can pass the directory where those policies are stored with `--policy` option.
 
 ``` bash
@@ -66,7 +66,7 @@ If you add a new custom policy, it must be defined under a new package like `use
 ### Policy structure
 
 `package` (required)
-:   - MUST follow the Rego's [specification](https://www.openpolicyagent.org/docs/latest/policy-language/#packages)
+:   - MUST follow the Rego's [specification][package]
     - MUST be unique per policy
     - SHOULD include policy id for uniqueness
     - MAY include the group name such as `kubernetes` for clarity
@@ -178,3 +178,6 @@ All fields under `__rego_input` are optional.
         `type` is overwritten by `kubernetes` from `yaml`.
 
     `type` accepts `kubernetes`, `dockerfile`, `ansible`, `cloudformation`, `json`, `yaml`, `toml`, or `hcl`.
+
+[rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
+[package]: https://www.openpolicyagent.org/docs/latest/policy-language/#packages

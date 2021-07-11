@@ -12,6 +12,9 @@ Only Terraform's policies are currently powered by [tfsec][tfsec].
 | Dockerfile     | [AppShield][docker]           |
 | Terraform      | [tfsec][tfsec-checks]         |
 
+Most of policies are from [Best practices for writing Dockerfiles][dockerfile-bestpractice], [Pod Security Standards][pss], and best practices from cloud providers such as [Azure best practices for network security][azure].
+Also, some policies are powered by [KICS][kics].
+
 For suggestions or issues regarding policy content, please open an issue under [AppShield][appshield] or [tfsec][tfsec] repository.
 
 CloudFormation and Ansible are coming soon.
@@ -31,3 +34,8 @@ Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if th
 [tfsec-checks]: https://tfsec.dev/docs/aws/home/
 [tfsec]: https://github.com/tfsec/tfsec
 [ghcr]: https://github.com/aquasecurity/appshield/pkgs/container/appshield
+
+[dockerfile-bestpractice]: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+[pss]: https://kubernetes.io/docs/concepts/security/pod-security-standards/
+[azure]: https://docs.microsoft.com/en-us/azure/security/fundamentals/network-best-practices
+[kics]: https://github.com/Checkmarx/kics/

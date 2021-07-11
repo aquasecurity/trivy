@@ -3,6 +3,9 @@ When working on more complex queries (or when learning Rego), it's useful to see
 For this purpose you can use the `--trace` flag.
 This will output a large trace from Open Policy Agent like the following:
 
+!!! tip
+    Only failed policies show traces. If you want to debug a passed policy, you need to make it fail on purpose.
+
 ```bash
 $ trivy conf --trace configs/
 2021-07-11T16:45:58.493+0300    INFO    Detected config files: 1
