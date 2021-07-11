@@ -76,27 +76,37 @@ func (results Results) Failed() bool {
 	return false
 }
 
+type Option struct {
+	Format         string
+	Output         io.Writer
+	Severities     []dbTypes.Severity
+	OutputTemplate string
+	Light          bool
+
+	// For misconfigurations
+	IncludeSuccesses bool
+}
+
 // Write writes the result to output, format as passed in argument
-func Write(format string, output io.Writer, severities []dbTypes.Severity, report Report,
-	outputTemplate string, light, includeSuccesses bool) error {
+func Write(report Report, option Option) error {
 	var writer Writer
-	switch format {
+	switch option.Format {
 	case "table":
 		writer = &TableWriter{
-			Output:           output,
-			Severities:       severities,
-			Light:            light,
-			IncludeSuccesses: includeSuccesses,
+			Output:           option.Output,
+			Severities:       option.Severities,
+			Light:            option.Light,
+			IncludeSuccesses: option.IncludeSuccesses,
 		}
 	case "json":
-		writer = &JSONWriter{Output: output}
+		writer = &JSONWriter{Output: option.Output}
 	case "template":
 		var err error
-		if writer, err = NewTemplateWriter(output, outputTemplate); err != nil {
+		if writer, err = NewTemplateWriter(option.Output, option.OutputTemplate); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
 	default:
-		return xerrors.Errorf("unknown format: %v", format)
+		return xerrors.Errorf("unknown format: %v", option.Format)
 	}
 
 	if err := writer.Write(report); err != nil {

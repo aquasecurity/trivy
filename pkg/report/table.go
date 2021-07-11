@@ -17,9 +17,13 @@ import (
 
 // TableWriter implements Writer and output in tabular form
 type TableWriter struct {
-	Severities       []dbTypes.Severity
-	Output           io.Writer
-	Light            bool
+	Severities []dbTypes.Severity
+	Output     io.Writer
+
+	// For vulnerabilities
+	Light bool
+
+	// For misconfigurations
 	IncludeSuccesses bool
 }
 

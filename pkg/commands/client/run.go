@@ -79,7 +79,15 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 		results[i].Misconfigurations = misconfs
 	}
 
-	if err = pkgReport.Write(opt.Format, opt.Output, opt.Severities, report, opt.Template, false, opt.IncludeSuccesses); err != nil {
+	if err = pkgReport.Write(report, pkgReport.Option{
+		Format:           opt.Format,
+		Output:           opt.Output,
+		Severities:       opt.Severities,
+		OutputTemplate:   opt.Template,
+		Light:            false,
+		IncludeSuccesses: opt.IncludeSuccesses,
+		Trace:            opt.Trace,
+	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
