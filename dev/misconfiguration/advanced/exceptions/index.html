@@ -1280,15 +1280,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#rule-based-exceptions" class="md-nav__link">
-    Rule-based exceptions
+  <a href="#namespace-based-exceptions" class="md-nav__link">
+    Namespace-based exceptions
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#namespace-based-exceptions" class="md-nav__link">
-    Namespace-based exceptions
+  <a href="#rule-based-exceptions" class="md-nav__link">
+    Rule-based exceptions
   </a>
   
 </li>
@@ -1884,15 +1884,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#rule-based-exceptions" class="md-nav__link">
-    Rule-based exceptions
+  <a href="#namespace-based-exceptions" class="md-nav__link">
+    Namespace-based exceptions
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#namespace-based-exceptions" class="md-nav__link">
-    Namespace-based exceptions
+  <a href="#rule-based-exceptions" class="md-nav__link">
+    Rule-based exceptions
   </a>
   
 </li>
@@ -1912,16 +1912,38 @@
                 
                 
                 <h1 id="exceptions">Exceptions</h1>
-<p>Trivy supports two types of exceptions.</p>
+<p>Exceptions lets you to specify cases where you allow policy violations.
+Trivy supports two types of exceptions.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>Exceptions can be applied to built-in policies as well as custom policies.</p>
 </div>
+<h2 id="namespace-based-exceptions">Namespace-based exceptions</h2>
+<p>There are some cases where you need to disable built-in policies partially or fully.
+Namespace-based exceptions lets you rough choose which individual packages to exempt.</p>
+<p>To use namespace-based exceptions, create a Rego rule with the name <code>exception</code> that returns the package names to exempt.
+The <code>exception</code> rule must be defined under <code>namespace.exceptions</code>.
+<code>data.namespaces</code> includes all package names.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>package namespace.exceptions
+
+import data.namespaces
+
+exception[ns] {
+    ns := data.namespaces[_]
+    startswith(ns, &quot;appshield&quot;)
+}
+</code></pre></div>
+</div>
+<p>This example exempts all built-in policies for Kubernetes.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/1c9fddb847c89159918743f11c9eec3817f32901/examples/misconf/namespace-exception">an example</a>.</p>
 <h2 id="rule-based-exceptions">Rule-based exceptions</h2>
-<p>There might be cases where rules might not apply under certain circumstances.
-For those occasions, you can use rule-based exceptions. 
-Rule-based exceptions are also written in Rego, and allow you to specify policies for when a given <code>deny</code> rule does not apply.</p>
-<p>Inputs matched by the exception will be exempted from the rules specified in rules, prefixed by <code>deny_</code>:</p>
+<p>There are some cases where you need more flexibility and granularity in defining which cases to exempt.
+Rule-based exceptions lets you granularly choose which individual rules to exempt, while also declaring under which conditions to exempt them.</p>
+<p>To use rule-based exceptions, create a Rego rule with the name <code>exception</code> that returns the rule name suffixes to exempt, prefixed by <code>deny_</code> (for example, returning <code>foo</code> will exempt <code>deny_foo</code>). 
+The rule can make any other assertion, for example, on the input or data documents. 
+This is useful to specify the exemption for a specific case.</p>
 <p>Note that if you specify the empty string, the exception will match all rules named <code>deny</code>.</p>
 <div class="highlight"><pre><span></span><code>exception[rules] {
     # Logic
@@ -1967,28 +1989,7 @@ exception[rules] {
 </div>
 <p>This exception is applied to <a href="https://github.com/aquasecurity/appshield/blob/57bccc1897b2500a731415bda3990b0d4fbc959e/kubernetes/policies/pss/restricted/3_runs_as_root.rego">KSV012</a> in AppShield.
 You can get the package names in <a href="https://github.com/aquasecurity/appshield/">AppShield repository</a> or the JSON output from Trivy.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/69f1aaaab7db4304174eed37ae39f2c15e864651/examples/misconf/rule-exception">the example</a></p>
-<h2 id="namespace-based-exceptions">Namespace-based exceptions</h2>
-<p>You might want to disable built-in policies partially or fully.
-For those occasions, you can use namespace-based exceptions.
-Namespace-based exceptions are also written in Rego, and allow you to specify packages where you want to disable.</p>
-<p>The package name must be <code>namespace.exceptions</code>.
-Packages returned by <code>exception</code> will be exempted.
-<code>data.namespaces</code> includes all package names.</p>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code>    package namespace.exceptions
-
-    import data.namespaces
-
-    exception[ns] {
-        ns := data.namespaces[_]
-        startswith(ns, &quot;appshield&quot;)
-    }
-</code></pre></div>
-</div>
-<p>This example exempts all built-in policies for Kubernetes.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/69f1aaaab7db4304174eed37ae39f2c15e864651/examples/misconf/namespace-exception">the example</a></p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/1c9fddb847c89159918743f11c9eec3817f32901/examples/misconf/rule-exception">an example</a>.</p>
                 
               
               

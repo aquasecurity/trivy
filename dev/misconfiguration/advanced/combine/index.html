@@ -1927,8 +1927,9 @@
                 
                 <h1 id="combined-input">Combined input</h1>
 <h2 id="overview">Overview</h2>
-<p>You might want to compare multiple values from different configurations simultaneously.
-When <code>combine</code> is set to true, all config files under the specified directory are combined into one input data structure.</p>
+<p>Trivy usually scans each configuration file individually. 
+Sometimes it might be useful to compare values from different configuration files simultaneously.</p>
+<p>When <code>combine</code> is set to true, all config files under the specified directory are combined into one input data structure.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code>__rego_input__ := {
@@ -1936,12 +1937,14 @@ When <code>combine</code> is set to true, all config files under the specified d
 }
 </code></pre></div>
 </div>
-<p>In "combine" mode, the <code>input</code> document becomes an array, where each element is an object with two fields:
-- <code>"path": "path/to/file"</code>: the relative file path of the respective file
-- <code>"contents": ...</code>: the parsed content of the respective file
-Now you can ensure that duplicate values match across the entirety of your configuration files.</p>
+<p>In "combine" mode, the <code>input</code> document becomes an array, where each element is an object with two fields:</p>
+<ul>
+<li><code>"path": "path/to/file"</code>: the relative file path of the respective file</li>
+<li><code>"contents": ...</code>: the parsed content of the respective file</li>
+</ul>
+<p>Now you can ensure that duplicate values match across the entirety of your configuration files.</p>
 <h2 id="return-value">Return value</h2>
-<p>The <code>deny</code> entrypoint must return an object with two keys</p>
+<p>In "combine" mode, the <code>deny</code> entrypoint must return an object with two keys</p>
 <dl>
 <dt><code>filepath</code> (required)</dt>
 <dd>the relative file path of the file being evaluated</dd>
@@ -1962,7 +1965,7 @@ Now you can ensure that duplicate values match across the entirety of your confi
 </code></pre></div>
 </div>
 <h2 id="example">Example</h2>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/69f1aaaab7db4304174eed37ae39f2c15e864651/examples/misconf/combine">here</a></p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/1c9fddb847c89159918743f11c9eec3817f32901/examples/misconf/combine">here</a></p>
                 
               
               
