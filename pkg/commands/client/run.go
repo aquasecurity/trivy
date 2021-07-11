@@ -70,13 +70,14 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 	resultClient := initializeResultClient()
 	results := report.Results
 	for i := range results {
-		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
+		vulns, misconfSummary, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
 			opt.Severities, opt.IgnoreUnfixed, opt.IncludeSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return xerrors.Errorf("filter error: %w", err)
 		}
 		results[i].Vulnerabilities = vulns
 		results[i].Misconfigurations = misconfs
+		results[i].MisconfSummary = misconfSummary
 	}
 
 	if err = pkgReport.Write(report, pkgReport.Option{

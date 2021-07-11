@@ -234,23 +234,18 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 
 		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
 
-		summary := new(report.MisconfSummary)
 		var detected []types.DetectedMisconfiguration
 
 		for _, f := range misconf.Failures {
-			summary.Failures++
 			detected = append(detected, toDetectedMisconfiguration(f, dbTypes.SeverityCritical, types.StatusFailure, misconf.Layer))
 		}
 		for _, w := range misconf.Warnings {
-			summary.Failures++
 			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityMedium, types.StatusFailure, misconf.Layer))
 		}
 		for _, w := range misconf.Successes {
-			summary.Successes++
 			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusPassed, misconf.Layer))
 		}
 		for _, w := range misconf.Exceptions {
-			summary.Exceptions++
 			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusException, misconf.Layer))
 		}
 
@@ -258,7 +253,6 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 			Target:            misconf.FilePath,
 			Class:             report.ClassConfig,
 			Type:              misconf.FileType,
-			MisconfSummary:    summary,
 			Misconfigurations: detected,
 		})
 	}

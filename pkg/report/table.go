@@ -43,27 +43,14 @@ func (tw TableWriter) Write(report Report) error {
 func (tw TableWriter) write(result Result) {
 	table := tablewriter.NewWriter(tw.Output)
 
-	var total int
 	var severityCount map[string]int
 	if len(result.Vulnerabilities) != 0 {
-		total, severityCount = tw.writeVulnerabilities(table, result.Vulnerabilities)
+		severityCount = tw.writeVulnerabilities(table, result.Vulnerabilities)
 	} else if len(result.Misconfigurations) != 0 {
 		severityCount = tw.writeMisconfigurations(table, result.Misconfigurations)
 	}
 
-	var severities []string
-	for _, sev := range tw.Severities {
-		severities = append(severities, sev.String())
-	}
-
-	var results []string
-	for _, severity := range dbTypes.SeverityNames {
-		if !utils.StringInSlice(severity, severities) {
-			continue
-		}
-		r := fmt.Sprintf("%s: %d", severity, severityCount[severity])
-		results = append(results, r)
-	}
+	total, summaries := tw.summary(severityCount)
 
 	target := result.Target
 	if result.Class != ClassOSPkg {
@@ -77,10 +64,10 @@ func (tw TableWriter) write(result Result) {
 		summary := result.MisconfSummary
 		fmt.Printf("Tests: %d (SUCCESSES: %d, FAILURES: %d, EXCEPTIONS: %d)\n",
 			summary.Successes+summary.Failures+summary.Exceptions, summary.Successes, summary.Failures, summary.Exceptions)
-		fmt.Printf("Failures: %d (%s)\n\n", summary.Failures, strings.Join(results, ", "))
+		fmt.Printf("Failures: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 	} else {
 		// for vulnerabilities
-		fmt.Printf("Total: %d (%s)\n\n", total, strings.Join(results, ", "))
+		fmt.Printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 	}
 
 	if len(result.Vulnerabilities) == 0 && len(result.Misconfigurations) == 0 {
@@ -99,7 +86,28 @@ func (tw TableWriter) write(result Result) {
 	return
 }
 
-func (tw TableWriter) writeVulnerabilities(table *tablewriter.Table, vulns []types.DetectedVulnerability) (int, map[string]int) {
+func (tw TableWriter) summary(severityCount map[string]int) (int, []string) {
+	var total int
+	var severities []string
+	for _, sev := range tw.Severities {
+		severities = append(severities, sev.String())
+	}
+
+	var summaries []string
+	for _, severity := range dbTypes.SeverityNames {
+		if !utils.StringInSlice(severity, severities) {
+			continue
+		}
+		count := severityCount[severity]
+		r := fmt.Sprintf("%s: %d", severity, count)
+		summaries = append(summaries, r)
+		total += count
+	}
+
+	return total, summaries
+}
+
+func (tw TableWriter) writeVulnerabilities(table *tablewriter.Table, vulns []types.DetectedVulnerability) map[string]int {
 	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version"}
 	if !tw.Light {
 		header = append(header, "Title")
@@ -107,7 +115,7 @@ func (tw TableWriter) writeVulnerabilities(table *tablewriter.Table, vulns []typ
 	table.SetHeader(header)
 	severityCount := tw.setVulnerabilityRows(table, vulns)
 
-	return len(vulns), severityCount
+	return severityCount
 }
 
 func (tw TableWriter) writeMisconfigurations(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) map[string]int {
@@ -202,25 +210,31 @@ func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.
 
 func (tw TableWriter) outputTrace(result Result) {
 	blue := color.New(color.FgBlue).SprintFunc()
+	green := color.New(color.FgGreen).SprintfFunc()
+	red := color.New(color.FgRed).SprintfFunc()
 
 	for _, misconf := range result.Misconfigurations {
 		if len(misconf.Traces) == 0 {
 			continue
 		}
 
-		c := color.New(color.FgGreen)
+		c := green
 		if misconf.Status == types.StatusFailure {
-			c = color.New(color.FgRed)
+			c = red
 		}
 
-		c.Fprintf(tw.Output, "\nID: %s\n", misconf.ID)
-		c.Fprintf(tw.Output, "File: %s\n", result.Target)
-		c.Fprintf(tw.Output, "Namespace: %s\n", misconf.Namespace)
-		c.Fprintf(tw.Output, "Query: %s\n", misconf.Query)
-		c.Fprintf(tw.Output, "Message: %s\n", misconf.Message)
+		tw.Println(c("\nID: %s", misconf.ID))
+		tw.Println(c("File: %s", result.Target))
+		tw.Println(c("Namespace: %s", misconf.Namespace))
+		tw.Println(c("Query: %s", misconf.Query))
+		tw.Println(c("Message: %s", misconf.Message))
 		for _, t := range misconf.Traces {
-			fmt.Fprintln(tw.Output, blue("TRAC "), t)
+			tw.Println(blue("TRACE "), t)
 		}
-		fmt.Fprintln(tw.Output)
+		tw.Println()
 	}
+}
+
+func (tw TableWriter) Println(a ...interface{}) {
+	_, _ = fmt.Fprintln(tw.Output, a...)
 }

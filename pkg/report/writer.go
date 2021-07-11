@@ -61,6 +61,10 @@ type MisconfSummary struct {
 	Exceptions int
 }
 
+func (s MisconfSummary) Empty() bool {
+	return s.Successes == 0 && s.Failures == 0 && s.Exceptions == 0
+}
+
 // Failed returns whether the result includes any vulnerabilities or misconfigurations
 func (results Results) Failed() bool {
 	for _, r := range results {
