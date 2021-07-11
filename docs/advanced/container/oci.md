@@ -1,4 +1,4 @@
-# OCI Image
+# OCI Image Layout
 
 An image directory compliant with [Open Container Image Layout Specification](https://github.com/opencontainers/image-spec/blob/master/spec.md).
 
