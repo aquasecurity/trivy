@@ -181,7 +181,7 @@ func TestReportWriter_Template(t *testing.T) {
 				OutputTemplate: tc.template,
 			})
 			assert.NoError(t, err)
-			assert.Equal(t, tc.expected, tmplWritten.String())
+			assert.Equal(t, tc.expected, got.String())
 		})
 	}
 }
