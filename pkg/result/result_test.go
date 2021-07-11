@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	ftypes "github.com/aquasecurity/fanal/types"
@@ -12,8 +13,8 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestClient_FillVulnerabilityInfo(t *testing.T) {
@@ -321,10 +322,11 @@ func TestClient_Filter(t *testing.T) {
 		policyFile    string
 	}
 	tests := []struct {
-		name         string
-		args         args
-		wantVulns    []types.DetectedVulnerability
-		wantMisconfs []types.DetectedMisconfiguration
+		name               string
+		args               args
+		wantVulns          []types.DetectedVulnerability
+		wantMisconfSummary *report.MisconfSummary
+		wantMisconfs       []types.DetectedMisconfiguration
 	}{
 		{
 			name: "happy path",
@@ -434,6 +436,11 @@ func TestClient_Filter(t *testing.T) {
 						Severity: dbTypes.SeverityHigh.String(),
 					},
 				},
+			},
+			wantMisconfSummary: &report.MisconfSummary{
+				Successes:  0,
+				Failures:   1,
+				Exceptions: 0,
 			},
 			wantMisconfs: []types.DetectedMisconfiguration{
 				{
@@ -715,10 +722,11 @@ func TestClient_Filter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := Client{}
-			gotVulns, gotMisconfs, err := c.Filter(context.Background(), tt.args.vulns, tt.args.misconfs,
+			gotVulns, gotMisconfSummary, gotMisconfs, err := c.Filter(context.Background(), tt.args.vulns, tt.args.misconfs,
 				tt.args.severities, tt.args.ignoreUnfixed, false, tt.args.ignoreFile, tt.args.policyFile)
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantVulns, gotVulns)
+			assert.Equal(t, tt.wantMisconfSummary, gotMisconfSummary)
 			assert.Equal(t, tt.wantMisconfs, gotMisconfs)
 		})
 	}

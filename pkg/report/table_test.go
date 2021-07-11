@@ -215,8 +215,12 @@ func TestReportWriter_Table(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tableWritten := bytes.Buffer{}
-			err := report.Write("table", &tableWritten, nil, report.Report{Results: tc.results},
-				"", tc.light, tc.includeSuccesses)
+			err := report.Write(report.Report{Results: tc.results}, report.Option{
+				Format:           "table",
+				Output:           &tableWritten,
+				Light:            tc.light,
+				IncludeSuccesses: tc.includeSuccesses,
+			})
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})

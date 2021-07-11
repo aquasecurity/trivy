@@ -16,6 +16,7 @@
         "Description": "It is a good practice to run the container as a non-root user.",
         "Message": "Specify at least 1 USER command in Dockerfile",
         "Namespace": "appshield.dockerfile.DS002",
+        "Query": "data.appshield.dockerfile.DS002.deny",
         "Resolution": "Add 'USER \u003cnon root user name\u003e' line to the Dockerfile",
         "Severity": "HIGH",
         "PrimaryURL": "https://avd.aquasec.com/appshield/ds002",
@@ -25,7 +26,7 @@
         ],
         "Status": "FAIL",
         "Layer": {
-          "DiffID": "sha256:0b78fcf040212c52c2fb86e2d5b1a63483d5ab07bd905f0009326329691f49aa"
+          "DiffID": "sha256:2f8334a38883ba260fc9cab989110b8eea18721ee15c319b83fa3eba8d5981ca"
         }
       }
     ]

@@ -74,7 +74,15 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		return xerrors.Errorf("filter error: %w", err)
 	}
 
-	if err = pkgReport.Write(opt.Format, opt.Output, opt.Severities, report, opt.Template, opt.Light, opt.IncludeSuccesses); err != nil {
+	if err = pkgReport.Write(report, pkgReport.Option{
+		Format:           opt.Format,
+		Output:           opt.Output,
+		Severities:       opt.Severities,
+		OutputTemplate:   opt.Template,
+		Light:            opt.Light,
+		IncludeSuccesses: opt.IncludeSuccesses,
+		Trace:            opt.Trace,
+	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
@@ -157,6 +165,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		}
 
 		configScannerOptions = config.ScannerOption{
+			Trace:        opt.Trace,
 			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespace),
 			PolicyPaths:  append(opt.PolicyPaths, builtinPolicyPaths...),
 			DataPaths:    opt.DataPaths,
@@ -183,13 +192,14 @@ func filter(ctx context.Context, opt Option, report pkgReport.Report) (pkgReport
 	results := report.Results
 	for i := range results {
 		resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
-		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
+		vulns, misconfSummary, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
 			opt.Severities, opt.IgnoreUnfixed, opt.IncludeSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return pkgReport.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 		results[i].Vulnerabilities = vulns
 		results[i].Misconfigurations = misconfs
+		results[i].MisconfSummary = misconfSummary
 	}
 	return report, nil
 }
