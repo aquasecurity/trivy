@@ -70,16 +70,25 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 	resultClient := initializeResultClient()
 	results := report.Results
 	for i := range results {
-		vulns, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
+		vulns, misconfSummary, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
 			opt.Severities, opt.IgnoreUnfixed, opt.IncludeSuccesses, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return xerrors.Errorf("filter error: %w", err)
 		}
 		results[i].Vulnerabilities = vulns
 		results[i].Misconfigurations = misconfs
+		results[i].MisconfSummary = misconfSummary
 	}
 
-	if err = pkgReport.Write(opt.Format, opt.Output, opt.Severities, report, opt.Template, false, opt.IncludeSuccesses); err != nil {
+	if err = pkgReport.Write(report, pkgReport.Option{
+		Format:           opt.Format,
+		Output:           opt.Output,
+		Severities:       opt.Severities,
+		OutputTemplate:   opt.Template,
+		Light:            false,
+		IncludeSuccesses: opt.IncludeSuccesses,
+		Trace:            opt.Trace,
+	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
@@ -124,6 +133,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 		}
 
 		configScannerOptions = config.ScannerOption{
+			Trace:        opt.Trace,
 			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespace),
 			PolicyPaths:  append(opt.PolicyPaths, builtinPolicyPaths...),
 			DataPaths:    opt.DataPaths,

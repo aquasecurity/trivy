@@ -17,6 +17,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -140,22 +141,22 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, source string) strin
 // Filter filter out the vulnerabilities
 func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
 	severities []dbTypes.Severity, ignoreUnfixed, includeSuccesses bool, ignoreFile, policyFile string) (
-	[]types.DetectedVulnerability, []types.DetectedMisconfiguration, error) {
+	[]types.DetectedVulnerability, *report.MisconfSummary, []types.DetectedMisconfiguration, error) {
 	ignoredIDs := getIgnoredIDs(ignoreFile)
 
 	filteredVulns := filterVulnerabilities(vulns, severities, ignoreUnfixed, ignoredIDs)
-	filteredMisconfs := filterMisconfigurations(misconfs, severities, includeSuccesses, ignoredIDs)
+	misconfSummary, filteredMisconfs := filterMisconfigurations(misconfs, severities, includeSuccesses, ignoredIDs)
 
 	if policyFile != "" {
 		var err error
 		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, policyFile)
 		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to apply the policy: %w", err)
+			return nil, nil, nil, xerrors.Errorf("failed to apply the policy: %w", err)
 		}
 	}
 	sort.Sort(types.BySeverity(filteredVulns))
 
-	return filteredVulns, filteredMisconfs, nil
+	return filteredVulns, misconfSummary, filteredMisconfs, nil
 }
 
 func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
@@ -191,15 +192,21 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 }
 
 func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,
-	includeSuccesses bool, ignoredIDs []string) []types.DetectedMisconfiguration {
+	includeSuccesses bool, ignoredIDs []string) (*report.MisconfSummary, []types.DetectedMisconfiguration) {
 	var filtered []types.DetectedMisconfiguration
+	summary := new(report.MisconfSummary)
+
 	for _, misconf := range misconfs {
 		// Filter misconfigurations by severity
 		for _, s := range severities {
 			if s.String() == misconf.Severity {
 				if utils.StringInSlice(misconf.ID, ignoredIDs) {
 					continue
-				} else if misconf.Status == types.StatusPassed && !includeSuccesses {
+				}
+
+				summarize(misconf.Status, summary)
+
+				if misconf.Status != types.StatusFailure && !includeSuccesses {
 					continue
 				}
 				filtered = append(filtered, misconf)
@@ -207,7 +214,23 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 			}
 		}
 	}
-	return filtered
+
+	if summary.Empty() {
+		return nil, nil
+	}
+
+	return summary, filtered
+}
+
+func summarize(status types.MisconfStatus, summary *report.MisconfSummary) {
+	switch status {
+	case types.StatusFailure:
+		summary.Failures++
+	case types.StatusPassed:
+		summary.Successes++
+	case types.StatusException:
+		summary.Exceptions++
+	}
 }
 
 func toSlice(uniqVulns map[string]types.DetectedVulnerability) []types.DetectedVulnerability {
