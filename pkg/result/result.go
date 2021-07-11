@@ -140,12 +140,12 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, source string) strin
 
 // Filter filter out the vulnerabilities
 func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
-	severities []dbTypes.Severity, ignoreUnfixed, includeSuccesses bool, ignoreFile, policyFile string) (
+	severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool, ignoreFile, policyFile string) (
 	[]types.DetectedVulnerability, *report.MisconfSummary, []types.DetectedMisconfiguration, error) {
 	ignoredIDs := getIgnoredIDs(ignoreFile)
 
 	filteredVulns := filterVulnerabilities(vulns, severities, ignoreUnfixed, ignoredIDs)
-	misconfSummary, filteredMisconfs := filterMisconfigurations(misconfs, severities, includeSuccesses, ignoredIDs)
+	misconfSummary, filteredMisconfs := filterMisconfigurations(misconfs, severities, includeNonFailures, ignoredIDs)
 
 	if policyFile != "" {
 		var err error
@@ -192,7 +192,7 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 }
 
 func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,
-	includeSuccesses bool, ignoredIDs []string) (*report.MisconfSummary, []types.DetectedMisconfiguration) {
+	includeNonFailures bool, ignoredIDs []string) (*report.MisconfSummary, []types.DetectedMisconfiguration) {
 	var filtered []types.DetectedMisconfiguration
 	summary := new(report.MisconfSummary)
 
@@ -204,9 +204,10 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 					continue
 				}
 
+				// Count successes, failures, and exceptions
 				summarize(misconf.Status, summary)
 
-				if misconf.Status != types.StatusFailure && !includeSuccesses {
+				if misconf.Status != types.StatusFailure && !includeNonFailures {
 					continue
 				}
 				filtered = append(filtered, misconf)

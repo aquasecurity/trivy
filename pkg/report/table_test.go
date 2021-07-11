@@ -13,11 +13,11 @@ import (
 
 func TestReportWriter_Table(t *testing.T) {
 	testCases := []struct {
-		name             string
-		results          report.Results
-		expectedOutput   string
-		light            bool
-		includeSuccesses bool
+		name               string
+		results            report.Results
+		expectedOutput     string
+		light              bool
+		includeNonFailures bool
 	}{
 		{
 			name: "happy path full",
@@ -169,8 +169,8 @@ func TestReportWriter_Table(t *testing.T) {
 `,
 		},
 		{
-			name:             "happy path misconfigurations with successes",
-			includeSuccesses: true,
+			name:               "happy path misconfigurations with successes",
+			includeNonFailures: true,
 			results: report.Results{
 				{
 					Target: "test",
@@ -216,10 +216,10 @@ func TestReportWriter_Table(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			tableWritten := bytes.Buffer{}
 			err := report.Write(report.Report{Results: tc.results}, report.Option{
-				Format:           "table",
-				Output:           &tableWritten,
-				Light:            tc.light,
-				IncludeSuccesses: tc.includeSuccesses,
+				Format:             "table",
+				Output:             &tableWritten,
+				Light:              tc.light,
+				IncludeNonFailures: tc.includeNonFailures,
 			})
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
