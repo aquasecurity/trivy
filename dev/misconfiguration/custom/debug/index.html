@@ -1898,6 +1898,10 @@
 <p>When working on more complex queries (or when learning Rego), it's useful to see exactly how the policy is applied.
 For this purpose you can use the <code>--trace</code> flag.
 This will output a large trace from Open Policy Agent like the following:</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Only failed policies show traces. If you want to debug a passed policy, you need to make it fail on purpose.</p>
+</div>
 <div class="highlight"><pre><span></span><code>$ trivy conf --trace configs/
 <span class="m">2021</span>-07-11T16:45:58.493+0300    INFO    Detected config files: <span class="m">1</span>
 
