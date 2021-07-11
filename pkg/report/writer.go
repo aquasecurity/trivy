@@ -85,6 +85,7 @@ type Option struct {
 
 	// For misconfigurations
 	IncludeSuccesses bool
+	Trace            bool
 }
 
 // Write writes the result to output, format as passed in argument
@@ -97,6 +98,7 @@ func Write(report Report, option Option) error {
 			Severities:       option.Severities,
 			Light:            option.Light,
 			IncludeSuccesses: option.IncludeSuccesses,
+			Trace:            option.Trace,
 		}
 	case "json":
 		writer = &JSONWriter{Output: option.Output}

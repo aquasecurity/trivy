@@ -25,6 +25,7 @@ type TableWriter struct {
 
 	// For misconfigurations
 	IncludeSuccesses bool
+	Trace            bool
 }
 
 // Write writes the result on standard output
@@ -89,6 +90,12 @@ func (tw TableWriter) write(result Result) {
 	table.SetAutoMergeCells(true)
 	table.SetRowLine(true)
 	table.Render()
+
+	// For debugging
+	if tw.Trace {
+		tw.outputTrace(result)
+	}
+
 	return
 }
 
@@ -191,4 +198,29 @@ func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.
 		table.Append(row)
 	}
 	return severityCount
+}
+
+func (tw TableWriter) outputTrace(result Result) {
+	blue := color.New(color.FgBlue).SprintFunc()
+
+	for _, misconf := range result.Misconfigurations {
+		if len(misconf.Traces) == 0 {
+			continue
+		}
+
+		c := color.New(color.FgGreen)
+		if misconf.Status == types.StatusFailure {
+			c = color.New(color.FgRed)
+		}
+
+		c.Fprintf(tw.Output, "\nID: %s\n", misconf.ID)
+		c.Fprintf(tw.Output, "File: %s\n", result.Target)
+		c.Fprintf(tw.Output, "Namespace: %s\n", misconf.Namespace)
+		c.Fprintf(tw.Output, "Query: %s\n", misconf.Query)
+		c.Fprintf(tw.Output, "Message: %s\n", misconf.Message)
+		for _, t := range misconf.Traces {
+			fmt.Fprintln(tw.Output, blue("TRAC "), t)
+		}
+		fmt.Fprintln(tw.Output)
+	}
 }

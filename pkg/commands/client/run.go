@@ -132,6 +132,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 		}
 
 		configScannerOptions = config.ScannerOption{
+			Trace:        opt.Trace,
 			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespace),
 			PolicyPaths:  append(opt.PolicyPaths, builtinPolicyPaths...),
 			DataPaths:    opt.DataPaths,

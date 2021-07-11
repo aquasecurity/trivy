@@ -259,6 +259,14 @@ var (
 		EnvVars: []string{"TRIVY_INCLUDE_SUCCESSES"},
 	}
 
+	traceFlag = cli.BoolFlag{
+		Name:    "trace",
+		Usage:   "enable more verbose trace output for custom queries",
+		Value:   false,
+		EnvVars: []string{"TRIVY_TRACE"},
+	}
+
+	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
 		&debugFlag,
@@ -606,6 +614,7 @@ func NewConfigCommand() *cli.Command {
 			stringSliceFlag(filePatterns),
 			stringSliceFlag(policyNamespaces),
 			&includeSuccesses,
+			&traceFlag,
 		},
 	}
 }

@@ -307,11 +307,13 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		Message:     msg,
 		Resolution:  res.RecommendedActions,
 		Namespace:   res.Namespace,
+		Query:       res.Query,
 		Severity:    severity.String(),
 		PrimaryURL:  primaryURL,
 		References:  res.References,
 		Status:      status,
 		Layer:       layer,
+		Traces:      res.Traces,
 	}
 }
 
