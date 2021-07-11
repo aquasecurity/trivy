@@ -17,8 +17,12 @@ type Misconfiguration struct {
 
 type MisconfResult struct {
 	Namespace      string `json:",omitempty"`
+	Query          string `json:",omitempty"`
 	Message        string `json:",omitempty"`
 	PolicyMetadata `json:",omitempty"`
+
+	// For debugging
+	Traces []string `json:",omitempty"`
 }
 
 type MisconfResults []MisconfResult

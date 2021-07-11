@@ -36,6 +36,7 @@ func TestConfigScanner_Scan(t *testing.T) {
 					Failures: types.MisconfResults{
 						{
 							Namespace: "testdata.xyz_200",
+							Query:     "data.testdata.xyz_200.deny",
 							Message:   "Old image",
 							PolicyMetadata: types.PolicyMetadata{
 								ID:       "XYZ-200",
@@ -62,6 +63,7 @@ func TestConfigScanner_Scan(t *testing.T) {
 					Successes: types.MisconfResults{
 						{
 							Namespace: "testdata.xyz_200",
+							Query:     "data.testdata.xyz_200.deny",
 							PolicyMetadata: types.PolicyMetadata{
 								ID:       "XYZ-200",
 								Type:     "Docker Security Check",

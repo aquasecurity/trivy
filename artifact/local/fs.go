@@ -43,7 +43,7 @@ func NewArtifact(dir string, c cache.ArtifactCache, disabled []analyzer.Type, op
 		return nil, xerrors.Errorf("config analyzer error: %w", err)
 	}
 
-	s, err := scanner.New(dir, opt.Namespaces, opt.PolicyPaths, opt.DataPaths)
+	s, err := scanner.New(dir, opt.Namespaces, opt.PolicyPaths, opt.DataPaths, opt.Trace)
 	if err != nil {
 		return nil, xerrors.Errorf("scanner error: %w", err)
 	}

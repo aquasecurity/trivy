@@ -46,6 +46,7 @@ func TestScanner_ScanConfig(t *testing.T) {
 				Failures: []types.MisconfResult{
 					{
 						Namespace: "testdata.kubernetes.id_100",
+						Query:     "data.testdata.kubernetes.id_100.deny",
 						Message:   "deny",
 						PolicyMetadata: types.PolicyMetadata{
 							Type:     "Kubernetes Security Check",
@@ -177,16 +178,19 @@ func TestScanner_ScanConfig(t *testing.T) {
 				Failures: types.MisconfResults{
 					types.MisconfResult{
 						Namespace:      "testdata.docker.id_300",
+						Query:          "data.testdata.docker.id_300.deny",
 						Message:        "deny",
 						PolicyMetadata: types.PolicyMetadata{ID: "N/A", Type: "N/A", Title: "N/A", Severity: "UNKNOWN"},
 					},
 					types.MisconfResult{
 						Namespace:      "testdata.kubernetes.id_100",
+						Query:          "data.testdata.kubernetes.id_100.deny",
 						Message:        "deny",
 						PolicyMetadata: types.PolicyMetadata{ID: "ID-100", Type: "Kubernetes Security Check", Title: "Bad Deployment", Severity: "HIGH"},
 					},
 					types.MisconfResult{
 						Namespace:      "testdata.kubernetes.id_200",
+						Query:          "data.testdata.kubernetes.id_200.deny",
 						Message:        "deny",
 						PolicyMetadata: types.PolicyMetadata{ID: "ID-200", Type: "Kubernetes Security Check", Title: "Bad Deployment", Severity: "CRITICAL"},
 					},
@@ -197,7 +201,7 @@ func TestScanner_ScanConfig(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s, err := scanner.New(tt.rootDir, tt.namespaces, tt.policyPaths, tt.dataPaths)
+			s, err := scanner.New(tt.rootDir, tt.namespaces, tt.policyPaths, tt.dataPaths, false)
 			require.NoError(t, err)
 
 			got, err := s.ScanConfigs(context.Background(), tt.configs)
