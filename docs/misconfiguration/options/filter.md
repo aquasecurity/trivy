@@ -168,13 +168,13 @@ Failures: 0 (HIGH: 0, CRITICAL: 0)
 </details>
 
 ## By Exceptions
-See [Exceptions](../advanced/exceptions.md)
+See [Exceptions](../policy/exceptions.md)
 
-## Show Successes
-Use `--include-successes` option to show successes as well as failures.
+## Show Successes and Exceptions
+Use `--include-non-failures` option to show successes and exceptions as well as failures.
 
 ```bash
-trivy conf --severity CRITICAL --include-successes examples/misconf/mixed
+trivy conf --severity CRITICAL --include-non-failures examples/misconf/mixed
 ```
 
 <details>

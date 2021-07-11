@@ -48,16 +48,19 @@ nav:
         - Filesystem: misconfiguration/filesystem.md
       - Policy:
           - Built-in Policies: misconfiguration/policy/builtin.md
-          - Custom Policies: misconfiguration/policy/custom.md
-      - Examples:
-          - Policy: misconfiguration/examples/policy.md
-          - Filtering: misconfiguration/examples/filter.md
-          - Report Formats: misconfiguration/examples/report.md
-          - Others: misconfiguration/examples/others.md
-      - Advanced:
-          - Combine: misconfiguration/advanced/combine.md
-          - Exceptions: misconfiguration/advanced/exceptions.md
-          - Testing: misconfiguration/advanced/testing.md
+          - Exceptions: misconfiguration/policy/exceptions.md
+      - Custom Policies:
+          - Overview: misconfiguration/custom/index.md
+          - Data: misconfiguration/custom/data.md
+          - Combine: misconfiguration/custom/combine.md
+          - Testing: misconfiguration/custom/testing.md
+          - Debugging Policies: misconfiguration/custom/debug.md
+          - Examples: misconfiguration/custom/examples.md
+      - Options:
+          - Policy: misconfiguration/options/policy.md
+          - Filtering: misconfiguration/options/filter.md
+          - Report Formats: misconfiguration/options/report.md
+          - Others: misconfiguration/options/others.md
   - Advanced:
       - Overview: advanced/index.md
       - Plugins: advanced/plugins.md

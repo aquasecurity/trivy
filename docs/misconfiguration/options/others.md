@@ -5,7 +5,7 @@
 
 ## File patterns
 When a directory is given as an input, Trivy will recursively look for and test all files based on file patterns.
-The default file patterns are  [here](../policy/custom.md).
+The default file patterns are [here](../custom/index.md).
 
 In addition to the default file patterns, the `--file-patterns` option takes regexp patterns to look for your files.
 For example, it may be useful when your file name of Dockerfile doesn't match the default patterns.

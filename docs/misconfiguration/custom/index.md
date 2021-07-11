@@ -163,18 +163,18 @@ All fields under `__rego_input` are optional.
     ```
 
 `combine` (boolean)
-: The details is [here](../advanced/combine.md)  
+: The details is [here](combine.md).
 
 `selector` (array)
-:   This option filters the input by config types. 
+:   This option filters the input by file formats or configuration languages. 
     In the above example, Trivy passes only Kubernetes files to this policy.
     Even if Dockerfile exists in the specified directory, it will not be passed to the policy as input.
 
+    When configuration language such as Kubernetes is not identified, file format such as JSON will be used as `type`.
+    When configuration language is identified, it will overwrite `type`.
+    
+    !!! example
+        `pod.yaml` including Kubernetes Pod will be handled as `kubernetes`, not `yaml`.
+        `type` is overwritten by `kubernetes` from `yaml`.
+
     `type` accepts `kubernetes`, `dockerfile`, `ansible`, `cloudformation`, `json`, `yaml`, `toml`, or `hcl`.
-
-    !!! note
-        If the configuration type is identified, the type will be overwritten, even if the file is genera format such as JSON or YAML.  
-        For example, `deployment.yaml` will be handled as `kubernetes`, not `yaml`.
-
-## Examples
-- [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/custom-policy)

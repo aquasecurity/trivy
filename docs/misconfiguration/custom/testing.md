@@ -84,10 +84,7 @@ The following example stores allowed and denied configuration files in a directo
 
 `Dockerfile.allowed` has one successful result in `Successes`, while `Dockerfile.denied` has one failure result in `Failures`.
 
-For more details, see [this example][go-testing].
-
 [opa-testing]: https://www.openpolicyagent.org/docs/latest/policy-testing/
 [appshield]: https://github.com/aquasecurity/appshield
 [table]: https://github.com/golang/go/wiki/TableDrivenTests
 [fanal]: https://github.com/aquasecurity/fanal
-[go-testing]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/go-testing

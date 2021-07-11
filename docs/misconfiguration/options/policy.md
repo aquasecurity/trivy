@@ -9,7 +9,7 @@ cd examplex/misconf/
 trivy conf --policy custom-policy/policy --policy combine/policy --namespaces user misconf/mixed
 ```
 
-For more details, see [Custom Policies](../policy/custom.md).
+For more details, see [Custom Policies](../custom/index.md).
 
 !!! tip
     You also need to specify `--namespaces` option.
@@ -23,7 +23,7 @@ cd examples/misconf/custom-data
 trivy conf --policy ./policy --data ./data --namespaces user ./configs
 ```
 
-For more details, see [Custom Data](../policy/data.md).
+For more details, see [Custom Data](../custom/data.md).
 
 ## Pass namespaces
 By default, Trivy evaluate policies defined in `appshield.*`.

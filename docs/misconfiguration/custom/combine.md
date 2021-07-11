@@ -42,5 +42,3 @@ In "combine" mode, the `deny` entrypoint must return an object with two keys
     }
     ```
 
-## Example
-See [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/combine)
