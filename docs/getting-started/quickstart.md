@@ -1,6 +1,6 @@
 # Quick Start
 
-## Scan Vulnerabilities
+## Scan image for vulnerabilities
 
 Simply specify an image name (and a tag).
 
@@ -37,7 +37,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 For more details, see [here][vulnerability].
 
-## Scan Misconfigurations
+## Scan directory for misconfigurations
 
 Simply specify a directory containing IaC files such as Terraform and Dockerfile.
 
