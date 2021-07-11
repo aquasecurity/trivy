@@ -21,16 +21,15 @@ See [Integrations][integrations] for details.
 
 ## Features
 
-- Detect comprehensive vulnerabilities
+- Comprehensive vulnerability detection
     - [OS packages][os] (Alpine, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
     - [**Language-specific packages**][lang] (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, Maven, and Go)
 - Detect IaC misconfigurations
-    - **Out of the box**
-        - A wide variety of [built-in policies][builtin] are provided
-    - Supported IaC configs
+    - A wide variety of [built-in policies][builtin] are provided **out of the box**:
         - Kubernetes
-        - Docker  
+        - Docker
         - Terraform
+        - more coming soon
     - Support custom policies
 - Simple
     - Specify only an image name, a directory containing IaC configs, or an artifact name
