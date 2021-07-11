@@ -15,7 +15,6 @@ import (
 	"github.com/open-policy-agent/opa/loader"
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/open-policy-agent/opa/storage"
-	"github.com/open-policy-agent/opa/topdown"
 	"github.com/open-policy-agent/opa/version"
 	"golang.org/x/xerrors"
 
@@ -30,6 +29,7 @@ var (
 
 // Engine represents the policy engine.
 type Engine struct {
+	trace    bool
 	modules  map[string]*ast.Module
 	compiler *ast.Compiler
 	store    storage.Store
@@ -38,7 +38,7 @@ type Engine struct {
 }
 
 // Load returns an Engine after loading all of the specified policies and data paths.
-func Load(policyPaths []string, dataPaths []string) (*Engine, error) {
+func Load(policyPaths []string, dataPaths []string, trace bool) (*Engine, error) {
 	policies, err := loader.AllRegos(policyPaths)
 	if err != nil {
 		return nil, xerrors.Errorf("load: %w", err)
@@ -67,6 +67,7 @@ func Load(policyPaths []string, dataPaths []string) (*Engine, error) {
 	}
 
 	return &Engine{
+		trace:    trace,
 		modules:  modules,
 		compiler: compiler,
 		policies: policyContents,
@@ -304,8 +305,13 @@ func (e *Engine) checkRule(ctx context.Context, namespace, rule string, input in
 	for _, ruleResult := range ruleQueryResult.results {
 		result := types.MisconfResult{
 			Namespace:      namespace,
+			Query:          ruleQuery,
 			Message:        ruleResult.Message,
 			PolicyMetadata: metadata,
+		}
+
+		if e.trace {
+			result.Traces = ruleQueryResult.traces
 		}
 
 		if ruleResult.Message == "" {
@@ -320,6 +326,7 @@ func (e *Engine) checkRule(ctx context.Context, namespace, rule string, input in
 	if len(failures) == 0 && len(warnings) == 0 {
 		successes = append(successes, types.MisconfResult{
 			Namespace:      namespace,
+			Query:          ruleQuery,
 			PolicyMetadata: metadata,
 		})
 	}
@@ -367,8 +374,13 @@ func (e *Engine) checkRuleCombined(ctx context.Context, namespace, rule string, 
 		misconf := misconfs[ruleResult.FilePath]
 		result := types.MisconfResult{
 			Namespace:      namespace,
+			Query:          ruleQuery,
 			Message:        ruleResult.Message,
 			PolicyMetadata: metadata,
+		}
+
+		if e.trace {
+			result.Traces = ruleQueryResult.traces
 		}
 
 		if isFailure(rule) {
@@ -382,8 +394,10 @@ func (e *Engine) checkRuleCombined(ctx context.Context, namespace, rule string, 
 	// Fill successes
 	success := types.MisconfResult{
 		Namespace:      namespace,
+		Query:          ruleQuery,
 		PolicyMetadata: metadata,
 	}
+
 	for _, input := range inputs {
 		misconf, ok := misconfs[input.Path]
 		if ok {
@@ -429,11 +443,16 @@ func (e *Engine) namespaceExceptions(ctx context.Context, namespace string, conf
 		// to the query that triggered the exception so that it is known
 		// which exception was triggered.
 		if exceptionResult.Message == "" {
-			exceptions = append(exceptions, types.MisconfResult{
+			exception := types.MisconfResult{
 				Namespace:      namespace,
+				Query:          exceptionQuery,
 				Message:        exceptionQuery,
 				PolicyMetadata: metadata,
-			})
+			}
+			if e.trace {
+				exception.Traces = exceptionQueryResult.traces
+			}
+			exceptions = append(exceptions, exception)
 		}
 	}
 	return exceptions, nil
@@ -453,11 +472,16 @@ func (e *Engine) ruleExceptions(ctx context.Context, namespace, rule string, con
 		// to the query that triggered the exception so that it is known
 		// which exception was triggered.
 		if exceptionResult.Message == "" {
-			exceptions = append(exceptions, types.MisconfResult{
+			exception := types.MisconfResult{
 				Namespace:      namespace,
+				Query:          exceptionQuery,
 				Message:        exceptionQuery,
 				PolicyMetadata: metadata,
-			})
+			}
+			if e.trace {
+				exception.Traces = exceptionQueryResult.traces
+			}
+			exceptions = append(exceptions, exception)
 		}
 	}
 	return exceptions, nil
@@ -491,16 +515,16 @@ type queryValue struct {
 // data.main.deny to query the deny rule in the main namespace
 // data.main.warn to query the warn rule in the main namespace
 func (e *Engine) query(ctx context.Context, input interface{}, query string) (queryResult, error) {
-	stdout := topdown.NewBufferTracer()
 	options := []func(r *rego.Rego){
 		rego.Input(input),
 		rego.Query(query),
 		rego.Compiler(e.Compiler()),
 		rego.Store(e.Store()),
 		rego.Runtime(e.Runtime()),
-		rego.QueryTracer(stdout),
+		rego.Trace(e.trace),
 	}
-	resultSet, err := rego.New(options...).Eval(ctx)
+	regoInstance := rego.New(options...)
+	resultSet, err := regoInstance.Eval(ctx)
 	if err != nil {
 		return queryResult{}, xerrors.Errorf("evaluating policy: %w", err)
 	}
@@ -508,7 +532,8 @@ func (e *Engine) query(ctx context.Context, input interface{}, query string) (qu
 	// After the evaluation of the policy, the results of the trace (stdout) will be populated
 	// for the query. Once populated, format the trace results into a human readable format.
 	buf := new(bytes.Buffer)
-	topdown.PrettyTrace(buf, *stdout)
+	rego.PrintTrace(buf, regoInstance)
+
 	var traces []string
 	for _, line := range strings.Split(buf.String(), "\n") {
 		if len(line) > 0 {

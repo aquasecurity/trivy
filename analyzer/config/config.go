@@ -20,6 +20,7 @@ import (
 const separator = ":"
 
 type ScannerOption struct {
+	Trace        bool
 	Namespaces   []string
 	FilePatterns []string
 	PolicyPaths  []string

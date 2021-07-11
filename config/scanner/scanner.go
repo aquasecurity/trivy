@@ -27,7 +27,7 @@ type Scanner struct {
 	tfscanner *externalscan.ExternalScanner
 }
 
-func New(rootDir string, namespaces, policyPaths, dataPaths []string) (Scanner, error) {
+func New(rootDir string, namespaces, policyPaths, dataPaths []string, trace bool) (Scanner, error) {
 	scanner := Scanner{
 		rootDir:    rootDir,
 		namespaces: namespaces,
@@ -35,7 +35,7 @@ func New(rootDir string, namespaces, policyPaths, dataPaths []string) (Scanner, 
 	}
 
 	if len(namespaces) > 0 && len(policyPaths) > 0 {
-		engine, err := policy.Load(policyPaths, dataPaths)
+		engine, err := policy.Load(policyPaths, dataPaths, trace)
 		if err != nil {
 			return Scanner{}, xerrors.Errorf("policy load error: %w", err)
 		}
