@@ -8,7 +8,7 @@ Simply specify a directory containing IaC files such as Terraform and Dockerfile
 $ trivy config [YOUR_IaC_DIRECTORY]
 ```
 
-Then, Trivy pulls built-in policies from GitHub Container Registry as OCI artifact and scans IaC files with those policies.
+Trivy will automatically fetch the managed policies and will keep them up-to-date in future scans.
 
 !!! example
     ```
