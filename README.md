@@ -18,17 +18,19 @@ In addition, `Trivy` scans Infrastructure as Code (IaC) files such as Terraform 
 `Trivy` is easy to use. Just install the binary and you're ready to scan.
 All you need to do for scanning is to specify a target such as an image name of the container.
 
-<img src="docs/imgs/overview.png" width="700">
+<p align="center">
+  <img src="docs/imgs/overview.png" width="800" alt="Trivy Overview">
+</p>
 
-<figure style="text-aligh: center">
-  <img src="docs/imgs/vuln-demo.gif" width="1000">
-  <figcaption>Demo: Vulnerability Detection</figcaption>
-</figure>
+### Demo: Vulnerability Detection (Container Image)
+<p align="center">
+  <img src="docs/imgs/vuln-demo.gif" width="1000" alt="Vulnerability Detection">
+</p>
 
-<figure style="text-aligh: center">
-  <img src="docs/imgs/misconf-demo.gif" width="1000">
-  <figcaption>Demo: Misconfiguration Detection</figcaption>
-</figure>
+### Demo: Misconfiguration Detection (IaC Files)
+<p align="center">
+  <img src="docs/imgs/misconf-demo.gif" width="1000" alt="Misconfiguration Detection">
+</p>
 
 # Quick Start
 ## Scan Image for Vulnerabilities
@@ -115,7 +117,7 @@ Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
     - Kubernetes, Docker, Terraform, and more coming soon
   - Support custom policies
 - Simple
-  - Specify only an image name or artifact name
+  - Specify only an image name, a path to config files, or an artifact name
 - Fast
   - The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish in single seconds.
 - Easy installation
