@@ -1,4 +1,4 @@
-# Custom data
+# Custom Data
 Disallowed ports are defined in `data/ports.yaml`.
 They are imported in `policy/custom.rego`.
 
