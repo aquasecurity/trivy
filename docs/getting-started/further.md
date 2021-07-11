@@ -18,7 +18,7 @@
 - [Find Image Vulnerabilities Using GitHub and Aqua Security Trivy Action][actions2]
 - [Using Trivy to Discover Vulnerabilities in VS Code Projects][vscode]
 
-## 3rd-party Blogs
+## External Blogs
 - [Open Source CVE Scanner Round-Up: Clair vs Anchore vs Trivy][round-up]
 - [Docker Image Security: Static Analysis Tool Comparison – Anchore Engine vs Clair vs Trivy][tool-comparison]
 - [Research Spike: evaluate Trivy for scanning running containers][gitlab]
