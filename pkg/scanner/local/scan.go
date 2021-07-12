@@ -120,7 +120,7 @@ func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetai
 func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
 	*report.Result, bool, error) {
 	if detail.OS == nil {
-		log.Logger.Infof("Detected OS: unknown")
+		log.Logger.Debug("Detected OS: unknown")
 		return nil, false, nil
 	}
 	log.Logger.Infof("Detected OS: %s", detail.OS.Family)
