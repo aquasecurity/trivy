@@ -27,6 +27,7 @@ This section describes the differences between Trivy and Conftest.
 Trivy offers built-in policies and a variety of options, while Conftest only supports custom policies.
 In other words, Conftest is simpler and lighter.
 
+Conftest is a general testing tool for configuration files, and Trivy is more security-focused.
 People who need an out-of-the-box misconfiguration scanner should use Trivy.
 People who don't need built-in policies and write your policies should use Conftest.
 
