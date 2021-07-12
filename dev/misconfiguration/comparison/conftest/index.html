@@ -1370,6 +1370,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tfsec/" class="md-nav__link">
+        vs tfsec
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -2027,14 +2041,19 @@ This section describes the differences between Trivy and Conftest.</p>
 <td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
 </tr>
 <tr>
-<td>OPA testing</td>
+<td>Rego Unit Tests</td>
 <td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span><sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup></td>
 <td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
 </tr>
 <tr>
-<td>Go testing</td>
+<td>Go Testing</td>
 <td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
 <td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
+</tr>
+<tr>
+<td>Verbose Trace</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
 </tr>
 <tr>
 <td>Supported Formats</td>
@@ -2054,10 +2073,10 @@ People who don't need built-in policies and write your policies should use Conft
 <p>Pass only the types of configuration file as input, specified in selector&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p>To enrich the results such as ID, Title, Description, Severity, etc.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p>To enrich the results such as ID, Title, Description, etc.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:3">
-<p>Partially <a href="https://github.com/open-policy-agent/conftest/pull/243">supported</a>, but processing of metadata, such as filtering by severity, is not supported.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p>Conftest supports <a href="https://github.com/open-policy-agent/conftest/pull/243">structured errors in rules</a>, but they are free format and not natively supported by Conftest.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:4">
 <p>Trivy is not able to run <code>*_test.rego</code> like <code>conftest verify</code>.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
@@ -2106,13 +2125,13 @@ People who don't need built-in policies and write your policies should use Conft
       
       
         
-        <a href="../../../advanced/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview" rel="next">
+        <a href="../tfsec/" class="md-footer__link md-footer__link--next" aria-label="Next: vs tfsec" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Overview
+              vs tfsec
             </div>
           </div>
           <div class="md-footer__button md-icon">
