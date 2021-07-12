@@ -12,9 +12,6 @@ Only Terraform's policies are currently powered by [tfsec][tfsec].
 | Dockerfile     | [AppShield][docker]           |
 | Terraform      | [tfsec][tfsec-checks]         |
 
-Most of policies are from [Best practices for writing Dockerfiles][dockerfile-bestpractice], [Pod Security Standards][pss], and best practices from cloud providers such as [Azure best practices for network security][azure].
-Also, some policies are powered by [KICS][kics].
-
 For suggestions or issues regarding policy content, please open an issue under [AppShield][appshield] or [tfsec][tfsec] repository.
 
 CloudFormation and Ansible are coming soon.
