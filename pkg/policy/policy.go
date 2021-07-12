@@ -63,7 +63,7 @@ type Client struct {
 }
 
 // NewClient is the factory method for policy client
-func NewClient(opts ...Option) (Client, error) {
+func NewClient(opts ...Option) (*Client, error) {
 	o := &options{
 		clock: clock.RealClock{},
 	}
@@ -72,14 +72,14 @@ func NewClient(opts ...Option) (Client, error) {
 		opt(o)
 	}
 
-	return Client{
+	return &Client{
 		img:   o.img,
 		clock: o.clock,
 	}, nil
 }
 
 // LoadBuiltinPolicies loads default policies
-func (c Client) LoadBuiltinPolicies() ([]string, error) {
+func (c *Client) LoadBuiltinPolicies() ([]string, error) {
 	f, err := os.Open(manifestPath())
 	if err != nil {
 		return nil, xerrors.Errorf("manifest file open error (%s): %w", manifestPath(), err)
@@ -105,7 +105,7 @@ func (c Client) LoadBuiltinPolicies() ([]string, error) {
 }
 
 // NeedsUpdate returns if the default policy should be updated
-func (c Client) NeedsUpdate() (bool, error) {
+func (c *Client) NeedsUpdate() (bool, error) {
 	f, err := os.Open(metadataPath())
 	if err != nil {
 		log.Logger.Debugf("Failed to open the policy metadata: %s", err)
@@ -123,17 +123,8 @@ func (c Client) NeedsUpdate() (bool, error) {
 		return false, nil
 	}
 
-	if c.img == nil {
-		repo := fmt.Sprintf("%s:%d", bundleRepository, bundleVersion)
-		ref, err := name.ParseReference(repo)
-		if err != nil {
-			return false, xerrors.Errorf("repository name error (%s): %w", repo, err)
-		}
-
-		c.img, err = remote.Image(ref)
-		if err != nil {
-			return false, xerrors.Errorf("OCI repository error: %w", err)
-		}
+	if err = c.populateImage(); err != nil {
+		return false, xerrors.Errorf("OPA bundle error: %w", err)
 	}
 
 	digest, err := c.img.Digest()
@@ -156,8 +147,28 @@ func (c Client) NeedsUpdate() (bool, error) {
 
 }
 
+func (c *Client) populateImage() error {
+	if c.img == nil {
+		repo := fmt.Sprintf("%s:%d", bundleRepository, bundleVersion)
+		ref, err := name.ParseReference(repo)
+		if err != nil {
+			return xerrors.Errorf("repository name error (%s): %w", repo, err)
+		}
+
+		c.img, err = remote.Image(ref)
+		if err != nil {
+			return xerrors.Errorf("OCI repository error: %w", err)
+		}
+	}
+	return nil
+}
+
 // DownloadBuiltinPolicies download default policies from GitHub Pages
-func (c Client) DownloadBuiltinPolicies(ctx context.Context) error {
+func (c *Client) DownloadBuiltinPolicies(ctx context.Context) error {
+	if err := c.populateImage(); err != nil {
+		return xerrors.Errorf("OPA bundle error: %w", err)
+	}
+
 	layers, err := c.img.Layers()
 	if err != nil {
 		return xerrors.Errorf("OCI layer error: %w", err)
@@ -195,7 +206,7 @@ func (c Client) DownloadBuiltinPolicies(ctx context.Context) error {
 	return nil
 }
 
-func (c Client) downloadBuiltinPolicies(ctx context.Context, bundleLayer v1.Layer) error {
+func (c *Client) downloadBuiltinPolicies(ctx context.Context, bundleLayer v1.Layer) error {
 	// Take the first layer as OPA bundle
 	rc, err := bundleLayer.Compressed()
 	if err != nil {
@@ -227,7 +238,7 @@ func (c Client) downloadBuiltinPolicies(ctx context.Context, bundleLayer v1.Laye
 	return nil
 }
 
-func (c Client) updateMetadata(digest string, now time.Time) error {
+func (c *Client) updateMetadata(digest string, now time.Time) error {
 	meta := Metadata{
 		Digest:           digest,
 		LastDownloadedAt: now,
