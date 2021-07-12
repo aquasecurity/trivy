@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/ubi-7.tar.gz (redhat 7.7)",
     "Class": "os-pkgs",
     "Type": "redhat",
+    "Size":2.15145984e+08,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2015-5186",

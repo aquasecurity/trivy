@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/oraclelinux-6-slim.tar.gz (oracle 6.10)",
     "Class": "os-pkgs",
     "Type": "oracle",
+    "Size":1.26135808e+08,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-3862",

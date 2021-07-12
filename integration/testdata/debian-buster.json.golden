@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/debian-buster.tar.gz (debian 10.1)",
     "Class": "os-pkgs",
     "Type": "debian",
+    "Size":1.19199744e+08,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2011-3374",

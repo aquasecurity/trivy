@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/distroless-python27.tar.gz (debian 9.9)",
     "Class": "os-pkgs",
     "Type": "debian",
+    "Size":4.824832e+07,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-12900",

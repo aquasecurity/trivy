@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz (debian 10.2)",
     "Class": "os-pkgs",
     "Type": "debian",
+    "Size":1.5734016e+08,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-5188",

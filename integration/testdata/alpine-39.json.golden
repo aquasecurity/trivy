@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/alpine-39.tar.gz (alpine 3.9.4)",
     "Class": "os-pkgs",
     "Type": "alpine",
+    "Size":5.796352e+06,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-1549",

@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/centos-7.tar.gz (centos 7.6.1810)",
     "Class": "os-pkgs",
     "Type": "centos",
+    "Size":2.09486336e+08,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2018-5743",

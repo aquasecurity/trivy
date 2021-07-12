@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/photon-10.tar.gz (photon 1.0)",
     "Class": "os-pkgs",
     "Type": "photon",
+    "Size":1.35107584e+08,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-18276",

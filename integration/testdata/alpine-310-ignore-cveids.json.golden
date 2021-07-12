@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
     "Class": "os-pkgs",
     "Type": "alpine",
+    "Size":5.843968e+06,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2019-1551",

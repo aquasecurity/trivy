@@ -37,6 +37,7 @@ message BlobInfo {
   repeated string                  whiteout_files    = 6;
   string                           digest            = 7;
   string                           diff_id           = 8;
+  int64                            size              = 10;
 }
 
 message PutBlobRequest {

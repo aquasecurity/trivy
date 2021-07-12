@@ -101,6 +101,7 @@ func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetai
 		if err != nil {
 			return nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
 		} else if result != nil {
+			result.Size = int64(detail.Size)
 			results = append(results, *result)
 		}
 		eosl = detectedEosl

@@ -175,6 +175,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 			Class:             report.ResultClass(result.Class),
 			Type:              result.Type,
 			Packages:          ConvertFromRPCPkgs(result.Packages),
+			Size:              result.Size,
 		})
 	}
 	return results
@@ -354,6 +355,7 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		Misconfigurations: ConvertFromRPCMisconfigurations(req.BlobInfo.Misconfigurations),
 		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
 		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
+		Size:              int(req.BlobInfo.Size),
 	}
 }
 
@@ -439,6 +441,7 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 			Misconfigurations: misconfigurations,
 			OpaqueDirs:        blobInfo.OpaqueDirs,
 			WhiteoutFiles:     blobInfo.WhiteoutFiles,
+			Size:              int64(blobInfo.Size),
 		},
 	}
 }
@@ -484,6 +487,7 @@ func ConvertToRPCScanResponse(results report.Results, os *ftypes.OS, eosl bool) 
 			Vulnerabilities:   ConvertToRPCVulns(result.Vulnerabilities),
 			Misconfigurations: ConvertToRPCMisconfs(result.Misconfigurations),
 			Packages:          ConvertToRPCPkgs(result.Packages),
+			Size:              result.Size,
 		})
 	}
 

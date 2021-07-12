@@ -3,6 +3,7 @@
     "Target": "testdata/fixtures/images/debian-stretch.tar.gz (debian 9.9)",
     "Class": "os-pkgs",
     "Type": "debian",
+    "Size":1.0558208e+08,
     "Vulnerabilities": [
       {
         "VulnerabilityID": "CVE-2011-3374",
