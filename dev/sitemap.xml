@@ -201,6 +201,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/comparison/conftest/</loc>
+         <lastmod>2021-07-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/misconfiguration/custom/</loc>
          <lastmod>2021-07-12</lastmod>
          <changefreq>daily</changefreq>

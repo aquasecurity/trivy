@@ -11,7 +11,7 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/misconfiguration/policy/builtin/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/misconfiguration/comparison/conftest/">
       
       
         
@@ -21,7 +21,7 @@
     
     
       
-        <title>Built-in Policies - Trivy</title>
+        <title>vs Conftest - Trivy</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#built-in-policies" class="md-skip">
+        <a href="#vs-conftest" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Built-in Policies
+              vs Conftest
             
           </span>
         </div>
@@ -1047,16 +1047,14 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" >
       
       
       
@@ -1077,65 +1075,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Built-in Policies
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../policy/builtin/" class="md-nav__link">
         Built-in Policies
       </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#policy-sources" class="md-nav__link">
-    Policy Sources
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#policy-distribution" class="md-nav__link">
-    Policy Distribution
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#update-interval" class="md-nav__link">
-    Update Interval
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1147,7 +1091,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../exceptions/" class="md-nav__link">
+      <a href="../../policy/exceptions/" class="md-nav__link">
         Exceptions
       </a>
     </li>
@@ -1376,14 +1320,16 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_5" type="checkbox" id="__nav_4_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_5" type="checkbox" id="__nav_4_5" checked>
       
       
       
@@ -1404,11 +1350,21 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../comparison/conftest/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         vs Conftest
       </a>
+      
     </li>
   
 
@@ -1975,35 +1931,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#policy-sources" class="md-nav__link">
-    Policy Sources
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#policy-distribution" class="md-nav__link">
-    Policy Distribution
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#update-interval" class="md-nav__link">
-    Update Interval
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -2016,43 +1943,133 @@
                 
                 
                 
-                <h1 id="built-in-policies">Built-in Policies</h1>
-<h2 id="policy-sources">Policy Sources</h2>
-<p>Built-in policies are mainly written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a>.
-Those policies are managed under <a href="https://github.com/aquasecurity/appshield">AppShield repository</a>.
-Only Terraform's policies are currently powered by <a href="https://github.com/tfsec/tfsec">tfsec</a>.</p>
+                <h1 id="vs-conftest">vs Conftest</h1>
+<p><a href="https://github.com/open-policy-agent/conftest">Conftest</a> is a really nice tool to help you write tests against structured configuration data.
+Misconfiguration detection in Trivy is heavily inspired by Conftest and provides similar features Conftest has.
+This section describes the differences between Trivy and Conftest.</p>
 <table>
 <thead>
 <tr>
-<th>Config type</th>
-<th>Source</th>
+<th>Feature</th>
+<th>Trivy</th>
+<th>Conftest</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Kubernetes</td>
-<td><a href="https://github.com/aquasecurity/appshield/tree/master/kubernetes">AppShield</a></td>
+<td>Support Rego Language</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
 </tr>
 <tr>
-<td>Dockerfile</td>
-<td><a href="https://github.com/aquasecurity/appshield/tree/master/docker">AppShield</a></td>
+<td>Built-in Policies</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
 </tr>
 <tr>
-<td>Terraform</td>
-<td><a href="https://tfsec.dev/docs/aws/home/">tfsec</a></td>
+<td>Custom Policies</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+</tr>
+<tr>
+<td>Custom Data</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+</tr>
+<tr>
+<td>Combine</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+</tr>
+<tr>
+<td>Combine per Policy</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
+</tr>
+<tr>
+<td>Policy Input Selector<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
+</tr>
+<tr>
+<td>Policy Metadata<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span><sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup></td>
+</tr>
+<tr>
+<td>Filtering by Severity</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
+</tr>
+<tr>
+<td>Rule-based Exceptions</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+</tr>
+<tr>
+<td>Namespace-based Exceptions</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
+</tr>
+<tr>
+<td>Sharing Policies</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+</tr>
+<tr>
+<td>Show Successes</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
+</tr>
+<tr>
+<td>Flexible Exit Code</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
+</tr>
+<tr>
+<td>OPA testing</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span><sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+</tr>
+<tr>
+<td>Go testing</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7z"/></svg></span></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg></span></td>
+</tr>
+<tr>
+<td>Supported Formats</td>
+<td>6 formats<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup></td>
+<td>14 formats<sup id="fnref:6"><a class="footnote-ref" href="#fn:6">6</a></sup></td>
 </tr>
 </tbody>
 </table>
-<p>Most of policies are from <a href="https://docs.docker.com/develop/develop-images/dockerfile_best-practices/">Best practices for writing Dockerfiles</a>, <a href="https://kubernetes.io/docs/concepts/security/pod-security-standards/">Pod Security Standards</a>, and best practices from cloud providers such as <a href="https://docs.microsoft.com/en-us/azure/security/fundamentals/network-best-practices">Azure best practices for network security</a>.
-Also, some policies are powered by <a href="https://github.com/Checkmarx/kics/">KICS</a>.</p>
-<p>For suggestions or issues regarding policy content, please open an issue under <a href="https://github.com/aquasecurity/appshield">AppShield</a> or <a href="https://github.com/tfsec/tfsec">tfsec</a> repository.</p>
-<p>CloudFormation and Ansible are coming soon.</p>
-<h2 id="policy-distribution">Policy Distribution</h2>
-<p>AppShield policies are destributed as OPA bundle on <a href="https://github.com/aquasecurity/appshield/pkgs/container/appshield">GitHub Container Registry</a> (GHCR).
-When misconfiguration detection is enabled, Trivy pulls OPA bundle from GHCR as OCI artifact and stores it in the cache.
-Then, those policies are loaded into Trivy OPA engine and used for detecting misconfigurations.</p>
-<h2 id="update-interval">Update Interval</h2>
-<p>Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if there are any updates.</p>
+<p>Trivy offers built-in policies and a variety of options, while Conftest only supports custom policies.
+In other words, Conftest is simpler and lighter.</p>
+<p>People who need an out-of-the-box misconfiguration scanner should use Trivy.
+People who don't need built-in policies and write your policies should use Conftest.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Pass only the types of configuration file as input, specified in selector&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>To enrich the results such as ID, Title, Description, Severity, etc.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>Partially <a href="https://github.com/open-policy-agent/conftest/pull/243">supported</a>, but processing of metadata, such as filtering by severity, is not supported.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:4">
+<p>Trivy is not able to run <code>*_test.rego</code> like <code>conftest verify</code>.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:5">
+<p>Dockerfile, HCL, HCL2, JSON, TOML, and YAML&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:6">
+<p>CUE, Dockerfile, EDN, HCL, HCL2, HOCON, Ignore files, INI, JSON, Jsonnet, TOML, VCL, XML, and YAML&#160;<a class="footnote-backref" href="#fnref:6" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
                 
               
               
@@ -2073,7 +2090,7 @@ Then, those policies are loaded into Trivy OPA engine and used for detecting mis
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../../filesystem/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Filesystem" rel="prev">
+        <a href="../../options/others/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Others" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -2082,20 +2099,20 @@ Then, those policies are loaded into Trivy OPA engine and used for detecting mis
               <span class="md-footer__direction">
                 Previous
               </span>
-              Filesystem
+              Others
             </div>
           </div>
         </a>
       
       
         
-        <a href="../exceptions/" class="md-footer__link md-footer__link--next" aria-label="Next: Exceptions" rel="next">
+        <a href="../../../advanced/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Exceptions
+              Overview
             </div>
           </div>
           <div class="md-footer__button md-icon">
