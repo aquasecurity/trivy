@@ -19,8 +19,9 @@ This section describes the differences between Trivy and Conftest.
 | Sharing Policies            | :material-close:     | :material-check:     |
 | Show Successes              | :material-check:     | :material-close:     |
 | Flexible Exit Code          | :material-check:     | :material-close:     |
-| OPA testing                 | :material-close:[^4] | :material-check:     |
-| Go testing                  | :material-check:     | :material-close:     |
+| Rego Unit Tests             | :material-close:[^4] | :material-check:     |
+| Go Testing                  | :material-check:     | :material-close:     |
+| Verbose Trace               | :material-check:     | :material-check:     |
 | Supported Formats           | 6 formats[^5]        | 14 formats[^6]       |
 
 Trivy offers built-in policies and a variety of options, while Conftest only supports custom policies.
@@ -30,8 +31,8 @@ People who need an out-of-the-box misconfiguration scanner should use Trivy.
 People who don't need built-in policies and write your policies should use Conftest.
 
 [^1]: Pass only the types of configuration file as input, specified in selector
-[^2]: To enrich the results such as ID, Title, Description, Severity, etc.
-[^3]: Partially [supported][conftest-structured], but processing of metadata, such as filtering by severity, is not supported.
+[^2]: To enrich the results such as ID, Title, Description, etc.
+[^3]: Conftest supports [structured errors in rules][conftest-structured], but they are free format and not natively supported by Conftest.
 [^4]: Trivy is not able to run `*_test.rego` like `conftest verify`.
 [^5]: Dockerfile, HCL, HCL2, JSON, TOML, and YAML
 [^6]: CUE, Dockerfile, EDN, HCL, HCL2, HOCON, Ignore files, INI, JSON, Jsonnet, TOML, VCL, XML, and YAML

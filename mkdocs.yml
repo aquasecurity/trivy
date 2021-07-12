@@ -63,6 +63,7 @@ nav:
           - Others: misconfiguration/options/others.md
       - Comparison:
           - vs Conftest: misconfiguration/comparison/conftest.md
+          - vs tfsec: misconfiguration/comparison/tfsec.md
   - Advanced:
       - Overview: advanced/index.md
       - Plugins: advanced/plugins.md
