@@ -7,76 +7,111 @@ repo_url: https://github.com/aquasecurity/trivy
 edit_uri: ""
 
 nav:
-  - Overview: index.md
-  - Installation: installation.md
-  - Quick Start: quickstart.md
-  - Scanning:
-      - Overview: scanning/index.md
-      - Image: scanning/image.md
-      - Filesystem: scanning/filesystem.md
-      - Git Repository: scanning/git-repository.md
-      - Advanced:
-          - Embed in Dockerfile: scanning/advanced/embed-in-dockerfile.md
-          - Unpacked container image filesystem: scanning/advanced/unpacked-filesystem.md
-          - OCI : scanning/advanced/oci.md
-          - Podman: scanning/advanced/podman.md
-  - Modes:
-      - Standalone: modes/standalone.md
-      - Client/Server: modes/client-server.md
-  - Examples:
-      - Overview: examples/index.md
-      - Vulnerability Filtering: examples/filter.md
-      - Report Formats: examples/report.md
-      - Vulnerability DB: examples/db.md
-      - Cache: examples/cache.md
-      - Skip Traversal of Files/Directories: examples/skip.md
-      - Others: examples/others.md
-  - Integrations:
-      - Overview: integrations/index.md
-      - GitHub Actions: integrations/github-actions.md
-      - CircleCI: integrations/circleci.md
-      - Travis CI: integrations/travis-ci.md
-      - GitLab CI: integrations/gitlab-ci.md
-      - AWS CodePipeline: integrations/aws-codepipeline.md
-      - AWS Security Hub: integrations/aws-security-hub.md
-  - Private Docker Registries:
-      - Overview: private-registries/index.md
-      - Docker Hub: private-registries/docker-hub.md
-      - AWS ECR (Elastic Container Registry): private-registries/ecr.md
-      - GCR (Google Container Registry): private-registries/gcr.md
-      - Self-Hosted: private-registries/self.md
-  - Vulnerability Detection:
-      - Overview: vuln-detection/index.md
-      - OS Packages: vuln-detection/os.md
-      - Application Dependencies: vuln-detection/library.md
-      - Supported Image TAR Format: vuln-detection/image-tar-format.md
-      - Data Sources: vuln-detection/data-source.md
-  - Usage:
-      - Overview: usage/index.md
-      - Image: usage/image.md
-      - Filesystem: usage/fs.md
-      - Repository: usage/repo.md
-      - Client: usage/client.md
-      - Server: usage/server.md
-  - Plugins: plugins.md
-  - Air-Gapped Environment: air-gap.md
-  - Comparison with Other Scanners: comparison.md
-  - Further Reading: further.md
-  - FAQ: faq.md
-  - Maintainer:
-      - Help Wanted: contrib/help-wanted.md
-      - Triage: contrib/triage.md
-  - Credits: credit.md
+  - HOME: index.md
+  - Getting started:
+      - Overview: getting-started/overview.md
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quickstart.md
+      - Troubleshooting: getting-started/troubleshooting.md
+      - Further Reading: getting-started/further.md
+      - Credits: getting-started/credit.md
+      - Reference:
+          - CLI:
+              - Overview: getting-started/cli/index.md
+              - Image: getting-started/cli/image.md
+              - Config: getting-started/cli/config.md
+              - Filesystem: getting-started/cli/fs.md
+              - Repository: getting-started/cli/repo.md
+              - Client: getting-started/cli/client.md
+              - Server: getting-started/cli/server.md
+  - Vulnerability:
+      - Scanning:
+          - Overview: vulnerability/scanning/index.md
+          - Container Image: vulnerability/scanning/image.md
+          - Filesystem: vulnerability/scanning/filesystem.md
+          - Git Repository: vulnerability/scanning/git-repository.md
+      - Detection:
+          - OS Packages: vulnerability/detection/os.md
+          - Language-specific Packages: vulnerability/detection/language.md
+          - Data Sources: vulnerability/detection/data-source.md
+          - Supported: vulnerability/detection/supported.md
+      - Examples:
+          - Vulnerability Filtering: vulnerability/examples/filter.md
+          - Report Formats: vulnerability/examples/report.md
+          - Vulnerability DB: vulnerability/examples/db.md
+          - Cache: vulnerability/examples/cache.md
+          - Others: vulnerability/examples/others.md
+  - Misconfiguration:
+      - Scanning:
+        - Overview: misconfiguration/index.md
+        - Infrastructure as Code: misconfiguration/iac.md
+        - Filesystem: misconfiguration/filesystem.md
+      - Policy:
+          - Built-in Policies: misconfiguration/policy/builtin.md
+          - Exceptions: misconfiguration/policy/exceptions.md
+      - Custom Policies:
+          - Overview: misconfiguration/custom/index.md
+          - Data: misconfiguration/custom/data.md
+          - Combine: misconfiguration/custom/combine.md
+          - Testing: misconfiguration/custom/testing.md
+          - Debugging Policies: misconfiguration/custom/debug.md
+          - Examples: misconfiguration/custom/examples.md
+      - Options:
+          - Policy: misconfiguration/options/policy.md
+          - Filtering: misconfiguration/options/filter.md
+          - Report Formats: misconfiguration/options/report.md
+          - Others: misconfiguration/options/others.md
+  - Advanced:
+      - Overview: advanced/index.md
+      - Plugins: advanced/plugins.md
+      - Air-Gapped Environment: advanced/air-gap.md
+      - Integrations:
+          - Overview: advanced/integrations/index.md
+          - GitHub Actions: advanced/integrations/github-actions.md
+          - CircleCI: advanced/integrations/circleci.md
+          - Travis CI: advanced/integrations/travis-ci.md
+          - GitLab CI: advanced/integrations/gitlab-ci.md
+          - AWS CodePipeline: advanced/integrations/aws-codepipeline.md
+          - AWS Security Hub: advanced/integrations/aws-security-hub.md
+      - Container Image:
+          - Embed in Dockerfile: advanced/container/embed-in-dockerfile.md
+          - Unpacked container image filesystem: advanced/container/unpacked-filesystem.md
+          - OCI Image: advanced/container/oci.md
+          - Podman: advanced/container/podman.md
+          - Private Docker Registries:
+              - Overview: advanced/private-registries/index.md
+              - Docker Hub: advanced/private-registries/docker-hub.md
+              - AWS ECR (Elastic Container Registry): advanced/private-registries/ecr.md
+              - GCR (Google Container Registry): advanced/private-registries/gcr.md
+              - Self-Hosted: advanced/private-registries/self.md
+      - Modes:
+          - Standalone: advanced/modes/standalone.md
+          - Client/Server: advanced/modes/client-server.md
+      - Maintainer:
+          - Help Wanted: advanced/contrib/help-wanted.md
+          - Triage: advanced/contrib/triage.md
 
 theme:
     name: material
     language: 'en'
     logo: imgs/logo-white.svg
+    features:
+      - navigation.tabs
+      - navigation.tabs.sticky
+      - navigation.sections
 
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
   - admonition
+  - footnotes
+  - attr_list
+  - pymdownx.tabbed
+  - def_list
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
 
 extra:
   generator: false

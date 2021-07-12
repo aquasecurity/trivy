@@ -1,5 +1,14 @@
 name: Test
-on: pull_request
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'LICENSE'
+  pull_request:
 env:
   GO_VERSION: "1.16"
 jobs:
