@@ -11,16 +11,20 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+const (
+	SchemaVersion = 2
+)
+
 // Now returns the current time
 var Now = time.Now
 
 // Report represents a scan result
 type Report struct {
-	ArtifactName string              `json:",omitempty"`
-	ArtifactID   string              `json:",omitempty"`
-	ArtifactType ftypes.ArtifactType `json:",omitempty"`
-	Metadata     Metadata            `json:",omitempty"`
-	Results      Results             `json:",omitempty"`
+	SchemaVersion int                 `json:",omitempty"`
+	ArtifactName  string              `json:",omitempty"`
+	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
+	Metadata      Metadata            `json:",omitempty"`
+	Results       Results             `json:",omitempty"`
 }
 
 // Metadata represents a metadata of artifact
