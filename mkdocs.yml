@@ -61,6 +61,9 @@ nav:
           - Filtering: misconfiguration/options/filter.md
           - Report Formats: misconfiguration/options/report.md
           - Others: misconfiguration/options/others.md
+      - Comparison:
+          - vs Conftest: misconfiguration/comparison/conftest.md
+          - vs tfsec: misconfiguration/comparison/tfsec.md
   - Advanced:
       - Overview: advanced/index.md
       - Plugins: advanced/plugins.md
