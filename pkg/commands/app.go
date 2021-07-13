@@ -201,10 +201,10 @@ var (
 		EnvVars: []string{"TRIVY_TOKEN_HEADER"},
 	}
 
-	ignorePolicy = cli.StringFlag{
+	ignorePolicies = cli.StringSliceFlag{
 		Name:    "ignore-policy",
-		Usage:   "specify the Rego file to evaluate each vulnerability",
-		EnvVars: []string{"TRIVY_IGNORE_POLICY"},
+		Usage:   "specify the Rego file to evaluate each vulnerability, can be specified multiple times",
+		EnvVars: []string{"TRIVY_IGNORE_POLICY", "TRIVY_IGNORE_POLICIES"},
 	}
 
 	listAllPackages = cli.BoolFlag{
@@ -306,7 +306,7 @@ var (
 		&ignoreFileFlag,
 		&timeoutFlag,
 		&lightFlag,
-		&ignorePolicy,
+		&ignorePolicies,
 		&listAllPackages,
 		&cacheBackendFlag,
 		stringSliceFlag(skipFiles),
@@ -484,7 +484,7 @@ func NewFilesystemCommand() *cli.Command {
 			&cacheBackendFlag,
 			&timeoutFlag,
 			&noProgressFlag,
-			&ignorePolicy,
+			&ignorePolicies,
 			&listAllPackages,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
@@ -521,7 +521,7 @@ func NewRepositoryCommand() *cli.Command {
 			&cacheBackendFlag,
 			&timeoutFlag,
 			&noProgressFlag,
-			&ignorePolicy,
+			&ignorePolicies,
 			&listAllPackages,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
@@ -551,7 +551,7 @@ func NewClientCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,
-			&ignorePolicy,
+			&ignorePolicies,
 			stringSliceFlag(configPolicy),
 			&listAllPackages,
 

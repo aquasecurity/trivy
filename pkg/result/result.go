@@ -140,16 +140,18 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, source string) strin
 
 // Filter filter out the vulnerabilities
 func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
-	severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool, ignoreFile, policyFile string) (
+	severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool, ignoreFile string, policyFiles []string) (
 	[]types.DetectedVulnerability, *report.MisconfSummary, []types.DetectedMisconfiguration, error) {
 	ignoredIDs := getIgnoredIDs(ignoreFile)
 
 	filteredVulns := filterVulnerabilities(vulns, severities, ignoreUnfixed, ignoredIDs)
 	misconfSummary, filteredMisconfs := filterMisconfigurations(misconfs, severities, includeNonFailures, ignoredIDs)
 
-	if policyFile != "" {
+	if len(policyFiles) > 0 {
 		var err error
-		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, policyFile)
+		for _, policyFile := range policyFiles {
+			filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, policyFile)
+		}
 		if err != nil {
 			return nil, nil, nil, xerrors.Errorf("failed to apply the policy: %w", err)
 		}
