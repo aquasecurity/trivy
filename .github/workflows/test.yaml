@@ -29,6 +29,11 @@ jobs:
           version: v1.41
           args: --deadline=30m
 
+      - name: Lint - Dockerfile
+        uses: hadolint/hadolint-action@v1.5.0
+        with:
+          Dockerfile: Dockerfile
+
       - name: Run unit tests
         run: make test
 
