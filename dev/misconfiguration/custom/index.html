@@ -44,7 +44,7 @@
     
     
     
-    <script>function __md_scope(t,e="../.."){return new URL(e,location).pathname+"."+t}function __md_get(t,e=localStorage,_){return JSON.parse(e.getItem(__md_scope(t,_)))}function __md_set(t,e,_=localStorage,n){try{_.setItem(__md_scope(t,n),JSON.stringify(e))}catch(t){}}</script>
+    <script>function __md_scope(e,t,_){return new URL(_||(t===localStorage?"../..":"../.."),location).pathname+"."+e}function __md_get(e,t=localStorage,_){return JSON.parse(t.getItem(__md_scope(e,t,_)))}function __md_set(e,t,_=localStorage,o){try{_.setItem(__md_scope(e,_,o),JSON.stringify(t))}catch(e){}}</script>
     
       
 
@@ -2127,7 +2127,7 @@
                 <h1 id="custom-policies">Custom Policies</h1>
 <h2 id="overview">Overview</h2>
 <p>You can write custom policies in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a>.
-Once you fisnish writing custom policies, you can pass the directory where those policies are stored with <code>--policy</code> option.</p>
+Once you finish writing custom policies, you can pass the directory where those policies are stored with <code>--policy</code> option.</p>
 <div class="highlight"><pre><span></span><code>trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
 </code></pre></div>
 <p>As for <code>--namespaces</code> option, the detail is described as below.</p>
