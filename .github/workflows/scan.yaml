@@ -14,6 +14,7 @@ jobs:
           scan-type: 'fs'
           exit-code: '1'
           severity: 'CRITICAL'
+          skip-dirs: integration
 
       - name: Run Trivy vulnerability scanner to scan for Medium and High Vulnerabilities
         uses: aquasecurity/trivy-action@master
@@ -21,3 +22,4 @@ jobs:
           scan-type: 'fs'
           exit-code: '0'
           severity: 'HIGH,MEDIUM'
+          skip-dirs: integration

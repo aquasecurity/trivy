@@ -1,6 +1,7 @@
 [
   {
-    "Target": "testdata/fixtures/fluentd-multiple-lockfiles.tar.gz (debian 10.2)",
+    "Target": "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz (debian 10.2)",
+    "Class": "os-pkgs",
     "Type": "debian",
     "Vulnerabilities": [
       {

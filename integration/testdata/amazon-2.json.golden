@@ -1,6 +1,7 @@
 [
   {
-    "Target": "testdata/fixtures/amazon-2.tar.gz (amazon 2 (Karoo))",
+    "Target": "testdata/fixtures/images/amazon-2.tar.gz (amazon 2 (Karoo))",
+    "Class": "os-pkgs",
     "Type": "amazon",
     "Vulnerabilities": [
       {

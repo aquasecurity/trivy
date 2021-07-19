@@ -40,7 +40,7 @@ func run(c Config) (err error) {
 	}
 
 	// download the database file
-	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, true, false, c.SkipUpdate); err != nil {
+	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, true, false, c.SkipDBUpdate); err != nil {
 		return err
 	}
 

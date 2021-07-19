@@ -45,7 +45,7 @@ func TestClientServer(t *testing.T) {
 			name: "alpine 3.10 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/alpine-310.tar.gz",
+				Input:   "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.json.golden",
 		},
@@ -54,7 +54,7 @@ func TestClientServer(t *testing.T) {
 			testArgs: args{
 				Version:       "dev",
 				IgnoreUnfixed: true,
-				Input:         "testdata/fixtures/alpine-310.tar.gz",
+				Input:         "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310-ignore-unfixed.json.golden",
 		},
@@ -64,7 +64,7 @@ func TestClientServer(t *testing.T) {
 				Version:       "dev",
 				IgnoreUnfixed: true,
 				Severity:      []string{"MEDIUM", "HIGH"},
-				Input:         "testdata/fixtures/alpine-310.tar.gz",
+				Input:         "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310-medium-high.json.golden",
 		},
@@ -74,7 +74,7 @@ func TestClientServer(t *testing.T) {
 				Version:       "dev",
 				IgnoreUnfixed: false,
 				IgnoreIDs:     []string{"CVE-2019-1549", "CVE-2019-1563"},
-				Input:         "testdata/fixtures/alpine-310.tar.gz",
+				Input:         "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310-ignore-cveids.json.golden",
 		},
@@ -84,7 +84,7 @@ func TestClientServer(t *testing.T) {
 				Format:       "template",
 				TemplatePath: "@../contrib/gitlab.tpl",
 				Version:      "dev",
-				Input:        "testdata/fixtures/alpine-310.tar.gz",
+				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.gitlab.golden",
 		},
@@ -94,7 +94,7 @@ func TestClientServer(t *testing.T) {
 				Format:       "template",
 				TemplatePath: "@../contrib/gitlab-codequality.tpl",
 				Version:      "dev",
-				Input:        "testdata/fixtures/alpine-310.tar.gz",
+				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.gitlab-codequality.golden",
 		},
@@ -104,7 +104,7 @@ func TestClientServer(t *testing.T) {
 				Format:       "template",
 				TemplatePath: "@../contrib/sarif.tpl",
 				Version:      "dev",
-				Input:        "testdata/fixtures/alpine-310.tar.gz",
+				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.sarif.golden",
 		},
@@ -112,7 +112,7 @@ func TestClientServer(t *testing.T) {
 			name: "alpine 3.9 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/alpine-39.tar.gz",
+				Input:   "testdata/fixtures/images/alpine-39.tar.gz",
 			},
 			golden: "testdata/alpine-39.json.golden",
 		},
@@ -120,7 +120,7 @@ func TestClientServer(t *testing.T) {
 			name: "debian buster integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/debian-buster.tar.gz",
+				Input:   "testdata/fixtures/images/debian-buster.tar.gz",
 			},
 			golden: "testdata/debian-buster.json.golden",
 		},
@@ -129,7 +129,7 @@ func TestClientServer(t *testing.T) {
 			testArgs: args{
 				Version:       "dev",
 				IgnoreUnfixed: true,
-				Input:         "testdata/fixtures/debian-buster.tar.gz",
+				Input:         "testdata/fixtures/images/debian-buster.tar.gz",
 			},
 			golden: "testdata/debian-buster-ignore-unfixed.json.golden",
 		},
@@ -137,7 +137,7 @@ func TestClientServer(t *testing.T) {
 			name: "debian stretch integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/debian-stretch.tar.gz",
+				Input:   "testdata/fixtures/images/debian-stretch.tar.gz",
 			},
 			golden: "testdata/debian-stretch.json.golden",
 		},
@@ -145,7 +145,7 @@ func TestClientServer(t *testing.T) {
 			name: "ubuntu 18.04 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/ubuntu-1804.tar.gz",
+				Input:   "testdata/fixtures/images/ubuntu-1804.tar.gz",
 			},
 			golden: "testdata/ubuntu-1804.json.golden",
 		},
@@ -154,7 +154,7 @@ func TestClientServer(t *testing.T) {
 			testArgs: args{
 				Version:       "dev",
 				IgnoreUnfixed: true,
-				Input:         "testdata/fixtures/ubuntu-1804.tar.gz",
+				Input:         "testdata/fixtures/images/ubuntu-1804.tar.gz",
 			},
 			golden: "testdata/ubuntu-1804-ignore-unfixed.json.golden",
 		},
@@ -162,7 +162,7 @@ func TestClientServer(t *testing.T) {
 			name: "ubuntu 16.04 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/ubuntu-1604.tar.gz",
+				Input:   "testdata/fixtures/images/ubuntu-1604.tar.gz",
 			},
 			golden: "testdata/ubuntu-1604.json.golden",
 		},
@@ -170,7 +170,7 @@ func TestClientServer(t *testing.T) {
 			name: "centos 7 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/centos-7.tar.gz",
+				Input:   "testdata/fixtures/images/centos-7.tar.gz",
 			},
 			golden: "testdata/centos-7.json.golden",
 		},
@@ -179,7 +179,7 @@ func TestClientServer(t *testing.T) {
 			testArgs: args{
 				Version:       "dev",
 				IgnoreUnfixed: true,
-				Input:         "testdata/fixtures/centos-7.tar.gz",
+				Input:         "testdata/fixtures/images/centos-7.tar.gz",
 			},
 			golden: "testdata/centos-7-ignore-unfixed.json.golden",
 		},
@@ -189,7 +189,7 @@ func TestClientServer(t *testing.T) {
 				Version:       "dev",
 				IgnoreUnfixed: true,
 				Severity:      []string{"LOW", "HIGH"},
-				Input:         "testdata/fixtures/centos-7.tar.gz",
+				Input:         "testdata/fixtures/images/centos-7.tar.gz",
 			},
 			golden: "testdata/centos-7-low-high.json.golden",
 		},
@@ -197,7 +197,7 @@ func TestClientServer(t *testing.T) {
 			name: "centos 6 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/centos-6.tar.gz",
+				Input:   "testdata/fixtures/images/centos-6.tar.gz",
 			},
 			golden: "testdata/centos-6.json.golden",
 		},
@@ -205,7 +205,7 @@ func TestClientServer(t *testing.T) {
 			name: "ubi 7 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/ubi-7.tar.gz",
+				Input:   "testdata/fixtures/images/ubi-7.tar.gz",
 			},
 			golden: "testdata/ubi-7.json.golden",
 		},
@@ -213,7 +213,7 @@ func TestClientServer(t *testing.T) {
 			name: "distroless base integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/distroless-base.tar.gz",
+				Input:   "testdata/fixtures/images/distroless-base.tar.gz",
 			},
 			golden: "testdata/distroless-base.json.golden",
 		},
@@ -222,7 +222,7 @@ func TestClientServer(t *testing.T) {
 			testArgs: args{
 				Version:       "dev",
 				IgnoreUnfixed: true,
-				Input:         "testdata/fixtures/distroless-base.tar.gz",
+				Input:         "testdata/fixtures/images/distroless-base.tar.gz",
 			},
 			golden: "testdata/distroless-base-ignore-unfixed.json.golden",
 		},
@@ -230,7 +230,7 @@ func TestClientServer(t *testing.T) {
 			name: "distroless python27 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/distroless-python27.tar.gz",
+				Input:   "testdata/fixtures/images/distroless-python27.tar.gz",
 			},
 			golden: "testdata/distroless-python27.json.golden",
 		},
@@ -238,7 +238,7 @@ func TestClientServer(t *testing.T) {
 			name: "amazon 1 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/amazon-1.tar.gz",
+				Input:   "testdata/fixtures/images/amazon-1.tar.gz",
 			},
 			golden: "testdata/amazon-1.json.golden",
 		},
@@ -246,7 +246,7 @@ func TestClientServer(t *testing.T) {
 			name: "amazon 2 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/amazon-2.tar.gz",
+				Input:   "testdata/fixtures/images/amazon-2.tar.gz",
 			},
 			golden: "testdata/amazon-2.json.golden",
 		},
@@ -254,7 +254,7 @@ func TestClientServer(t *testing.T) {
 			name: "oracle 6 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/oraclelinux-6-slim.tar.gz",
+				Input:   "testdata/fixtures/images/oraclelinux-6-slim.tar.gz",
 			},
 			golden: "testdata/oraclelinux-6-slim.json.golden",
 		},
@@ -262,7 +262,7 @@ func TestClientServer(t *testing.T) {
 			name: "oracle 7 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/oraclelinux-7-slim.tar.gz",
+				Input:   "testdata/fixtures/images/oraclelinux-7-slim.tar.gz",
 			},
 			golden: "testdata/oraclelinux-7-slim.json.golden",
 		},
@@ -270,7 +270,7 @@ func TestClientServer(t *testing.T) {
 			name: "oracle 8 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/oraclelinux-8-slim.tar.gz",
+				Input:   "testdata/fixtures/images/oraclelinux-8-slim.tar.gz",
 			},
 			golden: "testdata/oraclelinux-8-slim.json.golden",
 		},
@@ -278,7 +278,7 @@ func TestClientServer(t *testing.T) {
 			name: "opensuse leap 15.1 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/opensuse-leap-151.tar.gz",
+				Input:   "testdata/fixtures/images/opensuse-leap-151.tar.gz",
 			},
 			golden: "testdata/opensuse-leap-151.json.golden",
 		},
@@ -286,7 +286,7 @@ func TestClientServer(t *testing.T) {
 			name: "opensuse leap 42.3 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/opensuse-leap-423.tar.gz",
+				Input:   "testdata/fixtures/images/opensuse-leap-423.tar.gz",
 			},
 			golden: "testdata/opensuse-leap-423.json.golden",
 		},
@@ -294,7 +294,7 @@ func TestClientServer(t *testing.T) {
 			name: "photon 1.0 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/photon-10.tar.gz",
+				Input:   "testdata/fixtures/images/photon-10.tar.gz",
 			},
 			golden: "testdata/photon-10.json.golden",
 		},
@@ -302,7 +302,7 @@ func TestClientServer(t *testing.T) {
 			name: "photon 2.0 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/photon-20.tar.gz",
+				Input:   "testdata/fixtures/images/photon-20.tar.gz",
 			},
 			golden: "testdata/photon-20.json.golden",
 		},
@@ -310,7 +310,7 @@ func TestClientServer(t *testing.T) {
 			name: "photon 3.0 integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/photon-30.tar.gz",
+				Input:   "testdata/fixtures/images/photon-30.tar.gz",
 			},
 			golden: "testdata/photon-30.json.golden",
 		},
@@ -318,7 +318,7 @@ func TestClientServer(t *testing.T) {
 			name: "buxybox with Cargo.lock integration",
 			testArgs: args{
 				Version: "dev",
-				Input:   "testdata/fixtures/busybox-with-lockfile.tar.gz",
+				Input:   "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
 			},
 			golden: "testdata/busybox-with-lockfile.json.golden",
 		},
@@ -328,7 +328,7 @@ func TestClientServer(t *testing.T) {
 				Format:       "template",
 				TemplatePath: "@../contrib/asff.tpl",
 				Version:      "dev",
-				Input:        "testdata/fixtures/alpine-310.tar.gz",
+				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.asff.golden",
 		},
@@ -338,7 +338,7 @@ func TestClientServer(t *testing.T) {
 				Format:       "template",
 				TemplatePath: "@../contrib/html.tpl",
 				Version:      "dev",
-				Input:        "testdata/fixtures/alpine-310.tar.gz",
+				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.html.golden",
 		},
@@ -376,7 +376,7 @@ func TestClientServerWithToken(t *testing.T) {
 			name: "alpine 3.10 integration with token",
 			testArgs: args{
 				Version:           "dev",
-				Input:             "testdata/fixtures/alpine-310.tar.gz",
+				Input:             "testdata/fixtures/images/alpine-310.tar.gz",
 				ClientToken:       "token",
 				ClientTokenHeader: "Trivy-Token",
 			},
@@ -386,7 +386,7 @@ func TestClientServerWithToken(t *testing.T) {
 			name: "invalid token",
 			testArgs: args{
 				Version:           "dev",
-				Input:             "testdata/fixtures/distroless-base.tar.gz",
+				Input:             "testdata/fixtures/images/distroless-base.tar.gz",
 				ClientToken:       "invalidtoken",
 				ClientTokenHeader: "Trivy-Token",
 			},
@@ -396,7 +396,7 @@ func TestClientServerWithToken(t *testing.T) {
 			name: "invalid token header",
 			testArgs: args{
 				Version:           "dev",
-				Input:             "testdata/fixtures/distroless-base.tar.gz",
+				Input:             "testdata/fixtures/images/distroless-base.tar.gz",
 				ClientToken:       "valid-token",
 				ClientTokenHeader: "Trivy-Token",
 			},
@@ -445,7 +445,7 @@ func TestClientServerWithRedis(t *testing.T) {
 	// Test parameters
 	testArgs := args{
 		Version: "dev",
-		Input:   "testdata/fixtures/centos-7.tar.gz",
+		Input:   "testdata/fixtures/images/centos-7.tar.gz",
 	}
 	golden := "testdata/centos-7.json.golden"
 
@@ -484,9 +484,8 @@ func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 	t.Helper()
 	version := "dev"
 
-	// Copy DB file
-	cacheDir, err := gunzipDB()
-	assert.NoError(t, err)
+	// Set up testing DB
+	cacheDir := gunzipDB(t)
 
 	port, err := getFreePort()
 	assert.NoError(t, err)

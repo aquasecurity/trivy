@@ -21,9 +21,9 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	"github.com/aquasecurity/trivy/rpc/common"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
@@ -156,7 +156,7 @@ func TestScanServer_Scan(t *testing.T) {
 			mockDriver := new(scanner.MockDriver)
 			mockDriver.ApplyScanExpectation(tt.scanExpectation)
 
-			s := NewScanServer(mockDriver, vulnerability.NewClient(db.Config{}))
+			s := NewScanServer(mockDriver, result.NewClient(db.Config{}))
 			got, err := s.Scan(context.Background(), tt.args.in)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)

@@ -90,8 +90,8 @@ func TestScanner_ScanArtifact(t *testing.T) {
 				},
 			},
 			want: report.Report{
-				ArtifactName: "alpine:3.11",
-				ArtifactID:   "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
+				SchemaVersion: 2,
+				ArtifactName:  "alpine:3.11",
 				Metadata: report.Metadata{
 					OS: &ftypes.OS{
 						Family: "alpine",

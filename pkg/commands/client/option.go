@@ -14,9 +14,11 @@ import (
 type Option struct {
 	option.GlobalOption
 	option.ArtifactOption
-	ListAllPkgs bool
 	option.ImageOption
 	option.ReportOption
+	option.ConfigOption
+
+	ListAllPkgs   bool
 	RemoteAddr    string
 	token         string
 	tokenHeader   string
@@ -37,11 +39,12 @@ func NewOption(c *cli.Context) (Option, error) {
 		ArtifactOption: option.NewArtifactOption(c),
 		ImageOption:    option.NewImageOption(c),
 		ReportOption:   option.NewReportOption(c),
+		ConfigOption:   option.NewConfigOption(c),
+		ListAllPkgs:    c.Bool("list-all-pkgs"),
 		RemoteAddr:     c.String("remote"),
 		token:          c.String("token"),
 		tokenHeader:    c.String("token-header"),
 		customHeaders:  c.StringSlice("custom-headers"),
-		ListAllPkgs:    c.Bool("list-all-pkgs"),
 	}, nil
 }
 

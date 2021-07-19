@@ -1,6 +1,7 @@
 [
   {
-    "Target": "testdata/fixtures/debian-buster.tar.gz (debian 10.1)",
+    "Target": "testdata/fixtures/images/debian-buster.tar.gz (debian 10.1)",
+    "Class": "os-pkgs",
     "Type": "debian",
     "Vulnerabilities": [
       {

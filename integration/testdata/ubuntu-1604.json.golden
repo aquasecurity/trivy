@@ -1,6 +1,7 @@
 [
   {
-    "Target": "testdata/fixtures/ubuntu-1604.tar.gz (ubuntu 16.04)",
+    "Target": "testdata/fixtures/images/ubuntu-1604.tar.gz (ubuntu 16.04)",
+    "Class": "os-pkgs",
     "Type": "ubuntu",
     "Vulnerabilities": [
       {
