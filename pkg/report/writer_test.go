@@ -41,6 +41,40 @@ func TestResults_Failed(t *testing.T) {
 			},
 			want: true,
 		},
+		{
+			name: "failed misconfigurations",
+			results: report.Results{
+				{
+					Target: "test",
+					Type:   "test",
+					Misconfigurations: []types.DetectedMisconfiguration{
+						{
+							Type:   "Docker Security Check",
+							ID:     "ID-001",
+							Status: types.StatusFailure,
+						},
+					},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "passed misconfigurations",
+			results: report.Results{
+				{
+					Target: "test",
+					Type:   "test",
+					Misconfigurations: []types.DetectedMisconfiguration{
+						{
+							Type:   "Docker Security Check",
+							ID:     "ID-001",
+							Status: types.StatusPassed,
+						},
+					},
+				},
+			},
+			want: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

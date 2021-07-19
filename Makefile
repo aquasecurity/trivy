@@ -27,22 +27,22 @@ deps:
 	go mod tidy
 
 $(GOBIN)/golangci-lint:
-	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.21.0
+	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.41.1
 
 .PHONY: test
 test:
 	go test -v -short -coverprofile=coverage.txt -covermode=atomic ./...
 
-integration/testdata/fixtures/*.tar.gz:
-	git clone https://github.com/aquasecurity/trivy-test-images.git integration/testdata/fixtures
+integration/testdata/fixtures/images/*.tar.gz:
+	git clone https://github.com/aquasecurity/trivy-test-images.git integration/testdata/fixtures/images
 
 .PHONY: test-integration
-test-integration: integration/testdata/fixtures/*.tar.gz
+test-integration: integration/testdata/fixtures/images/*.tar.gz
 	go test -v -tags=integration ./integration/...
 
 .PHONY: lint
 lint: $(GOBIN)/golangci-lint
-	$(GOBIN)/golangci-lint run
+	$(GOBIN)/golangci-lint run --timeout 5m
 
 .PHONY: fmt
 fmt:
@@ -62,7 +62,7 @@ install:
 
 .PHONY: clean
 clean:
-	rm -rf integration/testdata/fixtures/
+	rm -rf integration/testdata/fixtures/images
 
 $(GOBIN)/labeler:
 	go install github.com/knqyf263/labeler@latest

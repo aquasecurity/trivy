@@ -1,0 +1,40 @@
+[
+  {
+    "Target": "Dockerfile",
+    "Class": "config",
+    "Type": "dockerfile",
+    "MisconfSummary": {
+      "Successes": 0,
+      "Failures": 2,
+      "Exceptions": 0
+    },
+    "Misconfigurations": [
+      {
+        "Type": "N/A",
+        "ID": "N/A",
+        "Title": "N/A",
+        "Message": "something bad: bar",
+        "Namespace": "user.bar",
+        "Query": "data.user.bar.deny",
+        "Severity": "UNKNOWN",
+        "Status": "FAIL",
+        "Layer": {
+          "DiffID": "sha256:8dc85f0b450296556c427e94db1d76a25fdce31334a4fcedac370f1aa59c86dc"
+        }
+      },
+      {
+        "Type": "N/A",
+        "ID": "N/A",
+        "Title": "N/A",
+        "Message": "something bad: foo",
+        "Namespace": "user.foo",
+        "Query": "data.user.foo.deny",
+        "Severity": "UNKNOWN",
+        "Status": "FAIL",
+        "Layer": {
+          "DiffID": "sha256:8dc85f0b450296556c427e94db1d76a25fdce31334a4fcedac370f1aa59c86dc"
+        }
+      }
+    ]
+  }
+]

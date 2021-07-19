@@ -15,6 +15,7 @@ type Option struct {
 	option.ImageOption
 	option.ReportOption
 	option.CacheOption
+	option.ConfigOption
 
 	// deprecated
 	onlyUpdate string
@@ -38,6 +39,7 @@ func NewOption(c *cli.Context) (Option, error) {
 		ImageOption:    option.NewImageOption(c),
 		ReportOption:   option.NewReportOption(c),
 		CacheOption:    option.NewCacheOption(c),
+		ConfigOption:   option.NewConfigOption(c),
 
 		onlyUpdate:  c.String("only-update"),
 		refresh:     c.Bool("refresh"),

@@ -11,7 +11,7 @@
           "version": "0.15.0",
           "rules": [
             {
-              "id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1549",
+              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1549",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1549 Package: libcrypto1.1"
@@ -37,7 +37,7 @@
               }
             },
             {
-              "id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1551",
+              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1551",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1551 Package: libcrypto1.1"
@@ -63,7 +63,7 @@
               }
             },
             {
-              "id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1563",
+              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1563",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1563 Package: libcrypto1.1"
@@ -89,7 +89,7 @@
               }
             },
             {
-              "id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1547",
+              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1547",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1547 Package: libcrypto1.1"
@@ -115,7 +115,7 @@
               }
             },
             {
-              "id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1549",
+              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1549",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1549 Package: libssl1.1"
@@ -141,7 +141,7 @@
               }
             },
             {
-              "id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1551",
+              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1551",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1551 Package: libssl1.1"
@@ -167,7 +167,7 @@
               }
             },
             {
-              "id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1563",
+              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1563",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1563 Package: libssl1.1"
@@ -193,7 +193,7 @@
               }
             },
             {
-              "id": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1547",
+              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1547",
               "name": "OS Package Vulnerability (Alpine)",
               "shortDescription": {
                 "text": "CVE-2019-1547 Package: libssl1.1"
@@ -222,7 +222,7 @@
       },
       "results": [
         {
-          "ruleId": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1549",
+          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1549",
           "ruleIndex": 0,
           "level": "warning",
           "message": {
@@ -231,14 +231,14 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
           }]
         },
         {
-          "ruleId": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1551",
+          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1551",
           "ruleIndex": 1,
           "level": "warning",
           "message": {
@@ -247,14 +247,14 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
           }]
         },
         {
-          "ruleId": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1563",
+          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1563",
           "ruleIndex": 2,
           "level": "warning",
           "message": {
@@ -263,14 +263,14 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
           }]
         },
         {
-          "ruleId": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1547",
+          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1547",
           "ruleIndex": 3,
           "level": "note",
           "message": {
@@ -279,14 +279,14 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
           }]
         },
         {
-          "ruleId": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1549",
+          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1549",
           "ruleIndex": 4,
           "level": "warning",
           "message": {
@@ -295,14 +295,14 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
           }]
         },
         {
-          "ruleId": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1551",
+          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1551",
           "ruleIndex": 5,
           "level": "warning",
           "message": {
@@ -311,14 +311,14 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
           }]
         },
         {
-          "ruleId": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1563",
+          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1563",
           "ruleIndex": 6,
           "level": "warning",
           "message": {
@@ -327,14 +327,14 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }
           }]
         },
         {
-          "ruleId": "testdata/fixtures/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1547",
+          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1547",
           "ruleIndex": 7,
           "level": "note",
           "message": {
@@ -343,7 +343,7 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "testdata/fixtures/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               }
             }

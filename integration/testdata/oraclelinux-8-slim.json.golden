@@ -1,6 +1,7 @@
 [
   {
-    "Target": "testdata/fixtures/oraclelinux-8-slim.tar.gz (oracle 8.0)",
+    "Target": "testdata/fixtures/images/oraclelinux-8-slim.tar.gz (oracle 8.0)",
+    "Class": "os-pkgs",
     "Type": "oracle",
     "Vulnerabilities": [
       {

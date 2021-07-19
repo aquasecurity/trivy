@@ -57,7 +57,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 			fields: fields{
 				severities:     "CRITICAL,INVALID",
 				vulnType:       "os,library",
-				securityChecks: "vuln",
+				securityChecks: "config",
 			},
 			args: []string{"centos:7"},
 			logs: []string{
@@ -66,7 +66,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 			want: ReportOption{
 				Severities:     []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityUnknown},
 				VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-				SecurityChecks: []string{types.SecurityCheckVulnerability},
+				SecurityChecks: []string{types.SecurityCheckConfig},
 				Output:         os.Stdout,
 			},
 		},
@@ -97,7 +97,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 				Template:       "@contrib/gitlab.tpl",
 				severities:     "LOW",
 				vulnType:       "os",
-				securityChecks: "vuln",
+				securityChecks: "config",
 			},
 			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
@@ -109,7 +109,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 				Severities:     []dbTypes.Severity{dbTypes.SeverityLow},
 				Template:       "@contrib/gitlab.tpl",
 				VulnType:       []string{types.VulnTypeOS},
-				SecurityChecks: []string{types.SecurityCheckVulnerability},
+				SecurityChecks: []string{types.SecurityCheckConfig},
 			},
 		},
 		{

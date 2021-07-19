@@ -1,0 +1,12 @@
+[
+  {
+    "Target": "Dockerfile",
+    "Class": "config",
+    "Type": "dockerfile",
+    "MisconfSummary": {
+      "Successes": 0,
+      "Failures": 0,
+      "Exceptions": 1
+    }
+  }
+]

@@ -11,8 +11,8 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/scanner"
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
 func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache,
@@ -43,7 +43,7 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	return scanner.Scanner{}, nil, nil
 }
 
-func initializeResultClient() vulnerability.Client {
-	wire.Build(vulnerability.SuperSet)
-	return vulnerability.Client{}
+func initializeResultClient() result.Client {
+	wire.Build(result.SuperSet)
+	return result.Client{}
 }

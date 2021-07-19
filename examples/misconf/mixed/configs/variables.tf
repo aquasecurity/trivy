@@ -1,0 +1,3 @@
+variable "enableEncryption" {
+    default = false
+}

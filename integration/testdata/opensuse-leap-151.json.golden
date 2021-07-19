@@ -1,6 +1,7 @@
 [
   {
-    "Target": "testdata/fixtures/opensuse-leap-151.tar.gz (opensuse.leap 15.1)",
+    "Target": "testdata/fixtures/images/opensuse-leap-151.tar.gz (opensuse.leap 15.1)",
+    "Class": "os-pkgs",
     "Type": "opensuse.leap",
     "Vulnerabilities": [
       {

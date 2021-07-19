@@ -1,0 +1,7 @@
+services:
+  ports:
+    - "20"
+    - "20/tcp"
+    - "20/udp"
+    - "23"
+    - "23/tcp"
