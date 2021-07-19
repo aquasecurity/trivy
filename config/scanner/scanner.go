@@ -5,8 +5,8 @@ import (
 	_ "embed"
 	"path/filepath"
 
+	"github.com/aquasecurity/tfsec/pkg/externalscan"
 	"github.com/open-policy-agent/opa/rego"
-	"github.com/tfsec/tfsec/pkg/externalscan"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/policy"
@@ -131,7 +131,7 @@ func (s Scanner) scanTerraformByTFSec(files []types.Config) ([]types.Misconfigur
 				Type:               "Terraform Security Check powered by tfsec",
 				Title:              result.RuleSummary,
 				Description:        result.Impact,
-				Severity:           severityFromTFSec(result.RuleID, result.Severity),
+				Severity:           string(result.Severity),
 				RecommendedActions: result.Resolution,
 				References:         result.Links,
 			},
