@@ -16,7 +16,6 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/all"
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -82,12 +81,6 @@ func (s Scanner) Scan(target, versionedArtifactID string, versionedBlobIDs []str
 		results = append(results, vulnResults...)
 	}
 
-	// Scan IaC config files
-	if utils.StringInSlice(types.SecurityCheckConfig, options.SecurityChecks) {
-		configResults := s.misconfsToResults(artifactDetail.Misconfigurations, options)
-		results = append(results, configResults...)
-	}
-
 	return results, artifactDetail.OS, eosl, nil
 }
 
@@ -120,7 +113,7 @@ func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetai
 func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
 	*report.Result, bool, error) {
 	if detail.OS == nil {
-		log.Logger.Debug("Detected OS: unknown")
+		log.Logger.Infof("Detected OS: unknown")
 		return nil, false, nil
 	}
 	log.Logger.Infof("Detected OS: %s", detail.OS.Family)
@@ -162,14 +155,13 @@ func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []fty
 	result := &report.Result{
 		Target:          artifactDetail,
 		Vulnerabilities: vulns,
-		Class:           report.ClassOSPkg,
 		Type:            osFamily,
 	}
 	return result, eosl, nil
 }
 
 func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOptions) (report.Results, error) {
-	log.Logger.Infof("Number of language-specific files: %d", len(apps))
+	log.Logger.Infof("Number of PL dependency files: %d", len(apps))
 	if len(apps) == 0 {
 		return nil, nil
 	}
@@ -199,7 +191,6 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		libReport := report.Result{
 			Target:          app.FilePath,
 			Vulnerabilities: vulns,
-			Class:           report.ClassLangPkg,
 			Type:            app.Type,
 		}
 		if options.ListAllPackages {
@@ -222,93 +213,6 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		return results[i].Target < results[j].Target
 	})
 	return results, nil
-}
-
-func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) report.Results {
-	log.Logger.Infof("Detected config files: %d", len(misconfs))
-	var results report.Results
-	for _, misconf := range misconfs {
-		if skipped(misconf.FilePath, options.SkipFiles, options.SkipDirs) {
-			continue
-		}
-
-		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
-
-		var detected []types.DetectedMisconfiguration
-
-		for _, f := range misconf.Failures {
-			detected = append(detected, toDetectedMisconfiguration(f, dbTypes.SeverityCritical, types.StatusFailure, misconf.Layer))
-		}
-		for _, w := range misconf.Warnings {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityMedium, types.StatusFailure, misconf.Layer))
-		}
-		for _, w := range misconf.Successes {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusPassed, misconf.Layer))
-		}
-		for _, w := range misconf.Exceptions {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusException, misconf.Layer))
-		}
-
-		results = append(results, report.Result{
-			Target:            misconf.FilePath,
-			Class:             report.ClassConfig,
-			Type:              misconf.FileType,
-			Misconfigurations: detected,
-		})
-	}
-
-	sort.Slice(results, func(i, j int) bool {
-		return results[i].Target < results[j].Target
-	})
-
-	return results
-}
-
-func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbTypes.Severity,
-	status types.MisconfStatus, layer ftypes.Layer) types.DetectedMisconfiguration {
-
-	severity := defaultSeverity
-	sev, err := dbTypes.NewSeverity(res.Severity)
-	if err != nil {
-		log.Logger.Warnf("severity must be %s, but %s", dbTypes.SeverityNames, res.Severity)
-	} else {
-		severity = sev
-	}
-
-	msg := strings.TrimSpace(res.Message)
-	if msg == "" {
-		msg = "No issues found"
-	}
-
-	var primaryURL string
-	if strings.HasPrefix(res.Namespace, "appshield.") {
-		primaryURL = fmt.Sprintf("https://avd.aquasec.com/appshield/%s", strings.ToLower(res.ID))
-		res.References = append(res.References, primaryURL)
-	} else if strings.Contains(res.Type, "tfsec") {
-		for _, ref := range res.References {
-			if strings.HasPrefix(ref, "https://tfsec.dev/docs/") {
-				primaryURL = ref
-				break
-			}
-		}
-	}
-
-	return types.DetectedMisconfiguration{
-		ID:          res.ID,
-		Type:        res.Type,
-		Title:       res.Title,
-		Description: res.Description,
-		Message:     msg,
-		Resolution:  res.RecommendedActions,
-		Namespace:   res.Namespace,
-		Query:       res.Query,
-		Severity:    severity.String(),
-		PrimaryURL:  primaryURL,
-		References:  res.References,
-		Status:      status,
-		Layer:       layer,
-		Traces:      res.Traces,
-	}
 }
 
 func skipped(filePath string, skipFiles, skipDirs []string) bool {

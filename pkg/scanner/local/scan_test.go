@@ -127,8 +127,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: report.ClassOSPkg,
-					Type:  vulnerability.Alpine,
+					Type: vulnerability.Alpine,
 				},
 				{
 					Target: "/app/Gemfile.lock",
@@ -143,8 +142,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: report.ClassLangPkg,
-					Type:  ftypes.Bundler,
+					Type: "bundler",
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -275,8 +273,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: report.ClassOSPkg,
-					Type:  vulnerability.Alpine,
+					Type: vulnerability.Alpine,
 				},
 				{
 					Target: "/app/Gemfile.lock",
@@ -300,8 +297,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: report.ClassLangPkg,
-					Type:  ftypes.Bundler,
+					Type: "bundler",
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -358,8 +354,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: report.ClassLangPkg,
-					Type:  "bundler",
+					Type: "bundler",
 				},
 			},
 			wantOS: &ftypes.OS{},
@@ -417,7 +412,6 @@ func TestScanner_Scan(t *testing.T) {
 			wantResults: report.Results{
 				{
 					Target: "alpine:latest (alpine 3.11)",
-					Class:  report.ClassOSPkg,
 					Type:   vulnerability.Alpine,
 				},
 				{
@@ -433,8 +427,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: report.ClassLangPkg,
-					Type:  "bundler",
+					Type: "bundler",
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -505,8 +498,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: report.ClassLangPkg,
-					Type:  ftypes.Bundler,
+					Type: "bundler",
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -606,8 +598,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: report.ClassLangPkg,
-					Type:  ftypes.Bundler,
+					Type: "bundler",
 				},
 				{
 					Target: "/app/composer-lock.json",
@@ -622,8 +613,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: report.ClassLangPkg,
-					Type:  ftypes.Composer,
+					Type: "composer",
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -638,7 +628,7 @@ func TestScanner_Scan(t *testing.T) {
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
 					VulnType:       []string{types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability, types.SecurityCheckConfig},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
 					SkipDirs:       []string{"/usr/lib/ruby/gems", "/app/k8s"},
 				},
 			},
@@ -682,18 +672,6 @@ func TestScanner_Scan(t *testing.T) {
 								},
 							},
 						},
-						Misconfigurations: []ftypes.Misconfiguration{
-							{
-								FileType: ftypes.Kubernetes,
-								FilePath: "/app/k8s/deployment.yaml",
-								Failures: ftypes.MisconfResults{
-									{
-										Namespace: "appshield.kubernetes.id100",
-										Message:   "something bad",
-									},
-								},
-							},
-						},
 					},
 				},
 			},
@@ -711,162 +689,12 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: report.ClassLangPkg,
-					Type:  ftypes.Composer,
+					Type: "composer",
 				},
 			},
 			wantOS: &ftypes.OS{
 				Family: "alpine",
 				Name:   "3.11",
-			},
-		},
-		{
-			name: "happy path with misconfigurations",
-			args: args{
-				target:   "/app/configs",
-				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				options: types.ScanOptions{
-					SecurityChecks: []string{types.SecurityCheckConfig},
-				},
-			},
-			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						Misconfigurations: []ftypes.Misconfiguration{
-							{
-								FileType: ftypes.Kubernetes,
-								FilePath: "/app/configs/pod.yaml",
-								Warnings: []ftypes.MisconfResult{
-									{
-										Namespace: "main.kubernetes.id300",
-										PolicyMetadata: ftypes.PolicyMetadata{
-											ID:       "ID300",
-											Type:     "Kubernetes Security Check",
-											Title:    "Bad Deployment",
-											Severity: "DUMMY",
-										},
-									},
-								},
-								Exceptions: ftypes.MisconfResults{
-									{
-										Namespace: "main.kubernetes.id100",
-										PolicyMetadata: ftypes.PolicyMetadata{
-											ID:       "ID100",
-											Type:     "Kubernetes Security Check",
-											Title:    "Bad Deployment",
-											Severity: "HIGH",
-										},
-									},
-								},
-								Layer: ftypes.Layer{
-									DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
-								},
-							},
-							{
-								FileType: ftypes.Kubernetes,
-								FilePath: "/app/configs/deployment.yaml",
-								Successes: []ftypes.MisconfResult{
-									{
-										Namespace: "appshield.kubernetes.id200",
-										PolicyMetadata: ftypes.PolicyMetadata{
-											ID:       "ID200",
-											Type:     "Kubernetes Security Check",
-											Title:    "Bad Deployment",
-											Severity: "MEDIUM",
-										},
-									},
-								},
-								Failures: ftypes.MisconfResults{
-									{
-										Namespace: "main.kubernetes.id100",
-										Message:   "something bad",
-										PolicyMetadata: ftypes.PolicyMetadata{
-											ID:       "ID100",
-											Type:     "Kubernetes Security Check",
-											Title:    "Bad Deployment",
-											Severity: "HIGH",
-										},
-									},
-								},
-								Layer: ftypes.Layer{
-									DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
-								},
-							},
-						},
-					},
-				},
-			},
-			wantResults: report.Results{
-				{
-					Target: "/app/configs/deployment.yaml",
-					Class:  report.ClassConfig,
-					Type:   ftypes.Kubernetes,
-					Misconfigurations: []types.DetectedMisconfiguration{
-						{
-							Type:      "Kubernetes Security Check",
-							ID:        "ID100",
-							Title:     "Bad Deployment",
-							Message:   "something bad",
-							Namespace: "main.kubernetes.id100",
-							Severity:  "HIGH",
-							Status:    types.StatusFailure,
-							Layer: ftypes.Layer{
-								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
-							},
-						},
-						{
-							Type:       "Kubernetes Security Check",
-							ID:         "ID200",
-							Title:      "Bad Deployment",
-							Message:    "No issues found",
-							Namespace:  "appshield.kubernetes.id200",
-							Severity:   "MEDIUM",
-							PrimaryURL: "https://avd.aquasec.com/appshield/id200",
-							References: []string{
-								"https://avd.aquasec.com/appshield/id200",
-							},
-							Status: types.StatusPassed,
-							Layer: ftypes.Layer{
-								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
-							},
-						},
-					},
-				},
-				{
-					Target: "/app/configs/pod.yaml",
-					Class:  report.ClassConfig,
-					Type:   ftypes.Kubernetes,
-					Misconfigurations: []types.DetectedMisconfiguration{
-						{
-							Type:      "Kubernetes Security Check",
-							ID:        "ID300",
-							Title:     "Bad Deployment",
-							Message:   "No issues found",
-							Namespace: "main.kubernetes.id300",
-							Severity:  "MEDIUM",
-							Status:    types.StatusFailure,
-							Layer: ftypes.Layer{
-								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
-							},
-						},
-						{
-							Type:      "Kubernetes Security Check",
-							ID:        "ID100",
-							Title:     "Bad Deployment",
-							Message:   "No issues found",
-							Namespace: "main.kubernetes.id100",
-							Severity:  "HIGH",
-							Status:    types.StatusException,
-							Layer: ftypes.Layer{
-								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
-							},
-						},
-					},
-				},
 			},
 		},
 		{

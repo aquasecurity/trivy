@@ -1,8 +1,0 @@
-version: 2
-services:
-  web:
-    image: "nginx:1.21"
-    ports:
-      - "8080:8080"
-  db:
-    image: "mysql:latest"

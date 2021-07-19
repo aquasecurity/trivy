@@ -71,10 +71,7 @@ func TestReportWriter_JSON(t *testing.T) {
 				},
 			}
 
-			err := report.Write(inputResults, report.Option{
-				Format: "json",
-				Output: &jsonWritten,
-			})
+			err := report.Write("json", &jsonWritten, nil, inputResults, "", false)
 			assert.NoError(t, err)
 
 			writtenResults := report.Results{}

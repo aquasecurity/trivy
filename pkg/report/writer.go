@@ -11,20 +11,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-const (
-	SchemaVersion = 2
-)
-
 // Now returns the current time
 var Now = time.Now
 
 // Report represents a scan result
 type Report struct {
-	SchemaVersion int                 `json:",omitempty"`
-	ArtifactName  string              `json:",omitempty"`
-	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
-	Metadata      Metadata            `json:",omitempty"`
-	Results       Results             `json:",omitempty"`
+	ArtifactName string              `json:",omitempty"`
+	ArtifactID   string              `json:",omitempty"`
+	ArtifactType ftypes.ArtifactType `json:",omitempty"`
+	Metadata     Metadata            `json:",omitempty"`
+	Results      Results             `json:",omitempty"`
 }
 
 // Metadata represents a metadata of artifact
@@ -40,83 +36,40 @@ type Metadata struct {
 // Results to hold list of Result
 type Results []Result
 
-type ResultClass string
-
-const (
-	ClassOSPkg   = "os-pkgs"
-	ClassLangPkg = "lang-pkgs"
-	ClassConfig  = "config"
-)
-
 // Result holds a target and detected vulnerabilities
 type Result struct {
-	Target            string                           `json:"Target"`
-	Class             ResultClass                      `json:"Class,omitempty"`
-	Type              string                           `json:"Type,omitempty"`
-	Packages          []ftypes.Package                 `json:"Packages,omitempty"`
-	Vulnerabilities   []types.DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
-	MisconfSummary    *MisconfSummary                  `json:"MisconfSummary,omitempty"`
-	Misconfigurations []types.DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
+	Target          string                        `json:"Target"`
+	Type            string                        `json:"Type,omitempty"`
+	Packages        []ftypes.Package              `json:"Packages,omitempty"`
+	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities,omitempty"`
 }
 
-type MisconfSummary struct {
-	Successes  int
-	Failures   int
-	Exceptions int
-}
-
-func (s MisconfSummary) Empty() bool {
-	return s.Successes == 0 && s.Failures == 0 && s.Exceptions == 0
-}
-
-// Failed returns whether the result includes any vulnerabilities or misconfigurations
+// Failed returns whether the result includes any vulnerabilities
 func (results Results) Failed() bool {
 	for _, r := range results {
 		if len(r.Vulnerabilities) > 0 {
 			return true
 		}
-		for _, m := range r.Misconfigurations {
-			if m.Status == types.StatusFailure {
-				return true
-			}
-		}
 	}
 	return false
 }
 
-type Option struct {
-	Format         string
-	Output         io.Writer
-	Severities     []dbTypes.Severity
-	OutputTemplate string
-	Light          bool
-
-	// For misconfigurations
-	IncludeNonFailures bool
-	Trace              bool
-}
-
 // Write writes the result to output, format as passed in argument
-func Write(report Report, option Option) error {
+func Write(format string, output io.Writer, severities []dbTypes.Severity, report Report,
+	outputTemplate string, light bool) error {
 	var writer Writer
-	switch option.Format {
+	switch format {
 	case "table":
-		writer = &TableWriter{
-			Output:             option.Output,
-			Severities:         option.Severities,
-			Light:              option.Light,
-			IncludeNonFailures: option.IncludeNonFailures,
-			Trace:              option.Trace,
-		}
+		writer = &TableWriter{Output: output, Light: light, Severities: severities}
 	case "json":
-		writer = &JSONWriter{Output: option.Output}
+		writer = &JSONWriter{Output: output}
 	case "template":
 		var err error
-		if writer, err = NewTemplateWriter(option.Output, option.OutputTemplate); err != nil {
+		if writer, err = NewTemplateWriter(output, outputTemplate); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
 	default:
-		return xerrors.Errorf("unknown format: %v", option.Format)
+		return xerrors.Errorf("unknown format: %v", format)
 	}
 
 	if err := writer.Write(report); err != nil {

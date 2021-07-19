@@ -2,6 +2,7 @@ package report_test
 
 import (
 	"bytes"
+	"io/ioutil"
 	"os"
 	"testing"
 	"time"
@@ -164,7 +165,7 @@ func TestReportWriter_Template(t *testing.T) {
 				return time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
 			}
 			os.Setenv("AWS_ACCOUNT_ID", "123456789012")
-			got := bytes.Buffer{}
+			tmplWritten := bytes.Buffer{}
 			inputReport := report.Report{
 				Results: report.Results{
 					{
@@ -175,13 +176,8 @@ func TestReportWriter_Template(t *testing.T) {
 				},
 			}
 
-			err := report.Write(inputReport, report.Option{
-				Format:         "template",
-				Output:         &got,
-				OutputTemplate: tc.template,
-			})
-			assert.NoError(t, err)
-			assert.Equal(t, tc.expected, got.String())
+			assert.NoError(t, report.Write("template", &tmplWritten, nil, inputReport, tc.template, false))
+			assert.Equal(t, tc.expected, tmplWritten.String())
 		})
 	}
 }
@@ -200,7 +196,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
 			templateFile := "../../contrib/sarif.tpl"
 			got := bytes.Buffer{}
 
-			template, err := os.ReadFile(templateFile)
+			template, err := ioutil.ReadFile(templateFile)
 			require.NoError(t, err, tc.name)
 
 			inputReport := report.Report{
@@ -212,12 +208,7 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
 					},
 				},
 			}
-			err = report.Write(inputReport, report.Option{
-				Format:         "template",
-				Output:         &got,
-				OutputTemplate: string(template),
-			})
-			assert.NoError(t, err)
+			assert.NoError(t, report.Write("template", &got, nil, inputReport, string(template), false), tc.name)
 			assert.JSONEq(t, tc.want, got.String(), tc.name)
 		})
 	}

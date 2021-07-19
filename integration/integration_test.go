@@ -8,39 +8,52 @@ import (
 	"encoding/json"
 	"flag"
 	"io"
+	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
-	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
+	"github.com/spf13/afero"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 )
 
 var update = flag.Bool("update", false, "update golden files")
 
-func gunzipDB(t *testing.T) string {
+func gunzipDB() (string, error) {
 	gz, err := os.Open("testdata/trivy.db.gz")
-	require.NoError(t, err)
-
+	if err != nil {
+		return "", err
+	}
 	zr, err := gzip.NewReader(gz)
-	require.NoError(t, err)
+	if err != nil {
+		return "", err
+	}
 
-	tmpDir := t.TempDir()
+	tmpDir, err := ioutil.TempDir("", "integration")
+	if err != nil {
+		return "", err
+	}
+
 	dbPath := db.Path(tmpDir)
 	dbDir := filepath.Dir(dbPath)
 	err = os.MkdirAll(dbDir, 0700)
-	require.NoError(t, err)
+	if err != nil {
+		return "", err
+	}
 
 	file, err := os.Create(dbPath)
-	require.NoError(t, err)
+	if err != nil {
+		return "", err
+	}
 	defer file.Close()
 
-	_, err = io.Copy(file, zr)
-	require.NoError(t, err)
+	if _, err = io.Copy(file, zr); err != nil {
+		return "", err
+	}
 
+	fs := afero.NewOsFs()
 	metadataFile := filepath.Join(dbDir, "metadata.json")
 	b, err := json.Marshal(db.Metadata{
 		Version:    1,
@@ -48,12 +61,15 @@ func gunzipDB(t *testing.T) string {
 		NextUpdate: time.Time{},
 		UpdatedAt:  time.Time{},
 	})
-	require.NoError(t, err)
+	if err != nil {
+		return "", err
+	}
+	err = afero.WriteFile(fs, metadataFile, b, 0600)
+	if err != nil {
+		return "", err
+	}
 
-	err = os.WriteFile(metadataFile, b, 0600)
-	require.NoError(t, err)
-
-	return tmpDir
+	return tmpDir, nil
 }
 
 func getFreePort() (int, error) {

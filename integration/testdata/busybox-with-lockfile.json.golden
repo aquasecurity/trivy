@@ -1,7 +1,6 @@
 [
   {
     "Target": "Cargo.lock",
-    "Class": "lang-pkgs",
     "Type": "cargo",
     "Vulnerabilities": [
       {

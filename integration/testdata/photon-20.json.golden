@@ -1,7 +1,6 @@
 [
   {
-    "Target": "testdata/fixtures/images/photon-20.tar.gz (photon 2.0)",
-    "Class": "os-pkgs",
+    "Target": "testdata/fixtures/photon-20.tar.gz (photon 2.0)",
     "Type": "photon",
     "Vulnerabilities": [
       {

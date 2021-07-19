@@ -6,10 +6,12 @@ linters-settings:
     check-shadowing: false
   gofmt:
     simplify: false
-  revive:
-    ignore-generated-header: true
+  golint:
+    min-confidence: 0
   gocyclo:
     min-complexity: 10
+  maligned:
+    suggest-new: true
   dupl:
     threshold: 100
   goconst:
@@ -30,13 +32,14 @@ linters:
     - errcheck
     - varcheck
     - deadcode
-    - revive
+    - golint
     - gosec
     - unconvert
     - goconst
     - gocyclo
     - gofmt
     - goimports
+    - maligned
     - misspell
 
 run:

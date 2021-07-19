@@ -1,14 +1,5 @@
 name: Test
-on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '*.md'
-      - 'docs/**'
-      - 'mkdocs.yml'
-      - 'LICENSE'
-  pull_request:
+on: pull_request
 env:
   GO_VERSION: "1.16"
 jobs:
@@ -26,7 +17,7 @@ jobs:
       - name: Lint
         uses: golangci/golangci-lint-action@v2
         with:
-          version: v1.41
+          version: v1.39
           args: --deadline=30m
 
       - name: Run unit tests

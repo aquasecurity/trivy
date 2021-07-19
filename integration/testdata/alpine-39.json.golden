@@ -1,7 +1,6 @@
 [
   {
-    "Target": "testdata/fixtures/images/alpine-39.tar.gz (alpine 3.9.4)",
-    "Class": "os-pkgs",
+    "Target": "testdata/fixtures/alpine-39.tar.gz (alpine 3.9.4)",
     "Type": "alpine",
     "Vulnerabilities": [
       {

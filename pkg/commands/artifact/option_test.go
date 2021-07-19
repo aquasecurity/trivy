@@ -43,24 +43,6 @@ func TestOption_Init(t *testing.T) {
 			},
 		},
 		{
-			name: "config scanning",
-			args: []string{"--severity", "CRITICAL", "--security-checks", "config", "--quiet", "alpine:3.10"},
-			want: Option{
-				GlobalOption: option.GlobalOption{
-					Quiet: true,
-				},
-				ArtifactOption: option.ArtifactOption{
-					Target: "alpine:3.10",
-				},
-				ReportOption: option.ReportOption{
-					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
-					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckConfig},
-					Output:         os.Stdout,
-				},
-			},
-		},
-		{
 			name: "happy path: reset",
 			args: []string{"--reset"},
 			want: Option{
@@ -172,8 +154,8 @@ func TestOption_Init(t *testing.T) {
 		},
 		{
 			name:    "sad: skip and download db",
-			args:    []string{"--skip-db-update", "--download-db-only", "alpine:3.10"},
-			wantErr: "--skip-db-update and --download-db-only options can not be specified both",
+			args:    []string{"--skip-update", "--download-db-only", "alpine:3.10"},
+			wantErr: "--skip-update and --download-db-only options can not be specified both",
 		},
 		{
 			name: "sad: multiple image names",
@@ -194,7 +176,7 @@ func TestOption_Init(t *testing.T) {
 			set.Bool("quiet", false, "")
 			set.Bool("no-progress", false, "")
 			set.Bool("reset", false, "")
-			set.Bool("skip-db-update", false, "")
+			set.Bool("skip-update", false, "")
 			set.Bool("download-db-only", false, "")
 			set.Bool("auto-refresh", false, "")
 			set.String("severity", "CRITICAL", "")

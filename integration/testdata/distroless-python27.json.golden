@@ -1,7 +1,6 @@
 [
   {
-    "Target": "testdata/fixtures/images/distroless-python27.tar.gz (debian 9.9)",
-    "Class": "os-pkgs",
+    "Target": "testdata/fixtures/distroless-python27.tar.gz (debian 9.9)",
     "Type": "debian",
     "Vulnerabilities": [
       {
