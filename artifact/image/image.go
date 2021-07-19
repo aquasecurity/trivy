@@ -201,23 +201,18 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobIn
 	// Sort the analysis result for consistent results
 	result.Sort()
 
-	// Scan config files
-	misconfs, err := a.scanner.ScanConfigs(ctx, result.Configs)
-	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("config scan error: %w", err)
-	}
+	// TODO Scan config files
 
 	layerInfo := types.BlobInfo{
-		SchemaVersion:     types.BlobJSONSchemaVersion,
-		Digest:            layerDigest,
-		DiffID:            diffID,
-		OS:                result.OS,
-		PackageInfos:      result.PackageInfos,
-		Applications:      result.Applications,
-		Misconfigurations: misconfs,
-		OpaqueDirs:        opqDirs,
-		WhiteoutFiles:     whFiles,
-		Size:              cr.Size(),
+		SchemaVersion: types.BlobJSONSchemaVersion,
+		Digest:        layerDigest,
+		DiffID:        diffID,
+		OS:            result.OS,
+		PackageInfos:  result.PackageInfos,
+		Applications:  result.Applications,
+		OpaqueDirs:    opqDirs,
+		WhiteoutFiles: whFiles,
+		Size:          cr.Size(),
 	}
 	return layerInfo, nil
 }
