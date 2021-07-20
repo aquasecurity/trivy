@@ -2094,9 +2094,16 @@
   <a href="#running-in-parallel-takes-same-time-as-series-run" class="md-nav__link">
     Running in parallel takes same time as series run
   </a>
+
+</li>
+
+<li class="md-nav__item">
+  <a href="#error-downloading-vulnerability-db" class="md-nav__link">
+    Error downloading vulnerability DB
+  </a>
   
 </li>
-        
+
       </ul>
     </nav>
   
@@ -2201,6 +2208,22 @@ This is because of a limitation of boltdb.</p>
 <p>Bolt obtains a file lock on the data file so multiple processes cannot open the same database at the same time. Opening an already open Bolt database will cause it to hang until the other process closes it.</p>
 </blockquote>
 <p>Reference : <a href="https://github.com/boltdb/bolt#opening-a-database">boltdb: Opening a database</a>.</p>
+
+<h3 id="error-downloading-vulnerability-db">Error downloading vulnerability DB behind corporate firewall</h3>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<p>FATAL	failed to download vulnerability DB</p>
+</div>
+<div class="highlight">
+  <p>Try to whitelist urls below:</p>
+  <ul>
+    <li>api.github.com</li>
+    <li>github.com</li>
+    <li>github-releases.githubusercontent.com</li>
+  </ul>
+
+</div>
+
 <h2 id="homebrew">Homebrew</h2>
 <h3 id="scope-error">Scope error</h3>
 <div class="admonition error">
@@ -2218,6 +2241,7 @@ echo &#39;export HOMEBREW_GITHUB_API_TOKEN=your_token_here&#39; &gt;&gt; ~/.zshr
 <p>Try:</p>
 <div class="highlight"><pre><span></span><code>$ printf &quot;protocol=https\nhost=github.com\n&quot; | git credential-osxkeychain erase
 </code></pre></div>
+
 <h3 id="already-installed">Already installed</h3>
 <div class="admonition error">
 <p class="admonition-title">Error</p>
