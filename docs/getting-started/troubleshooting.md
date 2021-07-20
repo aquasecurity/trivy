@@ -48,6 +48,17 @@ Reference : [boltdb: Opening a database][boltdb].
 
 [boltdb]: https://github.com/boltdb/bolt#opening-a-database
 
+### Error downloading vulnerability DB
+
+!!! error
+    FATAL failed to download vulnerability DB
+
+If trivy is running behind corporate firewall try to whitelist urls below:
+
+- api.github.com
+- github.com
+- github-releases.githubusercontent.com
+
 ## Homebrew
 ### Scope error
 !!! error
