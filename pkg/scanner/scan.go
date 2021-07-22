@@ -102,7 +102,10 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 	if err != nil {
 		return report.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
-	osFound.Eosl = eosl
+
+	if osFound != nil {
+		osFound.Eosl = eosl
+	}
 
 	if eosl {
 		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
