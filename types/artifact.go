@@ -9,6 +9,7 @@ import (
 type OS struct {
 	Family string
 	Name   string
+	Eosl   bool `json:"EOSL,omitempty"`
 }
 
 type Layer struct {
