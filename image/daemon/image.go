@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/docker/docker/api/types"
-	"github.com/google/go-containerregistry/pkg/v1"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
 	"golang.org/x/xerrors"
 )

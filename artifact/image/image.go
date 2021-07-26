@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"sync"
 
-	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
@@ -179,13 +179,11 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobIn
 		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", diffID, err)
 	}
 
-	// below line of code gets the size of uncompressed layer. Will sum up these layer sizes to get the size of image.
-	cr := newCountingReader(r)
 	var wg sync.WaitGroup
 	result := new(analyzer.AnalysisResult)
 	limit := semaphore.NewWeighted(parallel)
 
-	opqDirs, whFiles, err := walker.WalkLayerTar(cr, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	opqDirs, whFiles, layerSize, err := walker.WalkLayerTar(r, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
@@ -201,8 +199,6 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobIn
 	// Sort the analysis result for consistent results
 	result.Sort()
 
-	// TODO Scan config files
-
 	layerInfo := types.BlobInfo{
 		SchemaVersion: types.BlobJSONSchemaVersion,
 		Digest:        layerDigest,
@@ -212,7 +208,7 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobIn
 		Applications:  result.Applications,
 		OpaqueDirs:    opqDirs,
 		WhiteoutFiles: whFiles,
-		Size:          cr.Size(),
+		Size:          layerSize,
 	}
 	return layerInfo, nil
 }
@@ -279,23 +275,4 @@ func (a Artifact) inspectConfig(imageID string, osFound types.OS) error {
 	}
 
 	return nil
-}
-
-type countingReader struct {
-	reader    io.Reader
-	bytesRead int
-}
-
-func newCountingReader(r io.Reader) *countingReader {
-	return &countingReader{reader: r}
-}
-
-func (r *countingReader) Read(p []byte) (n int, err error) {
-	n, err = r.reader.Read(p)
-	r.bytesRead += n
-	return n, err
-}
-
-func (r *countingReader) Size() int {
-	return r.bytesRead
 }

@@ -16,17 +16,18 @@ const (
 	wh  string = ".wh."
 )
 
-func WalkLayerTar(layer io.Reader, analyzeFn WalkFunc) ([]string, []string, error) {
+func WalkLayerTar(layer io.Reader, analyzeFn WalkFunc) ([]string, []string, int64, error) {
 	var opqDirs, whFiles []string
-
+	var size int64
 	tr := tar.NewReader(layer)
 	for {
 		hdr, err := tr.Next()
 		if err == io.EOF {
 			break
 		}
+		size += hdr.Size
 		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to extract the archive: %w", err)
+			return nil, nil, 0, xerrors.Errorf("failed to extract the archive: %w", err)
 		}
 
 		filePath := hdr.Name
@@ -53,12 +54,11 @@ func WalkLayerTar(layer io.Reader, analyzeFn WalkFunc) ([]string, []string, erro
 		if hdr.Typeflag == tar.TypeSymlink || hdr.Typeflag == tar.TypeLink || hdr.Typeflag == tar.TypeReg {
 			err = analyzeFn(filePath, hdr.FileInfo(), tarOnceOpener(tr))
 			if err != nil {
-				return nil, nil, xerrors.Errorf("failed to analyze file: %w", err)
+				return nil, nil, 0, xerrors.Errorf("failed to analyze file: %w", err)
 			}
 		}
 	}
-
-	return opqDirs, whFiles, nil
+	return opqDirs, whFiles, size, nil
 }
 
 // tarOnceOpener reads a file once and the content is shared so that some analyzers can use the same data
