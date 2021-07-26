@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DEBIAN_RELEASES=$(debian-distro-info --supported)
-UBUNTU_RELEASES=$(ubuntu-distro-info --supported)
+UBUNTU_RELEASES=$(ubuntu-distro-info --supported-esm)
 
 cd trivy-repo/deb
 
