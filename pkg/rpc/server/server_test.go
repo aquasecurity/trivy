@@ -85,6 +85,7 @@ func TestScanServer_Scan(t *testing.T) {
 					OsFound: &ftypes.OS{
 						Family: "alpine",
 						Name:   "3.11",
+						Eosl:   true,
 					},
 				},
 			},
@@ -92,8 +93,8 @@ func TestScanServer_Scan(t *testing.T) {
 				Os: &common.OS{
 					Family: "alpine",
 					Name:   "3.11",
+					Eosl:   true,
 				},
-				Eosl: false,
 				Results: []*rpcScanner.Result{
 					{
 						Target: "alpine:3.11 (alpine 3.11)",
