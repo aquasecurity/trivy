@@ -1,0 +1,3 @@
+mike
+mkdocs-macros-plugin
+mkdocs-material
