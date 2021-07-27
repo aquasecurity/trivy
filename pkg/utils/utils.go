@@ -14,7 +14,7 @@ import (
 
 var cacheDir string
 
-// DefaultCacheDir returns/creates the cache-dir to be used for trivu operations
+// DefaultCacheDir returns/creates the cache-dir to be used for trivy operations
 func DefaultCacheDir() string {
 	tmpDir, err := os.UserCacheDir()
 	if err != nil {
