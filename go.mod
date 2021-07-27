@@ -14,7 +14,7 @@ require (
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
 	github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492
 	github.com/aquasecurity/trivy-db v0.0.0-20210531102723-aaab62dec6ee
-	github.com/caarlos0/env/v6 v6.0.0
+	github.com/caarlos0/env/v6 v6.6.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.3
 	github.com/containerd/containerd v1.4.4 // indirect
