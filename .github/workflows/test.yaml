@@ -104,11 +104,14 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: 3.x
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements-test.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
     - name: Install dependencies
-      run: |
-        pip install mkdocs-material
-        pip install mike
-        pip install mkdocs-macros-plugin
+      run: pip install -r requirements-test.txt
     - name: Configure the git user
       run: |
         git config user.name "knqyf263"
