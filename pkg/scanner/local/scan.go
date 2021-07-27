@@ -56,9 +56,8 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector) Scanner {
 }
 
 // Scan scans the artifact and return results.
-func (s Scanner) Scan(target, versionedArtifactID string, versionedBlobIDs []string, options types.ScanOptions) (
-	report.Results, *ftypes.OS, bool, error) {
-	artifactDetail, err := s.applier.ApplyLayers(versionedArtifactID, versionedBlobIDs)
+func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, options types.ScanOptions) (report.Results, *ftypes.OS, error) {
+	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
 		log.Logger.Debug("OS is not detected and vulnerabilities in OS packages are not detected.")
@@ -66,18 +65,21 @@ func (s Scanner) Scan(target, versionedArtifactID string, versionedBlobIDs []str
 		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
 	case err != nil:
-		return nil, nil, false, xerrors.Errorf("failed to apply layers: %w", err)
+		return nil, nil, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
 	var eosl bool
 	var results report.Results
 
-	// Scan OS packages and programming language dependencies
+	// Scan OS packages and language-specific dependencies
 	if utils.StringInSlice(types.SecurityCheckVulnerability, options.SecurityChecks) {
 		var vulnResults report.Results
 		vulnResults, eosl, err = s.checkVulnerabilities(target, artifactDetail, options)
 		if err != nil {
-			return nil, nil, false, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
+			return nil, nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
+		}
+		if artifactDetail.OS != nil {
+			artifactDetail.OS.Eosl = eosl
 		}
 		results = append(results, vulnResults...)
 	}
@@ -88,7 +90,7 @@ func (s Scanner) Scan(target, versionedArtifactID string, versionedBlobIDs []str
 		results = append(results, configResults...)
 	}
 
-	return results, artifactDetail.OS, eosl, nil
+	return results, artifactDetail.OS, nil
 }
 
 func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (

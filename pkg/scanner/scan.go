@@ -82,8 +82,8 @@ type Scanner struct {
 
 // Driver defines operations of scanner
 type Driver interface {
-	Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (
-		results report.Results, osFound *ftypes.OS, eols bool, err error)
+	Scan(target string, artifactKey string, blobKeys []string, options types.ScanOptions) (
+		results report.Results, osFound *ftypes.OS, err error)
 }
 
 // NewScanner is the factory method of Scanner
@@ -98,11 +98,12 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 		return report.Report{}, xerrors.Errorf("failed analysis: %w", err)
 	}
 
-	results, osFound, eosl, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
+	results, osFound, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
 		return report.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
-	if eosl {
+
+	if osFound != nil && osFound.Eosl {
 		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
 		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
 	}

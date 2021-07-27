@@ -136,8 +136,8 @@ func TestScanner_Scan(t *testing.T) {
 						Os: &common.OS{
 							Family: "alpine",
 							Name:   "3.11",
+							Eosl:   true,
 						},
-						Eosl: true,
 						Results: []*scanner.Result{
 							{
 								Target: "alpine:3.11",
@@ -226,8 +226,8 @@ func TestScanner_Scan(t *testing.T) {
 			wantOS: &ftypes.OS{
 				Family: "alpine",
 				Name:   "3.11",
+				Eosl:   true,
 			},
-			wantEosl: true,
 		},
 		{
 			name: "sad path: Scan returns an error",
@@ -269,7 +269,7 @@ func TestScanner_Scan(t *testing.T) {
 			mockClient.ApplyScanExpectation(tt.scanExpectation)
 
 			s := NewScanner(tt.fields.customHeaders, mockClient)
-			gotResults, gotOS, gotEosl, err := s.Scan(tt.args.target, tt.args.imageID, tt.args.layerIDs, tt.args.options)
+			gotResults, gotOS, err := s.Scan(tt.args.target, tt.args.imageID, tt.args.layerIDs, tt.args.options)
 
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
@@ -281,7 +281,6 @@ func TestScanner_Scan(t *testing.T) {
 
 			assert.Equal(t, tt.wantResults, gotResults)
 			assert.Equal(t, tt.wantOS, gotOS)
-			assert.Equal(t, tt.wantEosl, gotEosl)
 		})
 	}
 }
