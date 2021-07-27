@@ -16,7 +16,7 @@ require (
 	github.com/aquasecurity/trivy-db v0.0.0-20210531102723-aaab62dec6ee
 	github.com/caarlos0/env/v6 v6.6.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cheggaaa/pb/v3 v3.0.3
+	github.com/cheggaaa/pb/v3 v3.0.8
 	github.com/containerd/containerd v1.4.4 // indirect
 	github.com/docker/docker v20.10.7+incompatible
 	github.com/docker/go-connections v0.4.0
