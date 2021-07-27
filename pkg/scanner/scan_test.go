@@ -85,8 +85,8 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					OsFound: &ftypes.OS{
 						Family: "alpine",
 						Name:   "3.10",
+						Eosl:   true,
 					},
-					Eols: true,
 				},
 			},
 			want: report.Report{
