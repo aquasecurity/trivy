@@ -27,7 +27,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-containerregistry v0.1.2
 	github.com/google/go-github/v33 v33.0.0
-	github.com/google/wire v0.4.0
+	github.com/google/wire v0.5.0
 	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
 	github.com/hashicorp/go-getter v1.5.2
 	github.com/huandu/xstrings v1.3.2 // indirect
