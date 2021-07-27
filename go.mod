@@ -38,7 +38,7 @@ require (
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/mitchellh/copystructure v1.1.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.5
-	github.com/open-policy-agent/opa v0.25.2
+	github.com/open-policy-agent/opa v0.30.2
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/smartystreets/assertions v1.2.0 // indirect
 	github.com/spf13/afero v1.6.0
