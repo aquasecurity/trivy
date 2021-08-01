@@ -20,15 +20,15 @@ func TestParse(t *testing.T) {
 	}{
 		{
 			file: "testdata/Pipfile_normal.lock",
-			want: PipenvNormal,
+			want: pipenvNormal,
 		},
 		{
 			file: "testdata/Pipfile_django.lock",
-			want: PipenvDjango,
+			want: pipenvDjango,
 		},
 		{
 			file: "testdata/Pipfile_many.lock",
-			want: PipenvMany,
+			want: pipenvMany,
 		},
 	}
 

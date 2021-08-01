@@ -62,39 +62,39 @@ func TestParse(t *testing.T) {
 	}{
 		{
 			file: "testdata/yarn_normal.lock",
-			want: YarnNormal,
+			want: yarnNormal,
 		},
 		{
 			file: "testdata/yarn_react.lock",
-			want: YarnReact,
+			want: yarnReact,
 		},
 		{
 			file: "testdata/yarn_with_dev.lock",
-			want: YarnWithDev,
+			want: yarnWithDev,
 		},
 		{
 			file: "testdata/yarn_many.lock",
-			want: YarnMany,
+			want: yarnMany,
 		},
 		{
 			file: "testdata/yarn_realworld.lock",
-			want: YarnRealWorld,
+			want: yarnRealWorld,
 		},
 		{
 			file: "testdata/yarn_v2_normal.lock",
-			want: YarnV2Normal,
+			want: yarnV2Normal,
 		},
 		{
 			file: "testdata/yarn_v2_react.lock",
-			want: YarnV2React,
+			want: yarnV2React,
 		},
 		{
 			file: "testdata/yarn_v2_with_dev.lock",
-			want: YarnV2WithDev,
+			want: yarnV2WithDev,
 		},
 		{
 			file: "testdata/yarn_v2_many.lock",
-			want: YarnV2Many,
+			want: yarnV2Many,
 		},
 	}
 

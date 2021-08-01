@@ -20,23 +20,23 @@ func TestParse(t *testing.T) {
 	}{
 		{
 			file: "testdata/package-lock_normal.json",
-			want: NpmNormal,
+			want: npmNormal,
 		},
 		{
 			file: "testdata/package-lock_react.json",
-			want: NpmReact,
+			want: npmReact,
 		},
 		{
 			file: "testdata/package-lock_with_dev.json",
-			want: NpmWithDev,
+			want: npmWithDev,
 		},
 		{
 			file: "testdata/package-lock_many.json",
-			want: NpmMany,
+			want: npmMany,
 		},
 		{
 			file: "testdata/package-lock_nested.json",
-			want: NpmNested,
+			want: npmNested,
 		},
 	}
 

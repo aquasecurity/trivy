@@ -20,15 +20,15 @@ func TestParse(t *testing.T) {
 	}{
 		{
 			file: "testdata/cargo_normal.lock",
-			want: CargoNormal,
+			want: cargoNormal,
 		},
 		{
 			file: "testdata/cargo_many.lock",
-			want: CargoMany,
+			want: cargoMany,
 		},
 		{
 			file: "testdata/cargo_nickel.lock",
-			want: CargoNickel,
+			want: cargoNickel,
 		},
 	}
 

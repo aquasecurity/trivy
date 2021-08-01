@@ -1,6 +1,7 @@
 package types
 
-type Library struct{
-	Name string
+type Library struct {
+	Name    string
 	Version string
+	License string
 }

@@ -19,45 +19,46 @@ import (
 var (
 	// cd testdata/testimage/maven && docker build -t test .
 	// docker run --rm --name test -it test bash
-	// mvn dependency:tree -Dscope=compile -Dscope=runtime | awk '/:tree/,/BUILD SUCCESS/' | awk 'NR > 1 { print }' | head -n -2 | awk '{print $NF}' | awk -F":" '{printf("{\""$1":"$2"\", \""$4 "\"},\n")}'
+	// mvn dependency:list
+	// mvn dependency:tree -Dscope=compile -Dscope=runtime | awk '/:tree/,/BUILD SUCCESS/' | awk 'NR > 1 { print }' | head -n -2 | awk '{print $NF}' | awk -F":" '{printf("{\""$1":"$2"\", \""$4 "\", \"\"},\n")}'
 	wantMaven = []types.Library{
-		{"com.example:web-app", "1.0-SNAPSHOT"},
-		{"com.fasterxml.jackson.core:jackson-databind", "2.9.10.6"},
-		{"com.fasterxml.jackson.core:jackson-annotations", "2.9.10"},
-		{"com.fasterxml.jackson.core:jackson-core", "2.9.10"},
-		{"com.cronutils:cron-utils", "9.1.2"},
-		{"org.slf4j:slf4j-api", "1.7.30"},
-		{"org.glassfish:javax.el", "3.0.0"},
-		{"org.apache.commons:commons-lang3", "3.11"},
+		{"com.example:web-app", "1.0-SNAPSHOT", ""},
+		{"com.fasterxml.jackson.core:jackson-databind", "2.9.10.6", ""},
+		{"com.fasterxml.jackson.core:jackson-annotations", "2.9.10", ""},
+		{"com.fasterxml.jackson.core:jackson-core", "2.9.10", ""},
+		{"com.cronutils:cron-utils", "9.1.2", ""},
+		{"org.slf4j:slf4j-api", "1.7.30", ""},
+		{"org.glassfish:javax.el", "3.0.0", ""},
+		{"org.apache.commons:commons-lang3", "3.11", ""},
 	}
 
 	// cd testdata/testimage/gradle && docker build -t test .
 	// docker run --rm --name test -it test bash
-	// gradle app:dependencies --configuration implementation | grep "[+\]---" | cut -d" " -f2 | awk -F":" '{printf("{\""$1":"$2"\", \""$3"\"},\n")}'
+	// gradle app:dependencies --configuration implementation | grep "[+\]---" | cut -d" " -f2 | awk -F":" '{printf("{\""$1":"$2"\", \""$3"\", \"\"},\n")}'
 	wantGradle = []types.Library{
-		{"commons-dbcp:commons-dbcp", "1.4"},
-		{"commons-pool:commons-pool", "1.6"},
-		{"log4j:log4j", "1.2.17"},
-		{"org.apache.commons:commons-compress", "1.19"},
+		{"commons-dbcp:commons-dbcp", "1.4", ""},
+		{"commons-pool:commons-pool", "1.6", ""},
+		{"log4j:log4j", "1.2.17", ""},
+		{"org.apache.commons:commons-compress", "1.19", ""},
 	}
 
 	// manually created
 	wantSHA1 = []types.Library{
-		{"org.springframework:spring-core", "5.3.3"},
+		{"org.springframework:spring-core", "5.3.3", ""},
 	}
 
 	// manually created
 	wantHeuristic = []types.Library{
-		{"com.example:heuristic", "1.0.0-SNAPSHOT"},
+		{"com.example:heuristic", "1.0.0-SNAPSHOT", ""},
 	}
 
 	// manually created
 	wantFatjar = []types.Library{
-		{"com.google.guava:failureaccess", "1.0.1"},
-		{"com.google.guava:guava", "29.0-jre"},
-		{"com.google.guava:listenablefuture", "9999.0-empty-to-avoid-conflict-with-guava"},
-		{"com.google.j2objc:j2objc-annotations", "1.3"},
-		{"org.apache.hadoop.thirdparty:hadoop-shaded-guava", "1.1.0-SNAPSHOT"},
+		{"com.google.guava:failureaccess", "1.0.1", ""},
+		{"com.google.guava:guava", "29.0-jre", ""},
+		{"com.google.guava:listenablefuture", "9999.0-empty-to-avoid-conflict-with-guava", ""},
+		{"com.google.j2objc:j2objc-annotations", "1.3", ""},
+		{"org.apache.hadoop.thirdparty:hadoop-shaded-guava", "1.1.0-SNAPSHOT", ""},
 	}
 )
 

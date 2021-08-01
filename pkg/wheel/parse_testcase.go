@@ -17,12 +17,12 @@ var (
 	// for single METADATA file with known name
 	// cat "{{ libname }}.METADATA" | awk 'NR==2,NR==3' | awk 'BEGIN {FS=" "} {print $2}' | awk '!(NR%2){printf("{\""p"\", \""$0"\"},\n")}{p=$0}'
 	WheelSimple = []types.Library{
-		{"simple", "0.1.0"},
+		{"simple", "0.1.0", ""},
 	}
 	WheelDistlib = []types.Library{
-		{"distlib", "0.3.1"},
+		{"distlib", "0.3.1", ""},
 	}
 	WheelVirtualenv = []types.Library{
-		{"virtualenv", "20.4.2"},
+		{"virtualenv", "20.4.2", ""},
 	}
 )

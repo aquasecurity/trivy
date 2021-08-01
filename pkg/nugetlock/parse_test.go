@@ -20,19 +20,19 @@ func TestParse(t *testing.T) {
 	}{
 		{
 			file: "testdata/packages_lock_simple.json",
-			want: NuGetSimple,
+			want: nuGetSimple,
 		},
 		{
 			file: "testdata/packages_lock_subdependencies.json",
-			want: NuGetSubDependencies,
+			want: nuGetSubDependencies,
 		},
 		{
 			file: "testdata/packages_lock_multi.json",
-			want: NuGetMultiTarget,
+			want: nuGetMultiTarget,
 		},
 		{
 			file: "testdata/packages_lock_legacy.json",
-			want: NuGetLegacy,
+			want: nuGetLegacy,
 		},
 	}
 

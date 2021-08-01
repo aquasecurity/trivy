@@ -20,15 +20,15 @@ func TestParse(t *testing.T) {
 	}{
 		{
 			file: "testdata/poetry_normal.lock",
-			want: PoetryNormal,
+			want: poetryNormal,
 		},
 		{
 			file: "testdata/poetry_many.lock",
-			want: PoetryMany,
+			want: poetryMany,
 		},
 		{
 			file: "testdata/poetry_flask.lock",
-			want: PoetryFlask,
+			want: poetryFlask,
 		},
 	}
 
