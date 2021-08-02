@@ -22,7 +22,7 @@ require (
 	github.com/docker/go-connections v0.4.0
 	github.com/elazarl/goproxy v0.0.0-20200809112317-0581fc3aee2d // indirect
 	github.com/fatih/color v1.12.0
-	github.com/go-redis/redis/v8 v8.11.0
+	github.com/go-redis/redis/v8 v8.11.1
 	github.com/goccy/go-yaml v1.8.2 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-containerregistry v0.1.2
