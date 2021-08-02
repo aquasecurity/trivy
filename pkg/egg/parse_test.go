@@ -34,7 +34,7 @@ func TestParse(t *testing.T) {
 			// apk add py3-setuptools
 			// cd /usr/lib/python3.9/site-packages/
 			// cat six-1.15.0-py3.9.egg-info | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | \
-			// sed -e 's/\s\+/#/g' | tr "\n" " " | awk '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}' | sed -e 's/#\+/\ /g'
+			// tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
 			want: []types.Library{
 				{"six", "1.15.0", "MIT"},
 			},
@@ -46,7 +46,7 @@ func TestParse(t *testing.T) {
 			// apk add py3-distlib
 			// cd /usr/lib/python3.9/site-packages/
 			// cat distlib-0.3.1-py3.9.egg-info | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | \
-			// sed -e 's/\s\+/#/g' | tr "\n" " " | awk '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}' | sed -e 's/#\+/\ /g'
+			// tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
 			want: []types.Library{
 				{"distlib", "0.3.1", "Python license"},
 			},
