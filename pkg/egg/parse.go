@@ -20,6 +20,7 @@ func Parse(r io.Reader) ([]types.Library, error) {
 		{
 			Name:    h.Get("Name"),
 			Version: h.Get("Version"),
+			License: h.Get("License"),
 		},
 	}, nil
 }
