@@ -28,6 +28,7 @@ const (
 	TypeNpm      Type = "npm"
 	TypeNuget    Type = "nuget"
 	TypePipenv   Type = "pipenv"
+	TypePip      Type = "pip"
 	TypePoetry   Type = "poetry"
 	TypeYarn     Type = "yarn"
 	TypeGoBinary Type = "gobinary"

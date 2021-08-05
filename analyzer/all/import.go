@@ -10,6 +10,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/library/jar"
 	_ "github.com/aquasecurity/fanal/analyzer/library/npm"
 	_ "github.com/aquasecurity/fanal/analyzer/library/nuget"
+	_ "github.com/aquasecurity/fanal/analyzer/library/pip"
 	_ "github.com/aquasecurity/fanal/analyzer/library/pipenv"
 	_ "github.com/aquasecurity/fanal/analyzer/library/poetry"
 	_ "github.com/aquasecurity/fanal/analyzer/library/yarn"

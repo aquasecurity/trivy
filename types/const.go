@@ -13,6 +13,7 @@ const (
 	Npm      = "npm"
 	NuGet    = "nuget"
 	Pipenv   = "pipenv"
+	Pip      = "pip"
 	Poetry   = "poetry"
 	Yarn     = "yarn"
 	Jar      = "jar"
