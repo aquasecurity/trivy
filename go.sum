@@ -171,8 +171,8 @@ github.com/apparentlymart/go-textseg v1.0.0/go.mod h1:z96Txxhf3xSFMPmb5X/1W05FF/
 github.com/apparentlymart/go-textseg/v12 v12.0.0/go.mod h1:S/4uRK2UtaQttw1GenVJEynmyUenKwP++x/+DdGV/Ec=
 github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6iT90AvPUL1NNfNw=
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
-github.com/aquasecurity/go-dep-parser v0.0.0-20210725132212-29708b56ea7f h1:OT+1o8sddEHlLcP1wx2tgR071fQcqPRrPetjZqnS6bY=
-github.com/aquasecurity/go-dep-parser v0.0.0-20210725132212-29708b56ea7f/go.mod h1:Cv/FOCXy6gwvDbz/KX48+y//SmbnKroFwW5hquXn5G4=
+github.com/aquasecurity/go-dep-parser v0.0.0-20210802113332-f09967d68412 h1:l9f0keIaQpYo1cKfm3abwHY/skXXNPM65cu4I/I9TgI=
+github.com/aquasecurity/go-dep-parser v0.0.0-20210802113332-f09967d68412/go.mod h1:Cv/FOCXy6gwvDbz/KX48+y//SmbnKroFwW5hquXn5G4=
 github.com/aquasecurity/testdocker v0.0.0-20210106133225-0b17fe083674 h1:Xq/HxWFGaB4G/prC6czH/F5woB91GMCCilJxs/5DnDk=
 github.com/aquasecurity/testdocker v0.0.0-20210106133225-0b17fe083674/go.mod h1:psfu0MVaiTDLpNxCoNsTeILSKY2EICBwv345f3M+Ffs=
 github.com/aquasecurity/tfsec v0.46.0 h1:R9djHTpk+YrFuFv2GRdfU4rRz6uk5wLrgfx1fp9K1es=
