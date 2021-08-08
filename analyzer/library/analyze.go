@@ -11,9 +11,9 @@ import (
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
-type parser func(r io.Reader) ([]godeptypes.Library, error)
+type Parser func(r io.Reader) ([]godeptypes.Library, error)
 
-func Analyze(analyzerType, filePath string, content []byte, parse parser) (*analyzer.AnalysisResult, error) {
+func Analyze(fileType, filePath string, content []byte, parse Parser) (*analyzer.AnalysisResult, error) {
 	r := bytes.NewReader(content)
 	parsedLibs, err := parse(r)
 	if err != nil {
@@ -24,10 +24,10 @@ func Analyze(analyzerType, filePath string, content []byte, parse parser) (*anal
 		return nil, nil
 	}
 
-	return ToAnalysisResult(analyzerType, filePath, parsedLibs), nil
+	return ToAnalysisResult(fileType, filePath, parsedLibs), nil
 }
 
-func ToAnalysisResult(analyzerType, filePath string, libs []godeptypes.Library) *analyzer.AnalysisResult {
+func ToAnalysisResult(fileType, filePath string, libs []godeptypes.Library) *analyzer.AnalysisResult {
 	var libInfos []types.LibraryInfo
 	for _, lib := range libs {
 		libInfos = append(libInfos, types.LibraryInfo{
@@ -35,7 +35,7 @@ func ToAnalysisResult(analyzerType, filePath string, libs []godeptypes.Library) 
 		})
 	}
 	apps := []types.Application{{
-		Type:      analyzerType,
+		Type:      fileType,
 		FilePath:  filePath,
 		Libraries: libInfos,
 	}}

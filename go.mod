@@ -7,7 +7,7 @@ require (
 	github.com/GoogleCloudPlatform/docker-credential-gcr v1.5.0
 	github.com/Microsoft/hcsshim v0.8.14 // indirect
 	github.com/alicebob/miniredis/v2 v2.14.1
-	github.com/aquasecurity/go-dep-parser v0.0.0-20210725132212-29708b56ea7f
+	github.com/aquasecurity/go-dep-parser v0.0.0-20210802113332-f09967d68412
 	github.com/aquasecurity/testdocker v0.0.0-20210106133225-0b17fe083674
 	github.com/aquasecurity/tfsec v0.46.0
 	github.com/aws/aws-sdk-go v1.37.0

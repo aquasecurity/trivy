@@ -10,23 +10,36 @@ import (
 	"github.com/aquasecurity/fanal/analyzer/library"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/utils"
-	"github.com/aquasecurity/go-dep-parser/pkg/nuget"
+	"github.com/aquasecurity/go-dep-parser/pkg/nugetconfig"
+	"github.com/aquasecurity/go-dep-parser/pkg/nugetlock"
 )
 
 func init() {
 	analyzer.RegisterAnalyzer(&nugetLibraryAnalyzer{})
 }
 
-const version = 1
+const (
+	version    = 2
+	lockFile   = "packages.lock.json"
+	configFile = "packages.config"
+)
 
-var requiredFiles = []string{"packages.lock.json"}
+var requiredFiles = []string{lockFile, configFile}
 
 type nugetLibraryAnalyzer struct{}
 
 func (a nugetLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	res, err := library.Analyze(types.NuGet, target.FilePath, target.Content, nuget.Parse)
+	// Set the default parser
+	parser := nugetlock.Parse
+
+	targetFile := filepath.Base(target.FilePath)
+	if targetFile == configFile {
+		parser = nugetconfig.Parse
+	}
+
+	res, err := library.Analyze(types.NuGet, target.FilePath, target.Content, parser)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse packages.lock.json: %w", err)
+		return nil, xerrors.Errorf("NuGet analysis error: %w", err)
 	}
 	return res, nil
 }
