@@ -17,7 +17,7 @@
         
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.1+insiders-2.12.0">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.2+insiders-2.13.0">
     
     
       
@@ -25,10 +25,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.f55811a5.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.06b57b5d.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.73e53a79.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.1d832a92.min.css">
         
       
       <link rel="preload" as="style" href="../../../assets/stylesheets/vendor/mermaid.733f213f.min.css">
@@ -2019,6 +2019,9 @@
                 
                 
                 <h1 id="gitlab-ci">GitLab CI</h1>
+<p>If you're a GitLab Ultimate customer, GitLab 14.0 and above include out-of-the-box integration with Trivy. To enable it for your project, simply add the container scanning template to your <code>.gitlab-ci.yml</code> file. For more details, please refer to <a href="https://docs.gitlab.com/ee/user/application_security/container_scanning/">GitLab's documentation</a>.</p>
+<p>If you're using an earlier version of GitLab, you can still use the new integration by copying the <a href="https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/Container-Scanning.gitlab-ci.yml">contents of the 14.0 template</a> to your configuration.</p>
+<p>Alternatively, you can always use the example configurations below.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">stages</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">test</span>
 
@@ -2223,10 +2226,10 @@ command can be used, <code>jq -s 'add' prev-codeclimate.json trivy-codeclimate.j
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.74af7bc3.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.61ac8e46.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.1afabad3.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.87fa7172.min.js"></script>
       
     
   </body>
