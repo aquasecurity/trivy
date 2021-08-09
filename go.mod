@@ -24,7 +24,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.2
 	github.com/goccy/go-yaml v1.8.2 // indirect
 	github.com/golang/protobuf v1.5.2
-	github.com/google/go-containerregistry v0.1.2
+	github.com/google/go-containerregistry v0.6.0
 	github.com/google/go-github/v33 v33.0.0
 	github.com/google/wire v0.5.0
 	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
@@ -38,7 +38,6 @@ require (
 	github.com/mitchellh/copystructure v1.1.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/open-policy-agent/opa v0.31.0
-	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/smartystreets/assertions v1.2.0 // indirect
 	github.com/spf13/afero v1.6.0
 	github.com/stretchr/objx v0.3.0 // indirect
