@@ -3,7 +3,7 @@ package rpc
 import (
 	"time"
 
-	"github.com/cenkalti/backoff"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/twitchtv/twirp"
 
 	"github.com/aquasecurity/trivy/pkg/log"
