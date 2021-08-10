@@ -3,6 +3,7 @@ module github.com/aquasecurity/trivy
 go 1.16
 
 require (
+	github.com/CycloneDX/cyclonedx-go v0.4.0 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46
@@ -25,6 +26,8 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-containerregistry v0.7.1-0.20211214010025-a65b7844a475
 	github.com/google/wire v0.4.0
+	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
+	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/hashicorp/go-getter v1.5.2
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
