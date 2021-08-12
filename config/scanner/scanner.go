@@ -13,10 +13,8 @@ import (
 	"github.com/aquasecurity/fanal/types"
 )
 
-var (
-	//go:embed detection.rego
-	defaultDetectionModule string
-)
+//go:embed detection.rego
+var defaultDetectionModule string
 
 type Scanner struct {
 	rootDir    string
@@ -167,7 +165,6 @@ func detectType(ctx context.Context, input interface{}) (string, error) {
 		rego.Query("x = data.config.type.detect"),
 		rego.Module("detection.rego", defaultDetectionModule),
 	).Eval(ctx)
-
 	if err != nil {
 		return "", xerrors.Errorf("rego eval error: %w", err)
 	}
