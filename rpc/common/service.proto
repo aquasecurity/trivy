@@ -36,6 +36,7 @@ message Package {
   string src_version = 7;
   string src_release = 8;
   int32  src_epoch   = 9;
+  string license = 10;
 }
 
 message Library {
