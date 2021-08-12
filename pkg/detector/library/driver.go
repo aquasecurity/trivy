@@ -35,7 +35,7 @@ func NewDriver(libType string) (Driver, error) {
 		driver = newNpmDriver()
 	case ftypes.Pipenv, ftypes.Poetry:
 		driver = newPipDriver()
-	case ftypes.NuGetLock, ftypes.NuGetConfig:
+	case ftypes.NuGet:
 		driver = newNugetDriver()
 	case ftypes.Jar:
 		driver = newMavenDriver()
