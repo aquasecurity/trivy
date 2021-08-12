@@ -16,7 +16,7 @@ jobs:
       id: go
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install libdb-dev
@@ -34,7 +34,7 @@ jobs:
       id: go
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install libdb-dev
