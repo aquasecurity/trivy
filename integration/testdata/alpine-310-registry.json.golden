@@ -1,6 +1,7 @@
 [
   {
-    "Target": "localhost:55015/alpine:3.10 (alpine 3.10.2)",
+    "Target": "localhost:32779/alpine:3.10 (alpine 3.10.2)",
+    "Class": "os-pkgs",
     "Type": "alpine",
     "Vulnerabilities": [
       {

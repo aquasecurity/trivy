@@ -37,6 +37,14 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/nodejs.json.golden",
 		},
 		{
+			name: "pip",
+			args: args{
+				securityChecks: "vuln",
+				input:          "testdata/fixtures/fs/pip",
+			},
+			golden: "testdata/pip.json.golden",
+		},
+		{
 			name: "dockerfile",
 			args: args{
 				securityChecks: "config",

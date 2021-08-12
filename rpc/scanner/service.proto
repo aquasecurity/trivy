@@ -24,7 +24,6 @@ message ScanOptions {
 
 message ScanResponse {
   common.OS       os      = 1;
-  bool            eosl    = 2;
   repeated Result results = 3;
 }
 

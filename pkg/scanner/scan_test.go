@@ -85,8 +85,8 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					OsFound: &ftypes.OS{
 						Family: "alpine",
 						Name:   "3.10",
+						Eosl:   true,
 					},
-					Eols: true,
 				},
 			},
 			want: report.Report{
@@ -96,6 +96,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					OS: &ftypes.OS{
 						Family: "alpine",
 						Name:   "3.10",
+						Eosl:   true,
 					},
 					RepoTags:    []string{"alpine:3.11"},
 					RepoDigests: []string{"alpine@sha256:0bd0e9e03a022c3b0226667621da84fc9bf562a9056130424b5bfbd8bcb0397f"},

@@ -32,7 +32,6 @@ func TestScanner_Scan(t *testing.T) {
 		ospkgDetectExpectations []OspkgDetectorDetectExpectation
 		wantResults             report.Results
 		wantOS                  *ftypes.OS
-		wantEosl                bool
 		wantErr                 string
 	}{
 		{
@@ -109,7 +108,7 @@ func TestScanner_Scan(t *testing.T) {
 								},
 							},
 						},
-						Eosl: false,
+						Eosl: true,
 					},
 				},
 			},
@@ -150,6 +149,7 @@ func TestScanner_Scan(t *testing.T) {
 			wantOS: &ftypes.OS{
 				Family: "alpine",
 				Name:   "3.11",
+				Eosl:   true,
 			},
 		},
 		{
@@ -1008,7 +1008,7 @@ func TestScanner_Scan(t *testing.T) {
 			ospkgDetector.ApplyDetectExpectations(tt.ospkgDetectExpectations)
 
 			s := NewScanner(applier, ospkgDetector)
-			gotResults, gotOS, gotEosl, err := s.Scan(tt.args.target, "", tt.args.layerIDs, tt.args.options)
+			gotResults, gotOS, err := s.Scan(tt.args.target, "", tt.args.layerIDs, tt.args.options)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -1019,7 +1019,6 @@ func TestScanner_Scan(t *testing.T) {
 
 			assert.Equal(t, tt.wantResults, gotResults)
 			assert.Equal(t, tt.wantOS, gotOS)
-			assert.Equal(t, tt.wantEosl, gotEosl)
 
 			applier.AssertExpectations(t)
 			ospkgDetector.AssertExpectations(t)

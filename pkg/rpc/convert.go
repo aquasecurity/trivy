@@ -266,6 +266,7 @@ func ConvertFromRPCOS(rpcOS *common.OS) *ftypes.OS {
 	return &ftypes.OS{
 		Family: rpcOS.Family,
 		Name:   rpcOS.Name,
+		Eosl:   rpcOS.Eosl,
 	}
 }
 
@@ -468,11 +469,12 @@ func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.Miss
 }
 
 // ConvertToRPCScanResponse converts report.Result to ScanResponse
-func ConvertToRPCScanResponse(results report.Results, os *ftypes.OS, eosl bool) *scanner.ScanResponse {
+func ConvertToRPCScanResponse(results report.Results, os *ftypes.OS) *scanner.ScanResponse {
 	rpcOS := &common.OS{}
 	if os != nil {
 		rpcOS.Family = os.Family
 		rpcOS.Name = os.Name
+		rpcOS.Eosl = os.Eosl
 	}
 
 	var rpcResults []*scanner.Result
@@ -489,7 +491,6 @@ func ConvertToRPCScanResponse(results report.Results, os *ftypes.OS, eosl bool) 
 
 	return &scanner.ScanResponse{
 		Os:      rpcOS,
-		Eosl:    eosl,
 		Results: rpcResults,
 	}
 }

@@ -18,10 +18,12 @@
 - [Find Image Vulnerabilities Using GitHub and Aqua Security Trivy Action][actions2]
 - [Using Trivy to Discover Vulnerabilities in VS Code Projects][vscode]
 
-## External Blogs
+## External Blogs/Links
+- [the vulnerability remediation lifecycle of Alpine containers][alpine]
 - [Open Source CVE Scanner Round-Up: Clair vs Anchore vs Trivy][round-up]
 - [Docker Image Security: Static Analysis Tool Comparison – Anchore Engine vs Clair vs Trivy][tool-comparison]
 - [Research Spike: evaluate Trivy for scanning running containers][gitlab]
+- [Istio evaluates scanners][istio]
 
 [intro]: https://www.youtube.com/watch?v=AzOBGm7XxOA
 [cncf]: https://www.youtube.com/watch?v=XnYxX9uueoQ
@@ -36,6 +38,8 @@
 [actions2]: https://blog.aquasec.com/github-vulnerability-scanner-trivy
 [vscode]: https://blog.aquasec.com/trivy-open-source-vulnerability-scanner-vs-code
 
+[alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
 [round-up]: https://boxboat.com/2020/04/24/image-scanning-tech-compared/
 [tool-comparison]: https://www.a10o.net/devsecops/docker-image-security-static-analysis-tool-comparison-anchore-engine-vs-clair-vs-trivy/
 [gitlab]: https://gitlab.com/gitlab-org/gitlab/-/issues/270888
+[istio]: https://github.com/istio/release-builder/pull/687#issuecomment-874938417

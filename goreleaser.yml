@@ -54,6 +54,9 @@ nfpms:
       netbsd: NetBSD
       freebsd: FreeBSD
       dragonfly: DragonFlyBSD
+    contents:
+     - src: contrib/*.tpl
+       dst: /usr/local/share/trivy/templates
 
 archives:
   -

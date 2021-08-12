@@ -43,7 +43,7 @@ func (s *ScanServer) Scan(_ context.Context, in *rpcScanner.ScanRequest) (*rpcSc
 		SecurityChecks:  in.Options.SecurityChecks,
 		ListAllPackages: in.Options.ListAllPackages,
 	}
-	results, os, eosl, err := s.localScanner.Scan(in.Target, in.ArtifactId, in.BlobIds, options)
+	results, os, err := s.localScanner.Scan(in.Target, in.ArtifactId, in.BlobIds, options)
 	if err != nil {
 		return nil, xerrors.Errorf("failed scan, %s: %w", in.Target, err)
 	}
@@ -51,7 +51,7 @@ func (s *ScanServer) Scan(_ context.Context, in *rpcScanner.ScanRequest) (*rpcSc
 	for i := range results {
 		s.resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
 	}
-	return rpc.ConvertToRPCScanResponse(results, os, eosl), nil
+	return rpc.ConvertToRPCScanResponse(results, os), nil
 }
 
 // CacheServer implements the cache
