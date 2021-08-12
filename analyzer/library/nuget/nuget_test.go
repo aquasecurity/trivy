@@ -2,6 +2,7 @@ package nuget
 
 import (
 	"os"
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -91,6 +92,14 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
+
+			// Sort libraries for consistency
+			for _, app := range got.Applications {
+				sort.Slice(app.Libraries, func(i, j int) bool {
+					return app.Libraries[i].Library.Name < app.Libraries[j].Library.Name
+				})
+			}
+
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
