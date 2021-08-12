@@ -35,7 +35,7 @@ require (
 	github.com/opencontainers/image-spec v1.0.2-0.20190823105129-775207bd45b6
 	github.com/owenrumney/squealer v0.2.28 // indirect
 	github.com/saracen/walker v0.0.0-20191201085201-324a081bae7e
-	github.com/sosedoff/gitkit v0.2.0
+	github.com/sosedoff/gitkit v0.3.0
 	github.com/stretchr/testify v1.7.0
 	github.com/testcontainers/testcontainers-go v0.11.1
 	github.com/tmccombs/hcl2json v0.3.1
