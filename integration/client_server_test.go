@@ -591,6 +591,8 @@ func setupRedis(t *testing.T, ctx context.Context) (testcontainers.Container, st
 		Name:         "redis",
 		Image:        imageName,
 		ExposedPorts: []string{port},
+		SkipReaper:   true,
+		AutoRemove:   true,
 	}
 
 	redis, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{

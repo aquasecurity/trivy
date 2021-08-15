@@ -56,6 +56,8 @@ func setupRegistry(ctx context.Context, baseDir string, authURL *url.URL) (testc
 		BindMounts: map[string]string{
 			filepath.Join(baseDir, "data", "certs"): "/certs",
 		},
+		SkipReaper: true,
+		AutoRemove: true,
 		WaitingFor: wait.ForLog("listening on [::]:5443"),
 	}
 
@@ -75,7 +77,9 @@ func setupAuthServer(ctx context.Context, baseDir string) (testcontainers.Contai
 			filepath.Join(baseDir, "data", "auth_config"): "/config",
 			filepath.Join(baseDir, "data", "certs"):       "/certs",
 		},
-		Cmd: []string{"/config/config.yml"},
+		SkipReaper: true,
+		AutoRemove: true,
+		Cmd:        []string{"/config/config.yml"},
 	}
 
 	authC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
@@ -170,7 +174,7 @@ func TestRegistry(t *testing.T) {
 			name:      "sad path",
 			imageName: "alpine:3.10",
 			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
-			wantErr:   "unsupported status code 401; body: Auth failed",
+			wantErr:   "unexpected status code 401 Unauthorized: Auth failed",
 		},
 	}
 
