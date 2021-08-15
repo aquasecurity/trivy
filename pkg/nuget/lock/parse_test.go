@@ -1,4 +1,4 @@
-package nugetlock
+package lock
 
 import (
 	"os"

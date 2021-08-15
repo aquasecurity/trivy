@@ -1,8 +1,10 @@
-package gobinary
+package binary_test
 
 import (
 	"os"
 	"testing"
+
+	"github.com/aquasecurity/go-dep-parser/pkg/golang/binary"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -96,7 +98,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
 
-			got, err := Parse(f)
+			got, err := binary.Parse(f)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

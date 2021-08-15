@@ -1,4 +1,4 @@
-package gomod
+package mod
 
 import "github.com/aquasecurity/go-dep-parser/pkg/types"
 

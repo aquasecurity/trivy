@@ -1,4 +1,4 @@
-package nugetlock
+package lock
 
 import "github.com/aquasecurity/go-dep-parser/pkg/types"
 

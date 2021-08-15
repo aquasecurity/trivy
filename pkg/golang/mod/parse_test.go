@@ -1,4 +1,4 @@
-package gomod
+package mod
 
 import (
 	"os"

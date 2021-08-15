@@ -1,4 +1,4 @@
-package nugetconfig_test
+package config_test
 
 import (
 	"os"
@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/nugetconfig"
+	"github.com/aquasecurity/go-dep-parser/pkg/nuget/config"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
@@ -44,7 +44,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
 
-			got, err := nugetconfig.Parse(f)
+			got, err := config.Parse(f)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

@@ -1,4 +1,4 @@
-package nugetconfig
+package config
 
 import (
 	"encoding/xml"
