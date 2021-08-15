@@ -7,7 +7,7 @@ require (
 	github.com/GoogleCloudPlatform/docker-credential-gcr v1.5.0
 	github.com/alicebob/miniredis/v2 v2.14.1
 	github.com/aquasecurity/go-dep-parser v0.0.0-20210815080135-5be65146849a
-	github.com/aquasecurity/testdocker v0.0.0-20210106133225-0b17fe083674
+	github.com/aquasecurity/testdocker v0.0.0-20210815094158-097d418f8cdb
 	github.com/aquasecurity/tfsec v0.46.0
 	github.com/aws/aws-sdk-go v1.40.20
 	github.com/deckarep/golang-set v1.7.1
@@ -16,7 +16,7 @@ require (
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/go-redis/redis/v8 v8.11.3
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/google/go-containerregistry v0.1.2
+	github.com/google/go-containerregistry v0.6.0
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-hclog v0.15.0 // indirect
