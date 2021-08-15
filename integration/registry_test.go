@@ -56,6 +56,8 @@ func setupRegistry(ctx context.Context, baseDir string, authURL *url.URL) (testc
 		BindMounts: map[string]string{
 			filepath.Join(baseDir, "data", "certs"): "/certs",
 		},
+		SkipReaper: true,
+		AutoRemove: true,
 		WaitingFor: wait.ForLog("listening on [::]:5443"),
 	}
 
@@ -75,7 +77,9 @@ func setupAuthServer(ctx context.Context, baseDir string) (testcontainers.Contai
 			filepath.Join(baseDir, "data", "auth_config"): "/config",
 			filepath.Join(baseDir, "data", "certs"):       "/certs",
 		},
-		Cmd: []string{"/config/config.yml"},
+		SkipReaper: true,
+		AutoRemove: true,
+		Cmd:        []string{"/config/config.yml"},
 	}
 
 	authC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
