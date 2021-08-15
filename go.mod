@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/BurntSushi/toml v0.4.1
 	github.com/GoogleCloudPlatform/docker-credential-gcr v1.5.0
-	github.com/alicebob/miniredis/v2 v2.14.1
+	github.com/alicebob/miniredis/v2 v2.15.1
 	github.com/aquasecurity/go-dep-parser v0.0.0-20210815080135-5be65146849a
 	github.com/aquasecurity/testdocker v0.0.0-20210815094158-097d418f8cdb
 	github.com/aquasecurity/tfsec v0.46.0
