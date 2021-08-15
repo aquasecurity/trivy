@@ -170,7 +170,7 @@ func TestRegistry(t *testing.T) {
 			name:      "sad path",
 			imageName: "alpine:3.10",
 			imageFile: "testdata/fixtures/images/alpine-310.tar.gz",
-			wantErr:   "unsupported status code 401; body: Auth failed",
+			wantErr:   "unexpected status code 401 Unauthorized: Auth failed",
 		},
 	}
 
