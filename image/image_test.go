@@ -211,7 +211,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.11", serverAddr),
 			},
-			wantErr: "unsupported status code 401",
+			wantErr: "unexpected status code 401",
 		},
 		{
 			name: "sad path with invalid registry token",
