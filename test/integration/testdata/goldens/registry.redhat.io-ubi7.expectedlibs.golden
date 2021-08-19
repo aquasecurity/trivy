@@ -1,0 +1,163 @@
+{
+    "usr/lib/python2.7/site-packages/pyinotify-0.9.4-py2.7.egg-info": [
+        {
+            "Name": "pyinotify",
+            "Version": "0.9.4",
+            "License": "MIT License"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/python_dateutil-1.5-py2.7.egg-info/PKG-INFO": [
+        {
+            "Name": "python-dateutil",
+            "Version": "1.5",
+            "License": "PSF License"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/setuptools-0.9.8-py2.7.egg-info/PKG-INFO": [
+        {
+            "Name": "setuptools",
+            "Version": "0.9.8",
+            "License": "PSF or ZPL"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/six-1.9.0-py2.7.egg-info/PKG-INFO": [
+        {
+            "Name": "six",
+            "Version": "1.9.0",
+            "License": "MIT"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/backports.ssl_match_hostname-3.5.0.1-py2.7.egg-info": [
+        {
+            "Name": "backports.ssl_match_hostname",
+            "Version": "3.5.0.1",
+            "License": "Python Software Foundation License"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/decorator-3.4.0-py2.7.egg-info/PKG-INFO": [
+        {
+            "Name": "decorator",
+            "Version": "3.4.0",
+            "License": "BSD License"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/iniparse-0.4-py2.7.egg-info": [
+        {
+            "Name": "iniparse",
+            "Version": "0.4",
+            "License": "MIT"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/ipaddress-1.0.16-py2.7.egg-info": [
+        {
+            "Name": "ipaddress",
+            "Version": "1.0.16",
+            "License": "Python Software Foundation License"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/urlgrabber-3.10-py2.7.egg-info": [
+        {
+            "Name": "urlgrabber",
+            "Version": "3.10",
+            "License": "LGPL"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/chardet-2.2.1-py2.7.egg-info/PKG-INFO": [
+        {
+            "Name": "chardet",
+            "Version": "2.2.1",
+            "License": "LGPL"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/kitchen-1.1.1-py2.7.egg-info/PKG-INFO": [
+        {
+            "Name": "kitchen",
+            "Version": "1.1.1",
+            "License": "LGPLv2+"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/syspurpose-1.24.13-py2.7.egg-info/PKG-INFO": [
+        {
+            "Name": "syspurpose",
+            "Version": "1.24.13",
+            "License": "GPLv2"
+        }
+    ],
+    "usr/lib64/python2.7/lib-dynload/Python-2.7.5-py2.7.egg-info": [
+        {
+            "Name": "Python",
+            "Version": "2.7.5",
+            "License": "PSF license"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/pygpgme-0.3-py2.7.egg-info": [
+        {
+            "Name": "pygpgme",
+            "Version": "0.3",
+            "License": "LGPL"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/pyliblzma-0.5.3-py2.7.egg-info/PKG-INFO": [
+        {
+            "Name": "pyliblzma",
+            "Version": "0.5.3",
+            "License": "LGPL 3"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/subscription_manager-1.24.13-py2.7.egg-info/PKG-INFO": [
+        {
+            "Name": "subscription-manager",
+            "Version": "1.24.13",
+            "License": "GPLv2"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/pycurl-7.19.0-py2.7.egg-info": [
+        {
+            "Name": "pycurl",
+            "Version": "7.19.0",
+            "License": "LGPL/MIT"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/pygobject-3.22.0-py2.7-linux-x86_64.egg-info": [
+        {
+            "Name": "PyGObject",
+            "Version": "3.22.0",
+            "License": "GNU LGPL"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/python_dmidecode-3.10.13-py2.7.egg-info": [
+        {
+            "Name": "python-dmidecode",
+            "Version": "3.10.13",
+            "License": "GPL-2"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/pyxattr-0.5.1-py2.7.egg-info/PKG-INFO": [
+        {
+            "Name": "pyxattr",
+            "Version": "0.5.1",
+            "License": "LGPL"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/yum_metadata_parser-1.1.4-py2.7.egg-info": [
+        {
+            "Name": "yum-metadata-parser",
+            "Version": "1.1.4",
+            "License": "UNKNOWN"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/ethtool-0.8-py2.7.egg-info": [
+        {
+            "Name": "ethtool",
+            "Version": "0.8",
+            "License": "UNKNOWN"
+        }
+    ],
+    "usr/lib64/python2.7/wsgiref.egg-info": [
+        {
+            "Name": "wsgiref",
+            "Version": "0.1.2",
+            "License": "PSF or ZPL"
+        }
+    ]
+}

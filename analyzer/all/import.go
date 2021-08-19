@@ -9,6 +9,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/language/nodejs/npm"
 	_ "github.com/aquasecurity/fanal/analyzer/language/nodejs/yarn"
 	_ "github.com/aquasecurity/fanal/analyzer/language/php/composer"
+	_ "github.com/aquasecurity/fanal/analyzer/language/python/packaging"
 	_ "github.com/aquasecurity/fanal/analyzer/language/python/pip"
 	_ "github.com/aquasecurity/fanal/analyzer/language/python/pipenv"
 	_ "github.com/aquasecurity/fanal/analyzer/language/python/poetry"

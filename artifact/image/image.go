@@ -27,6 +27,16 @@ const (
 	parallel = 5
 )
 
+var defaultDisabledAnalyzers = []analyzer.Type{
+	// Do not scan go.sum in container images, only scan go binaries
+	analyzer.TypeGoMod,
+
+	// Do not scan requirements.txt, Pipfile.lock and poetry.lock in container images, only scan egg and wheel
+	analyzer.TypePip,
+	analyzer.TypePipenv,
+	analyzer.TypePoetry,
+}
+
 type Artifact struct {
 	image               image.Image
 	cache               cache.ArtifactCache
@@ -46,8 +56,7 @@ func NewArtifact(img image.Image, c cache.ArtifactCache, disabled []analyzer.Typ
 		return nil, xerrors.Errorf("scanner error: %w", err)
 	}
 
-	// Do not scan go.sum in container images, only scan go binaries
-	disabled = append(disabled, analyzer.TypeGoMod)
+	disabled = append(disabled, defaultDisabledAnalyzers...)
 
 	return Artifact{
 		image:               img,
