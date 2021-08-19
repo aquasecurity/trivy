@@ -17,6 +17,14 @@ import (
 	"github.com/aquasecurity/fanal/types"
 )
 
+var defaultDisabledAnalyzers = []analyzer.Type{
+	// Do not scan JAR/WAR/EAR in git repositories
+	analyzer.TypeJar,
+
+	// Do not scan egg and wheel in git repositories
+	analyzer.TypePythonPkg,
+}
+
 type Artifact struct {
 	url   string
 	local artifact.Artifact
@@ -49,8 +57,7 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, disabled []analyzer.Type,
 		_ = os.RemoveAll(tmpDir)
 	}
 
-	// JAR/WAR/EAR doesn't need to be analyzed in git repositories.
-	disabled = append(disabled, analyzer.TypeJar)
+	disabled = append(disabled, defaultDisabledAnalyzers...)
 
 	art, err := local.NewArtifact(tmpDir, c, disabled, opt)
 	if err != nil {

@@ -1,0 +1,72 @@
+{
+    "usr/lib/python2.7/site-packages/amazon_linux_extras-1.6.7-py2.7.egg-info/PKG-INFO": [
+        {
+            "Name": "amazon-linux-extras",
+            "Version": "1.6.7",
+            "License": "UNKNOWN"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/iniparse-0.4-py2.7.egg-info": [
+        {
+            "Name": "iniparse",
+            "Version": "0.4",
+            "License": "MIT"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/urlgrabber-3.10-py2.7.egg-info": [
+        {
+            "Name": "urlgrabber",
+            "Version": "3.10",
+            "License": "LGPL"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/pycurl-7.19.0-py2.7.egg-info": [
+        {
+            "Name": "pycurl",
+            "Version": "7.19.0",
+            "License": "LGPL/MIT"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/pygpgme-0.3-py2.7.egg-info": [
+        {
+            "Name": "pygpgme",
+            "Version": "0.3",
+            "License": "LGPL"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/pyliblzma-0.5.3-py2.7.egg-info/PKG-INFO": [
+        {
+            "Name": "pyliblzma",
+            "Version": "0.5.3",
+            "License": "LGPL 3"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/pyxattr-0.5.1-py2.7.egg-info/PKG-INFO": [
+        {
+            "Name": "pyxattr",
+            "Version": "0.5.1",
+            "License": "LGPL"
+        }
+    ],
+    "usr/lib64/python2.7/site-packages/yum_metadata_parser-1.1.4-py2.7.egg-info": [
+        {
+            "Name": "yum-metadata-parser",
+            "Version": "1.1.4",
+            "License": "UNKNOWN"
+        }
+    ],
+    "usr/lib64/python2.7/wsgiref.egg-info": [
+        {
+            "Name": "wsgiref",
+            "Version": "0.1.2",
+            "License": "PSF or ZPL"
+        }
+    ],
+    "usr/lib64/python2.7/lib-dynload/Python-2.7.14-py2.7.egg-info": [
+        {
+            "Name": "Python",
+            "Version": "2.7.14",
+            "License": "PSF License"
+        }
+    ]
+}

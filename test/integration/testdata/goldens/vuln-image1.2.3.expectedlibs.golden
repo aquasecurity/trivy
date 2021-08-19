@@ -1,852 +1,651 @@
 {
-  "node-app/package-lock.json": [
-    {
-      "Name": "react-is",
-      "Version": "16.8.6"
-    },
-    {
-      "Name": "asap",
-      "Version": "2.0.6"
-    },
-    {
-      "Name": "lodash",
-      "Version": "4.17.4"
-    },
-    {
-      "Name": "jquery",
-      "Version": "3.3.9"
-    },
-    {
-      "Name": "object-assign",
-      "Version": "4.1.1"
-    },
-    {
-      "Name": "promise",
-      "Version": "8.0.3"
-    },
-    {
-      "Name": "prop-types",
-      "Version": "15.7.2"
-    },
-    {
-      "Name": "react",
-      "Version": "16.8.6"
-    },
-    {
-      "Name": "scheduler",
-      "Version": "0.13.6"
-    },
-    {
-      "Name": "symbol-observable",
-      "Version": "1.2.0"
-    },
-    {
-      "Name": "js-tokens",
-      "Version": "4.0.0"
-    },
-    {
-      "Name": "loose-envify",
-      "Version": "1.4.0"
-    },
-    {
-      "Name": "redux",
-      "Version": "4.0.1"
-    }
-  ],
-  "php-app/composer.lock": [
-    {
-      "Name": "guzzlehttp/guzzle",
-      "Version": "6.2.0"
-    },
-    {
-      "Name": "guzzlehttp/promises",
-      "Version": "v1.3.1"
-    },
-    {
-      "Name": "guzzlehttp/psr7",
-      "Version": "1.5.2"
-    },
-    {
-      "Name": "laravel/installer",
-      "Version": "v2.0.1"
-    },
-    {
-      "Name": "pear/log",
-      "Version": "1.13.1"
-    },
-    {
-      "Name": "pear/pear_exception",
-      "Version": "v1.0.0"
-    },
-    {
-      "Name": "psr/http-message",
-      "Version": "1.0.1"
-    },
-    {
-      "Name": "ralouphie/getallheaders",
-      "Version": "2.0.5"
-    },
-    {
-      "Name": "symfony/console",
-      "Version": "v4.2.7"
-    },
-    {
-      "Name": "symfony/contracts",
-      "Version": "v1.0.2"
-    },
-    {
-      "Name": "symfony/filesystem",
-      "Version": "v4.2.7"
-    },
-    {
-      "Name": "symfony/polyfill-ctype",
-      "Version": "v1.11.0"
-    },
-    {
-      "Name": "symfony/polyfill-mbstring",
-      "Version": "v1.11.0"
-    },
-    {
-      "Name": "symfony/process",
-      "Version": "v4.2.7"
-    }
-  ],
-  "python-app/Pipfile.lock": [
-    {
-      "Name": "markupsafe",
-      "Version": "1.1.1"
-    },
-    {
-      "Name": "python-dateutil",
-      "Version": "2.8.0"
-    },
-    {
-      "Name": "redis",
-      "Version": "3.2.1"
-    },
-    {
-      "Name": "urllib3",
-      "Version": "1.24.1"
-    },
-    {
-      "Name": "autopep8",
-      "Version": "1.4.3"
-    },
-    {
-      "Name": "billiard",
-      "Version": "3.6.0.0"
-    },
-    {
-      "Name": "boto3",
-      "Version": "1.9.130"
-    },
-    {
-      "Name": "gprof2dot",
-      "Version": "2016.10.13"
-    },
-    {
-      "Name": "httplib2",
-      "Version": "0.12.1"
-    },
-    {
-      "Name": "kombu",
-      "Version": "4.5.0"
-    },
-    {
-      "Name": "psycopg2-binary",
-      "Version": "2.8.1"
-    },
-    {
-      "Name": "python-crontab",
-      "Version": "2.3.6"
-    },
-    {
-      "Name": "amqp",
-      "Version": "2.4.2"
-    },
-    {
-      "Name": "pyyaml",
-      "Version": "5.1"
-    },
-    {
-      "Name": "vine",
-      "Version": "1.3.0"
-    },
-    {
-      "Name": "six",
-      "Version": "1.12.0"
-    },
-    {
-      "Name": "botocore",
-      "Version": "1.12.130"
-    },
-    {
-      "Name": "django-celery-beat",
-      "Version": "1.4.0"
-    },
-    {
-      "Name": "gunicorn",
-      "Version": "19.9.0"
-    },
-    {
-      "Name": "pygments",
-      "Version": "2.3.1"
-    },
-    {
-      "Name": "decorator",
-      "Version": "4.4.0"
-    },
-    {
-      "Name": "djangorestframework",
-      "Version": "3.9.2"
-    },
-    {
-      "Name": "idna",
-      "Version": "2.8"
-    },
-    {
-      "Name": "jinja2",
-      "Version": "2.10.1"
-    },
-    {
-      "Name": "sendgrid",
-      "Version": "6.0.4"
-    },
-    {
-      "Name": "django-cors-headers",
-      "Version": "2.5.2"
-    },
-    {
-      "Name": "flower",
-      "Version": "0.9.3"
-    },
-    {
-      "Name": "django",
-      "Version": "2.0.9"
-    },
-    {
-      "Name": "pyjwt",
-      "Version": "1.7.1"
-    },
-    {
-      "Name": "retry",
-      "Version": "0.9.2"
-    },
-    {
-      "Name": "django-postgres-extra",
-      "Version": ""
-    },
-    {
-      "Name": "djangorestframework-jwt",
-      "Version": "1.11.0"
-    },
-    {
-      "Name": "docutils",
-      "Version": "0.14"
-    },
-    {
-      "Name": "pycodestyle",
-      "Version": "2.5.0"
-    },
-    {
-      "Name": "babel",
-      "Version": "2.6.0"
-    },
-    {
-      "Name": "celery",
-      "Version": "4.3.0"
-    },
-    {
-      "Name": "django-extensions",
-      "Version": "2.1.6"
-    },
-    {
-      "Name": "jmespath",
-      "Version": "0.9.4"
-    },
-    {
-      "Name": "tornado",
-      "Version": "5.1.1"
-    },
-    {
-      "Name": "s3transfer",
-      "Version": "0.2.0"
-    },
-    {
-      "Name": "certifi",
-      "Version": "2019.3.9"
-    },
-    {
-      "Name": "pycurl",
-      "Version": "7.43.0.2"
-    },
-    {
-      "Name": "requests",
-      "Version": "2.21.0"
-    },
-    {
-      "Name": "oauth2",
-      "Version": "1.9.0.post1"
-    },
-    {
-      "Name": "py",
-      "Version": "1.8.0"
-    },
-    {
-      "Name": "python-http-client",
-      "Version": "3.1.0"
-    },
-    {
-      "Name": "pytz",
-      "Version": "2019.1"
-    },
-    {
-      "Name": "xmltodict",
-      "Version": "0.12.0"
-    },
-    {
-      "Name": "django-silk",
-      "Version": "3.0.1"
-    },
-    {
-      "Name": "sentry-sdk",
-      "Version": "0.7.10"
-    },
-    {
-      "Name": "chardet",
-      "Version": "3.0.4"
-    },
-    {
-      "Name": "django-redis-cache",
-      "Version": "2.0.0"
-    },
-    {
-      "Name": "django-timezone-field",
-      "Version": "3.0"
-    },
-    {
-      "Name": "hiredis",
-      "Version": "1.0.0"
-    },
-    {
-      "Name": "sqlparse",
-      "Version": "0.3.0"
-    }
-  ],
-  "ruby-app/Gemfile.lock": [
-    {
-      "Name": "actioncable",
-      "Version": "5.2.3"
-    },
-    {
-      "Name": "actionmailer",
-      "Version": "5.2.3"
-    },
-    {
-      "Name": "actionpack",
-      "Version": "5.2.3"
-    },
-    {
-      "Name": "actionview",
-      "Version": "5.2.3"
-    },
-    {
-      "Name": "activejob",
-      "Version": "5.2.3"
-    },
-    {
-      "Name": "activemodel",
-      "Version": "5.2.3"
-    },
-    {
-      "Name": "activerecord",
-      "Version": "5.2.3"
-    },
-    {
-      "Name": "activestorage",
-      "Version": "5.2.3"
-    },
-    {
-      "Name": "activesupport",
-      "Version": "5.2.3"
-    },
-    {
-      "Name": "arel",
-      "Version": "9.0.0"
-    },
-    {
-      "Name": "ast",
-      "Version": "2.4.0"
-    },
-    {
-      "Name": "builder",
-      "Version": "3.2.3"
-    },
-    {
-      "Name": "coderay",
-      "Version": "1.1.2"
-    },
-    {
-      "Name": "concurrent-ruby",
-      "Version": "1.1.5"
-    },
-    {
-      "Name": "crass",
-      "Version": "1.0.4"
-    },
-    {
-      "Name": "dotenv",
-      "Version": "2.7.2"
-    },
-    {
-      "Name": "erubi",
-      "Version": "1.8.0"
-    },
-    {
-      "Name": "faker",
-      "Version": "1.9.3"
-    },
-    {
-      "Name": "globalid",
-      "Version": "0.4.2"
-    },
-    {
-      "Name": "i18n",
-      "Version": "1.6.0"
-    },
-    {
-      "Name": "jaro_winkler",
-      "Version": "1.5.2"
-    },
-    {
-      "Name": "json",
-      "Version": "2.2.0"
-    },
-    {
-      "Name": "loofah",
-      "Version": "2.2.3"
-    },
-    {
-      "Name": "mail",
-      "Version": "2.7.1"
-    },
-    {
-      "Name": "marcel",
-      "Version": "0.3.3"
-    },
-    {
-      "Name": "method_source",
-      "Version": "0.9.2"
-    },
-    {
-      "Name": "mimemagic",
-      "Version": "0.3.3"
-    },
-    {
-      "Name": "mini_mime",
-      "Version": "1.0.1"
-    },
-    {
-      "Name": "mini_portile2",
-      "Version": "2.4.0"
-    },
-    {
-      "Name": "minitest",
-      "Version": "5.11.3"
-    },
-    {
-      "Name": "nio4r",
-      "Version": "2.3.1"
-    },
-    {
-      "Name": "nokogiri",
-      "Version": "1.10.3"
-    },
-    {
-      "Name": "parallel",
-      "Version": "1.17.0"
-    },
-    {
-      "Name": "parser",
-      "Version": "2.6.3.0"
-    },
-    {
-      "Name": "pry",
-      "Version": "0.12.2"
-    },
-    {
-      "Name": "psych",
-      "Version": "3.1.0"
-    },
-    {
-      "Name": "rack",
-      "Version": "2.0.7"
-    },
-    {
-      "Name": "rack-test",
-      "Version": "1.1.0"
-    },
-    {
-      "Name": "rails",
-      "Version": "5.2.0"
-    },
-    {
-      "Name": "rails-dom-testing",
-      "Version": "2.0.3"
-    },
-    {
-      "Name": "rails-html-sanitizer",
-      "Version": "1.0.3"
-    },
-    {
-      "Name": "railties",
-      "Version": "5.2.3"
-    },
-    {
-      "Name": "rainbow",
-      "Version": "3.0.0"
-    },
-    {
-      "Name": "rake",
-      "Version": "12.3.2"
-    },
-    {
-      "Name": "rubocop",
-      "Version": "0.67.2"
-    },
-    {
-      "Name": "ruby-progressbar",
-      "Version": "1.10.0"
-    },
-    {
-      "Name": "sprockets",
-      "Version": "3.7.2"
-    },
-    {
-      "Name": "sprockets-rails",
-      "Version": "3.2.1"
-    },
-    {
-      "Name": "thor",
-      "Version": "0.20.3"
-    },
-    {
-      "Name": "thread_safe",
-      "Version": "0.3.6"
-    },
-    {
-      "Name": "tzinfo",
-      "Version": "1.2.5"
-    },
-    {
-      "Name": "unicode-display_width",
-      "Version": "1.5.0"
-    },
-    {
-      "Name": "websocket-driver",
-      "Version": "0.7.0"
-    },
-    {
-      "Name": "websocket-extensions",
-      "Version": "0.1.3"
-    }
-  ],
-  "rust-app/Cargo.lock": [
-    {
-      "Name": "ammonia",
-      "Version": "1.9.0"
-    },
-    {
-      "Name": "autocfg",
-      "Version": "0.1.2"
-    },
-    {
-      "Name": "bitflags",
-      "Version": "0.7.0"
-    },
-    {
-      "Name": "bitflags",
-      "Version": "1.0.4"
-    },
-    {
-      "Name": "cfg-if",
-      "Version": "0.1.7"
-    },
-    {
-      "Name": "cloudabi",
-      "Version": "0.0.3"
-    },
-    {
-      "Name": "fuchsia-cprng",
-      "Version": "0.1.1"
-    },
-    {
-      "Name": "futf",
-      "Version": "0.1.4"
-    },
-    {
-      "Name": "gdi32-sys",
-      "Version": "0.2.0"
-    },
-    {
-      "Name": "html5ever",
-      "Version": "0.23.0"
-    },
-    {
-      "Name": "idna",
-      "Version": "0.1.5"
-    },
-    {
-      "Name": "itoa",
-      "Version": "0.4.4"
-    },
-    {
-      "Name": "kernel32-sys",
-      "Version": "0.2.2"
-    },
-    {
-      "Name": "lazy_static",
-      "Version": "0.2.11"
-    },
-    {
-      "Name": "lazy_static",
-      "Version": "1.3.0"
-    },
-    {
-      "Name": "libc",
-      "Version": "0.2.54"
-    },
-    {
-      "Name": "libressl-pnacl-sys",
-      "Version": "2.1.6"
-    },
-    {
-      "Name": "log",
-      "Version": "0.4.6"
-    },
-    {
-      "Name": "mac",
-      "Version": "0.1.1"
-    },
-    {
-      "Name": "maplit",
-      "Version": "1.0.1"
-    },
-    {
-      "Name": "markup5ever",
-      "Version": "0.8.1"
-    },
-    {
-      "Name": "matches",
-      "Version": "0.1.8"
-    },
-    {
-      "Name": "new_debug_unreachable",
-      "Version": "1.0.3"
-    },
-    {
-      "Name": "normal",
-      "Version": "0.1.0"
-    },
-    {
-      "Name": "openssl",
-      "Version": "0.8.3"
-    },
-    {
-      "Name": "openssl-sys",
-      "Version": "0.7.17"
-    },
-    {
-      "Name": "percent-encoding",
-      "Version": "1.0.1"
-    },
-    {
-      "Name": "phf",
-      "Version": "0.7.24"
-    },
-    {
-      "Name": "phf_codegen",
-      "Version": "0.7.24"
-    },
-    {
-      "Name": "phf_generator",
-      "Version": "0.7.24"
-    },
-    {
-      "Name": "phf_shared",
-      "Version": "0.7.24"
-    },
-    {
-      "Name": "pkg-config",
-      "Version": "0.3.14"
-    },
-    {
-      "Name": "pnacl-build-helper",
-      "Version": "1.4.11"
-    },
-    {
-      "Name": "precomputed-hash",
-      "Version": "0.1.1"
-    },
-    {
-      "Name": "proc-macro2",
-      "Version": "0.4.30"
-    },
-    {
-      "Name": "quote",
-      "Version": "0.6.12"
-    },
-    {
-      "Name": "rand",
-      "Version": "0.4.6"
-    },
-    {
-      "Name": "rand",
-      "Version": "0.6.5"
-    },
-    {
-      "Name": "rand_chacha",
-      "Version": "0.1.1"
-    },
-    {
-      "Name": "rand_core",
-      "Version": "0.3.1"
-    },
-    {
-      "Name": "rand_core",
-      "Version": "0.4.0"
-    },
-    {
-      "Name": "rand_hc",
-      "Version": "0.1.0"
-    },
-    {
-      "Name": "rand_isaac",
-      "Version": "0.1.1"
-    },
-    {
-      "Name": "rand_jitter",
-      "Version": "0.1.4"
-    },
-    {
-      "Name": "rand_os",
-      "Version": "0.1.3"
-    },
-    {
-      "Name": "rand_pcg",
-      "Version": "0.1.2"
-    },
-    {
-      "Name": "rand_xorshift",
-      "Version": "0.1.1"
-    },
-    {
-      "Name": "rdrand",
-      "Version": "0.4.0"
-    },
-    {
-      "Name": "remove_dir_all",
-      "Version": "0.5.1"
-    },
-    {
-      "Name": "ryu",
-      "Version": "0.2.8"
-    },
-    {
-      "Name": "same-file",
-      "Version": "0.1.3"
-    },
-    {
-      "Name": "serde",
-      "Version": "1.0.91"
-    },
-    {
-      "Name": "serde_derive",
-      "Version": "1.0.91"
-    },
-    {
-      "Name": "serde_json",
-      "Version": "1.0.39"
-    },
-    {
-      "Name": "siphasher",
-      "Version": "0.2.3"
-    },
-    {
-      "Name": "smallvec",
-      "Version": "0.6.9"
-    },
-    {
-      "Name": "string_cache",
-      "Version": "0.7.3"
-    },
-    {
-      "Name": "string_cache_codegen",
-      "Version": "0.4.2"
-    },
-    {
-      "Name": "string_cache_shared",
-      "Version": "0.3.0"
-    },
-    {
-      "Name": "syn",
-      "Version": "0.15.34"
-    },
-    {
-      "Name": "tempdir",
-      "Version": "0.3.7"
-    },
-    {
-      "Name": "tendril",
-      "Version": "0.4.1"
-    },
-    {
-      "Name": "unicode-bidi",
-      "Version": "0.3.4"
-    },
-    {
-      "Name": "unicode-normalization",
-      "Version": "0.1.8"
-    },
-    {
-      "Name": "unicode-xid",
-      "Version": "0.1.0"
-    },
-    {
-      "Name": "url",
-      "Version": "1.7.2"
-    },
-    {
-      "Name": "user32-sys",
-      "Version": "0.2.0"
-    },
-    {
-      "Name": "utf-8",
-      "Version": "0.7.5"
-    },
-    {
-      "Name": "walkdir",
-      "Version": "1.0.7"
-    },
-    {
-      "Name": "winapi",
-      "Version": "0.2.8"
-    },
-    {
-      "Name": "winapi",
-      "Version": "0.3.7"
-    },
-    {
-      "Name": "winapi-build",
-      "Version": "0.1.1"
-    },
-    {
-      "Name": "winapi-i686-pc-windows-gnu",
-      "Version": "0.4.0"
-    },
-    {
-      "Name": "winapi-x86_64-pc-windows-gnu",
-      "Version": "0.4.0"
-    }
-  ]
+    "node-app/package-lock.json": [
+        {
+            "Name": "react-is",
+            "Version": "16.8.6"
+        },
+        {
+            "Name": "asap",
+            "Version": "2.0.6"
+        },
+        {
+            "Name": "lodash",
+            "Version": "4.17.4"
+        },
+        {
+            "Name": "jquery",
+            "Version": "3.3.9"
+        },
+        {
+            "Name": "object-assign",
+            "Version": "4.1.1"
+        },
+        {
+            "Name": "promise",
+            "Version": "8.0.3"
+        },
+        {
+            "Name": "prop-types",
+            "Version": "15.7.2"
+        },
+        {
+            "Name": "react",
+            "Version": "16.8.6"
+        },
+        {
+            "Name": "scheduler",
+            "Version": "0.13.6"
+        },
+        {
+            "Name": "symbol-observable",
+            "Version": "1.2.0"
+        },
+        {
+            "Name": "js-tokens",
+            "Version": "4.0.0"
+        },
+        {
+            "Name": "loose-envify",
+            "Version": "1.4.0"
+        },
+        {
+            "Name": "redux",
+            "Version": "4.0.1"
+        }
+    ],
+    "php-app/composer.lock": [
+        {
+            "Name": "guzzlehttp/guzzle",
+            "Version": "6.2.0"
+        },
+        {
+            "Name": "guzzlehttp/promises",
+            "Version": "v1.3.1"
+        },
+        {
+            "Name": "guzzlehttp/psr7",
+            "Version": "1.5.2"
+        },
+        {
+            "Name": "laravel/installer",
+            "Version": "v2.0.1"
+        },
+        {
+            "Name": "pear/log",
+            "Version": "1.13.1"
+        },
+        {
+            "Name": "pear/pear_exception",
+            "Version": "v1.0.0"
+        },
+        {
+            "Name": "psr/http-message",
+            "Version": "1.0.1"
+        },
+        {
+            "Name": "ralouphie/getallheaders",
+            "Version": "2.0.5"
+        },
+        {
+            "Name": "symfony/console",
+            "Version": "v4.2.7"
+        },
+        {
+            "Name": "symfony/contracts",
+            "Version": "v1.0.2"
+        },
+        {
+            "Name": "symfony/filesystem",
+            "Version": "v4.2.7"
+        },
+        {
+            "Name": "symfony/polyfill-ctype",
+            "Version": "v1.11.0"
+        },
+        {
+            "Name": "symfony/polyfill-mbstring",
+            "Version": "v1.11.0"
+        },
+        {
+            "Name": "symfony/process",
+            "Version": "v4.2.7"
+        }
+    ],
+    "ruby-app/Gemfile.lock": [
+        {
+            "Name": "actioncable",
+            "Version": "5.2.3"
+        },
+        {
+            "Name": "actionmailer",
+            "Version": "5.2.3"
+        },
+        {
+            "Name": "actionpack",
+            "Version": "5.2.3"
+        },
+        {
+            "Name": "actionview",
+            "Version": "5.2.3"
+        },
+        {
+            "Name": "activejob",
+            "Version": "5.2.3"
+        },
+        {
+            "Name": "activemodel",
+            "Version": "5.2.3"
+        },
+        {
+            "Name": "activerecord",
+            "Version": "5.2.3"
+        },
+        {
+            "Name": "activestorage",
+            "Version": "5.2.3"
+        },
+        {
+            "Name": "activesupport",
+            "Version": "5.2.3"
+        },
+        {
+            "Name": "arel",
+            "Version": "9.0.0"
+        },
+        {
+            "Name": "ast",
+            "Version": "2.4.0"
+        },
+        {
+            "Name": "builder",
+            "Version": "3.2.3"
+        },
+        {
+            "Name": "coderay",
+            "Version": "1.1.2"
+        },
+        {
+            "Name": "concurrent-ruby",
+            "Version": "1.1.5"
+        },
+        {
+            "Name": "crass",
+            "Version": "1.0.4"
+        },
+        {
+            "Name": "dotenv",
+            "Version": "2.7.2"
+        },
+        {
+            "Name": "erubi",
+            "Version": "1.8.0"
+        },
+        {
+            "Name": "faker",
+            "Version": "1.9.3"
+        },
+        {
+            "Name": "globalid",
+            "Version": "0.4.2"
+        },
+        {
+            "Name": "i18n",
+            "Version": "1.6.0"
+        },
+        {
+            "Name": "jaro_winkler",
+            "Version": "1.5.2"
+        },
+        {
+            "Name": "json",
+            "Version": "2.2.0"
+        },
+        {
+            "Name": "loofah",
+            "Version": "2.2.3"
+        },
+        {
+            "Name": "mail",
+            "Version": "2.7.1"
+        },
+        {
+            "Name": "marcel",
+            "Version": "0.3.3"
+        },
+        {
+            "Name": "method_source",
+            "Version": "0.9.2"
+        },
+        {
+            "Name": "mimemagic",
+            "Version": "0.3.3"
+        },
+        {
+            "Name": "mini_mime",
+            "Version": "1.0.1"
+        },
+        {
+            "Name": "mini_portile2",
+            "Version": "2.4.0"
+        },
+        {
+            "Name": "minitest",
+            "Version": "5.11.3"
+        },
+        {
+            "Name": "nio4r",
+            "Version": "2.3.1"
+        },
+        {
+            "Name": "nokogiri",
+            "Version": "1.10.3"
+        },
+        {
+            "Name": "parallel",
+            "Version": "1.17.0"
+        },
+        {
+            "Name": "parser",
+            "Version": "2.6.3.0"
+        },
+        {
+            "Name": "pry",
+            "Version": "0.12.2"
+        },
+        {
+            "Name": "psych",
+            "Version": "3.1.0"
+        },
+        {
+            "Name": "rack",
+            "Version": "2.0.7"
+        },
+        {
+            "Name": "rack-test",
+            "Version": "1.1.0"
+        },
+        {
+            "Name": "rails",
+            "Version": "5.2.0"
+        },
+        {
+            "Name": "rails-dom-testing",
+            "Version": "2.0.3"
+        },
+        {
+            "Name": "rails-html-sanitizer",
+            "Version": "1.0.3"
+        },
+        {
+            "Name": "railties",
+            "Version": "5.2.3"
+        },
+        {
+            "Name": "rainbow",
+            "Version": "3.0.0"
+        },
+        {
+            "Name": "rake",
+            "Version": "12.3.2"
+        },
+        {
+            "Name": "rubocop",
+            "Version": "0.67.2"
+        },
+        {
+            "Name": "ruby-progressbar",
+            "Version": "1.10.0"
+        },
+        {
+            "Name": "sprockets",
+            "Version": "3.7.2"
+        },
+        {
+            "Name": "sprockets-rails",
+            "Version": "3.2.1"
+        },
+        {
+            "Name": "thor",
+            "Version": "0.20.3"
+        },
+        {
+            "Name": "thread_safe",
+            "Version": "0.3.6"
+        },
+        {
+            "Name": "tzinfo",
+            "Version": "1.2.5"
+        },
+        {
+            "Name": "unicode-display_width",
+            "Version": "1.5.0"
+        },
+        {
+            "Name": "websocket-driver",
+            "Version": "0.7.0"
+        },
+        {
+            "Name": "websocket-extensions",
+            "Version": "0.1.3"
+        }
+    ],
+    "rust-app/Cargo.lock": [
+        {
+            "Name": "ammonia",
+            "Version": "1.9.0"
+        },
+        {
+            "Name": "autocfg",
+            "Version": "0.1.2"
+        },
+        {
+            "Name": "bitflags",
+            "Version": "0.7.0"
+        },
+        {
+            "Name": "bitflags",
+            "Version": "1.0.4"
+        },
+        {
+            "Name": "cfg-if",
+            "Version": "0.1.7"
+        },
+        {
+            "Name": "cloudabi",
+            "Version": "0.0.3"
+        },
+        {
+            "Name": "fuchsia-cprng",
+            "Version": "0.1.1"
+        },
+        {
+            "Name": "futf",
+            "Version": "0.1.4"
+        },
+        {
+            "Name": "gdi32-sys",
+            "Version": "0.2.0"
+        },
+        {
+            "Name": "html5ever",
+            "Version": "0.23.0"
+        },
+        {
+            "Name": "idna",
+            "Version": "0.1.5"
+        },
+        {
+            "Name": "itoa",
+            "Version": "0.4.4"
+        },
+        {
+            "Name": "kernel32-sys",
+            "Version": "0.2.2"
+        },
+        {
+            "Name": "lazy_static",
+            "Version": "0.2.11"
+        },
+        {
+            "Name": "lazy_static",
+            "Version": "1.3.0"
+        },
+        {
+            "Name": "libc",
+            "Version": "0.2.54"
+        },
+        {
+            "Name": "libressl-pnacl-sys",
+            "Version": "2.1.6"
+        },
+        {
+            "Name": "log",
+            "Version": "0.4.6"
+        },
+        {
+            "Name": "mac",
+            "Version": "0.1.1"
+        },
+        {
+            "Name": "maplit",
+            "Version": "1.0.1"
+        },
+        {
+            "Name": "markup5ever",
+            "Version": "0.8.1"
+        },
+        {
+            "Name": "matches",
+            "Version": "0.1.8"
+        },
+        {
+            "Name": "new_debug_unreachable",
+            "Version": "1.0.3"
+        },
+        {
+            "Name": "normal",
+            "Version": "0.1.0"
+        },
+        {
+            "Name": "openssl",
+            "Version": "0.8.3"
+        },
+        {
+            "Name": "openssl-sys",
+            "Version": "0.7.17"
+        },
+        {
+            "Name": "percent-encoding",
+            "Version": "1.0.1"
+        },
+        {
+            "Name": "phf",
+            "Version": "0.7.24"
+        },
+        {
+            "Name": "phf_codegen",
+            "Version": "0.7.24"
+        },
+        {
+            "Name": "phf_generator",
+            "Version": "0.7.24"
+        },
+        {
+            "Name": "phf_shared",
+            "Version": "0.7.24"
+        },
+        {
+            "Name": "pkg-config",
+            "Version": "0.3.14"
+        },
+        {
+            "Name": "pnacl-build-helper",
+            "Version": "1.4.11"
+        },
+        {
+            "Name": "precomputed-hash",
+            "Version": "0.1.1"
+        },
+        {
+            "Name": "proc-macro2",
+            "Version": "0.4.30"
+        },
+        {
+            "Name": "quote",
+            "Version": "0.6.12"
+        },
+        {
+            "Name": "rand",
+            "Version": "0.4.6"
+        },
+        {
+            "Name": "rand",
+            "Version": "0.6.5"
+        },
+        {
+            "Name": "rand_chacha",
+            "Version": "0.1.1"
+        },
+        {
+            "Name": "rand_core",
+            "Version": "0.3.1"
+        },
+        {
+            "Name": "rand_core",
+            "Version": "0.4.0"
+        },
+        {
+            "Name": "rand_hc",
+            "Version": "0.1.0"
+        },
+        {
+            "Name": "rand_isaac",
+            "Version": "0.1.1"
+        },
+        {
+            "Name": "rand_jitter",
+            "Version": "0.1.4"
+        },
+        {
+            "Name": "rand_os",
+            "Version": "0.1.3"
+        },
+        {
+            "Name": "rand_pcg",
+            "Version": "0.1.2"
+        },
+        {
+            "Name": "rand_xorshift",
+            "Version": "0.1.1"
+        },
+        {
+            "Name": "rdrand",
+            "Version": "0.4.0"
+        },
+        {
+            "Name": "remove_dir_all",
+            "Version": "0.5.1"
+        },
+        {
+            "Name": "ryu",
+            "Version": "0.2.8"
+        },
+        {
+            "Name": "same-file",
+            "Version": "0.1.3"
+        },
+        {
+            "Name": "serde",
+            "Version": "1.0.91"
+        },
+        {
+            "Name": "serde_derive",
+            "Version": "1.0.91"
+        },
+        {
+            "Name": "serde_json",
+            "Version": "1.0.39"
+        },
+        {
+            "Name": "siphasher",
+            "Version": "0.2.3"
+        },
+        {
+            "Name": "smallvec",
+            "Version": "0.6.9"
+        },
+        {
+            "Name": "string_cache",
+            "Version": "0.7.3"
+        },
+        {
+            "Name": "string_cache_codegen",
+            "Version": "0.4.2"
+        },
+        {
+            "Name": "string_cache_shared",
+            "Version": "0.3.0"
+        },
+        {
+            "Name": "syn",
+            "Version": "0.15.34"
+        },
+        {
+            "Name": "tempdir",
+            "Version": "0.3.7"
+        },
+        {
+            "Name": "tendril",
+            "Version": "0.4.1"
+        },
+        {
+            "Name": "unicode-bidi",
+            "Version": "0.3.4"
+        },
+        {
+            "Name": "unicode-normalization",
+            "Version": "0.1.8"
+        },
+        {
+            "Name": "unicode-xid",
+            "Version": "0.1.0"
+        },
+        {
+            "Name": "url",
+            "Version": "1.7.2"
+        },
+        {
+            "Name": "user32-sys",
+            "Version": "0.2.0"
+        },
+        {
+            "Name": "utf-8",
+            "Version": "0.7.5"
+        },
+        {
+            "Name": "walkdir",
+            "Version": "1.0.7"
+        },
+        {
+            "Name": "winapi",
+            "Version": "0.2.8"
+        },
+        {
+            "Name": "winapi",
+            "Version": "0.3.7"
+        },
+        {
+            "Name": "winapi-build",
+            "Version": "0.1.1"
+        },
+        {
+            "Name": "winapi-i686-pc-windows-gnu",
+            "Version": "0.4.0"
+        },
+        {
+            "Name": "winapi-x86_64-pc-windows-gnu",
+            "Version": "0.4.0"
+        }
+    ],
+    "usr/lib/python2.7/lib-dynload/Python-2.7.15-py2.7.egg-info": [
+        {
+            "Name": "Python",
+            "Version": "2.7.15",
+            "License": "PSF license"
+        }
+    ],
+    "usr/lib/python2.7/site-packages/mercurial-4.5.2-py2.7.egg-info": [
+        {
+            "Name": "mercurial",
+            "Version": "4.5.2",
+            "License": "GNU GPLv2 or any later version"
+        }
+    ],
+    "usr/lib/python2.7/wsgiref.egg-info": [
+        {
+            "Name": "wsgiref",
+            "Version": "0.1.2",
+            "License": "PSF or ZPL"
+        }
+    ]
 }
