@@ -45,7 +45,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []types.Pa
 
 		// check package if paragraph end
 		if len(line) < 2 {
-			if analyzer.CheckPackage(&pkg) {
+			if !pkg.Empty() {
 				pkgs = append(pkgs, pkg)
 			}
 			pkg = types.Package{}
@@ -71,7 +71,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) (pkgs []types.Pa
 		}
 	}
 	// in case of last paragraph
-	if analyzer.CheckPackage(&pkg) {
+	if !pkg.Empty() {
 		pkgs = append(pkgs, pkg)
 	}
 

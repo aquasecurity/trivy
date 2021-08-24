@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/artifact/local"
 	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/fanal/hook"
 	"github.com/aquasecurity/fanal/types"
 )
 
@@ -30,7 +31,8 @@ type Artifact struct {
 	local artifact.Artifact
 }
 
-func NewArtifact(rawurl string, c cache.ArtifactCache, disabled []analyzer.Type, opt config.ScannerOption) (
+func NewArtifact(rawurl string, c cache.ArtifactCache, disabledAnalyzers []analyzer.Type, disabledHooks []hook.Type,
+	opt config.ScannerOption) (
 	artifact.Artifact, func(), error) {
 	cleanup := func() {}
 
@@ -57,9 +59,9 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, disabled []analyzer.Type,
 		_ = os.RemoveAll(tmpDir)
 	}
 
-	disabled = append(disabled, defaultDisabledAnalyzers...)
+	disabledAnalyzers = append(disabledAnalyzers, defaultDisabledAnalyzers...)
 
-	art, err := local.NewArtifact(tmpDir, c, disabled, opt)
+	art, err := local.NewArtifact(tmpDir, c, disabledAnalyzers, disabledHooks, opt)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("fs artifact: %w", err)
 	}

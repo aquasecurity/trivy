@@ -32,6 +32,10 @@ type Package struct {
 	Layer           Layer  `json:",omitempty"`
 }
 
+func (pkg *Package) Empty() bool {
+	return pkg.Name == "" || pkg.Version == ""
+}
+
 type SrcPackage struct {
 	Name        string   `json:"name"`
 	Version     string   `json:"version"`
@@ -44,13 +48,24 @@ type PackageInfo struct {
 }
 
 type LibraryInfo struct {
+	// Each package metadata have the file path, while a package from lock files do not have
+	FilePath string `json:",omitempty"`
+
+	// Library holds package name, version, etc.
 	Library godeptypes.Library `json:",omitempty"`
-	Layer   Layer              `json:",omitempty"`
+
+	// Layer represents which layer the lang-specific package is installed.
+	Layer Layer `json:",omitempty"`
 }
 
 type Application struct {
-	Type      string
-	FilePath  string
+	// e.g. bundler and pipenv
+	Type string
+
+	// Lock files have the file path here, while each package metadata do not have
+	FilePath string `json:",omitempty"`
+
+	// Libraries is a list of lang-specific packages
 	Libraries []LibraryInfo
 }
 

@@ -70,7 +70,7 @@ func TestNewArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, nil, config.ScannerOption{})
+			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, nil, nil, config.ScannerOption{})
 			assert.Equal(t, tt.wantErr, err != nil)
 			defer cleanup()
 		})
@@ -94,9 +94,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: ts.URL + "/test.git",
 				Type: types.ArtifactRemoteRepository,
-				ID:   "sha256:cc2c4eda5d15c45fc12ab09ead3d7712b3b908b06a95cf6fc803e051592800e2",
+				ID:   "sha256:c400bb198f7ff7c3e8feef28933d0e027bb1826fdb28737e3d5b24cbd4dc312f",
 				BlobIDs: []string{
-					"sha256:cc2c4eda5d15c45fc12ab09ead3d7712b3b908b06a95cf6fc803e051592800e2",
+					"sha256:c400bb198f7ff7c3e8feef28933d0e027bb1826fdb28737e3d5b24cbd4dc312f",
 				},
 			},
 		},
@@ -107,7 +107,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			fsCache, err := cache.NewFSCache(t.TempDir())
 			require.NoError(t, err)
 
-			art, cleanup, err := NewArtifact(tt.rawurl, fsCache, nil, config.ScannerOption{})
+			art, cleanup, err := NewArtifact(tt.rawurl, fsCache, nil, nil, config.ScannerOption{})
 			require.NoError(t, err)
 			defer cleanup()
 

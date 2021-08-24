@@ -441,45 +441,6 @@ func TestAnalyzeConfig(t *testing.T) {
 	}
 }
 
-func TestCheckPackage(t *testing.T) {
-	tests := []struct {
-		name string
-		pkg  *types.Package
-		want bool
-	}{
-		{
-			name: "valid package",
-			pkg: &types.Package{
-				Name:    "musl",
-				Version: "1.2.3",
-			},
-			want: true,
-		},
-		{
-			name: "empty name",
-			pkg: &types.Package{
-				Name:    "",
-				Version: "1.2.3",
-			},
-			want: false,
-		},
-		{
-			name: "empty version",
-			pkg: &types.Package{
-				Name:    "musl",
-				Version: "",
-			},
-			want: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := analyzer.CheckPackage(tt.pkg)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
-
 func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 	tests := []struct {
 		name     string

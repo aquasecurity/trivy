@@ -35,7 +35,7 @@ func NewConfigScanner(cacheDir string, policyPaths, dataPaths, namespaces []stri
 }
 
 func (s ConfigScanner) Scan(dir string) ([]types.Misconfiguration, error) {
-	art, err := local.NewArtifact(dir, s.cache, nil, config.ScannerOption{
+	art, err := local.NewArtifact(dir, s.cache, nil, nil, config.ScannerOption{
 		PolicyPaths: s.policyPaths,
 		DataPaths:   s.dataPaths,
 		Namespaces:  s.namespaces,

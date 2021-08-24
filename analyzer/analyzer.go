@@ -239,7 +239,3 @@ func isDisabled(t Type, disabled []Type) bool {
 	}
 	return false
 }
-
-func CheckPackage(pkg *types.Package) bool {
-	return pkg.Name != "" && pkg.Version != ""
-}
