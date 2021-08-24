@@ -12,6 +12,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/all"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/fanal/hook"
 	"github.com/aquasecurity/fanal/types"
 )
 
@@ -24,6 +25,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		fields             fields
 		scannerOpt         config.ScannerOption
 		disabledAnalyzers  []analyzer.Type
+		disabledHooks      []hook.Type
 		putBlobExpectation cache.ArtifactCachePutBlobExpectation
 		want               types.ArtifactReference
 		wantErr            string
@@ -35,7 +37,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:fb5174f05302bcc3bfd2d622cfd27430ab237693fbdcaf1ce18bb2162e2ab1de",
+					BlobID: "sha256:da2c7479a32a23834e3adb0690661cd1315db995e96c0ea1e55a5d8682f91646",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						DiffID:        "sha256:0f88c2f4a441514ebd105e81527af76af15bed17d91c17ba3637397f8c4f1925",
@@ -58,9 +60,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:fb5174f05302bcc3bfd2d622cfd27430ab237693fbdcaf1ce18bb2162e2ab1de",
+				ID:   "sha256:da2c7479a32a23834e3adb0690661cd1315db995e96c0ea1e55a5d8682f91646",
 				BlobIDs: []string{
-					"sha256:fb5174f05302bcc3bfd2d622cfd27430ab237693fbdcaf1ce18bb2162e2ab1de",
+					"sha256:da2c7479a32a23834e3adb0690661cd1315db995e96c0ea1e55a5d8682f91646",
 				},
 			},
 		},
@@ -72,7 +74,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			disabledAnalyzers: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeApk},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:86d30449fe3266668ad009635b0ae28a9279d75f0a79646bf26de174eeac0db7",
+					BlobID: "sha256:7a16c801394f9ca0bdfe3b8d57da0e821737e7bb4f013b2cdc0e31714246f01d",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						DiffID:        "sha256:3404e98968ad338dc60ef74c0dd5bdd893478415cd2296b0c265a5650b3ae4d6",
@@ -83,9 +85,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:86d30449fe3266668ad009635b0ae28a9279d75f0a79646bf26de174eeac0db7",
+				ID:   "sha256:7a16c801394f9ca0bdfe3b8d57da0e821737e7bb4f013b2cdc0e31714246f01d",
 				BlobIDs: []string{
-					"sha256:86d30449fe3266668ad009635b0ae28a9279d75f0a79646bf26de174eeac0db7",
+					"sha256:7a16c801394f9ca0bdfe3b8d57da0e821737e7bb4f013b2cdc0e31714246f01d",
 				},
 			},
 		},
@@ -96,7 +98,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:fb5174f05302bcc3bfd2d622cfd27430ab237693fbdcaf1ce18bb2162e2ab1de",
+					BlobID: "sha256:da2c7479a32a23834e3adb0690661cd1315db995e96c0ea1e55a5d8682f91646",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						DiffID:        "sha256:0f88c2f4a441514ebd105e81527af76af15bed17d91c17ba3637397f8c4f1925",
@@ -133,7 +135,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			c := new(cache.MockArtifactCache)
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 
-			a, err := NewArtifact(tt.fields.dir, c, tt.disabledAnalyzers, tt.scannerOpt)
+			a, err := NewArtifact(tt.fields.dir, c, tt.disabledAnalyzers, tt.disabledHooks, tt.scannerOpt)
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())

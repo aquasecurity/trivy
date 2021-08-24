@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/config/scanner"
+	"github.com/aquasecurity/fanal/hook"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/walker"
 )
@@ -33,11 +34,13 @@ type Artifact struct {
 	dir                 string
 	cache               cache.ArtifactCache
 	analyzer            analyzer.Analyzer
+	hookManager         hook.Manager
 	scanner             scanner.Scanner
 	configScannerOption config.ScannerOption
 }
 
-func NewArtifact(dir string, c cache.ArtifactCache, disabled []analyzer.Type, opt config.ScannerOption) (artifact.Artifact, error) {
+func NewArtifact(dir string, c cache.ArtifactCache, disabledAnalyzers []analyzer.Type, disableHooks []hook.Type,
+	opt config.ScannerOption) (artifact.Artifact, error) {
 	// Register config analyzers
 	if err := config.RegisterConfigAnalyzers(opt.FilePatterns); err != nil {
 		return nil, xerrors.Errorf("config analyzer error: %w", err)
@@ -51,7 +54,8 @@ func NewArtifact(dir string, c cache.ArtifactCache, disabled []analyzer.Type, op
 	return Artifact{
 		dir:                 dir,
 		cache:               c,
-		analyzer:            analyzer.NewAnalyzer(disabled),
+		analyzer:            analyzer.NewAnalyzer(disabledAnalyzers),
+		hookManager:         hook.NewManager(disableHooks),
 		scanner:             s,
 		configScannerOption: opt,
 	}, nil
@@ -97,6 +101,10 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		Misconfigurations: misconfs,
 	}
 
+	if err = a.hookManager.CallHooks(&blobInfo); err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to call hooks: %w", err)
+	}
+
 	// calculate hash of JSON and use it as pseudo artifactID and blobID
 	h := sha256.New()
 	if err = json.NewEncoder(h).Encode(blobInfo); err != nil {
@@ -106,7 +114,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	d := digest.NewDigest(digest.SHA256, h)
 	diffID := d.String()
 	blobInfo.DiffID = diffID
-	cacheKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), &a.configScannerOption)
+	cacheKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), a.hookManager.Versions(), &a.configScannerOption)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("cache key: %w", err)
 	}

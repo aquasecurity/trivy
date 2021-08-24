@@ -28,6 +28,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy_path.egg-info/PKG-INFO",
 						Libraries: []types.LibraryInfo{
 							{
+								FilePath: "testdata/happy_path.egg-info/PKG-INFO",
 								Library: godeptypes.Library{
 									Name:    "distlib",
 									Version: "0.3.1",
@@ -49,6 +50,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/no_license.egg-info/PKG-INFO",
 						Libraries: []types.LibraryInfo{
 							{
+								FilePath: "testdata/no_license.egg-info/PKG-INFO",
 								Library: godeptypes.Library{
 									Name:    "setuptools",
 									Version: "51.3.3",
@@ -69,6 +71,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy_path.dist-info/METADATA",
 						Libraries: []types.LibraryInfo{
 							{
+								FilePath: "testdata/happy_path.dist-info/METADATA",
 								Library: godeptypes.Library{
 									Name:    "distlib",
 									Version: "0.3.1",

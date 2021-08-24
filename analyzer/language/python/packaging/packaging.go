@@ -46,7 +46,8 @@ func (a packagingAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.An
 			FilePath: target.FilePath,
 			Libraries: []types.LibraryInfo{
 				{
-					Library: lib,
+					FilePath: target.FilePath,
+					Library:  lib,
 				},
 			},
 		},

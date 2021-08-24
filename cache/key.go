@@ -11,7 +11,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer/config"
 )
 
-func CalcKey(id string, versions map[string]int, opt *config.ScannerOption) (string, error) {
+func CalcKey(id string, analyzerVersions, hookVersions map[string]int, opt *config.ScannerOption) (string, error) {
 	// Sort options for consistent results
 	opt.Sort()
 
@@ -21,7 +21,11 @@ func CalcKey(id string, versions map[string]int, opt *config.ScannerOption) (str
 		return "", xerrors.Errorf("sha256 error: %w", err)
 	}
 
-	if err := json.NewEncoder(h).Encode(versions); err != nil {
+	if err := json.NewEncoder(h).Encode(analyzerVersions); err != nil {
+		return "", xerrors.Errorf("json encode error: %w", err)
+	}
+
+	if err := json.NewEncoder(h).Encode(hookVersions); err != nil {
 		return "", xerrors.Errorf("json encode error: %w", err)
 	}
 

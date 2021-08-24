@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/google/go-containerregistry/pkg/v1"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/config/scanner"
+	"github.com/aquasecurity/fanal/hook"
 	"github.com/aquasecurity/fanal/image"
 	"github.com/aquasecurity/fanal/log"
 	"github.com/aquasecurity/fanal/types"
@@ -27,25 +28,30 @@ const (
 	parallel = 5
 )
 
-var defaultDisabledAnalyzers = []analyzer.Type{
-	// Do not scan go.sum in container images, only scan go binaries
-	analyzer.TypeGoMod,
+var (
+	defaultDisabledAnalyzers = []analyzer.Type{
+		// Do not scan go.sum in container images, only scan go binaries
+		analyzer.TypeGoMod,
 
-	// Do not scan requirements.txt, Pipfile.lock and poetry.lock in container images, only scan egg and wheel
-	analyzer.TypePip,
-	analyzer.TypePipenv,
-	analyzer.TypePoetry,
-}
+		// Do not scan requirements.txt, Pipfile.lock and poetry.lock in container images, only scan egg and wheel
+		analyzer.TypePip,
+		analyzer.TypePipenv,
+		analyzer.TypePoetry,
+	}
+	defaultDisabledHooks = []hook.Type{}
+)
 
 type Artifact struct {
 	image               image.Image
 	cache               cache.ArtifactCache
 	analyzer            analyzer.Analyzer
+	hookManager         hook.Manager
 	scanner             scanner.Scanner
 	configScannerOption config.ScannerOption
 }
 
-func NewArtifact(img image.Image, c cache.ArtifactCache, disabled []analyzer.Type, opt config.ScannerOption) (artifact.Artifact, error) {
+func NewArtifact(img image.Image, c cache.ArtifactCache, disabledAnalyzers []analyzer.Type, disabledHooks []hook.Type,
+	opt config.ScannerOption) (artifact.Artifact, error) {
 	// Register config analyzers
 	if err := config.RegisterConfigAnalyzers(opt.FilePatterns); err != nil {
 		return nil, xerrors.Errorf("config scanner error: %w", err)
@@ -56,12 +62,14 @@ func NewArtifact(img image.Image, c cache.ArtifactCache, disabled []analyzer.Typ
 		return nil, xerrors.Errorf("scanner error: %w", err)
 	}
 
-	disabled = append(disabled, defaultDisabledAnalyzers...)
+	disabledAnalyzers = append(disabledAnalyzers, defaultDisabledAnalyzers...)
+	disabledHooks = append(disabledHooks, defaultDisabledHooks...)
 
 	return Artifact{
 		image:               img,
 		cache:               c,
-		analyzer:            analyzer.NewAnalyzer(disabled),
+		analyzer:            analyzer.NewAnalyzer(disabledAnalyzers),
+		hookManager:         hook.NewManager(disabledHooks),
 		scanner:             s,
 		configScannerOption: opt,
 	}, nil
@@ -116,8 +124,10 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 }
 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, map[string]string, error) {
+	hookVersions := a.hookManager.Versions()
+
 	// Pass an empty config scanner option so that the cache key can be the same, even when policies are updated.
-	imageKey, err := cache.CalcKey(imageID, a.analyzer.ImageConfigAnalyzerVersions(), &config.ScannerOption{})
+	imageKey, err := cache.CalcKey(imageID, a.analyzer.ImageConfigAnalyzerVersions(), hookVersions, &config.ScannerOption{})
 	if err != nil {
 		return "", nil, nil, err
 	}
@@ -125,7 +135,7 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []str
 	layerKeyMap := map[string]string{}
 	var layerKeys []string
 	for _, diffID := range diffIDs {
-		blobKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), &a.configScannerOption)
+		blobKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), hookVersions, &a.configScannerOption)
 		if err != nil {
 			return "", nil, nil, err
 		}
@@ -208,7 +218,7 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobIn
 	// Sort the analysis result for consistent results
 	result.Sort()
 
-	layerInfo := types.BlobInfo{
+	blobInfo := types.BlobInfo{
 		SchemaVersion: types.BlobJSONSchemaVersion,
 		Digest:        layerDigest,
 		DiffID:        diffID,
@@ -219,7 +229,13 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobIn
 		WhiteoutFiles: whFiles,
 		Size:          layerSize,
 	}
-	return layerInfo, nil
+
+	// Call hooks to modify blob info
+	if err = a.hookManager.CallHooks(&blobInfo); err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("failed to call hooks: %w", err)
+	}
+
+	return blobInfo, nil
 }
 
 func (a Artifact) uncompressedLayer(diffID string) (string, io.Reader, error) {

@@ -128,7 +128,7 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 			require.NoError(t, err, tc.name)
 			defer cleanup()
 
-			ar, err := aimage.NewArtifact(img, c, nil, config.ScannerOption{})
+			ar, err := aimage.NewArtifact(img, c, nil, nil, config.ScannerOption{})
 			require.NoError(t, err)
 
 			applier := applier.NewApplier(c)
@@ -178,7 +178,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			require.NoError(t, err, tc.name)
 			defer cleanup()
 
-			ar, err := aimage.NewArtifact(img, c, nil, config.ScannerOption{})
+			ar, err := aimage.NewArtifact(img, c, nil, nil, config.ScannerOption{})
 			require.NoError(t, err)
 
 			applier := applier.NewApplier(c)
@@ -224,7 +224,7 @@ func TestFanal_Library_TarMode(t *testing.T) {
 			img, err := image.NewArchiveImage(tc.imageFile)
 			require.NoError(t, err, tc.name)
 
-			ar, err := aimage.NewArtifact(img, c, nil, config.ScannerOption{})
+			ar, err := aimage.NewArtifact(img, c, nil, nil, config.ScannerOption{})
 			require.NoError(t, err)
 
 			applier := applier.NewApplier(c)
