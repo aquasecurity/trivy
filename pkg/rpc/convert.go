@@ -3,6 +3,8 @@ package rpc
 import (
 	"time"
 
+	"google.golang.org/protobuf/types/known/structpb"
+
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
 
@@ -102,6 +104,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 		}
 
 		var lastModifiedDate, publishedDate *timestamp.Timestamp
+		var customAdvisoryData, customVulnData *structpb.Value
 		if vuln.LastModifiedDate != nil {
 			lastModifiedDate, _ = ptypes.TimestampProto(*vuln.LastModifiedDate) // nolint: errcheck
 		}
@@ -110,22 +113,32 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			publishedDate, _ = ptypes.TimestampProto(*vuln.PublishedDate) // nolint: errcheck
 		}
 
+		if vuln.CustomAdvisoryData != nil {
+			customAdvisoryData, _ = structpb.NewValue(vuln.CustomAdvisoryData)
+		}
+
+		if vuln.CustomVulnData != nil {
+			customVulnData, _ = structpb.NewValue(vuln.CustomVulnData)
+		}
+
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
-			VulnerabilityId:  vuln.VulnerabilityID,
-			PkgName:          vuln.PkgName,
-			InstalledVersion: vuln.InstalledVersion,
-			FixedVersion:     vuln.FixedVersion,
-			Title:            vuln.Title,
-			Description:      vuln.Description,
-			Severity:         common.Severity(severity),
-			References:       vuln.References,
-			Layer:            ConvertToRPCLayer(vuln.Layer),
-			Cvss:             cvssMap,
-			SeveritySource:   vuln.SeveritySource,
-			CweIds:           vuln.CweIDs,
-			PrimaryUrl:       vuln.PrimaryURL,
-			LastModifiedDate: lastModifiedDate,
-			PublishedDate:    publishedDate,
+			VulnerabilityId:    vuln.VulnerabilityID,
+			PkgName:            vuln.PkgName,
+			InstalledVersion:   vuln.InstalledVersion,
+			FixedVersion:       vuln.FixedVersion,
+			Title:              vuln.Title,
+			Description:        vuln.Description,
+			CustomAdvisoryData: customAdvisoryData,
+			Severity:           common.Severity(severity),
+			References:         vuln.References,
+			Layer:              ConvertToRPCLayer(vuln.Layer),
+			Cvss:               cvssMap,
+			SeveritySource:     vuln.SeveritySource,
+			CweIds:             vuln.CweIDs,
+			PrimaryUrl:         vuln.PrimaryURL,
+			CustomVulnData:     customVulnData,
+			LastModifiedDate:   lastModifiedDate,
+			PublishedDate:      publishedDate,
 		})
 	}
 	return rpcVulns
@@ -208,10 +221,11 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 		}
 
 		vulns = append(vulns, types.DetectedVulnerability{
-			VulnerabilityID:  vuln.VulnerabilityId,
-			PkgName:          vuln.PkgName,
-			InstalledVersion: vuln.InstalledVersion,
-			FixedVersion:     vuln.FixedVersion,
+			VulnerabilityID:    vuln.VulnerabilityId,
+			PkgName:            vuln.PkgName,
+			InstalledVersion:   vuln.InstalledVersion,
+			FixedVersion:       vuln.FixedVersion,
+			CustomAdvisoryData: vuln.CustomAdvisoryData.AsInterface(),
 			Vulnerability: dbTypes.Vulnerability{
 				Title:            vuln.Title,
 				Description:      vuln.Description,
@@ -221,6 +235,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				CweIDs:           vuln.CweIds,
 				LastModifiedDate: lastModifiedDate,
 				PublishedDate:    publishedDate,
+				CustomVulnData:   vuln.CustomVulnData.AsInterface(),
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: vuln.SeveritySource,

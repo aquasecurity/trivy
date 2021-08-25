@@ -100,11 +100,12 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 			fixedVersion := version.NewVersion(adv.FixedVersion)
 			if installedVersion.LessThan(fixedVersion) {
 				vuln := types.DetectedVulnerability{
-					VulnerabilityID:  adv.VulnerabilityID,
-					PkgName:          pkg.Name,
-					InstalledVersion: installed,
-					FixedVersion:     fixedVersion.String(),
-					Layer:            pkg.Layer,
+					VulnerabilityID:    adv.VulnerabilityID,
+					PkgName:            pkg.Name,
+					InstalledVersion:   installed,
+					FixedVersion:       fixedVersion.String(),
+					CustomAdvisoryData: adv.CustomAdvisoryData,
+					Layer:              pkg.Layer,
 				}
 				vulns = append(vulns, vuln)
 			}
