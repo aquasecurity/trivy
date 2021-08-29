@@ -3,6 +3,9 @@ Target,Vulnerability Class,Target Type,Vulnerability ID,Severity,PackageName,Ins
 {{- $target := .Target }}
 {{- $class := .Class }}
 {{- $vulnerabilityType := .Type }}
+{{- if (and (eq (len .Vulnerabilities) 0) (eq (len .Misconfigurations) 0)) -}}
+	{{- $target }},{{ $class }},{{ $vulnerabilityType }},,,,,,,,,,,,
+{{ else }}
 {{- range .Vulnerabilities }}
 	{{- $target }},
 	{{- $class }},
@@ -28,11 +31,17 @@ Target,Vulnerability Class,Target Type,Vulnerability ID,Severity,PackageName,Ins
 		{{- end }}
 	{{- end }},
 	{{- $cvss := (index .CVSS "nvd").V3Score -}}
-	{{- if $cvss -}}
-		{{- $cvss | printf "%.1f" -}}
-	{{- end -}},
-	{{- (index .CVSS "nvd").V3Vector | printf "%q" }}
-{{ end -}}
+	{{- $cvssRH := (index .CVSS "redhat").V3Score -}}
+	{{- if $cvss }}
+		{{- $cvss | printf "%.1f" -}},
+		{{- (index .CVSS "nvd").V3Vector | printf "%q" }}
+	{{- else if $cvssRH }}
+		{{- $cvssRH | printf "%.1f" -}},
+		{{- (index .CVSS "redhat").V3Vector | printf "%q" }}
+	{{- else }}
+		{{- printf "," }}
+	{{- end }}
+{{ end }}
 {{- range .Misconfigurations }}
 	{{- $target }},
 	{{- $class }},
@@ -48,5 +57,6 @@ Target,Vulnerability Class,Target Type,Vulnerability ID,Severity,PackageName,Ins
 			{{- . }}
 		{{- end }}
 	{{- end }},,
-{{ end -}}
+{{ end }}
+{{- end }}
 {{- end -}}
