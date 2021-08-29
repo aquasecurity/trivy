@@ -23,6 +23,8 @@ Target,Vulnerability Class,Target Type,Vulnerability ID,Severity,PackageName,Ins
 	{{- abbrev 500 .Vulnerability.Description | printf "%q" | replace "," ";" }},
 	{{- if .FixedVersion }}
 		{{- printf "Update %s to version %s or higher." .PkgName .FixedVersion | printf "%q" }}
+	{{- else }}
+		{{- printf "No resolution provided." | printf "%q" }}
 	{{- end }},
 	{{- .PrimaryURL }},
 	{{- range .References }}
