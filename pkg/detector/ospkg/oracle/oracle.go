@@ -57,7 +57,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.vs.Get(osVer, pkg.SrcName)
+		advisories, err := s.vs.Get(osVer, pkg.Name)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Oracle Linux advisory: %w", err)
 		}
