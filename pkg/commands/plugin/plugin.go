@@ -84,6 +84,7 @@ func LoadCommands() cli.Commands {
 		return nil
 	}
 	for _, p := range plugins {
+		p := p
 		cmd := &cli.Command{
 			Name:  p.Name,
 			Usage: p.Usage,
