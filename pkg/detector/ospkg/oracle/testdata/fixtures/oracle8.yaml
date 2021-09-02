@@ -1,0 +1,7 @@
+- bucket: Oracle Linux 8
+  pairs:
+    - bucket: glibc
+      pairs:
+        - key: CVE-2019-9169
+          value:
+            FixedVersion: "2:2.28-151.0.1.ksplice2.el8"
