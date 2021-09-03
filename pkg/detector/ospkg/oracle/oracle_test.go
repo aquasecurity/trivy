@@ -152,29 +152,10 @@ func TestScanner_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
-			name:     "the correct installed version without ksplice2",
-			fixtures: []string{"testdata/fixtures/oracle8.yaml"},
+			name:     "the installed version has ksplice2",
+			fixtures: []string{"testdata/fixtures/oracle7.yaml"},
 			args: args{
-				osVer: "8",
-				pkgs: []ftypes.Package{
-					{
-						Name:       "glibc",
-						Version:    "2.28",
-						Release:    "151.0.1.el8",
-						Arch:       "x86_64",
-						SrcName:    "glibc",
-						SrcVersion: "2.28",
-						SrcRelease: "151.0.1.el8",
-					},
-				},
-			},
-			want: nil,
-		},
-		{
-			name:     "the correct installed version with ksplice2",
-			fixtures: []string{"testdata/fixtures/oracle8.yaml"},
-			args: args{
-				osVer: "8",
+				osVer: "7",
 				pkgs: []ftypes.Package{
 					{
 						Name:       "glibc",
@@ -190,55 +171,6 @@ func TestScanner_Detect(t *testing.T) {
 				},
 			},
 			want: nil,
-		},
-		{
-			name:     "the installed version has ksplice1",
-			fixtures: []string{"testdata/fixtures/oracle8.yaml"},
-			args: args{
-				osVer: "8",
-				pkgs: []ftypes.Package{
-					{
-						Name:       "glibc",
-						Epoch:      2,
-						Version:    "2.17",
-						Release:    "156.ksplice1.el7",
-						Arch:       "x86_64",
-						SrcEpoch:   2,
-						SrcName:    "glibc",
-						SrcVersion: "2.17",
-						SrcRelease: "156.ksplice1.el7",
-					},
-				},
-			},
-			want: nil,
-		},
-		{
-			name:     "the installed version has earlier ksplice2 version",
-			fixtures: []string{"testdata/fixtures/oracle8.yaml"},
-			args: args{
-				osVer: "8",
-				pkgs: []ftypes.Package{
-					{
-						Name:       "glibc",
-						Epoch:      2,
-						Version:    "2.27",
-						Release:    "151.0.1.ksplice2.el8",
-						Arch:       "x86_64",
-						SrcEpoch:   2,
-						SrcName:    "glibc",
-						SrcVersion: "2.27",
-						SrcRelease: "151.0.1.ksplice2.el8",
-					},
-				},
-			},
-			want: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-2019-9169",
-					PkgName:          "glibc",
-					InstalledVersion: "2:2.27-151.0.1.ksplice2.el8",
-					FixedVersion:     "2:2.28-151.0.1.ksplice2.el8",
-				},
-			},
 		},
 		{
 			name:     "with ksplice",
@@ -306,24 +238,5 @@ func TestScanner_Detect(t *testing.T) {
 
 			assert.Equal(t, tt.want, got)
 		})
-	}
-}
-
-func TestGetKspliceNumber(t *testing.T) {
-	tests := []struct {
-		in  string
-		res string
-	}{
-		{"", ""},
-		{"2:2.17-157.el7_3.4", ""},
-		{"2:2.17-157.ksplice1.el7_3.4", "1"},
-		{"2:2.28-151.0.1.ksplice2.el8", "2"},
-		{"2:2.28-151.0.1.ksplice2", "2"},
-		{"2:2.28-151.0.1.KSplice2", "2"},
-	}
-	for _, test := range tests {
-		if got := extractKspliceNumber(test.in); got != test.res {
-			t.Errorf("getKspliceNumber(%q) got %q, want %q", test.in, got, test.res)
-		}
 	}
 }
