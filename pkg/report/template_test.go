@@ -222,3 +222,55 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
 		})
 	}
 }
+
+func TestReportWriter_Template_CSV(t *testing.T) {
+	testCases := []struct {
+		name    string
+		results report.Results
+	}{
+		{
+			name: "complex csv",
+			results: report.Results{
+				{
+					Target: "test",
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2020-26160",
+							PkgName:          "github.com/dgrijalva/jwt-go",
+							InstalledVersion: "3.2.0+incompatible",
+							FixedVersion:     "",
+							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-26160",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "jwt-go: access restriction bypass vulnerability",
+								Description: "jwt-go before 4.0.0-preview1 allows attackers to bypass intended access restrictions in situations with []string{} for m[\"aud\"] (which is allowed by the specification). Because the type assertion fails; \"\" is the value of aud. This is a security problem if the JWT token is presented to a service that lacks its own audience check.",
+								Severity:    "HIGH",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			templateFile := "../../contrib/csv.tpl"
+			template, err := os.ReadFile(templateFile)
+			require.NoError(t, err)
+
+			got := bytes.Buffer{}
+
+			err = report.Write(report.Report{Results: tc.results}, report.Option{
+				Format:         "template",
+				Output:         &got,
+				OutputTemplate: string(template),
+			})
+			assert.NoError(t, err)
+
+			outputFile := "testdata/report.csv.golden"
+			output, err := os.ReadFile(outputFile)
+			assert.NoError(t, err)
+
+			assert.Equal(t, string(output), got.String(), tc.name)
+		})
+	}
+}
