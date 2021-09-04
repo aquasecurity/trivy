@@ -1,9 +1,9 @@
-Thank you for taking interest in contributing to Trivy !
+Thank you for taking interest in contributing to Trivy!
 
 ## Issues
 - Feel free to open issues for any reason. When you open a new issue, you'll have to select an issue kind: bug/feature/support and fill the required information based on the selected template.
 - Please spend a small amount of time giving due diligence to the issue tracker. Your issue might be a duplicate. If it is, please add your comment to the existing issue.
-- Remember users might be searching for your issue in the future, so please give it a meaningful title to help others.
+- Remember that users might search for your issue in the future, so please give it a meaningful title to help others.
 - The issue should clearly explain the reason for opening, the proposal if you have any, and any relevant technical information.
 
 ## Pull Requests
@@ -23,6 +23,6 @@ Thank you for taking interest in contributing to Trivy !
 Trivy is composed of several different repositories that work together:
 
 - [Trivy](https://github.com/aquasecurity/trivy) is the client-side, user-facing, command line tool.
-- [vuln-list](https://github.com/aquasecurity/vuln-list) is a vulnerabilities database, aggregated from different sources, and normalized for easy consumption. This of this as the "server" side of the trivy command line tool. **There should be no pull requests to this repo** 
+- [vuln-list](https://github.com/aquasecurity/vuln-list) is a vulnerabilities database, aggregated from different sources, and normalized for easy consumption. Think of this as the "server" side of the trivy command line tool. **There should be no pull requests to this repo** 
 - [vuln-list-update](https://github.com/aquasecurity/vuln-list-update) is the code that maintains the vuln-list database.
-- [fanal](https://github.com/aquasecurity/fanal) is a library for extracting system information containers. It is being used by Trivy to find testable subjects in the container image.
+- [fanal](https://github.com/aquasecurity/fanal) is a library for extracting system information from containers. It is being used by Trivy to find testable subjects in the container image.
