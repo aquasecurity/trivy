@@ -7,6 +7,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/language/golang/mod"
 	_ "github.com/aquasecurity/fanal/analyzer/language/java/jar"
 	_ "github.com/aquasecurity/fanal/analyzer/language/nodejs/npm"
+	_ "github.com/aquasecurity/fanal/analyzer/language/nodejs/pkg"
 	_ "github.com/aquasecurity/fanal/analyzer/language/nodejs/yarn"
 	_ "github.com/aquasecurity/fanal/analyzer/language/php/composer"
 	_ "github.com/aquasecurity/fanal/analyzer/language/python/packaging"

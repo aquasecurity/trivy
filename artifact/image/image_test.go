@@ -39,17 +39,17 @@ func TestArtifact_Inspect(t *testing.T) {
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:d2b38afccf21751162a2c5d632f095290c96ab726642c1586d90f94cd8eb30bb",
-					BlobIDs:    []string{"sha256:abe7753627a705c6854489c5d94d5f27a15e7ad5b5e31c3bfb988f4d2a8d94a8"},
+					BlobIDs:    []string{"sha256:b59e5f5eaa7fe002f88447801080d73c6c6a46b5464c603432ceced713939fde"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingArtifact: true,
-					MissingBlobIDs:  []string{"sha256:abe7753627a705c6854489c5d94d5f27a15e7ad5b5e31c3bfb988f4d2a8d94a8"},
+					MissingBlobIDs:  []string{"sha256:b59e5f5eaa7fe002f88447801080d73c6c6a46b5464c603432ceced713939fde"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:abe7753627a705c6854489c5d94d5f27a15e7ad5b5e31c3bfb988f4d2a8d94a8",
+						BlobID: "sha256:b59e5f5eaa7fe002f88447801080d73c6c6a46b5464c603432ceced713939fde",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "",
@@ -104,7 +104,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				Name:    "../../test/testdata/alpine-311.tar.gz",
 				Type:    types.ArtifactContainerImage,
 				ID:      "sha256:d2b38afccf21751162a2c5d632f095290c96ab726642c1586d90f94cd8eb30bb",
-				BlobIDs: []string{"sha256:abe7753627a705c6854489c5d94d5f27a15e7ad5b5e31c3bfb988f4d2a8d94a8"},
+				BlobIDs: []string{"sha256:b59e5f5eaa7fe002f88447801080d73c6c6a46b5464c603432ceced713939fde"},
 			},
 		},
 		{
@@ -114,25 +114,25 @@ func TestArtifact_Inspect(t *testing.T) {
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:dd096dc1f5f4a50a3a257f3ae62e912d3dca448767104315eb01ad2ac019ec5e",
 					BlobIDs: []string{
-						"sha256:1e0c6b3d5f6b25e2c9defb6169e59909f95941319570e0570c8163c244709f8c",
-						"sha256:55071ec93bc64fd8c24cc90cf4753e3ecba55a44f60eefaa89b5ea9d9f339ee1",
-						"sha256:7a14bdb5c3f78812dbbcf46f172d33116f2e7c6d0fa3bb14efa25c0b09d26640",
-						"sha256:947f2b879eb8509652d3ddbe466d113cf3c73a4e18dd5623f6ca0ecb671d7615",
+						"sha256:bc65122bab94a3659c95de45513220673c339ff5c5c1ee391080e6b701a9d68e",
+						"sha256:83b990f219dcd48d2d4bf7a801db9c2307c82561cfd8367e9b484520a5222a5d",
+						"sha256:6166307af74b076e0d035f330270dd08359149a622743f87875e96adc695e0c9",
+						"sha256:64a4d15ac3d68c5f2e32285512842b982adea1df823672d1d4bfec6f8143fa4a",
 					},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingBlobIDs: []string{
-						"sha256:1e0c6b3d5f6b25e2c9defb6169e59909f95941319570e0570c8163c244709f8c",
-						"sha256:55071ec93bc64fd8c24cc90cf4753e3ecba55a44f60eefaa89b5ea9d9f339ee1",
-						"sha256:7a14bdb5c3f78812dbbcf46f172d33116f2e7c6d0fa3bb14efa25c0b09d26640",
-						"sha256:947f2b879eb8509652d3ddbe466d113cf3c73a4e18dd5623f6ca0ecb671d7615",
+						"sha256:bc65122bab94a3659c95de45513220673c339ff5c5c1ee391080e6b701a9d68e",
+						"sha256:83b990f219dcd48d2d4bf7a801db9c2307c82561cfd8367e9b484520a5222a5d",
+						"sha256:6166307af74b076e0d035f330270dd08359149a622743f87875e96adc695e0c9",
+						"sha256:64a4d15ac3d68c5f2e32285512842b982adea1df823672d1d4bfec6f8143fa4a",
 					},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:1e0c6b3d5f6b25e2c9defb6169e59909f95941319570e0570c8163c244709f8c",
+						BlobID: "sha256:bc65122bab94a3659c95de45513220673c339ff5c5c1ee391080e6b701a9d68e",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "",
@@ -167,7 +167,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:55071ec93bc64fd8c24cc90cf4753e3ecba55a44f60eefaa89b5ea9d9f339ee1",
+						BlobID: "sha256:83b990f219dcd48d2d4bf7a801db9c2307c82561cfd8367e9b484520a5222a5d",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "",
@@ -198,7 +198,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:7a14bdb5c3f78812dbbcf46f172d33116f2e7c6d0fa3bb14efa25c0b09d26640",
+						BlobID: "sha256:6166307af74b076e0d035f330270dd08359149a622743f87875e96adc695e0c9",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "",
@@ -229,7 +229,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				{
 					// Gemfile.lock will not be scanned.
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:947f2b879eb8509652d3ddbe466d113cf3c73a4e18dd5623f6ca0ecb671d7615",
+						BlobID: "sha256:64a4d15ac3d68c5f2e32285512842b982adea1df823672d1d4bfec6f8143fa4a",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "",
@@ -245,10 +245,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				Type: types.ArtifactContainerImage,
 				ID:   "sha256:dd096dc1f5f4a50a3a257f3ae62e912d3dca448767104315eb01ad2ac019ec5e",
 				BlobIDs: []string{
-					"sha256:1e0c6b3d5f6b25e2c9defb6169e59909f95941319570e0570c8163c244709f8c",
-					"sha256:55071ec93bc64fd8c24cc90cf4753e3ecba55a44f60eefaa89b5ea9d9f339ee1",
-					"sha256:7a14bdb5c3f78812dbbcf46f172d33116f2e7c6d0fa3bb14efa25c0b09d26640",
-					"sha256:947f2b879eb8509652d3ddbe466d113cf3c73a4e18dd5623f6ca0ecb671d7615",
+					"sha256:bc65122bab94a3659c95de45513220673c339ff5c5c1ee391080e6b701a9d68e",
+					"sha256:83b990f219dcd48d2d4bf7a801db9c2307c82561cfd8367e9b484520a5222a5d",
+					"sha256:6166307af74b076e0d035f330270dd08359149a622743f87875e96adc695e0c9",
+					"sha256:64a4d15ac3d68c5f2e32285512842b982adea1df823672d1d4bfec6f8143fa4a",
 				},
 			},
 		},
@@ -260,25 +260,25 @@ func TestArtifact_Inspect(t *testing.T) {
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:dd096dc1f5f4a50a3a257f3ae62e912d3dca448767104315eb01ad2ac019ec5e",
 					BlobIDs: []string{
-						"sha256:f4b34b771cd347275066e030b4b3abbca373dc140793814291b40f5ffaa18b33",
-						"sha256:e6709e0025b8fb8b35613c412a8c9134fc8af0b4466a2576f6ead11dc3e0e8e9",
-						"sha256:b0062c664ecbebbf4946cbdafd718685001c6ebbd2f03a9e00deb8e7aad32f0d",
-						"sha256:619968d449e812315d11d0b7409e3f8a8f5592d62d1dbbbe2ce0d90f4e4f0f7b",
+						"sha256:9ce49d15b334ffdae8febfa9b59570be9921dc5a4de75c2461285087ad9efb7c",
+						"sha256:96d0652a75b644b881d138134859037fa0ebda6cd573b4f5ed8dc538b29a028e",
+						"sha256:86992601cbd668f50965dcc46ade2302ddab5a8a20fac546eb7f2006f137a13a",
+						"sha256:f4fdf9890781d2ed1a3f292667869b1db2e7684690e06a907b9269c740534e58",
 					},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingBlobIDs: []string{
-						"sha256:f4b34b771cd347275066e030b4b3abbca373dc140793814291b40f5ffaa18b33",
-						"sha256:e6709e0025b8fb8b35613c412a8c9134fc8af0b4466a2576f6ead11dc3e0e8e9",
-						"sha256:b0062c664ecbebbf4946cbdafd718685001c6ebbd2f03a9e00deb8e7aad32f0d",
-						"sha256:619968d449e812315d11d0b7409e3f8a8f5592d62d1dbbbe2ce0d90f4e4f0f7b",
+						"sha256:9ce49d15b334ffdae8febfa9b59570be9921dc5a4de75c2461285087ad9efb7c",
+						"sha256:96d0652a75b644b881d138134859037fa0ebda6cd573b4f5ed8dc538b29a028e",
+						"sha256:86992601cbd668f50965dcc46ade2302ddab5a8a20fac546eb7f2006f137a13a",
+						"sha256:f4fdf9890781d2ed1a3f292667869b1db2e7684690e06a907b9269c740534e58",
 					},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:f4b34b771cd347275066e030b4b3abbca373dc140793814291b40f5ffaa18b33",
+						BlobID: "sha256:9ce49d15b334ffdae8febfa9b59570be9921dc5a4de75c2461285087ad9efb7c",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "",
@@ -289,7 +289,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:e6709e0025b8fb8b35613c412a8c9134fc8af0b4466a2576f6ead11dc3e0e8e9",
+						BlobID: "sha256:96d0652a75b644b881d138134859037fa0ebda6cd573b4f5ed8dc538b29a028e",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "",
@@ -300,7 +300,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:b0062c664ecbebbf4946cbdafd718685001c6ebbd2f03a9e00deb8e7aad32f0d",
+						BlobID: "sha256:86992601cbd668f50965dcc46ade2302ddab5a8a20fac546eb7f2006f137a13a",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "",
@@ -312,7 +312,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:619968d449e812315d11d0b7409e3f8a8f5592d62d1dbbbe2ce0d90f4e4f0f7b",
+						BlobID: "sha256:f4fdf9890781d2ed1a3f292667869b1db2e7684690e06a907b9269c740534e58",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "",
@@ -328,10 +328,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				Type: types.ArtifactContainerImage,
 				ID:   "sha256:dd096dc1f5f4a50a3a257f3ae62e912d3dca448767104315eb01ad2ac019ec5e",
 				BlobIDs: []string{
-					"sha256:f4b34b771cd347275066e030b4b3abbca373dc140793814291b40f5ffaa18b33",
-					"sha256:e6709e0025b8fb8b35613c412a8c9134fc8af0b4466a2576f6ead11dc3e0e8e9",
-					"sha256:b0062c664ecbebbf4946cbdafd718685001c6ebbd2f03a9e00deb8e7aad32f0d",
-					"sha256:619968d449e812315d11d0b7409e3f8a8f5592d62d1dbbbe2ce0d90f4e4f0f7b",
+					"sha256:9ce49d15b334ffdae8febfa9b59570be9921dc5a4de75c2461285087ad9efb7c",
+					"sha256:96d0652a75b644b881d138134859037fa0ebda6cd573b4f5ed8dc538b29a028e",
+					"sha256:86992601cbd668f50965dcc46ade2302ddab5a8a20fac546eb7f2006f137a13a",
+					"sha256:f4fdf9890781d2ed1a3f292667869b1db2e7684690e06a907b9269c740534e58",
 				},
 			},
 		},
@@ -341,7 +341,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:d2b38afccf21751162a2c5d632f095290c96ab726642c1586d90f94cd8eb30bb",
-					BlobIDs:    []string{"sha256:abe7753627a705c6854489c5d94d5f27a15e7ad5b5e31c3bfb988f4d2a8d94a8"},
+					BlobIDs:    []string{"sha256:b59e5f5eaa7fe002f88447801080d73c6c6a46b5464c603432ceced713939fde"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					Err: xerrors.New("MissingBlobs failed"),
@@ -355,16 +355,16 @@ func TestArtifact_Inspect(t *testing.T) {
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:d2b38afccf21751162a2c5d632f095290c96ab726642c1586d90f94cd8eb30bb",
-					BlobIDs:    []string{"sha256:abe7753627a705c6854489c5d94d5f27a15e7ad5b5e31c3bfb988f4d2a8d94a8"},
+					BlobIDs:    []string{"sha256:b59e5f5eaa7fe002f88447801080d73c6c6a46b5464c603432ceced713939fde"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
-					MissingBlobIDs: []string{"sha256:abe7753627a705c6854489c5d94d5f27a15e7ad5b5e31c3bfb988f4d2a8d94a8"},
+					MissingBlobIDs: []string{"sha256:b59e5f5eaa7fe002f88447801080d73c6c6a46b5464c603432ceced713939fde"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:abe7753627a705c6854489c5d94d5f27a15e7ad5b5e31c3bfb988f4d2a8d94a8",
+						BlobID: "sha256:b59e5f5eaa7fe002f88447801080d73c6c6a46b5464c603432ceced713939fde",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "",
@@ -411,17 +411,17 @@ func TestArtifact_Inspect(t *testing.T) {
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:d2b38afccf21751162a2c5d632f095290c96ab726642c1586d90f94cd8eb30bb",
-					BlobIDs:    []string{"sha256:abe7753627a705c6854489c5d94d5f27a15e7ad5b5e31c3bfb988f4d2a8d94a8"},
+					BlobIDs:    []string{"sha256:b59e5f5eaa7fe002f88447801080d73c6c6a46b5464c603432ceced713939fde"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingArtifact: true,
-					MissingBlobIDs:  []string{"sha256:abe7753627a705c6854489c5d94d5f27a15e7ad5b5e31c3bfb988f4d2a8d94a8"},
+					MissingBlobIDs:  []string{"sha256:b59e5f5eaa7fe002f88447801080d73c6c6a46b5464c603432ceced713939fde"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:abe7753627a705c6854489c5d94d5f27a15e7ad5b5e31c3bfb988f4d2a8d94a8",
+						BlobID: "sha256:b59e5f5eaa7fe002f88447801080d73c6c6a46b5464c603432ceced713939fde",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "",
