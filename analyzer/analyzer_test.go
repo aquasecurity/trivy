@@ -477,6 +477,7 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 				"ubuntu":     1,
 				"yarn":       1,
 				"python-pkg": 1,
+				"gemspec":    1,
 			},
 		},
 		{
@@ -509,6 +510,7 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 				"ubuntu":     0,
 				"yarn":       1,
 				"python-pkg": 1,
+				"gemspec":    1,
 			},
 		},
 	}

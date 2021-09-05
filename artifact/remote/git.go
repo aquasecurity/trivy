@@ -24,6 +24,9 @@ var defaultDisabledAnalyzers = []analyzer.Type{
 
 	// Do not scan egg and wheel in git repositories
 	analyzer.TypePythonPkg,
+
+	// Do not scan .gemspec in git repositories
+	analyzer.TypeGemSpec,
 }
 
 type Artifact struct {
