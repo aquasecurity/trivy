@@ -232,7 +232,9 @@ func TestReportWriter_Template_CSV(t *testing.T) {
 			name: "complex csv",
 			results: report.Results{
 				{
-					Target: "test",
+					Target: "go.sum",
+					Class:  "lang-pkgs",
+					Type:   "gomod",
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-26160",
@@ -244,7 +246,63 @@ func TestReportWriter_Template_CSV(t *testing.T) {
 								Title:       "jwt-go: access restriction bypass vulnerability",
 								Description: "jwt-go before 4.0.0-preview1 allows attackers to bypass intended access restrictions in situations with []string{} for m[\"aud\"] (which is allowed by the specification). Because the type assertion fails; \"\" is the value of aud. This is a security problem if the JWT token is presented to a service that lacks its own audience check.",
 								Severity:    "HIGH",
+								References: []string{
+									"https://nvd.nist.gov/vuln/detail/CVE-2020-26160",
+								},
+								CVSS: dbTypes.VendorCVSS{
+									"nvd": dbTypes.CVSS{
+										V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+										V3Score:  7.5,
+									},
+								},
 							},
+						},
+					},
+				},
+				{
+					Target: "go.sum",
+					Class:  "lang-pkgs",
+					Type:   "gomod",
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2019-19794",
+							PkgName:          "github.com/miekg/dns",
+							InstalledVersion: "1.0.14",
+							FixedVersion:     "v1.1.25-0.20191211073109-8ebf2e419df7",
+							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2019-19794",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "golang-github-miekg-dns: predictable TXID can lead to response forgeries",
+								Description: "The miekg Go DNS package before 1.1.25, as used in CoreDNS before 1.6.6 and other products, improperly generates random numbers because math/rand is used. The TXID becomes predictable, leading to response forgeries.",
+								Severity:    "MEDIUM",
+								CVSS: dbTypes.VendorCVSS{
+									"redhat": dbTypes.CVSS{
+										V3Vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:N",
+										V3Score:  5.9,
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					Target:            "example/1010/main.tf",
+					Class:             "config",
+					Type:              "terraform",
+					Misconfigurations: []types.DetectedMisconfiguration{},
+				},
+				{
+					Target: "example/971/modules/azure/storage-account/module.tf",
+					Class:  "config",
+					Type:   "terraform",
+					Misconfigurations: []types.DetectedMisconfiguration{
+						{
+							ID:          "AZU015",
+							Title:       "The minimum TLS version for Storage Accounts should be TLS1_2",
+							Description: "The TLS version being outdated and has known vulnerabilities",
+							Message:     "Resource 'azurerm_storage_account.storage_accounts' should have the min tls version set to TLS1_2 .",
+							Severity:    "MEDIUM",
+							Resolution:  "Use a more recent TLS/SSL policy for the load balancer",
+							PrimaryURL:  "https://tfsec.dev/docs/azure/AZU015/",
 						},
 					},
 				},

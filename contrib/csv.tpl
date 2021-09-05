@@ -51,7 +51,7 @@ Target,Vulnerability Class,Target Type,Vulnerability ID,Severity,PackageName,Ins
 	{{- .ID }},
 	{{- .Severity }},,,,
 	{{- abbrev 100 .Title | printf "%q" | replace "," ";" }},
-	{{- abbrev 500 .Description | printf "%q" | replace "," ";" }},
+	{{- printf "%s - %s" .Description .Message | abbrev 500 | printf "%q" | replace "," ";" }},
 	{{- .Resolution | printf "%q" | replace "," ";" }},
 	{{- .PrimaryURL }},
 	{{- range .References }}
