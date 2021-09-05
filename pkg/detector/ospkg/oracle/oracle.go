@@ -44,6 +44,16 @@ func NewScanner() *Scanner {
 	}
 }
 
+func extractKsplice(v string) string {
+	subs := strings.Split(strings.ToLower(v), ".")
+	for _, s := range subs {
+		if strings.HasPrefix(s, "ksplice") {
+			return s
+		}
+	}
+	return ""
+}
+
 // Detect scans and return vulnerability in Oracle scanner
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Oracle Linux vulnerabilities...")
@@ -65,10 +75,13 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 		installed := utils.FormatVersion(pkg)
 		installedVersion := version.NewVersion(installed)
 		for _, adv := range advisories {
-			// Skip if only one of them contains .ksplice1.
-			if strings.Contains(adv.FixedVersion, ".ksplice1.") != strings.Contains(pkg.Release, ".ksplice1.") {
+			// when one of them doesn't have ksplice, we'll also skip it
+			// extract kspliceX and compare it with kspliceY in advisories
+			// if kspliceX and kspliceY are different, we will skip the advisory
+			if extractKsplice(adv.FixedVersion) != extractKsplice(pkg.Release) {
 				continue
 			}
+
 			fixedVersion := version.NewVersion(adv.FixedVersion)
 			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
