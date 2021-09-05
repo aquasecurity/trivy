@@ -14,6 +14,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/language/python/pipenv"
 	_ "github.com/aquasecurity/fanal/analyzer/language/python/poetry"
 	_ "github.com/aquasecurity/fanal/analyzer/language/ruby/bundler"
+	_ "github.com/aquasecurity/fanal/analyzer/language/ruby/gemspec"
 	_ "github.com/aquasecurity/fanal/analyzer/language/rust/cargo"
 	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/fanal/analyzer/os/amazonlinux"

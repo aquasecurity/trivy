@@ -8,6 +8,7 @@ const (
 const (
 	// Programming language dependencies
 	Bundler   = "bundler"
+	GemSpec   = "gemspec"
 	Cargo     = "cargo"
 	Composer  = "composer"
 	Npm       = "npm"
@@ -20,6 +21,7 @@ const (
 	Jar       = "jar"
 	GoBinary  = "gobinary"
 	GoMod     = "gomod"
+	PkgJson   = "packagejson"
 
 	// Config files
 	YAML           = "yaml"

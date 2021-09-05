@@ -22,6 +22,7 @@ const (
 
 	// Programming Language Package
 	TypeBundler   Type = "bundler"
+	TypeGemSpec   Type = "gemspec"
 	TypeCargo     Type = "cargo"
 	TypeComposer  Type = "composer"
 	TypeJar       Type = "jar"

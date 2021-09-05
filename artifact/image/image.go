@@ -37,8 +37,12 @@ var (
 		analyzer.TypePip,
 		analyzer.TypePipenv,
 		analyzer.TypePoetry,
+
+		// Do not scan Gemfile.lock in container images, only scan .gemspec
+		analyzer.TypeBundler,
 	}
-	defaultDisabledHooks = []hook.Type{}
+
+	defaultDisabledHooks []hook.Type
 )
 
 type Artifact struct {
