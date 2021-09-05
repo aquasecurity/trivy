@@ -22,7 +22,7 @@ func Parse(r io.Reader) (types.Library, error) {
 	}
 
 	if data.Name == "" || data.Version == "" {
-		return types.Library{}, xerrors.Errorf("unable to parse package.json: %w", err)
+		return types.Library{}, xerrors.Errorf("unable to parse package.json")
 	}
 
 	return types.Library{
