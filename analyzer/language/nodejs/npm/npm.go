@@ -37,7 +37,7 @@ func (a npmLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 }
 
 func (a npmLibraryAnalyzer) Type() analyzer.Type {
-	return analyzer.TypeNpm
+	return analyzer.TypeNpmPkgLock
 }
 
 func (a npmLibraryAnalyzer) Version() int {

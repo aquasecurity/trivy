@@ -17,11 +17,11 @@ const (
 	Pipenv    = "pipenv"
 	Poetry    = "poetry"
 	PythonPkg = "python-pkg"
+	NodePkg   = "node-pkg"
 	Yarn      = "yarn"
 	Jar       = "jar"
 	GoBinary  = "gobinary"
 	GoMod     = "gomod"
-	PkgJson   = "packagejson"
 
 	// Config files
 	YAML           = "yaml"
