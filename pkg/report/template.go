@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"text/template"
 	"time"
@@ -60,6 +61,12 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 	}
 	templateFuncMap["escapeString"] = func(input string) string {
 		return html.EscapeString(input)
+	}
+	templateFuncMap["escapeCsv"] = func(input string) string {
+		// First we safely double-quote the string
+		quoted := strconv.Quote(input)
+		// Then we encode escaped double-quotes \" as "" according to RFC4180
+		return strings.ReplaceAll(quoted, "\\\"", "\"\"")
 	}
 	templateFuncMap["toPathUri"] = func(input string) string {
 		var matches = re.FindStringSubmatch(input)

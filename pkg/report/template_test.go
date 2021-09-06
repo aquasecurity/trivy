@@ -244,7 +244,7 @@ func TestReportWriter_Template_CSV(t *testing.T) {
 							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-26160",
 							Vulnerability: dbTypes.Vulnerability{
 								Title:       "jwt-go: access restriction bypass vulnerability",
-								Description: "jwt-go before 4.0.0-preview1 allows attackers to bypass intended access restrictions in situations with []string{} for m[\"aud\"] (which is allowed by the specification). Because the type assertion fails; \"\" is the value of aud. This is a security problem if the JWT token is presented to a service that lacks its own audience check.",
+								Description: "jwt-go before 4.0.0-preview1 allows attackers to bypass intended access restrictions in situations with []string{} for m[\"aud\"] (which is allowed by the specification). Because the type assertion fails, \"\" is the value of aud. This is a security problem if the JWT token is presented to a service that lacks its own audience check.",
 								Severity:    "HIGH",
 								References: []string{
 									"https://nvd.nist.gov/vuln/detail/CVE-2020-26160",
