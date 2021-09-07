@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/all"
 	"github.com/aquasecurity/fanal/applier"
+	_ "github.com/aquasecurity/fanal/hook/all"
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
