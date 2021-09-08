@@ -97,7 +97,7 @@ func toSarifRuleName(vulnerabilityType string) string {
 	case vulnerability.Ubuntu, vulnerability.Alpine, vulnerability.RedHat, vulnerability.RedHatOVAL,
 		vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
 		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon,
-		vulnerability.CentOS:
+		vulnerability.CentOS, vulnerability.Alma:
 		ruleName = "OS Package Vulnerability"
 	case "npm", "yarn", "nuget", "pipenv", "poetry", "bundler", "cargo", "composer":
 		ruleName = "Programming Language Vulnerability"
