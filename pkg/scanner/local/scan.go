@@ -210,6 +210,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 				pkgs = append(pkgs, ftypes.Package{
 					Name:    lib.Library.Name,
 					Version: lib.Library.Version,
+					License: lib.Library.License,
 					Layer:   lib.Layer,
 				})
 			}
