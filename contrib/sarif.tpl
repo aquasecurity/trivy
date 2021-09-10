@@ -20,7 +20,7 @@
                 ,
               {{- end }}
             {
-              "id": {{ printf "%s: %s-%s %s" $result.Target .PkgName .InstalledVersion .VulnerabilityID | toJson }},
+              "id": {{ .VulnerabilityID | toJson }},
               "name": "{{ toSarifRuleName $vulnerabilityType }}",
               "shortDescription": {
                 "text": {{ printf "%v Package: %v" .VulnerabilityID .PkgName | printf "%q" }}
