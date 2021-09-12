@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/all"
 	aos "github.com/aquasecurity/fanal/analyzer/os"
+	_ "github.com/aquasecurity/fanal/hook/all"
 	"github.com/aquasecurity/fanal/types"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
@@ -294,6 +295,10 @@ func TestAnalyzeFile(t *testing.T) {
 							{Name: "musl", Version: "1.1.24-r2", SrcName: "musl", SrcVersion: "1.1.24-r2", License: "MIT"},
 						},
 					},
+				},
+				SystemInstalledFiles: []string{
+					"lib/libc.musl-x86_64.so.1",
+					"lib/ld-musl-x86_64.so.1",
 				},
 			},
 		},
