@@ -16,6 +16,7 @@ require (
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/go-redis/redis/v8 v8.11.3
 	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/google/flatbuffers v1.12.1 // indirect
 	github.com/google/go-containerregistry v0.6.0
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
@@ -25,7 +26,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.10.1 // indirect
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
-	github.com/knqyf263/go-rpmdb v0.0.0-20201215100354-a9e3110d8ee1
+	github.com/knqyf263/go-rpmdb v0.0.0-20210911072402-73bd0ce46c49
 	github.com/knqyf263/nested v0.0.1
 	github.com/kylelemons/godebug v1.1.0
 	github.com/mitchellh/mapstructure v1.4.1

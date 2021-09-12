@@ -9,15 +9,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/aquasecurity/fanal/types"
-
-	"github.com/aquasecurity/fanal/utils"
-
-	mapset "github.com/deckarep/golang-set"
+	debVersion "github.com/knqyf263/go-deb-version"
 
 	"github.com/aquasecurity/fanal/analyzer"
-
-	debVersion "github.com/knqyf263/go-deb-version"
+	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/fanal/utils"
 )
 
 func init() {
@@ -50,9 +46,9 @@ func (a debianPkgAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.An
 	}, nil
 }
 
-func (a debianPkgAnalyzer) parseDpkginfo(scanner *bufio.Scanner) (pkgs []types.Package) {
+func (a debianPkgAnalyzer) parseDpkginfo(scanner *bufio.Scanner) []types.Package {
 	var pkg *types.Package
-	pkgMap := mapset.NewSet()
+	pkgMap := map[string]*types.Package{}
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
@@ -63,20 +59,15 @@ func (a debianPkgAnalyzer) parseDpkginfo(scanner *bufio.Scanner) (pkgs []types.P
 
 		pkg = a.parseDpkgPkg(scanner)
 		if pkg != nil {
-			pkgMap.Add(*pkg)
+			pkgMap[pkg.Name+"-"+pkg.Version] = pkg
 		}
 	}
-	pkgs = mapsetToSlice(pkgMap)
-	return pkgs
-}
 
-func mapsetToSlice(features mapset.Set) []types.Package {
-	uniqueLayerFeatures := make([]types.Package, 0, features.Cardinality())
-	for f := range features.Iter() {
-		feature := f.(types.Package)
-		uniqueLayerFeatures = append(uniqueLayerFeatures, feature)
+	pkgs := make([]types.Package, 0, len(pkgMap))
+	for _, p := range pkgMap {
+		pkgs = append(pkgs, *p)
 	}
-	return uniqueLayerFeatures
+	return pkgs
 }
 
 func (a debianPkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) {

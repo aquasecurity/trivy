@@ -229,6 +229,7 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobIn
 		OS:            result.OS,
 		PackageInfos:  result.PackageInfos,
 		Applications:  result.Applications,
+		SystemFiles:   result.SystemInstalledFiles,
 		OpaqueDirs:    opqDirs,
 		WhiteoutFiles: whFiles,
 	}
