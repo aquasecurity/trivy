@@ -16,8 +16,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
-	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/config/scanner"
