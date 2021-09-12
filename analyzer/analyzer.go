@@ -58,15 +58,17 @@ func RegisterConfigAnalyzer(analyzer configAnalyzer) {
 type Opener func() ([]byte, error)
 
 type AnalysisResult struct {
-	m            sync.Mutex
-	OS           *types.OS
-	PackageInfos []types.PackageInfo
-	Applications []types.Application
-	Configs      []types.Config
+	m                    sync.Mutex
+	OS                   *types.OS
+	PackageInfos         []types.PackageInfo
+	Applications         []types.Application
+	Configs              []types.Config
+	SystemInstalledFiles []string // A list of files installed by OS package manager
 }
 
 func (r *AnalysisResult) isEmpty() bool {
-	return r.OS == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 && len(r.Configs) == 0
+	return r.OS == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
+		len(r.Configs) == 0 && len(r.SystemInstalledFiles) == 0
 }
 
 func (r *AnalysisResult) Sort() {
@@ -123,6 +125,8 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	for _, m := range new.Configs {
 		r.Configs = append(r.Configs, m)
 	}
+
+	r.SystemInstalledFiles = append(r.SystemInstalledFiles, new.SystemInstalledFiles...)
 }
 
 type Analyzer struct {

@@ -584,7 +584,7 @@ func TestParseRpmInfo(t *testing.T) {
 			bytes, err := ioutil.ReadFile(tc.path)
 			require.NoError(t, err)
 
-			pkgs, err := a.parsePkgInfo(bytes)
+			pkgs, _, err := a.parsePkgInfo(bytes)
 			require.NoError(t, err)
 
 			sort.Slice(tc.pkgs, func(i, j int) bool {

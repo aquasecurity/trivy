@@ -99,6 +99,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		PackageInfos:      result.PackageInfos,
 		Applications:      result.Applications,
 		Misconfigurations: misconfs,
+		SystemFiles:       result.SystemInstalledFiles,
 	}
 
 	if err = a.hookManager.CallHooks(&blobInfo); err != nil {

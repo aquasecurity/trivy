@@ -11,7 +11,7 @@ import (
 	"github.com/kylelemons/godebug/pretty"
 )
 
-func TestParseApkInfo(t *testing.T) {
+func TestParseDpkgInfo(t *testing.T) {
 	var tests = map[string]struct {
 		path string
 		pkgs []types.Package

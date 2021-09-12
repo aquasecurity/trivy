@@ -28,7 +28,7 @@ var requiredFiles = []string{
 type rpmPkgAnalyzer struct{}
 
 func (a rpmPkgAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	parsedPkgs, err := a.parsePkgInfo(target.Content)
+	parsedPkgs, installedFiles, err := a.parsePkgInfo(target.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse rpmdb: %w", err)
 	}
@@ -40,27 +40,28 @@ func (a rpmPkgAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.Analy
 				Packages: parsedPkgs,
 			},
 		},
+		SystemInstalledFiles: installedFiles,
 	}, nil
 }
 
-func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []types.Package, err error) {
+func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) ([]types.Package, []string, error) {
 	tmpDir, err := ioutil.TempDir("", "rpm")
 	defer os.RemoveAll(tmpDir)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to create a temp dir: %w", err)
+		return nil, nil, xerrors.Errorf("failed to create a temp dir: %w", err)
 	}
 
 	filename := filepath.Join(tmpDir, "Packages")
 	err = ioutil.WriteFile(filename, packageBytes, 0700)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to write a package file: %w", err)
+		return nil, nil, xerrors.Errorf("failed to write a package file: %w", err)
 	}
 
 	// rpm-python 4.11.3 rpm-4.11.3-35.el7.src.rpm
 	// Extract binary package names because RHSA refers to binary package names.
 	db, err := rpmdb.Open(filename)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to open RPM DB: %w", err)
+		return nil, nil, xerrors.Errorf("failed to open RPM DB: %w", err)
 	}
 
 	// equivalent:
@@ -68,9 +69,11 @@ func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []types.Package,
 	//   old version: rpm -qa --qf "%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{SOURCERPM} %{ARCH}\n"
 	pkgList, err := db.ListPackages()
 	if err != nil {
-		return nil, xerrors.Errorf("failed to list packages", err)
+		return nil, nil, xerrors.Errorf("failed to list packages", err)
 	}
 
+	var pkgs []types.Package
+	var installedFiles []string
 	for _, pkg := range pkgList {
 		arch := pkg.Arch
 		if arch == "" {
@@ -82,6 +85,11 @@ func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []types.Package,
 		if pkg.SourceRpm != "(none)" && pkg.SourceRpm != "" {
 			// source epoch is not included in SOURCERPM
 			srcName, srcVer, srcRel = splitFileName(pkg.SourceRpm)
+		}
+
+		files, err := pkg.InstalledFiles()
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to get installed files: %w", err)
 		}
 
 		p := types.Package{
@@ -98,9 +106,10 @@ func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) (pkgs []types.Package,
 			License:         pkg.License,
 		}
 		pkgs = append(pkgs, p)
+		installedFiles = append(installedFiles, files...)
 	}
 
-	return pkgs, nil
+	return pkgs, installedFiles, nil
 }
 
 // splitFileName returns a name, version, release, epoch, arch
