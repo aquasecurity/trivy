@@ -19,16 +19,38 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 		wantErr   string
 	}{
 		{
-			name:      "egg",
-			inputFile: "testdata/happy_path.egg-info/PKG-INFO",
+			name:      "egg zip",
+			inputFile: "testdata/kitchen-1.2.6-py2.7.egg",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.PythonPkg,
-						FilePath: "testdata/happy_path.egg-info/PKG-INFO",
+						FilePath: "testdata/kitchen-1.2.6-py2.7.egg",
 						Libraries: []types.LibraryInfo{
 							{
-								FilePath: "testdata/happy_path.egg-info/PKG-INFO",
+								FilePath: "testdata/kitchen-1.2.6-py2.7.egg",
+								Library: godeptypes.Library{
+									Name:    "kitchen",
+									Version: "1.2.6",
+									License: "LGPLv2+",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "egg-info",
+			inputFile: "testdata/happy.egg-info/PKG-INFO",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.PythonPkg,
+						FilePath: "testdata/happy.egg-info/PKG-INFO",
+						Libraries: []types.LibraryInfo{
+							{
+								FilePath: "testdata/happy.egg-info/PKG-INFO",
 								Library: godeptypes.Library{
 									Name:    "distlib",
 									Version: "0.3.1",
@@ -41,7 +63,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "egg no-license",
+			name:      "egg-info no-license",
 			inputFile: "testdata/no_license.egg-info/PKG-INFO",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -63,15 +85,15 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "wheel",
-			inputFile: "testdata/happy_path.dist-info/METADATA",
+			inputFile: "testdata/happy.dist-info/METADATA",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.PythonPkg,
-						FilePath: "testdata/happy_path.dist-info/METADATA",
+						FilePath: "testdata/happy.dist-info/METADATA",
 						Libraries: []types.LibraryInfo{
 							{
-								FilePath: "testdata/happy_path.dist-info/METADATA",
+								FilePath: "testdata/happy.dist-info/METADATA",
 								Library: godeptypes.Library{
 									Name:    "distlib",
 									Version: "0.3.1",
