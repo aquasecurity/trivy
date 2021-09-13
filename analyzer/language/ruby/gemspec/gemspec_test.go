@@ -28,6 +28,7 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/multiple_licenses.gemspec",
 						Libraries: []types.LibraryInfo{
 							{
+								FilePath: "testdata/multiple_licenses.gemspec",
 								Library: godeptypes.Library{
 									Name:    "test-unit",
 									Version: "3.3.7",
