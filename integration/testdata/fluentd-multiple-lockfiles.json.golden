@@ -205,6 +205,7 @@
       {
         "VulnerabilityID": "CVE-2020-8165",
         "PkgName": "activesupport",
+        "PkgPath": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
         "InstalledVersion": "6.0.2.1",
         "FixedVersion": "~\u003e 5.2.4.3, \u003e= 6.0.3.1",
         "Layer": {
