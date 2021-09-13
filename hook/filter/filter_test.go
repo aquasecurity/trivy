@@ -146,6 +146,26 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "distoless",
+			blob: &types.BlobInfo{
+				Applications: []types.Application{
+					{
+						FilePath: "usr/lib/python2.7/lib-dynload/Python-2.7.egg-info",
+						Libraries: []types.LibraryInfo{
+							{
+								FilePath: "usr/lib/python2.7/lib-dynload/Python-2.7.egg-info",
+								Library: godeptypes.Library{
+									Name:    "python",
+									Version: "2.7.14",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &types.BlobInfo{},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
