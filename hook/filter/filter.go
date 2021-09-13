@@ -12,15 +12,27 @@ func init() {
 
 const version = 1
 
+var (
+	defaultSystemFiles = []string{
+		// TODO: Google Distroless removes /var/lib/dpkg/info/*.list, so we cannot know which files are installed by dpkg.
+		//       We have to hardcode these files at the moment, but should look for the better way.
+		"/usr/lib/python2.7/argparse.egg-info",
+		"/usr/lib/python2.7/lib-dynload/Python-2.7.egg-info",
+		"/usr/lib/python2.7/wsgiref.egg-info",
+	}
+)
+
 type systemFileFilterHook struct{}
 
 // Hook removes files installed by OS package manager such as yum.
 func (h systemFileFilterHook) Hook(blob *types.BlobInfo) error {
+	systemFiles := append(blob.SystemFiles, defaultSystemFiles...)
+
 	var apps []types.Application
 	for _, app := range blob.Applications {
 		// If the lang-specific package was installed by OS package manager, it should not be taken.
 		// Otherwise, the package version will be wrong, then it will lead to false positive.
-		if utils.StringInSlice("/"+app.FilePath, blob.SystemFiles) {
+		if utils.StringInSlice("/"+app.FilePath, systemFiles) {
 			continue
 		}
 
@@ -28,7 +40,7 @@ func (h systemFileFilterHook) Hook(blob *types.BlobInfo) error {
 		for _, lib := range app.Libraries {
 			// If the lang-specific package was installed by OS package manager, it should not be taken.
 			// Otherwise, the package version will be wrong, then it will lead to false positive.
-			if utils.StringInSlice("/"+lib.FilePath, blob.SystemFiles) {
+			if utils.StringInSlice("/"+lib.FilePath, systemFiles) {
 				continue
 			}
 			libs = append(libs, lib)
