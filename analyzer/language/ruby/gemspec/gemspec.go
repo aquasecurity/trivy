@@ -37,7 +37,8 @@ func (a gemspecLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyz
 				FilePath: target.FilePath,
 				Libraries: []types.LibraryInfo{
 					{
-						Library: parsedLib,
+						FilePath: target.FilePath,
+						Library:  parsedLib,
 					},
 				},
 			},
