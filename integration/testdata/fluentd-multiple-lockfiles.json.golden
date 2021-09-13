@@ -196,5 +196,29 @@
         "LastModifiedDate": "2020-01-28T06:15:00Z"
       }
     ]
+  },
+  {
+    "Target": "",
+    "Class": "lang-pkgs",
+    "Type": "gemspec",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "CVE-2020-8165",
+        "PkgName": "activesupport",
+        "PkgPath": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
+        "InstalledVersion": "6.0.2.1",
+        "FixedVersion": "~\u003e 5.2.4.3, \u003e= 6.0.3.1",
+        "Layer": {
+          "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-8165",
+        "Title": "Potentially unintended unmarshalling of user-provided objects in MemCacheStore and RedisCacheStore",
+        "Description": "There is potentially unexpected behaviour in the MemCacheStore and RedisCacheStore where, when\nuntrusted user input is written to the cache store using the `raw: true` parameter, re-reading the result\nfrom the cache can evaluate the user input as a Marshalled object instead of plain text. Vulnerable code looks like:\n\n```\ndata = cache.fetch(\"demo\", raw: true) { untrusted_string }\n```\n\nVersions Affected:  rails \u003c 5.2.5, rails \u003c 6.0.4\nNot affected:       Applications not using MemCacheStore or RedisCacheStore. Applications that do not use the `raw` option when storing untrusted user input.\nFixed Versions:     rails \u003e= 5.2.4.3, rails \u003e= 6.0.3.1\n\nImpact\n------\n\nUnmarshalling of untrusted user input can have impact up to and including RCE. At a minimum,\nthis vulnerability allows an attacker to inject untrusted Ruby objects into a web application.\n\nIn addition to upgrading to the latest versions of Rails, developers should ensure that whenever\nthey are calling `Rails.cache.fetch` they are using consistent values of the `raw` parameter for both\nreading and writing, especially in the case of the RedisCacheStore which does not, prior to these changes,\ndetect if data was serialized using the raw option upon deserialization.\n\nWorkarounds\n-----------\n\nIt is recommended that application developers apply the suggested patch or upgrade to the latest release as\nsoon as possible. If this is not possible, we recommend ensuring that all user-provided strings cached using\nthe `raw` argument should be double-checked to ensure that they conform to the expected format.\n",
+        "Severity": "UNKNOWN",
+        "References": [
+          "https://groups.google.com/forum/#!topic/rubyonrails-security/bv6fW4S0Y1c"
+        ]
+      }
+    ]
   }
 ]

@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/all"
 	"github.com/aquasecurity/fanal/applier"
+	_ "github.com/aquasecurity/fanal/hook/all"
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
@@ -23,6 +24,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
+)
+
+var (
+	pkgTargets = map[string]string{
+		ftypes.PythonPkg: "Python",
+	}
 )
 
 // SuperSet binds dependencies for Local scan
@@ -198,26 +205,20 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		}
 
+		target := app.FilePath
+		if t, ok := pkgTargets[app.Type]; ok && target == "" {
+			// When the file path is empty, we will overwrite it with the pre-defined value.
+			target = t
+		}
+
 		libReport := report.Result{
-			Target:          app.FilePath,
+			Target:          target,
 			Vulnerabilities: vulns,
 			Class:           report.ClassLangPkg,
 			Type:            app.Type,
 		}
 		if options.ListAllPackages {
-			var pkgs []ftypes.Package
-			for _, lib := range app.Libraries {
-				pkgs = append(pkgs, ftypes.Package{
-					Name:    lib.Library.Name,
-					Version: lib.Library.Version,
-					License: lib.Library.License,
-					Layer:   lib.Layer,
-				})
-			}
-			sort.Slice(pkgs, func(i, j int) bool {
-				return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
-			})
-			libReport.Packages = pkgs
+			libReport.Packages = s.listAllPkgs(app)
 		}
 		results = append(results, libReport)
 	}
@@ -225,6 +226,23 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		return results[i].Target < results[j].Target
 	})
 	return results, nil
+}
+
+func (s Scanner) listAllPkgs(app ftypes.Application) []ftypes.Package {
+	var pkgs []ftypes.Package
+	for _, lib := range app.Libraries {
+		pkgs = append(pkgs, ftypes.Package{
+			Name:    lib.Library.Name,
+			Version: lib.Library.Version,
+			License: lib.Library.License,
+			Layer:   lib.Layer,
+		})
+	}
+	sort.Slice(pkgs, func(i, j int) bool {
+		return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
+	})
+
+	return pkgs
 }
 
 func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) report.Results {

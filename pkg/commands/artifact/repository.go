@@ -10,12 +10,13 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/fanal/hook"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )
 
 func repositoryScanner(ctx context.Context, dir string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
-	_ time.Duration, disabled []analyzer.Type, opt config.ScannerOption) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeRepositoryScanner(ctx, dir, ac, lac, disabled, opt)
+	_ time.Duration, disabled []analyzer.Type, disabledHooks []hook.Type, opt config.ScannerOption) (scanner.Scanner, func(), error) {
+	s, cleanup, err := initializeRepositoryScanner(ctx, dir, ac, lac, disabled, disabledHooks, opt)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)
 	}
