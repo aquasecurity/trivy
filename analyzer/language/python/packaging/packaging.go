@@ -21,7 +21,12 @@ const version = 1
 
 var (
 	requiredFiles = []string{
-		// egg
+		// .egg format
+		// https://setuptools.readthedocs.io/en/latest/deprecated/python_eggs.html#eggs-and-their-formats
+		"EGG-INFO/PKG-INFO",
+
+		// .egg-info format: .egg-info can be a file or directory
+		// https://setuptools.readthedocs.io/en/latest/deprecated/python_eggs.html#eggs-and-their-formats
 		".egg-info",
 		".egg-info/PKG-INFO",
 
