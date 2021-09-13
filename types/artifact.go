@@ -3,6 +3,8 @@ package types
 import (
 	"time"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
@@ -86,12 +88,19 @@ const (
 
 // ArtifactReference represents a reference of container image, local filesystem and repository
 type ArtifactReference struct {
-	Name        string // image name, tar file name, directory or repository name
-	Type        ArtifactType
-	ID          string
-	BlobIDs     []string
+	Name          string // image name, tar file name, directory or repository name
+	Type          ArtifactType
+	ID            string
+	BlobIDs       []string
+	ImageMetadata *ImageMetadata
+}
+
+type ImageMetadata struct {
+	ID          string   // image ID
+	DiffIDs     []string // uncompressed layer IDs
 	RepoTags    []string
 	RepoDigests []string
+	ConfigFile  v1.ConfigFile
 }
 
 // ArtifactInfo is stored in cache

@@ -16,7 +16,7 @@ import (
 	"github.com/aquasecurity/fanal/types"
 )
 
-func tryRemote(ctx context.Context, ref name.Reference, option types.DockerOption) (v1.Image, extender, error) {
+func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.DockerOption) (types.Image, error) {
 	var remoteOpts []remote.Option
 	if option.InsecureSkipTLSVerify {
 		t := &http.Transport{
@@ -39,36 +39,53 @@ func tryRemote(ctx context.Context, ref name.Reference, option types.DockerOptio
 
 	desc, err := remote.Get(ref, remoteOpts...)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	img, err := desc.Image()
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	// Return v1.Image if the image is found in Docker Registry
-	return img, remoteExtender{
+	return remoteImage{
+		name:       imageName,
+		Image:      img,
 		ref:        implicitReference{ref: ref},
 		descriptor: desc,
 	}, nil
+
 }
 
-type remoteExtender struct {
+type remoteImage struct {
+	name       string
 	ref        implicitReference
 	descriptor *remote.Descriptor
+	v1.Image
 }
 
-func (e remoteExtender) RepoTags() []string {
-	tag := e.ref.TagName()
+func (img remoteImage) Name() string {
+	return img.name
+}
+
+func (img remoteImage) ID() (string, error) {
+	return ID(img)
+}
+
+func (img remoteImage) LayerIDs() ([]string, error) {
+	return LayerIDs(img)
+}
+
+func (img remoteImage) RepoTags() []string {
+	tag := img.ref.TagName()
 	if tag == "" {
 		return []string{}
 	}
-	return []string{fmt.Sprintf("%s:%s", e.ref.RepositoryName(), tag)}
+	return []string{fmt.Sprintf("%s:%s", img.ref.RepositoryName(), tag)}
 }
 
-func (e remoteExtender) RepoDigests() []string {
-	repoDigest := fmt.Sprintf("%s@%s", e.ref.RepositoryName(), e.descriptor.Digest.String())
+func (img remoteImage) RepoDigests() []string {
+	repoDigest := fmt.Sprintf("%s@%s", img.ref.RepositoryName(), img.descriptor.Digest.String())
 	return []string{repoDigest}
 }
 
