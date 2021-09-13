@@ -234,6 +234,7 @@ func (s Scanner) listAllPkgs(app ftypes.Application) []ftypes.Package {
 		pkgs = append(pkgs, ftypes.Package{
 			Name:    lib.Library.Name,
 			Version: lib.Library.Version,
+			License: lib.Library.License,
 			Layer:   lib.Layer,
 		})
 	}
