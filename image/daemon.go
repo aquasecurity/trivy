@@ -1,38 +1,48 @@
 package image
 
 import (
-	"github.com/aquasecurity/fanal/image/daemon"
-	"github.com/docker/docker/api/types"
 	"github.com/google/go-containerregistry/pkg/name"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
+
+	"github.com/aquasecurity/fanal/image/daemon"
+	"github.com/aquasecurity/fanal/types"
 )
 
-func tryDockerDaemon(ref name.Reference) (v1.Image, extender, func(), error) {
-	img, inspect, cleanup, err := daemon.DockerImage(ref)
+func tryDockerDaemon(imageName string, ref name.Reference) (types.Image, func(), error) {
+	img, cleanup, err := daemon.DockerImage(ref)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
-	return img, daemonExtender{inspect: inspect}, cleanup, nil
+	return daemonImage{
+		Image: img,
+		name:  imageName,
+	}, cleanup, nil
 
 }
 
-func tryPodmanDaemon(ref string) (v1.Image, extender, func(), error) {
-	img, inspect, cleanup, err := daemon.PodmanImage(ref)
+func tryPodmanDaemon(ref string) (types.Image, func(), error) {
+	img, cleanup, err := daemon.PodmanImage(ref)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
-	return img, daemonExtender{inspect: inspect}, cleanup, nil
-
+	return daemonImage{
+		Image: img,
+		name:  ref,
+	}, cleanup, nil
 }
 
-type daemonExtender struct {
-	inspect *types.ImageInspect
+type daemonImage struct {
+	daemon.Image
+	name string
 }
 
-func (e daemonExtender) RepoTags() []string {
-	return e.inspect.RepoTags
+func (d daemonImage) Name() string {
+	return d.name
 }
 
-func (e daemonExtender) RepoDigests() []string {
-	return e.inspect.RepoDigests
+func (d daemonImage) ID() (string, error) {
+	return ID(d)
+}
+
+func (d daemonImage) LayerIDs() ([]string, error) {
+	return LayerIDs(d)
 }

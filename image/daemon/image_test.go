@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -57,7 +58,7 @@ func Test_image_ConfigName(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, _, cleanup, err := DockerImage(ref)
+			img, cleanup, err := DockerImage(ref)
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -79,15 +80,25 @@ func Test_image_ConfigFile(t *testing.T) {
 			name:      "one diff_id",
 			imageName: "alpine:3.11",
 			want: &v1.ConfigFile{
-				RootFS: v1.RootFS{
-					Type: "layers",
-					DiffIDs: []v1.Hash{
-						{
-							Algorithm: "sha256",
-							Hex:       "beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
-						},
+				Architecture:  "amd64",
+				Created:       v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
+				DockerVersion: "18.09.7",
+				History: []v1.History{
+					{
+						Created:    v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 0, time.UTC)},
+						CreatedBy:  "/bin/sh -c #(nop) ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
+						EmptyLayer: false,
+					},
+					{
+						Created:    v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 0, time.UTC)},
+						CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+						Comment:    "",
+						EmptyLayer: true,
 					},
 				},
+				RootFS:    v1.RootFS{Type: "layers", DiffIDs: []v1.Hash{v1.Hash{Algorithm: "sha256", Hex: "beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"}}},
+				Config:    v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"}},
+				OSVersion: "",
 			},
 			wantErr: false,
 		},
@@ -95,19 +106,30 @@ func Test_image_ConfigFile(t *testing.T) {
 			name:      "multiple diff_ids",
 			imageName: "gcr.io/distroless/base",
 			want: &v1.ConfigFile{
+				Architecture: "amd64",
+				Author:       "Bazel",
+				Created:      v1.Time{Time: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
+				History: []v1.History{
+					{
+						Created:    v1.Time{Time: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
+						CreatedBy:  "bazel build ...",
+						EmptyLayer: false,
+					},
+					{
+						Created:    v1.Time{Time: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
+						CreatedBy:  "bazel build ...",
+						EmptyLayer: false,
+					},
+				},
 				RootFS: v1.RootFS{
 					Type: "layers",
 					DiffIDs: []v1.Hash{
-						{
-							Algorithm: "sha256",
-							Hex:       "42a3027eaac150d2b8f516100921f4bd83b3dbc20bfe64124f686c072b49c602",
-						},
-						{
-							Algorithm: "sha256",
-							Hex:       "f47163e8de57e3e3ccfe89d5dfbd9c252d9eca53dc7906b8db60eddcb876c592",
-						},
+						{Algorithm: "sha256", Hex: "42a3027eaac150d2b8f516100921f4bd83b3dbc20bfe64124f686c072b49c602"},
+						{Algorithm: "sha256", Hex: "f47163e8de57e3e3ccfe89d5dfbd9c252d9eca53dc7906b8db60eddcb876c592"},
 					},
 				},
+				Config:    v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt"}},
+				OSVersion: "",
 			},
 			wantErr: false,
 		},
@@ -117,13 +139,13 @@ func Test_image_ConfigFile(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, _, cleanup, err := DockerImage(ref)
+			img, cleanup, err := DockerImage(ref)
 			require.NoError(t, err)
 			defer cleanup()
 
 			conf, err := img.ConfigFile()
+			require.Equal(t, tt.wantErr, err != nil, err)
 			assert.Equal(t, tt.want, conf)
-			assert.Equal(t, tt.wantErr, err != nil)
 		})
 	}
 }
@@ -162,7 +184,7 @@ func Test_image_LayerByDiffID(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, _, cleanup, err := DockerImage(ref)
+			img, cleanup, err := DockerImage(ref)
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -191,7 +213,7 @@ func Test_image_RawConfigFile(t *testing.T) {
 			ref, err := name.ParseReference(tt.imageName)
 			require.NoError(t, err)
 
-			img, _, cleanup, err := DockerImage(ref)
+			img, cleanup, err := DockerImage(ref)
 			require.NoError(t, err)
 			defer cleanup()
 

@@ -5,14 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 
-	"github.com/docker/docker/api/types"
-	"github.com/google/go-containerregistry/pkg/v1"
+	api "github.com/docker/docker/api/types"
 	"golang.org/x/xerrors"
 )
 
@@ -49,25 +47,25 @@ type errResponse struct {
 	Message string
 }
 
-func (p podmanClient) imageInspect(imageName string) (types.ImageInspect, error) {
+func (p podmanClient) imageInspect(imageName string) (api.ImageInspect, error) {
 	url := fmt.Sprintf(inspectURL, imageName)
 	resp, err := p.c.Get(url)
 	if err != nil {
-		return types.ImageInspect{}, xerrors.Errorf("http error: %w", err)
+		return api.ImageInspect{}, xerrors.Errorf("http error: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		var res errResponse
 		if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-			return types.ImageInspect{}, xerrors.Errorf("unknown status code from Podman: %d", resp.StatusCode)
+			return api.ImageInspect{}, xerrors.Errorf("unknown status code from Podman: %d", resp.StatusCode)
 		}
-		return types.ImageInspect{}, xerrors.New(res.Message)
+		return api.ImageInspect{}, xerrors.New(res.Message)
 	}
 
-	var inspect types.ImageInspect
+	var inspect api.ImageInspect
 	if err = json.NewDecoder(resp.Body).Decode(&inspect); err != nil {
-		return types.ImageInspect{}, xerrors.Errorf("unable to decode JSON: %w", err)
+		return api.ImageInspect{}, xerrors.Errorf("unable to decode JSON: %w", err)
 	}
 	return inspect, nil
 }
@@ -84,23 +82,23 @@ func (p podmanClient) imageSave(_ context.Context, imageNames []string) (io.Read
 	return resp.Body, nil
 }
 
-// Image implements v1.Image by extending daemon.Image.
+// PodmanImage implements v1.Image by extending daemon.Image.
 // The caller must call cleanup() to remove a temporary file.
-func PodmanImage(ref string) (v1.Image, *types.ImageInspect, func(), error) {
+func PodmanImage(ref string) (Image, func(), error) {
 	cleanup := func() {}
 
 	c, err := newPodmanClient()
 	if err != nil {
-		return nil, nil, cleanup, xerrors.Errorf("unable to initialize Podman client: %w", err)
+		return nil, cleanup, xerrors.Errorf("unable to initialize Podman client: %w", err)
 	}
 	inspect, err := c.imageInspect(ref)
 	if err != nil {
-		return nil, nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", ref, err)
+		return nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", ref, err)
 	}
 
-	f, err := ioutil.TempFile("", "fanal-*")
+	f, err := os.CreateTemp("", "fanal-*")
 	if err != nil {
-		return nil, nil, cleanup, xerrors.Errorf("failed to create a temporary file")
+		return nil, cleanup, xerrors.Errorf("failed to create a temporary file")
 	}
 
 	cleanup = func() {
@@ -111,5 +109,5 @@ func PodmanImage(ref string) (v1.Image, *types.ImageInspect, func(), error) {
 	return &image{
 		opener:  imageOpener(ref, f, c.imageSave),
 		inspect: inspect,
-	}, &inspect, cleanup, nil
+	}, cleanup, nil
 }

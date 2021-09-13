@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/golang-jwt/jwt"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -59,6 +60,7 @@ func TestNewDockerImage(t *testing.T) {
 		args            args
 		wantID          string
 		wantLayerIDs    []string
+		wantConfigFile  *v1.ConfigFile
 		wantRepoTags    []string
 		wantRepoDigests []string
 		wantErr         bool
@@ -71,6 +73,27 @@ func TestNewDockerImage(t *testing.T) {
 			wantID:       "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 			wantLayerIDs: []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
 			wantRepoTags: []string{"alpine:3.11"},
+			wantConfigFile: &v1.ConfigFile{
+				Architecture:  "amd64",
+				Created:       v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
+				DockerVersion: "18.09.7",
+				History: []v1.History{
+					{
+						Created:    v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 0, time.UTC)},
+						CreatedBy:  "/bin/sh -c #(nop) ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
+						EmptyLayer: false,
+					},
+					{
+						Created:    v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 0, time.UTC)},
+						CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+						Comment:    "",
+						EmptyLayer: true,
+					},
+				},
+				RootFS:    v1.RootFS{Type: "layers", DiffIDs: []v1.Hash{v1.Hash{Algorithm: "sha256", Hex: "beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"}}},
+				Config:    v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"}},
+				OSVersion: "",
+			},
 		},
 		{
 			name: "happy path with Docker Registry",
@@ -82,6 +105,34 @@ func TestNewDockerImage(t *testing.T) {
 			wantRepoTags: []string{serverAddr + "/library/alpine:3.10"},
 			wantRepoDigests: []string{
 				serverAddr + "/library/alpine@sha256:e10ea963554297215478627d985466ada334ed15c56d3d6bb808ceab98374d91",
+			},
+			wantConfigFile: &v1.ConfigFile{
+				Architecture:  "amd64",
+				Container:     "7f4a36a667d138b079b5ff059485ff65bfbb5ebc48f24a89f983b918e73f4f28",
+				Created:       v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+				DockerVersion: "18.06.1-ce",
+				History: []v1.History{
+					{
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 551172402, time.UTC)},
+						CreatedBy:  "/bin/sh -c #(nop) ADD file:d48cac34fac385cbc1de6adfdd88300f76f9bbe346cd17e64fd834d042a98326 in / ",
+						EmptyLayer: false,
+					},
+					{
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+						CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+						Comment:    "",
+						EmptyLayer: true,
+					},
+				},
+				OS: "linux",
+
+				RootFS: v1.RootFS{Type: "layers", DiffIDs: []v1.Hash{v1.Hash{Algorithm: "sha256", Hex: "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"}}},
+				Config: v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
+					Cmd:         []string{"/bin/sh"},
+					Image:       "sha256:7c41e139ba64dd2eba852a2e963ee86f2e8da3a5bbfaf10cf4349535dbf0ff08",
+					ArgsEscaped: true,
+				},
+				OSVersion: "",
 			},
 		},
 		{
@@ -100,6 +151,33 @@ func TestNewDockerImage(t *testing.T) {
 			wantRepoTags: []string{serverAddr + "/library/alpine:3.10"},
 			wantRepoDigests: []string{
 				serverAddr + "/library/alpine@sha256:e10ea963554297215478627d985466ada334ed15c56d3d6bb808ceab98374d91",
+			},
+			wantConfigFile: &v1.ConfigFile{
+				Architecture:  "amd64",
+				Container:     "7f4a36a667d138b079b5ff059485ff65bfbb5ebc48f24a89f983b918e73f4f28",
+				Created:       v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+				DockerVersion: "18.06.1-ce",
+				History: []v1.History{
+					{
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 551172402, time.UTC)},
+						CreatedBy:  "/bin/sh -c #(nop) ADD file:d48cac34fac385cbc1de6adfdd88300f76f9bbe346cd17e64fd834d042a98326 in / ",
+						EmptyLayer: false,
+					},
+					{
+						Created:    v1.Time{Time: time.Date(2020, 1, 23, 16, 53, 06, 686519038, time.UTC)},
+						CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+						Comment:    "",
+						EmptyLayer: true,
+					},
+				},
+				OS: "linux",
+
+				RootFS: v1.RootFS{Type: "layers", DiffIDs: []v1.Hash{v1.Hash{Algorithm: "sha256", Hex: "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"}}},
+				Config: v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
+					Cmd:         []string{"/bin/sh"},
+					Image:       "sha256:7c41e139ba64dd2eba852a2e963ee86f2e8da3a5bbfaf10cf4349535dbf0ff08",
+					ArgsEscaped: true,
+				},
 			},
 		},
 		{
@@ -131,6 +209,10 @@ func TestNewDockerImage(t *testing.T) {
 			gotID, err := img.ID()
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantID, gotID)
+
+			gotConfigFile, err := img.ConfigFile()
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantConfigFile, gotConfigFile)
 
 			gotLayerIDs, err := img.LayerIDs()
 			require.NoError(t, err)
