@@ -15,12 +15,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-var (
-	displayTypes = map[string]string{
-		ftypes.PythonPkg: "Python",
-	}
-)
-
 // TableWriter implements Writer and output in tabular form
 type TableWriter struct {
 	Severities []dbTypes.Severity
@@ -41,9 +35,6 @@ func (tw TableWriter) Write(report Report) error {
 		if result.Type == ftypes.Jar && len(result.Vulnerabilities) == 0 {
 			continue
 		}
-		if value, ok := displayTypes[result.Type]; ok {
-			result.Type = value
-		}
 		tw.write(result)
 	}
 	return nil
@@ -63,11 +54,7 @@ func (tw TableWriter) write(result Result) {
 
 	target := result.Target
 	if result.Class != ClassOSPkg {
-		if target == "" {
-			target = result.Type
-		} else {
-			target += fmt.Sprintf(" (%s)", result.Type)
-		}
+		target += fmt.Sprintf(" (%s)", result.Type)
 	}
 
 	fmt.Printf("\n%s\n", target)

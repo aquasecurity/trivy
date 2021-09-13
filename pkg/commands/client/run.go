@@ -9,7 +9,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
-	"github.com/aquasecurity/fanal/hook"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -125,8 +124,6 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 		disabledAnalyzers = []analyzer.Type{}
 	}
 
-	disabledHooks := []hook.Type{}
-
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
@@ -147,7 +144,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	if opt.Input != "" {
 		// Scan tar file
 		s, err := initializeArchiveScanner(ctx, opt.Input, remoteCache, client.CustomHeaders(opt.CustomHeaders),
-			client.RemoteURL(opt.RemoteAddr), opt.Timeout, disabledAnalyzers, disabledHooks, configScannerOptions)
+			client.RemoteURL(opt.RemoteAddr), opt.Timeout, disabledAnalyzers, nil, configScannerOptions)
 		if err != nil {
 			return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 		}
@@ -156,7 +153,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 
 	// Scan an image in Docker Engine or Docker Registry
 	s, cleanup, err := initializeDockerScanner(ctx, opt.Target, remoteCache, client.CustomHeaders(opt.CustomHeaders),
-		client.RemoteURL(opt.RemoteAddr), opt.Timeout, disabledAnalyzers, disabledHooks, configScannerOptions)
+		client.RemoteURL(opt.RemoteAddr), opt.Timeout, disabledAnalyzers, nil, configScannerOptions)
 	if err != nil {
 		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the docker scanner: %w", err)
 	}

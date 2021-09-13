@@ -157,8 +157,6 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		disabledAnalyzers = []analyzer.Type{}
 	}
 
-	disabledHooks := []hook.Type{}
-
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
@@ -177,7 +175,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	}
 
 	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Timeout,
-		disabledAnalyzers, disabledHooks, configScannerOptions)
+		disabledAnalyzers, nil, configScannerOptions)
 	if err != nil {
 		return pkgReport.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}

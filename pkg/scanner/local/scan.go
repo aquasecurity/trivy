@@ -26,6 +26,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
+var (
+	pkgTargets = map[string]string{
+		ftypes.PythonPkg: "Python",
+	}
+)
+
 // SuperSet binds dependencies for Local scan
 var SuperSet = wire.NewSet(
 	applier.NewApplier,
@@ -199,8 +205,14 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		}
 
+		target := app.FilePath
+		if t, ok := pkgTargets[app.Type]; ok && target == "" {
+			// When the file path is empty, we will overwrite it with the pre-defined value.
+			target = t
+		}
+
 		libReport := report.Result{
-			Target:          app.FilePath,
+			Target:          target,
 			Vulnerabilities: vulns,
 			Class:           report.ClassLangPkg,
 			Type:            app.Type,
