@@ -114,6 +114,11 @@ func Test_packagingAnalyzer_Required(t *testing.T) {
 		want     bool
 	}{
 		{
+			name:     "egg",
+			filePath: "python2.7/site-packages/cssutils-1.0-py2.7.egg/EGG-INFO/PKG-INFO",
+			want:     true,
+		},
+		{
 			name:     "egg-info",
 			filePath: "python3.8/site-packages/wrapt-1.12.1.egg-info",
 			want:     true,
