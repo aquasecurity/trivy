@@ -4,14 +4,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian"
-	debianoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian-oval"
-	"k8s.io/utils/clock"
-
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian"
+	debianoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian-oval"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
