@@ -116,7 +116,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 	}{
 		{
 			name: "debian 7",
-			now:  time.Date(2019, 3, 31, 23, 59, 59, 0, time.UTC),
+			now:  time.Date(2018, 3, 31, 23, 59, 59, 0, time.UTC),
 			args: args{
 				osFamily: "debian",
 				osVer:    "7",
