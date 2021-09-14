@@ -149,7 +149,7 @@ func TestScanner_Detect(t *testing.T) {
 	}
 }
 
-func TestScanner_IsSupportedVersion1(t *testing.T) {
+func TestScanner_IsSupportedVersion(t *testing.T) {
 	type args struct {
 		osFamily string
 		osVer    string
