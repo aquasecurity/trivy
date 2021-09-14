@@ -29,6 +29,7 @@ import (
 var (
 	pkgTargets = map[string]string{
 		ftypes.PythonPkg: "Python",
+		ftypes.GemSpec:   "Ruby",
 	}
 )
 
