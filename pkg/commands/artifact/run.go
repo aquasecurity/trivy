@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/fanal/hook"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -26,7 +27,7 @@ var errSkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanner type to define initialize function signature
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration,
-	[]analyzer.Type, config.ScannerOption) (scanner.Scanner, func(), error)
+	[]analyzer.Type, []hook.Type, config.ScannerOption) (scanner.Scanner, func(), error)
 
 // InitCache defines cache initializer
 type InitCache func(c Option) (cache.Cache, error)
@@ -174,7 +175,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	}
 
 	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Timeout,
-		disabledAnalyzers, configScannerOptions)
+		disabledAnalyzers, nil, configScannerOptions)
 	if err != nil {
 		return pkgReport.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}

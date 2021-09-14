@@ -205,6 +205,7 @@
       {
         "VulnerabilityID": "CVE-2020-8165",
         "PkgName": "activesupport",
+        "PkgPath": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
         "InstalledVersion": "6.0.2.1",
         "FixedVersion": "~\u003e 5.2.4.3, \u003e= 6.0.3.1",
         "Layer": {
@@ -216,70 +217,6 @@
         "Severity": "UNKNOWN",
         "References": [
           "https://groups.google.com/forum/#!topic/rubyonrails-security/bv6fW4S0Y1c"
-        ]
-      },
-      {
-        "VulnerabilityID": "CVE-2020-10663",
-        "PkgName": "json",
-        "InstalledVersion": "2.1.0",
-        "FixedVersion": "\u003e= 2.3.0",
-        "Layer": {
-          "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-10663",
-        "Title": "json Gem for Ruby Unsafe Object Creation Vulnerability (additional fix)",
-        "Description": "There is an unsafe object creation vulnerability in the json gem bundled with\nRuby. This vulnerability has been assigned the CVE identifier CVE-2020-10663.\nWe strongly recommend upgrading the json gem.\n\nDetails\n-------\n\nWhen parsing certain JSON documents, the json gem (including the one bundled\nwith Ruby) can be coerced into creating arbitrary objects in the target system.\n\nThis is the same issue as CVE-2013-0269. The previous fix was incomplete, which\naddressed JSON.parse(user_input), but didn’t address some other styles of JSON\nparsing including JSON(user_input) and JSON.parse(user_input, nil).\n\nSee CVE-2013-0269 in detail. Note that the issue was exploitable to cause a\nDenial of Service by creating many garbage-uncollectable Symbol objects, but\nthis kind of attack is no longer valid because Symbol objects are now\ngarbage-collectable. However, creating arbitrary objects may cause severe\nsecurity consequences depending upon the application code.\n",
-        "Severity": "UNKNOWN",
-        "References": [
-          "https://groups.google.com/forum/#!topic/ruby-security-ann/ermX1eQqqKA",
-          "https://www.ruby-lang.org/en/news/2020/03/19/json-dos-cve-2020-10663/"
-        ]
-      },
-      {
-        "VulnerabilityID": "CVE-2020-8130",
-        "PkgName": "rake",
-        "InstalledVersion": "12.3.1",
-        "FixedVersion": "\u003e= 12.3.3",
-        "Layer": {
-          "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-8130",
-        "Title": "OS Command Injection in Rake",
-        "Description": "There is an OS command injection vulnerability in Ruby Rake \u003c 12.3.3 in Rake::FileList when supplying a filename that begins with the pipe character `|`.",
-        "Severity": "HIGH",
-        "CweIDs": [
-          "CWE-78"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:C/I:C/A:C",
-            "V2Score": 9.3
-          }
-        },
-        "References": [
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-8130",
-          "https://github.com/advisories/GHSA-jppv-gw3r-w3q8",
-          "https://hackerone.com/reports/651518",
-          "https://lists.debian.org/debian-lts-announce/2020/02/msg00026.html"
-        ],
-        "PublishedDate": "2020-02-24T15:15:00Z",
-        "LastModifiedDate": "2020-02-27T00:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2020-25613",
-        "PkgName": "webrick",
-        "InstalledVersion": "1.4.2",
-        "FixedVersion": "\u003e= 1.6.1",
-        "Layer": {
-          "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-25613",
-        "Title": "Potential HTTP Request Smuggling Vulnerability in WEBrick",
-        "Description": "WEBrick was too tolerant against an invalid Transfer-Encoding header. This may lead to\ninconsistent interpretation between WEBrick and some HTTP proxy servers, which may\nallow the attacker to \"smuggle\" a request. See CWE-444 in detail.\n",
-        "Severity": "UNKNOWN",
-        "References": [
-          "https://www.ruby-lang.org/en/news/2020/09/29/http-request-smuggling-cve-2020-25613/"
         ]
       }
     ]
