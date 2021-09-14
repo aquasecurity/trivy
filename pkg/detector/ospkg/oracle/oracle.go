@@ -9,7 +9,6 @@ import (
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -32,7 +31,7 @@ var (
 
 // Scanner implements oracle vulnerability scanner
 type Scanner struct {
-	vs    dbTypes.VulnSrc
+	vs    oracleoval.VulnSrc
 	clock clock.Clock
 }
 
