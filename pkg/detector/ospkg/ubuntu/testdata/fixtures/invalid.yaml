@@ -1,0 +1,9 @@
+- bucket: ubuntu 21.04
+  pairs:
+    - bucket: jq
+      pairs:
+        - key: CVE-2020-8177
+          value:
+            FixedVersion:
+              - foo
+              - bar

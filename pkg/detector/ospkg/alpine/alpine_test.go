@@ -161,7 +161,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "alpine3.6",
+			name: "alpine 3.6",
 			now:  time.Date(2019, 3, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
 				osFamily: "alpine",
@@ -170,7 +170,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "alpine3.6 with EOL",
+			name: "alpine 3.6 with EOL",
 			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
 				osFamily: "alpine",
@@ -179,7 +179,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "alpine3.9",
+			name: "alpine 3.9",
 			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
 				osFamily: "alpine",
@@ -188,7 +188,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "alpine3.10",
+			name: "alpine 3.10",
 			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
 				osFamily: "alpine",
