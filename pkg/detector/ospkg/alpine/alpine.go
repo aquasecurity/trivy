@@ -44,7 +44,6 @@ var (
 )
 
 type options struct {
-	vs    alpine.VulnSrc
 	clock clock.Clock
 }
 
@@ -58,13 +57,13 @@ func WithClock(clock clock.Clock) option {
 
 // Scanner implements the Alpine scanner
 type Scanner struct {
+	vs alpine.VulnSrc
 	*options
 }
 
 // NewScanner is the factory method for Scanner
 func NewScanner(opts ...option) *Scanner {
 	o := &options{
-		vs:    alpine.NewVulnSrc(),
 		clock: clock.RealClock{},
 	}
 
@@ -72,6 +71,7 @@ func NewScanner(opts ...option) *Scanner {
 		opt(o)
 	}
 	return &Scanner{
+		vs:      alpine.NewVulnSrc(),
 		options: o,
 	}
 }
