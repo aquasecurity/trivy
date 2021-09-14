@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package integration
@@ -21,9 +22,9 @@ import (
 	"github.com/aquasecurity/fanal/artifact"
 	aimage "github.com/aquasecurity/fanal/artifact/image"
 	"github.com/aquasecurity/fanal/cache"
+	_ "github.com/aquasecurity/fanal/hook/all"
 	"github.com/aquasecurity/fanal/image"
 	"github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dtypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
@@ -33,13 +34,13 @@ import (
 var update = flag.Bool("update", false, "update golden files")
 
 type testCase struct {
-	name                 string
-	imageName            string
-	remoteImageName      string
-	imageFile            string
-	expectedOS           types.OS
-	expectedPkgsFromCmds string
-	expectedLibraries    string
+	name                string
+	imageName           string
+	remoteImageName     string
+	imageFile           string
+	wantOS              types.OS
+	wantPkgsFromCmds    string
+	wantApplicationFile string
 }
 
 var testCases = []testCase{
@@ -48,53 +49,51 @@ var testCases = []testCase{
 		imageName:       "alpine:3.10",
 		remoteImageName: "knqyf263/alpine:3.10",
 		imageFile:       "testdata/fixtures/alpine-310.tar.gz",
-		expectedOS:      types.OS{Name: "3.10.2", Family: "alpine"},
+		wantOS:          types.OS{Name: "3.10.2", Family: "alpine"},
 	},
 	{
-		name:              "happy path, amazonlinux:2",
-		imageName:         "amazonlinux:2",
-		remoteImageName:   "knqyf263/amazonlinux:2",
-		imageFile:         "testdata/fixtures/amazon-2.tar.gz",
-		expectedOS:        types.OS{Name: "2 (Karoo)", Family: "amazon"},
-		expectedLibraries: "testdata/goldens/amazonlinux-2.expectedlibs.golden",
+		name:            "happy path, amazonlinux:2",
+		imageName:       "amazonlinux:2",
+		remoteImageName: "knqyf263/amazonlinux:2",
+		imageFile:       "testdata/fixtures/amazon-2.tar.gz",
+		wantOS:          types.OS{Name: "2 (Karoo)", Family: "amazon"},
 	},
 	{
 		name:            "happy path, debian:buster",
 		imageName:       "debian:buster",
 		remoteImageName: "knqyf263/debian:buster",
 		imageFile:       "testdata/fixtures/debian-buster.tar.gz",
-		expectedOS:      types.OS{Name: "10.1", Family: "debian"},
+		wantOS:          types.OS{Name: "10.1", Family: "debian"},
 	},
 	{
 		name:            "happy path, photon:1.0",
 		imageName:       "photon:1.0-20190823",
 		remoteImageName: "knqyf263/photon:1.0-20190823",
 		imageFile:       "testdata/fixtures/photon-10.tar.gz",
-		expectedOS:      types.OS{Name: "1.0", Family: "photon"},
+		wantOS:          types.OS{Name: "1.0", Family: "photon"},
 	},
 	{
-		name:              "happy path, registry.redhat.io/ubi7",
-		imageName:         "registry.redhat.io/ubi7",
-		remoteImageName:   "knqyf263/registry.redhat.io-ubi7:latest",
-		imageFile:         "testdata/fixtures/ubi-7.tar.gz",
-		expectedOS:        types.OS{Name: "7.7", Family: "redhat"},
-		expectedLibraries: "testdata/goldens/registry.redhat.io-ubi7.expectedlibs.golden",
+		name:            "happy path, registry.redhat.io/ubi7",
+		imageName:       "registry.redhat.io/ubi7",
+		remoteImageName: "knqyf263/registry.redhat.io-ubi7:latest",
+		imageFile:       "testdata/fixtures/ubi-7.tar.gz",
+		wantOS:          types.OS{Name: "7.7", Family: "redhat"},
 	},
 	{
 		name:            "happy path, opensuse leap 15.1",
 		imageName:       "opensuse/leap:latest",
 		remoteImageName: "knqyf263/opensuse-leap:latest",
 		imageFile:       "testdata/fixtures/opensuse-leap-151.tar.gz",
-		expectedOS:      types.OS{Name: "15.1", Family: "opensuse.leap"},
+		wantOS:          types.OS{Name: "15.1", Family: "opensuse.leap"},
 	},
 	{
-		name:                 "happy path, vulnimage with lock files",
-		imageName:            "knqyf263/vuln-image:1.2.3",
-		remoteImageName:      "knqyf263/vuln-image:1.2.3",
-		imageFile:            "testdata/fixtures/vulnimage.tar.gz",
-		expectedOS:           types.OS{Name: "3.7.1", Family: "alpine"},
-		expectedLibraries:    "testdata/goldens/vuln-image1.2.3.expectedlibs.golden",
-		expectedPkgsFromCmds: "testdata/goldens/vuln-image1.2.3.expectedpkgsfromcmds.golden",
+		name:                "happy path, vulnimage with lock files",
+		imageName:           "knqyf263/vuln-image:1.2.3",
+		remoteImageName:     "knqyf263/vuln-image:1.2.3",
+		imageFile:           "testdata/fixtures/vulnimage.tar.gz",
+		wantOS:              types.OS{Name: "3.7.1", Family: "alpine"},
+		wantApplicationFile: "testdata/goldens/vuln-image1.2.3.expectedlibs.golden",
+		wantPkgsFromCmds:    "testdata/goldens/vuln-image1.2.3.expectedpkgsfromcmds.golden",
 	},
 }
 
@@ -104,8 +103,7 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
-			d, _ := ioutil.TempDir("", "TestFanal_Library_DockerLessMode_*")
-			defer os.RemoveAll(d)
+			d := t.TempDir()
 
 			c, err := cache.NewFSCache(d)
 			require.NoError(t, err, tc.name)
@@ -150,8 +148,8 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
-			d, _ := ioutil.TempDir("", "TestFanal_Library_DockerMode_*")
-			defer os.RemoveAll(d)
+			d := t.TempDir()
+
 			c, err := cache.NewFSCache(d)
 			require.NoError(t, err)
 			opt := types.DockerOption{
@@ -215,8 +213,7 @@ func TestFanal_Library_TarMode(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
-			d, _ := ioutil.TempDir("", "TestFanal_Library_TarMode_*")
-			defer os.RemoveAll(d)
+			d := t.TempDir()
 
 			c, err := cache.NewFSCache(d)
 			require.NoError(t, err)
@@ -246,13 +243,13 @@ func runChecks(t *testing.T, ctx context.Context, ar artifact.Artifact, applier 
 }
 
 func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
-	assert.Equal(t, tc.expectedOS, *detail.OS, tc.name)
-	checkPackages(t, detail, tc)
+	assert.Equal(t, tc.wantOS, *detail.OS, tc.name)
+	checkOSPackages(t, detail, tc)
 	checkPackageFromCommands(t, detail, tc)
-	checkLibraries(detail, t, tc)
+	checkLangPkgs(detail, t, tc)
 }
 
-func checkPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
+func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	r := strings.NewReplacer("/", "-", ":", "-")
 	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", r.Replace(tc.imageName))
 	if *update {
@@ -279,22 +276,52 @@ func checkPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	}
 }
 
-func checkLibraries(detail types.ArtifactDetail, t *testing.T, tc testCase) {
-	if tc.expectedLibraries != "" {
-		data, _ := ioutil.ReadFile(tc.expectedLibraries)
-		var expectedLibraries map[string][]godeptypes.Library
+func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
+	if tc.wantApplicationFile != "" {
+		// Sort applications for consistency
+		sort.Slice(detail.Applications, func(i, j int) bool {
+			if detail.Applications[i].Type != detail.Applications[j].Type {
+				return detail.Applications[i].Type < detail.Applications[j].Type
+			}
+			return detail.Applications[i].FilePath < detail.Applications[j].FilePath
+		})
 
-		err := json.Unmarshal(data, &expectedLibraries)
+		for _, app := range detail.Applications {
+			sort.Slice(app.Libraries, func(i, j int) bool {
+				return app.Libraries[i].FilePath < app.Libraries[j].FilePath
+			})
+		}
+
+		// Do not compare layers
+		for _, app := range detail.Applications {
+			for i := range app.Libraries {
+				app.Libraries[i].Layer = types.Layer{}
+			}
+		}
+
+		if *update {
+			b, err := json.MarshalIndent(detail.Applications, "", "  ")
+			require.NoError(t, err)
+			err = os.WriteFile(tc.wantApplicationFile, b, 0666)
+			require.NoError(t, err)
+			return
+		}
+
+		var wantApps []types.Application
+		data, err := os.ReadFile(tc.wantApplicationFile)
 		require.NoError(t, err)
-		require.Equal(t, len(expectedLibraries), len(detail.Applications), tc.name)
+		err = json.Unmarshal(data, &wantApps)
+		require.NoError(t, err)
+
+		require.Equal(t, wantApps, detail.Applications, tc.name)
 	} else {
 		assert.Nil(t, detail.Applications, tc.name)
 	}
 }
 
 func checkPackageFromCommands(t *testing.T, detail types.ArtifactDetail, tc testCase) {
-	if tc.expectedPkgsFromCmds != "" {
-		data, _ := ioutil.ReadFile(tc.expectedPkgsFromCmds)
+	if tc.wantPkgsFromCmds != "" {
+		data, _ := ioutil.ReadFile(tc.wantPkgsFromCmds)
 		var expectedPkgsFromCmds []types.Package
 
 		err := json.Unmarshal(data, &expectedPkgsFromCmds)

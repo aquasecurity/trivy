@@ -127,5 +127,37 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		}
 	}
 
+	// Aggregate python/ruby/node.js packages
+	aggregate(&mergedLayer)
+
 	return mergedLayer
+}
+
+// aggregate merges all packages installed by pip/gem/npm into each application
+func aggregate(detail *types.ArtifactDetail) {
+	var apps []types.Application
+
+	aggregatedApps := map[string]*types.Application{
+		types.PythonPkg: {Type: types.PythonPkg},
+		types.GemSpec:   {Type: types.GemSpec},
+		types.NodePkg:   {Type: types.NodePkg},
+	}
+
+	for _, app := range detail.Applications {
+		a, ok := aggregatedApps[app.Type]
+		if !ok {
+			apps = append(apps, app)
+			continue
+		}
+		a.Libraries = append(a.Libraries, app.Libraries...)
+	}
+
+	for _, app := range aggregatedApps {
+		if len(app.Libraries) > 0 {
+			apps = append(apps, *app)
+		}
+	}
+
+	// Overwrite Applications
+	detail.Applications = apps
 }
