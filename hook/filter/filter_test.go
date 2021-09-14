@@ -97,7 +97,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					"/usr/lib64/python2.7/distutils/command/install_egg_info.pyc",
 					"/usr/lib64/python2.7/distutils/command/install_egg_info.pyo",
 					"/usr/lib64/python2.7/lib-dynload/Python-2.7.5-py2.7.egg-info",
-					"/usr/lib64/python2.7/wsgiref.egg-info",
+					"usr/lib64/python2.7/wsgiref.egg-info", // without the leading slash
 				},
 			},
 			want: &types.BlobInfo{
