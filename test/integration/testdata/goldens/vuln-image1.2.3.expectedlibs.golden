@@ -1,433 +1,727 @@
-{
-    "node-app/package-lock.json": [
-        {
-            "Name": "react-is",
-            "Version": "16.8.6"
-        },
-        {
-            "Name": "asap",
-            "Version": "2.0.6"
-        },
-        {
-            "Name": "lodash",
-            "Version": "4.17.4"
-        },
-        {
-            "Name": "jquery",
-            "Version": "3.3.9"
-        },
-        {
-            "Name": "object-assign",
-            "Version": "4.1.1"
-        },
-        {
-            "Name": "promise",
-            "Version": "8.0.3"
-        },
-        {
-            "Name": "prop-types",
-            "Version": "15.7.2"
-        },
-        {
-            "Name": "react",
-            "Version": "16.8.6"
-        },
-        {
-            "Name": "scheduler",
-            "Version": "0.13.6"
-        },
-        {
-            "Name": "symbol-observable",
-            "Version": "1.2.0"
-        },
-        {
-            "Name": "js-tokens",
-            "Version": "4.0.0"
-        },
-        {
-            "Name": "loose-envify",
-            "Version": "1.4.0"
-        },
-        {
-            "Name": "redux",
-            "Version": "4.0.1"
-        }
-    ],
-    "php-app/composer.lock": [
-        {
-            "Name": "guzzlehttp/guzzle",
-            "Version": "6.2.0"
-        },
-        {
-            "Name": "guzzlehttp/promises",
-            "Version": "v1.3.1"
-        },
-        {
-            "Name": "guzzlehttp/psr7",
-            "Version": "1.5.2"
-        },
-        {
-            "Name": "laravel/installer",
-            "Version": "v2.0.1"
-        },
-        {
-            "Name": "pear/log",
-            "Version": "1.13.1"
-        },
-        {
-            "Name": "pear/pear_exception",
-            "Version": "v1.0.0"
-        },
-        {
-            "Name": "psr/http-message",
-            "Version": "1.0.1"
-        },
-        {
-            "Name": "ralouphie/getallheaders",
-            "Version": "2.0.5"
-        },
-        {
-            "Name": "symfony/console",
-            "Version": "v4.2.7"
-        },
-        {
-            "Name": "symfony/contracts",
-            "Version": "v1.0.2"
-        },
-        {
-            "Name": "symfony/filesystem",
-            "Version": "v4.2.7"
-        },
-        {
-            "Name": "symfony/polyfill-ctype",
-            "Version": "v1.11.0"
-        },
-        {
-            "Name": "symfony/polyfill-mbstring",
-            "Version": "v1.11.0"
-        },
-        {
-            "Name": "symfony/process",
-            "Version": "v4.2.7"
-        }
-    ],
-    "rust-app/Cargo.lock": [
-        {
-            "Name": "ammonia",
-            "Version": "1.9.0"
-        },
-        {
-            "Name": "autocfg",
-            "Version": "0.1.2"
-        },
-        {
-            "Name": "bitflags",
-            "Version": "0.7.0"
-        },
-        {
-            "Name": "bitflags",
-            "Version": "1.0.4"
-        },
-        {
-            "Name": "cfg-if",
-            "Version": "0.1.7"
-        },
-        {
-            "Name": "cloudabi",
-            "Version": "0.0.3"
-        },
-        {
-            "Name": "fuchsia-cprng",
-            "Version": "0.1.1"
-        },
-        {
-            "Name": "futf",
-            "Version": "0.1.4"
-        },
-        {
-            "Name": "gdi32-sys",
-            "Version": "0.2.0"
-        },
-        {
-            "Name": "html5ever",
-            "Version": "0.23.0"
-        },
-        {
-            "Name": "idna",
-            "Version": "0.1.5"
-        },
-        {
-            "Name": "itoa",
-            "Version": "0.4.4"
-        },
-        {
-            "Name": "kernel32-sys",
-            "Version": "0.2.2"
-        },
-        {
-            "Name": "lazy_static",
-            "Version": "0.2.11"
-        },
-        {
-            "Name": "lazy_static",
-            "Version": "1.3.0"
-        },
-        {
-            "Name": "libc",
-            "Version": "0.2.54"
-        },
-        {
-            "Name": "libressl-pnacl-sys",
-            "Version": "2.1.6"
-        },
-        {
-            "Name": "log",
-            "Version": "0.4.6"
-        },
-        {
-            "Name": "mac",
-            "Version": "0.1.1"
-        },
-        {
-            "Name": "maplit",
-            "Version": "1.0.1"
-        },
-        {
-            "Name": "markup5ever",
-            "Version": "0.8.1"
-        },
-        {
-            "Name": "matches",
-            "Version": "0.1.8"
-        },
-        {
-            "Name": "new_debug_unreachable",
-            "Version": "1.0.3"
-        },
-        {
-            "Name": "normal",
-            "Version": "0.1.0"
-        },
-        {
-            "Name": "openssl",
-            "Version": "0.8.3"
-        },
-        {
-            "Name": "openssl-sys",
-            "Version": "0.7.17"
-        },
-        {
-            "Name": "percent-encoding",
-            "Version": "1.0.1"
-        },
-        {
-            "Name": "phf",
-            "Version": "0.7.24"
-        },
-        {
-            "Name": "phf_codegen",
-            "Version": "0.7.24"
-        },
-        {
-            "Name": "phf_generator",
-            "Version": "0.7.24"
-        },
-        {
-            "Name": "phf_shared",
-            "Version": "0.7.24"
-        },
-        {
-            "Name": "pkg-config",
-            "Version": "0.3.14"
-        },
-        {
-            "Name": "pnacl-build-helper",
-            "Version": "1.4.11"
-        },
-        {
-            "Name": "precomputed-hash",
-            "Version": "0.1.1"
-        },
-        {
-            "Name": "proc-macro2",
-            "Version": "0.4.30"
-        },
-        {
-            "Name": "quote",
-            "Version": "0.6.12"
-        },
-        {
-            "Name": "rand",
-            "Version": "0.4.6"
-        },
-        {
-            "Name": "rand",
-            "Version": "0.6.5"
-        },
-        {
-            "Name": "rand_chacha",
-            "Version": "0.1.1"
-        },
-        {
-            "Name": "rand_core",
-            "Version": "0.3.1"
-        },
-        {
-            "Name": "rand_core",
-            "Version": "0.4.0"
-        },
-        {
-            "Name": "rand_hc",
-            "Version": "0.1.0"
-        },
-        {
-            "Name": "rand_isaac",
-            "Version": "0.1.1"
-        },
-        {
-            "Name": "rand_jitter",
-            "Version": "0.1.4"
-        },
-        {
-            "Name": "rand_os",
-            "Version": "0.1.3"
-        },
-        {
-            "Name": "rand_pcg",
-            "Version": "0.1.2"
-        },
-        {
-            "Name": "rand_xorshift",
-            "Version": "0.1.1"
-        },
-        {
-            "Name": "rdrand",
-            "Version": "0.4.0"
-        },
-        {
-            "Name": "remove_dir_all",
-            "Version": "0.5.1"
-        },
-        {
-            "Name": "ryu",
-            "Version": "0.2.8"
-        },
-        {
-            "Name": "same-file",
-            "Version": "0.1.3"
-        },
-        {
-            "Name": "serde",
-            "Version": "1.0.91"
-        },
-        {
-            "Name": "serde_derive",
-            "Version": "1.0.91"
-        },
-        {
-            "Name": "serde_json",
-            "Version": "1.0.39"
-        },
-        {
-            "Name": "siphasher",
-            "Version": "0.2.3"
-        },
-        {
-            "Name": "smallvec",
-            "Version": "0.6.9"
-        },
-        {
-            "Name": "string_cache",
-            "Version": "0.7.3"
-        },
-        {
-            "Name": "string_cache_codegen",
-            "Version": "0.4.2"
-        },
-        {
-            "Name": "string_cache_shared",
-            "Version": "0.3.0"
-        },
-        {
-            "Name": "syn",
-            "Version": "0.15.34"
-        },
-        {
-            "Name": "tempdir",
-            "Version": "0.3.7"
-        },
-        {
-            "Name": "tendril",
-            "Version": "0.4.1"
-        },
-        {
-            "Name": "unicode-bidi",
-            "Version": "0.3.4"
-        },
-        {
-            "Name": "unicode-normalization",
-            "Version": "0.1.8"
-        },
-        {
-            "Name": "unicode-xid",
-            "Version": "0.1.0"
-        },
-        {
-            "Name": "url",
-            "Version": "1.7.2"
-        },
-        {
-            "Name": "user32-sys",
-            "Version": "0.2.0"
-        },
-        {
-            "Name": "utf-8",
-            "Version": "0.7.5"
-        },
-        {
-            "Name": "walkdir",
-            "Version": "1.0.7"
-        },
-        {
-            "Name": "winapi",
-            "Version": "0.2.8"
-        },
-        {
-            "Name": "winapi",
-            "Version": "0.3.7"
-        },
-        {
-            "Name": "winapi-build",
-            "Version": "0.1.1"
-        },
-        {
-            "Name": "winapi-i686-pc-windows-gnu",
-            "Version": "0.4.0"
-        },
-        {
-            "Name": "winapi-x86_64-pc-windows-gnu",
-            "Version": "0.4.0"
-        }
-    ],
-    "usr/lib/python2.7/lib-dynload/Python-2.7.15-py2.7.egg-info": [
-        {
-            "Name": "Python",
-            "Version": "2.7.15",
-            "License": "PSF license"
-        }
-    ],
-    "usr/lib/python2.7/site-packages/mercurial-4.5.2-py2.7.egg-info": [
-        {
-            "Name": "mercurial",
-            "Version": "4.5.2",
-            "License": "GNU GPLv2 or any later version"
-        }
-    ],
-    "usr/lib/python2.7/wsgiref.egg-info": [
-        {
-            "Name": "wsgiref",
-            "Version": "0.1.2",
-            "License": "PSF or ZPL"
-        }
+[
+  {
+    "Type": "cargo",
+    "FilePath": "rust-app/Cargo.lock",
+    "Libraries": [
+      {
+        "Library": {
+          "Name": "ammonia",
+          "Version": "1.9.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "autocfg",
+          "Version": "0.1.2"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "bitflags",
+          "Version": "0.7.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "bitflags",
+          "Version": "1.0.4"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "cfg-if",
+          "Version": "0.1.7"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "cloudabi",
+          "Version": "0.0.3"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "fuchsia-cprng",
+          "Version": "0.1.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "futf",
+          "Version": "0.1.4"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "gdi32-sys",
+          "Version": "0.2.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "html5ever",
+          "Version": "0.23.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "idna",
+          "Version": "0.1.5"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "itoa",
+          "Version": "0.4.4"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "kernel32-sys",
+          "Version": "0.2.2"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "lazy_static",
+          "Version": "0.2.11"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "lazy_static",
+          "Version": "1.3.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "libc",
+          "Version": "0.2.54"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "libressl-pnacl-sys",
+          "Version": "2.1.6"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "log",
+          "Version": "0.4.6"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "mac",
+          "Version": "0.1.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "maplit",
+          "Version": "1.0.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "markup5ever",
+          "Version": "0.8.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "matches",
+          "Version": "0.1.8"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "new_debug_unreachable",
+          "Version": "1.0.3"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "normal",
+          "Version": "0.1.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "openssl",
+          "Version": "0.8.3"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "openssl-sys",
+          "Version": "0.7.17"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "percent-encoding",
+          "Version": "1.0.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "phf",
+          "Version": "0.7.24"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "phf_codegen",
+          "Version": "0.7.24"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "phf_generator",
+          "Version": "0.7.24"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "phf_shared",
+          "Version": "0.7.24"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "pkg-config",
+          "Version": "0.3.14"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "pnacl-build-helper",
+          "Version": "1.4.11"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "precomputed-hash",
+          "Version": "0.1.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "proc-macro2",
+          "Version": "0.4.30"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "quote",
+          "Version": "0.6.12"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "rand",
+          "Version": "0.4.6"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "rand",
+          "Version": "0.6.5"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "rand_chacha",
+          "Version": "0.1.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "rand_core",
+          "Version": "0.3.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "rand_core",
+          "Version": "0.4.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "rand_hc",
+          "Version": "0.1.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "rand_isaac",
+          "Version": "0.1.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "rand_jitter",
+          "Version": "0.1.4"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "rand_os",
+          "Version": "0.1.3"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "rand_pcg",
+          "Version": "0.1.2"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "rand_xorshift",
+          "Version": "0.1.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "rdrand",
+          "Version": "0.4.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "remove_dir_all",
+          "Version": "0.5.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "ryu",
+          "Version": "0.2.8"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "same-file",
+          "Version": "0.1.3"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "serde",
+          "Version": "1.0.91"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "serde_derive",
+          "Version": "1.0.91"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "serde_json",
+          "Version": "1.0.39"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "siphasher",
+          "Version": "0.2.3"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "smallvec",
+          "Version": "0.6.9"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "string_cache",
+          "Version": "0.7.3"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "string_cache_codegen",
+          "Version": "0.4.2"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "string_cache_shared",
+          "Version": "0.3.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "syn",
+          "Version": "0.15.34"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "tempdir",
+          "Version": "0.3.7"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "tendril",
+          "Version": "0.4.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "unicode-bidi",
+          "Version": "0.3.4"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "unicode-normalization",
+          "Version": "0.1.8"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "unicode-xid",
+          "Version": "0.1.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "url",
+          "Version": "1.7.2"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "user32-sys",
+          "Version": "0.2.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "utf-8",
+          "Version": "0.7.5"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "walkdir",
+          "Version": "1.0.7"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "winapi",
+          "Version": "0.2.8"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "winapi",
+          "Version": "0.3.7"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "winapi-build",
+          "Version": "0.1.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "winapi-i686-pc-windows-gnu",
+          "Version": "0.4.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "winapi-x86_64-pc-windows-gnu",
+          "Version": "0.4.0"
+        },
+        "Layer": {}
+      }
     ]
-}
+  },
+  {
+    "Type": "composer",
+    "FilePath": "php-app/composer.lock",
+    "Libraries": [
+      {
+        "Library": {
+          "Name": "guzzlehttp/guzzle",
+          "Version": "6.2.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "guzzlehttp/promises",
+          "Version": "v1.3.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "guzzlehttp/psr7",
+          "Version": "1.5.2"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "laravel/installer",
+          "Version": "v2.0.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "pear/log",
+          "Version": "1.13.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "pear/pear_exception",
+          "Version": "v1.0.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "psr/http-message",
+          "Version": "1.0.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "ralouphie/getallheaders",
+          "Version": "2.0.5"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "symfony/console",
+          "Version": "v4.2.7"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "symfony/contracts",
+          "Version": "v1.0.2"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "symfony/filesystem",
+          "Version": "v4.2.7"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "symfony/polyfill-ctype",
+          "Version": "v1.11.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "symfony/polyfill-mbstring",
+          "Version": "v1.11.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "symfony/process",
+          "Version": "v4.2.7"
+        },
+        "Layer": {}
+      }
+    ]
+  },
+  {
+    "Type": "npm",
+    "FilePath": "node-app/package-lock.json",
+    "Libraries": [
+      {
+        "Library": {
+          "Name": "asap",
+          "Version": "2.0.6"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "jquery",
+          "Version": "3.3.9"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "js-tokens",
+          "Version": "4.0.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "lodash",
+          "Version": "4.17.4"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "loose-envify",
+          "Version": "1.4.0"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "object-assign",
+          "Version": "4.1.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "promise",
+          "Version": "8.0.3"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "prop-types",
+          "Version": "15.7.2"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "react",
+          "Version": "16.8.6"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "react-is",
+          "Version": "16.8.6"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "redux",
+          "Version": "4.0.1"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "scheduler",
+          "Version": "0.13.6"
+        },
+        "Layer": {}
+      },
+      {
+        "Library": {
+          "Name": "symbol-observable",
+          "Version": "1.2.0"
+        },
+        "Layer": {}
+      }
+    ]
+  }
+]
