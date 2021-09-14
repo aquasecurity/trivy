@@ -106,7 +106,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				Type:    types.ArtifactContainerImage,
 				ID:      "sha256:59c4082ceb491faefd44cf9a006dd24c8f57b44b438f081251c90ea1367ca043",
 				BlobIDs: []string{"sha256:868fafa15d51961bffd953db0369326b78b8fbff5c856283f642941645cfe630"},
-				ImageMetadata: &types.ImageMetadata{
+				ImageMetadata: types.ImageMetadata{
 					ID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					DiffIDs: []string{
 						"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
@@ -284,7 +284,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					"sha256:bffb1ac0624bb6f64e4f3ebd160fd2fb183825e6dec009ffc365efba749432ef",
 					"sha256:d9b84a3857355817fe46ebdde8e58009c37ea8965bd39bfe5a07e14875ca6080",
 				},
-				ImageMetadata: &types.ImageMetadata{
+				ImageMetadata: types.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
 					DiffIDs: []string{
 						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -429,7 +429,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					"sha256:b2a31345f7afe47856b2d19c8490597cb2335d7e8a43134359684fb4df78ec19",
 					"sha256:bef0956a7402c9cb87f4662486557517f00bc1049099e4dfef4b83be70dce242",
 				},
-				ImageMetadata: &types.ImageMetadata{
+				ImageMetadata: types.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
 					DiffIDs: []string{
 						"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
