@@ -114,8 +114,11 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 		ArtifactType:  artifactInfo.Type,
 		Metadata: report.Metadata{
 			OS:          osFound,
+			ImageID:     artifactInfo.ImageMetadata.ID,
+			DiffIDs:     artifactInfo.ImageMetadata.DiffIDs,
 			RepoTags:    artifactInfo.ImageMetadata.RepoTags,
 			RepoDigests: artifactInfo.ImageMetadata.RepoDigests,
+			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
 		},
 		Results: results,
 	}, nil

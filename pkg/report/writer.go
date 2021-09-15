@@ -4,6 +4,7 @@ import (
 	"io"
 	"time"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/fanal/types"
@@ -33,8 +34,11 @@ type Metadata struct {
 	OS   *ftypes.OS `json:",omitempty"`
 
 	// Container image
-	RepoTags    []string `json:",omitempty"`
-	RepoDigests []string `json:",omitempty"`
+	ImageID     string        `json:",omitempty"`
+	DiffIDs     []string      `json:",omitempty"`
+	RepoTags    []string      `json:",omitempty"`
+	RepoDigests []string      `json:",omitempty"`
+	ImageConfig v1.ConfigFile `json:",omitempty"`
 }
 
 // Results to hold list of Result
