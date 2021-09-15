@@ -58,18 +58,34 @@ func NewClient(dbc db.Config) Client {
 
 // FillVulnerabilityInfo fills extra info in vulnerability objects
 func (c Client) FillVulnerabilityInfo(vulns []types.DetectedVulnerability, reportType string) {
-	var err error
-
 	for i := range vulns {
-		vulns[i].Vulnerability, err = c.dbc.GetVulnerability(vulns[i].VulnerabilityID)
+		vulnID := vulns[i].VulnerabilityID
+		vuln, err := c.dbc.GetVulnerability(vulnID)
 		if err != nil {
 			log.Logger.Warnf("Error while getting vulnerability details: %s\n", err)
 			continue
 		}
 
+		// Detect which data source should be used.
 		source := c.detectSource(reportType)
-		vulns[i].Severity, vulns[i].SeveritySource = c.getVendorSeverity(&vulns[i], source)
-		vulns[i].PrimaryURL = c.getPrimaryURL(vulns[i].VulnerabilityID, vulns[i].References, source)
+
+		// Select the severity according to the detected source.
+		severity, severitySource := c.getVendorSeverity(&vuln, source)
+
+		// The vendor might provide package-specific severity like Debian.
+		// For example, CVE-2015-2328 in Debian has "unimportant" for mongodb and "low" for pcre3.
+		// In that case, we keep the severity as is.
+		if vulns[i].SeveritySource != "" {
+			severity = vulns[i].Severity
+			severitySource = vulns[i].SeveritySource
+		}
+
+		// Add the vulnerability detail
+		vulns[i].Vulnerability = vuln
+
+		vulns[i].Severity = severity
+		vulns[i].SeveritySource = severitySource
+		vulns[i].PrimaryURL = c.getPrimaryURL(vulnID, vuln.References, source)
 		vulns[i].Vulnerability.VendorSeverity = nil // Remove VendorSeverity from Results
 	}
 }
@@ -98,7 +114,7 @@ func (c Client) detectSource(reportType string) string {
 	return source
 }
 
-func (c Client) getVendorSeverity(vuln *types.DetectedVulnerability, source string) (string, string) {
+func (c Client) getVendorSeverity(vuln *dbTypes.Vulnerability, source string) (string, string) {
 	if vs, ok := vuln.VendorSeverity[source]; ok {
 		return vs.String(), source
 	}
