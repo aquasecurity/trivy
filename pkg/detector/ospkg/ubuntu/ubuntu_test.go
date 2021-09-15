@@ -1,131 +1,149 @@
-package ubuntu
+package ubuntu_test
 
 import (
 	"testing"
 	"time"
 
-	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	fake "k8s.io/utils/clock/testing"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-type MockUbuntuConfig struct {
-	update func(string) error
-	get    func(string, string) ([]dbTypes.Advisory, error)
-}
-
-func (muc MockUbuntuConfig) Update(a string) error {
-	if muc.update != nil {
-		return muc.update(a)
+func TestScanner_Detect(t *testing.T) {
+	type args struct {
+		osVer string
+		pkgs  []ftypes.Package
 	}
-	return nil
-}
-
-func (muc MockUbuntuConfig) Get(a string, b string) ([]dbTypes.Advisory, error) {
-	if muc.get != nil {
-		return muc.get(a, b)
+	tests := []struct {
+		name     string
+		args     args
+		fixtures []string
+		want     []types.DetectedVulnerability
+		wantErr  string
+	}{
+		{
+			name:     "happy path",
+			fixtures: []string{"testdata/fixtures/ubuntu.yaml"},
+			args: args{
+				osVer: "20.04",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "wpa",
+						Version:    "2.9",
+						SrcName:    "wpa",
+						SrcVersion: "2.9",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "wpa",
+					VulnerabilityID:  "CVE-2019-9243",
+					InstalledVersion: "2.9",
+					FixedVersion:     "",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
+				{
+					PkgName:          "wpa",
+					VulnerabilityID:  "CVE-2021-27803",
+					InstalledVersion: "2.9",
+					FixedVersion:     "2:2.9-1ubuntu4.3",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
+			},
+		},
+		{
+			name:     "broken bucket",
+			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			args: args{
+				osVer: "21.04",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "jq",
+						Version:    "1.6-r0",
+						SrcName:    "jq",
+						SrcVersion: "1.6-r0",
+					},
+				},
+			},
+			wantErr: "failed to get Ubuntu advisories",
+		},
 	}
-	return []dbTypes.Advisory{}, nil
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_ = dbtest.InitDB(t, tt.fixtures)
+			defer db.Close()
+
+			s := ubuntu.NewScanner()
+			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)
+			if tt.wantErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
 }
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
-	vectors := map[string]struct {
-		now       time.Time
-		osFamily  string
-		osVersion string
-		expected  bool
+	type args struct {
+		osFamily string
+		osVer    string
+	}
+	tests := []struct {
+		name string
+		now  time.Time
+		args args
+		want bool
 	}{
-		"ubuntu12.04 eol ends": {
-			now:       time.Date(2019, 3, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "ubuntu",
-			osVersion: "12.04",
-			expected:  true,
+		{
+			name: "ubuntu 12.04 eol ends",
+			now:  time.Date(2019, 3, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "ubuntu",
+				osVer:    "12.04",
+			},
+			want: true,
 		},
-		"ubuntu12.04": {
-			now:       time.Date(2019, 4, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "ubuntu",
-			osVersion: "12.04",
-			expected:  false,
+		{
+			name: "ubuntu12.04",
+			now:  time.Date(2019, 4, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "ubuntu",
+				osVer:    "12.04",
+			},
+			want: false,
 		},
-		"ubuntu12.10": {
-			now:       time.Date(2019, 4, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "ubuntu",
-			osVersion: "12.10",
-			expected:  false,
-		},
-		"ubuntu18.04": {
-			now:       time.Date(2019, 4, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "ubuntu",
-			osVersion: "18.04",
-			expected:  true,
-		},
-		"ubuntu19.04": {
-			now:       time.Date(2019, 4, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "ubuntu",
-			osVersion: "19.04",
-			expected:  true,
-		},
-		"unknown": {
-			now:       time.Date(2019, 4, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "ubuntu",
-			osVersion: "unknown",
-			expected:  false,
+		{
+			name: "unknown",
+			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "ubuntu",
+				osVer:    "unknown",
+			},
+			want: false,
 		},
 	}
-
-	for testName, v := range vectors {
-		s := NewScanner()
-		t.Run(testName, func(t *testing.T) {
-			actual := s.isSupportedVersion(v.now, v.osFamily, v.osVersion)
-			if actual != v.expected {
-				t.Errorf("[%s] got %v, want %v", testName, actual, v.expected)
-			}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := ubuntu.NewScanner(ubuntu.WithClock(fake.NewFakeClock(tt.now)))
+			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
+			assert.Equal(t, tt.want, got)
 		})
 	}
-}
-
-func TestScanner_Detect(t *testing.T) {
-	t.Run("happy path", func(t *testing.T) {
-		s := &Scanner{
-			vs: MockUbuntuConfig{
-				get: func(s string, s2 string) (advisories []dbTypes.Advisory, err error) {
-					return []dbTypes.Advisory{
-						{
-							VulnerabilityID: "ubuntu-123",
-							FixedVersion:    "3.0.0",
-						},
-					}, nil
-				},
-			},
-		}
-
-		vuls, err := s.Detect("3.1.0", []ftypes.Package{
-			{
-				Name:       "testpkg",
-				Version:    "2.1.0",
-				Release:    "hotfix",
-				SrcRelease: "test-hotfix",
-				SrcVersion: "2.1.0",
-				Layer: ftypes.Layer{
-					DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-				},
-			},
-		})
-		assert.NoError(t, err)
-		assert.Equal(t, []types.DetectedVulnerability{
-			{
-				VulnerabilityID:  "ubuntu-123",
-				PkgName:          "testpkg",
-				InstalledVersion: "2.1.0-test-hotfix",
-				FixedVersion:     "3.0.0",
-				Layer: ftypes.Layer{
-					DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-				},
-			},
-		}, vuls)
-	})
-
-	// TODO: Add unhappy paths
 }

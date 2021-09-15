@@ -1,15 +1,17 @@
-package alpine
+package alpine_test
 
 import (
-	"errors"
 	"testing"
 	"time"
 
-	ftypes "github.com/aquasecurity/fanal/types"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	fake "k8s.io/utils/clock/testing"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -18,31 +20,16 @@ func TestScanner_Detect(t *testing.T) {
 		osVer string
 		pkgs  []ftypes.Package
 	}
-	type getInput struct {
-		osVer   string
-		pkgName string
-	}
-	type getOutput struct {
-		advisories []dbTypes.Advisory
-		err        error
-	}
-	type get struct {
-		input  getInput
-		output getOutput
-	}
-	type mocks struct {
-		get []get
-	}
-
 	tests := []struct {
-		name    string
-		args    args
-		mocks   mocks
-		want    []types.DetectedVulnerability
-		wantErr string
+		name     string
+		args     args
+		fixtures []string
+		want     []types.DetectedVulnerability
+		wantErr  string
 	}{
 		{
-			name: "happy path",
+			name:     "happy path",
+			fixtures: []string{"testdata/fixtures/alpine310.yaml"},
 			args: args{
 				osVer: "3.10.2",
 				pkgs: []ftypes.Package{
@@ -63,39 +50,6 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			mocks: mocks{
-				get: []get{
-					{
-						input: getInput{
-							osVer:   "3.10",
-							pkgName: "ansible",
-						},
-						output: getOutput{
-							advisories: []dbTypes.Advisory{
-								{
-									VulnerabilityID: "CVE-2018-10875",
-									FixedVersion:    "2.6.3-r0",
-								},
-								{
-									VulnerabilityID: "CVE-2019-10217",
-									FixedVersion:    "2.8.4-r0",
-								},
-								{
-									VulnerabilityID: "CVE-2019-INVALID",
-									FixedVersion:    "invalid", // skipped
-								},
-							},
-						},
-					},
-					{
-						input: getInput{
-							osVer:   "3.10",
-							pkgName: "invalid",
-						},
-						output: getOutput{advisories: []dbTypes.Advisory{{}}},
-					},
-				},
-			},
 			want: []types.DetectedVulnerability{
 				{
 					PkgName:          "ansible",
@@ -109,9 +63,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name: "contain rc",
+			name:     "contain rc",
+			fixtures: []string{"testdata/fixtures/alpine310.yaml"},
 			args: args{
-				osVer: "3.9",
+				osVer: "3.10",
 				pkgs: []ftypes.Package{
 					{
 						Name:       "jq",
@@ -121,40 +76,20 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			mocks: mocks{
-				get: []get{
-					{
-						input: getInput{
-							osVer:   "3.9",
-							pkgName: "jq",
-						},
-						output: getOutput{
-							advisories: []dbTypes.Advisory{
-								{
-									VulnerabilityID: "CVE-2016-4074",
-									FixedVersion:    "1.6_rc1-r0",
-								},
-								{
-									VulnerabilityID: "CVE-2019-9999",
-									FixedVersion:    "1.6_rc2",
-								},
-							},
-						},
-					},
-					{
-						input: getInput{
-							osVer:   "3.10",
-							pkgName: "invalid",
-						},
-						output: getOutput{advisories: []dbTypes.Advisory{{}}},
-					},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "jq",
+					VulnerabilityID:  "CVE-2020-1234",
+					InstalledVersion: "1.6-r0",
+					FixedVersion:     "1.6-r1",
 				},
 			},
 		},
 		{
-			name: "contain pre",
+			name:     "contain pre",
+			fixtures: []string{"testdata/fixtures/alpine310.yaml"},
 			args: args{
-				osVer: "3.12",
+				osVer: "3.10",
 				pkgs: []ftypes.Package{
 					{
 						Name:       "test",
@@ -163,28 +98,6 @@ func TestScanner_Detect(t *testing.T) {
 						SrcVersion: "0.1.0_alpha",
 						Layer: ftypes.Layer{
 							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-						},
-					},
-				},
-			},
-			mocks: mocks{
-				get: []get{
-					{
-						input: getInput{
-							osVer:   "3.12",
-							pkgName: "test-src",
-						},
-						output: getOutput{
-							advisories: []dbTypes.Advisory{
-								{
-									VulnerabilityID: "CVE-2030-0001",
-									FixedVersion:    "0.1.0_alpha_pre2",
-								},
-								{
-									VulnerabilityID: "CVE-2030-0002",
-									FixedVersion:    "0.1.0_alpha2",
-								},
-							},
 						},
 					},
 				},
@@ -202,9 +115,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name: "Get returns an error",
+			name:     "Get returns an error",
+			fixtures: []string{"testdata/fixtures/invalid.yaml"},
 			args: args{
-				osVer: "3.8.1",
+				osVer: "3.10.2",
 				pkgs: []ftypes.Package{
 					{
 						Name:       "jq",
@@ -214,91 +128,89 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			mocks: mocks{
-				get: []get{
-					{
-						input: getInput{
-							osVer:   "3.8",
-							pkgName: "jq",
-						},
-						output: getOutput{err: errors.New("error")},
-					},
-				},
-			},
 			wantErr: "failed to get alpine advisories",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockVulnSrc := new(dbTypes.MockVulnSrc)
-			for _, g := range tt.mocks.get {
-				mockVulnSrc.On("Get", g.input.osVer, g.input.pkgName).Return(
-					g.output.advisories, g.output.err)
-			}
+			_ = dbtest.InitDB(t, tt.fixtures)
+			defer db.Close()
 
-			s := &Scanner{
-				vs: mockVulnSrc,
-			}
+			s := alpine.NewScanner()
 			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)
-
-			switch {
-			case tt.wantErr != "":
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
-			default:
-				assert.NoError(t, err, tt.name)
+			if tt.wantErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
 			}
-
-			assert.ElementsMatch(t, got, tt.want, tt.name)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
-	vectors := map[string]struct {
-		now       time.Time
-		osFamily  string
-		osVersion string
-		expected  bool
+	type args struct {
+		osFamily string
+		osVer    string
+	}
+	tests := []struct {
+		name string
+		now  time.Time
+		args args
+		want bool
 	}{
-		"alpine3.6": {
-			now:       time.Date(2019, 3, 2, 23, 59, 59, 0, time.UTC),
-			osFamily:  "alpine",
-			osVersion: "3.6",
-			expected:  true,
+		{
+			name: "alpine 3.6",
+			now:  time.Date(2019, 3, 2, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "alpine",
+				osVer:    "3.6",
+			},
+			want: true,
 		},
-		"alpine3.6 with EOL": {
-			now:       time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
-			osFamily:  "alpine",
-			osVersion: "3.6.5",
-			expected:  false,
+		{
+			name: "alpine 3.6 with EOL",
+			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "alpine",
+				osVer:    "3.6.5",
+			},
+			want: false,
 		},
-		"alpine3.9": {
-			now:       time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
-			osFamily:  "alpine",
-			osVersion: "3.9.0",
-			expected:  true,
+		{
+			name: "alpine 3.9",
+			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "alpine",
+				osVer:    "3.9.0",
+			},
+			want: true,
 		},
-		"alpine3.10": {
-			now:       time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
-			osFamily:  "alpine",
-			osVersion: "3.10",
-			expected:  true,
+		{
+			name: "alpine 3.10",
+			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "alpine",
+				osVer:    "3.10",
+			},
+			want: true,
 		},
-		"unknown": {
-			now:       time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
-			osFamily:  "alpine",
-			osVersion: "unknown",
-			expected:  false,
+		{
+			name: "unknown",
+			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "alpine",
+				osVer:    "unknown",
+			},
+			want: false,
 		},
 	}
-
-	for testName, v := range vectors {
-		s := NewScanner()
-		t.Run(testName, func(t *testing.T) {
-			actual := s.isSupportedVersion(v.now, v.osFamily, v.osVersion)
-			if actual != v.expected {
-				t.Errorf("[%s] got %v, want %v", testName, actual, v.expected)
-			}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := alpine.NewScanner(alpine.WithClock(fake.NewFakeClock(tt.now)))
+			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

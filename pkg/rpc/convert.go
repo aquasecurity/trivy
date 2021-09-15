@@ -65,6 +65,7 @@ func ConvertFromRPCLibraries(rpcLibs []*common.Library) []ftypes.LibraryInfo {
 			Library: deptypes.Library{
 				Name:    l.Name,
 				Version: l.Version,
+				License: l.License,
 			},
 		})
 	}
@@ -78,6 +79,7 @@ func ConvertToRPCLibraries(libs []deptypes.Library) []*common.Library {
 		rpcLibs = append(rpcLibs, &common.Library{
 			Name:    l.Name,
 			Version: l.Version,
+			License: l.License,
 		})
 	}
 	return rpcLibs
@@ -408,6 +410,7 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 			libs = append(libs, &common.Library{
 				Name:    lib.Library.Name,
 				Version: lib.Library.Version,
+				License: lib.Library.License,
 			})
 		}
 		applications = append(applications, &common.Application{

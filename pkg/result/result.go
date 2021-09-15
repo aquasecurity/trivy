@@ -104,8 +104,8 @@ func (c Client) getVendorSeverity(vuln *types.DetectedVulnerability, source stri
 	}
 
 	// Try NVD as a fallback if it exists
-	if vs, ok := vuln.VendorSeverity[vulnerability.Nvd]; ok {
-		return vs.String(), vulnerability.Nvd
+	if vs, ok := vuln.VendorSeverity[vulnerability.NVD]; ok {
+		return vs.String(), vulnerability.NVD
 	}
 
 	if vuln.Severity == "" {

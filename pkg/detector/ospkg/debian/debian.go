@@ -4,14 +4,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian"
-	debianoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian-oval"
-
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian"
+	debianoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian-oval"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -40,17 +39,38 @@ var (
 	}
 )
 
+type options struct {
+	clock clock.Clock
+}
+
+type option func(*options)
+
+func WithClock(clock clock.Clock) option {
+	return func(opts *options) {
+		opts.clock = clock
+	}
+}
+
 // Scanner implements the Debian scanner
 type Scanner struct {
-	ovalVs dbTypes.VulnSrc
-	vs     dbTypes.VulnSrc
+	ovalVs debianoval.VulnSrc
+	vs     debian.VulnSrc
+	*options
 }
 
 // NewScanner is the factory method to return Scanner
-func NewScanner() *Scanner {
+func NewScanner(opts ...option) *Scanner {
+	o := &options{
+		clock: clock.RealClock{},
+	}
+
+	for _, opt := range opts {
+		opt(o)
+	}
 	return &Scanner{
-		ovalVs: debianoval.NewVulnSrc(),
-		vs:     debian.NewVulnSrc(),
+		ovalVs:  debianoval.NewVulnSrc(),
+		vs:      debian.NewVulnSrc(),
+		options: o,
 	}
 }
 
@@ -121,11 +141,6 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 // IsSupportedVersion checks is OSFamily can be scanned using Debian
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	now := time.Now()
-	return s.isSupportedVersion(now, osFamily, osVer)
-}
-
-func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool {
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
@@ -135,5 +150,5 @@ func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool
 		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
 		return false
 	}
-	return now.Before(eol)
+	return s.clock.Now().Before(eol)
 }
