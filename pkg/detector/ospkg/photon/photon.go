@@ -3,10 +3,8 @@ package photon
 import (
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/photon"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -18,17 +16,15 @@ import (
 //	eolDates = map[string]time.Time{}
 //)
 
-// Scanner implements Photon scanner
+// Scanner implements the Photon scanner
 type Scanner struct {
-	vs    dbTypes.VulnSrc
-	clock clock.Clock
+	vs photon.VulnSrc
 }
 
 // NewScanner is the factory method for Scanner
 func NewScanner() *Scanner {
 	return &Scanner{
-		vs:    photon.NewVulnSrc(),
-		clock: clock.RealClock{},
+		vs: photon.NewVulnSrc(),
 	}
 }
 
@@ -65,6 +61,6 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 }
 
 // IsSupportedVersion checks is OSFamily can be scanned
-func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
+func (s *Scanner) IsSupportedVersion(_, _ string) bool {
 	return true
 }

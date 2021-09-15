@@ -6,10 +6,10 @@ import (
 
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -38,15 +38,36 @@ var (
 	}
 )
 
-// Scanner implements the Redhat scanner
+type options struct {
+	clock clock.Clock
+}
+
+type option func(*options)
+
+func WithClock(clock clock.Clock) option {
+	return func(opts *options) {
+		opts.clock = clock
+	}
+}
+
+// Scanner implements the Alpine scanner
 type Scanner struct {
-	vs dbTypes.VulnSrc
+	vs redhat.VulnSrc
+	*options
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner() *Scanner {
+func NewScanner(opts ...option) *Scanner {
+	o := &options{
+		clock: clock.RealClock{},
+	}
+
+	for _, opt := range opts {
+		opt(o)
+	}
 	return &Scanner{
-		vs: redhat.NewVulnSrc(),
+		vs:      redhat.NewVulnSrc(),
+		options: o,
 	}
 }
 
@@ -115,11 +136,6 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 // IsSupportedVersion checks is OSFamily can be scanned with Redhat scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	now := time.Now()
-	return s.isSupportedVersion(now, osFamily, osVer)
-}
-
-func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool {
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
@@ -135,7 +151,8 @@ func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool
 		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
 		return false
 	}
-	return now.Before(eolDate)
+
+	return s.clock.Now().Before(eolDate)
 }
 
 func (s *Scanner) isFromSupportedVendor(pkg ftypes.Package) bool {

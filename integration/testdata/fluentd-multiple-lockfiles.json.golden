@@ -198,7 +198,7 @@
     ]
   },
   {
-    "Target": "",
+    "Target": "Ruby",
     "Class": "lang-pkgs",
     "Type": "gemspec",
     "Vulnerabilities": [
