@@ -1,14 +1,18 @@
-package alma
+package alma_test
 
 import (
 	"testing"
 	"time"
 
-	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alma"
-	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	fake "k8s.io/utils/clock/testing"
+
+	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestScanner_Detect(t *testing.T) {
@@ -16,31 +20,16 @@ func TestScanner_Detect(t *testing.T) {
 		osVer string
 		pkgs  []ftypes.Package
 	}
-	type getInput struct {
-		osVer   string
-		pkgName string
-	}
-	type getOutput struct {
-		advisories []dbTypes.Advisory
-		err        error
-	}
-	type get struct {
-		input  getInput
-		output getOutput
-	}
-	type mocks struct {
-		get []get
-	}
-
 	tests := []struct {
-		name    string
-		args    args
-		mocks   mocks
-		want    []types.DetectedVulnerability
-		wantErr string
+		name     string
+		args     args
+		fixtures []string
+		want     []types.DetectedVulnerability
+		wantErr  string
 	}{
 		{
-			name: "happy path",
+			name:     "happy path",
+			fixtures: []string{"testdata/fixtures/alma.yaml"},
 			args: args{
 				osVer: "8.4",
 				pkgs: []ftypes.Package{
@@ -60,28 +49,6 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			mocks: mocks{
-				get: []get{
-					{
-						input: getInput{
-							osVer:   "8.4",
-							pkgName: "python3-libs",
-						},
-						output: getOutput{
-							advisories: []dbTypes.Advisory{
-								{
-									VulnerabilityID: "CVE-2019-16935",
-									FixedVersion:    "3.6.8-31.el8.alma",
-								},
-								{
-									VulnerabilityID: "CVE-2020-26116",
-									FixedVersion:    "3.6.8-37.el8.alma",
-								},
-							},
-						},
-					},
-				},
-			},
 			want: []types.DetectedVulnerability{
 				{
 					PkgName:          "python3-libs",
@@ -92,66 +59,85 @@ func TestScanner_Detect(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:     "Get returns an error",
+			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			args: args{
+				osVer: "8.4",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "jq",
+						Version:    "1.5-12",
+						SrcName:    "jq",
+						SrcVersion: "1.5-12",
+					},
+				},
+			},
+			wantErr: "failed to get AlmaLinux advisories",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockVulnSrc := new(dbTypes.MockVulnSrc)
-			for _, g := range tt.mocks.get {
-				mockVulnSrc.On("Get", g.input.osVer, g.input.pkgName).Return(
-					g.output.advisories, g.output.err)
-			}
+			_ = dbtest.InitDB(t, tt.fixtures)
+			defer db.Close()
 
-			s := &Scanner{
-				vs: alma.VulnSrc{},
-			}
+			s := alma.NewScanner()
 			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)
-
-			switch {
-			case tt.wantErr != "":
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
-			default:
-				assert.NoError(t, err, tt.name)
+			if tt.wantErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
 			}
-
-			assert.ElementsMatch(t, got, tt.want, tt.name)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
-	vectors := map[string]struct {
-		now       time.Time
-		osFamily  string
-		osVersion string
-		expected  bool
+	type args struct {
+		osFamily string
+		osVer    string
+	}
+	tests := []struct {
+		name string
+		now  time.Time
+		args args
+		want bool
 	}{
-		"alma8": {
-			now:       time.Date(2021, 9, 9, 23, 59, 59, 0, time.UTC),
-			osFamily:  "alma",
-			osVersion: "8.4",
-			expected:  true,
+		{
+			name: "alma 8.4",
+			now:  time.Date(2019, 3, 2, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "alma",
+				osVer:    "8.4",
+			},
+			want: true,
 		},
-		"alma8 with EOL": {
-			now:       time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC),
-			osFamily:  "alma",
-			osVersion: "8.4",
-			expected:  false,
+		{
+			name: "alma 8.4 with EOL",
+			now:  time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC),
+			args: args{
+				osFamily: "alma",
+				osVer:    "8.4",
+			},
+			want: false,
 		},
-		"unknown": {
-			now:       time.Date(2021, 9, 9, 23, 59, 59, 0, time.UTC),
-			osFamily:  "alam",
-			osVersion: "unknown",
-			expected:  false,
+		{
+			name: "unknown",
+			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "alma",
+				osVer:    "unknown",
+			},
+			want: false,
 		},
 	}
-
-	for testName, v := range vectors {
-		s := NewScanner()
-		t.Run(testName, func(t *testing.T) {
-			actual := s.isSupportedVersion(v.now, v.osFamily, v.osVersion)
-			if actual != v.expected {
-				t.Errorf("[%s] got %v, want %v", testName, actual, v.expected)
-			}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := alma.NewScanner(alma.WithClock(fake.NewFakeClock(tt.now)))
+			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

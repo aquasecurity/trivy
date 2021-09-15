@@ -6,6 +6,7 @@ import (
 
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alma"
@@ -22,39 +23,58 @@ var (
 	}
 )
 
+type options struct {
+	clock clock.Clock
+}
+
+type option func(*options)
+
+func WithClock(clock clock.Clock) option {
+	return func(opts *options) {
+		opts.clock = clock
+	}
+}
+
 // Scanner implements the AlmaLinux scanner
 type Scanner struct {
 	vs alma.VulnSrc
+	*options
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner() *Scanner {
+func NewScanner(opts ...option) *Scanner {
+	o := &options{
+		clock: clock.RealClock{},
+	}
+
+	for _, opt := range opts {
+		opt(o)
+	}
 	return &Scanner{
-		vs: alma.NewVulnSrc(),
+		vs:      alma.NewVulnSrc(),
+		options: o,
 	}
 }
 
 // Detect vulnerabilities in package using AlmaLinux scanner
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting AlmaLinux vulnerabilities...")
-
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
-
 	log.Logger.Debugf("AlmaLinux: os version: %s", osVer)
 	log.Logger.Debugf("AlmaLinux: the number of packages: %d", len(pkgs))
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		installed := utils.FormatVersion(pkg)
-		installedVersion := version.NewVersion(installed)
-
 		pkgName := addModularNamespace(pkg.SrcName, pkg.Modularitylabel)
 		advisories, err := s.vs.Get(osVer, pkgName)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to get AlmaLinux advisory: %w", err)
+			return nil, xerrors.Errorf("failed to get AlmaLinux advisories: %w", err)
 		}
+
+		installed := utils.FormatVersion(pkg)
+		installedVersion := version.NewVersion(installed)
 
 		for _, adv := range advisories {
 			fixedVersion := version.NewVersion(adv.FixedVersion)
@@ -73,7 +93,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 		pkgName = addModularNamespace(pkg.Name, pkg.Modularitylabel)
 		advisories, err = s.vs.Get(osVer, pkgName)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to get AlmaLinux advisory: %w", err)
+			return nil, xerrors.Errorf("failed to get AlmaLinux advisories: %w", err)
 		}
 
 		for _, adv := range advisories {
@@ -93,13 +113,8 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
-// IsSupportedVersion checks the OSFamily can be scanned using Alpine scanner
+// IsSupportedVersion checks the OSFamily can be scanned using AlmaLinux scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	now := time.Now()
-	return s.isSupportedVersion(now, osFamily, osVer)
-}
-
-func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool {
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
@@ -109,7 +124,8 @@ func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool
 		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
 		return false
 	}
-	return now.Before(eol)
+
+	return s.clock.Now().Before(eol)
 }
 
 func addModularNamespace(name, label string) string {
