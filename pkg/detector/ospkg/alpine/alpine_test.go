@@ -1,6 +1,7 @@
 package alpine_test
 
 import (
+	"sort"
 	"testing"
 	"time"
 
@@ -29,7 +30,7 @@ func TestScanner_Detect(t *testing.T) {
 	}{
 		{
 			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/alpine310.yaml"},
+			fixtures: []string{"testdata/fixtures/alpine.yaml"},
 			args: args{
 				osVer: "3.10.2",
 				pkgs: []ftypes.Package{
@@ -60,11 +61,20 @@ func TestScanner_Detect(t *testing.T) {
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 				},
+				{
+					PkgName:          "ansible",
+					VulnerabilityID:  "CVE-2021-20191",
+					InstalledVersion: "2.6.4",
+					FixedVersion:     "",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
 			},
 		},
 		{
 			name:     "contain rc",
-			fixtures: []string{"testdata/fixtures/alpine310.yaml"},
+			fixtures: []string{"testdata/fixtures/alpine.yaml"},
 			args: args{
 				osVer: "3.10",
 				pkgs: []ftypes.Package{
@@ -87,7 +97,7 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			name:     "contain pre",
-			fixtures: []string{"testdata/fixtures/alpine310.yaml"},
+			fixtures: []string{"testdata/fixtures/alpine.yaml"},
 			args: args{
 				osVer: "3.10",
 				pkgs: []ftypes.Package{
@@ -143,6 +153,10 @@ func TestScanner_Detect(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
+
+			sort.Slice(got, func(i, j int) bool {
+				return got[i].VulnerabilityID < got[j].VulnerabilityID
+			})
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})

@@ -100,19 +100,28 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 		}
 
 		for _, adv := range advisories {
+			vuln := types.DetectedVulnerability{
+				VulnerabilityID:  adv.VulnerabilityID,
+				PkgName:          pkg.Name,
+				InstalledVersion: installed,
+				FixedVersion:     adv.FixedVersion,
+				Layer:            pkg.Layer,
+			}
+
+			// This logic is for unfixed vulnerabilities, but Trivy DB doesn't have advisories for unfixed vulnerabilities
+			// because Alpine just provides potentially vulnerable packages. It will cause a lot of false positives.
+			if adv.FixedVersion == "" {
+				vulns = append(vulns, vuln)
+				continue
+			}
+
+			// Compare versions for fixed vulnerabilities
 			fixedVersion, err := version.NewVersion(adv.FixedVersion)
 			if err != nil {
 				log.Logger.Debugf("failed to parse Alpine Linux fixed version: %s", err)
 				continue
 			}
 			if installedVersion.LessThan(fixedVersion) {
-				vuln := types.DetectedVulnerability{
-					VulnerabilityID:  adv.VulnerabilityID,
-					PkgName:          pkg.Name,
-					InstalledVersion: installed,
-					FixedVersion:     adv.FixedVersion,
-					Layer:            pkg.Layer,
-				}
 				vulns = append(vulns, vuln)
 			}
 		}
