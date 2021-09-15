@@ -123,6 +123,9 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	if opt.ScanRemovedPkgs {
 		disabledAnalyzers = []analyzer.Type{}
 	}
+	for a := range opt.SkipAnalyzers {
+		disabledAnalyzers = append(disabledAnalyzers, analyzer.Type(a))
+	}
 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption

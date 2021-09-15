@@ -8,4 +8,5 @@ type ScanOptions struct {
 	ListAllPackages     bool
 	SkipFiles           []string
 	SkipDirs            []string
+	SkipAnalyzers       []string
 }

@@ -148,6 +148,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		ListAllPackages:     opt.ListAllPkgs,
 		SkipFiles:           opt.SkipFiles,
 		SkipDirs:            opt.SkipDirs,
+		SkipAnalyzers:       opt.SkipAnalyzers,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
@@ -155,6 +156,9 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	disabledAnalyzers := []analyzer.Type{analyzer.TypeApkCommand}
 	if opt.ScanRemovedPkgs {
 		disabledAnalyzers = []analyzer.Type{}
+	}
+	for a := range opt.SkipAnalyzers {
+		disabledAnalyzers = append(disabledAnalyzers, analyzer.Type(a))
 	}
 
 	// ScannerOptions is filled only when config scanning is enabled.

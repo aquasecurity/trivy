@@ -225,6 +225,12 @@ var (
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
+	skipAnalyzers = cli.StringSliceFlag{
+		Name:    "skip-analyzers",
+		Usage:   "specify analyzers to skip",
+		EnvVars: []string{"TRIVY_SKIP_ANALYZERS"},
+	}
+
 	// For misconfigurations
 	configPolicy = cli.StringSliceFlag{
 		Name:    "config-policy",
@@ -311,6 +317,7 @@ var (
 		&cacheBackendFlag,
 		stringSliceFlag(skipFiles),
 		stringSliceFlag(skipDirs),
+		stringSliceFlag(skipAnalyzers),
 	}
 
 	// deprecated options
@@ -488,6 +495,7 @@ func NewFilesystemCommand() *cli.Command {
 			&listAllPackages,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
+			stringSliceFlag(skipAnalyzers),
 			stringSliceFlag(configPolicy),
 			stringSliceFlag(configData),
 			stringSliceFlag(policyNamespaces),
@@ -525,6 +533,7 @@ func NewRepositoryCommand() *cli.Command {
 			&listAllPackages,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
+			stringSliceFlag(skipAnalyzers),
 		},
 	}
 }
@@ -620,6 +629,7 @@ func NewConfigCommand() *cli.Command {
 			&timeoutFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
+			stringSliceFlag(skipAnalyzers),
 			stringSliceFlag(configPolicyAlias),
 			stringSliceFlag(configDataAlias),
 			stringSliceFlag(policyNamespaces),
