@@ -10,7 +10,6 @@ import (
 
 	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	susecvrf "github.com/aquasecurity/trivy-db/pkg/vulnsrc/suse-cvrf"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -57,13 +56,19 @@ var (
 	}
 )
 
-// Scanner implements suse scanner
-type Scanner struct {
-	vs    dbTypes.VulnSrc
+type options struct {
 	clock clock.Clock
 }
 
-// Type to define SUSE type
+type option func(*options)
+
+func WithClock(clock clock.Clock) option {
+	return func(opts *options) {
+		opts.clock = clock
+	}
+}
+
+// Type defines SUSE type
 type Type int
 
 const (
@@ -73,18 +78,32 @@ const (
 	OpenSUSE
 )
 
+// Scanner implements the Alpine scanner
+type Scanner struct {
+	vs susecvrf.VulnSrc
+	*options
+}
+
 // NewScanner is the factory method for Scanner
-func NewScanner(t Type) *Scanner {
+func NewScanner(t Type, opts ...option) *Scanner {
+	o := &options{
+		clock: clock.RealClock{},
+	}
+
+	for _, opt := range opts {
+		opt(o)
+	}
+
 	switch t {
 	case SUSEEnterpriseLinux:
 		return &Scanner{
-			vs:    susecvrf.NewVulnSrc(susecvrf.SUSEEnterpriseLinux),
-			clock: clock.RealClock{},
+			vs:      susecvrf.NewVulnSrc(susecvrf.SUSEEnterpriseLinux),
+			options: o,
 		}
 	case OpenSUSE:
 		return &Scanner{
-			vs:    susecvrf.NewVulnSrc(susecvrf.OpenSUSE),
-			clock: clock.RealClock{},
+			vs:      susecvrf.NewVulnSrc(susecvrf.OpenSUSE),
+			options: o,
 		}
 	}
 	return nil

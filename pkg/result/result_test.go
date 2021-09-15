@@ -72,7 +72,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
 						PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
 					},
-					SeveritySource: vulnerability.Nvd,
+					SeveritySource: vulnerability.NVD,
 					PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2019-0002",
 				},
 			},
@@ -118,7 +118,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						CweIDs:      []string{"CWE-311"},
 						References:  []string{"http://example.com"},
 						CVSS: map[string]dbTypes.CVSS{
-							vulnerability.Nvd: {
+							vulnerability.NVD: {
 								V2Vector: "AV:N/AC:L/Au:N/C:P/I:P/A:P",
 								V2Score:  4.5,
 								V3Vector: "CVSS:3.0/PR:N/UI:N/S:U/C:H/I:H/A:H",

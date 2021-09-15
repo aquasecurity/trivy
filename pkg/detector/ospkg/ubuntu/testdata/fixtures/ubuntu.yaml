@@ -1,0 +1,13 @@
+- bucket: ubuntu 20.04
+  pairs:
+    - bucket: wpa
+      pairs:
+        - key: CVE-2021-27803
+          value:
+            FixedVersion: "2:2.9-1ubuntu4.3"
+        - key: CVE-2019-9243
+          value:
+            FixedVersion: ""
+        - key: CVE-2016-4476
+          value:
+            FixedVersion: "2.4-0ubuntu10"
