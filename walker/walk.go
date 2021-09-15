@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ignoreDirs       = []string{".git", "node_modules", "vendor"}
+	ignoreDirs       = []string{".git", "vendor"}
 	ignoreSystemDirs = []string{"proc", "sys"}
 )
 

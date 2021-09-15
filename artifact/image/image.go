@@ -39,6 +39,10 @@ var (
 
 		// Do not scan Gemfile.lock in container images, only scan .gemspec
 		analyzer.TypeBundler,
+
+		// Do not scan package-lock.json and yarn.lock in container images, only scan package.json
+		analyzer.TypeNpmPkgLock,
+		analyzer.TypeYarn,
 	}
 
 	defaultDisabledHooks []hook.Type
