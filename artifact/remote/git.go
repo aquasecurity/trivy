@@ -27,6 +27,9 @@ var defaultDisabledAnalyzers = []analyzer.Type{
 
 	// Do not scan .gemspec in git repositories
 	analyzer.TypeGemSpec,
+
+	// Do not scan package.json in git repositories
+	analyzer.TypeNodePkg,
 }
 
 type Artifact struct {
