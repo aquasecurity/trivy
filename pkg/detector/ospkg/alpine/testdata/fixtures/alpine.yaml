@@ -8,6 +8,13 @@
         - key: CVE-2019-10217
           value:
             FixedVersion: "2.8.4-r0"
+        - key: CVE-2020-1740
+          value:
+            FixedVersion: ""
+            AffectedVersion: "2.6.5"
+        - key: CVE-2021-20191
+          value:
+            FixedVersion: ""
         - key: CVE-2019-INVALID
           value:
             FixedVersion: "invalid"
