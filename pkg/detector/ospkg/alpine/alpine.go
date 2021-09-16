@@ -108,8 +108,22 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				Layer:            pkg.Layer,
 			}
 
-			// This logic is for unfixed vulnerabilities, but Trivy DB doesn't have advisories for unfixed vulnerabilities
+			// This logic is for unfixed vulnerabilities, but Trivy DB doesn't have advisories for unfixed vulnerabilities for now
 			// because Alpine just provides potentially vulnerable packages. It will cause a lot of false positives.
+			// This is for Aqua commercial products.
+			if adv.AffectedVersion != "" {
+				// AffectedVersion means which version introduced this vulnerability.
+				affectedVersion, err := version.NewVersion(adv.AffectedVersion)
+				if err != nil {
+					log.Logger.Debugf("failed to parse Alpine Linux affected package version: %s", err)
+					continue
+				}
+				if affectedVersion.GreaterThan(installedVersion) {
+					continue
+				}
+			}
+
+			// This logic is also for unfixed vulnerabilities.
 			if adv.FixedVersion == "" {
 				vulns = append(vulns, vuln)
 				continue
@@ -119,8 +133,8 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 			fixedVersion, err := version.NewVersion(adv.FixedVersion)
 			if err != nil {
 				log.Logger.Debugf("failed to parse Alpine Linux fixed version: %s", err)
-				continue
 			}
+
 			if installedVersion.LessThan(fixedVersion) {
 				vulns = append(vulns, vuln)
 			}
