@@ -3,6 +3,7 @@ module github.com/aquasecurity/trivy
 go 1.16
 
 require (
+	github.com/MaineK00n/go-pacman-version v0.0.0-20210916231937-19e87b7d7184 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46

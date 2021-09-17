@@ -1,0 +1,13 @@
+- bucket: archlinux
+  pairs:
+    - bucket: ansible
+      pairs:
+        - key: CVE-2016-9587
+          value:
+            FixedVersion: "2.2.1.0rc5-3"
+            AffectedVersion: "2.2.0.0-1"
+        - key: CVE-2021-3447
+          value:
+            FixedVersion: ""
+            AffectedVersion: "3.1.0-1"
+        
