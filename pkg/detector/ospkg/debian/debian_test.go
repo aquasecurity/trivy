@@ -4,16 +4,17 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	fake "k8s.io/utils/clock/testing"
+
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
 	"github.com/aquasecurity/trivy/pkg/types"
-
-	fake "k8s.io/utils/clock/testing"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestScanner_Detect(t *testing.T) {
@@ -49,6 +50,7 @@ func TestScanner_Detect(t *testing.T) {
 				{
 					PkgName:          "htpasswd",
 					VulnerabilityID:  "CVE-2020-11985",
+					VendorIDs:        []string{"DSA-4884-1"},
 					InstalledVersion: "2.4.24",
 					FixedVersion:     "2.4.25-1",
 					Layer: ftypes.Layer{
@@ -59,6 +61,10 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "htpasswd",
 					VulnerabilityID:  "CVE-2021-31618",
 					InstalledVersion: "2.4.24",
+					SeveritySource:   vulnerability.Debian,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},

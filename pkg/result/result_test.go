@@ -202,6 +202,37 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 			},
 		},
 		{
+			name:     "happy path, with package-specific severity",
+			fixtures: []string{"testdata/fixtures/full.yaml"},
+			args: args{
+				vulns: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "CVE-2019-0001",
+						SeveritySource:  vulnerability.Debian,
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityLow.String(),
+						},
+					},
+				},
+				reportType: vulnerability.Debian,
+			},
+			expectedVulnerabilities: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2019-0001",
+					SeveritySource:  vulnerability.Debian,
+					Vulnerability: dbTypes.Vulnerability{
+						Title:            "dos",
+						Description:      "dos vulnerability",
+						Severity:         dbTypes.SeverityLow.String(),
+						References:       []string{"http://example.com"},
+						LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
+						PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
+					},
+					PrimaryURL: "https://avd.aquasec.com/nvd/cve-2019-0001",
+				},
+			},
+		},
+		{
 			name:     "GetVulnerability returns an error",
 			fixtures: []string{"testdata/fixtures/sad.yaml"},
 			args: args{

@@ -9,8 +9,9 @@ import (
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian"
-	debianoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian-oval"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -53,8 +54,7 @@ func WithClock(clock clock.Clock) option {
 
 // Scanner implements the Debian scanner
 type Scanner struct {
-	ovalVs debianoval.VulnSrc
-	vs     debian.VulnSrc
+	vs debian.VulnSrc
 	*options
 }
 
@@ -68,7 +68,6 @@ func NewScanner(opts ...option) *Scanner {
 		opt(o)
 	}
 	return &Scanner{
-		ovalVs:  debianoval.NewVulnSrc(),
 		vs:      debian.NewVulnSrc(),
 		options: o,
 	}
@@ -86,54 +85,52 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		// This bucket has only fixed vulnerabilities.
-		// To detect vulnerabilities, it is necessary to compare versions between the installed version and the patched version.
-		advisories, err := s.ovalVs.Get(osVer, pkg.SrcName)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get debian OVAL: %w", err)
-		}
-
 		installed := utils.FormatSrcVersion(pkg)
 		installedVersion, err := version.NewVersion(installed)
 		if err != nil {
-			log.Logger.Debugf("failed to parse Debian installed package version: %w", err)
+			log.Logger.Debugf("Debian installed package version error: %s", err)
 			continue
 		}
 
+		advisories, err := s.vs.Get(osVer, pkg.SrcName)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to get debian advisories: %w", err)
+		}
+
 		for _, adv := range advisories {
+			vuln := types.DetectedVulnerability{
+				VulnerabilityID:  adv.VulnerabilityID,
+				VendorIDs:        adv.VendorIDs,
+				PkgName:          pkg.Name,
+				InstalledVersion: installed,
+				FixedVersion:     adv.FixedVersion,
+				Layer:            pkg.Layer,
+			}
+
+			if adv.Severity != dbTypes.SeverityUnknown {
+				// Package-specific severity
+				vuln.SeveritySource = vulnerability.Debian
+				vuln.Vulnerability = dbTypes.Vulnerability{
+					Severity: adv.Severity.String(),
+				}
+			}
+
+			// It means unfixed vulnerability. We don't have to compare versions.
+			if adv.FixedVersion == "" {
+				vulns = append(vulns, vuln)
+				continue
+			}
+
 			var fixedVersion version.Version
 			fixedVersion, err = version.NewVersion(adv.FixedVersion)
 			if err != nil {
-				log.Logger.Debugf("failed to parse Debian package version: %w", err)
+				log.Logger.Debugf("Debian advisory package version error: %s", err)
 				continue
 			}
 
 			if installedVersion.LessThan(fixedVersion) {
-				vuln := types.DetectedVulnerability{
-					VulnerabilityID:  adv.VulnerabilityID,
-					PkgName:          pkg.Name,
-					InstalledVersion: installed,
-					FixedVersion:     adv.FixedVersion,
-					Layer:            pkg.Layer,
-				}
 				vulns = append(vulns, vuln)
 			}
-		}
-
-		// This bucket has only unfixed vulnerabilities which don't have a patched version.
-		// It is unnecessary to compare versions since it should be always vulnerable to an unfixed vulnerability.
-		advisories, err = s.vs.Get(osVer, pkg.SrcName)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get debian advisory: %w", err)
-		}
-		for _, adv := range advisories {
-			vuln := types.DetectedVulnerability{
-				VulnerabilityID:  adv.VulnerabilityID,
-				PkgName:          pkg.Name,
-				InstalledVersion: installed,
-				Layer:            pkg.Layer,
-			}
-			vulns = append(vulns, vuln)
 		}
 	}
 	return vulns, nil
