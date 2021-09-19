@@ -1,6 +1,7 @@
 package binary
 
 import (
+	"errors"
 	"os"
 
 	"golang.org/x/xerrors"
@@ -21,7 +22,9 @@ type gobinaryLibraryAnalyzer struct{}
 
 func (a gobinaryLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	res, err := language.Analyze(types.GoBinary, target.FilePath, target.Content, binary.Parse)
-	if err != nil {
+	if errors.Is(err, binary.ErrUnrecognizedExe) {
+		return nil, nil
+	} else if err != nil {
 		return nil, xerrors.Errorf("unable to parse %s: %w", target.FilePath, err)
 	}
 	return res, nil
