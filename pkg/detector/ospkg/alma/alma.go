@@ -67,7 +67,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		pkgName := addModularNamespace(pkg.SrcName, pkg.Modularitylabel)
+		pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
 		advisories, err := s.vs.Get(osVer, pkgName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get AlmaLinux advisories: %w", err)
