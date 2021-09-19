@@ -57,7 +57,7 @@ var SuperSet = wire.NewSet(
 
 // Operation defines the DB operations
 type Operation interface {
-	NeedsUpdate(cliVersion string, skip, light bool) (need bool, err error)
+	NeedsUpdate(cliVersion string, light, skip bool) (need bool, err error)
 	Download(ctx context.Context, cacheDir string, light bool) (err error)
 	UpdateMetadata(cacheDir string) (err error)
 }
