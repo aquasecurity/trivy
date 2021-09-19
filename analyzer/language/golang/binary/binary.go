@@ -28,8 +28,13 @@ func (a gobinaryLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analy
 }
 
 func (a gobinaryLibraryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
+	mode := fileInfo.Mode()
+	if !mode.IsRegular() {
+		return false
+	}
+
 	// Check executable file
-	if fileInfo.Mode()&0111 != 0 {
+	if mode.Perm()&0111 != 0 {
 		return true
 	}
 	return false

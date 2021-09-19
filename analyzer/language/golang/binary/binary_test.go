@@ -81,11 +81,16 @@ func Test_gobinaryLibraryAnalyzer_Required(t *testing.T) {
 			filePath: "testdata/0644",
 			want:     false,
 		},
+		{
+			name:     "symlink",
+			filePath: "testdata/symlink",
+			want:     false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := gobinaryLibraryAnalyzer{}
-			fileInfo, err := os.Stat(tt.filePath)
+			fileInfo, err := os.Lstat(tt.filePath)
 			require.NoError(t, err)
 			got := a.Required(tt.filePath, fileInfo)
 			assert.Equal(t, tt.want, got, fileInfo.Mode().Perm())
