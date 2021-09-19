@@ -11,6 +11,8 @@ const (
 	TypeDebian     Type = "debian"
 	TypePhoton     Type = "photon"
 	TypeCentOS     Type = "centos"
+	TypeRocky      Type = "rocky"
+	TypeAlma       Type = "alma"
 	TypeFedora     Type = "fedora"
 	TypeOracle     Type = "oracle"
 	TypeRedHatBase Type = "redhat"

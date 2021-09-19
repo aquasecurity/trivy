@@ -51,6 +51,10 @@ func (a redhatOSAnalyzer) parseRelease(content []byte) (types.OS, error) {
 		switch strings.ToLower(result[1]) {
 		case "centos", "centos linux":
 			return types.OS{Family: aos.CentOS, Name: result[2]}, nil
+		case "rocky", "rocky linux":
+			return types.OS{Family: aos.Rocky, Name: result[2]}, nil
+		case "alma", "almalinux", "alma linux":
+			return types.OS{Family: aos.Alma, Name: result[2]}, nil
 		case "oracle", "oracle linux", "oracle linux server":
 			return types.OS{Family: aos.Oracle, Name: result[2]}, nil
 		case "fedora", "fedora linux":

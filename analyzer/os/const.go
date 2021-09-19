@@ -15,6 +15,12 @@ const (
 	// CentOS is done
 	CentOS = "centos"
 
+	// Rocky is done
+	Rocky = "rocky"
+
+	// Alma is done
+	Alma = "alma"
+
 	// Fedora is done
 	Fedora = "fedora"
 
