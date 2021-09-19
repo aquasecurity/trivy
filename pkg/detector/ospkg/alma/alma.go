@@ -89,26 +89,6 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				vulns = append(vulns, vuln)
 			}
 		}
-
-		pkgName = addModularNamespace(pkg.Name, pkg.Modularitylabel)
-		advisories, err = s.vs.Get(osVer, pkgName)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get AlmaLinux advisories: %w", err)
-		}
-
-		for _, adv := range advisories {
-			fixedVersion := version.NewVersion(adv.FixedVersion)
-			if installedVersion.LessThan(fixedVersion) {
-				vuln := types.DetectedVulnerability{
-					VulnerabilityID:  adv.VulnerabilityID,
-					PkgName:          pkg.Name,
-					InstalledVersion: installed,
-					FixedVersion:     fixedVersion.String(),
-					Layer:            pkg.Layer,
-				}
-				vulns = append(vulns, vuln)
-			}
-		}
 	}
 	return vulns, nil
 }
