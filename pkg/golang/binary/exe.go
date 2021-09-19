@@ -7,9 +7,14 @@ import (
 	"debug/elf"
 	"debug/macho"
 	"debug/pe"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+)
+
+var (
+	ErrUnrecognizedExe = errors.New("unrecognized executable format")
 )
 
 // An exe is a generic interface to an OS executable (ELF, Mach-O, PE, XCOFF).
@@ -59,7 +64,7 @@ func openExe(r io.Reader) (exe, error) {
 
 	}
 
-	return nil, fmt.Errorf("unrecognized executable format")
+	return nil, ErrUnrecognizedExe
 }
 
 // elfExe is the ELF implementation of the exe interface.
