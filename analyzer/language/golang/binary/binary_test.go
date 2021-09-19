@@ -38,9 +38,13 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "sad path not gobinary",
+			name:      "not go binary",
 			inputFile: "testdata/executable_bash",
-			wantErr:   "unrecognized executable format",
+		},
+		{
+			name:      "broken elf",
+			inputFile: "testdata/broken_elf",
+			wantErr:   "unexpected EOF",
 		},
 	}
 	for _, tt := range tests {
