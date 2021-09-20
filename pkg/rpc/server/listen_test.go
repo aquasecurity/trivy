@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -106,7 +105,7 @@ func Test_dbWorker_update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cacheDir, err := ioutil.TempDir("", "server-test")
+			cacheDir, err := os.MkdirTemp("", "server-test")
 			require.NoError(t, err, tt.name)
 
 			require.NoError(t, db.Init(cacheDir), tt.name)
@@ -121,13 +120,13 @@ func Test_dbWorker_update(t *testing.T) {
 				mockDBClient.On("Download", mock.Anything, mock.Anything, false).Run(
 					func(args mock.Arguments) {
 						// fake download: copy testdata/new.db to tmpDir/db/trivy.db
-						content, err := ioutil.ReadFile("testdata/new.db")
+						content, err := os.ReadFile("testdata/new.db")
 						require.NoError(t, err, tt.name)
 
 						tmpDir := args.String(1)
 						dbPath := db.Path(tmpDir)
 						require.NoError(t, os.MkdirAll(filepath.Dir(dbPath), 0777), tt.name)
-						err = ioutil.WriteFile(dbPath, content, 0444)
+						err = os.WriteFile(dbPath, content, 0444)
 						require.NoError(t, err, tt.name)
 					}).Return(tt.download.err)
 			}

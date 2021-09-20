@@ -6,7 +6,7 @@ package integration
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -495,7 +495,7 @@ func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 	go func() {
 		// Setup CLI App
 		app := commands.NewApp(version)
-		app.Writer = ioutil.Discard
+		app.Writer = io.Discard
 		osArgs := setupServer(addr, options.token, options.tokenHeader, cacheDir, options.cacheBackend)
 
 		// Run Trivy server
@@ -508,7 +508,7 @@ func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 
 	// Setup CLI App
 	app := commands.NewApp(version)
-	app.Writer = ioutil.Discard
+	app.Writer = io.Discard
 
 	return app, addr, cacheDir
 }
@@ -549,10 +549,10 @@ func setupClient(t *testing.T, c args, addr string, cacheDir string, golden stri
 	var err error
 	var ignoreTmpDir string
 	if len(c.IgnoreIDs) != 0 {
-		ignoreTmpDir, err = ioutil.TempDir("", "ignore")
+		ignoreTmpDir, err = os.MkdirTemp("", "ignore")
 		require.NoError(t, err, "failed to create a temp dir")
 		trivyIgnore := filepath.Join(ignoreTmpDir, ".trivyignore")
-		err = ioutil.WriteFile(trivyIgnore, []byte(strings.Join(c.IgnoreIDs, "\n")), 0444)
+		err = os.WriteFile(trivyIgnore, []byte(strings.Join(c.IgnoreIDs, "\n")), 0444)
 		require.NoError(t, err, "failed to write .trivyignore")
 		osArgs = append(osArgs, []string{"--ignorefile", trivyIgnore}...)
 	}
@@ -568,7 +568,7 @@ func setupClient(t *testing.T, c args, addr string, cacheDir string, golden stri
 	if *update {
 		outputFile = golden
 	} else {
-		output, _ := ioutil.TempFile("", "integration")
+		output, _ := os.CreateTemp("", "integration")
 		assert.Nil(t, output.Close())
 		outputFile = output.Name()
 	}
@@ -615,9 +615,9 @@ func setupRedis(t *testing.T, ctx context.Context) (testcontainers.Container, st
 func compare(t *testing.T, wantFile, gotFile string) {
 	t.Helper()
 	// Compare want and got
-	want, err := ioutil.ReadFile(wantFile)
+	want, err := os.ReadFile(wantFile)
 	assert.NoError(t, err)
-	got, err := ioutil.ReadFile(gotFile)
+	got, err := os.ReadFile(gotFile)
 	assert.NoError(t, err)
 
 	if strings.HasSuffix(wantFile, ".json.golden") {

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"html"
 	"io"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
@@ -31,7 +30,7 @@ type TemplateWriter struct {
 // NewTemplateWriter is the factory method to return TemplateWriter object
 func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter, error) {
 	if strings.HasPrefix(outputTemplate, "@") {
-		buf, err := ioutil.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
+		buf, err := os.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
 		if err != nil {
 			return nil, xerrors.Errorf("error retrieving template from path: %w", err)
 		}
