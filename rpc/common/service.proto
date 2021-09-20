@@ -5,6 +5,8 @@ import "google/protobuf/timestamp.proto";
 package trivy.common;
 option  go_package = "github.com/aquasecurity/trivy/rpc/common;common";
 
+import "google/protobuf/struct.proto";
+
 message OS {
   string family = 1;
   string name   = 2;
@@ -95,6 +97,8 @@ message Vulnerability {
   string                    primary_url        = 14;
   google.protobuf.Timestamp published_date     = 15;
   google.protobuf.Timestamp last_modified_date = 16;
+  google.protobuf.Value     custom_advisory_data =17;
+  google.protobuf.Value     custom_vuln_data     =18;
 }
 
 message Layer {

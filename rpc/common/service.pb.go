@@ -9,6 +9,7 @@ package common
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -765,21 +766,23 @@ type Vulnerability struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	VulnerabilityId  string                 `protobuf:"bytes,1,opt,name=vulnerability_id,json=vulnerabilityId,proto3" json:"vulnerability_id,omitempty"`
-	PkgName          string                 `protobuf:"bytes,2,opt,name=pkg_name,json=pkgName,proto3" json:"pkg_name,omitempty"`
-	InstalledVersion string                 `protobuf:"bytes,3,opt,name=installed_version,json=installedVersion,proto3" json:"installed_version,omitempty"`
-	FixedVersion     string                 `protobuf:"bytes,4,opt,name=fixed_version,json=fixedVersion,proto3" json:"fixed_version,omitempty"`
-	Title            string                 `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
-	Description      string                 `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
-	Severity         Severity               `protobuf:"varint,7,opt,name=severity,proto3,enum=trivy.common.Severity" json:"severity,omitempty"`
-	References       []string               `protobuf:"bytes,8,rep,name=references,proto3" json:"references,omitempty"`
-	Layer            *Layer                 `protobuf:"bytes,10,opt,name=layer,proto3" json:"layer,omitempty"`
-	SeveritySource   string                 `protobuf:"bytes,11,opt,name=severity_source,json=severitySource,proto3" json:"severity_source,omitempty"`
-	Cvss             map[string]*CVSS       `protobuf:"bytes,12,rep,name=cvss,proto3" json:"cvss,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	CweIds           []string               `protobuf:"bytes,13,rep,name=cwe_ids,json=cweIds,proto3" json:"cwe_ids,omitempty"`
-	PrimaryUrl       string                 `protobuf:"bytes,14,opt,name=primary_url,json=primaryUrl,proto3" json:"primary_url,omitempty"`
-	PublishedDate    *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=published_date,json=publishedDate,proto3" json:"published_date,omitempty"`
-	LastModifiedDate *timestamppb.Timestamp `protobuf:"bytes,16,opt,name=last_modified_date,json=lastModifiedDate,proto3" json:"last_modified_date,omitempty"`
+	VulnerabilityId    string                 `protobuf:"bytes,1,opt,name=vulnerability_id,json=vulnerabilityId,proto3" json:"vulnerability_id,omitempty"`
+	PkgName            string                 `protobuf:"bytes,2,opt,name=pkg_name,json=pkgName,proto3" json:"pkg_name,omitempty"`
+	InstalledVersion   string                 `protobuf:"bytes,3,opt,name=installed_version,json=installedVersion,proto3" json:"installed_version,omitempty"`
+	FixedVersion       string                 `protobuf:"bytes,4,opt,name=fixed_version,json=fixedVersion,proto3" json:"fixed_version,omitempty"`
+	Title              string                 `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
+	Description        string                 `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
+	Severity           Severity               `protobuf:"varint,7,opt,name=severity,proto3,enum=trivy.common.Severity" json:"severity,omitempty"`
+	References         []string               `protobuf:"bytes,8,rep,name=references,proto3" json:"references,omitempty"`
+	Layer              *Layer                 `protobuf:"bytes,10,opt,name=layer,proto3" json:"layer,omitempty"`
+	SeveritySource     string                 `protobuf:"bytes,11,opt,name=severity_source,json=severitySource,proto3" json:"severity_source,omitempty"`
+	Cvss               map[string]*CVSS       `protobuf:"bytes,12,rep,name=cvss,proto3" json:"cvss,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	CweIds             []string               `protobuf:"bytes,13,rep,name=cwe_ids,json=cweIds,proto3" json:"cwe_ids,omitempty"`
+	PrimaryUrl         string                 `protobuf:"bytes,14,opt,name=primary_url,json=primaryUrl,proto3" json:"primary_url,omitempty"`
+	PublishedDate      *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=published_date,json=publishedDate,proto3" json:"published_date,omitempty"`
+	LastModifiedDate   *timestamppb.Timestamp `protobuf:"bytes,16,opt,name=last_modified_date,json=lastModifiedDate,proto3" json:"last_modified_date,omitempty"`
+	CustomAdvisoryData *structpb.Value        `protobuf:"bytes,17,opt,name=custom_advisory_data,json=customAdvisoryData,proto3" json:"custom_advisory_data,omitempty"`
+	CustomVulnData     *structpb.Value        `protobuf:"bytes,18,opt,name=custom_vuln_data,json=customVulnData,proto3" json:"custom_vuln_data,omitempty"`
 }
 
 func (x *Vulnerability) Reset() {
@@ -915,6 +918,20 @@ func (x *Vulnerability) GetPublishedDate() *timestamppb.Timestamp {
 func (x *Vulnerability) GetLastModifiedDate() *timestamppb.Timestamp {
 	if x != nil {
 		return x.LastModifiedDate
+	}
+	return nil
+}
+
+func (x *Vulnerability) GetCustomAdvisoryData() *structpb.Value {
+	if x != nil {
+		return x.CustomAdvisoryData
+	}
+	return nil
+}
+
+func (x *Vulnerability) GetCustomVulnData() *structpb.Value {
+	if x != nil {
+		return x.CustomVulnData
 	}
 	return nil
 }
@@ -1246,6 +1263,7 @@ var file_rpc_common_service_proto_goTypes = []interface{}{
 	(*CVSS)(nil),                     // 11: trivy.common.CVSS
 	nil,                              // 12: trivy.common.Vulnerability.CvssEntry
 	(*timestamppb.Timestamp)(nil),    // 13: google.protobuf.Timestamp
+	(*structpb.Value)(nil),           // 14: google.protobuf.Value
 }
 var file_rpc_common_service_proto_depIdxs = []int32{
 	4,  // 0: trivy.common.PackageInfo.packages:type_name -> trivy.common.Package

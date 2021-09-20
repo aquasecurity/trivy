@@ -106,6 +106,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				Layer:            pkg.Layer,
+				Custom:           adv.Custom,
 			}
 			vulns = append(vulns, vuln)
 		}
