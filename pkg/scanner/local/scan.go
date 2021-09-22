@@ -3,8 +3,6 @@ package local
 import (
 	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -191,9 +189,6 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		if len(app.Libraries) == 0 {
 			continue
 		}
-		if skipped(app.FilePath, options.SkipFiles, options.SkipDirs) {
-			continue
-		}
 
 		// Prevent the same log messages from being displayed many times for the same type.
 		if _, ok := printedTypes[app.Type]; !ok {
@@ -251,10 +246,6 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 	log.Logger.Infof("Detected config files: %d", len(misconfs))
 	var results report.Results
 	for _, misconf := range misconfs {
-		if skipped(misconf.FilePath, options.SkipFiles, options.SkipDirs) {
-			continue
-		}
-
 		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
 
 		var detected []types.DetectedMisconfiguration
@@ -332,29 +323,6 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		Layer:       layer,
 		Traces:      res.Traces,
 	}
-}
-
-func skipped(filePath string, skipFiles, skipDirs []string) bool {
-	filePath = strings.TrimLeft(filepath.Clean(filePath), string(os.PathSeparator))
-	for _, skipFile := range skipFiles {
-		skipFile = strings.TrimLeft(filepath.Clean(skipFile), string(os.PathSeparator))
-		if filePath == skipFile {
-			return true
-		}
-	}
-
-	for _, skipDir := range skipDirs {
-		skipDir = strings.TrimLeft(filepath.Clean(skipDir), string(os.PathSeparator))
-		rel, err := filepath.Rel(skipDir, filePath)
-		if err != nil {
-			log.Logger.Warnf("Unexpected error while skipping directories: %s", err)
-			return false
-		}
-		if !strings.HasPrefix(rel, "..") {
-			return true
-		}
-	}
-	return false
 }
 
 func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {
