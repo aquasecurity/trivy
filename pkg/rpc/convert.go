@@ -32,6 +32,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int32(pkg.SrcEpoch),
 			License:    pkg.License,
+			Layer:      ConvertToRPCLayer(pkg.Layer),
 		})
 	}
 	return rpcPkgs
@@ -52,6 +53,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int(pkg.SrcEpoch),
 			License:    pkg.License,
+			Layer:      ConvertFromRPCLayer(pkg.Layer),
 		})
 	}
 	return pkgs
