@@ -88,7 +88,7 @@ brews:
     homepage: "https://github.com/aquasecurity/trivy"
     description: ""
     test: |
-      system "#{bin}/program --version"
+      system "#{bin}/trivy --version"
 
 dockers:
   - image_templates:
