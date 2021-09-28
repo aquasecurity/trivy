@@ -75,6 +75,7 @@ func TestNewDockerImage(t *testing.T) {
 			wantRepoTags: []string{"alpine:3.11"},
 			wantConfigFile: &v1.ConfigFile{
 				Architecture:  "amd64",
+				OS:            "linux",
 				Created:       v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
 				DockerVersion: "18.09.7",
 				History: []v1.History{

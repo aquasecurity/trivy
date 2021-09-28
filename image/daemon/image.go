@@ -105,6 +105,7 @@ func (img *image) ConfigFile() (*v1.ConfigFile, error) {
 
 	return &v1.ConfigFile{
 		Architecture:  img.inspect.Architecture,
+		OS:            img.inspect.Os,
 		Author:        img.inspect.Author,
 		Created:       v1.Time{Time: created},
 		DockerVersion: img.inspect.DockerVersion,
