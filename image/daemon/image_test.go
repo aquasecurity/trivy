@@ -81,6 +81,7 @@ func Test_image_ConfigFile(t *testing.T) {
 			imageName: "alpine:3.11",
 			want: &v1.ConfigFile{
 				Architecture:  "amd64",
+				OS:            "linux",
 				Created:       v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
 				DockerVersion: "18.09.7",
 				History: []v1.History{
@@ -107,6 +108,7 @@ func Test_image_ConfigFile(t *testing.T) {
 			imageName: "gcr.io/distroless/base",
 			want: &v1.ConfigFile{
 				Architecture: "amd64",
+				OS:           "linux",
 				Author:       "Bazel",
 				Created:      v1.Time{Time: time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
 				History: []v1.History{
