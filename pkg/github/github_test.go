@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -122,7 +121,7 @@ func TestClient_DownloadDB(t *testing.T) {
 				{
 					input: 100,
 					output: downloadAssetOutput{
-						rc: ioutil.NopCloser(strings.NewReader("foo")),
+						rc: io.NopCloser(strings.NewReader("foo")),
 					},
 				},
 			},
@@ -217,7 +216,7 @@ func TestClient_DownloadDB(t *testing.T) {
 				{
 					input: 300,
 					output: downloadAssetOutput{
-						rc: ioutil.NopCloser(strings.NewReader("foo")),
+						rc: io.NopCloser(strings.NewReader("foo")),
 					},
 				},
 			},
@@ -268,7 +267,7 @@ func TestClient_DownloadDB(t *testing.T) {
 				{
 					input: 200,
 					output: downloadAssetOutput{
-						rc: ioutil.NopCloser(strings.NewReader("foo")),
+						rc: io.NopCloser(strings.NewReader("foo")),
 					},
 				},
 			},

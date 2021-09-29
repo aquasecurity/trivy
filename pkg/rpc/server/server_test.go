@@ -310,6 +310,10 @@ func TestCacheServer_PutBlob(t *testing.T) {
 										SrcVersion: "1.2.3",
 										SrcRelease: "1",
 										SrcEpoch:   2,
+										Layer: &common.Layer{
+											Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+											DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+										},
 									},
 									{
 										Name:       "vim-minimal",
@@ -321,6 +325,10 @@ func TestCacheServer_PutBlob(t *testing.T) {
 										SrcVersion: "7.4.160",
 										SrcRelease: "5.el7",
 										SrcEpoch:   2,
+										Layer: &common.Layer{
+											Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+											DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+										},
 									},
 								},
 							},
@@ -371,6 +379,10 @@ func TestCacheServer_PutBlob(t *testing.T) {
 										SrcVersion: "1.2.3",
 										SrcRelease: "1",
 										SrcEpoch:   2,
+										Layer: ftypes.Layer{
+											Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+											DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+										},
 									},
 									{
 										Name:       "vim-minimal",
@@ -382,6 +394,10 @@ func TestCacheServer_PutBlob(t *testing.T) {
 										SrcVersion: "7.4.160",
 										SrcRelease: "5.el7",
 										SrcEpoch:   2,
+										Layer: ftypes.Layer{
+											Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+											DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+										},
 									},
 								},
 							},

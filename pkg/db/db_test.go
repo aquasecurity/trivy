@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"os"
 	"testing"
 	"time"
@@ -246,7 +245,7 @@ func TestClient_Download(t *testing.T) {
 			fs := afero.NewMemMapFs()
 			metadata := NewMetadata(fs, "/cache")
 
-			dir, err := ioutil.TempDir("", "db")
+			dir, err := os.MkdirTemp("", "db")
 			require.NoError(t, err, tc.name)
 			defer os.RemoveAll(dir)
 
@@ -349,7 +348,7 @@ func TestClient_UpdateMetadata(t *testing.T) {
 			fs := afero.NewMemMapFs()
 			metadata := NewMetadata(fs, "/cache")
 
-			dir, err := ioutil.TempDir("", "db")
+			dir, err := os.MkdirTemp("", "db")
 			require.NoError(t, err, tc.name)
 			defer os.RemoveAll(dir)
 
