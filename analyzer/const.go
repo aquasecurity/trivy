@@ -75,3 +75,17 @@ const (
 	TypeHCL        Type = "hcl"
 	TypeTerraform  Type = "terraform"
 )
+
+var (
+	// TypeOSes has all OS-related analyzers
+	TypeOSes = []Type{TypeAlpine, TypeAmazon, TypeDebian, TypePhoton, TypeCentOS,
+		TypeRocky, TypeAlma, TypeFedora, TypeOracle, TypeRedHatBase, TypeSUSE, TypeUbuntu,
+		TypeApk, TypeDpkg, TypeRpm,
+	}
+
+	// TypeLanguages has all language analyzers
+	TypeLanguages = []Type{TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar,
+		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypeNuget, TypePythonPkg, TypePip, TypePipenv,
+		TypePoetry, TypeWheel, TypeGoBinary, TypeGoMod,
+	}
+)
