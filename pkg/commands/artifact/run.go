@@ -157,6 +157,11 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		disabledAnalyzers = []analyzer.Type{}
 	}
 
+	// Don't analyze programming language packages when not running in 'library' mode
+	if !utils.StringInSlice(types.VulnTypeLibrary, opt.VulnType) {
+		disabledAnalyzers = append(disabledAnalyzers, analyzer.TypeLanguages...)
+	}
+
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
