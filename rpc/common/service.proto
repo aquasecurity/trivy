@@ -42,6 +42,7 @@ message Package {
 message Library {
   string name    = 1;
   string version = 2;
+  string license = 3;
 }
 
 message Misconfiguration {

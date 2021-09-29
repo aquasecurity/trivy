@@ -25,15 +25,15 @@ type advisory interface {
 func NewDriver(libType string) (Driver, error) {
 	var driver Driver
 	switch libType {
-	case ftypes.Bundler:
+	case ftypes.Bundler, ftypes.GemSpec:
 		driver = newRubyGemsDriver()
 	case ftypes.Cargo:
 		driver = newCargoDriver()
 	case ftypes.Composer:
 		driver = newComposerDriver()
-	case ftypes.Npm, ftypes.Yarn:
+	case ftypes.Npm, ftypes.Yarn, ftypes.NodePkg:
 		driver = newNpmDriver()
-	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip:
+	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:
 		driver = newPipDriver()
 	case ftypes.NuGet:
 		driver = newNugetDriver()
