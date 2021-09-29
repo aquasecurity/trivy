@@ -9,7 +9,7 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -236,7 +236,7 @@ func scan(t *testing.T, imageRef name.Reference, baseDir, goldenFile string, opt
 	if *update && goldenFile != "" {
 		outputFile = goldenFile
 	} else {
-		output, err := ioutil.TempFile("", "integration")
+		output, err := os.CreateTemp("", "integration")
 		if err != nil {
 			return "", cleanup, err
 		}
@@ -256,7 +256,7 @@ func scan(t *testing.T, imageRef name.Reference, baseDir, goldenFile string, opt
 
 	// Setup CLI App
 	app := commands.NewApp("dev")
-	app.Writer = ioutil.Discard
+	app.Writer = io.Discard
 
 	osArgs := []string{"trivy", "--cache-dir", cacheDir, "--format", "json", "--skip-update", "--output", outputFile, imageRef.Name()}
 
@@ -306,7 +306,7 @@ func unsetEnv() error {
 
 func requestRegistryToken(imageRef name.Reference, baseDir string, opt registryOption) (string, error) {
 	// Create a CA certificate pool and add cert.pem to it
-	caCert, err := ioutil.ReadFile(filepath.Join(baseDir, "data", "certs", "cert.pem"))
+	caCert, err := os.ReadFile(filepath.Join(baseDir, "data", "certs", "cert.pem"))
 	if err != nil {
 		return "", err
 	}

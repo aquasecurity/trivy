@@ -2,7 +2,6 @@ package utils
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -25,14 +24,14 @@ func touch(t *testing.T, name string) {
 }
 
 func write(t *testing.T, name string, content string) {
-	err := ioutil.WriteFile(name, []byte(content), 0666)
+	err := os.WriteFile(name, []byte(content), 0666)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestFileWalk(t *testing.T) {
-	td, err := ioutil.TempDir("", "walktest")
+	td, err := os.MkdirTemp("", "walktest")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,7 +61,7 @@ func TestFileWalk(t *testing.T) {
 			sawFoo2 = true
 		}
 		if strings.HasSuffix(path, "foo3") {
-			contentFoo3, err = ioutil.ReadAll(r)
+			contentFoo3, err = io.ReadAll(r)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -163,7 +162,7 @@ func TestCopyFile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			src := tt.args.src
 			if tt.args.src == "" {
-				s, err := ioutil.TempFile("", "src")
+				s, err := os.CreateTemp("", "src")
 				require.NoError(t, err, tt.name)
 				_, err = s.Write(tt.content)
 				require.NoError(t, err, tt.name)
@@ -172,7 +171,7 @@ func TestCopyFile(t *testing.T) {
 
 			dst := tt.args.dst
 			if tt.args.dst == "" {
-				d, err := ioutil.TempFile("", "dst")
+				d, err := os.CreateTemp("", "dst")
 				require.NoError(t, err, tt.name)
 				dst = d.Name()
 				require.NoError(t, d.Close(), tt.name)

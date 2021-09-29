@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"sort"
 	"strings"
@@ -262,7 +261,7 @@ func toSlice(uniqVulns map[string]types.DetectedVulnerability) []types.DetectedV
 
 func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
 	policyFile string) ([]types.DetectedVulnerability, []types.DetectedMisconfiguration, error) {
-	policy, err := ioutil.ReadFile(policyFile)
+	policy, err := os.ReadFile(policyFile)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("unable to read the policy file: %w", err)
 	}

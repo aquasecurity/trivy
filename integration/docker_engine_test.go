@@ -6,7 +6,6 @@ package integration
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -270,14 +269,14 @@ func TestRun_WithDockerEngine(t *testing.T) {
 				// load image into docker engine
 				res, err := cli.ImageLoad(ctx, testfile, true)
 				require.NoError(t, err, tc.name)
-				io.Copy(ioutil.Discard, res.Body)
+				io.Copy(io.Discard, res.Body)
 
 				// tag our image to something unique
 				err = cli.ImageTag(ctx, tc.imageTag, tc.testfile)
 				require.NoError(t, err, tc.name)
 			}
 
-			of, err := ioutil.TempFile("", "integration-docker-engine-output-file-*")
+			of, err := os.CreateTemp("", "integration-docker-engine-output-file-*")
 			require.NoError(t, err, tc.name)
 			defer os.Remove(of.Name())
 
@@ -301,7 +300,7 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			}
 			if len(tc.ignoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
-				err := ioutil.WriteFile(trivyIgnore, []byte(strings.Join(tc.ignoreIDs, "\n")), 0444)
+				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tc.ignoreIDs, "\n")), 0444)
 				assert.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
@@ -318,9 +317,9 @@ func TestRun_WithDockerEngine(t *testing.T) {
 			}
 
 			// check for vulnerability output info
-			got, err := ioutil.ReadAll(of)
+			got, err := io.ReadAll(of)
 			assert.NoError(t, err, tc.name)
-			want, err := ioutil.ReadFile(tc.expectedOutputFile)
+			want, err := os.ReadFile(tc.expectedOutputFile)
 			assert.NoError(t, err, tc.name)
 			assert.JSONEq(t, string(want), string(got), tc.name)
 
