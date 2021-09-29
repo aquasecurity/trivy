@@ -158,21 +158,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 
 	// Don't analyze programming language packages when not running in 'library' mode
 	if !utils.StringInSlice(types.VulnTypeLibrary, opt.VulnType) {
-		// TODO(fawind): Move this collection to 'github.com/aquasecurity/fanal/analyzer/const.go'
-		libraryAnalyzers := []analyzer.Type{
-			analyzer.TypeBundler,
-			analyzer.TypeCargo,
-			analyzer.TypeComposer,
-			analyzer.TypeJar,
-			analyzer.TypeNpm,
-			analyzer.TypeNuget,
-			analyzer.TypePipenv,
-			analyzer.TypePip,
-			analyzer.TypePoetry,
-			analyzer.TypeYarn,
-			analyzer.TypeGoBinary,
-			analyzer.TypeGoMod}
-		disabledAnalyzers = append(disabledAnalyzers, libraryAnalyzers...)
+		disabledAnalyzers = append(disabledAnalyzers, analyzer.TypeLanguages...)
 	}
 
 	// ScannerOptions is filled only when config scanning is enabled.
