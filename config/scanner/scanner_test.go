@@ -72,40 +72,40 @@ func TestScanner_ScanConfig(t *testing.T) {
 				FilePath: "main.tf",
 				Successes: []types.MisconfResult{
 					{
-						Message: "Resource 'aws_security_group_rule.my-rule' passed check: An egress security group rule allows traffic to /0.",
+						Message: "Resource 'aws_security_group_rule.my-rule' passed check: Ensures that usage of security groups with inline rules and security group rule resources are not mixed.",
 						PolicyMetadata: types.PolicyMetadata{
 							Type:               "Terraform Security Check powered by tfsec",
-							ID:                 "AWS007",
+							ID:                 "AVD-AWS-0100",
+							Description:        "Security group rules will be overwritten and will result in unintended blocking of network traffic",
+							RecommendedActions: "Either define all of a security group's rules inline, or none of the security group's rules inline",
+							Severity:           "LOW",
+						},
+					},
+					{
+						Message: `Resource 'aws_security_group_rule.my-rule' passed check: An egress security group rule allows traffic to /0.`,
+						PolicyMetadata: types.PolicyMetadata{
+							Type:               "Terraform Security Check powered by tfsec",
+							ID:                 "AVD-AWS-0104",
 							Description:        "Your port is egressing data to the internet",
 							RecommendedActions: "Set a more restrictive cidr range",
 							Severity:           "CRITICAL",
 						},
 					},
 					{
-						Message: `Resource 'variable.enableEncryption' passed check: Potentially sensitive data stored in "default" value of variable.`,
+						Message: "Resource 'aws_security_group_rule.my-rule' passed check: Potentially sensitive data stored in block attribute.",
 						PolicyMetadata: types.PolicyMetadata{
+							ID:                 "AVD-GEN-0001",
 							Type:               "Terraform Security Check powered by tfsec",
-							ID:                 "GEN001",
-							Description:        "Default values could be exposing sensitive data",
-							RecommendedActions: "Don't include sensitive data in variable defaults",
-							Severity:           "CRITICAL",
-						},
-					},
-					{
-						Message: `Resource 'aws_security_group_rule.my-rule' passed check: Potentially sensitive data stored in block attribute.`,
-						PolicyMetadata: types.PolicyMetadata{
-							Type:               "Terraform Security Check powered by tfsec",
-							ID:                 "GEN003",
 							Description:        "Block attribute could be leaking secrets",
-							RecommendedActions: "Don't include sensitive data in blocks",
 							Severity:           "CRITICAL",
+							RecommendedActions: "Don't include sensitive data in blocks",
 						},
 					},
 					{
 						Message: `Resource 'azurerm_managed_disk.source' passed check: Potentially sensitive data stored in block attribute.`,
 						PolicyMetadata: types.PolicyMetadata{
 							Type:               "Terraform Security Check powered by tfsec",
-							ID:                 "GEN003",
+							ID:                 "AVD-GEN-0001",
 							Description:        "Block attribute could be leaking secrets",
 							RecommendedActions: "Don't include sensitive data in blocks",
 							Severity:           "CRITICAL",
@@ -114,7 +114,7 @@ func TestScanner_ScanConfig(t *testing.T) {
 					{
 						Message: "Resource 'aws_security_group_rule.my-rule' passed check: The attribute has potentially sensitive data, passwords, tokens or keys in it",
 						PolicyMetadata: types.PolicyMetadata{
-							ID:                 "GEN005",
+							ID:                 "AVD-GEN-0002",
 							Type:               "Terraform Security Check powered by tfsec",
 							Description:        "Sensitive credentials may be compromised",
 							Severity:           "CRITICAL",
@@ -124,7 +124,18 @@ func TestScanner_ScanConfig(t *testing.T) {
 					{
 						Message: "Resource 'azurerm_managed_disk.source' passed check: The attribute has potentially sensitive data, passwords, tokens or keys in it",
 						PolicyMetadata: types.PolicyMetadata{
-							ID:                 "GEN005",
+							ID:                 "AVD-GEN-0002",
+							Type:               "Terraform Security Check powered by tfsec",
+							Description:        "Sensitive credentials may be compromised",
+							Severity:           "CRITICAL",
+							RecommendedActions: "Check the code for vulnerabilities and move to variables",
+						},
+					},
+
+					{
+						Message: "Resource 'variable.enableEncryption' passed check: The attribute has potentially sensitive data, passwords, tokens or keys in it",
+						PolicyMetadata: types.PolicyMetadata{
+							ID:                 "AVD-GEN-0002",
 							Type:               "Terraform Security Check powered by tfsec",
 							Description:        "Sensitive credentials may be compromised",
 							Severity:           "CRITICAL",
@@ -132,43 +143,28 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 					},
 					{
-						Message: "Resource 'variable.enableEncryption' passed check: The attribute has potentially sensitive data, passwords, tokens or keys in it",
+						Message: `Resource 'variable.enableEncryption' passed check: Potentially sensitive data stored in "default" value of variable.`,
 						PolicyMetadata: types.PolicyMetadata{
-							ID:                 "GEN005",
 							Type:               "Terraform Security Check powered by tfsec",
-							Description:        "Sensitive credentials may be compromised",
+							ID:                 "AVD-GEN-0004",
+							Description:        "Default values could be exposing sensitive data",
+							RecommendedActions: "Don't include sensitive data in variable defaults",
 							Severity:           "CRITICAL",
-							RecommendedActions: "Check the code for vulnerabilities and move to variables",
 						},
 					},
 				},
 				Failures: []types.MisconfResult{
 					{
-						Message: "Resource 'aws_security_group_rule.my-rule' defines a fully open ingress security group rule.",
-						PolicyMetadata: types.PolicyMetadata{
-							ID:                 "AWS006",
-							Type:               "Terraform Security Check powered by tfsec",
-							Title:              "An ingress security group rule allows traffic from /0.",
-							Description:        "Your port exposed to the internet",
-							RecommendedActions: "Set a more restrictive cidr range",
-							Severity:           "CRITICAL",
-							References: []string{
-								"https://tfsec.dev/docs/aws/AWS006/",
-								"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html",
-							},
-						},
-					},
-					{
 						Message: "Resource 'aws_security_group_rule.my-rule' should include a description for auditing purposes.",
 						PolicyMetadata: types.PolicyMetadata{
-							ID:                 "AWS018",
+							ID:                 "AVD-AWS-0099",
 							Type:               "Terraform Security Check powered by tfsec",
 							Title:              "Missing description for security group/security group rule.",
 							Description:        "Descriptions provide context for the firewall rule reasons",
 							RecommendedActions: "Add descriptions for all security groups and rules",
 							Severity:           "LOW",
 							References: []string{
-								"https://tfsec.dev/docs/aws/AWS018/",
+								"https://tfsec.dev/docs/aws/vpc/add-description-to-security-group#aws/vpc",
 								"https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group",
 								"https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule",
 								"https://www.cloudconformity.com/knowledge-base/aws/EC2/security-group-rules-description.html",
@@ -176,18 +172,34 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 					},
 					{
+						Message: "Resource 'aws_security_group_rule.my-rule' defines a fully open ingress security group rule.",
+						PolicyMetadata: types.PolicyMetadata{
+							ID:                 "AVD-AWS-0107",
+							Type:               "Terraform Security Check powered by tfsec",
+							Title:              "An ingress security group rule allows traffic from /0.",
+							Description:        "Your port exposed to the internet",
+							RecommendedActions: "Set a more restrictive cidr range",
+							Severity:           "CRITICAL",
+							References: []string{
+								"https://tfsec.dev/docs/aws/vpc/no-public-ingress-sgr#aws/vpc",
+								"https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule#cidr_blocks",
+								"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html",
+							},
+						},
+					},
+					{
 						Message: "Resource 'azurerm_managed_disk.source' defines an unencrypted managed disk.",
 						PolicyMetadata: types.PolicyMetadata{
-							ID:                 "AZU003",
+							ID:                 "AVD-AZU-0009",
 							Type:               "Terraform Security Check powered by tfsec",
-							Title:              "Unencrypted managed disk.",
+							Title:              "Enable disk encryption on managed disk",
 							Description:        "Data could be read if compromised",
 							RecommendedActions: "Enable encryption on managed disks",
 							Severity:           "HIGH",
 							References: []string{
-								"https://tfsec.dev/docs/azure/AZU003/",
+								"https://tfsec.dev/docs/azure/compute/enable-disk-encryption#azure/compute",
+								"https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/managed_disk",
 								"https://docs.microsoft.com/en-us/azure/virtual-machines/linux/disk-encryption",
-								"https://www.terraform.io/docs/providers/azurerm/r/managed_disk.html",
 							},
 						},
 					},
@@ -252,6 +264,9 @@ func TestScanner_ScanConfig(t *testing.T) {
 			require.NoError(t, err)
 
 			sort.Slice(got[0].Failures, func(i, j int) bool {
+				if got[0].Failures[i].Namespace == got[0].Failures[j].Namespace {
+					return got[0].Failures.Less(i, j)
+				}
 				return got[0].Failures[i].Namespace < got[0].Failures[j].Namespace
 			})
 
