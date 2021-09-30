@@ -202,8 +202,8 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/fanal v0.0.0-20210929075752-5b518184b9ea h1:9rlVpbsqrLmbX5DqHThl08aQrR7873Nnm4mFM1T1FXM=
-github.com/aquasecurity/fanal v0.0.0-20210929075752-5b518184b9ea/go.mod h1:aA/jPD4k3JdWY9ZE8xiYXb+9L+HFmETV8tYep7X7xOQ=
+github.com/aquasecurity/fanal v0.0.0-20210930090921-61ce2b00aa20 h1:3uC7HWxSUAD2GuVshZXQWwKBP5RED5VIZSHYWURLyUI=
+github.com/aquasecurity/fanal v0.0.0-20210930090921-61ce2b00aa20/go.mod h1:aA/jPD4k3JdWY9ZE8xiYXb+9L+HFmETV8tYep7X7xOQ=
 github.com/aquasecurity/go-dep-parser v0.0.0-20210919151457-76db061b9305 h1:xsniAD6IrP+stY8tkytxE2tk8czkzSN3XaUvzoi1hCk=
 github.com/aquasecurity/go-dep-parser v0.0.0-20210919151457-76db061b9305/go.mod h1:Zc7Eo6tFl9l4XcqsWeabD7jHnXRBK/LdgZuu9GTSVLU=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
