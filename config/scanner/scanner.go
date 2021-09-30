@@ -135,7 +135,7 @@ func (s Scanner) scanTerraformByTFSec(files []types.Config) ([]types.Misconfigur
 			},
 		}
 
-		filePath, err := filepath.Rel(rootDir, result.Range.Filename)
+		filePath, err := filepath.Rel(rootDir, result.Range().Filename)
 		if err != nil {
 			return nil, xerrors.Errorf("filepath rel: %w", err)
 		}
