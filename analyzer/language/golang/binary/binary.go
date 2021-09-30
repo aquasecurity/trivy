@@ -16,7 +16,11 @@ func init() {
 	analyzer.RegisterAnalyzer(&gobinaryLibraryAnalyzer{})
 }
 
-const version = 1
+const (
+	version     = 1
+	MiB         = 1024 * 1024
+	MaxFileSize = 200 * MiB
+)
 
 type gobinaryLibraryAnalyzer struct{}
 
@@ -36,6 +40,9 @@ func (a gobinaryLibraryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
 		return false
 	}
 
+	if fileInfo.Size() > MaxFileSize {
+		return false
+	}
 	// Check executable file
 	if mode.Perm()&0111 != 0 {
 		return true
