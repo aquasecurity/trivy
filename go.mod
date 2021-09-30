@@ -26,7 +26,7 @@ require (
 	github.com/knqyf263/go-rpmdb v0.0.0-20210911072402-73bd0ce46c49
 	github.com/knqyf263/nested v0.0.1
 	github.com/kylelemons/godebug v1.1.0
-	github.com/mitchellh/mapstructure v1.4.1
+	github.com/mitchellh/mapstructure v1.4.2
 	github.com/moby/buildkit v0.8.1
 	github.com/open-policy-agent/opa v0.32.0
 	github.com/opencontainers/go-digest v1.0.0
