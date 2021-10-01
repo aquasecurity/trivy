@@ -19,7 +19,6 @@
       table, th, td {
         border: 1px solid black;
         border-collapse: collapse;
-        white-space: nowrap;
         padding: .3em;
       }
       table {
@@ -85,7 +84,7 @@
     <h1>{{- escapeXML ( index . 0 ).Target }} - Trivy Report - {{ getCurrentTime }}</h1>
     <table>
     {{- range . }}
-      <tr class="group-header"><th colspan="6">{{ escapeXML .Type }}</th></tr>
+      <tr class="group-header"><th colspan="6">{{ escapeXML .Type }}: {{ escapeXML .Target }}</th></tr>
       {{- if (eq (len .Vulnerabilities) 0) }}
       <tr><th colspan="6">No Vulnerabilities found</th></tr>
       {{- else }}
