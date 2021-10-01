@@ -16,7 +16,7 @@ func TestReportWriter_JSON(t *testing.T) {
 	testCases := []struct {
 		name          string
 		detectedVulns []types.DetectedVulnerability
-		expectedJSON  report.Results
+		want          report.Report
 	}{
 		{
 			name: "happy path",
@@ -34,20 +34,24 @@ func TestReportWriter_JSON(t *testing.T) {
 					},
 				},
 			},
-			expectedJSON: report.Results{
-				report.Result{
-					Target: "foojson",
-					Vulnerabilities: []types.DetectedVulnerability{
-						{
-							VulnerabilityID:  "CVE-2020-0001",
-							PkgName:          "foo",
-							InstalledVersion: "1.2.3",
-							FixedVersion:     "3.4.5",
-							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
-							Vulnerability: dbTypes.Vulnerability{
-								Title:       "foobar",
-								Description: "baz",
-								Severity:    "HIGH",
+			want: report.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "alpine:3.14",
+				Results: report.Results{
+					report.Result{
+						Target: "foojson",
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2020-0001",
+								PkgName:          "foo",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "3.4.5",
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
+								Vulnerability: dbTypes.Vulnerability{
+									Title:       "foobar",
+									Description: "baz",
+									Severity:    "HIGH",
+								},
 							},
 						},
 					},
@@ -63,6 +67,8 @@ func TestReportWriter_JSON(t *testing.T) {
 			jw.Output = &jsonWritten
 
 			inputResults := report.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "alpine:3.14",
 				Results: report.Results{
 					{
 						Target:          "foojson",
@@ -77,11 +83,11 @@ func TestReportWriter_JSON(t *testing.T) {
 			})
 			assert.NoError(t, err)
 
-			writtenResults := report.Results{}
-			err = json.Unmarshal([]byte(jsonWritten.String()), &writtenResults)
-			assert.NoError(t, err, "invalid json written", tc.name)
+			var got report.Report
+			err = json.Unmarshal(jsonWritten.Bytes(), &got)
+			assert.NoError(t, err, "invalid json written")
 
-			assert.Equal(t, tc.expectedJSON, writtenResults, tc.name)
+			assert.Equal(t, tc.want, got, tc.name)
 		})
 	}
 }
