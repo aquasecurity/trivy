@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/analyzer/config"
+	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/types"
 )
@@ -70,7 +71,7 @@ func TestNewArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, nil, nil, config.ScannerOption{})
+			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{}, config.ScannerOption{})
 			assert.Equal(t, tt.wantErr, err != nil)
 			defer cleanup()
 		})
@@ -94,9 +95,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: ts.URL + "/test.git",
 				Type: types.ArtifactRemoteRepository,
-				ID:   "sha256:2f64ff463b8e72dbb1010607351956b119817ad5376839f8c5e8624dbb804da6",
+				ID:   "sha256:1b9a2e1c7079d3fa2e1ed8e3886cd271cbab400d6b5d5115d3b4f965f239b58e",
 				BlobIDs: []string{
-					"sha256:2f64ff463b8e72dbb1010607351956b119817ad5376839f8c5e8624dbb804da6",
+					"sha256:1b9a2e1c7079d3fa2e1ed8e3886cd271cbab400d6b5d5115d3b4f965f239b58e",
 				},
 			},
 		},
@@ -107,7 +108,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			fsCache, err := cache.NewFSCache(t.TempDir())
 			require.NoError(t, err)
 
-			art, cleanup, err := NewArtifact(tt.rawurl, fsCache, nil, nil, config.ScannerOption{})
+			art, cleanup, err := NewArtifact(tt.rawurl, fsCache, artifact.Option{}, config.ScannerOption{})
 			require.NoError(t, err)
 			defer cleanup()
 

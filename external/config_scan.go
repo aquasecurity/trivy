@@ -7,6 +7,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/applier"
+	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/artifact/local"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/types"
@@ -35,7 +36,7 @@ func NewConfigScanner(cacheDir string, policyPaths, dataPaths, namespaces []stri
 }
 
 func (s ConfigScanner) Scan(dir string) ([]types.Misconfiguration, error) {
-	art, err := local.NewArtifact(dir, s.cache, nil, nil, config.ScannerOption{
+	art, err := local.NewArtifact(dir, s.cache, artifact.Option{}, config.ScannerOption{
 		PolicyPaths: s.policyPaths,
 		DataPaths:   s.dataPaths,
 		Namespaces:  s.namespaces,
