@@ -49,36 +49,41 @@ var (
 )
 
 type Artifact struct {
-	image               types.Image
-	cache               cache.ArtifactCache
-	analyzer            analyzer.Analyzer
-	hookManager         hook.Manager
-	scanner             scanner.Scanner
+	image       types.Image
+	cache       cache.ArtifactCache
+	walker      walker.LayerTar
+	analyzer    analyzer.Analyzer
+	hookManager hook.Manager
+	scanner     scanner.Scanner
+
+	artifactOption      artifact.Option
 	configScannerOption config.ScannerOption
 }
 
-func NewArtifact(img types.Image, c cache.ArtifactCache, disabledAnalyzers []analyzer.Type, disabledHooks []hook.Type,
-	opt config.ScannerOption) (artifact.Artifact, error) {
+func NewArtifact(img types.Image, c cache.ArtifactCache, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (artifact.Artifact, error) {
 	// Register config analyzers
-	if err := config.RegisterConfigAnalyzers(opt.FilePatterns); err != nil {
+	if err := config.RegisterConfigAnalyzers(scannerOpt.FilePatterns); err != nil {
 		return nil, xerrors.Errorf("config scanner error: %w", err)
 	}
 
-	s, err := scanner.New("", opt.Namespaces, opt.PolicyPaths, opt.DataPaths, opt.Trace)
+	s, err := scanner.New("", scannerOpt.Namespaces, scannerOpt.PolicyPaths, scannerOpt.DataPaths, scannerOpt.Trace)
 	if err != nil {
 		return nil, xerrors.Errorf("scanner error: %w", err)
 	}
 
-	disabledAnalyzers = append(disabledAnalyzers, defaultDisabledAnalyzers...)
-	disabledHooks = append(disabledHooks, defaultDisabledHooks...)
+	disabledAnalyzers := append(artifactOpt.DisabledAnalyzers, defaultDisabledAnalyzers...)
+	disabledHooks := append(artifactOpt.DisabledHooks, defaultDisabledHooks...)
 
 	return Artifact{
-		image:               img,
-		cache:               c,
-		analyzer:            analyzer.NewAnalyzer(disabledAnalyzers),
-		hookManager:         hook.NewManager(disabledHooks),
-		scanner:             s,
-		configScannerOption: opt,
+		image:       img,
+		cache:       c,
+		walker:      walker.NewLayerTar(artifactOpt.SkipFiles, artifactOpt.SkipDirs),
+		analyzer:    analyzer.NewAnalyzer(disabledAnalyzers),
+		hookManager: hook.NewManager(disabledHooks),
+		scanner:     s,
+
+		artifactOption:      artifactOpt,
+		configScannerOption: scannerOpt,
 	}, nil
 }
 
@@ -142,7 +147,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, map[string]string, error) {
 
 	// Pass an empty config scanner option so that the cache key can be the same, even when policies are updated.
-	imageKey, err := cache.CalcKey(imageID, a.analyzer.ImageConfigAnalyzerVersions(), nil, &config.ScannerOption{})
+	imageKey, err := cache.CalcKey(imageID, a.analyzer.ImageConfigAnalyzerVersions(), nil, artifact.Option{}, config.ScannerOption{})
 	if err != nil {
 		return "", nil, nil, err
 	}
@@ -151,7 +156,7 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []str
 	hookVersions := a.hookManager.Versions()
 	var layerKeys []string
 	for _, diffID := range diffIDs {
-		blobKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), hookVersions, &a.configScannerOption)
+		blobKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), hookVersions, a.artifactOption, a.configScannerOption)
 		if err != nil {
 			return "", nil, nil, err
 		}
@@ -218,7 +223,7 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobIn
 	result := new(analyzer.AnalysisResult)
 	limit := semaphore.NewWeighted(parallel)
 
-	opqDirs, whFiles, err := walker.WalkLayerTar(r, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	opqDirs, whFiles, err := a.walker.Walk(r, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}

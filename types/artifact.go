@@ -50,7 +50,7 @@ type PackageInfo struct {
 }
 
 type LibraryInfo struct {
-	// Each package metadata have the file path, while a package from lock files do not have
+	// Each package metadata have the file path, while the package from lock files does not have
 	FilePath string `json:",omitempty"`
 
 	// Library holds package name, version, etc.

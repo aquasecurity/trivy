@@ -14,7 +14,6 @@ import (
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/artifact/local"
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/hook"
 	"github.com/aquasecurity/fanal/types"
 )
 
@@ -37,8 +36,7 @@ type Artifact struct {
 	local artifact.Artifact
 }
 
-func NewArtifact(rawurl string, c cache.ArtifactCache, disabledAnalyzers []analyzer.Type, disabledHooks []hook.Type,
-	opt config.ScannerOption) (
+func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (
 	artifact.Artifact, func(), error) {
 	cleanup := func() {}
 
@@ -65,9 +63,9 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, disabledAnalyzers []analy
 		_ = os.RemoveAll(tmpDir)
 	}
 
-	disabledAnalyzers = append(disabledAnalyzers, defaultDisabledAnalyzers...)
+	artifactOpt.DisabledAnalyzers = append(artifactOpt.DisabledAnalyzers, defaultDisabledAnalyzers...)
 
-	art, err := local.NewArtifact(tmpDir, c, disabledAnalyzers, disabledHooks, opt)
+	art, err := local.NewArtifact(tmpDir, c, artifactOpt, scannerOpt)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("fs artifact: %w", err)
 	}
@@ -93,7 +91,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 func newURL(rawurl string) (*url.URL, error) {
 	u, err := url.Parse(rawurl)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("url parse error: %w", err)
 	}
 	// "https://" can be omitted
 	// e.g. github.com/aquasecurity/fanal

@@ -28,18 +28,10 @@ type ScannerOption struct {
 }
 
 func (o *ScannerOption) Sort() {
-	sort.Slice(o.Namespaces, func(i, j int) bool {
-		return o.Namespaces[i] < o.Namespaces[j]
-	})
-	sort.Slice(o.FilePatterns, func(i, j int) bool {
-		return o.FilePatterns[i] < o.FilePatterns[j]
-	})
-	sort.Slice(o.PolicyPaths, func(i, j int) bool {
-		return o.PolicyPaths[i] < o.PolicyPaths[j]
-	})
-	sort.Slice(o.DataPaths, func(i, j int) bool {
-		return o.DataPaths[i] < o.DataPaths[j]
-	})
+	sort.Strings(o.Namespaces)
+	sort.Strings(o.FilePatterns)
+	sort.Strings(o.PolicyPaths)
+	sort.Strings(o.DataPaths)
 }
 
 func RegisterConfigAnalyzers(filePatterns []string) error {

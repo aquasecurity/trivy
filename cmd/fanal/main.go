@@ -47,6 +47,14 @@ func run() (err error) {
 						Name:  "conf-policy",
 						Usage: "policy paths",
 					},
+					&cli.StringSliceFlag{
+						Name:  "skip-files",
+						Usage: "skip files",
+					},
+					&cli.StringSliceFlag{
+						Name:  "skip-dirs",
+						Usage: "skip dirs",
+					},
 				},
 				Action: globalOption(imageAction),
 			},
@@ -69,6 +77,14 @@ func run() (err error) {
 					&cli.StringSliceFlag{
 						Name:  "policy",
 						Usage: "policy paths",
+					},
+					&cli.StringSliceFlag{
+						Name:  "skip-files",
+						Usage: "skip files",
+					},
+					&cli.StringSliceFlag{
+						Name:  "skip-dirs",
+						Usage: "skip dirs",
 					},
 				},
 				Action: globalOption(fsAction),
@@ -127,9 +143,15 @@ func initializeCache(backend string) (cache.Cache, error) {
 }
 
 func imageAction(c *cli.Context, fsCache cache.Cache) error {
-	art, cleanup, err := imageArtifact(c.Context, c.Args().First(), fsCache, config.ScannerOption{
-		PolicyPaths: c.StringSlice("conf-policy"),
-	})
+	artifactOpt := artifact.Option{
+		SkipFiles: c.StringSlice("skip-files"),
+		SkipDirs:  c.StringSlice("skip-dirs"),
+	}
+	scannerOpt := config.ScannerOption{
+		PolicyPaths: c.StringSlice("policy"),
+	}
+
+	art, cleanup, err := imageArtifact(c.Context, c.Args().First(), fsCache, artifactOpt, scannerOpt)
 	if err != nil {
 		return err
 	}
@@ -146,10 +168,16 @@ func archiveAction(c *cli.Context, fsCache cache.Cache) error {
 }
 
 func fsAction(c *cli.Context, fsCache cache.Cache) error {
-	art, err := local.NewArtifact(c.Args().First(), fsCache, nil, nil, config.ScannerOption{
+	artifactOpt := artifact.Option{
+		SkipFiles: c.StringSlice("skip-files"),
+		SkipDirs:  c.StringSlice("skip-dirs"),
+	}
+	scannerOpt := config.ScannerOption{
 		Namespaces:  []string{"appshield"},
 		PolicyPaths: c.StringSlice("policy"),
-	})
+	}
+
+	art, err := local.NewArtifact(c.Args().First(), fsCache, artifactOpt, scannerOpt)
 	if err != nil {
 		return err
 	}
@@ -203,7 +231,8 @@ func inspect(ctx context.Context, art artifact.Artifact, c cache.LocalArtifactCa
 	return nil
 }
 
-func imageArtifact(ctx context.Context, imageName string, c cache.ArtifactCache, opt config.ScannerOption) (artifact.Artifact, func(), error) {
+func imageArtifact(ctx context.Context, imageName string, c cache.ArtifactCache,
+	artifactOpt artifact.Option, scannerOpt config.ScannerOption) (artifact.Artifact, func(), error) {
 	img, cleanup, err := image.NewDockerImage(ctx, imageName, types.DockerOption{
 		Timeout:  600 * time.Second,
 		SkipPing: true,
@@ -212,7 +241,7 @@ func imageArtifact(ctx context.Context, imageName string, c cache.ArtifactCache,
 		return nil, func() {}, err
 	}
 
-	art, err := aimage.NewArtifact(img, c, nil, nil, opt)
+	art, err := aimage.NewArtifact(img, c, artifactOpt, scannerOpt)
 	if err != nil {
 		return nil, func() {}, err
 	}
@@ -225,7 +254,7 @@ func archiveImageArtifact(imagePath string, c cache.ArtifactCache) (artifact.Art
 		return nil, err
 	}
 
-	art, err := aimage.NewArtifact(img, c, nil, nil, config.ScannerOption{})
+	art, err := aimage.NewArtifact(img, c, artifact.Option{}, config.ScannerOption{})
 	if err != nil {
 		return nil, err
 	}
@@ -233,5 +262,5 @@ func archiveImageArtifact(imagePath string, c cache.ArtifactCache) (artifact.Art
 }
 
 func remoteArtifact(dir string, c cache.ArtifactCache) (artifact.Artifact, func(), error) {
-	return remote.NewArtifact(dir, c, nil, nil, config.ScannerOption{})
+	return remote.NewArtifact(dir, c, artifact.Option{}, config.ScannerOption{})
 }

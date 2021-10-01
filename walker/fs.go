@@ -1,35 +1,55 @@
 package walker
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sync"
 
-	"github.com/saracen/walker"
-
+	swalker "github.com/saracen/walker"
 	"golang.org/x/xerrors"
 )
 
-// WalkDir walks the file tree rooted at root, calling WalkFunc for each file or
+type Dir struct {
+	walker
+}
+
+func NewDir(skipFiles, skipDirs []string) Dir {
+	return Dir{
+		walker: newWalker(skipFiles, skipDirs),
+	}
+}
+
+// Walk walks the file tree rooted at root, calling WalkFunc for each file or
 // directory in the tree, including root, but a directory to be ignored will be skipped.
-func WalkDir(root string, f WalkFunc) error {
+func (w Dir) Walk(root string, fn WalkFunc) error {
 	// walk function called for every path found
 	walkFn := func(pathname string, fi os.FileInfo) error {
-		if !fi.Mode().IsRegular() {
-			return nil
-		} else if isIgnored(pathname) {
-			return filepath.SkipDir
-		}
 		pathname = filepath.Clean(pathname)
-		if err := f(pathname, fi, fileOnceOpener(pathname)); err != nil {
+
+		if fi.IsDir() {
+			if w.shouldSkipDir(pathname) {
+				return filepath.SkipDir
+			}
+			return nil
+		} else if !fi.Mode().IsRegular() {
+			return nil
+		} else if w.shouldSkipFile(pathname) {
+			return nil
+		}
+
+		f, err := os.Open(pathname)
+		if err != nil {
+			return xerrors.Errorf("file open error (%s): %w", pathname, err)
+		}
+		defer f.Close()
+
+		if err = fn(pathname, fi, w.fileOnceOpener(f)); err != nil {
 			return xerrors.Errorf("failed to analyze file: %w", err)
 		}
 		return nil
 	}
 
 	// error function called for every error encountered
-	errorCallbackOption := walker.WithErrorCallback(func(pathname string, err error) error {
+	errorCallbackOption := swalker.WithErrorCallback(func(pathname string, err error) error {
 		// ignore permission errors
 		if os.IsPermission(err) {
 			return nil
@@ -40,25 +60,8 @@ func WalkDir(root string, f WalkFunc) error {
 
 	// Multiple goroutines stat the filesystem concurrently. The provided
 	// walkFn must be safe for concurrent use.
-	if err := walker.Walk(root, walkFn, errorCallbackOption); err != nil {
-		return err
+	if err := swalker.Walk(root, walkFn, errorCallbackOption); err != nil {
+		return xerrors.Errorf("walk error: %w", err)
 	}
 	return nil
-}
-
-// fileOnceOpener opens a file once and the content is shared so that some analyzers can use the same data
-func fileOnceOpener(filePath string) func() ([]byte, error) {
-	var once sync.Once
-	var b []byte
-	var err error
-
-	return func() ([]byte, error) {
-		once.Do(func() {
-			b, err = ioutil.ReadFile(filePath)
-		})
-		if err != nil {
-			return nil, xerrors.Errorf("unable to read file: %w", err)
-		}
-		return b, nil
-	}
 }
