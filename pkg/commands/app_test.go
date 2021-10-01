@@ -3,7 +3,6 @@ package commands
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -81,7 +80,7 @@ Vulnerability DB:
 			case tt.args.cacheDir != "":
 				cacheDir = tt.args.cacheDir
 			default:
-				cacheDir, _ = ioutil.TempDir("", "Test_showVersion-*")
+				cacheDir, _ = os.MkdirTemp("", "Test_showVersion-*")
 				defer os.RemoveAll(cacheDir)
 			}
 

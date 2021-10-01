@@ -10,7 +10,7 @@ Trivy_container_scanning:
     IMAGE: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
   allow_failure: true
   before_script:
-    - export TRIVY_VERSION=${TRIVY_VERSION:-v0.4.3}
+    - export TRIVY_VERSION=${TRIVY_VERSION:-v0.19.2}
     - apk add --no-cache curl docker-cli
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${TRIVY_VERSION}
