@@ -15,9 +15,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/report"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -84,4 +86,30 @@ func waitPort(ctx context.Context, addr string) error {
 			time.Sleep(1 * time.Second)
 		}
 	}
+}
+
+func readReport(t *testing.T, filePath string) report.Report {
+	t.Helper()
+
+	f, err := os.Open(filePath)
+	require.NoError(t, err, filePath)
+	defer f.Close()
+
+	var res report.Report
+	err = json.NewDecoder(f).Decode(&res)
+	require.NoError(t, err, filePath)
+
+	// We don't compare history because the nano-seconds in "created" don't match
+	res.Metadata.ImageConfig.History = nil
+
+	// We don't compare repo tags because the archive doesn't support it
+	res.Metadata.RepoTags = nil
+
+	return res
+}
+
+func compareReports(t *testing.T, wantFile, gotFile string) {
+	want := readReport(t, wantFile)
+	got := readReport(t, gotFile)
+	assert.Equal(t, want, got)
 }
