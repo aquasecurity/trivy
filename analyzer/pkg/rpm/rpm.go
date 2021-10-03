@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/aquasecurity/fanal/log"
 	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
 	"golang.org/x/xerrors"
 
@@ -24,6 +25,7 @@ var requiredFiles = []string{
 	"usr/lib/sysimage/rpm/Packages",
 	"var/lib/rpm/Packages",
 }
+var errUnexpectedNameFormat = xerrors.New("unexpected name format")
 
 type rpmPkgAnalyzer struct{}
 
@@ -84,7 +86,10 @@ func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) ([]types.Package, []st
 		var srcName, srcVer, srcRel string
 		if pkg.SourceRpm != "(none)" && pkg.SourceRpm != "" {
 			// source epoch is not included in SOURCERPM
-			srcName, srcVer, srcRel = splitFileName(pkg.SourceRpm)
+			srcName, srcVer, srcRel, err = splitFileName(pkg.SourceRpm)
+			if err != nil {
+				log.Logger.Debugf("Invalid Source RPM Found: %s", pkg.SourceRpm)
+			}
 		}
 
 		files, err := pkg.InstalledFiles()
@@ -117,21 +122,30 @@ func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) ([]types.Package, []st
 //    foo-1.0-1.i386.rpm returns foo, 1.0, 1, i386
 //    1:bar-9-123a.ia64.rpm returns bar, 9, 123a, 1, ia64
 // https://github.com/rpm-software-management/yum/blob/043e869b08126c1b24e392f809c9f6871344c60d/rpmUtils/miscutils.py#L301
-func splitFileName(filename string) (name, ver, rel string) {
+func splitFileName(filename string) (name, ver, rel string, err error) {
 	if strings.HasSuffix(filename, ".rpm") {
 		filename = filename[:len(filename)-4]
 	}
 
 	archIndex := strings.LastIndex(filename, ".")
+	if archIndex == -1 {
+		return "", "", "", errUnexpectedNameFormat
+	}
 
 	relIndex := strings.LastIndex(filename[:archIndex], "-")
+	if relIndex == -1 {
+		return "", "", "", errUnexpectedNameFormat
+	}
 	rel = filename[relIndex+1 : archIndex]
 
 	verIndex := strings.LastIndex(filename[:relIndex], "-")
+	if verIndex == -1 {
+		return "", "", "", errUnexpectedNameFormat
+	}
 	ver = filename[verIndex+1 : relIndex]
 
 	name = filename[:verIndex]
-	return name, ver, rel
+	return name, ver, rel, nil
 }
 
 func (a rpmPkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
