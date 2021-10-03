@@ -552,6 +552,8 @@ func NewClientCommand() *cli.Command {
 			&ignoreFileFlag,
 			&timeoutFlag,
 			&ignorePolicy,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
 			&listAllPackages,
 

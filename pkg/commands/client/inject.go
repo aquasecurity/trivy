@@ -1,3 +1,4 @@
+//go:build wireinject
 // +build wireinject
 
 package client
@@ -8,9 +9,8 @@ import (
 
 	"github.com/google/wire"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/hook"
 	"github.com/aquasecurity/fanal/analyzer/config"
+	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -18,15 +18,15 @@ import (
 )
 
 func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders,
-	url client.RemoteURL, timeout time.Duration, disabled []analyzer.Type, disabledhook []hook.Type, configScannerOption config.ScannerOption) (
+	url client.RemoteURL, timeout time.Duration, artifactOption artifact.Option, configScannerOption config.ScannerOption) (
 	scanner.Scanner, func(), error) {
 	wire.Build(scanner.RemoteDockerSet)
 	return scanner.Scanner{}, nil, nil
 }
 
 func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
-	customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration, disabled []analyzer.Type,
-	disabledhook []hook.Type, configScannerOption config.ScannerOption) (scanner.Scanner, error) {
+	customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration, artifactOption artifact.Option,
+	configScannerOption config.ScannerOption) (scanner.Scanner, error) {
 	wire.Build(scanner.RemoteArchiveSet)
 	return scanner.Scanner{}, nil
 }

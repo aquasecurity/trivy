@@ -6,6 +6,4 @@ type ScanOptions struct {
 	SecurityChecks      []string
 	ScanRemovedPackages bool
 	ListAllPackages     bool
-	SkipFiles           []string
-	SkipDirs            []string
 }
