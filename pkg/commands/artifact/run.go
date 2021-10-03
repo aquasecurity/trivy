@@ -10,8 +10,8 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
+	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/hook"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -27,7 +27,7 @@ var errSkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanner type to define initialize function signature
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration,
-	[]analyzer.Type, []hook.Type, config.ScannerOption) (scanner.Scanner, func(), error)
+	artifact.Option, config.ScannerOption) (scanner.Scanner, func(), error)
 
 // InitCache defines cache initializer
 type InitCache func(c Option) (cache.Cache, error)
@@ -146,8 +146,6 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		SecurityChecks:      opt.SecurityChecks,
 		ScanRemovedPackages: opt.ScanRemovedPkgs, // this is valid only for image subcommand
 		ListAllPackages:     opt.ListAllPkgs,
-		SkipFiles:           opt.SkipFiles,
-		SkipDirs:            opt.SkipDirs,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
@@ -179,8 +177,13 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		}
 	}
 
-	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Timeout,
-		disabledAnalyzers, nil, configScannerOptions)
+	artifactOpt := artifact.Option{
+		DisabledAnalyzers: disabledAnalyzers,
+		SkipFiles:         opt.SkipFiles,
+		SkipDirs:          opt.SkipDirs,
+	}
+
+	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Timeout, artifactOpt, configScannerOptions)
 	if err != nil {
 		return pkgReport.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}

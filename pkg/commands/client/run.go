@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
+	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -146,10 +147,16 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 		}
 	}
 
+	artifactOpt := artifact.Option{
+		DisabledAnalyzers: disabledAnalyzers,
+		SkipFiles:         opt.SkipFiles,
+		SkipDirs:          opt.SkipDirs,
+	}
+
 	if opt.Input != "" {
 		// Scan tar file
 		s, err := initializeArchiveScanner(ctx, opt.Input, remoteCache, client.CustomHeaders(opt.CustomHeaders),
-			client.RemoteURL(opt.RemoteAddr), opt.Timeout, disabledAnalyzers, nil, configScannerOptions)
+			client.RemoteURL(opt.RemoteAddr), opt.Timeout, artifactOpt, configScannerOptions)
 		if err != nil {
 			return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 		}
@@ -158,7 +165,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 
 	// Scan an image in Docker Engine or Docker Registry
 	s, cleanup, err := initializeDockerScanner(ctx, opt.Target, remoteCache, client.CustomHeaders(opt.CustomHeaders),
-		client.RemoteURL(opt.RemoteAddr), opt.Timeout, disabledAnalyzers, nil, configScannerOptions)
+		client.RemoteURL(opt.RemoteAddr), opt.Timeout, artifactOpt, configScannerOptions)
 	if err != nil {
 		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the docker scanner: %w", err)
 	}
