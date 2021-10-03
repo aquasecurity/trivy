@@ -31,6 +31,7 @@ var (
 		ftypes.PythonPkg: "Python",
 		ftypes.GemSpec:   "Ruby",
 		ftypes.NodePkg:   "Node.js",
+		ftypes.Jar:       "Java",
 	}
 )
 
