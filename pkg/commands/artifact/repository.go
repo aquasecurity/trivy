@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/scanner"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func repositoryScanner(ctx context.Context, dir string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
@@ -29,6 +30,9 @@ func RepositoryRun(ctx *cli.Context) error {
 	if err != nil {
 		return xerrors.Errorf("option error: %w", err)
 	}
+
+	// Do not scan OS packages
+	opt.VulnType = []string{types.VulnTypeLibrary}
 
 	// Disable the OS analyzers and individual package analyzers
 	opt.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
