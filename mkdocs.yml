@@ -21,6 +21,7 @@ nav:
               - Image: getting-started/cli/image.md
               - Config: getting-started/cli/config.md
               - Filesystem: getting-started/cli/fs.md
+              - Rootfs: getting-started/cli/rootfs.md
               - Repository: getting-started/cli/repo.md
               - Client: getting-started/cli/client.md
               - Server: getting-started/cli/server.md
@@ -29,6 +30,7 @@ nav:
           - Overview: vulnerability/scanning/index.md
           - Container Image: vulnerability/scanning/image.md
           - Filesystem: vulnerability/scanning/filesystem.md
+          - Rootfs: vulnerability/scanning/rootfs.md
           - Git Repository: vulnerability/scanning/git-repository.md
       - Detection:
           - OS Packages: vulnerability/detection/os.md
