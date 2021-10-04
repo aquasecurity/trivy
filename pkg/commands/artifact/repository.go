@@ -30,8 +30,8 @@ func RepositoryRun(ctx *cli.Context) error {
 		return xerrors.Errorf("option error: %w", err)
 	}
 
-	// Disable the individual package scanning
-	opt.DisabledAnalyzers = analyzer.TypeIndividualPkgs
+	// Disable the OS analyzers and individual package analyzers
+	opt.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes)
 
 	return Run(ctx.Context, opt, repositoryScanner, initFSCache)
 }
