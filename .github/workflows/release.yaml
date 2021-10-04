@@ -57,7 +57,7 @@ jobs:
           username: ${{ secrets.ECR_ACCESS_KEY_ID }}
           password: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
       - name: Generate SBOM
-        uses: CycloneDX/gh-gomod-generate-sbom@v0.3.0
+        uses: CycloneDX/gh-gomod-generate-sbom@v1
         with:
           json: true
           output: bom.json
