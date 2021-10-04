@@ -202,10 +202,8 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/fanal v0.0.0-20211003111225-62545988ce3f h1:HS3cEuBKJ28l89UN9fg8IQWRX+AZKcpa6xZN0SNeCO4=
-github.com/aquasecurity/fanal v0.0.0-20211003111225-62545988ce3f/go.mod h1:FyKpqN6I6emeoEFdU3BKHyTpr47g2gwzIdJQDbm/Z+0=
-github.com/aquasecurity/fanal v0.0.0-20211004070100-eb291d3fb538 h1:uNPUl2xh88tYRhbduC9b9GruNwn8vF4eYTRRcD+urAU=
-github.com/aquasecurity/fanal v0.0.0-20211004070100-eb291d3fb538/go.mod h1:FyKpqN6I6emeoEFdU3BKHyTpr47g2gwzIdJQDbm/Z+0=
+github.com/aquasecurity/fanal v0.0.0-20211004103628-a3e6bd0a4c2a h1:hfgNXom1CQ8w4W+xGDJVjuL8gz6Rk+PGrPb5Hv8vdzM=
+github.com/aquasecurity/fanal v0.0.0-20211004103628-a3e6bd0a4c2a/go.mod h1:nXdCM1C89phZEkn/sHQ6S5IjcvxdTnXLSKcftmhFodg=
 github.com/aquasecurity/go-dep-parser v0.0.0-20210919151457-76db061b9305 h1:xsniAD6IrP+stY8tkytxE2tk8czkzSN3XaUvzoi1hCk=
 github.com/aquasecurity/go-dep-parser v0.0.0-20210919151457-76db061b9305/go.mod h1:Zc7Eo6tFl9l4XcqsWeabD7jHnXRBK/LdgZuu9GTSVLU=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -2156,5 +2154,7 @@ sigs.k8s.io/structured-merge-diff/v4 v4.0.2/go.mod h1:bJZC9H9iH24zzfZ/41RGcq60oK
 sigs.k8s.io/structured-merge-diff/v4 v4.0.3/go.mod h1:bJZC9H9iH24zzfZ/41RGcq60oK1F7G282QMXDPYydCw=
 sigs.k8s.io/yaml v1.1.0/go.mod h1:UJmg0vDUVViEyp3mgSv9WPwZCDxu4rQW1olrI1uml+o=
 sigs.k8s.io/yaml v1.2.0/go.mod h1:yfXDCHCao9+ENCvLSE62v9VSji2MKu5jeNfTrofGhJc=
+sigs.k8s.io/yaml v1.3.0 h1:a2VclLzOGrwOHDiV8EfBGhvjHvP46CtW5j6POvhYGGo=
+sigs.k8s.io/yaml v1.3.0/go.mod h1:GeOyir5tyXNByN85N/dRIT9es5UQNerPYEKK56eTBm8=
 sourcegraph.com/sqs/pbtypes v0.0.0-20180604144634-d3ebe8f20ae4/go.mod h1:ketZ/q3QxT9HOBeFhu6RdvsftgpsbFHBF5Cas6cDKZ0=
 sourcegraph.com/sqs/pbtypes v1.0.0/go.mod h1:3AciMUv4qUuRHRHhOG4TZOB+72GdPVz5k+c648qsFS4=
