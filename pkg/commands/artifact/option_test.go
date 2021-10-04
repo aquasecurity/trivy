@@ -94,25 +94,6 @@ func TestOption_Init(t *testing.T) {
 			},
 		},
 		{
-			name: "deprecated options",
-			args: []string{"--only-update", "alpine", "--severity", "LOW", "debian:buster"},
-			logs: []string{
-				"--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.",
-			},
-			want: Option{
-				ReportOption: option.ReportOption{
-					Severities:     []dbTypes.Severity{dbTypes.SeverityLow},
-					Output:         os.Stdout,
-					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability},
-				},
-				ArtifactOption: option.ArtifactOption{
-					Target: "debian:buster",
-				},
-				onlyUpdate: "alpine",
-			},
-		},
-		{
 			name: "invalid option combination: --template enabled without --format",
 			args: []string{"--template", "@contrib/gitlab.tpl", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
@@ -196,11 +177,9 @@ func TestOption_Init(t *testing.T) {
 			set.Bool("reset", false, "")
 			set.Bool("skip-db-update", false, "")
 			set.Bool("download-db-only", false, "")
-			set.Bool("auto-refresh", false, "")
 			set.String("severity", "CRITICAL", "")
 			set.String("vuln-type", "os,library", "")
 			set.String("security-checks", "vuln", "")
-			set.String("only-update", "", "")
 			set.String("template", "", "")
 			set.String("format", "", "")
 
