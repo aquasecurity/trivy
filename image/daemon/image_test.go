@@ -81,24 +81,30 @@ func Test_image_ConfigFile(t *testing.T) {
 			imageName: "alpine:3.11",
 			want: &v1.ConfigFile{
 				Architecture:  "amd64",
+				Container:     "fb71ddde5f6411a82eb056a9190f0cc1c80d7f77a8509ee90a2054428edb0024",
 				OS:            "linux",
 				Created:       v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
 				DockerVersion: "18.09.7",
 				History: []v1.History{
 					{
 						Created:    v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 0, time.UTC)},
-						CreatedBy:  "/bin/sh -c #(nop) ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
-						EmptyLayer: false,
-					},
-					{
-						Created:    v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 0, time.UTC)},
 						CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
 						Comment:    "",
 						EmptyLayer: true,
 					},
+					{
+						Created:    v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 0, time.UTC)},
+						CreatedBy:  "/bin/sh -c #(nop) ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
+						EmptyLayer: false,
+					},
 				},
-				RootFS:    v1.RootFS{Type: "layers", DiffIDs: []v1.Hash{v1.Hash{Algorithm: "sha256", Hex: "beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"}}},
-				Config:    v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"}},
+				RootFS: v1.RootFS{Type: "layers", DiffIDs: []v1.Hash{v1.Hash{Algorithm: "sha256", Hex: "beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"}}},
+				Config: v1.Config{
+					Cmd:         []string{"/bin/sh"},
+					Image:       "sha256:74df73bb19fbfc7fb5ab9a8234b3d98ee2fb92df5b824496679802685205ab8c",
+					Env:         []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
+					ArgsEscaped: true,
+				},
 				OSVersion: "",
 			},
 			wantErr: false,
