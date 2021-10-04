@@ -44,7 +44,7 @@ func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
 								"name": "hello-kubernetes",
 							},
 							"spec": map[string]interface{}{
-								"replicas": 3,
+								"replicas": float64(3),
 							},
 						},
 					},
@@ -72,7 +72,7 @@ func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
 								"name": "hello-kubernetes",
 							},
 							"spec": map[string]interface{}{
-								"replicas": 4,
+								"replicas": float64(4),
 							},
 						},
 					},
@@ -104,10 +104,10 @@ func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
 							"john": map[string]interface{}{
 								"john_name": "john",
 							},
-							"main": map[interface{}]interface{}{
+							"main": map[string]interface{}{
 								"comment": "multi\nline\n",
 								"line":    "single line",
-								"name": map[interface{}]interface{}{
+								"name": map[string]interface{}{
 									"fred_name": "fred",
 									"john_name": "john",
 								},
@@ -139,7 +139,7 @@ func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
 								"name": "hello-kubernetes",
 							},
 							"spec": map[string]interface{}{
-								"replicas": 4,
+								"replicas": float64(4),
 							},
 						},
 					},
@@ -154,11 +154,37 @@ func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
 							},
 							"spec": map[string]interface{}{
 								"ports": []interface{}{map[string]interface{}{
-									"port":       80,
+									"port":       float64(80),
 									"protocol":   "TCP",
-									"targetPort": 8080,
+									"targetPort": float64(8080),
 								},
 								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy with yaml which incompatible with json spec",
+			args: args{
+				namespaces:  []string{"main"},
+				policyPaths: []string{"testdata/deny.rego"},
+			},
+			inputFile: "testdata/incompatible_json.yaml",
+			want: &analyzer.AnalysisResult{
+				OS:           (*types.OS)(nil),
+				PackageInfos: []types.PackageInfo(nil),
+				Applications: []types.Application(nil),
+				Configs: []types.Config{
+					{
+						Type:     "yaml",
+						FilePath: "testdata/incompatible_json.yaml",
+						Content: map[string]interface{}{
+							"replacements": map[string]interface{}{
+								"amd64": "64bit",
+								"386":   "32bit",
+								"arm":   "ARM",
 							},
 						},
 					},

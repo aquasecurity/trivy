@@ -27,7 +27,7 @@ func TestParser_Parse(t *testing.T) {
 					"name": "hello-kubernetes",
 				},
 				"spec": map[string]interface{}{
-					"replicas": 4,
+					"replicas": float64(4),
 				},
 			},
 		},

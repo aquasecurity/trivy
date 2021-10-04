@@ -4,7 +4,7 @@ import (
 	"bytes"
 
 	"golang.org/x/xerrors"
-	"gopkg.in/yaml.v3"
+	"sigs.k8s.io/yaml"
 )
 
 // Parser is a YAML parser.
