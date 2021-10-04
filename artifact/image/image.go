@@ -27,27 +27,6 @@ const (
 	parallel = 5
 )
 
-var (
-	defaultDisabledAnalyzers = []analyzer.Type{
-		// Do not scan go.sum in container images, only scan go binaries
-		analyzer.TypeGoMod,
-
-		// Do not scan requirements.txt, Pipfile.lock and poetry.lock in container images, only scan egg and wheel
-		analyzer.TypePip,
-		analyzer.TypePipenv,
-		analyzer.TypePoetry,
-
-		// Do not scan Gemfile.lock in container images, only scan .gemspec
-		analyzer.TypeBundler,
-
-		// Do not scan package-lock.json and yarn.lock in container images, only scan package.json
-		analyzer.TypeNpmPkgLock,
-		analyzer.TypeYarn,
-	}
-
-	defaultDisabledHooks []hook.Type
-)
-
 type Artifact struct {
 	image       types.Image
 	cache       cache.ArtifactCache
@@ -71,15 +50,12 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, artifactOpt artifact.Op
 		return nil, xerrors.Errorf("scanner error: %w", err)
 	}
 
-	disabledAnalyzers := append(artifactOpt.DisabledAnalyzers, defaultDisabledAnalyzers...)
-	disabledHooks := append(artifactOpt.DisabledHooks, defaultDisabledHooks...)
-
 	return Artifact{
 		image:       img,
 		cache:       c,
 		walker:      walker.NewLayerTar(artifactOpt.SkipFiles, artifactOpt.SkipDirs),
-		analyzer:    analyzer.NewAnalyzer(disabledAnalyzers),
-		hookManager: hook.NewManager(disabledHooks),
+		analyzer:    analyzer.NewAnalyzer(artifactOpt.DisabledAnalyzers),
+		hookManager: hook.NewManager(artifactOpt.DisabledHooks),
 		scanner:     s,
 
 		artifactOption:      artifactOpt,
