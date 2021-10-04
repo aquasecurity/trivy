@@ -17,7 +17,7 @@
         
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.6+insiders-3.0.0">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.1+insiders-3.1.1">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.58e805ff.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.cf34c07f.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.1d832a92.min.css">
@@ -577,6 +577,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../rootfs/" class="md-nav__link">
+        Rootfs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../repo/" class="md-nav__link">
         Repository
       </a>
@@ -725,6 +739,20 @@
     <li class="md-nav__item">
       <a href="../../../vulnerability/scanning/filesystem/" class="md-nav__link">
         Filesystem
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../vulnerability/scanning/rootfs/" class="md-nav__link">
+        Rootfs
       </a>
     </li>
   
@@ -1971,7 +1999,6 @@ USAGE:
 OPTIONS:
    --template value, -t value                     output template <span class="o">[</span><span class="nv">$TRIVY_TEMPLATE</span><span class="o">]</span>
    --format value, -f value                       format <span class="o">(</span>table, json, template<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;table&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_FORMAT</span><span class="o">]</span>
-   --input value, -i value                        input file path instead of image name <span class="o">[</span><span class="nv">$TRIVY_INPUT</span><span class="o">]</span>
    --severity value, -s value                     severities of vulnerabilities to be displayed <span class="o">(</span>comma separated<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SEVERITY</span><span class="o">]</span>
    --output value, -o value                       output file name <span class="o">[</span><span class="nv">$TRIVY_OUTPUT</span><span class="o">]</span>
    --exit-code value                              Exit code when vulnerabilities were found <span class="o">(</span>default: <span class="m">0</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_EXIT_CODE</span><span class="o">]</span>
@@ -1979,7 +2006,6 @@ OPTIONS:
    --skip-policy-update                           skip updating built-in policies <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SKIP_POLICY_UPDATE</span><span class="o">]</span>
    --clear-cache, -c                              clear image caches without scanning <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CLEAR_CACHE</span><span class="o">]</span>
    --ignore-unfixed                               display only fixed vulnerabilities <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_IGNORE_UNFIXED</span><span class="o">]</span>
-   --removed-pkgs                                 detect vulnerabilities of removed packages <span class="o">(</span>only <span class="k">for</span> Alpine<span class="o">)</span> <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_REMOVED_PKGS</span><span class="o">]</span>
    --vuln-type value                              comma-separated list of vulnerability types <span class="o">(</span>os,library<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;os,library&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_VULN_TYPE</span><span class="o">]</span>
    --security-checks value                        comma-separated list of what security issues to detect <span class="o">(</span>vuln,config<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;vuln&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SECURITY_CHECKS</span><span class="o">]</span>
    --ignorefile value                             specify .trivyignore file <span class="o">(</span>default: <span class="s2">&quot;.trivyignore&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_IGNOREFILE</span><span class="o">]</span>
@@ -2031,13 +2057,13 @@ OPTIONS:
       
       
         
-        <a href="../repo/" class="md-footer__link md-footer__link--next" aria-label="Next: Repository" rel="next">
+        <a href="../rootfs/" class="md-footer__link md-footer__link--next" aria-label="Next: Rootfs" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Repository
+              Rootfs
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -2064,10 +2090,10 @@ OPTIONS:
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.b07a6a97.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.b473f883.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.bb4d2ab6.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.665a53ce.min.js"></script>
       
     
   </body>
