@@ -21,13 +21,6 @@ type Option struct {
 	// We don't want to allow disabled analyzers to be passed by users,
 	// but it differs depending on scanning modes.
 	DisabledAnalyzers []analyzer.Type
-
-	// deprecated
-	onlyUpdate string
-	// deprecated
-	refresh bool
-	// deprecated
-	autoRefresh bool
 }
 
 // NewOption is the factory method to return options
@@ -45,19 +38,11 @@ func NewOption(c *cli.Context) (Option, error) {
 		ReportOption:   option.NewReportOption(c),
 		CacheOption:    option.NewCacheOption(c),
 		ConfigOption:   option.NewConfigOption(c),
-
-		onlyUpdate:  c.String("only-update"),
-		refresh:     c.Bool("refresh"),
-		autoRefresh: c.Bool("auto-refresh"),
 	}, nil
 }
 
 // Init initializes the artifact options
 func (c *Option) Init() error {
-	if c.onlyUpdate != "" || c.refresh || c.autoRefresh {
-		c.Logger.Warn("--only-update, --refresh and --auto-refresh are unnecessary and ignored now. These commands will be removed in the next version.")
-	}
-
 	if err := c.initPreScanOptions(); err != nil {
 		return err
 	}

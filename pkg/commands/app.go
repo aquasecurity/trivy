@@ -312,25 +312,6 @@ var (
 		stringSliceFlag(skipFiles),
 		stringSliceFlag(skipDirs),
 	}
-
-	// deprecated options
-	deprecatedFlags = []cli.Flag{
-		&cli.StringFlag{
-			Name:    "only-update",
-			Usage:   "deprecated",
-			EnvVars: []string{"TRIVY_ONLY_UPDATE"},
-		},
-		&cli.BoolFlag{
-			Name:    "refresh",
-			Usage:   "deprecated",
-			EnvVars: []string{"TRIVY_REFRESH"},
-		},
-		&cli.BoolFlag{
-			Name:    "auto-refresh",
-			Usage:   "deprecated",
-			EnvVars: []string{"TRIVY_AUTO_REFRESH"},
-		},
-	}
 )
 
 // NewApp is the factory method to return Trivy CLI
@@ -346,8 +327,7 @@ func NewApp(version string) *cli.App {
 	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
 	app.EnableBashCompletion = true
 
-	flags := append(globalFlags, setHidden(deprecatedFlags, true)...)
-	flags = append(flags, setHidden(imageFlags, true)...)
+	flags := append(globalFlags, setHidden(imageFlags, true)...)
 
 	app.Flags = flags
 	app.Commands = []*cli.Command{
