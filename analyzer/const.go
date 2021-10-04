@@ -54,7 +54,6 @@ const (
 	TypePip       Type = "pip"
 	TypePipenv    Type = "pipenv"
 	TypePoetry    Type = "poetry"
-	TypeWheel     Type = "wheel"
 
 	// Go
 	TypeGoBinary Type = "gobinary"
@@ -86,6 +85,14 @@ var (
 	// TypeLanguages has all language analyzers
 	TypeLanguages = []Type{TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar,
 		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypeNuget, TypePythonPkg, TypePip, TypePipenv,
-		TypePoetry, TypeWheel, TypeGoBinary, TypeGoMod,
+		TypePoetry, TypeGoBinary, TypeGoMod,
 	}
+
+	// TypeLockfiles has all lock file analyzers
+	TypeLockfiles = []Type{TypeBundler, TypeNpmPkgLock, TypeYarn,
+		TypePip, TypePipenv, TypePoetry, TypeGoMod,
+	}
+
+	// TypeIndividualPkgs has all analyzers for individual packages
+	TypeIndividualPkgs = []Type{TypeGemSpec, TypeNodePkg, TypePythonPkg, TypeGoBinary}
 )

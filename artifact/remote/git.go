@@ -9,27 +9,12 @@ import (
 	git "github.com/go-git/go-git/v5"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/artifact/local"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/types"
 )
-
-var defaultDisabledAnalyzers = []analyzer.Type{
-	// Do not scan JAR/WAR/EAR in git repositories
-	analyzer.TypeJar,
-
-	// Do not scan egg and wheel in git repositories
-	analyzer.TypePythonPkg,
-
-	// Do not scan .gemspec in git repositories
-	analyzer.TypeGemSpec,
-
-	// Do not scan package.json in git repositories
-	analyzer.TypeNodePkg,
-}
 
 type Artifact struct {
 	url   string
@@ -62,8 +47,6 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 	cleanup = func() {
 		_ = os.RemoveAll(tmpDir)
 	}
-
-	artifactOpt.DisabledAnalyzers = append(artifactOpt.DisabledAnalyzers, defaultDisabledAnalyzers...)
 
 	art, err := local.NewArtifact(tmpDir, c, artifactOpt, scannerOpt)
 	if err != nil {
