@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -19,7 +20,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/urfave/cli/v2"
 )
 
 const defaultPolicyNamespace = "appshield"
