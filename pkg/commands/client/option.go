@@ -7,6 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 )
 
@@ -18,7 +19,10 @@ type Option struct {
 	option.ReportOption
 	option.ConfigOption
 
-	ListAllPkgs   bool
+	// We don't want to allow disabled analyzers to be passed by users,
+	// but it differs depending on scanning modes.
+	DisabledAnalyzers []analyzer.Type
+
 	RemoteAddr    string
 	token         string
 	tokenHeader   string
@@ -40,7 +44,6 @@ func NewOption(c *cli.Context) (Option, error) {
 		ImageOption:    option.NewImageOption(c),
 		ReportOption:   option.NewReportOption(c),
 		ConfigOption:   option.NewConfigOption(c),
-		ListAllPkgs:    c.Bool("list-all-pkgs"),
 		RemoteAddr:     c.String("remote"),
 		token:          c.String("token"),
 		tokenHeader:    c.String("token-header"),
@@ -62,11 +65,11 @@ func (c *Option) Init() (err error) {
 		c.CustomHeaders.Set(c.tokenHeader, c.token)
 	}
 
-	if err := c.ReportOption.Init(c.Logger); err != nil {
+	if err = c.ReportOption.Init(c.Logger); err != nil {
 		return err
 	}
 
-	if err := c.ArtifactOption.Init(c.Context, c.Logger); err != nil {
+	if err = c.ArtifactOption.Init(c.Context, c.Logger); err != nil {
 		return err
 	}
 

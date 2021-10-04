@@ -6,7 +6,7 @@ In this case, Trivy works the same way when scanning containers
 
 ```bash
 $ docker export $(docker create alpine:3.10.2) | tar -C /tmp/rootfs -xvf -
-$ trivy fs /tmp/rootfs
+$ trivy rootfs /tmp/rootfs
 ```
 
 <details>

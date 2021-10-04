@@ -4,6 +4,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 )
 
@@ -16,6 +17,10 @@ type Option struct {
 	option.ReportOption
 	option.CacheOption
 	option.ConfigOption
+
+	// We don't want to allow disabled analyzers to be passed by users,
+	// but it differs depending on scanning modes.
+	DisabledAnalyzers []analyzer.Type
 }
 
 // NewOption is the factory method to return options

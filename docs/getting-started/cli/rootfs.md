@@ -1,11 +1,11 @@
-# Filesystem
+# Rootfs
 
 ```bash
 NAME:
-   trivy filesystem - scan local filesystem
+   trivy rootfs - scan rootfs
 
 USAGE:
-   trivy filesystem [command options] dir
+   trivy rootfs [command options] dir
 
 OPTIONS:
    --template value, -t value                     output template [$TRIVY_TEMPLATE]

@@ -333,6 +333,7 @@ func NewApp(version string) *cli.App {
 	app.Commands = []*cli.Command{
 		NewImageCommand(),
 		NewFilesystemCommand(),
+		NewRootfsCommand(),
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
@@ -444,12 +445,11 @@ func NewFilesystemCommand() *cli.Command {
 		Name:      "filesystem",
 		Aliases:   []string{"fs"},
 		ArgsUsage: "dir",
-		Usage:     "scan local filesystem",
+		Usage:     "scan local filesystem for language-specific dependencies and config files",
 		Action:    artifact.FilesystemRun,
 		Flags: []cli.Flag{
 			&templateFlag,
 			&formatFlag,
-			&inputFlag,
 			&severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
@@ -457,7 +457,40 @@ func NewFilesystemCommand() *cli.Command {
 			&skipPolicyUpdateFlag,
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
-			&removedPkgsFlag,
+			&vulnTypeFlag,
+			&securityChecksFlag,
+			&ignoreFileFlag,
+			&cacheBackendFlag,
+			&timeoutFlag,
+			&noProgressFlag,
+			&ignorePolicy,
+			&listAllPackages,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+			stringSliceFlag(configPolicy),
+			stringSliceFlag(configData),
+			stringSliceFlag(policyNamespaces),
+		},
+	}
+}
+
+// NewRootfsCommand is the factory method to add filesystem command
+func NewRootfsCommand() *cli.Command {
+	return &cli.Command{
+		Name:      "rootfs",
+		ArgsUsage: "dir",
+		Usage:     "scan rootfs",
+		Action:    artifact.RootfsRun,
+		Flags: []cli.Flag{
+			&templateFlag,
+			&formatFlag,
+			&severityFlag,
+			&outputFlag,
+			&exitCodeFlag,
+			&skipDBUpdateFlag,
+			&skipPolicyUpdateFlag,
+			&clearCacheFlag,
+			&ignoreUnfixedFlag,
 			&vulnTypeFlag,
 			&securityChecksFlag,
 			&ignoreFileFlag,

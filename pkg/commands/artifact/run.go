@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -25,7 +26,7 @@ const defaultPolicyNamespace = "appshield"
 
 var errSkipScan = errors.New("skip subsequent processes")
 
-// InitializeScanner type to define initialize function signature
+// InitializeScanner defines the initialize function signature of scanner
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration,
 	artifact.Option, config.ScannerOption) (scanner.Scanner, func(), error)
 
@@ -134,6 +135,38 @@ func initDB(c Option) error {
 	return nil
 }
 
+func initOption(ctx *cli.Context) (Option, error) {
+	opt, err := NewOption(ctx)
+	if err != nil {
+		return Option{}, xerrors.Errorf("option error: %w", err)
+	}
+
+	// initialize options
+	if err = opt.Init(); err != nil {
+		return Option{}, xerrors.Errorf("option initialize error: %w", err)
+	}
+
+	return opt, nil
+}
+
+func disabledAnalyzers(opt Option) []analyzer.Type {
+	// Specified analyzers to be disabled depending on scanning modes
+	// e.g. The 'image' subcommand should disable the lock file scanning.
+	analyzers := opt.DisabledAnalyzers
+
+	// It doesn't analyze apk commands by default.
+	if !opt.ScanRemovedPkgs {
+		analyzers = append(analyzers, analyzer.TypeApkCommand)
+	}
+
+	// Don't analyze programming language packages when not running in 'library' mode
+	if !utils.StringInSlice(types.VulnTypeLibrary, opt.VulnType) {
+		analyzers = append(analyzers, analyzer.TypeLanguages...)
+	}
+
+	return analyzers
+}
+
 func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, cacheClient cache.Cache) (
 	pkgReport.Report, error) {
 	target := opt.Target
@@ -148,17 +181,6 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		ListAllPackages:     opt.ListAllPkgs,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
-
-	// It doesn't analyze apk commands by default.
-	disabledAnalyzers := []analyzer.Type{analyzer.TypeApkCommand}
-	if opt.ScanRemovedPkgs {
-		disabledAnalyzers = []analyzer.Type{}
-	}
-
-	// Don't analyze programming language packages when not running in 'library' mode
-	if !utils.StringInSlice(types.VulnTypeLibrary, opt.VulnType) {
-		disabledAnalyzers = append(disabledAnalyzers, analyzer.TypeLanguages...)
-	}
 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
@@ -178,7 +200,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	}
 
 	artifactOpt := artifact.Option{
-		DisabledAnalyzers: disabledAnalyzers,
+		DisabledAnalyzers: disabledAnalyzers(opt),
 		SkipFiles:         opt.SkipFiles,
 		SkipDirs:          opt.SkipDirs,
 	}

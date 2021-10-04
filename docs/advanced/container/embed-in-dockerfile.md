@@ -10,7 +10,7 @@ FROM alpine:3.7
 
 RUN apk add curl \
     && curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin \
-    && trivy filesystem --exit-code 1 --no-progress /
+    && trivy rootfs --exit-code 1 --no-progress /
 
 $ docker build -t vulnerable-image .
 ```
@@ -21,7 +21,7 @@ insecure `curl | sh`. Also the image is not changed.
 # Run vulnerability scan on build image
 FROM build AS vulnscan
 COPY --from=aquasec/trivy:latest /usr/local/bin/trivy /usr/local/bin/trivy
-RUN trivy filesystem --exit-code 1 --no-progress /
+RUN trivy rootfs --exit-code 1 --no-progress /
 [...]
 ```
 

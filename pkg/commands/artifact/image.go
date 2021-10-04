@@ -7,6 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
@@ -33,15 +34,13 @@ func dockerScanner(ctx context.Context, imageName string, ac cache.ArtifactCache
 
 // ImageRun runs scan on docker image
 func ImageRun(ctx *cli.Context) error {
-	opt, err := NewOption(ctx)
+	opt, err := initOption(ctx)
 	if err != nil {
 		return xerrors.Errorf("option error: %w", err)
 	}
 
-	// initialize options
-	if err = opt.Init(); err != nil {
-		return xerrors.Errorf("option initialize error: %w", err)
-	}
+	// Disable the lock file scanning
+	opt.DisabledAnalyzers = analyzer.TypeLockfiles
 
 	if opt.Input != "" {
 		// scan tar file

@@ -32,6 +32,9 @@ func Run(cliCtx *cli.Context) error {
 	ctx, cancel := context.WithTimeout(cliCtx.Context, opt.Timeout)
 	defer cancel()
 
+	// Disable the lock file scanning
+	opt.DisabledAnalyzers = analyzer.TypeLockfiles
+
 	err = runWithTimeout(ctx, opt)
 	if xerrors.Is(err, context.DeadlineExceeded) {
 		log.Logger.Warn("Increase --timeout value")
@@ -116,19 +119,26 @@ func initialize(opt *Option) error {
 	return nil
 }
 
-func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func(), error) {
-	remoteCache := cache.NewRemoteCache(cache.RemoteURL(opt.RemoteAddr), opt.CustomHeaders)
+func disabledAnalyzers(opt Option) []analyzer.Type {
+	// Specified analyzers to be disabled depending on scanning modes
+	// e.g. The 'image' subcommand should disable the lock file scanning.
+	analyzers := opt.DisabledAnalyzers
 
-	// By default, apk commands are not analyzed.
-	disabledAnalyzers := []analyzer.Type{analyzer.TypeApkCommand}
-	if opt.ScanRemovedPkgs {
-		disabledAnalyzers = []analyzer.Type{}
+	// It doesn't analyze apk commands by default.
+	if !opt.ScanRemovedPkgs {
+		analyzers = append(analyzers, analyzer.TypeApkCommand)
 	}
 
 	// Don't analyze programming language packages when not running in 'library' mode
 	if !utils.StringInSlice(types.VulnTypeLibrary, opt.VulnType) {
-		disabledAnalyzers = append(disabledAnalyzers, analyzer.TypeLanguages...)
+		analyzers = append(analyzers, analyzer.TypeLanguages...)
 	}
+
+	return analyzers
+}
+
+func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func(), error) {
+	remoteCache := cache.NewRemoteCache(cache.RemoteURL(opt.RemoteAddr), opt.CustomHeaders)
 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
@@ -148,7 +158,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	}
 
 	artifactOpt := artifact.Option{
-		DisabledAnalyzers: disabledAnalyzers,
+		DisabledAnalyzers: disabledAnalyzers(opt),
 		SkipFiles:         opt.SkipFiles,
 		SkipDirs:          opt.SkipDirs,
 	}

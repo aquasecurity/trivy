@@ -7,10 +7,12 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/scanner"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func repositoryScanner(ctx context.Context, dir string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
@@ -24,15 +26,16 @@ func repositoryScanner(ctx context.Context, dir string, ac cache.ArtifactCache, 
 
 // RepositoryRun runs scan on repository
 func RepositoryRun(ctx *cli.Context) error {
-	opt, err := NewOption(ctx)
+	opt, err := initOption(ctx)
 	if err != nil {
 		return xerrors.Errorf("option error: %w", err)
 	}
 
-	// initialize options
-	if err = opt.Init(); err != nil {
-		return xerrors.Errorf("failed to initialize options: %w", err)
-	}
+	// Do not scan OS packages
+	opt.VulnType = []string{types.VulnTypeLibrary}
+
+	// Disable the OS analyzers and individual package analyzers
+	opt.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
 
 	return Run(ctx.Context, opt, repositoryScanner, initFSCache)
 }
