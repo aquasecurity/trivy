@@ -4,20 +4,19 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // ConfigRun runs scan on config files
 func ConfigRun(ctx *cli.Context) error {
-	opt, err := NewOption(ctx)
+	opt, err := initOption(ctx)
 	if err != nil {
 		return xerrors.Errorf("option error: %w", err)
 	}
 
-	// initialize options
-	if err = opt.Init(); err != nil {
-		return xerrors.Errorf("failed to initialize options: %w", err)
-	}
+	// Disable OS and language analyzers
+	opt.DisabledAnalyzers = append(analyzer.TypeOSes, analyzer.TypeLanguages...)
 
 	// Scan only config files
 	opt.VulnType = nil

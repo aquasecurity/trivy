@@ -7,6 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
@@ -24,15 +25,13 @@ func repositoryScanner(ctx context.Context, dir string, ac cache.ArtifactCache, 
 
 // RepositoryRun runs scan on repository
 func RepositoryRun(ctx *cli.Context) error {
-	opt, err := NewOption(ctx)
+	opt, err := initOption(ctx)
 	if err != nil {
 		return xerrors.Errorf("option error: %w", err)
 	}
 
-	// initialize options
-	if err = opt.Init(); err != nil {
-		return xerrors.Errorf("failed to initialize options: %w", err)
-	}
+	// Disable the individual package scanning
+	opt.DisabledAnalyzers = analyzer.TypeIndividualPkgs
 
 	return Run(ctx.Context, opt, repositoryScanner, initFSCache)
 }

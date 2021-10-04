@@ -7,6 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
@@ -22,17 +23,28 @@ func filesystemScanner(ctx context.Context, dir string, ac cache.ArtifactCache, 
 	return s, cleanup, nil
 }
 
-// FilesystemRun runs scan on filesystem
+// FilesystemRun runs scan on filesystem for language-specific dependencies and config files
 func FilesystemRun(ctx *cli.Context) error {
-	opt, err := NewOption(ctx)
+	opt, err := initOption(ctx)
 	if err != nil {
 		return xerrors.Errorf("option error: %w", err)
 	}
 
-	// initialize options
-	if err = opt.Init(); err != nil {
-		return xerrors.Errorf("failed to initialize options: %w", err)
+	// Disable the individual package scanning
+	opt.DisabledAnalyzers = analyzer.TypeIndividualPkgs
+
+	return Run(ctx.Context, opt, filesystemScanner, initFSCache)
+}
+
+// RootfsRun runs scan on rootfs.
+func RootfsRun(ctx *cli.Context) error {
+	opt, err := initOption(ctx)
+	if err != nil {
+		return xerrors.Errorf("option error: %w", err)
 	}
+
+	// Disable the lock file scanning
+	opt.DisabledAnalyzers = analyzer.TypeLockfiles
 
 	return Run(ctx.Context, opt, filesystemScanner, initFSCache)
 }
