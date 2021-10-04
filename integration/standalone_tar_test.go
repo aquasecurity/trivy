@@ -6,6 +6,7 @@ package integration
 import (
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -381,7 +382,6 @@ func TestRun_WithTar(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-
 			osArgs := []string{"trivy"}
 			osArgs = append(osArgs, "--cache-dir", cacheDir)
 			if c.testArgs.WithImageSubcommand {
@@ -423,14 +423,9 @@ func TestRun_WithTar(t *testing.T) {
 			}
 
 			// Setup the output file
-			var outputFile string
+			outputFile := filepath.Join(t.TempDir(), "output.json")
 			if *update {
 				outputFile = c.golden
-			} else {
-				output, _ := os.CreateTemp("", "integration")
-				assert.Nil(t, output.Close())
-				defer os.Remove(output.Name())
-				outputFile = output.Name()
 			}
 
 			osArgs = append(osArgs, []string{"--output", outputFile}...)
@@ -439,12 +434,7 @@ func TestRun_WithTar(t *testing.T) {
 			assert.Nil(t, app.Run(osArgs))
 
 			// Compare want and got
-			want, err := os.ReadFile(c.golden)
-			assert.NoError(t, err)
-			got, err := os.ReadFile(outputFile)
-			assert.NoError(t, err)
-
-			assert.JSONEq(t, string(want), string(got))
+			compareReports(t, c.golden, outputFile)
 		})
 	}
 }

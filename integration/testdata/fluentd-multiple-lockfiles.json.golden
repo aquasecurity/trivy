@@ -1,224 +1,326 @@
-[
-  {
-    "Target": "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz (debian 10.2)",
-    "Class": "os-pkgs",
-    "Type": "debian",
-    "Vulnerabilities": [
-      {
-        "VulnerabilityID": "CVE-2019-5188",
-        "PkgName": "e2fsprogs",
-        "InstalledVersion": "1.44.5-1+deb10u2",
-        "FixedVersion": "1.44.5-1+deb10u3",
-        "Layer": {
-          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "debian",
+      "Name": "10.2"
+    },
+    "ImageID": "sha256:5a992077baba51b97f27591a10d54d2f2723dc9c81a3fe419e261023f2554933",
+    "DiffIDs": [
+      "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f",
+      "sha256:02874b2b269dea8dde0f7edb4c9906904dfe38a09de1a214f20c650cfb15c60e",
+      "sha256:3752e1f6fd759c795c13aff2c93c081529366e27635ba6621e849b0f9cfc77f0",
+      "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9",
+      "sha256:788c00e2cfc8f2a018ae4344ccf0b2c226ebd756d7effd1ce50eea1a4252cd89",
+      "sha256:25165eb51d15842f870f97873e0a58409d5e860e6108e3dd829bd10e484c0065"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "container": "232f3fc7ddffd71dc3ff52c6c0c3a5feea2f51acffd9b53850a8fc6f1a15319a",
+      "created": "2020-03-04T13:59:39.161374106Z",
+      "docker_version": "19.03.4",
+      "history": [
+        {
+          "created": "2019-11-22T14:55:09.912242636Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:bc8179c87c8dbb3d962bed1801f99e7c860ff03797cde6ad19b107d43b973ada in / "
         },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
-        "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
-            "V3Score": 7.5
-          }
+        {
+          "created": "2019-11-22T14:55:10.253859615Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"bash\"]",
+          "empty_layer": true
         },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/",
-          "https://usn.ubuntu.com/usn/usn-4249-1"
-        ],
-        "PublishedDate": "2020-01-08T16:15:00Z",
-        "LastModifiedDate": "2020-01-28T06:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-5188",
-        "PkgName": "libcom-err2",
-        "InstalledVersion": "1.44.5-1+deb10u2",
-        "FixedVersion": "1.44.5-1+deb10u3",
-        "Layer": {
-          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        {
+          "created": "2020-03-04T13:58:17.973854594Z",
+          "created_by": "/bin/sh -c #(nop)  ARG DEBIAN_FRONTEND=noninteractive",
+          "empty_layer": true
         },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
-        "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
-            "V3Score": 7.5
-          }
+        {
+          "created": "2020-03-04T13:58:18.12120844Z",
+          "created_by": "/bin/sh -c #(nop) COPY file:4e7fdb1bc31a0f689d88f6af28d4f0352e89a2ac598c523e9637da3de75bfada in /tmp/install.sh "
         },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/",
-          "https://usn.ubuntu.com/usn/usn-4249-1"
-        ],
-        "PublishedDate": "2020-01-08T16:15:00Z",
-        "LastModifiedDate": "2020-01-28T06:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-5188",
-        "PkgName": "libext2fs2",
-        "InstalledVersion": "1.44.5-1+deb10u2",
-        "FixedVersion": "1.44.5-1+deb10u3",
-        "Layer": {
-          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        {
+          "created": "2020-03-04T13:58:18.26894021Z",
+          "created_by": "/bin/sh -c #(nop) COPY file:c03560fcb4f0aff4cecd93039c348ba4992564740c77e3d6049a44fe79ca44ab in /Gemfile "
         },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
-        "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
-            "V3Score": 7.5
-          }
+        {
+          "created": "2020-03-04T13:59:37.96119583Z",
+          "created_by": "|1 DEBIAN_FRONTEND=noninteractive /bin/sh -c chmod +x /tmp/install.sh \u0026\u0026     /bin/bash -l -c /tmp/install.sh \u0026\u0026     rm /tmp/*"
         },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/",
-          "https://usn.ubuntu.com/usn/usn-4249-1"
-        ],
-        "PublishedDate": "2020-01-08T16:15:00Z",
-        "LastModifiedDate": "2020-01-28T06:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-18224",
-        "PkgName": "libidn2-0",
-        "InstalledVersion": "2.0.5-1",
-        "FixedVersion": "2.0.5-1+deb10u1",
-        "Layer": {
-          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        {
+          "created": "2020-03-04T13:59:38.583719926Z",
+          "created_by": "/bin/sh -c #(nop) COPY file:f742fdea941d5baccbf9a9c45ccc9cd943377f3c3e07da787a8d8d9f92a8b3d3 in /etc/fluent/fluent.conf "
         },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
-        "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
-        "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
-        "Severity": "HIGH",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 5.6
-          }
+        {
+          "created": "2020-03-04T13:59:38.72131564Z",
+          "created_by": "/bin/sh -c #(nop) COPY file:a9ce963551c165ec55bb4d982d96336caa97e8c70011eb4ca58927956bd08e2a in /run.sh "
         },
-        "References": [
-          "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
-          "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c",
-          "https://github.com/libidn/libidn2/compare/libidn2-2.1.0...libidn2-2.1.1",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
-          "https://usn.ubuntu.com/4168-1/",
-          "https://usn.ubuntu.com/usn/usn-4168-1"
-        ],
-        "PublishedDate": "2019-10-21T17:15:00Z",
-        "LastModifiedDate": "2019-10-29T19:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-5188",
-        "PkgName": "libss2",
-        "InstalledVersion": "1.44.5-1+deb10u2",
-        "FixedVersion": "1.44.5-1+deb10u3",
-        "Layer": {
-          "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        {
+          "created": "2020-03-04T13:59:38.844116271Z",
+          "created_by": "/bin/sh -c #(nop)  EXPOSE 80",
+          "empty_layer": true
         },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
-        "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
-            "V3Score": 7.5
-          }
+        {
+          "created": "2020-03-04T13:59:38.99446051Z",
+          "created_by": "/bin/sh -c #(nop)  ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2",
+          "empty_layer": true
         },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/",
-          "https://usn.ubuntu.com/usn/usn-4249-1"
-        ],
-        "PublishedDate": "2020-01-08T16:15:00Z",
-        "LastModifiedDate": "2020-01-28T06:15:00Z"
-      }
-    ]
-  },
-  {
-    "Target": "Ruby",
-    "Class": "lang-pkgs",
-    "Type": "gemspec",
-    "Vulnerabilities": [
-      {
-        "VulnerabilityID": "CVE-2020-8165",
-        "PkgName": "activesupport",
-        "PkgPath": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
-        "InstalledVersion": "6.0.2.1",
-        "FixedVersion": "~\u003e 5.2.4.3, \u003e= 6.0.3.1",
-        "Layer": {
-          "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
-        },
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-8165",
-        "Title": "Potentially unintended unmarshalling of user-provided objects in MemCacheStore and RedisCacheStore",
-        "Description": "There is potentially unexpected behaviour in the MemCacheStore and RedisCacheStore where, when\nuntrusted user input is written to the cache store using the `raw: true` parameter, re-reading the result\nfrom the cache can evaluate the user input as a Marshalled object instead of plain text. Vulnerable code looks like:\n\n```\ndata = cache.fetch(\"demo\", raw: true) { untrusted_string }\n```\n\nVersions Affected:  rails \u003c 5.2.5, rails \u003c 6.0.4\nNot affected:       Applications not using MemCacheStore or RedisCacheStore. Applications that do not use the `raw` option when storing untrusted user input.\nFixed Versions:     rails \u003e= 5.2.4.3, rails \u003e= 6.0.3.1\n\nImpact\n------\n\nUnmarshalling of untrusted user input can have impact up to and including RCE. At a minimum,\nthis vulnerability allows an attacker to inject untrusted Ruby objects into a web application.\n\nIn addition to upgrading to the latest versions of Rails, developers should ensure that whenever\nthey are calling `Rails.cache.fetch` they are using consistent values of the `raw` parameter for both\nreading and writing, especially in the case of the RedisCacheStore which does not, prior to these changes,\ndetect if data was serialized using the raw option upon deserialization.\n\nWorkarounds\n-----------\n\nIt is recommended that application developers apply the suggested patch or upgrade to the latest release as\nsoon as possible. If this is not possible, we recommend ensuring that all user-provided strings cached using\nthe `raw` argument should be double-checked to ensure that they conform to the expected format.\n",
-        "Severity": "UNKNOWN",
-        "References": [
-          "https://groups.google.com/forum/#!topic/rubyonrails-security/bv6fW4S0Y1c"
+        {
+          "created": "2020-03-04T13:59:39.161374106Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"/run.sh\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f",
+          "sha256:02874b2b269dea8dde0f7edb4c9906904dfe38a09de1a214f20c650cfb15c60e",
+          "sha256:3752e1f6fd759c795c13aff2c93c081529366e27635ba6621e849b0f9cfc77f0",
+          "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9",
+          "sha256:788c00e2cfc8f2a018ae4344ccf0b2c226ebd756d7effd1ce50eea1a4252cd89",
+          "sha256:25165eb51d15842f870f97873e0a58409d5e860e6108e3dd829bd10e484c0065"
         ]
+      },
+      "config": {
+        "Cmd": [
+          "/run.sh"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2"
+        ],
+        "Image": "sha256:2a538358cddc4824e9eff1531e0c63ae5e3cda85d2984c647df9b1c816b9b86b",
+        "ExposedPorts": {
+          "80/tcp": {}
+        }
       }
-    ]
-  }
-]
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz (debian 10.2)",
+      "Class": "os-pkgs",
+      "Type": "debian",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-5188",
+          "PkgName": "e2fsprogs",
+          "InstalledVersion": "1.44.5-1+deb10u2",
+          "FixedVersion": "1.44.5-1+deb10u3",
+          "Layer": {
+            "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
+          "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+          "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
+            "https://usn.ubuntu.com/4249-1/",
+            "https://usn.ubuntu.com/usn/usn-4249-1"
+          ],
+          "PublishedDate": "2020-01-08T16:15:00Z",
+          "LastModifiedDate": "2020-01-28T06:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5188",
+          "PkgName": "libcom-err2",
+          "InstalledVersion": "1.44.5-1+deb10u2",
+          "FixedVersion": "1.44.5-1+deb10u3",
+          "Layer": {
+            "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
+          "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+          "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
+            "https://usn.ubuntu.com/4249-1/",
+            "https://usn.ubuntu.com/usn/usn-4249-1"
+          ],
+          "PublishedDate": "2020-01-08T16:15:00Z",
+          "LastModifiedDate": "2020-01-28T06:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5188",
+          "PkgName": "libext2fs2",
+          "InstalledVersion": "1.44.5-1+deb10u2",
+          "FixedVersion": "1.44.5-1+deb10u3",
+          "Layer": {
+            "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
+          "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+          "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
+            "https://usn.ubuntu.com/4249-1/",
+            "https://usn.ubuntu.com/usn/usn-4249-1"
+          ],
+          "PublishedDate": "2020-01-08T16:15:00Z",
+          "LastModifiedDate": "2020-01-28T06:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-18224",
+          "PkgName": "libidn2-0",
+          "InstalledVersion": "2.0.5-1",
+          "FixedVersion": "2.0.5-1+deb10u1",
+          "Layer": {
+            "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
+          "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
+          "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 5.6
+            }
+          },
+          "References": [
+            "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
+            "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c",
+            "https://github.com/libidn/libidn2/compare/libidn2-2.1.0...libidn2-2.1.1",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
+            "https://usn.ubuntu.com/4168-1/",
+            "https://usn.ubuntu.com/usn/usn-4168-1"
+          ],
+          "PublishedDate": "2019-10-21T17:15:00Z",
+          "LastModifiedDate": "2019-10-29T19:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5188",
+          "PkgName": "libss2",
+          "InstalledVersion": "1.44.5-1+deb10u2",
+          "FixedVersion": "1.44.5-1+deb10u3",
+          "Layer": {
+            "DiffID": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
+          "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+          "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
+            "https://usn.ubuntu.com/4249-1/",
+            "https://usn.ubuntu.com/usn/usn-4249-1"
+          ],
+          "PublishedDate": "2020-01-08T16:15:00Z",
+          "LastModifiedDate": "2020-01-28T06:15:00Z"
+        }
+      ]
+    },
+    {
+      "Target": "Ruby",
+      "Class": "lang-pkgs",
+      "Type": "gemspec",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2020-8165",
+          "PkgName": "activesupport",
+          "PkgPath": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec",
+          "InstalledVersion": "6.0.2.1",
+          "FixedVersion": "~\u003e 5.2.4.3, \u003e= 6.0.3.1",
+          "Layer": {
+            "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+          },
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-8165",
+          "Title": "Potentially unintended unmarshalling of user-provided objects in MemCacheStore and RedisCacheStore",
+          "Description": "There is potentially unexpected behaviour in the MemCacheStore and RedisCacheStore where, when\nuntrusted user input is written to the cache store using the `raw: true` parameter, re-reading the result\nfrom the cache can evaluate the user input as a Marshalled object instead of plain text. Vulnerable code looks like:\n\n```\ndata = cache.fetch(\"demo\", raw: true) { untrusted_string }\n```\n\nVersions Affected:  rails \u003c 5.2.5, rails \u003c 6.0.4\nNot affected:       Applications not using MemCacheStore or RedisCacheStore. Applications that do not use the `raw` option when storing untrusted user input.\nFixed Versions:     rails \u003e= 5.2.4.3, rails \u003e= 6.0.3.1\n\nImpact\n------\n\nUnmarshalling of untrusted user input can have impact up to and including RCE. At a minimum,\nthis vulnerability allows an attacker to inject untrusted Ruby objects into a web application.\n\nIn addition to upgrading to the latest versions of Rails, developers should ensure that whenever\nthey are calling `Rails.cache.fetch` they are using consistent values of the `raw` parameter for both\nreading and writing, especially in the case of the RedisCacheStore which does not, prior to these changes,\ndetect if data was serialized using the raw option upon deserialization.\n\nWorkarounds\n-----------\n\nIt is recommended that application developers apply the suggested patch or upgrade to the latest release as\nsoon as possible. If this is not possible, we recommend ensuring that all user-provided strings cached using\nthe `raw` argument should be double-checked to ensure that they conform to the expected format.\n",
+          "Severity": "UNKNOWN",
+          "References": [
+            "https://groups.google.com/forum/#!topic/rubyonrails-security/bv6fW4S0Y1c"
+          ]
+        }
+      ]
+    }
+  ]
+}

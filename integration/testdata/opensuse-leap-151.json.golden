@@ -1,297 +1,354 @@
-[
-  {
-    "Target": "testdata/fixtures/images/opensuse-leap-151.tar.gz (opensuse.leap 15.1)",
-    "Class": "os-pkgs",
-    "Type": "opensuse.leap",
-    "Vulnerabilities": [
-      {
-        "VulnerabilityID": "openSUSE-SU-2019:2596-1",
-        "PkgName": "cpio",
-        "InstalledVersion": "2.12-lp151.2.68",
-        "FixedVersion": "2.12-lp151.3.3.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for cpio",
-        "Description": "This update for cpio fixes the following issues:\n\n- CVE-2019-14866: Fixed an improper validation of the values written \n  in the header of a TAR file through the to_oct() function which could \n  have led to unexpected TAR generation (bsc#1155199).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00076.html",
-          "https://www.suse.com/support/security/rating/"
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/images/opensuse-leap-151.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "opensuse.leap",
+      "Name": "15.1",
+      "EOSL": true
+    },
+    "ImageID": "sha256:fef5ad254f6378f08071cfa2daaf05a1ce9857141c944b67a40742e63e65cecc",
+    "DiffIDs": [
+      "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "author": "Fabian Vogt \u003cfvogt@suse.com\u003e",
+      "created": "2019-11-05T15:54:41Z",
+      "history": [
+        {
+          "created": "2019-11-05T15:54:41Z",
+          "created_by": "KIWI 9.17.16"
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
         ]
       },
-      {
-        "VulnerabilityID": "openSUSE-SU-2020:0166-1",
-        "PkgName": "libcom_err2",
-        "InstalledVersion": "1.43.8-lp151.5.6.1",
-        "FixedVersion": "1.43.8-lp151.5.12.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for e2fsprogs",
-        "Description": "This update for e2fsprogs fixes the following issues:\n\n- CVE-2019-5188: Fixed a code execution vulnerability in the directory rehashing functionality (bsc#1160571).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2020:0022-1",
-        "PkgName": "libgcrypt20",
-        "InstalledVersion": "1.8.2-lp151.9.4.1",
-        "FixedVersion": "1.8.2-lp151.9.7.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for libgcrypt",
-        "Description": "This update for libgcrypt fixes the following issues:\n\nSecurity issues fixed:\n\n- CVE-2019-13627: Mitigation against an ECDSA timing attack (bsc#1148987).\n\nBug fixes:\n\n- Added CMAC AES self test (bsc#1155339).\n- Added CMAC TDES self test missing (bsc#1155338).\n- Fix test dsa-rfc6979 in FIPS mode.\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00018.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2019:2611-1",
-        "PkgName": "libidn2-0",
-        "InstalledVersion": "2.0.4-lp151.2.3",
-        "FixedVersion": "2.2.0-lp151.3.3.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for libidn2",
-        "Description": "This update for libidn2 to version 2.2.0 fixes the following issues:\n\n- CVE-2019-12290: Fixed an improper round-trip check when converting A-labels to U-labels (bsc#1154884).\n- CVE-2019-18224: Fixed a heap-based buffer overflow that was caused by long domain strings (bsc#1154887).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00009.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2019:2551-1",
-        "PkgName": "libncurses6",
-        "InstalledVersion": "6.1-lp151.5.41",
-        "FixedVersion": "6.1-lp151.6.3.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for ncurses",
-        "Description": "This update for ncurses fixes the following issues:\n\nSecurity issues fixed:\n\n- CVE-2019-17594: Fixed a heap-based buffer over-read in the _nc_find_entry function (bsc#1154036).\n- CVE-2019-17595: Fixed a heap-based buffer over-read in the fmt_entry function (bsc#1154037).\n\nNon-security issue fixed:\n\n- Removed screen.xterm from terminfo database (bsc#1103320).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2020:0062-1",
-        "PkgName": "libopenssl1_1",
-        "InstalledVersion": "1.1.0i-lp151.8.3.1",
-        "FixedVersion": "1.1.0i-lp151.8.6.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for openssl-1_1",
-        "Description": "This update for openssl-1_1 fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2019-1551: Fixed an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli (bsc#1158809).                             \n\nVarious FIPS related improvements were done:\n\n- FIPS: Backport SSH KDF to openssl (jsc#SLE-8789, bsc#1157775).\n- Port FIPS patches from SLE-12 (bsc#1158101).\n- Use SHA-2 in the RSA pairwise consistency check (bsc#1155346).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2020:0255-1",
-        "PkgName": "libsolv-tools",
-        "InstalledVersion": "0.7.6-lp151.2.3.2",
-        "FixedVersion": "0.7.10-lp151.2.10.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for libsolv, libzypp, zypper",
-        "Description": "This update for libsolv, libzypp, zypper fixes the following issues:\n\n\nSecurity issue fixed:\n\n- CVE-2019-18900: Fixed assert cookie file that was world readable (bsc#1158763).\n\nBug fixes\n\n- Fixed removing orphaned packages dropped by to-be-installed products (bsc#1155819).\n- Adds libzypp API to mark all obsolete kernels according to the existing purge-kernel script rules (bsc#1155198).\n- Do not enforce 'en' being in RequestedLocales If the user decides to have a system without explicit language support he may do so (bsc#1155678).                                            \n- Load only target resolvables for zypper rm (bsc#1157377).\n- Fix broken search by filelist (bsc#1135114).\n- Replace python by a bash script in zypper-log (fixes#304, fixes#306, bsc#1156158).\n- Do not sort out requested locales which are not available (bsc#1155678).\n- Prevent listing duplicate matches in tables. XML result is provided within the new list-patches-byissue element (bsc#1154805).                                                              \n- XML add patch issue-date and issue-list (bsc#1154805).\n- Fix zypper lp --cve/bugzilla/issue options (bsc#1155298).\n- Always execute commit when adding/removing locales (fixes bsc#1155205).\n- Fix description of --table-style,-s in man page (bsc#1154804).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00036.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2019:2689-1",
-        "PkgName": "libssh4",
-        "InstalledVersion": "0.8.7-lp151.2.3.1",
-        "FixedVersion": "0.8.7-lp151.2.6.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for libssh",
-        "Description": "This update for libssh fixes the following issues:\n\n- CVE-2019-14889: Fixed an arbitrary command execution (bsc#1158095).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
-        "Severity": "HIGH",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00033.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2020:0102-1",
-        "PkgName": "libssh4",
-        "InstalledVersion": "0.8.7-lp151.2.3.1",
-        "FixedVersion": "0.8.7-lp151.2.9.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for libssh",
-        "Description": "This update for libssh fixes the following issues:\n\n- CVE-2019-14889: Fixed an unwanted command execution in scp caused by unsanitized location (bsc#1158095).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
-        "Severity": "HIGH",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00047.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2020:0208-1",
-        "PkgName": "libsystemd0",
-        "InstalledVersion": "234-lp151.26.4.1",
-        "FixedVersion": "234-lp151.26.7.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for systemd",
-        "Description": "This update for systemd fixes the following issues:\n\n- CVE-2020-1712 (bsc#bsc#1162108)\n  Fix a heap use-after-free vulnerability, when asynchronous\n  Polkit queries were performed while handling Dbus messages. A local\n  unprivileged attacker could have abused this flaw to crash systemd services or\n  potentially execute code and elevate their privileges, by sending specially\n  crafted Dbus messages.\n\n- Use suse.pool.ntp.org server pool on SLE distros (jsc#SLE-7683)\n\n- libblkid: open device in nonblock mode. (bsc#1084671)\n- udev/cdrom_id: Do not open CD-rom in exclusive mode. (bsc#1154256)\n- bus_open leak sd_event_source when udevadm trigger。 (bsc#1161436 CVE-2019-20386)\n- fileio: introduce read_full_virtual_file() for reading virtual files in sysfs, procfs (bsc#1133495 bsc#1159814)\n- fileio: initialize errno to zero before we do fread()\n- fileio: try to read one byte too much in read_full_stream()\n- logind: consider 'greeter' sessions suitable as 'display' sessions of a user (bsc#1158485)\n- logind: never elect a session that is stopping as display\n\n- journal: include kmsg lines from the systemd process which exec()d us (#8078)\n- udevd: don't use monitor after manager_exit()\n- udevd: capitalize log messages in on_sigchld()\n- udevd: merge conditions to decrease indentation\n- Revert 'udevd: fix crash when workers time out after exit is signal caught'\n- core: fragments of masked units ought not be considered for NeedDaemonReload (#7060) (bsc#1156482)\n- udevd: fix crash when workers time out after exit is signal caught\n- udevd: wait for workers to finish when exiting (bsc#1106383)\n\n- Improve bash completion support (bsc#1155207)\n  * shell-completion: systemctl: do not list template units in {re,}start\n  * shell-completion: systemctl: pass current word to all list_unit*\n  * bash-completion: systemctl: pass current partial unit to list-unit* (bsc#1155207)\n  * bash-completion: systemctl: use systemctl --no-pager\n  * bash-completion: also suggest template unit files\n  * bash-completion: systemctl: add missing options and verbs\n  * bash-completion: use the first argument instead of the global variable (#6457)\n\n- networkd: VXLan Make group and remote variable separate (bsc#1156213)\n- networkd: vxlan require Remote= to be a non multicast address (#8117) (bsc#1156213)\n- fs-util: let's avoid unnecessary strerror()\n- fs-util: introduce inotify_add_watch_and_warn() helper\n- ask-password: improve log message when inotify limit is reached (bsc#1155574)\n- shared/install: failing with -ELOOP can be due to the use of an alias in install_error() (bsc#1151377)\n- man: alias names can't be used with enable command (bsc#1151377)\n\n- Add boot option to not use swap at system start (jsc#SLE-7689)\n\n- Allow YaST to select Iranian (Persian, Farsi) keyboard layout\n  (bsc#1092920)\n  \nThis update was imported from the SUSE:SLE-15:Update update project.",
-        "Severity": "HIGH",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00014.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2020:0208-1",
-        "PkgName": "libudev1",
-        "InstalledVersion": "234-lp151.26.4.1",
-        "FixedVersion": "234-lp151.26.7.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for systemd",
-        "Description": "This update for systemd fixes the following issues:\n\n- CVE-2020-1712 (bsc#bsc#1162108)\n  Fix a heap use-after-free vulnerability, when asynchronous\n  Polkit queries were performed while handling Dbus messages. A local\n  unprivileged attacker could have abused this flaw to crash systemd services or\n  potentially execute code and elevate their privileges, by sending specially\n  crafted Dbus messages.\n\n- Use suse.pool.ntp.org server pool on SLE distros (jsc#SLE-7683)\n\n- libblkid: open device in nonblock mode. (bsc#1084671)\n- udev/cdrom_id: Do not open CD-rom in exclusive mode. (bsc#1154256)\n- bus_open leak sd_event_source when udevadm trigger。 (bsc#1161436 CVE-2019-20386)\n- fileio: introduce read_full_virtual_file() for reading virtual files in sysfs, procfs (bsc#1133495 bsc#1159814)\n- fileio: initialize errno to zero before we do fread()\n- fileio: try to read one byte too much in read_full_stream()\n- logind: consider 'greeter' sessions suitable as 'display' sessions of a user (bsc#1158485)\n- logind: never elect a session that is stopping as display\n\n- journal: include kmsg lines from the systemd process which exec()d us (#8078)\n- udevd: don't use monitor after manager_exit()\n- udevd: capitalize log messages in on_sigchld()\n- udevd: merge conditions to decrease indentation\n- Revert 'udevd: fix crash when workers time out after exit is signal caught'\n- core: fragments of masked units ought not be considered for NeedDaemonReload (#7060) (bsc#1156482)\n- udevd: fix crash when workers time out after exit is signal caught\n- udevd: wait for workers to finish when exiting (bsc#1106383)\n\n- Improve bash completion support (bsc#1155207)\n  * shell-completion: systemctl: do not list template units in {re,}start\n  * shell-completion: systemctl: pass current word to all list_unit*\n  * bash-completion: systemctl: pass current partial unit to list-unit* (bsc#1155207)\n  * bash-completion: systemctl: use systemctl --no-pager\n  * bash-completion: also suggest template unit files\n  * bash-completion: systemctl: add missing options and verbs\n  * bash-completion: use the first argument instead of the global variable (#6457)\n\n- networkd: VXLan Make group and remote variable separate (bsc#1156213)\n- networkd: vxlan require Remote= to be a non multicast address (#8117) (bsc#1156213)\n- fs-util: let's avoid unnecessary strerror()\n- fs-util: introduce inotify_add_watch_and_warn() helper\n- ask-password: improve log message when inotify limit is reached (bsc#1155574)\n- shared/install: failing with -ELOOP can be due to the use of an alias in install_error() (bsc#1151377)\n- man: alias names can't be used with enable command (bsc#1151377)\n\n- Add boot option to not use swap at system start (jsc#SLE-7689)\n\n- Allow YaST to select Iranian (Persian, Farsi) keyboard layout\n  (bsc#1092920)\n  \nThis update was imported from the SUSE:SLE-15:Update update project.",
-        "Severity": "HIGH",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00014.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2019:2612-1",
-        "PkgName": "libxml2-2",
-        "InstalledVersion": "2.9.7-lp151.5.3.1",
-        "FixedVersion": "2.9.7-lp151.5.6.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for libxml2",
-        "Description": "This update for libxml2 doesn't fix any additional security issues, but correct its rpm changelog to reflect\nall CVEs that have been fixed over the past.\nThis update was imported from the SUSE:SLE-15:Update update project.",
-        "Severity": "UNKNOWN",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00010.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2020:0255-1",
-        "PkgName": "libzypp",
-        "InstalledVersion": "17.15.0-lp151.2.3.2",
-        "FixedVersion": "17.19.0-lp151.2.10.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for libsolv, libzypp, zypper",
-        "Description": "This update for libsolv, libzypp, zypper fixes the following issues:\n\n\nSecurity issue fixed:\n\n- CVE-2019-18900: Fixed assert cookie file that was world readable (bsc#1158763).\n\nBug fixes\n\n- Fixed removing orphaned packages dropped by to-be-installed products (bsc#1155819).\n- Adds libzypp API to mark all obsolete kernels according to the existing purge-kernel script rules (bsc#1155198).\n- Do not enforce 'en' being in RequestedLocales If the user decides to have a system without explicit language support he may do so (bsc#1155678).                                            \n- Load only target resolvables for zypper rm (bsc#1157377).\n- Fix broken search by filelist (bsc#1135114).\n- Replace python by a bash script in zypper-log (fixes#304, fixes#306, bsc#1156158).\n- Do not sort out requested locales which are not available (bsc#1155678).\n- Prevent listing duplicate matches in tables. XML result is provided within the new list-patches-byissue element (bsc#1154805).                                                              \n- XML add patch issue-date and issue-list (bsc#1154805).\n- Fix zypper lp --cve/bugzilla/issue options (bsc#1155298).\n- Always execute commit when adding/removing locales (fixes bsc#1155205).\n- Fix description of --table-style,-s in man page (bsc#1154804).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00036.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2019:2551-1",
-        "PkgName": "ncurses-utils",
-        "InstalledVersion": "6.1-lp151.5.41",
-        "FixedVersion": "6.1-lp151.6.3.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for ncurses",
-        "Description": "This update for ncurses fixes the following issues:\n\nSecurity issues fixed:\n\n- CVE-2019-17594: Fixed a heap-based buffer over-read in the _nc_find_entry function (bsc#1154036).\n- CVE-2019-17595: Fixed a heap-based buffer over-read in the fmt_entry function (bsc#1154037).\n\nNon-security issue fixed:\n\n- Removed screen.xterm from terminfo database (bsc#1103320).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2020:0062-1",
-        "PkgName": "openssl-1_1",
-        "InstalledVersion": "1.1.0i-lp151.8.3.1",
-        "FixedVersion": "1.1.0i-lp151.8.6.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for openssl-1_1",
-        "Description": "This update for openssl-1_1 fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2019-1551: Fixed an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli (bsc#1158809).                             \n\nVarious FIPS related improvements were done:\n\n- FIPS: Backport SSH KDF to openssl (jsc#SLE-8789, bsc#1157775).\n- Port FIPS patches from SLE-12 (bsc#1158101).\n- Use SHA-2 in the RSA pairwise consistency check (bsc#1155346).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2019:2672-1",
-        "PkgName": "permissions",
-        "InstalledVersion": "20181116-lp151.4.6.1",
-        "FixedVersion": "20181116-lp151.4.9.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for permissions",
-        "Description": "This update for permissions fixes the following issues:\n\n- CVE-2019-3688: Changed wrong ownership in /usr/sbin/pinger to root:squid\n  which could have allowed a squid user to gain persistence by changing the \n  binary (bsc#1093414).\n- CVE-2019-3690: Fixed a privilege escalation through untrusted symbolic \n  links (bsc#1150734).\n- Fixed a regression which caused sagmentation fault (bsc#1157198).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00024.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2019:2551-1",
-        "PkgName": "terminfo-base",
-        "InstalledVersion": "6.1-lp151.5.41",
-        "FixedVersion": "6.1-lp151.6.3.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for ncurses",
-        "Description": "This update for ncurses fixes the following issues:\n\nSecurity issues fixed:\n\n- CVE-2019-17594: Fixed a heap-based buffer over-read in the _nc_find_entry function (bsc#1154036).\n- CVE-2019-17595: Fixed a heap-based buffer over-read in the fmt_entry function (bsc#1154037).\n\nNon-security issue fixed:\n\n- Removed screen.xterm from terminfo database (bsc#1103320).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
-      },
-      {
-        "VulnerabilityID": "openSUSE-SU-2020:0255-1",
-        "PkgName": "zypper",
-        "InstalledVersion": "1.14.30-lp151.2.3.1",
-        "FixedVersion": "1.14.33-lp151.2.10.1",
-        "Layer": {
-          "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
-        },
-        "Title": "Security update for libsolv, libzypp, zypper",
-        "Description": "This update for libsolv, libzypp, zypper fixes the following issues:\n\n\nSecurity issue fixed:\n\n- CVE-2019-18900: Fixed assert cookie file that was world readable (bsc#1158763).\n\nBug fixes\n\n- Fixed removing orphaned packages dropped by to-be-installed products (bsc#1155819).\n- Adds libzypp API to mark all obsolete kernels according to the existing purge-kernel script rules (bsc#1155198).\n- Do not enforce 'en' being in RequestedLocales If the user decides to have a system without explicit language support he may do so (bsc#1155678).                                            \n- Load only target resolvables for zypper rm (bsc#1157377).\n- Fix broken search by filelist (bsc#1135114).\n- Replace python by a bash script in zypper-log (fixes#304, fixes#306, bsc#1156158).\n- Do not sort out requested locales which are not available (bsc#1155678).\n- Prevent listing duplicate matches in tables. XML result is provided within the new list-patches-byissue element (bsc#1154805).                                                              \n- XML add patch issue-date and issue-list (bsc#1154805).\n- Fix zypper lp --cve/bugzilla/issue options (bsc#1155298).\n- Always execute commit when adding/removing locales (fixes bsc#1155205).\n- Fix description of --table-style,-s in man page (bsc#1154804).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
-        "Severity": "MEDIUM",
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00036.html",
-          "https://www.suse.com/support/security/rating/"
-        ]
+      "config": {
+        "Cmd": [
+          "/bin/bash"
+        ],
+        "Labels": {
+          "org.openbuildservice.disturl": "obs://build.opensuse.org/openSUSE:Leap:15.1:Images/images/740264e3294afe7ca32a3ea9deb863d2-opensuse-leap-image:docker",
+          "org.opencontainers.image.created": "2019-11-05T15:54:10.571514200Z",
+          "org.opencontainers.image.description": "Image containing a minimal environment for containers based on openSUSE Leap 15.1.",
+          "org.opencontainers.image.title": "openSUSE Leap 15.1 Base Container",
+          "org.opencontainers.image.url": "https://www.opensuse.org/",
+          "org.opencontainers.image.vendor": "openSUSE Project",
+          "org.opencontainers.image.version": "15.1.3.67",
+          "org.opensuse.base.created": "2019-11-05T15:54:10.571514200Z",
+          "org.opensuse.base.description": "Image containing a minimal environment for containers based on openSUSE Leap 15.1.",
+          "org.opensuse.base.disturl": "obs://build.opensuse.org/openSUSE:Leap:15.1:Images/images/740264e3294afe7ca32a3ea9deb863d2-opensuse-leap-image:docker",
+          "org.opensuse.base.reference": "registry.opensuse.org/opensuse/leap:15.1.3.67",
+          "org.opensuse.base.title": "openSUSE Leap 15.1 Base Container",
+          "org.opensuse.base.url": "https://www.opensuse.org/",
+          "org.opensuse.base.vendor": "openSUSE Project",
+          "org.opensuse.base.version": "15.1.3.67",
+          "org.opensuse.reference": "registry.opensuse.org/opensuse/leap:15.1.3.67"
+        }
       }
-    ]
-  }
-]
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/opensuse-leap-151.tar.gz (opensuse.leap 15.1)",
+      "Class": "os-pkgs",
+      "Type": "opensuse.leap",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "openSUSE-SU-2019:2596-1",
+          "PkgName": "cpio",
+          "InstalledVersion": "2.12-lp151.2.68",
+          "FixedVersion": "2.12-lp151.3.3.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for cpio",
+          "Description": "This update for cpio fixes the following issues:\n\n- CVE-2019-14866: Fixed an improper validation of the values written \n  in the header of a TAR file through the to_oct() function which could \n  have led to unexpected TAR generation (bsc#1155199).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+          "Severity": "MEDIUM",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00076.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2020:0166-1",
+          "PkgName": "libcom_err2",
+          "InstalledVersion": "1.43.8-lp151.5.6.1",
+          "FixedVersion": "1.43.8-lp151.5.12.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for e2fsprogs",
+          "Description": "This update for e2fsprogs fixes the following issues:\n\n- CVE-2019-5188: Fixed a code execution vulnerability in the directory rehashing functionality (bsc#1160571).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+          "Severity": "MEDIUM",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2020:0022-1",
+          "PkgName": "libgcrypt20",
+          "InstalledVersion": "1.8.2-lp151.9.4.1",
+          "FixedVersion": "1.8.2-lp151.9.7.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for libgcrypt",
+          "Description": "This update for libgcrypt fixes the following issues:\n\nSecurity issues fixed:\n\n- CVE-2019-13627: Mitigation against an ECDSA timing attack (bsc#1148987).\n\nBug fixes:\n\n- Added CMAC AES self test (bsc#1155339).\n- Added CMAC TDES self test missing (bsc#1155338).\n- Fix test dsa-rfc6979 in FIPS mode.\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+          "Severity": "MEDIUM",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00018.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2019:2611-1",
+          "PkgName": "libidn2-0",
+          "InstalledVersion": "2.0.4-lp151.2.3",
+          "FixedVersion": "2.2.0-lp151.3.3.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for libidn2",
+          "Description": "This update for libidn2 to version 2.2.0 fixes the following issues:\n\n- CVE-2019-12290: Fixed an improper round-trip check when converting A-labels to U-labels (bsc#1154884).\n- CVE-2019-18224: Fixed a heap-based buffer overflow that was caused by long domain strings (bsc#1154887).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+          "Severity": "MEDIUM",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00009.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2019:2551-1",
+          "PkgName": "libncurses6",
+          "InstalledVersion": "6.1-lp151.5.41",
+          "FixedVersion": "6.1-lp151.6.3.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for ncurses",
+          "Description": "This update for ncurses fixes the following issues:\n\nSecurity issues fixed:\n\n- CVE-2019-17594: Fixed a heap-based buffer over-read in the _nc_find_entry function (bsc#1154036).\n- CVE-2019-17595: Fixed a heap-based buffer over-read in the fmt_entry function (bsc#1154037).\n\nNon-security issue fixed:\n\n- Removed screen.xterm from terminfo database (bsc#1103320).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+          "Severity": "MEDIUM",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2020:0062-1",
+          "PkgName": "libopenssl1_1",
+          "InstalledVersion": "1.1.0i-lp151.8.3.1",
+          "FixedVersion": "1.1.0i-lp151.8.6.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for openssl-1_1",
+          "Description": "This update for openssl-1_1 fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2019-1551: Fixed an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli (bsc#1158809).                             \n\nVarious FIPS related improvements were done:\n\n- FIPS: Backport SSH KDF to openssl (jsc#SLE-8789, bsc#1157775).\n- Port FIPS patches from SLE-12 (bsc#1158101).\n- Use SHA-2 in the RSA pairwise consistency check (bsc#1155346).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+          "Severity": "MEDIUM",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2020:0255-1",
+          "PkgName": "libsolv-tools",
+          "InstalledVersion": "0.7.6-lp151.2.3.2",
+          "FixedVersion": "0.7.10-lp151.2.10.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for libsolv, libzypp, zypper",
+          "Description": "This update for libsolv, libzypp, zypper fixes the following issues:\n\n\nSecurity issue fixed:\n\n- CVE-2019-18900: Fixed assert cookie file that was world readable (bsc#1158763).\n\nBug fixes\n\n- Fixed removing orphaned packages dropped by to-be-installed products (bsc#1155819).\n- Adds libzypp API to mark all obsolete kernels according to the existing purge-kernel script rules (bsc#1155198).\n- Do not enforce 'en' being in RequestedLocales If the user decides to have a system without explicit language support he may do so (bsc#1155678).                                            \n- Load only target resolvables for zypper rm (bsc#1157377).\n- Fix broken search by filelist (bsc#1135114).\n- Replace python by a bash script in zypper-log (fixes#304, fixes#306, bsc#1156158).\n- Do not sort out requested locales which are not available (bsc#1155678).\n- Prevent listing duplicate matches in tables. XML result is provided within the new list-patches-byissue element (bsc#1154805).                                                              \n- XML add patch issue-date and issue-list (bsc#1154805).\n- Fix zypper lp --cve/bugzilla/issue options (bsc#1155298).\n- Always execute commit when adding/removing locales (fixes bsc#1155205).\n- Fix description of --table-style,-s in man page (bsc#1154804).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+          "Severity": "MEDIUM",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00036.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2019:2689-1",
+          "PkgName": "libssh4",
+          "InstalledVersion": "0.8.7-lp151.2.3.1",
+          "FixedVersion": "0.8.7-lp151.2.6.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for libssh",
+          "Description": "This update for libssh fixes the following issues:\n\n- CVE-2019-14889: Fixed an arbitrary command execution (bsc#1158095).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+          "Severity": "HIGH",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00033.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2020:0102-1",
+          "PkgName": "libssh4",
+          "InstalledVersion": "0.8.7-lp151.2.3.1",
+          "FixedVersion": "0.8.7-lp151.2.9.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for libssh",
+          "Description": "This update for libssh fixes the following issues:\n\n- CVE-2019-14889: Fixed an unwanted command execution in scp caused by unsanitized location (bsc#1158095).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+          "Severity": "HIGH",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00047.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2020:0208-1",
+          "PkgName": "libsystemd0",
+          "InstalledVersion": "234-lp151.26.4.1",
+          "FixedVersion": "234-lp151.26.7.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for systemd",
+          "Description": "This update for systemd fixes the following issues:\n\n- CVE-2020-1712 (bsc#bsc#1162108)\n  Fix a heap use-after-free vulnerability, when asynchronous\n  Polkit queries were performed while handling Dbus messages. A local\n  unprivileged attacker could have abused this flaw to crash systemd services or\n  potentially execute code and elevate their privileges, by sending specially\n  crafted Dbus messages.\n\n- Use suse.pool.ntp.org server pool on SLE distros (jsc#SLE-7683)\n\n- libblkid: open device in nonblock mode. (bsc#1084671)\n- udev/cdrom_id: Do not open CD-rom in exclusive mode. (bsc#1154256)\n- bus_open leak sd_event_source when udevadm trigger。 (bsc#1161436 CVE-2019-20386)\n- fileio: introduce read_full_virtual_file() for reading virtual files in sysfs, procfs (bsc#1133495 bsc#1159814)\n- fileio: initialize errno to zero before we do fread()\n- fileio: try to read one byte too much in read_full_stream()\n- logind: consider 'greeter' sessions suitable as 'display' sessions of a user (bsc#1158485)\n- logind: never elect a session that is stopping as display\n\n- journal: include kmsg lines from the systemd process which exec()d us (#8078)\n- udevd: don't use monitor after manager_exit()\n- udevd: capitalize log messages in on_sigchld()\n- udevd: merge conditions to decrease indentation\n- Revert 'udevd: fix crash when workers time out after exit is signal caught'\n- core: fragments of masked units ought not be considered for NeedDaemonReload (#7060) (bsc#1156482)\n- udevd: fix crash when workers time out after exit is signal caught\n- udevd: wait for workers to finish when exiting (bsc#1106383)\n\n- Improve bash completion support (bsc#1155207)\n  * shell-completion: systemctl: do not list template units in {re,}start\n  * shell-completion: systemctl: pass current word to all list_unit*\n  * bash-completion: systemctl: pass current partial unit to list-unit* (bsc#1155207)\n  * bash-completion: systemctl: use systemctl --no-pager\n  * bash-completion: also suggest template unit files\n  * bash-completion: systemctl: add missing options and verbs\n  * bash-completion: use the first argument instead of the global variable (#6457)\n\n- networkd: VXLan Make group and remote variable separate (bsc#1156213)\n- networkd: vxlan require Remote= to be a non multicast address (#8117) (bsc#1156213)\n- fs-util: let's avoid unnecessary strerror()\n- fs-util: introduce inotify_add_watch_and_warn() helper\n- ask-password: improve log message when inotify limit is reached (bsc#1155574)\n- shared/install: failing with -ELOOP can be due to the use of an alias in install_error() (bsc#1151377)\n- man: alias names can't be used with enable command (bsc#1151377)\n\n- Add boot option to not use swap at system start (jsc#SLE-7689)\n\n- Allow YaST to select Iranian (Persian, Farsi) keyboard layout\n  (bsc#1092920)\n  \nThis update was imported from the SUSE:SLE-15:Update update project.",
+          "Severity": "HIGH",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00014.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2020:0208-1",
+          "PkgName": "libudev1",
+          "InstalledVersion": "234-lp151.26.4.1",
+          "FixedVersion": "234-lp151.26.7.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for systemd",
+          "Description": "This update for systemd fixes the following issues:\n\n- CVE-2020-1712 (bsc#bsc#1162108)\n  Fix a heap use-after-free vulnerability, when asynchronous\n  Polkit queries were performed while handling Dbus messages. A local\n  unprivileged attacker could have abused this flaw to crash systemd services or\n  potentially execute code and elevate their privileges, by sending specially\n  crafted Dbus messages.\n\n- Use suse.pool.ntp.org server pool on SLE distros (jsc#SLE-7683)\n\n- libblkid: open device in nonblock mode. (bsc#1084671)\n- udev/cdrom_id: Do not open CD-rom in exclusive mode. (bsc#1154256)\n- bus_open leak sd_event_source when udevadm trigger。 (bsc#1161436 CVE-2019-20386)\n- fileio: introduce read_full_virtual_file() for reading virtual files in sysfs, procfs (bsc#1133495 bsc#1159814)\n- fileio: initialize errno to zero before we do fread()\n- fileio: try to read one byte too much in read_full_stream()\n- logind: consider 'greeter' sessions suitable as 'display' sessions of a user (bsc#1158485)\n- logind: never elect a session that is stopping as display\n\n- journal: include kmsg lines from the systemd process which exec()d us (#8078)\n- udevd: don't use monitor after manager_exit()\n- udevd: capitalize log messages in on_sigchld()\n- udevd: merge conditions to decrease indentation\n- Revert 'udevd: fix crash when workers time out after exit is signal caught'\n- core: fragments of masked units ought not be considered for NeedDaemonReload (#7060) (bsc#1156482)\n- udevd: fix crash when workers time out after exit is signal caught\n- udevd: wait for workers to finish when exiting (bsc#1106383)\n\n- Improve bash completion support (bsc#1155207)\n  * shell-completion: systemctl: do not list template units in {re,}start\n  * shell-completion: systemctl: pass current word to all list_unit*\n  * bash-completion: systemctl: pass current partial unit to list-unit* (bsc#1155207)\n  * bash-completion: systemctl: use systemctl --no-pager\n  * bash-completion: also suggest template unit files\n  * bash-completion: systemctl: add missing options and verbs\n  * bash-completion: use the first argument instead of the global variable (#6457)\n\n- networkd: VXLan Make group and remote variable separate (bsc#1156213)\n- networkd: vxlan require Remote= to be a non multicast address (#8117) (bsc#1156213)\n- fs-util: let's avoid unnecessary strerror()\n- fs-util: introduce inotify_add_watch_and_warn() helper\n- ask-password: improve log message when inotify limit is reached (bsc#1155574)\n- shared/install: failing with -ELOOP can be due to the use of an alias in install_error() (bsc#1151377)\n- man: alias names can't be used with enable command (bsc#1151377)\n\n- Add boot option to not use swap at system start (jsc#SLE-7689)\n\n- Allow YaST to select Iranian (Persian, Farsi) keyboard layout\n  (bsc#1092920)\n  \nThis update was imported from the SUSE:SLE-15:Update update project.",
+          "Severity": "HIGH",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00014.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2019:2612-1",
+          "PkgName": "libxml2-2",
+          "InstalledVersion": "2.9.7-lp151.5.3.1",
+          "FixedVersion": "2.9.7-lp151.5.6.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for libxml2",
+          "Description": "This update for libxml2 doesn't fix any additional security issues, but correct its rpm changelog to reflect\nall CVEs that have been fixed over the past.\nThis update was imported from the SUSE:SLE-15:Update update project.",
+          "Severity": "UNKNOWN",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00010.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2020:0255-1",
+          "PkgName": "libzypp",
+          "InstalledVersion": "17.15.0-lp151.2.3.2",
+          "FixedVersion": "17.19.0-lp151.2.10.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for libsolv, libzypp, zypper",
+          "Description": "This update for libsolv, libzypp, zypper fixes the following issues:\n\n\nSecurity issue fixed:\n\n- CVE-2019-18900: Fixed assert cookie file that was world readable (bsc#1158763).\n\nBug fixes\n\n- Fixed removing orphaned packages dropped by to-be-installed products (bsc#1155819).\n- Adds libzypp API to mark all obsolete kernels according to the existing purge-kernel script rules (bsc#1155198).\n- Do not enforce 'en' being in RequestedLocales If the user decides to have a system without explicit language support he may do so (bsc#1155678).                                            \n- Load only target resolvables for zypper rm (bsc#1157377).\n- Fix broken search by filelist (bsc#1135114).\n- Replace python by a bash script in zypper-log (fixes#304, fixes#306, bsc#1156158).\n- Do not sort out requested locales which are not available (bsc#1155678).\n- Prevent listing duplicate matches in tables. XML result is provided within the new list-patches-byissue element (bsc#1154805).                                                              \n- XML add patch issue-date and issue-list (bsc#1154805).\n- Fix zypper lp --cve/bugzilla/issue options (bsc#1155298).\n- Always execute commit when adding/removing locales (fixes bsc#1155205).\n- Fix description of --table-style,-s in man page (bsc#1154804).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+          "Severity": "MEDIUM",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00036.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2019:2551-1",
+          "PkgName": "ncurses-utils",
+          "InstalledVersion": "6.1-lp151.5.41",
+          "FixedVersion": "6.1-lp151.6.3.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for ncurses",
+          "Description": "This update for ncurses fixes the following issues:\n\nSecurity issues fixed:\n\n- CVE-2019-17594: Fixed a heap-based buffer over-read in the _nc_find_entry function (bsc#1154036).\n- CVE-2019-17595: Fixed a heap-based buffer over-read in the fmt_entry function (bsc#1154037).\n\nNon-security issue fixed:\n\n- Removed screen.xterm from terminfo database (bsc#1103320).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+          "Severity": "MEDIUM",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2020:0062-1",
+          "PkgName": "openssl-1_1",
+          "InstalledVersion": "1.1.0i-lp151.8.3.1",
+          "FixedVersion": "1.1.0i-lp151.8.6.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for openssl-1_1",
+          "Description": "This update for openssl-1_1 fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2019-1551: Fixed an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli (bsc#1158809).                             \n\nVarious FIPS related improvements were done:\n\n- FIPS: Backport SSH KDF to openssl (jsc#SLE-8789, bsc#1157775).\n- Port FIPS patches from SLE-12 (bsc#1158101).\n- Use SHA-2 in the RSA pairwise consistency check (bsc#1155346).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+          "Severity": "MEDIUM",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2019:2672-1",
+          "PkgName": "permissions",
+          "InstalledVersion": "20181116-lp151.4.6.1",
+          "FixedVersion": "20181116-lp151.4.9.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for permissions",
+          "Description": "This update for permissions fixes the following issues:\n\n- CVE-2019-3688: Changed wrong ownership in /usr/sbin/pinger to root:squid\n  which could have allowed a squid user to gain persistence by changing the \n  binary (bsc#1093414).\n- CVE-2019-3690: Fixed a privilege escalation through untrusted symbolic \n  links (bsc#1150734).\n- Fixed a regression which caused sagmentation fault (bsc#1157198).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+          "Severity": "MEDIUM",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00024.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2019:2551-1",
+          "PkgName": "terminfo-base",
+          "InstalledVersion": "6.1-lp151.5.41",
+          "FixedVersion": "6.1-lp151.6.3.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for ncurses",
+          "Description": "This update for ncurses fixes the following issues:\n\nSecurity issues fixed:\n\n- CVE-2019-17594: Fixed a heap-based buffer over-read in the _nc_find_entry function (bsc#1154036).\n- CVE-2019-17595: Fixed a heap-based buffer over-read in the fmt_entry function (bsc#1154037).\n\nNon-security issue fixed:\n\n- Removed screen.xterm from terminfo database (bsc#1103320).\n\nThis update was imported from the SUSE:SLE-15:Update update project.",
+          "Severity": "MEDIUM",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2020:0255-1",
+          "PkgName": "zypper",
+          "InstalledVersion": "1.14.30-lp151.2.3.1",
+          "FixedVersion": "1.14.33-lp151.2.10.1",
+          "Layer": {
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "Title": "Security update for libsolv, libzypp, zypper",
+          "Description": "This update for libsolv, libzypp, zypper fixes the following issues:\n\n\nSecurity issue fixed:\n\n- CVE-2019-18900: Fixed assert cookie file that was world readable (bsc#1158763).\n\nBug fixes\n\n- Fixed removing orphaned packages dropped by to-be-installed products (bsc#1155819).\n- Adds libzypp API to mark all obsolete kernels according to the existing purge-kernel script rules (bsc#1155198).\n- Do not enforce 'en' being in RequestedLocales If the user decides to have a system without explicit language support he may do so (bsc#1155678).                                            \n- Load only target resolvables for zypper rm (bsc#1157377).\n- Fix broken search by filelist (bsc#1135114).\n- Replace python by a bash script in zypper-log (fixes#304, fixes#306, bsc#1156158).\n- Do not sort out requested locales which are not available (bsc#1155678).\n- Prevent listing duplicate matches in tables. XML result is provided within the new list-patches-byissue element (bsc#1154805).                                                              \n- XML add patch issue-date and issue-list (bsc#1154805).\n- Fix zypper lp --cve/bugzilla/issue options (bsc#1155298).\n- Always execute commit when adding/removing locales (fixes bsc#1155205).\n- Fix description of --table-style,-s in man page (bsc#1154804).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+          "Severity": "MEDIUM",
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00036.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        }
+      ]
+    }
+  ]
+}

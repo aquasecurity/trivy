@@ -26,7 +26,6 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer"
 	testdocker "github.com/aquasecurity/trivy/integration/docker"
 	"github.com/aquasecurity/trivy/pkg/commands"
-	"github.com/aquasecurity/trivy/pkg/report"
 )
 
 const (
@@ -193,7 +192,7 @@ func TestRegistry(t *testing.T) {
 			require.NoError(t, err)
 
 			// 2. Scan it
-			resultFile, cleanup, err := scan(t, imageRef, baseDir, tc.golden, tc.option)
+			resultFile, err := scan(t, imageRef, baseDir, tc.golden, tc.option)
 
 			if tc.wantErr != "" {
 				require.NotNil(t, err)
@@ -202,57 +201,40 @@ func TestRegistry(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 			}
-			defer cleanup()
 
-			// 3. Compare want and got
-			golden, err := os.Open(tc.golden)
-			assert.NoError(t, err)
+			// 3. Read want and got
+			want := readReport(t, tc.golden)
+			got := readReport(t, resultFile)
 
-			var want report.Results
-			err = json.NewDecoder(golden).Decode(&want)
-			require.NoError(t, err)
+			// 4 Update some dynamic fields
+			want.ArtifactName = s
+			for i := range want.Results {
+				want.Results[i].Target = fmt.Sprintf("%s (alpine 3.10.2)", s)
+			}
+			want.Metadata.RepoDigests = []string{
+				fmt.Sprintf("%s/alpine@sha256:acd3ca9941a85e8ed16515bfc5328e4e2f8c128caa72959a58a127b7801ee01f", registryURL.Host),
+			}
 
-			result, err := os.Open(resultFile)
-			assert.NoError(t, err)
-
-			var got report.Results
-			err = json.NewDecoder(result).Decode(&got)
-			require.NoError(t, err)
-
-			assert.Equal(t, want[0].Vulnerabilities, got[0].Vulnerabilities)
-			assert.Equal(t, want[0].Vulnerabilities, got[0].Vulnerabilities)
+			// 5. Compare want and got
+			assert.Equal(t, want, got)
 		})
 	}
 }
 
-func scan(t *testing.T, imageRef name.Reference, baseDir, goldenFile string, opt registryOption) (string, func(), error) {
-	cleanup := func() {}
-
+func scan(t *testing.T, imageRef name.Reference, baseDir, goldenFile string, opt registryOption) (string, error) {
 	// Set up testing DB
 	cacheDir := gunzipDB(t)
 
 	// Setup the output file
-	var outputFile string
-	if *update && goldenFile != "" {
+	outputFile := filepath.Join(t.TempDir(), "output.json")
+	if *update {
 		outputFile = goldenFile
-	} else {
-		output, err := os.CreateTemp("", "integration")
-		if err != nil {
-			return "", cleanup, err
-		}
-		defer output.Close()
-
-		outputFile = output.Name()
-		cleanup = func() {
-			os.Remove(outputFile)
-		}
 	}
 
 	// Setup env
-	if err := setupEnv(imageRef, baseDir, opt); err != nil {
-		return "", cleanup, err
+	if err := setupEnv(t, imageRef, baseDir, opt); err != nil {
+		return "", err
 	}
-	defer unsetEnv()
 
 	// Setup CLI App
 	app := commands.NewApp("dev")
@@ -262,15 +244,13 @@ func scan(t *testing.T, imageRef name.Reference, baseDir, goldenFile string, opt
 
 	// Run Trivy
 	if err := app.Run(osArgs); err != nil {
-		return "", cleanup, err
+		return "", err
 	}
-	return outputFile, cleanup, nil
+	return outputFile, nil
 }
 
-func setupEnv(imageRef name.Reference, baseDir string, opt registryOption) error {
-	if err := os.Setenv("TRIVY_INSECURE", "true"); err != nil {
-		return err
-	}
+func setupEnv(t *testing.T, imageRef name.Reference, baseDir string, opt registryOption) error {
+	t.Setenv("TRIVY_INSECURE", "true")
 
 	if opt.Username != "" && opt.Password != "" {
 		if opt.RegistryToken {
@@ -279,26 +259,10 @@ func setupEnv(imageRef name.Reference, baseDir string, opt registryOption) error
 			if err != nil {
 				return err
 			}
-			if err := os.Setenv("TRIVY_REGISTRY_TOKEN", token); err != nil {
-				return err
-			}
+			t.Setenv("TRIVY_REGISTRY_TOKEN", token)
 		} else {
-			if err := os.Setenv("TRIVY_USERNAME", opt.Username); err != nil {
-				return err
-			}
-			if err := os.Setenv("TRIVY_PASSWORD", opt.Password); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
-
-func unsetEnv() error {
-	envs := []string{"TRIVY_INSECURE", "TRIVY_USERNAME", "TRIVY_PASSWORD", "TRIVY_REGISTRY_TOKEN"}
-	for _, e := range envs {
-		if err := os.Unsetenv(e); err != nil {
-			return err
+			t.Setenv("TRIVY_USERNAME", opt.Username)
+			t.Setenv("TRIVY_PASSWORD", opt.Password)
 		}
 	}
 	return nil

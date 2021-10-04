@@ -4,7 +4,7 @@ on:
     tags:
       - "v*"
 env:
-  GO_VERSION: "1.16"
+  GO_VERSION: "1.17"
   GH_USER: "aqua-bot"
 jobs:
   release:
