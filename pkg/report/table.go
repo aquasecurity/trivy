@@ -9,7 +9,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -31,10 +30,6 @@ type TableWriter struct {
 // Write writes the result on standard output
 func (tw TableWriter) Write(report Report) error {
 	for _, result := range report.Results {
-		// Skip zero vulnerabilities on Java archives (JAR/WAR/EAR)
-		if result.Type == ftypes.Jar && len(result.Vulnerabilities) == 0 {
-			continue
-		}
 		tw.write(result)
 	}
 	return nil
