@@ -40,10 +40,7 @@
             "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/",
             "https://avd.aquasec.com/appshield/ds002"
           ],
-          "Status": "FAIL",
-          "Layer": {
-            "DiffID": "sha256:2f8334a38883ba260fc9cab989110b8eea18721ee15c319b83fa3eba8d5981ca"
-          }
+          "Status": "FAIL"
         }
       ]
     }

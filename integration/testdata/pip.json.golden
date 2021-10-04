@@ -25,9 +25,6 @@
           "PkgName": "Werkzeug",
           "InstalledVersion": "0.11",
           "FixedVersion": "0.15.3",
-          "Layer": {
-            "DiffID": "sha256:6393f36bbbee0b53834ba0f9f585194d9e5ab56b555a2910551254fc8a2aec19"
-          },
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14806",
           "Title": "python-werkzeug: insufficient debugger PIN randomness vulnerability",
@@ -65,9 +62,6 @@
           "PkgName": "Werkzeug",
           "InstalledVersion": "0.11",
           "FixedVersion": "0.11.11",
-          "Layer": {
-            "DiffID": "sha256:6393f36bbbee0b53834ba0f9f585194d9e5ab56b555a2910551254fc8a2aec19"
-          },
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10516",
           "Title": "python-werkzeug: Cross-site scripting in render_full function in debug/tbtools.py",
@@ -103,9 +97,6 @@
           "PkgName": "Werkzeug",
           "InstalledVersion": "0.11",
           "FixedVersion": "0.11.6",
-          "Layer": {
-            "DiffID": "sha256:6393f36bbbee0b53834ba0f9f585194d9e5ab56b555a2910551254fc8a2aec19"
-          },
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-28724",
           "Title": "Werkzeug before 0.11.6 includes an open redirect vulnerability via a double slash in the URL. See CVE-2020-28724.",
           "Severity": "UNKNOWN"
@@ -115,9 +106,6 @@
           "PkgName": "Werkzeug",
           "InstalledVersion": "0.11",
           "FixedVersion": "0.12",
-          "Layer": {
-            "DiffID": "sha256:6393f36bbbee0b53834ba0f9f585194d9e5ab56b555a2910551254fc8a2aec19"
-          },
           "Title": "The defaults of ``generate_password_hash`` in werkzeug 0.12 have been changed to more secure ones, see pull request ``#753``.",
           "Severity": "UNKNOWN"
         },
@@ -126,9 +114,6 @@
           "PkgName": "Werkzeug",
           "InstalledVersion": "0.11",
           "FixedVersion": "0.15.0",
-          "Layer": {
-            "DiffID": "sha256:6393f36bbbee0b53834ba0f9f585194d9e5ab56b555a2910551254fc8a2aec19"
-          },
           "Title": "Werkzeug 0.15.0 refactors class:`~middleware.proxy_fix.ProxyFix` to support more headers, multiple values, and a more secure configuration.",
           "Severity": "UNKNOWN"
         }
