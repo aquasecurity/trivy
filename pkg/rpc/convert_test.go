@@ -141,7 +141,7 @@ func TestConvertFromRpcLibraries(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []ftypes.LibraryInfo
+		want []ftypes.Package
 	}{
 		{
 			name: "happy path",
@@ -151,9 +151,9 @@ func TestConvertFromRpcLibraries(t *testing.T) {
 					{Name: "bar", Version: "4.5.6"},
 				},
 			},
-			want: []ftypes.LibraryInfo{
-				{Library: ptypes.Library{Name: "foo", Version: "1.2.3"}},
-				{Library: ptypes.Library{Name: "bar", Version: "4.5.6"}},
+			want: []ftypes.Package{
+				{Name: "foo", Version: "1.2.3"},
+				{Name: "bar", Version: "4.5.6"},
 			},
 		},
 	}

@@ -15,7 +15,6 @@ import (
 
 	"github.com/aquasecurity/fanal/cache"
 	ftypes "github.com/aquasecurity/fanal/types"
-	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
@@ -406,18 +405,14 @@ func TestCacheServer_PutBlob(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "php-app/composer.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: deptypes.Library{
-											Name:    "guzzlehttp/guzzle",
-											Version: "6.2.0",
-										},
+										Name:    "guzzlehttp/guzzle",
+										Version: "6.2.0",
 									},
 									{
-										Library: deptypes.Library{
-											Name:    "guzzlehttp/promises",
-											Version: "v1.3.1",
-										},
+										Name:    "guzzlehttp/promises",
+										Version: "v1.3.1",
 									},
 								},
 							},

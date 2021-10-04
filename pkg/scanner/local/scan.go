@@ -216,7 +216,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 			Type:            app.Type,
 		}
 		if options.ListAllPackages {
-			libReport.Packages = s.listAllPkgs(app)
+			libReport.Packages = app.Libraries
 		}
 		results = append(results, libReport)
 	}
@@ -224,23 +224,6 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		return results[i].Target < results[j].Target
 	})
 	return results, nil
-}
-
-func (s Scanner) listAllPkgs(app ftypes.Application) []ftypes.Package {
-	var pkgs []ftypes.Package
-	for _, lib := range app.Libraries {
-		pkgs = append(pkgs, ftypes.Package{
-			Name:    lib.Library.Name,
-			Version: lib.Library.Version,
-			License: lib.Library.License,
-			Layer:   lib.Layer,
-		})
-	}
-	sort.Slice(pkgs, func(i, j int) bool {
-		return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
-	})
-
-	return pkgs
 }
 
 func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) report.Results {
