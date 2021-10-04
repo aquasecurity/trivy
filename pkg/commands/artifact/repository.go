@@ -31,7 +31,7 @@ func RepositoryRun(ctx *cli.Context) error {
 	}
 
 	// Disable the OS analyzers and individual package analyzers
-	opt.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes)
+	opt.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
 
 	return Run(ctx.Context, opt, repositoryScanner, initFSCache)
 }
