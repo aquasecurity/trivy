@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	dimage "github.com/docker/docker/api/types/image"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
@@ -105,14 +106,13 @@ func (img *image) ConfigFile() (*v1.ConfigFile, error) {
 
 	return &v1.ConfigFile{
 		Architecture:  img.inspect.Architecture,
-		OS:            img.inspect.Os,
 		Author:        img.inspect.Author,
+		Container:     img.inspect.Container,
 		Created:       v1.Time{Time: created},
 		DockerVersion: img.inspect.DockerVersion,
-		Config: v1.Config{
-			Labels: img.inspect.Config.Labels,
-			Env:    img.inspect.Config.Env},
-		History: img.configHistory(),
+		Config:        img.imageConfig(img.inspect.Config),
+		History:       img.configHistory(),
+		OS:            img.inspect.Os,
 		RootFS: v1.RootFS{
 			Type:    img.inspect.RootFS.Type,
 			DiffIDs: diffIDs,
@@ -145,7 +145,8 @@ func (img *image) RepoDigests() []string {
 func (img *image) configHistory() []v1.History {
 	// Fill only required metadata
 	var history []v1.History
-	for _, h := range img.history {
+	for i := len(img.history) - 1; i >= 0; i-- {
+		h := img.history[i]
 		history = append(history, v1.History{
 			Created: v1.Time{
 				Time: time.Unix(h.Created, 0).UTC(),
@@ -168,4 +169,50 @@ func (img *image) diffIDs() ([]v1.Hash, error) {
 		diffIDs = append(diffIDs, h)
 	}
 	return diffIDs, nil
+}
+
+func (img *image) imageConfig(config *container.Config) v1.Config {
+	c := v1.Config{
+		AttachStderr:    config.AttachStderr,
+		AttachStdin:     config.AttachStdin,
+		AttachStdout:    config.AttachStdout,
+		Cmd:             config.Cmd,
+		Domainname:      config.Domainname,
+		Entrypoint:      config.Entrypoint,
+		Env:             config.Env,
+		Hostname:        config.Hostname,
+		Image:           config.Image,
+		Labels:          config.Labels,
+		OnBuild:         config.OnBuild,
+		OpenStdin:       config.OpenStdin,
+		StdinOnce:       config.StdinOnce,
+		Tty:             config.Tty,
+		User:            config.User,
+		Volumes:         config.Volumes,
+		WorkingDir:      config.WorkingDir,
+		ArgsEscaped:     config.ArgsEscaped,
+		NetworkDisabled: config.NetworkDisabled,
+		MacAddress:      config.MacAddress,
+		StopSignal:      config.StopSignal,
+		Shell:           config.Shell,
+	}
+
+	if config.Healthcheck != nil {
+		c.Healthcheck = &v1.HealthConfig{
+			Test:        config.Healthcheck.Test,
+			Interval:    config.Healthcheck.Interval,
+			Timeout:     config.Healthcheck.Timeout,
+			StartPeriod: config.Healthcheck.StartPeriod,
+			Retries:     config.Healthcheck.Retries,
+		}
+	}
+
+	if len(config.ExposedPorts) > 0 {
+		c.ExposedPorts = map[string]struct{}{}
+		for port := range c.ExposedPorts {
+			c.ExposedPorts[port] = struct{}{}
+		}
+	}
+
+	return c
 }
