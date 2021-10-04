@@ -1,136 +1,186 @@
-[
-  {
-    "Target": "Cargo.lock",
-    "Class": "lang-pkgs",
-    "Type": "cargo",
-    "Vulnerabilities": [
-      {
-        "VulnerabilityID": "RUSTSEC-2019-0001",
-        "PkgName": "ammonia",
-        "InstalledVersion": "1.9.0",
-        "FixedVersion": "\u003e= 2.1.0",
-        "Layer": {
-          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "ImageID": "sha256:17c82adee8b5ffec7d6e30dba333bb37986add86afeb4a07754407bb049faedb",
+    "DiffIDs": [
+      "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
+      "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "created": "2020-04-26T16:23:28.996276377Z",
+      "docker_version": "19.03.8",
+      "history": [
+        {
+          "created": "2020-03-10T00:19:32.83969331Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:450bea8cddb743ed282cb1ade3d1614033172b93ef531c69a4e49fda3016cef0 in / "
         },
-        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0001",
-        "Title": "Uncontrolled recursion leads to abort in HTML serialization",
-        "Description": "Affected versions of this crate did use recursion for serialization of HTML\nDOM trees.\n\nThis allows an attacker to cause abort due to stack overflow by providing\na pathologically nested input.\n\nThe flaw was corrected by serializing the DOM tree iteratively instead.",
-        "Severity": "UNKNOWN",
-        "References": [
-          "https://github.com/rust-ammonia/ammonia/blob/master/CHANGELOG.md#210"
+        {
+          "created": "2020-03-10T00:19:33.019716493Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"sh\"]",
+          "empty_layer": true
+        },
+        {
+          "created": "2020-04-26T16:23:28.996276377Z",
+          "created_by": "/bin/sh -c #(nop) ADD 343df0159abcc51b06b4e56bfd4c06d2003b88947ed93b0cec6214ae5985669e in . "
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
+          "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
         ]
       },
-      {
-        "VulnerabilityID": "RUSTSEC-2016-0001",
-        "PkgName": "openssl",
-        "InstalledVersion": "0.8.3",
-        "FixedVersion": "\u003e= 0.9.0",
-        "Layer": {
-          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
-        },
-        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2016-0001",
-        "Title": "SSL/TLS MitM vulnerability due to insecure defaults",
-        "Description": "All versions of rust-openssl prior to 0.9.0 contained numerous insecure defaults\nincluding off-by-default certificate verification and no API to perform hostname\nverification.\n\nUnless configured correctly by a developer, these defaults could allow an attacker\nto perform man-in-the-middle attacks.\n\nThe problem was addressed in newer versions by enabling certificate verification\nby default and exposing APIs to perform hostname verification. Use the\n`SslConnector` and `SslAcceptor` types to take advantage of these new features\n(as opposed to the lower-level `SslContext` type).",
-        "Severity": "UNKNOWN",
-        "References": [
-          "https://github.com/sfackler/rust-openssl/releases/tag/v0.9.0"
-        ]
-      },
-      {
-        "VulnerabilityID": "RUSTSEC-2019-0035",
-        "PkgName": "rand_core",
-        "InstalledVersion": "0.3.1",
-        "FixedVersion": "\u003e= 0.4.2",
-        "Layer": {
-          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
-        },
-        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0035",
-        "Title": "Unaligned memory access",
-        "Description": "Affected versions of this crate violated alignment when casting byte slices to\ninteger slices, resulting in undefined behavior.\n\nThe flaw was corrected by Ralf Jung and Diggory Hardy.",
-        "Severity": "UNKNOWN",
-        "References": [
-          "https://github.com/rust-random/rand/blob/master/rand_core/CHANGELOG.md#050---2019-06-06"
-        ]
-      },
-      {
-        "VulnerabilityID": "RUSTSEC-2019-0035",
-        "PkgName": "rand_core",
-        "InstalledVersion": "0.4.0",
-        "FixedVersion": "\u003e= 0.4.2",
-        "Layer": {
-          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
-        },
-        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0035",
-        "Title": "Unaligned memory access",
-        "Description": "Affected versions of this crate violated alignment when casting byte slices to\ninteger slices, resulting in undefined behavior.\n\nThe flaw was corrected by Ralf Jung and Diggory Hardy.",
-        "Severity": "UNKNOWN",
-        "References": [
-          "https://github.com/rust-random/rand/blob/master/rand_core/CHANGELOG.md#050---2019-06-06"
-        ]
-      },
-      {
-        "VulnerabilityID": "RUSTSEC-2018-0018",
-        "PkgName": "smallvec",
-        "InstalledVersion": "0.6.9",
-        "FixedVersion": "\u003e= 0.6.13",
-        "Layer": {
-          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
-        },
-        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2018-0018",
-        "Title": "smallvec creates uninitialized value of any type",
-        "Description": "Affected versions of this crate called `mem::uninitialized()` to create values of a user-supplied type `T`.\nThis is unsound e.g. if `T` is a reference type (which must be non-null and thus may not remain uninitialized).\n \nThe flaw was corrected by avoiding the use of `mem::uninitialized()`, using `MaybeUninit` instead.",
-        "Severity": "UNKNOWN",
-        "References": [
-          "https://github.com/servo/rust-smallvec/issues/126"
-        ]
-      },
-      {
-        "VulnerabilityID": "RUSTSEC-2019-0009",
-        "PkgName": "smallvec",
-        "InstalledVersion": "0.6.9",
-        "FixedVersion": "\u003e= 0.6.10",
-        "Layer": {
-          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
-        },
-        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0009",
-        "Title": "Double-free and use-after-free in SmallVec::grow()",
-        "Description": "Attempting to call `grow` on a spilled SmallVec with a value equal to the current capacity causes it to free the existing data. This performs a double free immediately and may lead to use-after-free on subsequent accesses to the SmallVec contents.\n\nAn attacker that controls the value passed to `grow` may exploit this flaw to obtain memory contents or gain remote code execution.\n\nCredits to @ehuss for discovering, reporting and fixing the bug.",
-        "Severity": "UNKNOWN",
-        "References": [
-          "https://github.com/servo/rust-smallvec/issues/148"
-        ]
-      },
-      {
-        "VulnerabilityID": "RUSTSEC-2019-0012",
-        "PkgName": "smallvec",
-        "InstalledVersion": "0.6.9",
-        "FixedVersion": "\u003e= 0.6.10",
-        "Layer": {
-          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
-        },
-        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0012",
-        "Title": "Memory corruption in SmallVec::grow()",
-        "Description": "Attempting to call `grow` on a spilled SmallVec with a value less than the current capacity causes corruption of memory allocator data structures.\n\nAn attacker that controls the value passed to `grow` may exploit this flaw to obtain memory contents or gain remote code execution.\n\nCredits to @ehuss for discovering, reporting and fixing the bug.",
-        "Severity": "UNKNOWN",
-        "References": [
-          "https://github.com/servo/rust-smallvec/issues/149"
-        ]
-      },
-      {
-        "VulnerabilityID": "RUSTSEC-2018-0017",
-        "PkgName": "tempdir",
-        "InstalledVersion": "0.3.7",
-        "Layer": {
-          "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
-        },
-        "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2018-0017",
-        "Title": "`tempdir` crate has been deprecated; use `tempfile` instead",
-        "Description": "The [`tempdir`](https://crates.io/crates/tempdir) crate has been deprecated\nand the functionality is merged into [`tempfile`](https://crates.io/crates/tempfile).",
-        "Severity": "UNKNOWN",
-        "References": [
-          "https://github.com/rust-lang-deprecated/tempdir/pull/46"
-        ]
+      "config": {
+        "Cmd": [
+          "sh"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "Image": "sha256:83aa35aa1c79e4b6957e018da6e322bfca92bf3b4696a211b42502543c242d6f",
+        "ArgsEscaped": true
       }
-    ]
-  }
-]
+    }
+  },
+  "Results": [
+    {
+      "Target": "Cargo.lock",
+      "Class": "lang-pkgs",
+      "Type": "cargo",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "RUSTSEC-2019-0001",
+          "PkgName": "ammonia",
+          "InstalledVersion": "1.9.0",
+          "FixedVersion": "\u003e= 2.1.0",
+          "Layer": {
+            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+          },
+          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0001",
+          "Title": "Uncontrolled recursion leads to abort in HTML serialization",
+          "Description": "Affected versions of this crate did use recursion for serialization of HTML\nDOM trees.\n\nThis allows an attacker to cause abort due to stack overflow by providing\na pathologically nested input.\n\nThe flaw was corrected by serializing the DOM tree iteratively instead.",
+          "Severity": "UNKNOWN",
+          "References": [
+            "https://github.com/rust-ammonia/ammonia/blob/master/CHANGELOG.md#210"
+          ]
+        },
+        {
+          "VulnerabilityID": "RUSTSEC-2016-0001",
+          "PkgName": "openssl",
+          "InstalledVersion": "0.8.3",
+          "FixedVersion": "\u003e= 0.9.0",
+          "Layer": {
+            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+          },
+          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2016-0001",
+          "Title": "SSL/TLS MitM vulnerability due to insecure defaults",
+          "Description": "All versions of rust-openssl prior to 0.9.0 contained numerous insecure defaults\nincluding off-by-default certificate verification and no API to perform hostname\nverification.\n\nUnless configured correctly by a developer, these defaults could allow an attacker\nto perform man-in-the-middle attacks.\n\nThe problem was addressed in newer versions by enabling certificate verification\nby default and exposing APIs to perform hostname verification. Use the\n`SslConnector` and `SslAcceptor` types to take advantage of these new features\n(as opposed to the lower-level `SslContext` type).",
+          "Severity": "UNKNOWN",
+          "References": [
+            "https://github.com/sfackler/rust-openssl/releases/tag/v0.9.0"
+          ]
+        },
+        {
+          "VulnerabilityID": "RUSTSEC-2019-0035",
+          "PkgName": "rand_core",
+          "InstalledVersion": "0.3.1",
+          "FixedVersion": "\u003e= 0.4.2",
+          "Layer": {
+            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+          },
+          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0035",
+          "Title": "Unaligned memory access",
+          "Description": "Affected versions of this crate violated alignment when casting byte slices to\ninteger slices, resulting in undefined behavior.\n\nThe flaw was corrected by Ralf Jung and Diggory Hardy.",
+          "Severity": "UNKNOWN",
+          "References": [
+            "https://github.com/rust-random/rand/blob/master/rand_core/CHANGELOG.md#050---2019-06-06"
+          ]
+        },
+        {
+          "VulnerabilityID": "RUSTSEC-2019-0035",
+          "PkgName": "rand_core",
+          "InstalledVersion": "0.4.0",
+          "FixedVersion": "\u003e= 0.4.2",
+          "Layer": {
+            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+          },
+          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0035",
+          "Title": "Unaligned memory access",
+          "Description": "Affected versions of this crate violated alignment when casting byte slices to\ninteger slices, resulting in undefined behavior.\n\nThe flaw was corrected by Ralf Jung and Diggory Hardy.",
+          "Severity": "UNKNOWN",
+          "References": [
+            "https://github.com/rust-random/rand/blob/master/rand_core/CHANGELOG.md#050---2019-06-06"
+          ]
+        },
+        {
+          "VulnerabilityID": "RUSTSEC-2018-0018",
+          "PkgName": "smallvec",
+          "InstalledVersion": "0.6.9",
+          "FixedVersion": "\u003e= 0.6.13",
+          "Layer": {
+            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+          },
+          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2018-0018",
+          "Title": "smallvec creates uninitialized value of any type",
+          "Description": "Affected versions of this crate called `mem::uninitialized()` to create values of a user-supplied type `T`.\nThis is unsound e.g. if `T` is a reference type (which must be non-null and thus may not remain uninitialized).\n \nThe flaw was corrected by avoiding the use of `mem::uninitialized()`, using `MaybeUninit` instead.",
+          "Severity": "UNKNOWN",
+          "References": [
+            "https://github.com/servo/rust-smallvec/issues/126"
+          ]
+        },
+        {
+          "VulnerabilityID": "RUSTSEC-2019-0009",
+          "PkgName": "smallvec",
+          "InstalledVersion": "0.6.9",
+          "FixedVersion": "\u003e= 0.6.10",
+          "Layer": {
+            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+          },
+          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0009",
+          "Title": "Double-free and use-after-free in SmallVec::grow()",
+          "Description": "Attempting to call `grow` on a spilled SmallVec with a value equal to the current capacity causes it to free the existing data. This performs a double free immediately and may lead to use-after-free on subsequent accesses to the SmallVec contents.\n\nAn attacker that controls the value passed to `grow` may exploit this flaw to obtain memory contents or gain remote code execution.\n\nCredits to @ehuss for discovering, reporting and fixing the bug.",
+          "Severity": "UNKNOWN",
+          "References": [
+            "https://github.com/servo/rust-smallvec/issues/148"
+          ]
+        },
+        {
+          "VulnerabilityID": "RUSTSEC-2019-0012",
+          "PkgName": "smallvec",
+          "InstalledVersion": "0.6.9",
+          "FixedVersion": "\u003e= 0.6.10",
+          "Layer": {
+            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+          },
+          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0012",
+          "Title": "Memory corruption in SmallVec::grow()",
+          "Description": "Attempting to call `grow` on a spilled SmallVec with a value less than the current capacity causes corruption of memory allocator data structures.\n\nAn attacker that controls the value passed to `grow` may exploit this flaw to obtain memory contents or gain remote code execution.\n\nCredits to @ehuss for discovering, reporting and fixing the bug.",
+          "Severity": "UNKNOWN",
+          "References": [
+            "https://github.com/servo/rust-smallvec/issues/149"
+          ]
+        },
+        {
+          "VulnerabilityID": "RUSTSEC-2018-0017",
+          "PkgName": "tempdir",
+          "InstalledVersion": "0.3.7",
+          "Layer": {
+            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
+          },
+          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2018-0017",
+          "Title": "`tempdir` crate has been deprecated; use `tempfile` instead",
+          "Description": "The [`tempdir`](https://crates.io/crates/tempdir) crate has been deprecated\nand the functionality is merged into [`tempfile`](https://crates.io/crates/tempfile).",
+          "Severity": "UNKNOWN",
+          "References": [
+            "https://github.com/rust-lang-deprecated/tempdir/pull/46"
+          ]
+        }
+      ]
+    }
+  ]
+}
