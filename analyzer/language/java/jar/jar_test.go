@@ -9,7 +9,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
@@ -27,15 +26,15 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Jar,
 						FilePath: "testdata/test.war",
-						Libraries: []types.LibraryInfo{
-							{Library: godeptypes.Library{Name: "org.glassfish:javax.el", Version: "3.0.0"}},
-							{Library: godeptypes.Library{Name: "com.fasterxml.jackson.core:jackson-databind", Version: "2.9.10.6"}},
-							{Library: godeptypes.Library{Name: "com.fasterxml.jackson.core:jackson-annotations", Version: "2.9.10"}},
-							{Library: godeptypes.Library{Name: "com.fasterxml.jackson.core:jackson-core", Version: "2.9.10"}},
-							{Library: godeptypes.Library{Name: "org.slf4j:slf4j-api", Version: "1.7.30"}},
-							{Library: godeptypes.Library{Name: "com.cronutils:cron-utils", Version: "9.1.2"}},
-							{Library: godeptypes.Library{Name: "org.apache.commons:commons-lang3", Version: "3.11"}},
-							{Library: godeptypes.Library{Name: "com.example:web-app", Version: "1.0-SNAPSHOT"}},
+						Libraries: []types.Package{
+							{Name: "org.glassfish:javax.el", Version: "3.0.0"},
+							{Name: "com.fasterxml.jackson.core:jackson-databind", Version: "2.9.10.6"},
+							{Name: "com.fasterxml.jackson.core:jackson-annotations", Version: "2.9.10"},
+							{Name: "com.fasterxml.jackson.core:jackson-core", Version: "2.9.10"},
+							{Name: "org.slf4j:slf4j-api", Version: "1.7.30"},
+							{Name: "com.cronutils:cron-utils", Version: "9.1.2"},
+							{Name: "org.apache.commons:commons-lang3", Version: "3.11"},
+							{Name: "com.example:web-app", Version: "1.0-SNAPSHOT"},
 						},
 					},
 				},

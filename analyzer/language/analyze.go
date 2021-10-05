@@ -28,16 +28,18 @@ func Analyze(fileType, filePath string, content []byte, parse Parser) (*analyzer
 }
 
 func ToAnalysisResult(fileType, filePath string, libs []godeptypes.Library) *analyzer.AnalysisResult {
-	var libInfos []types.LibraryInfo
+	var pkgs []types.Package
 	for _, lib := range libs {
-		libInfos = append(libInfos, types.LibraryInfo{
-			Library: lib,
+		pkgs = append(pkgs, types.Package{
+			Name:    lib.Name,
+			Version: lib.Version,
+			License: lib.License,
 		})
 	}
 	apps := []types.Application{{
 		Type:      fileType,
 		FilePath:  filePath,
-		Libraries: libInfos,
+		Libraries: pkgs,
 	}}
 
 	return &analyzer.AnalysisResult{Applications: apps}

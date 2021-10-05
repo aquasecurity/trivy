@@ -9,7 +9,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 func Test_pipAnalyzer_Analyze(t *testing.T) {
@@ -27,10 +26,19 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pip,
 						FilePath: "testdata/requirements.txt",
-						Libraries: []types.LibraryInfo{
-							{Library: godeptypes.Library{Name: "click", Version: "8.0.0"}},
-							{Library: godeptypes.Library{Name: "Flask", Version: "2.0.0"}},
-							{Library: godeptypes.Library{Name: "itsdangerous", Version: "2.0.0"}},
+						Libraries: []types.Package{
+							{
+								Name:    "click",
+								Version: "8.0.0",
+							},
+							{
+								Name:    "Flask",
+								Version: "2.0.0",
+							},
+							{
+								Name:    "itsdangerous",
+								Version: "2.0.0",
+							},
 						},
 					},
 				},

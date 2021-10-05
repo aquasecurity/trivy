@@ -6,7 +6,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -26,14 +25,12 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.PythonPkg,
 						FilePath: "testdata/kitchen-1.2.6-py2.7.egg",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
+								Name:     "kitchen",
+								Version:  "1.2.6",
+								License:  "LGPLv2+",
 								FilePath: "testdata/kitchen-1.2.6-py2.7.egg",
-								Library: godeptypes.Library{
-									Name:    "kitchen",
-									Version: "1.2.6",
-									License: "LGPLv2+",
-								},
 							},
 						},
 					},
@@ -48,14 +45,12 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.PythonPkg,
 						FilePath: "testdata/happy.egg-info/PKG-INFO",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
+								Name:     "distlib",
+								Version:  "0.3.1",
+								License:  "Python license",
 								FilePath: "testdata/happy.egg-info/PKG-INFO",
-								Library: godeptypes.Library{
-									Name:    "distlib",
-									Version: "0.3.1",
-									License: "Python license",
-								},
 							},
 						},
 					},
@@ -70,13 +65,11 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.PythonPkg,
 						FilePath: "testdata/no_license.egg-info/PKG-INFO",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
+								Name:     "setuptools",
+								Version:  "51.3.3",
 								FilePath: "testdata/no_license.egg-info/PKG-INFO",
-								Library: godeptypes.Library{
-									Name:    "setuptools",
-									Version: "51.3.3",
-								},
 							},
 						},
 					},
@@ -91,14 +84,12 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.PythonPkg,
 						FilePath: "testdata/happy.dist-info/METADATA",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
+								Name:     "distlib",
+								Version:  "0.3.1",
+								License:  "Python license",
 								FilePath: "testdata/happy.dist-info/METADATA",
-								Library: godeptypes.Library{
-									Name:    "distlib",
-									Version: "0.3.1",
-									License: "Python license",
-								},
 							},
 						},
 					},

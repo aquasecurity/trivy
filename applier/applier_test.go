@@ -10,7 +10,6 @@ import (
 	"github.com/aquasecurity/fanal/applier"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/types"
-	depTypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 func TestApplier_ApplyLayers(t *testing.T) {
@@ -107,18 +106,14 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: []types.LibraryInfo{
+									Libraries: []types.Package{
 										{
-											Library: depTypes.Library{
-												Name:    "guzzlehttp/guzzle",
-												Version: "6.2.0",
-											},
+											Name:    "guzzlehttp/guzzle",
+											Version: "6.2.0",
 										},
 										{
-											Library: depTypes.Library{
-												Name:    "symfony/process",
-												Version: "v4.2.7",
-											},
+											Name:    "symfony/process",
+											Version: "v4.2.7",
 										},
 									},
 								},
@@ -163,22 +158,18 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				Applications: []types.Application{
 					{
 						Type: "composer", FilePath: "php-app/composer.lock",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
-								Library: depTypes.Library{
-									Name:    "guzzlehttp/guzzle",
-									Version: "6.2.0",
-								},
+								Name:    "guzzlehttp/guzzle",
+								Version: "6.2.0",
 								Layer: types.Layer{
 									Digest: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 								},
 							},
 							{
-								Library: depTypes.Library{
-									Name:    "symfony/process",
-									Version: "v4.2.7",
-								},
+								Name:    "symfony/process",
+								Version: "v4.2.7",
 								Layer: types.Layer{
 									Digest: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
@@ -419,18 +410,14 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								{
 									Type:     "composer",
 									FilePath: "php-app/composer.lock",
-									Libraries: []types.LibraryInfo{
+									Libraries: []types.Package{
 										{
-											Library: depTypes.Library{
-												Name:    "guzzlehttp/guzzle",
-												Version: "6.2.0",
-											},
+											Name:    "guzzlehttp/guzzle",
+											Version: "6.2.0",
 										},
 										{
-											Library: depTypes.Library{
-												Name:    "symfony/process",
-												Version: "v4.2.7",
-											},
+											Name:    "symfony/process",
+											Version: "v4.2.7",
 										},
 									},
 								},
@@ -459,22 +446,18 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				Applications: []types.Application{
 					{
 						Type: "composer", FilePath: "php-app/composer.lock",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
-								Library: depTypes.Library{
-									Name:    "guzzlehttp/guzzle",
-									Version: "6.2.0",
-								},
+								Name:    "guzzlehttp/guzzle",
+								Version: "6.2.0",
 								Layer: types.Layer{
 									Digest: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 								},
 							},
 							{
-								Library: depTypes.Library{
-									Name:    "symfony/process",
-									Version: "v4.2.7",
-								},
+								Name:    "symfony/process",
+								Version: "v4.2.7",
 								Layer: types.Layer{
 									Digest: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 									DiffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
@@ -539,7 +522,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			})
 			for _, app := range got.Applications {
 				sort.Slice(app.Libraries, func(i, j int) bool {
-					return app.Libraries[i].Library.Name < app.Libraries[j].Library.Name
+					return app.Libraries[i].Name < app.Libraries[j].Name
 				})
 			}
 			assert.Equal(t, tt.want, got)

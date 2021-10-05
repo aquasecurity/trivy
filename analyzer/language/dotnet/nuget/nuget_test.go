@@ -10,7 +10,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
@@ -28,18 +27,14 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.NuGet,
 						FilePath: "testdata/packages.config",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
-								Library: godeptypes.Library{
-									Name:    "Microsoft.AspNet.WebApi",
-									Version: "5.2.2",
-								},
+								Name:    "Microsoft.AspNet.WebApi",
+								Version: "5.2.2",
 							},
 							{
-								Library: godeptypes.Library{
-									Name:    "Newtonsoft.Json",
-									Version: "6.0.4",
-								},
+								Name:    "Newtonsoft.Json",
+								Version: "6.0.4",
 							},
 						},
 					},
@@ -54,18 +49,14 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.NuGet,
 						FilePath: "testdata/packages.lock.json",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
-								Library: godeptypes.Library{
-									Name:    "Newtonsoft.Json",
-									Version: "12.0.3",
-								},
+								Name:    "Newtonsoft.Json",
+								Version: "12.0.3",
 							},
 							{
-								Library: godeptypes.Library{
-									Name:    "NuGet.Frameworks",
-									Version: "5.7.0",
-								},
+								Name:    "NuGet.Frameworks",
+								Version: "5.7.0",
 							},
 						},
 					},
@@ -98,7 +89,7 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 			// Sort libraries for consistency
 			for _, app := range got.Applications {
 				sort.Slice(app.Libraries, func(i, j int) bool {
-					return app.Libraries[i].Library.Name < app.Libraries[j].Library.Name
+					return app.Libraries[i].Name < app.Libraries[j].Name
 				})
 			}
 

@@ -6,7 +6,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -26,14 +25,12 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GemSpec,
 						FilePath: "testdata/multiple_licenses.gemspec",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
+								Name:     "test-unit",
+								Version:  "3.3.7",
+								License:  "Ruby, BSDL, PSFL",
 								FilePath: "testdata/multiple_licenses.gemspec",
-								Library: godeptypes.Library{
-									Name:    "test-unit",
-									Version: "3.3.7",
-									License: "Ruby, BSDL, PSFL",
-								},
 							},
 						},
 					},
