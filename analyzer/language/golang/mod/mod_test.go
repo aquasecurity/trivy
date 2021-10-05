@@ -10,7 +10,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 func Test_gomodAnalyzer_Analyze(t *testing.T) {
@@ -28,20 +27,20 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.GoMod,
 						FilePath: "testdata/gomod_many.sum",
-						Libraries: []types.LibraryInfo{
-							{Library: godeptypes.Library{Name: "github.com/BurntSushi/toml", Version: "0.3.1"}},
-							{Library: godeptypes.Library{Name: "github.com/cpuguy83/go-md2man/v2", Version: "2.0.0-20190314233015-f79a8a8ca69d"}},
-							{Library: godeptypes.Library{Name: "github.com/davecgh/go-spew", Version: "1.1.0"}},
-							{Library: godeptypes.Library{Name: "github.com/pmezard/go-difflib", Version: "1.0.0"}},
-							{Library: godeptypes.Library{Name: "github.com/russross/blackfriday/v2", Version: "2.0.1"}},
-							{Library: godeptypes.Library{Name: "github.com/shurcooL/sanitized_anchor_name", Version: "1.0.0"}},
-							{Library: godeptypes.Library{Name: "github.com/stretchr/objx", Version: "0.1.0"}},
-							{Library: godeptypes.Library{Name: "github.com/stretchr/testify", Version: "1.7.0"}},
-							{Library: godeptypes.Library{Name: "github.com/urfave/cli", Version: "1.22.5"}},
-							{Library: godeptypes.Library{Name: "golang.org/x/xerrors", Version: "0.0.0-20200804184101-5ec99f83aff1"}},
-							{Library: godeptypes.Library{Name: "gopkg.in/check.v1", Version: "0.0.0-20161208181325-20d25e280405"}},
-							{Library: godeptypes.Library{Name: "gopkg.in/yaml.v2", Version: "2.2.2"}},
-							{Library: godeptypes.Library{Name: "gopkg.in/yaml.v3", Version: "3.0.0-20200313102051-9f266ea9e77c"}},
+						Libraries: []types.Package{
+							{Name: "github.com/BurntSushi/toml", Version: "0.3.1"},
+							{Name: "github.com/cpuguy83/go-md2man/v2", Version: "2.0.0-20190314233015-f79a8a8ca69d"},
+							{Name: "github.com/davecgh/go-spew", Version: "1.1.0"},
+							{Name: "github.com/pmezard/go-difflib", Version: "1.0.0"},
+							{Name: "github.com/russross/blackfriday/v2", Version: "2.0.1"},
+							{Name: "github.com/shurcooL/sanitized_anchor_name", Version: "1.0.0"},
+							{Name: "github.com/stretchr/objx", Version: "0.1.0"},
+							{Name: "github.com/stretchr/testify", Version: "1.7.0"},
+							{Name: "github.com/urfave/cli", Version: "1.22.5"},
+							{Name: "golang.org/x/xerrors", Version: "0.0.0-20200804184101-5ec99f83aff1"},
+							{Name: "gopkg.in/check.v1", Version: "0.0.0-20161208181325-20d25e280405"},
+							{Name: "gopkg.in/yaml.v2", Version: "2.2.2"},
+							{Name: "gopkg.in/yaml.v3", Version: "3.0.0-20200313102051-9f266ea9e77c"},
 						},
 					},
 				},
@@ -70,10 +69,10 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			}
 			if got != nil {
 				sort.Slice(got.Applications[0].Libraries, func(i, j int) bool {
-					return got.Applications[0].Libraries[i].Library.Name < got.Applications[0].Libraries[j].Library.Name
+					return got.Applications[0].Libraries[i].Name < got.Applications[0].Libraries[j].Name
 				})
 				sort.Slice(tt.want.Applications[0].Libraries, func(i, j int) bool {
-					return tt.want.Applications[0].Libraries[i].Library.Name < tt.want.Applications[0].Libraries[j].Library.Name
+					return tt.want.Applications[0].Libraries[i].Name < tt.want.Applications[0].Libraries[j].Name
 				})
 			}
 			assert.NoError(t, err)

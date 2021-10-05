@@ -4,381 +4,273 @@
     "FilePath": "ruby-app/Gemfile.lock",
     "Libraries": [
       {
-        "Library": {
-          "Name": "actioncable",
-          "Version": "5.2.3"
-        },
+        "Name": "actioncable",
+        "Version": "5.2.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "actionmailer",
-          "Version": "5.2.3"
-        },
+        "Name": "actionmailer",
+        "Version": "5.2.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "actionpack",
-          "Version": "5.2.3"
-        },
+        "Name": "actionpack",
+        "Version": "5.2.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "actionview",
-          "Version": "5.2.3"
-        },
+        "Name": "actionview",
+        "Version": "5.2.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "activejob",
-          "Version": "5.2.3"
-        },
+        "Name": "activejob",
+        "Version": "5.2.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "activemodel",
-          "Version": "5.2.3"
-        },
+        "Name": "activemodel",
+        "Version": "5.2.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "activerecord",
-          "Version": "5.2.3"
-        },
+        "Name": "activerecord",
+        "Version": "5.2.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "activestorage",
-          "Version": "5.2.3"
-        },
+        "Name": "activestorage",
+        "Version": "5.2.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "activesupport",
-          "Version": "5.2.3"
-        },
+        "Name": "activesupport",
+        "Version": "5.2.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "arel",
-          "Version": "9.0.0"
-        },
+        "Name": "arel",
+        "Version": "9.0.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "ast",
-          "Version": "2.4.0"
-        },
+        "Name": "ast",
+        "Version": "2.4.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "builder",
-          "Version": "3.2.3"
-        },
+        "Name": "builder",
+        "Version": "3.2.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "coderay",
-          "Version": "1.1.2"
-        },
+        "Name": "coderay",
+        "Version": "1.1.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "concurrent-ruby",
-          "Version": "1.1.5"
-        },
+        "Name": "concurrent-ruby",
+        "Version": "1.1.5",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "crass",
-          "Version": "1.0.4"
-        },
+        "Name": "crass",
+        "Version": "1.0.4",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "dotenv",
-          "Version": "2.7.2"
-        },
+        "Name": "dotenv",
+        "Version": "2.7.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "erubi",
-          "Version": "1.8.0"
-        },
+        "Name": "erubi",
+        "Version": "1.8.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "faker",
-          "Version": "1.9.3"
-        },
+        "Name": "faker",
+        "Version": "1.9.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "globalid",
-          "Version": "0.4.2"
-        },
+        "Name": "globalid",
+        "Version": "0.4.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "i18n",
-          "Version": "1.6.0"
-        },
+        "Name": "i18n",
+        "Version": "1.6.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "jaro_winkler",
-          "Version": "1.5.2"
-        },
+        "Name": "jaro_winkler",
+        "Version": "1.5.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "json",
-          "Version": "2.2.0"
-        },
+        "Name": "json",
+        "Version": "2.2.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "loofah",
-          "Version": "2.2.3"
-        },
+        "Name": "loofah",
+        "Version": "2.2.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "mail",
-          "Version": "2.7.1"
-        },
+        "Name": "mail",
+        "Version": "2.7.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "marcel",
-          "Version": "0.3.3"
-        },
+        "Name": "marcel",
+        "Version": "0.3.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "method_source",
-          "Version": "0.9.2"
-        },
+        "Name": "method_source",
+        "Version": "0.9.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "mimemagic",
-          "Version": "0.3.3"
-        },
+        "Name": "mimemagic",
+        "Version": "0.3.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "mini_mime",
-          "Version": "1.0.1"
-        },
+        "Name": "mini_mime",
+        "Version": "1.0.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "mini_portile2",
-          "Version": "2.4.0"
-        },
+        "Name": "mini_portile2",
+        "Version": "2.4.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "minitest",
-          "Version": "5.11.3"
-        },
+        "Name": "minitest",
+        "Version": "5.11.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "nio4r",
-          "Version": "2.3.1"
-        },
+        "Name": "nio4r",
+        "Version": "2.3.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "nokogiri",
-          "Version": "1.10.3"
-        },
+        "Name": "nokogiri",
+        "Version": "1.10.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "parallel",
-          "Version": "1.17.0"
-        },
+        "Name": "parallel",
+        "Version": "1.17.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "parser",
-          "Version": "2.6.3.0"
-        },
+        "Name": "parser",
+        "Version": "2.6.3.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "pry",
-          "Version": "0.12.2"
-        },
+        "Name": "pry",
+        "Version": "0.12.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "psych",
-          "Version": "3.1.0"
-        },
+        "Name": "psych",
+        "Version": "3.1.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rack",
-          "Version": "2.0.7"
-        },
+        "Name": "rack",
+        "Version": "2.0.7",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rack-test",
-          "Version": "1.1.0"
-        },
+        "Name": "rack-test",
+        "Version": "1.1.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rails",
-          "Version": "5.2.0"
-        },
+        "Name": "rails",
+        "Version": "5.2.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rails-dom-testing",
-          "Version": "2.0.3"
-        },
+        "Name": "rails-dom-testing",
+        "Version": "2.0.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rails-html-sanitizer",
-          "Version": "1.0.3"
-        },
+        "Name": "rails-html-sanitizer",
+        "Version": "1.0.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "railties",
-          "Version": "5.2.3"
-        },
+        "Name": "railties",
+        "Version": "5.2.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rainbow",
-          "Version": "3.0.0"
-        },
+        "Name": "rainbow",
+        "Version": "3.0.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rake",
-          "Version": "12.3.2"
-        },
+        "Name": "rake",
+        "Version": "12.3.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rubocop",
-          "Version": "0.67.2"
-        },
+        "Name": "rubocop",
+        "Version": "0.67.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "ruby-progressbar",
-          "Version": "1.10.0"
-        },
+        "Name": "ruby-progressbar",
+        "Version": "1.10.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "sprockets",
-          "Version": "3.7.2"
-        },
+        "Name": "sprockets",
+        "Version": "3.7.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "sprockets-rails",
-          "Version": "3.2.1"
-        },
+        "Name": "sprockets-rails",
+        "Version": "3.2.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "thor",
-          "Version": "0.20.3"
-        },
+        "Name": "thor",
+        "Version": "0.20.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "thread_safe",
-          "Version": "0.3.6"
-        },
+        "Name": "thread_safe",
+        "Version": "0.3.6",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "tzinfo",
-          "Version": "1.2.5"
-        },
+        "Name": "tzinfo",
+        "Version": "1.2.5",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "unicode-display_width",
-          "Version": "1.5.0"
-        },
+        "Name": "unicode-display_width",
+        "Version": "1.5.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "websocket-driver",
-          "Version": "0.7.0"
-        },
+        "Name": "websocket-driver",
+        "Version": "0.7.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "websocket-extensions",
-          "Version": "0.1.3"
-        },
+        "Name": "websocket-extensions",
+        "Version": "0.1.3",
         "Layer": {}
       }
     ]
@@ -388,521 +280,373 @@
     "FilePath": "rust-app/Cargo.lock",
     "Libraries": [
       {
-        "Library": {
-          "Name": "ammonia",
-          "Version": "1.9.0"
-        },
+        "Name": "ammonia",
+        "Version": "1.9.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "autocfg",
-          "Version": "0.1.2"
-        },
+        "Name": "autocfg",
+        "Version": "0.1.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "bitflags",
-          "Version": "0.7.0"
-        },
+        "Name": "bitflags",
+        "Version": "0.7.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "bitflags",
-          "Version": "1.0.4"
-        },
+        "Name": "bitflags",
+        "Version": "1.0.4",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "cfg-if",
-          "Version": "0.1.7"
-        },
+        "Name": "cfg-if",
+        "Version": "0.1.7",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "cloudabi",
-          "Version": "0.0.3"
-        },
+        "Name": "cloudabi",
+        "Version": "0.0.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "fuchsia-cprng",
-          "Version": "0.1.1"
-        },
+        "Name": "fuchsia-cprng",
+        "Version": "0.1.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "futf",
-          "Version": "0.1.4"
-        },
+        "Name": "futf",
+        "Version": "0.1.4",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "gdi32-sys",
-          "Version": "0.2.0"
-        },
+        "Name": "gdi32-sys",
+        "Version": "0.2.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "html5ever",
-          "Version": "0.23.0"
-        },
+        "Name": "html5ever",
+        "Version": "0.23.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "idna",
-          "Version": "0.1.5"
-        },
+        "Name": "idna",
+        "Version": "0.1.5",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "itoa",
-          "Version": "0.4.4"
-        },
+        "Name": "itoa",
+        "Version": "0.4.4",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "kernel32-sys",
-          "Version": "0.2.2"
-        },
+        "Name": "kernel32-sys",
+        "Version": "0.2.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "lazy_static",
-          "Version": "0.2.11"
-        },
+        "Name": "lazy_static",
+        "Version": "0.2.11",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "lazy_static",
-          "Version": "1.3.0"
-        },
+        "Name": "lazy_static",
+        "Version": "1.3.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "libc",
-          "Version": "0.2.54"
-        },
+        "Name": "libc",
+        "Version": "0.2.54",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "libressl-pnacl-sys",
-          "Version": "2.1.6"
-        },
+        "Name": "libressl-pnacl-sys",
+        "Version": "2.1.6",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "log",
-          "Version": "0.4.6"
-        },
+        "Name": "log",
+        "Version": "0.4.6",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "mac",
-          "Version": "0.1.1"
-        },
+        "Name": "mac",
+        "Version": "0.1.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "maplit",
-          "Version": "1.0.1"
-        },
+        "Name": "maplit",
+        "Version": "1.0.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "markup5ever",
-          "Version": "0.8.1"
-        },
+        "Name": "markup5ever",
+        "Version": "0.8.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "matches",
-          "Version": "0.1.8"
-        },
+        "Name": "matches",
+        "Version": "0.1.8",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "new_debug_unreachable",
-          "Version": "1.0.3"
-        },
+        "Name": "new_debug_unreachable",
+        "Version": "1.0.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "normal",
-          "Version": "0.1.0"
-        },
+        "Name": "normal",
+        "Version": "0.1.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "openssl",
-          "Version": "0.8.3"
-        },
+        "Name": "openssl",
+        "Version": "0.8.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "openssl-sys",
-          "Version": "0.7.17"
-        },
+        "Name": "openssl-sys",
+        "Version": "0.7.17",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "percent-encoding",
-          "Version": "1.0.1"
-        },
+        "Name": "percent-encoding",
+        "Version": "1.0.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "phf",
-          "Version": "0.7.24"
-        },
+        "Name": "phf",
+        "Version": "0.7.24",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "phf_codegen",
-          "Version": "0.7.24"
-        },
+        "Name": "phf_codegen",
+        "Version": "0.7.24",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "phf_generator",
-          "Version": "0.7.24"
-        },
+        "Name": "phf_generator",
+        "Version": "0.7.24",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "phf_shared",
-          "Version": "0.7.24"
-        },
+        "Name": "phf_shared",
+        "Version": "0.7.24",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "pkg-config",
-          "Version": "0.3.14"
-        },
+        "Name": "pkg-config",
+        "Version": "0.3.14",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "pnacl-build-helper",
-          "Version": "1.4.11"
-        },
+        "Name": "pnacl-build-helper",
+        "Version": "1.4.11",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "precomputed-hash",
-          "Version": "0.1.1"
-        },
+        "Name": "precomputed-hash",
+        "Version": "0.1.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "proc-macro2",
-          "Version": "0.4.30"
-        },
+        "Name": "proc-macro2",
+        "Version": "0.4.30",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "quote",
-          "Version": "0.6.12"
-        },
+        "Name": "quote",
+        "Version": "0.6.12",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rand",
-          "Version": "0.4.6"
-        },
+        "Name": "rand",
+        "Version": "0.4.6",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rand",
-          "Version": "0.6.5"
-        },
+        "Name": "rand",
+        "Version": "0.6.5",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rand_chacha",
-          "Version": "0.1.1"
-        },
+        "Name": "rand_chacha",
+        "Version": "0.1.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rand_core",
-          "Version": "0.3.1"
-        },
+        "Name": "rand_core",
+        "Version": "0.3.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rand_core",
-          "Version": "0.4.0"
-        },
+        "Name": "rand_core",
+        "Version": "0.4.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rand_hc",
-          "Version": "0.1.0"
-        },
+        "Name": "rand_hc",
+        "Version": "0.1.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rand_isaac",
-          "Version": "0.1.1"
-        },
+        "Name": "rand_isaac",
+        "Version": "0.1.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rand_jitter",
-          "Version": "0.1.4"
-        },
+        "Name": "rand_jitter",
+        "Version": "0.1.4",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rand_os",
-          "Version": "0.1.3"
-        },
+        "Name": "rand_os",
+        "Version": "0.1.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rand_pcg",
-          "Version": "0.1.2"
-        },
+        "Name": "rand_pcg",
+        "Version": "0.1.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rand_xorshift",
-          "Version": "0.1.1"
-        },
+        "Name": "rand_xorshift",
+        "Version": "0.1.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "rdrand",
-          "Version": "0.4.0"
-        },
+        "Name": "rdrand",
+        "Version": "0.4.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "remove_dir_all",
-          "Version": "0.5.1"
-        },
+        "Name": "remove_dir_all",
+        "Version": "0.5.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "ryu",
-          "Version": "0.2.8"
-        },
+        "Name": "ryu",
+        "Version": "0.2.8",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "same-file",
-          "Version": "0.1.3"
-        },
+        "Name": "same-file",
+        "Version": "0.1.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "serde",
-          "Version": "1.0.91"
-        },
+        "Name": "serde",
+        "Version": "1.0.91",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "serde_derive",
-          "Version": "1.0.91"
-        },
+        "Name": "serde_derive",
+        "Version": "1.0.91",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "serde_json",
-          "Version": "1.0.39"
-        },
+        "Name": "serde_json",
+        "Version": "1.0.39",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "siphasher",
-          "Version": "0.2.3"
-        },
+        "Name": "siphasher",
+        "Version": "0.2.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "smallvec",
-          "Version": "0.6.9"
-        },
+        "Name": "smallvec",
+        "Version": "0.6.9",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "string_cache",
-          "Version": "0.7.3"
-        },
+        "Name": "string_cache",
+        "Version": "0.7.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "string_cache_codegen",
-          "Version": "0.4.2"
-        },
+        "Name": "string_cache_codegen",
+        "Version": "0.4.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "string_cache_shared",
-          "Version": "0.3.0"
-        },
+        "Name": "string_cache_shared",
+        "Version": "0.3.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "syn",
-          "Version": "0.15.34"
-        },
+        "Name": "syn",
+        "Version": "0.15.34",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "tempdir",
-          "Version": "0.3.7"
-        },
+        "Name": "tempdir",
+        "Version": "0.3.7",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "tendril",
-          "Version": "0.4.1"
-        },
+        "Name": "tendril",
+        "Version": "0.4.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "unicode-bidi",
-          "Version": "0.3.4"
-        },
+        "Name": "unicode-bidi",
+        "Version": "0.3.4",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "unicode-normalization",
-          "Version": "0.1.8"
-        },
+        "Name": "unicode-normalization",
+        "Version": "0.1.8",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "unicode-xid",
-          "Version": "0.1.0"
-        },
+        "Name": "unicode-xid",
+        "Version": "0.1.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "url",
-          "Version": "1.7.2"
-        },
+        "Name": "url",
+        "Version": "1.7.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "user32-sys",
-          "Version": "0.2.0"
-        },
+        "Name": "user32-sys",
+        "Version": "0.2.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "utf-8",
-          "Version": "0.7.5"
-        },
+        "Name": "utf-8",
+        "Version": "0.7.5",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "walkdir",
-          "Version": "1.0.7"
-        },
+        "Name": "walkdir",
+        "Version": "1.0.7",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "winapi",
-          "Version": "0.2.8"
-        },
+        "Name": "winapi",
+        "Version": "0.2.8",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "winapi",
-          "Version": "0.3.7"
-        },
+        "Name": "winapi",
+        "Version": "0.3.7",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "winapi-build",
-          "Version": "0.1.1"
-        },
+        "Name": "winapi-build",
+        "Version": "0.1.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "winapi-i686-pc-windows-gnu",
-          "Version": "0.4.0"
-        },
+        "Name": "winapi-i686-pc-windows-gnu",
+        "Version": "0.4.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "winapi-x86_64-pc-windows-gnu",
-          "Version": "0.4.0"
-        },
+        "Name": "winapi-x86_64-pc-windows-gnu",
+        "Version": "0.4.0",
         "Layer": {}
       }
     ]
@@ -912,101 +656,73 @@
     "FilePath": "php-app/composer.lock",
     "Libraries": [
       {
-        "Library": {
-          "Name": "guzzlehttp/guzzle",
-          "Version": "6.2.0"
-        },
+        "Name": "guzzlehttp/guzzle",
+        "Version": "6.2.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "guzzlehttp/promises",
-          "Version": "v1.3.1"
-        },
+        "Name": "guzzlehttp/promises",
+        "Version": "v1.3.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "guzzlehttp/psr7",
-          "Version": "1.5.2"
-        },
+        "Name": "guzzlehttp/psr7",
+        "Version": "1.5.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "laravel/installer",
-          "Version": "v2.0.1"
-        },
+        "Name": "laravel/installer",
+        "Version": "v2.0.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "pear/log",
-          "Version": "1.13.1"
-        },
+        "Name": "pear/log",
+        "Version": "1.13.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "pear/pear_exception",
-          "Version": "v1.0.0"
-        },
+        "Name": "pear/pear_exception",
+        "Version": "v1.0.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "psr/http-message",
-          "Version": "1.0.1"
-        },
+        "Name": "psr/http-message",
+        "Version": "1.0.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "ralouphie/getallheaders",
-          "Version": "2.0.5"
-        },
+        "Name": "ralouphie/getallheaders",
+        "Version": "2.0.5",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "symfony/console",
-          "Version": "v4.2.7"
-        },
+        "Name": "symfony/console",
+        "Version": "v4.2.7",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "symfony/contracts",
-          "Version": "v1.0.2"
-        },
+        "Name": "symfony/contracts",
+        "Version": "v1.0.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "symfony/filesystem",
-          "Version": "v4.2.7"
-        },
+        "Name": "symfony/filesystem",
+        "Version": "v4.2.7",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "symfony/polyfill-ctype",
-          "Version": "v1.11.0"
-        },
+        "Name": "symfony/polyfill-ctype",
+        "Version": "v1.11.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "symfony/polyfill-mbstring",
-          "Version": "v1.11.0"
-        },
+        "Name": "symfony/polyfill-mbstring",
+        "Version": "v1.11.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "symfony/process",
-          "Version": "v4.2.7"
-        },
+        "Name": "symfony/process",
+        "Version": "v4.2.7",
         "Layer": {}
       }
     ]
@@ -1016,94 +732,68 @@
     "FilePath": "node-app/package-lock.json",
     "Libraries": [
       {
-        "Library": {
-          "Name": "asap",
-          "Version": "2.0.6"
-        },
+        "Name": "asap",
+        "Version": "2.0.6",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "jquery",
-          "Version": "3.3.9"
-        },
+        "Name": "jquery",
+        "Version": "3.3.9",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "js-tokens",
-          "Version": "4.0.0"
-        },
+        "Name": "js-tokens",
+        "Version": "4.0.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "lodash",
-          "Version": "4.17.4"
-        },
+        "Name": "lodash",
+        "Version": "4.17.4",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "loose-envify",
-          "Version": "1.4.0"
-        },
+        "Name": "loose-envify",
+        "Version": "1.4.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "object-assign",
-          "Version": "4.1.1"
-        },
+        "Name": "object-assign",
+        "Version": "4.1.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "promise",
-          "Version": "8.0.3"
-        },
+        "Name": "promise",
+        "Version": "8.0.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "prop-types",
-          "Version": "15.7.2"
-        },
+        "Name": "prop-types",
+        "Version": "15.7.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "react",
-          "Version": "16.8.6"
-        },
+        "Name": "react",
+        "Version": "16.8.6",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "react-is",
-          "Version": "16.8.6"
-        },
+        "Name": "react-is",
+        "Version": "16.8.6",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "redux",
-          "Version": "4.0.1"
-        },
+        "Name": "redux",
+        "Version": "4.0.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "scheduler",
-          "Version": "0.13.6"
-        },
+        "Name": "scheduler",
+        "Version": "0.13.6",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "symbol-observable",
-          "Version": "1.2.0"
-        },
+        "Name": "symbol-observable",
+        "Version": "1.2.0",
         "Layer": {}
       }
     ]
@@ -1113,388 +803,277 @@
     "FilePath": "python-app/Pipfile.lock",
     "Libraries": [
       {
-        "Library": {
-          "Name": "amqp",
-          "Version": "2.4.2"
-        },
+        "Name": "amqp",
+        "Version": "2.4.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "autopep8",
-          "Version": "1.4.3"
-        },
+        "Name": "autopep8",
+        "Version": "1.4.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "babel",
-          "Version": "2.6.0"
-        },
+        "Name": "babel",
+        "Version": "2.6.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "billiard",
-          "Version": "3.6.0.0"
-        },
+        "Name": "billiard",
+        "Version": "3.6.0.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "boto3",
-          "Version": "1.9.130"
-        },
+        "Name": "boto3",
+        "Version": "1.9.130",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "botocore",
-          "Version": "1.12.130"
-        },
+        "Name": "botocore",
+        "Version": "1.12.130",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "celery",
-          "Version": "4.3.0"
-        },
+        "Name": "celery",
+        "Version": "4.3.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "certifi",
-          "Version": "2019.3.9"
-        },
+        "Name": "certifi",
+        "Version": "2019.3.9",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "chardet",
-          "Version": "3.0.4"
-        },
+        "Name": "chardet",
+        "Version": "3.0.4",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "decorator",
-          "Version": "4.4.0"
-        },
+        "Name": "decorator",
+        "Version": "4.4.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "django",
-          "Version": "2.0.9"
-        },
+        "Name": "django",
+        "Version": "2.0.9",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "django-celery-beat",
-          "Version": "1.4.0"
-        },
+        "Name": "django-celery-beat",
+        "Version": "1.4.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "django-cors-headers",
-          "Version": "2.5.2"
-        },
+        "Name": "django-cors-headers",
+        "Version": "2.5.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "django-extensions",
-          "Version": "2.1.6"
-        },
+        "Name": "django-extensions",
+        "Version": "2.1.6",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "django-postgres-extra",
-          "Version": ""
-        },
+        "Name": "django-postgres-extra",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "django-redis-cache",
-          "Version": "2.0.0"
-        },
+        "Name": "django-redis-cache",
+        "Version": "2.0.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "django-silk",
-          "Version": "3.0.1"
-        },
+        "Name": "django-silk",
+        "Version": "3.0.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "django-timezone-field",
-          "Version": "3.0"
-        },
+        "Name": "django-timezone-field",
+        "Version": "3.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "djangorestframework",
-          "Version": "3.9.2"
-        },
+        "Name": "djangorestframework",
+        "Version": "3.9.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "djangorestframework-jwt",
-          "Version": "1.11.0"
-        },
+        "Name": "djangorestframework-jwt",
+        "Version": "1.11.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "docutils",
-          "Version": "0.14"
-        },
+        "Name": "docutils",
+        "Version": "0.14",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "flower",
-          "Version": "0.9.3"
-        },
+        "Name": "flower",
+        "Version": "0.9.3",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "gprof2dot",
-          "Version": "2016.10.13"
-        },
+        "Name": "gprof2dot",
+        "Version": "2016.10.13",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "gunicorn",
-          "Version": "19.9.0"
-        },
+        "Name": "gunicorn",
+        "Version": "19.9.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "hiredis",
-          "Version": "1.0.0"
-        },
+        "Name": "hiredis",
+        "Version": "1.0.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "httplib2",
-          "Version": "0.12.1"
-        },
+        "Name": "httplib2",
+        "Version": "0.12.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "idna",
-          "Version": "2.8"
-        },
+        "Name": "idna",
+        "Version": "2.8",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "jinja2",
-          "Version": "2.10.1"
-        },
+        "Name": "jinja2",
+        "Version": "2.10.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "jmespath",
-          "Version": "0.9.4"
-        },
+        "Name": "jmespath",
+        "Version": "0.9.4",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "kombu",
-          "Version": "4.5.0"
-        },
+        "Name": "kombu",
+        "Version": "4.5.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "markupsafe",
-          "Version": "1.1.1"
-        },
+        "Name": "markupsafe",
+        "Version": "1.1.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "oauth2",
-          "Version": "1.9.0.post1"
-        },
+        "Name": "oauth2",
+        "Version": "1.9.0.post1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "psycopg2-binary",
-          "Version": "2.8.1"
-        },
+        "Name": "psycopg2-binary",
+        "Version": "2.8.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "py",
-          "Version": "1.8.0"
-        },
+        "Name": "py",
+        "Version": "1.8.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "pycodestyle",
-          "Version": "2.5.0"
-        },
+        "Name": "pycodestyle",
+        "Version": "2.5.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "pycurl",
-          "Version": "7.43.0.2"
-        },
+        "Name": "pycurl",
+        "Version": "7.43.0.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "pygments",
-          "Version": "2.3.1"
-        },
+        "Name": "pygments",
+        "Version": "2.3.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "pyjwt",
-          "Version": "1.7.1"
-        },
+        "Name": "pyjwt",
+        "Version": "1.7.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "python-crontab",
-          "Version": "2.3.6"
-        },
+        "Name": "python-crontab",
+        "Version": "2.3.6",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "python-dateutil",
-          "Version": "2.8.0"
-        },
+        "Name": "python-dateutil",
+        "Version": "2.8.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "python-http-client",
-          "Version": "3.1.0"
-        },
+        "Name": "python-http-client",
+        "Version": "3.1.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "pytz",
-          "Version": "2019.1"
-        },
+        "Name": "pytz",
+        "Version": "2019.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "pyyaml",
-          "Version": "5.1"
-        },
+        "Name": "pyyaml",
+        "Version": "5.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "redis",
-          "Version": "3.2.1"
-        },
+        "Name": "redis",
+        "Version": "3.2.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "requests",
-          "Version": "2.21.0"
-        },
+        "Name": "requests",
+        "Version": "2.21.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "retry",
-          "Version": "0.9.2"
-        },
+        "Name": "retry",
+        "Version": "0.9.2",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "s3transfer",
-          "Version": "0.2.0"
-        },
+        "Name": "s3transfer",
+        "Version": "0.2.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "sendgrid",
-          "Version": "6.0.4"
-        },
+        "Name": "sendgrid",
+        "Version": "6.0.4",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "sentry-sdk",
-          "Version": "0.7.10"
-        },
+        "Name": "sentry-sdk",
+        "Version": "0.7.10",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "six",
-          "Version": "1.12.0"
-        },
+        "Name": "six",
+        "Version": "1.12.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "sqlparse",
-          "Version": "0.3.0"
-        },
+        "Name": "sqlparse",
+        "Version": "0.3.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "tornado",
-          "Version": "5.1.1"
-        },
+        "Name": "tornado",
+        "Version": "5.1.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "urllib3",
-          "Version": "1.24.1"
-        },
+        "Name": "urllib3",
+        "Version": "1.24.1",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "vine",
-          "Version": "1.3.0"
-        },
+        "Name": "vine",
+        "Version": "1.3.0",
         "Layer": {}
       },
       {
-        "Library": {
-          "Name": "xmltodict",
-          "Version": "0.12.0"
-        },
+        "Name": "xmltodict",
+        "Version": "0.12.0",
         "Layer": {}
       }
     ]

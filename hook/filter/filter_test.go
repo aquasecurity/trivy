@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 func Test_systemFileFilterHook_Hook(t *testing.T) {
@@ -40,43 +39,35 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					{
 						Type:     types.Pipenv,
 						FilePath: "app/Pipfile.lock",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
-								Library: godeptypes.Library{
-									Name:    "django",
-									Version: "3.1.2",
-								},
+								Name:    "django",
+								Version: "3.1.2",
 							},
 						},
 					},
 					{
 						Type: types.PythonPkg,
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
+								Name:     "python",
+								Version:  "2.7.5",
 								FilePath: "usr/lib64/python2.7/lib-dynload/Python-2.7.5-py2.7.egg-info",
-								Library: godeptypes.Library{
-									Name:    "python",
-									Version: "2.7.5",
-								},
 							},
 							{
+								Name:     "pycurl",
+								Version:  "7.19.0",
 								FilePath: "usr/lib64/python2.7/site-packages/pycurl-7.19.0-py2.7.egg-info",
-								Library: godeptypes.Library{
-									Name:    "pycurl",
-									Version: "7.19.0",
-								},
 							},
 						},
 					},
 					{
 						Type:     types.PythonPkg,
 						FilePath: "usr/lib64/python2.7/wsgiref.egg-info",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
-								Library: godeptypes.Library{
-									Name:    "wsgiref",
-									Version: "0.1.2",
-								},
+								Name:    "wsgiref",
+								Version: "0.1.2",
 							},
 						},
 					},
@@ -122,24 +113,20 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					{
 						Type:     types.Pipenv,
 						FilePath: "app/Pipfile.lock",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
-								Library: godeptypes.Library{
-									Name:    "django",
-									Version: "3.1.2",
-								},
+								Name:    "django",
+								Version: "3.1.2",
 							},
 						},
 					},
 					{
 						Type: types.PythonPkg,
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
+								Name:     "pycurl",
+								Version:  "7.19.0",
 								FilePath: "usr/lib64/python2.7/site-packages/pycurl-7.19.0-py2.7.egg-info",
-								Library: godeptypes.Library{
-									Name:    "pycurl",
-									Version: "7.19.0",
-								},
 							},
 						},
 					},
@@ -152,13 +139,11 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 				Applications: []types.Application{
 					{
 						FilePath: "usr/lib/python2.7/lib-dynload/Python-2.7.egg-info",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
+								Name:     "python",
+								Version:  "2.7.14",
 								FilePath: "usr/lib/python2.7/lib-dynload/Python-2.7.egg-info",
-								Library: godeptypes.Library{
-									Name:    "python",
-									Version: "2.7.14",
-								},
 							},
 						},
 					},

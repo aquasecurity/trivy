@@ -35,10 +35,12 @@ func (a gemspecLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyz
 			{
 				Type:     types.GemSpec,
 				FilePath: target.FilePath,
-				Libraries: []types.LibraryInfo{
+				Libraries: []types.Package{
 					{
+						Name:     parsedLib.Name,
+						Version:  parsedLib.Version,
+						License:  parsedLib.License,
 						FilePath: target.FilePath,
-						Library:  parsedLib,
 					},
 				},
 			},

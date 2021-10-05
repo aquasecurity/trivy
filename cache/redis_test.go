@@ -33,7 +33,7 @@ func TestRedisCache_PutArtifact(t *testing.T) {
 			args: args{
 				artifactID: "sha256:8652b9f0cb4c0599575e5a003f5906876e10c1ceb2ab9fe1786712dac14a50cf",
 				artifactConfig: types.ArtifactInfo{
-					SchemaVersion: 1,
+					SchemaVersion: 2,
 					Architecture:  "amd64",
 					Created:       time.Date(2020, 11, 14, 0, 20, 4, 0, time.UTC),
 					DockerVersion: "19.03.12",
@@ -107,7 +107,7 @@ func TestRedisCache_PutBlob(t *testing.T) {
 			args: args{
 				blobID: "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
 				blobConfig: types.BlobInfo{
-					SchemaVersion: 1,
+					SchemaVersion: 2,
 					Digest:        "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
 					DiffID:        "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
 					OS: &types.OS{
@@ -180,7 +180,7 @@ func TestRedisCache_PutBlob(t *testing.T) {
 
 func TestRedisCache_GetArtifact(t *testing.T) {
 	info := types.ArtifactInfo{
-		SchemaVersion: 1,
+		SchemaVersion: 2,
 		Architecture:  "amd64",
 		Created:       time.Date(2020, 11, 14, 0, 20, 4, 0, time.UTC),
 		DockerVersion: "19.03.12",
@@ -259,7 +259,7 @@ func TestRedisCache_GetArtifact(t *testing.T) {
 
 func TestRedisCache_GetBlob(t *testing.T) {
 	blobInfo := types.BlobInfo{
-		SchemaVersion: 1,
+		SchemaVersion: 2,
 		Digest:        "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
 		DiffID:        "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
 		OS: &types.OS{
@@ -341,10 +341,9 @@ func TestRedisCache_GetBlob(t *testing.T) {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
-			} else {
-				assert.NoError(t, err)
 			}
 
+			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -428,10 +427,14 @@ func TestRedisCache_MissingBlobs(t *testing.T) {
 	require.NoError(t, err)
 	defer s.Close()
 
-	s.Set("fanal::artifact::sha256:8652b9f0cb4c0599575e5a003f5906876e10c1ceb2ab9fe1786712dac14a50cf/1", `{"SchemaVersion": 1}`)
-	s.Set("fanal::artifact::sha256:be4e4bea2c2e15b403bb321562e78ea84b501fb41497472e91ecb41504e8a27c/1", `{"SchemaVersion": 2}`)
-	s.Set("fanal::blob::sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0/11111", `{"SchemaVersion": 1}`)
-	s.Set("fanal::blob::sha256:174f5685490326fc0a1c0f5570b8663732189b327007e47ff13d2ca59673db02/11111", `{"SchemaVersion": 2}`)
+	s.Set("fanal::artifact::sha256:8652b9f0cb4c0599575e5a003f5906876e10c1ceb2ab9fe1786712dac14a50cf/1",
+		fmt.Sprintf("{\"SchemaVersion\": %d}", types.ArtifactJSONSchemaVersion))
+	s.Set("fanal::artifact::sha256:be4e4bea2c2e15b403bb321562e78ea84b501fb41497472e91ecb41504e8a27c/1",
+		`{"SchemaVersion": 999999}`) // This version should not match the current version
+	s.Set("fanal::blob::sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0/11111",
+		fmt.Sprintf("{\"SchemaVersion\": %d}", types.BlobJSONSchemaVersion))
+	s.Set("fanal::blob::sha256:174f5685490326fc0a1c0f5570b8663732189b327007e47ff13d2ca59673db02/11111",
+		`{"SchemaVersion": 999999}`) // This version should not match the current version
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -449,10 +452,9 @@ func TestRedisCache_MissingBlobs(t *testing.T) {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
-			} else {
-				assert.NoError(t, err)
 			}
 
+			assert.NoError(t, err)
 			assert.Equal(t, tt.wantMissingArtifact, missingArtifact)
 			assert.Equal(t, tt.wantMissingBlobIDs, missingBlobIDs)
 		})

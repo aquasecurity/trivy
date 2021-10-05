@@ -34,10 +34,12 @@ func (a nodePkgLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyz
 			{
 				Type:     types.NodePkg,
 				FilePath: target.FilePath,
-				Libraries: []types.LibraryInfo{
+				Libraries: []types.Package{
 					{
+						Name:     parsedLib.Name,
+						Version:  parsedLib.Version,
+						License:  parsedLib.License,
 						FilePath: target.FilePath,
-						Library:  parsedLib,
 					},
 				},
 			},

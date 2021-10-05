@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/knqyf263/nested"
 )
 
@@ -31,15 +30,6 @@ func containsPackage(e types.Package, s []types.Package) bool {
 	return false
 }
 
-func containsLibrary(e godeptypes.Library, s []types.LibraryInfo) bool {
-	for _, a := range s {
-		if e.Name == a.Library.Name && e.Version == a.Library.Version {
-			return true
-		}
-	}
-	return false
-}
-
 func lookupOriginLayerForPkg(pkg types.Package, layers []types.BlobInfo) (string, string) {
 	for _, layer := range layers {
 		for _, info := range layer.PackageInfos {
@@ -51,13 +41,13 @@ func lookupOriginLayerForPkg(pkg types.Package, layers []types.BlobInfo) (string
 	return "", ""
 }
 
-func lookupOriginLayerForLib(filePath string, lib godeptypes.Library, layers []types.BlobInfo) (string, string) {
+func lookupOriginLayerForLib(filePath string, lib types.Package, layers []types.BlobInfo) (string, string) {
 	for _, layer := range layers {
 		for _, layerApp := range layer.Applications {
 			if filePath != layerApp.FilePath {
 				continue
 			}
-			if containsLibrary(lib, layerApp.Libraries) {
+			if containsPackage(lib, layerApp.Libraries) {
 				return layer.Digest, layer.DiffID
 			}
 		}
@@ -118,8 +108,8 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	}
 
 	for _, app := range mergedLayer.Applications {
-		for i, libInfo := range app.Libraries {
-			originLayerDigest, originLayerDiffID := lookupOriginLayerForLib(app.FilePath, libInfo.Library, layers)
+		for i, lib := range app.Libraries {
+			originLayerDigest, originLayerDiffID := lookupOriginLayerForLib(app.FilePath, lib, layers)
 			app.Libraries[i].Layer = types.Layer{
 				Digest: originLayerDigest,
 				DiffID: originLayerDiffID,

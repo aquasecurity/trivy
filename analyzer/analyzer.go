@@ -88,10 +88,10 @@ func (r *AnalysisResult) Sort() {
 
 	for _, app := range r.Applications {
 		sort.Slice(app.Libraries, func(i, j int) bool {
-			if app.Libraries[i].Library.Name != app.Libraries[j].Library.Name {
-				return app.Libraries[i].Library.Name < app.Libraries[j].Library.Name
+			if app.Libraries[i].Name != app.Libraries[j].Name {
+				return app.Libraries[i].Name < app.Libraries[j].Name
 			}
-			return app.Libraries[i].Library.Version < app.Libraries[j].Library.Version
+			return app.Libraries[i].Version < app.Libraries[j].Version
 		})
 	}
 }

@@ -42,18 +42,18 @@ func (h systemFileFilterHook) Hook(blob *types.BlobInfo) error {
 			continue
 		}
 
-		var libs []types.LibraryInfo
+		var pkgs []types.Package
 		for _, lib := range app.Libraries {
 			// If the lang-specific package was installed by OS package manager, it should not be taken.
 			// Otherwise, the package version will be wrong, then it will lead to false positive.
 			if utils.StringInSlice(lib.FilePath, systemFiles) {
 				continue
 			}
-			libs = append(libs, lib)
+			pkgs = append(pkgs, lib)
 		}
 
 		// Overwrite Libraries
-		app.Libraries = libs
+		app.Libraries = pkgs
 		apps = append(apps, app)
 	}
 

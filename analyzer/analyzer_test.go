@@ -18,7 +18,6 @@ import (
 	aos "github.com/aquasecurity/fanal/analyzer/os"
 	_ "github.com/aquasecurity/fanal/hook/all"
 	"github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 type mockConfigAnalyzer struct{}
@@ -84,11 +83,10 @@ func TestAnalysisResult_Merge(t *testing.T) {
 					{
 						Type:     "bundler",
 						FilePath: "app/Gemfile.lock",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
-								Library: godeptypes.Library{
-									Name: "rails", Version: "5.0.0",
-								},
+								Name:    "rails",
+								Version: "5.0.0",
 							},
 						},
 					},
@@ -108,11 +106,10 @@ func TestAnalysisResult_Merge(t *testing.T) {
 						{
 							Type:     "bundler",
 							FilePath: "app2/Gemfile.lock",
-							Libraries: []types.LibraryInfo{
+							Libraries: []types.Package{
 								{
-									Library: godeptypes.Library{
-										Name: "nokogiri", Version: "1.0.0",
-									},
+									Name:    "nokogiri",
+									Version: "1.0.0",
 								},
 							},
 						},
@@ -142,22 +139,20 @@ func TestAnalysisResult_Merge(t *testing.T) {
 					{
 						Type:     "bundler",
 						FilePath: "app/Gemfile.lock",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
-								Library: godeptypes.Library{
-									Name: "rails", Version: "5.0.0",
-								},
+								Name:    "rails",
+								Version: "5.0.0",
 							},
 						},
 					},
 					{
 						Type:     "bundler",
 						FilePath: "app2/Gemfile.lock",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
-								Library: godeptypes.Library{
-									Name: "nokogiri", Version: "1.0.0",
-								},
+								Name:    "nokogiri",
+								Version: "1.0.0",
 							},
 						},
 					},
@@ -322,12 +317,10 @@ func TestAnalyzeFile(t *testing.T) {
 					{
 						Type:     "bundler",
 						FilePath: "/app/Gemfile.lock",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
-								Library: godeptypes.Library{
-									Name:    "actioncable",
-									Version: "5.2.3",
-								},
+								Name:    "actioncable",
+								Version: "5.2.3",
 							},
 						},
 					},

@@ -4,8 +4,6 @@ import (
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 type OS struct {
@@ -32,6 +30,9 @@ type Package struct {
 	Modularitylabel string `json:",omitempty"` // only for Red Hat based distributions
 	License         string `json:",omitempty"`
 	Layer           Layer  `json:",omitempty"`
+
+	// Each package metadata have the file path, while the package from lock files does not have.
+	FilePath string `json:",omitempty"`
 }
 
 func (pkg *Package) Empty() bool {
@@ -49,17 +50,6 @@ type PackageInfo struct {
 	Packages []Package
 }
 
-type LibraryInfo struct {
-	// Each package metadata have the file path, while the package from lock files does not have
-	FilePath string `json:",omitempty"`
-
-	// Library holds package name, version, etc.
-	Library godeptypes.Library `json:",omitempty"`
-
-	// Layer represents which layer the lang-specific package is installed.
-	Layer Layer `json:",omitempty"`
-}
-
 type Application struct {
 	// e.g. bundler and pipenv
 	Type string
@@ -68,7 +58,7 @@ type Application struct {
 	FilePath string `json:",omitempty"`
 
 	// Libraries is a list of lang-specific packages
-	Libraries []LibraryInfo
+	Libraries []Package
 }
 
 type Config struct {

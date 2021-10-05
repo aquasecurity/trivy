@@ -38,12 +38,10 @@ func TestAnalyze(t *testing.T) {
 					{
 						Type:     types.GoBinary,
 						FilePath: "app/myweb",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
-								Library: godeptypes.Library{
-									Name:    "test",
-									Version: "1.2.3",
-								},
+								Name:    "test",
+								Version: "1.2.3",
 							},
 						},
 					},

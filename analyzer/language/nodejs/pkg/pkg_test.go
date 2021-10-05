@@ -9,7 +9,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
@@ -30,14 +29,12 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.NodePkg,
 						FilePath: "testdata/package.json",
-						Libraries: []types.LibraryInfo{
+						Libraries: []types.Package{
 							{
+								Name:     "lodash",
+								Version:  "5.0.0",
+								License:  "MIT",
 								FilePath: "testdata/package.json",
-								Library: godeptypes.Library{
-									Name:    "lodash",
-									Version: "5.0.0",
-									License: "MIT",
-								},
 							},
 						},
 					},

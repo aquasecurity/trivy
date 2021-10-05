@@ -63,10 +63,12 @@ func (a packagingAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.An
 		{
 			Type:     types.PythonPkg,
 			FilePath: target.FilePath,
-			Libraries: []types.LibraryInfo{
+			Libraries: []types.Package{
 				{
+					Name:     lib.Name,
+					Version:  lib.Version,
+					License:  lib.License,
 					FilePath: target.FilePath,
-					Library:  lib,
 				},
 			},
 		},
