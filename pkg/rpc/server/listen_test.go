@@ -114,7 +114,7 @@ func Test_dbWorker_update(t *testing.T) {
 			mockDBClient.On("NeedsUpdate",
 				tt.needsUpdate.input.appVersion, false, tt.needsUpdate.input.skip).Return(
 				tt.needsUpdate.output.needsUpdate, tt.needsUpdate.output.err)
-			mockDBClient.On("UpdateMetadata", mock.Anything).Return(nil)
+			mockDBClient.On("UpdateMetadata", mock.Anything, false).Return(nil)
 
 			if tt.download.call {
 				mockDBClient.On("Download", mock.Anything, mock.Anything, false).Run(

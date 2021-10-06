@@ -164,7 +164,7 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 		return xerrors.Errorf("failed to copy the database file: %w", err)
 	}
 
-	if err = w.dbClient.UpdateMetadata(cacheDir); err != nil {
+	if err = w.dbClient.UpdateMetadata(cacheDir, false); err != nil {
 		return xerrors.Errorf("unable to update database metadata: %w", err)
 	}
 

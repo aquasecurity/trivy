@@ -59,7 +59,7 @@ var SuperSet = wire.NewSet(
 type Operation interface {
 	NeedsUpdate(cliVersion string, light, skip bool) (need bool, err error)
 	Download(ctx context.Context, cacheDir string, light bool) (err error)
-	UpdateMetadata(cacheDir string) (err error)
+	UpdateMetadata(cacheDir string, light bool) (err error)
 }
 
 type dbOperation interface {
@@ -200,7 +200,7 @@ func (c Client) Download(ctx context.Context, cacheDir string, light bool) error
 }
 
 // UpdateMetadata updates the DB metadata
-func (c Client) UpdateMetadata(cacheDir string) error {
+func (c Client) UpdateMetadata(cacheDir string, light bool) error {
 	log.Logger.Debug("Updating database metadata...")
 
 	// make sure the DB has been successfully downloaded
@@ -215,6 +215,11 @@ func (c Client) UpdateMetadata(cacheDir string) error {
 	}
 
 	metadata.DownloadedAt = c.clock.Now().UTC()
+	dbType := db.TypeFull
+	if light {
+		dbType = db.TypeLight
+	}
+	metadata.Type = dbType
 	if err = c.dbc.StoreMetadata(metadata, filepath.Join(cacheDir, "db")); err != nil {
 		return xerrors.Errorf("failed to store metadata: %w", err)
 	}

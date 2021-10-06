@@ -355,7 +355,7 @@ func TestClient_UpdateMetadata(t *testing.T) {
 			pb := indicator.NewProgressBar(true)
 			client := NewClient(mockConfig, nil, pb, tc.clock, metadata)
 
-			err = client.UpdateMetadata(dir)
+			err = client.UpdateMetadata(dir, false)
 			switch {
 			case tc.expectedError != nil:
 				assert.EqualError(t, err, tc.expectedError.Error(), tc.name)
