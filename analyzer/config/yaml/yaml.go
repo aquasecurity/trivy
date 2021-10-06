@@ -1,6 +1,7 @@
 package yaml
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -28,7 +29,7 @@ func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
 	}
 }
 
-func (a ConfigAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a ConfigAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	// YAML might have sub documents separated by "---"
 	//
 	// If the current configuration contains multiple configurations, evaluate each policy

@@ -36,7 +36,7 @@ type AnalysisTarget struct {
 type analyzer interface {
 	Type() Type
 	Version() int
-	Analyze(input AnalysisTarget) (*AnalysisResult, error)
+	Analyze(ctx context.Context, input AnalysisTarget) (*AnalysisResult, error)
 	Required(filePath string, info os.FileInfo) bool
 }
 
@@ -209,7 +209,7 @@ func (a Analyzer) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *se
 			defer limit.Release(1)
 			defer wg.Done()
 
-			ret, err := a.Analyze(target)
+			ret, err := a.Analyze(ctx, target)
 			if err != nil && !xerrors.Is(err, aos.AnalyzeOSError) {
 				log.Logger.Debugf("Analysis error: %s", err)
 				return

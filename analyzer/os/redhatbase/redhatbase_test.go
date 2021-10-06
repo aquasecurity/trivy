@@ -1,6 +1,7 @@
 package redhatbase
 
 import (
+	"context"
 	"io/ioutil"
 	"testing"
 
@@ -35,8 +36,8 @@ func Test_redhatOSAnalyzer_Analyze(t *testing.T) {
 			a := redhatOSAnalyzer{}
 			b, err := ioutil.ReadFile(tt.inputFile)
 			require.NoError(t, err)
-
-			got, err := a.Analyze(analyzer.AnalysisTarget{
+			ctx := context.Background()
+			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: "etc/redhat-release",
 				Content:  b,
 			})

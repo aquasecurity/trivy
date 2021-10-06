@@ -1,6 +1,7 @@
 package redhatbase
 
 import (
+	"context"
 	"io/ioutil"
 	"testing"
 
@@ -35,8 +36,9 @@ func Test_centosOSAnalyzer_Analyze(t *testing.T) {
 			a := centOSAnalyzer{}
 			b, err := ioutil.ReadFile(tt.inputFile)
 			require.NoError(t, err)
+			ctx := context.Background()
 
-			got, err := a.Analyze(analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: "etc/centos-release",
 				Content:  b,
 			})

@@ -1,6 +1,7 @@
 package composer
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 
@@ -23,7 +24,7 @@ var requiredFiles = []string{"composer.lock"}
 
 type composerLibraryAnalyzer struct{}
 
-func (a composerLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a composerLibraryAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	res, err := language.Analyze(types.Composer, target.FilePath, target.Content, composer.Parse)
 	if err != nil {
 		return nil, xerrors.Errorf("error with composer.lock: %w", err)

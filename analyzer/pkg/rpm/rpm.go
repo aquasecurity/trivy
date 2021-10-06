@@ -1,6 +1,7 @@
 package rpm
 
 import (
+	"context"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -29,7 +30,7 @@ var errUnexpectedNameFormat = xerrors.New("unexpected name format")
 
 type rpmPkgAnalyzer struct{}
 
-func (a rpmPkgAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a rpmPkgAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	parsedPkgs, installedFiles, err := a.parsePkgInfo(target.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse rpmdb: %w", err)

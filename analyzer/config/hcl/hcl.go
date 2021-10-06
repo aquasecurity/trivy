@@ -1,6 +1,7 @@
 package hcl
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -30,7 +31,7 @@ func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
 
 // Analyze analyzes HCL-based config files, defaulting to HCL2.0 spec
 // it returns error only if content does not comply to both HCL2.0 and HCL1.0 spec
-func (a ConfigAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a ConfigAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	parsed, err := a.analyze(target)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse HCL (%a): %w", target.FilePath, err)

@@ -1,6 +1,7 @@
 package yaml_test
 
 import (
+	"context"
 	"io/ioutil"
 	"regexp"
 	"testing"
@@ -216,8 +217,8 @@ func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 
 			a := yaml.NewConfigAnalyzer(nil)
-
-			got, err := a.Analyze(analyzer.AnalysisTarget{
+			ctx := context.Background()
+			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: tt.inputFile,
 				Content:  b,
 			})

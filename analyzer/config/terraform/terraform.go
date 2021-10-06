@@ -1,6 +1,7 @@
 package terraform
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 
@@ -20,7 +21,7 @@ func NewConfigAnalyzer() ConfigAnalyzer {
 }
 
 // Analyze returns a name of Terraform file
-func (a ConfigAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a ConfigAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	return &analyzer.AnalysisResult{
 		Configs: []types.Config{
 			{
