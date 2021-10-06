@@ -3,6 +3,7 @@ package suse
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"os"
 	"strings"
 
@@ -27,7 +28,7 @@ var requiredFiles = []string{
 
 type suseOSAnalyzer struct{}
 
-func (a suseOSAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a suseOSAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	suseName := ""
 	scanner := bufio.NewScanner(bytes.NewBuffer(target.Content))
 	for scanner.Scan() {

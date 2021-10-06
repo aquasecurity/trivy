@@ -1,6 +1,7 @@
 package terraform_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -36,7 +37,8 @@ func TestConfigAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := terraform.ConfigAnalyzer{}
-			got, err := a.Analyze(tt.target)
+			ctx := context.Background()
+			got, err := a.Analyze(ctx, tt.target)
 
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)

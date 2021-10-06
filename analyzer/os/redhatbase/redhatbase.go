@@ -3,6 +3,7 @@ package redhatbase
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"os"
 	"regexp"
 	"strings"
@@ -28,7 +29,7 @@ var redhatRe = regexp.MustCompile(`(.*) release (\d[\d\.]*)`)
 
 type redhatOSAnalyzer struct{}
 
-func (a redhatOSAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a redhatOSAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	foundOS, err := a.parseRelease(target.Content)
 	if err != nil {
 		return nil, err

@@ -1,6 +1,7 @@
 package binary
 
 import (
+	"context"
 	"errors"
 	"os"
 
@@ -24,7 +25,7 @@ const (
 
 type gobinaryLibraryAnalyzer struct{}
 
-func (a gobinaryLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a gobinaryLibraryAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	res, err := language.Analyze(types.GoBinary, target.FilePath, target.Content, binary.Parse)
 	if errors.Is(err, binary.ErrUnrecognizedExe) {
 		return nil, nil

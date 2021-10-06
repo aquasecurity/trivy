@@ -1,6 +1,7 @@
 package nuget
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 
@@ -28,7 +29,7 @@ var requiredFiles = []string{lockFile, configFile}
 
 type nugetLibraryAnalyzer struct{}
 
-func (a nugetLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a nugetLibraryAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	// Set the default parser
 	parser := lock.Parse
 

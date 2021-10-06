@@ -2,6 +2,7 @@ package jar
 
 import (
 	"bytes"
+	"context"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,7 +26,7 @@ var requiredExtensions = []string{".jar", ".war", ".ear"}
 // javaLibraryAnalyzer analyzes jar/war/ear files
 type javaLibraryAnalyzer struct{}
 
-func (a javaLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a javaLibraryAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	r := bytes.NewReader(target.Content)
 	libs, err := jar.Parse(r, jar.WithFilePath(target.FilePath))
 	if err != nil {

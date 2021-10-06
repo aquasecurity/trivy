@@ -3,6 +3,7 @@ package dpkg
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"log"
 	"os"
 	"path/filepath"
@@ -35,7 +36,7 @@ var (
 
 type dpkgAnalyzer struct{}
 
-func (a dpkgAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a dpkgAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	scanner := bufio.NewScanner(bytes.NewBuffer(target.Content))
 	if a.isListFile(filepath.Split(target.FilePath)) {
 		return a.parseDpkgInfoList(scanner)

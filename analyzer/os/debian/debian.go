@@ -3,6 +3,7 @@ package debian
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"os"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -23,7 +24,7 @@ var requiredFiles = []string{"etc/debian_version"}
 
 type debianOSAnalyzer struct{}
 
-func (a debianOSAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a debianOSAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	scanner := bufio.NewScanner(bytes.NewBuffer(target.Content))
 	for scanner.Scan() {
 		line := scanner.Text()

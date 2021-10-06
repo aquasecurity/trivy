@@ -1,6 +1,7 @@
 package dpkg
 
 import (
+	"context"
 	"os"
 	"sort"
 	"testing"
@@ -188,7 +189,8 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 
 			a := dpkgAnalyzer{}
-			got, err := a.Analyze(analyzer.AnalysisTarget{
+			ctx := context.Background()
+			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: tt.filePath,
 				Content:  b,
 			})

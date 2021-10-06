@@ -1,6 +1,7 @@
 package redhatbase
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -35,8 +36,8 @@ func Test_rockyOSAnalyzer_Analyze(t *testing.T) {
 			a := rockyOSAnalyzer{}
 			b, err := os.ReadFile(tt.inputFile)
 			require.NoError(t, err)
-
-			got, err := a.Analyze(analyzer.AnalysisTarget{
+			ctx := context.Background()
+			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: "etc/rocky-release",
 				Content:  b,
 			})

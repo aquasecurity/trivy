@@ -1,6 +1,7 @@
 package jar
 
 import (
+	"context"
 	"io/ioutil"
 	"testing"
 
@@ -52,7 +53,8 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 
 			a := javaLibraryAnalyzer{}
-			got, err := a.Analyze(analyzer.AnalysisTarget{
+			ctx := context.Background()
+			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: tt.inputFile,
 				Content:  b,
 			})

@@ -1,6 +1,7 @@
 package json_test
 
 import (
+	"context"
 	"io/ioutil"
 	"regexp"
 	"testing"
@@ -132,7 +133,8 @@ func Test_jsonConfigAnalyzer_Analyze(t *testing.T) {
 
 			s := json.NewConfigAnalyzer(nil)
 
-			got, err := s.Analyze(analyzer.AnalysisTarget{
+			ctx := context.Background()
+			got, err := s.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: tt.inputFile,
 				Content:  b,
 			})

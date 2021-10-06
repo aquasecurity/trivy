@@ -1,6 +1,7 @@
 package mod
 
 import (
+	"context"
 	"os"
 	"sort"
 	"testing"
@@ -57,7 +58,8 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 
 			a := gomodAnalyzer{}
-			got, err := a.Analyze(analyzer.AnalysisTarget{
+			ctx := context.Background()
+			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: tt.inputFile,
 				Content:  b,
 			})

@@ -6,40 +6,40 @@ import (
 )
 
 func TestTryOCI(t *testing.T) {
-	tests := []struct{
-		name string
+	tests := []struct {
+		name         string
 		ociImagePath string
-		wantErr string
+		wantErr      string
 	}{
 		{
-			name: "correct path to index without tag",
+			name:         "correct path to index without tag",
 			ociImagePath: "testdata/multi",
-			wantErr: "",
+			wantErr:      "",
 		},
 		{
-			name: "correct path to index with correct tag",
+			name:         "correct path to index with correct tag",
 			ociImagePath: "testdata/multi:tg11",
-			wantErr: "",
+			wantErr:      "",
 		},
 		{
-			name: "correct path to index with incorrect tag",
+			name:         "correct path to index with incorrect tag",
 			ociImagePath: "testdata/multi:tg12",
-			wantErr: "invalid OCI image tag",
+			wantErr:      "invalid OCI image tag",
 		},
 		{
-			name: "correct path to manifest without tag",
+			name:         "correct path to manifest without tag",
 			ociImagePath: "testdata/single",
-			wantErr: "",
+			wantErr:      "",
 		},
 		{
-			name: "correct path to manifest with correct tag",
+			name:         "correct path to manifest with correct tag",
 			ociImagePath: "testdata/single:3.14",
-			wantErr: "",
+			wantErr:      "",
 		},
 		{
-			name: "correct path to manifest with incorrect tag",
+			name:         "correct path to manifest with incorrect tag",
 			ociImagePath: "testdata/single:3.11",
-			wantErr: "invalid OCI image tag",
+			wantErr:      "invalid OCI image tag",
 		},
 	}
 

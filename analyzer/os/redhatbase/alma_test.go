@@ -1,6 +1,7 @@
 package redhatbase
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -35,8 +36,9 @@ func Test_almaOSAnalyzer_Analyze(t *testing.T) {
 			a := almaOSAnalyzer{}
 			b, err := os.ReadFile(tt.inputFile)
 			require.NoError(t, err)
+			ctx := context.Background()
 
-			got, err := a.Analyze(analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: "etc/almalinux-release",
 				Content:  b,
 			})

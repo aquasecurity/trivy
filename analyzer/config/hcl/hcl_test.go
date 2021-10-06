@@ -1,6 +1,7 @@
 package hcl_test
 
 import (
+	"context"
 	"os"
 	"regexp"
 	"testing"
@@ -113,8 +114,8 @@ func TestConfigAnalyzer_Analyze(t *testing.T) {
 
 			a := hcl.NewConfigAnalyzer(nil)
 			require.NoError(t, err)
-
-			got, err := a.Analyze(analyzer.AnalysisTarget{
+			ctx := context.Background()
+			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: tt.inputFile,
 				Content:  b,
 			})

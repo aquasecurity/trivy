@@ -3,6 +3,7 @@ package redhatbase
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"os"
 	"strings"
 
@@ -22,7 +23,7 @@ func init() {
 
 type centOSAnalyzer struct{}
 
-func (a centOSAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a centOSAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	scanner := bufio.NewScanner(bytes.NewBuffer(target.Content))
 	for scanner.Scan() {
 		line := scanner.Text()

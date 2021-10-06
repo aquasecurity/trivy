@@ -1,6 +1,7 @@
 package bundler
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 
@@ -25,7 +26,7 @@ var (
 
 type bundlerLibraryAnalyzer struct{}
 
-func (a bundlerLibraryAnalyzer) Analyze(target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a bundlerLibraryAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	res, err := language.Analyze(types.Bundler, target.FilePath, target.Content, bundler.Parse)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse Gemfile.lock: %w", err)

@@ -1,6 +1,7 @@
 package amazonlinux
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -65,7 +66,8 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := amazonlinuxOSAnalyzer{}
-			got, err := a.Analyze(tt.target)
+			ctx := context.Background()
+			got, err := a.Analyze(ctx, tt.target)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

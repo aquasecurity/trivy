@@ -1,6 +1,7 @@
 package photon
 
 import (
+	"context"
 	"io/ioutil"
 	"testing"
 
@@ -41,7 +42,8 @@ func Test_photonOSAnalyzer_Analyze(t *testing.T) {
 			b, err := ioutil.ReadFile(tt.inputFile)
 			require.NoError(t, err)
 
-			got, err := a.Analyze(analyzer.AnalysisTarget{
+			ctx := context.Background()
+			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: "etc/os-release",
 				Content:  b,
 			})
