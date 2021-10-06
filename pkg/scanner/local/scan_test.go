@@ -9,7 +9,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	ftypes "github.com/aquasecurity/fanal/types"
-	dtypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
@@ -68,9 +67,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     ftypes.Bundler,
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "4.0.2"},
+										Name:    "rails",
+										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 										},
@@ -194,9 +194,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "4.0.2"},
+										Name:    "rails",
+										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 										},
@@ -331,9 +332,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "4.0.2"},
+										Name:    "rails",
+										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 										},
@@ -389,9 +391,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "4.0.2"},
+										Name:    "rails",
+										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 										},
@@ -467,9 +470,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "4.0.2"},
+										Name:    "rails",
+										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 										},
@@ -567,9 +571,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "4.0.2"},
+										Name:    "rails",
+										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
 										},
@@ -579,9 +584,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "/app/composer-lock.json",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "laravel/framework", Version: "6.0.0"},
+										Name:    "laravel/framework",
+										Version: "6.0.0",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 										},
@@ -890,9 +896,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "6.0"},
+										Name:    "rails",
+										Version: "6.0",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6",
 										},

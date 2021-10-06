@@ -108,6 +108,11 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
 	}
 
+	// Layer makes sense only when scanning container images
+	if artifactInfo.Type != ftypes.ArtifactContainerImage {
+		removeLayer(results)
+	}
+
 	return report.Report{
 		SchemaVersion: report.SchemaVersion,
 		ArtifactName:  artifactInfo.Name,
@@ -122,4 +127,20 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 		},
 		Results: results,
 	}, nil
+}
+
+func removeLayer(results report.Results) {
+	for i := range results {
+		result := results[i]
+
+		for j := range result.Packages {
+			result.Packages[j].Layer = ftypes.Layer{}
+		}
+		for j := range result.Vulnerabilities {
+			result.Vulnerabilities[j].Layer = ftypes.Layer{}
+		}
+		for j := range result.Misconfigurations {
+			result.Misconfigurations[j].Layer = ftypes.Layer{}
+		}
+	}
 }

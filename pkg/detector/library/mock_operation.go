@@ -19,7 +19,7 @@ type OperationDetectArgs struct {
 	FilePathAnything  bool
 	Created           time.Time
 	CreatedAnything   bool
-	Pkgs              []types.LibraryInfo
+	Pkgs              []types.Package
 	PkgsAnything      bool
 }
 
@@ -65,11 +65,11 @@ func (_m *MockOperation) ApplyDetectExpectations(expectations []OperationDetectE
 }
 
 // Detect provides a mock function with given fields: imageName, filePath, created, pkgs
-func (_m *MockOperation) Detect(imageName string, filePath string, created time.Time, pkgs []types.LibraryInfo) ([]pkgtypes.DetectedVulnerability, error) {
+func (_m *MockOperation) Detect(imageName string, filePath string, created time.Time, pkgs []types.Package) ([]pkgtypes.DetectedVulnerability, error) {
 	ret := _m.Called(imageName, filePath, created, pkgs)
 
 	var r0 []pkgtypes.DetectedVulnerability
-	if rf, ok := ret.Get(0).(func(string, string, time.Time, []types.LibraryInfo) []pkgtypes.DetectedVulnerability); ok {
+	if rf, ok := ret.Get(0).(func(string, string, time.Time, []types.Package) []pkgtypes.DetectedVulnerability); ok {
 		r0 = rf(imageName, filePath, created, pkgs)
 	} else {
 		if ret.Get(0) != nil {
@@ -78,7 +78,7 @@ func (_m *MockOperation) Detect(imageName string, filePath string, created time.
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, string, time.Time, []types.LibraryInfo) error); ok {
+	if rf, ok := ret.Get(1).(func(string, string, time.Time, []types.Package) error); ok {
 		r1 = rf(imageName, filePath, created, pkgs)
 	} else {
 		r1 = ret.Error(1)
