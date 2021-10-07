@@ -210,6 +210,10 @@ The official documentation, which provides detailed installation, configuration,
 
 ---
 
-Trivy is an [Aqua Security](https://aquasec.com) open source project.  
-Learn about our open source work and portfolio [here](https://www.aquasec.com/products/open-source-projects/).  
-Contact us about any matter by opening a GitHub Discussion [here](https://github.com/aquasecurity/trivy/discussions).
+Trivy is an [Aqua Security][aquasec] open source project.  
+Learn about our open source work and portfolio [here][oss].  
+Contact us about any matter by opening a GitHub Discussion [here][discussions]
+
+[aquasec]: https://aquasec.com
+[oss]: https://www.aquasec.com/products/open-source-projects/
+[discussions]: https://github.com/aquasecurity/trivy/discussions
