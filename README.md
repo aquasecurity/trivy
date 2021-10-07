@@ -210,6 +210,6 @@ The official documentation, which provides detailed installation, configuration,
 
 ---
 
-Starboard is an [Aqua Security](https://aquasec.com) open source project.  
+Trivy is an [Aqua Security](https://aquasec.com) open source project.  
 Learn about our open source work and portfolio [here](https://www.aquasec.com/products/open-source-projects/).  
-Contact us about any matter by opening a GitHub Discussion [here](https://github.com/aquasecurity/starboard/discussions).
+Contact us about any matter by opening a GitHub Discussion [here](https://github.com/aquasecurity/trivy/discussions).
