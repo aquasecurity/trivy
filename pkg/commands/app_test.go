@@ -35,7 +35,7 @@ func Test_showVersion(t *testing.T) {
 			},
 			expectedOutput: `Version: v1.2.3
 Vulnerability DB:
-  Type: Light
+  Type: Full
   Version: 42
   UpdatedAt: 2020-03-16 23:40:20 +0000 UTC
   NextUpdate: 2020-03-16 23:57:00 +0000 UTC
