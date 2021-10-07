@@ -207,3 +207,9 @@ The official documentation, which provides detailed installation, configuration,
 [alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
 [action]: https://github.com/aquasecurity/trivy-action
 [vscode]: https://github.com/aquasecurity/trivy-vscode-extension
+
+---
+
+Starboard is an [Aqua Security](https://aquasec.com) open source project.  
+Learn about our open source work and portfolio [here](https://www.aquasec.com/products/open-source-projects/).  
+Contact us about any matter by opening a GitHub Discussion [here](https://github.com/aquasecurity/starboard/discussions).
