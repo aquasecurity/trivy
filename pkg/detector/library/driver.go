@@ -31,7 +31,7 @@ func NewDriver(libType string) (Driver, error) {
 		driver = newCargoDriver()
 	case ftypes.Composer:
 		driver = newComposerDriver()
-	case ftypes.Npm, ftypes.Yarn, ftypes.NodePkg:
+	case ftypes.Npm, ftypes.Yarn, ftypes.NodePkg, ftypes.JavaScript:
 		driver = newNpmDriver()
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:
 		driver = newPipDriver()
