@@ -1,10 +1,8 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "trivy.fullname" . -}}
-{{- $apiV1 := false -}}
-{{- if and (.Capabilities.APIVersions.Has "networking.k8s.io/v1") (semverCompare ">= v1.19.0" .Capabilities.KubeVersion.Version) -}}
+{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
 apiVersion: networking.k8s.io/v1
-{{- $apiV1 = true -}}
-{{- else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" -}}
+{{- else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1/Ingress" -}}
 apiVersion: networking.k8s.io/v1beta1
 {{- end }}
 kind: Ingress
@@ -36,7 +34,7 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
-          {{- if $apiV1 }}
+          {{- if $.Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
           - path: {{ $.Values.ingress.path }}
             pathType: {{ $.Values.ingress.pathType }}
             backend:
