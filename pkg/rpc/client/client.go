@@ -38,7 +38,7 @@ func NewProtobufClient(remoteURL RemoteURL) (rpc.Scanner, error) {
 	}
 
 	http.DefaultTransport.(*http.Transport).TLSClientConfig.InsecureSkipVerify = httpClientConfig.Insecure
-	return rpc.NewScannerProtobufClient(string(remoteURL)), nil
+	return rpc.NewScannerProtobufClient(string(remoteURL), &http.Client{}), nil
 }
 
 // CustomHeaders for holding HTTP headers
