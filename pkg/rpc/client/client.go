@@ -25,7 +25,7 @@ var SuperSet = wire.NewSet(
 // RemoteURL for RPC remote host
 type RemoteURL string
 
-// HTTPClientConfig holds the config of Docker
+// HTTPClientConfig holds the config of the HTTPClient
 type HTTPClientConfig struct {
 	Insecure bool `env:"TRIVY_INSECURE" envDefault:"false"`
 }
