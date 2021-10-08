@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/caarlos0/env/v6"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 
@@ -24,9 +25,20 @@ var SuperSet = wire.NewSet(
 // RemoteURL for RPC remote host
 type RemoteURL string
 
+// HTTPClientConfig holds the config of Docker
+type HTTPClientConfig struct {
+	Insecure bool `env:"TRIVY_INSECURE" envDefault:"false"`
+}
+
 // NewProtobufClient is the factory method to return RPC scanner
-func NewProtobufClient(remoteURL RemoteURL) rpc.Scanner {
-	return rpc.NewScannerProtobufClient(string(remoteURL), &http.Client{})
+func NewProtobufClient(remoteURL RemoteURL) (rpc.Scanner, error) {
+	httpClientConfig := HTTPClientConfig{}
+	if err := env.Parse(&httpClientConfig); err != nil {
+		return nil, xerrors.Errorf("unable to parse environment variables: %w", err)
+	}
+
+	http.DefaultTransport.(*http.Transport).TLSClientConfig.InsecureSkipVerify = httpClientConfig.Insecure
+	return rpc.NewScannerProtobufClient(string(remoteURL)), nil
 }
 
 // CustomHeaders for holding HTTP headers

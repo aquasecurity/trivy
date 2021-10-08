@@ -23,7 +23,10 @@ import (
 // Injectors from inject.go:
 
 func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, dockerOpt types.DockerOption, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
-	scannerScanner := client.NewProtobufClient(url)
+	scannerScanner, err := client.NewProtobufClient(url)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
 	clientScanner := client.NewScanner(customHeaders, scannerScanner)
 	typesImage, cleanup, err := image.NewDockerImage(ctx, imageName, dockerOpt)
 	if err != nil {
@@ -41,7 +44,10 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 }
 
 func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, error) {
-	scannerScanner := client.NewProtobufClient(url)
+	scannerScanner, err := client.NewProtobufClient(url)
+	if err != nil {
+		return scanner.Scanner{}, err
+	}
 	clientScanner := client.NewScanner(customHeaders, scannerScanner)
 	typesImage, err := image.NewArchiveImage(filePath)
 	if err != nil {
