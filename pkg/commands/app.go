@@ -410,9 +410,9 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 		if dbMeta != nil {
 			var dbType string
 			switch dbMeta.Type {
-			case 0:
+			case db.TypeFull:
 				dbType = "Full"
-			case 1:
+			case db.TypeLight:
 				dbType = "Light"
 			}
 			output += fmt.Sprintf(`Vulnerability DB:
