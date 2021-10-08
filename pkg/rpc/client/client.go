@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/caarlos0/env/v6"
 
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -12,6 +11,7 @@ import (
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/fanal/types"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
 )
@@ -37,7 +37,12 @@ func NewProtobufClient(remoteURL RemoteURL) (rpc.Scanner, error) {
 		return nil, xerrors.Errorf("unable to parse environment variables: %w", err)
 	}
 
-	http.DefaultTransport.(*http.Transport).TLSClientConfig.InsecureSkipVerify = httpClientConfig.Insecure
+	httpTransport := http.DefaultTransport.(*http.Transport).Clone()
+	tlsConfig := httpTransport.TLSClientConfig.Clone()
+	tlsConfig.InsecureSkipVerify = httpClientConfig.Insecure
+	httpTransport.TLSClientConfig = tlsConfig
+
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = tlsConfig
 	return rpc.NewScannerProtobufClient(string(remoteURL), &http.Client{}), nil
 }
 
