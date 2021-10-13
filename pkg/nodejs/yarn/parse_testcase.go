@@ -3,7 +3,7 @@ package yarn
 import "github.com/aquasecurity/go-dep-parser/pkg/types"
 
 var (
-	// docker run --name composer --rm -it node:12-alpine sh
+	// docker run --name node --rm -it node:12-alpine sh
 	// yarn init -y
 	// yarn add promise jquery
 	// yarn list | grep -E -o "\S+@[^\^~]\S+" | awk -F@ 'NR>0 {printf("{\""$1"\", \""$2"\", \"\"},\n")}'
@@ -2838,5 +2838,14 @@ var (
 		{"yargs-unparser", "1.6.1", ""},
 		{"yargs", "13.3.2", ""},
 		{"yargs", "14.2.3", ""},
+	}
+
+	// docker run --name node --rm -it node:16-alpine sh
+	// mkdir app && cd app
+	// yarn init -y
+	// yarn add jquery
+	// npm install
+	yarnWithNpm = []types.Library{
+		{"jquery", "3.6.0", ""},
 	}
 )

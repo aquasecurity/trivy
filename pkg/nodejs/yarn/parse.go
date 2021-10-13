@@ -13,7 +13,7 @@ import (
 
 var (
 	yarnLocatorRegexp = regexp.MustCompile(`"?(?P<package>.+?)@(?:(?P<protocol>.+?):)?.+`)
-	yarnVersionRegexp = regexp.MustCompile(`\s+version:?\s+"?(?P<version>[^"]+)"?`)
+	yarnVersionRegexp = regexp.MustCompile(`\s+"?version:?"?\s+"?(?P<version>[^"]+)"?`)
 )
 
 type LockFile struct {

@@ -81,6 +81,10 @@ func TestParse(t *testing.T) {
 			want: yarnRealWorld,
 		},
 		{
+			file: "testdata/yarn_with_npm.lock",
+			want: yarnWithNpm,
+		},
+		{
 			file: "testdata/yarn_v2_normal.lock",
 			want: yarnV2Normal,
 		},
