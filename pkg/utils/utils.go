@@ -1,8 +1,11 @@
 package utils
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -126,4 +129,22 @@ func CopyFile(src, dst string) (int64, error) {
 	defer destination.Close()
 	n, err := io.Copy(destination, source)
 	return n, err
+}
+
+// getTLSConfig get tls config from CA, Cert and Key file
+func GetTLSConfig(caCertPath, certPath, keyPath string) (*x509.CertPool, tls.Certificate, error) {
+	cert, err := tls.LoadX509KeyPair(certPath, keyPath)
+	if err != nil {
+		return nil, tls.Certificate{}, err
+	}
+
+	caCert, err := ioutil.ReadFile(caCertPath)
+	if err != nil {
+		return nil, tls.Certificate{}, err
+	}
+
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+
+	return caCertPool, cert, nil
 }
