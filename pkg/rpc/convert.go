@@ -5,6 +5,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
@@ -112,22 +113,32 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			publishedDate, _ = ptypes.TimestampProto(*vuln.PublishedDate) // nolint: errcheck
 		}
 
+		var customAdvisoryData, customVulnData *structpb.Value
+		if vuln.Custom != nil {
+			customAdvisoryData, _ = structpb.NewValue(vuln.Custom) // nolint: errcheck
+		}
+		if vuln.Vulnerability.Custom != nil {
+			customVulnData, _ = structpb.NewValue(vuln.Vulnerability.Custom) // nolint: errcheck
+		}
+
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
-			VulnerabilityId:  vuln.VulnerabilityID,
-			PkgName:          vuln.PkgName,
-			InstalledVersion: vuln.InstalledVersion,
-			FixedVersion:     vuln.FixedVersion,
-			Title:            vuln.Title,
-			Description:      vuln.Description,
-			Severity:         common.Severity(severity),
-			References:       vuln.References,
-			Layer:            ConvertToRPCLayer(vuln.Layer),
-			Cvss:             cvssMap,
-			SeveritySource:   vuln.SeveritySource,
-			CweIds:           vuln.CweIDs,
-			PrimaryUrl:       vuln.PrimaryURL,
-			LastModifiedDate: lastModifiedDate,
-			PublishedDate:    publishedDate,
+			VulnerabilityId:    vuln.VulnerabilityID,
+			PkgName:            vuln.PkgName,
+			InstalledVersion:   vuln.InstalledVersion,
+			FixedVersion:       vuln.FixedVersion,
+			Title:              vuln.Title,
+			Description:        vuln.Description,
+			Severity:           common.Severity(severity),
+			References:         vuln.References,
+			Layer:              ConvertToRPCLayer(vuln.Layer),
+			Cvss:               cvssMap,
+			SeveritySource:     vuln.SeveritySource,
+			CweIds:             vuln.CweIDs,
+			PrimaryUrl:         vuln.PrimaryURL,
+			LastModifiedDate:   lastModifiedDate,
+			PublishedDate:      publishedDate,
+			CustomAdvisoryData: customAdvisoryData,
+			CustomVulnData:     customVulnData,
 		})
 	}
 	return rpcVulns
@@ -223,10 +234,12 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				CweIDs:           vuln.CweIds,
 				LastModifiedDate: lastModifiedDate,
 				PublishedDate:    publishedDate,
+				Custom:           vuln.CustomVulnData.AsInterface(),
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: vuln.SeveritySource,
 			PrimaryURL:     vuln.PrimaryUrl,
+			Custom:         vuln.CustomAdvisoryData.AsInterface(),
 		})
 	}
 	return vulns

@@ -110,8 +110,8 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
+				Custom:           adv.Custom,
 			})
-
 		}
 	}
 	return vulns, nil
