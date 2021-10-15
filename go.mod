@@ -7,8 +7,8 @@ require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20211007060930-f7efd1b3357e
-	github.com/aquasecurity/go-dep-parser v0.0.0-20210919151457-76db061b9305
+	github.com/aquasecurity/fanal v0.0.0-20211014152324-29fbacfbfca4
+	github.com/aquasecurity/go-dep-parser v0.0.0-20211013074621-eb58e8565220
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -21,7 +21,7 @@ require (
 	github.com/docker/docker v20.10.8+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.10.0
-	github.com/go-redis/redis/v8 v8.11.3
+	github.com/go-redis/redis/v8 v8.11.4
 	github.com/goccy/go-yaml v1.8.2 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-containerregistry v0.6.0
