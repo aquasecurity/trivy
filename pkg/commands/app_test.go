@@ -108,7 +108,7 @@ Vulnerability DB:
 }
 
 func TestNewCommands(t *testing.T) {
-	NewApp("test")
+	NewApp()
 	NewClientCommand()
 	NewFilesystemCommand()
 	NewImageCommand()

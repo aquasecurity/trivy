@@ -19,6 +19,7 @@ import (
 	testcontainers "github.com/testcontainers/testcontainers-go"
 	"github.com/urfave/cli/v2"
 
+	appinfo "github.com/aquasecurity/trivy/pkg/app"
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/report"
 )
@@ -431,7 +432,7 @@ type setupOptions struct {
 
 func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 	t.Helper()
-	version := "dev"
+	appinfo.Version = "dev"
 
 	// Set up testing DB
 	cacheDir := initDB(t)
@@ -442,7 +443,7 @@ func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 
 	go func() {
 		// Setup CLI App
-		app := commands.NewApp(version)
+		app := commands.NewApp()
 		app.Writer = io.Discard
 		osArgs := setupServer(addr, options.token, options.tokenHeader, cacheDir, options.cacheBackend)
 
@@ -455,7 +456,7 @@ func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 	assert.NoError(t, err)
 
 	// Setup CLI App
-	app := commands.NewApp(version)
+	app := commands.NewApp()
 	app.Writer = io.Discard
 
 	return app, addr, cacheDir

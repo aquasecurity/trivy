@@ -16,6 +16,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	appinfo "github.com/aquasecurity/trivy/pkg/app"
 	"github.com/aquasecurity/trivy/pkg/commands"
 )
 

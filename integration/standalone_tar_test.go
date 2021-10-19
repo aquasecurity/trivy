@@ -12,6 +12,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	appinfo "github.com/aquasecurity/trivy/pkg/app"
 	"github.com/aquasecurity/trivy/pkg/commands"
 )
 
@@ -254,7 +255,8 @@ func TestTar(t *testing.T) {
 	cacheDir := initDB(t)
 
 	// Setup CLI App
-	app := commands.NewApp("dev")
+	appinfo.Version = "dev"
+	app := commands.NewApp()
 	app.Writer = io.Discard
 
 	for _, tt := range tests {

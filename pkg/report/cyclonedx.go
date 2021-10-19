@@ -66,10 +66,7 @@ func ConvertToBom(r Report) (*cdx.BOM, error) {
 	componets := []cdx.Component{}
 	dependencies := []cdx.Dependency{}
 	for _, result := range r.Results {
-		resultComponent, err := resultToComponent(result, r.Metadata.OS)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to parse result component: %w", err)
-		}
+		resultComponent := resultToComponent(result, r.Metadata.OS)
 		componets = append(componets, resultComponent)
 
 		componentDependencies := []cdx.Dependency{}
@@ -134,6 +131,65 @@ func pkgToComponent(t string, pkg types.Package) (cdx.Component, error) {
 	return component, nil
 }
 
+func parseQualifier(pkg types.Package) packageurl.Qualifiers {
+	qualifiers := packageurl.Qualifiers{}
+	if pkg.Release != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "release",
+			Value: pkg.Release,
+		})
+	}
+	if pkg.Epoch != 0 {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "epoch",
+			Value: strconv.Itoa(pkg.Epoch),
+		})
+	}
+	if pkg.Arch != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "arch",
+			Value: pkg.Arch,
+		})
+	}
+	if pkg.SrcName != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "src_name",
+			Value: pkg.SrcName,
+		})
+	}
+	if pkg.SrcVersion != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "src_version",
+			Value: pkg.SrcVersion,
+		})
+	}
+	if pkg.SrcRelease != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "src_release",
+			Value: pkg.SrcRelease,
+		})
+	}
+	if pkg.SrcEpoch != 0 {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "src_epoch",
+			Value: strconv.Itoa(pkg.SrcEpoch),
+		})
+	}
+	if pkg.Modularitylabel != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "modularitylabel",
+			Value: pkg.Modularitylabel,
+		})
+	}
+	if pkg.FilePath != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "file_path",
+			Value: pkg.FilePath,
+		})
+	}
+	return qualifiers
+}
+
 func NewPackageURL(t string, pkg types.Package) string {
 	name := strings.ReplaceAll(pkg.Name, ":", "/")
 	index := strings.LastIndex(name, "/")
@@ -144,63 +200,7 @@ func NewPackageURL(t string, pkg types.Package) string {
 		namespace = name[:index]
 		pkgName = name[index+1:]
 	}
-
-	qualifier := packageurl.Qualifiers{}
-	if pkg.Release != "" {
-		qualifier = append(qualifier, packageurl.Qualifier{
-			Key:   "release",
-			Value: pkg.Release,
-		})
-	}
-	if pkg.Epoch != 0 {
-		qualifier = append(qualifier, packageurl.Qualifier{
-			Key:   "epoch",
-			Value: strconv.Itoa(pkg.Epoch),
-		})
-	}
-	if pkg.Arch != "" {
-		qualifier = append(qualifier, packageurl.Qualifier{
-			Key:   "arch",
-			Value: pkg.Arch,
-		})
-	}
-	if pkg.SrcName != "" {
-		qualifier = append(qualifier, packageurl.Qualifier{
-			Key:   "src_name",
-			Value: pkg.SrcName,
-		})
-	}
-	if pkg.SrcVersion != "" {
-		qualifier = append(qualifier, packageurl.Qualifier{
-			Key:   "src_version",
-			Value: pkg.SrcVersion,
-		})
-	}
-	if pkg.SrcRelease != "" {
-		qualifier = append(qualifier, packageurl.Qualifier{
-			Key:   "src_release",
-			Value: pkg.SrcRelease,
-		})
-	}
-	if pkg.SrcEpoch != 0 {
-		qualifier = append(qualifier, packageurl.Qualifier{
-			Key:   "src_epoch",
-			Value: strconv.Itoa(pkg.SrcEpoch),
-		})
-	}
-	if pkg.Modularitylabel != "" {
-		qualifier = append(qualifier, packageurl.Qualifier{
-			Key:   "modularitylabel",
-			Value: pkg.Modularitylabel,
-		})
-	}
-	if pkg.FilePath != "" {
-		qualifier = append(qualifier, packageurl.Qualifier{
-			Key:   "file_path",
-			Value: pkg.FilePath,
-		})
-	}
-	purl := packageurl.NewPackageURL(t, namespace, pkgName, pkg.Version, qualifier, "")
+	purl := packageurl.NewPackageURL(t, namespace, pkgName, pkg.Version, parseQualifier(pkg), "")
 
 	return purl.String()
 }
@@ -253,7 +253,7 @@ func reportToComponent(r Report) *cdx.Component {
 	return component
 }
 
-func resultToComponent(r Result, osFound *types.OS) (cdx.Component, error) {
+func resultToComponent(r Result, osFound *types.OS) cdx.Component {
 	component := cdx.Component{
 		Name:   r.Target,
 		BOMRef: r.Target,
@@ -283,7 +283,7 @@ func resultToComponent(r Result, osFound *types.OS) (cdx.Component, error) {
 		component.Type = cdx.ComponentTypeFile
 	}
 
-	return component, nil
+	return component
 }
 
 func Unmarshal(buf []byte) (*types.Package, error) {
