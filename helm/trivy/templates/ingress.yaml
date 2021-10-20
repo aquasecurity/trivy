@@ -1,6 +1,10 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "trivy.fullname" . -}}
+{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
+apiVersion: networking.k8s.io/v1
+{{- else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1/Ingress" -}}
 apiVersion: networking.k8s.io/v1beta1
+{{- end }}
 kind: Ingress
 metadata:
   name: {{ include "trivy.fullname" . }}
@@ -12,6 +16,9 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+{{- if and (.Values.ingress.ingressClassName) (semverCompare ">= v1.18.0" .Capabilities.KubeVersion.Version) }}
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
+{{- end }}
 {{- if .Values.ingress.tls }}
   tls:
   {{- range .Values.ingress.tls }}
@@ -27,9 +34,19 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
+          {{- if $.Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
+          - path: {{ $.Values.ingress.path }}
+            pathType: {{ $.Values.ingress.pathType }}
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $.Values.service.port -}}
+          {{- else }}
           - path: {{ $.Values.ingress.path }}
             backend:
               serviceName: {{ $fullName }}
               servicePort: {{ $.Values.service.port -}}
+          {{- end }}
   {{- end }}
 {{- end }}

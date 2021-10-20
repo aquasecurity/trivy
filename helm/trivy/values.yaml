@@ -95,11 +95,15 @@ service:
 
 ingress:
   enabled: false
+  # From Kubernetes 1.18+ this field is supported in case your ingress controller supports it. When set, you do not need to add the ingress class as annotation.
+  ingressClassName:
   annotations: {}
     # kubernetes.io/ingress.class: nginx
   hosts:
     - host: trivy.example.com
   path: "/"
+  # type is only needed for networking.k8s.io/v1 in k8s 1.19+
+  pathType: Prefix
   tls: []
   #  - secretName: trivy-example-tls
   #    hosts:
