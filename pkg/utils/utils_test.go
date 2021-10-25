@@ -187,3 +187,38 @@ func TestCopyFile(t *testing.T) {
 		})
 	}
 }
+
+func TestReadIgnoreFile(t *testing.T) {
+
+	tests := []struct {
+		name    string
+		content []byte
+		want    []string
+		wantErr string
+	}{
+		{
+			name:    "empty ignore file",
+			content: []byte(""),
+			want:    nil,
+		},
+		{
+			name:    "ignore file with content",
+			content: []byte("CVE-123\nCVE-245"),
+			want:    []string{"CVE-123", "CVE-245"},
+		},
+		{
+			name:    "ignore file with comments and blanks",
+			content: []byte("CVE-123\n#ignore me\n\nCVE-245"),
+			want:    []string{"CVE-123", "CVE-245"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ignore, err := os.CreateTemp("", "ignore")
+			require.NoError(t, err, tt.name)
+			ignore.Write([]byte(tt.content))
+			got := ReadIgnoreFile(ignore.Name())
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

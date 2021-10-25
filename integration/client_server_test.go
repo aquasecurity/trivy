@@ -531,10 +531,7 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 	}
 
 	if len(c.IgnoreIDs) != 0 {
-		trivyIgnore := filepath.Join(t.TempDir(), ".trivyignore")
-		err := os.WriteFile(trivyIgnore, []byte(strings.Join(c.IgnoreIDs, "\n")), 0444)
-		require.NoError(t, err, "failed to write .trivyignore")
-		osArgs = append(osArgs, []string{"--ignorefile", trivyIgnore}...)
+		osArgs = append(osArgs, []string{"--ignore-ids", strings.Join(",", c.IgnoreIDs)}...)
 	}
 	if c.ClientToken != "" {
 		osArgs = append(osArgs, []string{"--token", c.ClientToken, "--token-header", c.ClientTokenHeader}...)

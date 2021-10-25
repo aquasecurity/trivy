@@ -10,11 +10,12 @@ import (
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy-db/pkg/utils"
+	dbUtils "github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 func TestClient_FillVulnerabilityInfo(t *testing.T) {
@@ -45,8 +46,8 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Description:      "dos vulnerability",
 						Severity:         dbTypes.SeverityMedium.String(),
 						References:       []string{"http://example.com"},
-						LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
-						PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
+						LastModifiedDate: dbUtils.MustTimeParse("2020-01-01T01:01:00Z"),
+						PublishedDate:    dbUtils.MustTimeParse("2001-01-01T01:01:00Z"),
 					},
 					PrimaryURL: "https://avd.aquasec.com/nvd/cve-2019-0001",
 				},
@@ -69,8 +70,8 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Description:      "dos vulnerability",
 						Severity:         dbTypes.SeverityLow.String(),
 						References:       []string{"http://example.com"},
-						LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
-						PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
+						LastModifiedDate: dbUtils.MustTimeParse("2020-01-01T01:01:00Z"),
+						PublishedDate:    dbUtils.MustTimeParse("2001-01-01T01:01:00Z"),
 					},
 					SeveritySource: vulnerability.NVD,
 					PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2019-0002",
@@ -225,8 +226,8 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Description:      "dos vulnerability",
 						Severity:         dbTypes.SeverityLow.String(),
 						References:       []string{"http://example.com"},
-						LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
-						PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
+						LastModifiedDate: dbUtils.MustTimeParse("2020-01-01T01:01:00Z"),
+						PublishedDate:    dbUtils.MustTimeParse("2001-01-01T01:01:00Z"),
 					},
 					PrimaryURL: "https://avd.aquasec.com/nvd/cve-2019-0001",
 				},
@@ -753,8 +754,9 @@ func TestClient_Filter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := Client{}
+			ignoredIDs := utils.ReadIgnoreFile(tt.args.ignoreFile)
 			gotVulns, gotMisconfSummary, gotMisconfs, err := c.Filter(context.Background(), tt.args.vulns, tt.args.misconfs,
-				tt.args.severities, tt.args.ignoreUnfixed, false, tt.args.ignoreFile, tt.args.policyFile)
+				tt.args.severities, tt.args.ignoreUnfixed, false, ignoredIDs, tt.args.policyFile)
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantVulns, gotVulns)
 			assert.Equal(t, tt.wantMisconfSummary, gotMisconfSummary)

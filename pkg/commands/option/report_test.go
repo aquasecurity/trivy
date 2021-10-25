@@ -23,6 +23,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 		securityChecks string
 		severities     string
 		IgnoreFile     string
+		IgnoredIDs     []string
 		IgnoreUnfixed  bool
 		ExitCode       int
 		VulnType       []string
@@ -149,6 +150,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 				securityChecks: tt.fields.securityChecks,
 				severities:     tt.fields.severities,
 				IgnoreFile:     tt.fields.IgnoreFile,
+				IgnoredIDs:     tt.fields.IgnoredIDs,
 				IgnoreUnfixed:  tt.fields.IgnoreUnfixed,
 				ExitCode:       tt.fields.ExitCode,
 				Output:         tt.fields.Output,

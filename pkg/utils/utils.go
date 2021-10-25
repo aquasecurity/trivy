@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -126,4 +127,28 @@ func CopyFile(src, dst string) (int64, error) {
 	defer destination.Close()
 	n, err := io.Copy(destination, source)
 	return n, err
+}
+
+// ReadIgnoreFile reads the ignore file and retuns a list
+// of the vulnerability IDs to ignore
+func ReadIgnoreFile(ignoreFile string) []string {
+	var ignoredIDs []string
+	if ignoreFile == "" {
+		return ignoredIDs
+	}
+	f, err := os.Open(ignoreFile)
+	if err != nil {
+		// trivy must work even if no .trivyignore exist
+		return ignoredIDs
+	}
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := scanner.Text()
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "#") || line == "" {
+			continue
+		}
+		ignoredIDs = append(ignoredIDs, line)
+	}
+	return ignoredIDs
 }

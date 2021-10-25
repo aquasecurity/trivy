@@ -219,12 +219,13 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 }
 
 func filter(ctx context.Context, opt Option, report pkgReport.Report) (pkgReport.Report, error) {
+	ignoreIds := utils.ReadIgnoreFile(opt.IgnoreFile)
 	resultClient := initializeResultClient()
 	results := report.Results
 	for i := range results {
 		resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
 		vulns, misconfSummary, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
-			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, opt.IgnoreFile, opt.IgnorePolicy)
+			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, ignoreIds, opt.IgnorePolicy)
 		if err != nil {
 			return pkgReport.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}

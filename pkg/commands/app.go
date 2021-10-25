@@ -175,6 +175,13 @@ var (
 		EnvVars: []string{"TRIVY_IGNOREFILE"},
 	}
 
+	ignoreIDsFlag = cli.StringFlag{
+		Name:    "ignore-ids",
+		Value:   "",
+		Usage:   "specify comma-separated list of CVE IDs to ignore",
+		EnvVars: []string{"TRIVY_IGNORE_IDS"},
+	}
+
 	timeoutFlag = cli.DurationFlag{
 		Name:    "timeout",
 		Value:   time.Second * 300,

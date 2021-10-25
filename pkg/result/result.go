@@ -1,7 +1,6 @@
 package result
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"os"
@@ -155,9 +154,8 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, source string) strin
 
 // Filter filter out the vulnerabilities
 func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
-	severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool, ignoreFile, policyFile string) (
+	severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool, ignoredIDs []string, policyFile string) (
 	[]types.DetectedVulnerability, *report.MisconfSummary, []types.DetectedMisconfiguration, error) {
-	ignoredIDs := getIgnoredIDs(ignoreFile)
 
 	filteredVulns := filterVulnerabilities(vulns, severities, ignoreUnfixed, ignoredIDs)
 	misconfSummary, filteredMisconfs := filterMisconfigurations(misconfs, severities, includeNonFailures, ignoredIDs)
@@ -316,26 +314,6 @@ func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface
 		return false, xerrors.New("the policy must return boolean")
 	}
 	return ignore, nil
-}
-
-func getIgnoredIDs(ignoreFile string) []string {
-	f, err := os.Open(ignoreFile)
-	if err != nil {
-		// trivy must work even if no .trivyignore exist
-		return nil
-	}
-
-	var ignoredIDs []string
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		line := scanner.Text()
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, "#") || line == "" {
-			continue
-		}
-		ignoredIDs = append(ignoredIDs, line)
-	}
-	return ignoredIDs
 }
 
 func shouldOverwrite(old, new types.DetectedVulnerability) bool {

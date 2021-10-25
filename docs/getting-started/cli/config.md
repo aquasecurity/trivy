@@ -17,6 +17,7 @@ OPTIONS:
    --reset                                        remove all caches and database (default: false) [$TRIVY_RESET]
    --clear-cache, -c                              clear image caches without scanning (default: false) [$TRIVY_CLEAR_CACHE]
    --ignorefile value                             specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
+   --ignore-ids value          comma-separated list of CVEs to ignore (default: "") [$TRIVY_IGNORE_IDS]
    --timeout value                                timeout (default: 5m0s) [$TRIVY_TIMEOUT]
    --skip-files value                             specify the file paths to skip traversal [$TRIVY_SKIP_FILES]
    --skip-dirs value                              specify the directories where the traversal is skipped [$TRIVY_SKIP_DIRS]

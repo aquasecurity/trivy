@@ -28,12 +28,14 @@ type ReportOption struct {
 	securityChecks string
 	output         string
 	severities     string
+	ignoredIds     string
 
 	// these variables are populated by Init()
 	VulnType       []string
 	SecurityChecks []string
 	Output         *os.File
 	Severities     []dbTypes.Severity
+	IgnoredIDs     []string
 }
 
 // NewReportOption is the factory method to return ReportOption
@@ -48,6 +50,7 @@ func NewReportOption(c *cli.Context) ReportOption {
 		securityChecks: c.String("security-checks"),
 		severities:     c.String("severity"),
 		IgnoreFile:     c.String("ignorefile"),
+		ignoredIds:     c.String("ignore-ids"),
 		IgnoreUnfixed:  c.Bool("ignore-unfixed"),
 		ExitCode:       c.Int("exit-code"),
 	}
@@ -69,7 +72,7 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 	}
 
 	c.Severities = splitSeverity(logger, c.severities)
-
+	c.IgnoredIDs = splitIgnoreIds(logger, c.ignoredIds)
 	if err = c.populateVulnTypes(); err != nil {
 		return xerrors.Errorf("vuln type: %w", err)
 	}
@@ -124,4 +127,12 @@ func splitSeverity(logger *zap.SugaredLogger, severity string) []dbTypes.Severit
 		severities = append(severities, severity)
 	}
 	return severities
+}
+
+func splitIgnoreIds(logger *zap.SugaredLogger, ignoreIds string) []string {
+	logger.Debugf("Ignore IDs: %s", ignoreIds)
+	if ignoreIds == "" {
+		return nil
+	}
+	return strings.Split(ignoreIds, ",")
 }

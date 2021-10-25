@@ -19,6 +19,7 @@ OPTIONS:
    --removed-pkgs              detect vulnerabilities of removed packages (only for Alpine) (default: false) [$TRIVY_REMOVED_PKGS]
    --vuln-type value           comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
    --ignorefile value          specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
+   --ignore-ids value          comma-separated list of CVEs to ignore (default: "") [$TRIVY_IGNORE_IDS]
    --timeout value             timeout (default: 5m0s) [$TRIVY_TIMEOUT]
    --ignore-policy value       specify the Rego file to evaluate each vulnerability [$TRIVY_IGNORE_POLICY]
    --list-all-pkgs             enabling the option will output all packages regardless of vulnerability (default: false) [$TRIVY_LIST_ALL_PKGS]

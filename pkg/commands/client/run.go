@@ -73,9 +73,18 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 
 	resultClient := initializeResultClient()
 	results := report.Results
+
+	var ignoredIDs []string
+	if opt.IgnoreFile != "" {
+		ignoredIDs = utils.ReadIgnoreFile(opt.IgnoreFile)
+	}
+	if opt.IgnoredIDs != nil {
+		ignoredIDs = append(ignoredIDs, opt.IgnoredIDs...)
+	}
+
 	for i := range results {
 		vulns, misconfSummary, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
-			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, opt.IgnoreFile, opt.IgnorePolicy)
+			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, ignoredIDs, opt.IgnorePolicy)
 		if err != nil {
 			return xerrors.Errorf("filter error: %w", err)
 		}
