@@ -2090,9 +2090,9 @@ Only Terraform's policies are currently powered by <a href="https://github.com/t
 <p>For suggestions or issues regarding policy content, please open an issue under <a href="https://github.com/aquasecurity/appshield">AppShield</a> or <a href="https://github.com/tfsec/tfsec">tfsec</a> repository.</p>
 <p>CloudFormation and Ansible are coming soon.</p>
 <h2 id="policy-distribution">Policy Distribution</h2>
-<p>AppShield policies are destributed as OPA bundle on <a href="https://github.com/aquasecurity/appshield/pkgs/container/appshield">GitHub Container Registry</a> (GHCR).
-When misconfiguration detection is enabled, Trivy pulls OPA bundle from GHCR as OCI artifact and stores it in the cache.
-Then, those policies are loaded into Trivy OPA engine and used for detecting misconfigurations.</p>
+<p>AppShield policies are distributed as an OPA bundle on <a href="https://github.com/aquasecurity/appshield/pkgs/container/appshield">GitHub Container Registry</a> (GHCR).
+When misconfiguration detection is enabled, Trivy pulls the OPA bundle from GHCR as an OCI artifact and stores it in the cache.
+Those policies are then loaded into Trivy OPA engine and used for detecting misconfigurations.</p>
 <h2 id="update-interval">Update Interval</h2>
 <p>Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if there are any updates.</p>
                 
