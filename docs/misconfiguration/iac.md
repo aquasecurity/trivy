@@ -42,7 +42,7 @@ For example, the following example holds IaC files for Terraform, Kubernetes, an
 ``` bash
 $ ls iac/
 Dockerfile  deployment.yaml  main.tf
-$ trivy conf --severith HIGH,CRITICAL ./iac
+$ trivy conf --severity HIGH,CRITICAL ./iac
 ```
 
 <details>
