@@ -17,9 +17,9 @@ For suggestions or issues regarding policy content, please open an issue under [
 CloudFormation and Ansible are coming soon.
 
 ## Policy Distribution
-AppShield policies are destributed as OPA bundle on [GitHub Container Registry][ghcr] (GHCR).
-When misconfiguration detection is enabled, Trivy pulls OPA bundle from GHCR as OCI artifact and stores it in the cache.
-Then, those policies are loaded into Trivy OPA engine and used for detecting misconfigurations.
+AppShield policies are distributed as an OPA bundle on [GitHub Container Registry][ghcr] (GHCR).
+When misconfiguration detection is enabled, Trivy pulls the OPA bundle from GHCR as an OCI artifact and stores it in the cache.
+Those policies are then loaded into Trivy OPA engine and used for detecting misconfigurations.
 
 ## Update Interval
 Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if there are any updates.
