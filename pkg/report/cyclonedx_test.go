@@ -141,8 +141,24 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						PackageURL: "pkg:centos/acl@2.2.53?release=1.el8&arch=aarch64&src_name=acl&src_version=2.2.53&src_release=1.el8",
 						Properties: &[]cdx.Property{
 							{
-								Name:  "aquasecurity:trivy:Object",
-								Value: "/7j/gQMBAQdQYWNrYWdlAf+CAAENAQROYW1lAQwAAQdWZXJzaW9uAQwAAQdSZWxlYXNlAQwAAQVFcG9jaAEEAAEEQXJjaAEMAAEHU3JjTmFtZQEMAAEKU3JjVmVyc2lvbgEMAAEKU3JjUmVsZWFzZQEMAAEIU3JjRXBvY2gBBAABD01vZHVsYXJpdHlsYWJlbAEMAAEHTGljZW5zZQEMAAEFTGF5ZXIB/4QAAQhGaWxlUGF0aAEMAAAAKf+DAwEBBUxheWVyAf+EAAECAQZEaWdlc3QBDAABBkRpZmZJRAEMAAAAPv+CAQNhY2wBBjIuMi41MwEFMS5lbDgCB2FhcmNoNjQBA2FjbAEGMi4yLjUzAQUxLmVsOAMGR1BMdjIrAQAA",
+								Name:  "aquasecurity:trivy:release",
+								Value: "1.el8",
+							},
+							{
+								Name:  "aquasecurity:trivy:arch",
+								Value: "aarch64",
+							},
+							{
+								Name:  "aquasecurity:trivy:src_name",
+								Value: "acl",
+							},
+							{
+								Name:  "aquasecurity:trivy:src_version",
+								Value: "2.2.53",
+							},
+							{
+								Name:  "aquasecurity:trivy:src_release",
+								Value: "1.el8",
 							},
 						},
 					},
@@ -168,12 +184,7 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						Name:       "actioncable",
 						Version:    "7.0.0",
 						PackageURL: "pkg:bundler/actioncable@7.0.0",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:Object",
-								Value: "/7j/gQMBAQdQYWNrYWdlAf+CAAENAQROYW1lAQwAAQdWZXJzaW9uAQwAAQdSZWxlYXNlAQwAAQVFcG9jaAEEAAEEQXJjaAEMAAEHU3JjTmFtZQEMAAEKU3JjVmVyc2lvbgEMAAEKU3JjUmVsZWFzZQEMAAEIU3JjRXBvY2gBBAABD01vZHVsYXJpdHlsYWJlbAEMAAEHTGljZW5zZQEMAAEFTGF5ZXIB/4QAAQhGaWxlUGF0aAEMAAAAKf+DAwEBBUxheWVyAf+EAAECAQZEaWdlc3QBDAABBkRpZmZJRAEMAAAAGf+CAQthY3Rpb25jYWJsZQEFNy4wLjAKAAA=",
-							},
-						},
+						Properties: &[]cdx.Property{},
 					},
 				},
 				Dependencies: &[]cdx.Dependency{

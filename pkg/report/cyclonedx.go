@@ -1,11 +1,7 @@
 package report
 
 import (
-	"bytes"
-	"encoding/base64"
-	"encoding/gob"
 	"io"
-	"io/ioutil"
 	"strconv"
 	"strings"
 	"time"
@@ -19,14 +15,22 @@ import (
 )
 
 const (
-	Namespace             = "aquasecurity:trivy:"
-	PropertyType          = Namespace + "Type"
-	PropertyClass         = Namespace + "Class"
-	PropertySchemaVersion = Namespace + "SchemaVersion"
-	PropertySize          = Namespace + "Size"
-	PropertyDigest        = Namespace + "Digest"
-	PropertyTag           = Namespace + "Tag"
-	PropertyObject        = Namespace + "Object"
+	Namespace               = "aquasecurity:trivy:"
+	PropertyType            = Namespace + "Type"
+	PropertyClass           = Namespace + "Class"
+	PropertySchemaVersion   = Namespace + "SchemaVersion"
+	PropertySize            = Namespace + "Size"
+	PropertyDigest          = Namespace + "Digest"
+	PropertyTag             = Namespace + "Tag"
+	PropertyRelease         = Namespace + "release"
+	PropertyEpoch           = Namespace + "epoch"
+	PropertyArch            = Namespace + "arch"
+	PropertySrcName         = Namespace + "src_name"
+	PropertySrcVersion      = Namespace + "src_version"
+	PropertySrcRelease      = Namespace + "src_release"
+	PropertySrcEpoch        = Namespace + "src_epoch"
+	PropertyModularitylabel = Namespace + "modularitylabel"
+	PropertyFilePath        = Namespace + "file_path"
 )
 
 // CycloneDXWriter implements result Writer
@@ -103,25 +107,16 @@ func pkgToComponent(t string, pkg types.Package) (cdx.Component, error) {
 	if pkg.Release != "" {
 		version = strings.Join([]string{pkg.Version, pkg.Release}, "-")
 	}
-
-	bytesPkg, err := Marshal(pkg)
-	if err != nil {
-		return cdx.Component{}, xerrors.Errorf("failed to marshal package: %w", err)
-	}
-
+	properties := parseProperties(pkg)
 	component := cdx.Component{
 		Type:       cdx.ComponentTypeLibrary,
 		Name:       pkg.Name,
 		Version:    version,
 		BOMRef:     purl,
 		PackageURL: purl,
-		Properties: &[]cdx.Property{
-			{
-				Name:  PropertyObject,
-				Value: string(bytesPkg),
-			},
-		},
+		Properties: &properties,
 	}
+
 	if pkg.License != "" {
 		component.Licenses = &cdx.Licenses{
 			cdx.LicenseChoice{Expression: pkg.License},
@@ -129,6 +124,90 @@ func pkgToComponent(t string, pkg types.Package) (cdx.Component, error) {
 	}
 
 	return component, nil
+}
+
+func parseProperties(pkg types.Package) []cdx.Property {
+	properties := []cdx.Property{}
+	if pkg.FilePath != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertyFilePath,
+				Value: pkg.FilePath,
+			},
+		)
+	}
+	if pkg.Release != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertyRelease,
+				Value: pkg.Release,
+			},
+		)
+	}
+	if pkg.Epoch != 0 {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertyEpoch,
+				Value: strconv.Itoa(pkg.Epoch),
+			},
+		)
+	}
+	if pkg.Arch != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertyArch,
+				Value: pkg.Arch,
+			},
+		)
+	}
+	if pkg.SrcRelease != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertySrcRelease,
+				Value: pkg.SrcRelease,
+			},
+		)
+	}
+	if pkg.SrcEpoch != 0 {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertySrcEpoch,
+				Value: strconv.Itoa(pkg.SrcEpoch),
+			},
+		)
+	}
+	if pkg.Modularitylabel != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertyModularitylabel,
+				Value: pkg.Modularitylabel,
+			},
+		)
+	}
+	if pkg.SrcName != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertySrcName,
+				Value: pkg.SrcName,
+			},
+		)
+	}
+	return properties
+}
+
+func NewPackageURL(t string, pkg types.Package) string {
+	name := strings.ReplaceAll(pkg.Name, ":", "/")
+	index := strings.LastIndex(name, "/")
+
+	namespace := ""
+	pkgName := name
+	if index != -1 {
+		namespace = name[:index]
+		pkgName = name[index+1:]
+	}
+	purl := packageurl.NewPackageURL(t, namespace, pkgName, pkg.Version, parseQualifier(pkg), "")
+
+	return purl.String()
 }
 
 func parseQualifier(pkg types.Package) packageurl.Qualifiers {
@@ -188,21 +267,6 @@ func parseQualifier(pkg types.Package) packageurl.Qualifiers {
 		})
 	}
 	return qualifiers
-}
-
-func NewPackageURL(t string, pkg types.Package) string {
-	name := strings.ReplaceAll(pkg.Name, ":", "/")
-	index := strings.LastIndex(name, "/")
-
-	namespace := ""
-	pkgName := name
-	if index != -1 {
-		namespace = name[:index]
-		pkgName = name[index+1:]
-	}
-	purl := packageurl.NewPackageURL(t, namespace, pkgName, pkg.Version, parseQualifier(pkg), "")
-
-	return purl.String()
 }
 
 func reportToComponent(r Report) *cdx.Component {
@@ -284,34 +348,4 @@ func resultToComponent(r Result, osFound *types.OS) cdx.Component {
 	}
 
 	return component
-}
-
-func Unmarshal(buf []byte) (*types.Package, error) {
-	base64dec := base64.NewDecoder(base64.StdEncoding, bytes.NewReader(buf))
-	b, err := ioutil.ReadAll(base64dec)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to decode base64: %w", err)
-	}
-	reader := bytes.NewReader(b)
-	dec := gob.NewDecoder(reader)
-
-	pkg := types.Package{}
-	if err := dec.Decode(&pkg); err != nil {
-		return nil, xerrors.Errorf("failed to read struct binary: %w", err)
-	}
-	return &pkg, nil
-}
-
-func Marshal(v interface{}) ([]byte, error) {
-	var buf bytes.Buffer
-	base64enc := base64.NewEncoder(base64.StdEncoding, &buf)
-	enc := gob.NewEncoder(base64enc)
-
-	if err := enc.Encode(v); err != nil {
-		return nil, xerrors.Errorf("failed to encode struct binary: %w", err)
-	}
-	if err := base64enc.Close(); err != nil {
-		return nil, xerrors.Errorf("failed to close base64 encoder: %w", err)
-	}
-	return buf.Bytes(), nil
 }
