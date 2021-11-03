@@ -172,6 +172,10 @@ func (img *image) diffIDs() ([]v1.Hash, error) {
 }
 
 func (img *image) imageConfig(config *container.Config) v1.Config {
+	if config == nil {
+		return v1.Config{}
+	}
+
 	c := v1.Config{
 		AttachStderr:    config.AttachStderr,
 		AttachStdin:     config.AttachStdin,
