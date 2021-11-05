@@ -17,7 +17,8 @@ require (
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.3
-	github.com/containerd/containerd v1.5.4 // indirect
+	github.com/containerd/containerd v1.5.7 // indirect
+	github.com/docker/cli v20.10.9+incompatible // indirect
 	github.com/docker/docker v20.10.8+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.10.0
