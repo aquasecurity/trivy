@@ -67,12 +67,13 @@ const (
 	// =================
 	// Structured Config
 	// =================
-	TypeYaml       Type = "yaml"
-	TypeTOML       Type = "toml"
-	TypeJSON       Type = "json"
-	TypeDockerfile Type = "dockerfile"
-	TypeHCL        Type = "hcl"
-	TypeTerraform  Type = "terraform"
+	TypeYaml           Type = "yaml"
+	TypeTOML           Type = "toml"
+	TypeJSON           Type = "json"
+	TypeDockerfile     Type = "dockerfile"
+	TypeHCL            Type = "hcl"
+	TypeTerraform      Type = "terraform"
+	TypeCloudFormation Type = "cloudFormation"
 )
 
 var (
