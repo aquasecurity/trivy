@@ -95,9 +95,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: ts.URL + "/test.git",
 				Type: types.ArtifactRemoteRepository,
-				ID:   "sha256:c4924414863864534b5014027d19554842128b48eb6ea78d3d7fd8852e0f5ac4",
+				ID:   "sha256:8dd3e15371c90ab4efcc15dea5c8cc1fac9a8c273c5208ad25a562074fd099cc",
 				BlobIDs: []string{
-					"sha256:c4924414863864534b5014027d19554842128b48eb6ea78d3d7fd8852e0f5ac4",
+					"sha256:8dd3e15371c90ab4efcc15dea5c8cc1fac9a8c273c5208ad25a562074fd099cc",
 				},
 			},
 		},
