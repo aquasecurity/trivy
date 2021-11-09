@@ -29,7 +29,9 @@ Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if th
 [kubernetes]: https://github.com/aquasecurity/appshield/tree/master/kubernetes
 [docker]: https://github.com/aquasecurity/appshield/tree/master/docker
 [tfsec-checks]: https://tfsec.dev/docs/aws/home/
-[tfsec]: https://github.com/tfsec/tfsec
+[tfsec]: https://github.com/aquasecurity/tfsec
+[cfsec-checks]: https://cfsec.dev/
+[cfsec]: https://github.com/aquasecurity/cfsec
 [ghcr]: https://github.com/aquasecurity/appshield/pkgs/container/appshield
 
 [dockerfile-bestpractice]: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
