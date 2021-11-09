@@ -78,6 +78,7 @@ nav:
           - GitLab CI: advanced/integrations/gitlab-ci.md
           - AWS CodePipeline: advanced/integrations/aws-codepipeline.md
           - AWS Security Hub: advanced/integrations/aws-security-hub.md
+          - Community Integrations: advanced/integrations/community.md
       - Container Image:
           - Embed in Dockerfile: advanced/container/embed-in-dockerfile.md
           - Unpacked container image filesystem: advanced/container/unpacked-filesystem.md
