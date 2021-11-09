@@ -190,10 +190,6 @@ github.com/apparentlymart/go-textseg v1.0.0/go.mod h1:z96Txxhf3xSFMPmb5X/1W05FF/
 github.com/apparentlymart/go-textseg/v12 v12.0.0/go.mod h1:S/4uRK2UtaQttw1GenVJEynmyUenKwP++x/+DdGV/Ec=
 github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6iT90AvPUL1NNfNw=
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
-github.com/aquasecurity/cfsec v0.0.4-0.20211101203401-7d62b2c76423 h1:Nz1b0JXWrKre1V6BUR9sxcL6ZELf89pcifOvFTiyXIU=
-github.com/aquasecurity/cfsec v0.0.4-0.20211101203401-7d62b2c76423/go.mod h1:26CqZRuXnPWAEqN2duORHQAPfz8Fh5FjVE+AT0wu78k=
-github.com/aquasecurity/cfsec v0.0.4-0.20211102120804-8f0d236ef6b9 h1:aw6BNdD41/cmq5JwNrTAvuErJfJpQ0rXSHM+PURQEos=
-github.com/aquasecurity/cfsec v0.0.4-0.20211102120804-8f0d236ef6b9/go.mod h1:26CqZRuXnPWAEqN2duORHQAPfz8Fh5FjVE+AT0wu78k=
 github.com/aquasecurity/cfsec v0.0.4-0.20211102125145-e913da5f0019 h1:vYUQxcaZlNE+xk6rrK/OjdzDT6PtUAUF6izUPFZg2lY=
 github.com/aquasecurity/cfsec v0.0.4-0.20211102125145-e913da5f0019/go.mod h1:26CqZRuXnPWAEqN2duORHQAPfz8Fh5FjVE+AT0wu78k=
 github.com/aquasecurity/defsec v0.0.30 h1:7GSGUUH0xeWRlyLeksdYz+PLZqQu6taICzapGvdlu4c=
@@ -221,8 +217,8 @@ github.com/aws/aws-sdk-go v1.20.6/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN
 github.com/aws/aws-sdk-go v1.25.11/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go v1.27.1/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go v1.31.6/go.mod h1:5zCpMtNQVjRREroY7sYe8lOMRSxkhG6MZveU8YkpAk0=
-github.com/aws/aws-sdk-go v1.41.0 h1:XUzHLFWQVhmFtmKTodnAo5QdooPQfpVfilCxIV3aLoE=
-github.com/aws/aws-sdk-go v1.41.0/go.mod h1:585smgzpB/KqRA+K3y/NL/oYRqQvpNJYvLm+LY1U59Q=
+github.com/aws/aws-sdk-go v1.42.0 h1:BMZws0t8NAhHFsfnT3B40IwD13jVDG5KerlRksctVIw=
+github.com/aws/aws-sdk-go v1.42.0/go.mod h1:585smgzpB/KqRA+K3y/NL/oYRqQvpNJYvLm+LY1U59Q=
 github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59/go.mod h1:q/89r3U2H7sSsE2t6Kca0lfwTK8JdoNGS/yzM/4iH5I=
 github.com/benbjohnson/clock v1.1.0 h1:Q92kusRqC1XV2MjkWETPvjJVqKetz1OzxZB7mHJLju8=
 github.com/benbjohnson/clock v1.1.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
