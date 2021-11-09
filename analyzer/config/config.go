@@ -5,6 +5,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/aquasecurity/fanal/analyzer/config/cloudformation"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -68,6 +69,7 @@ func RegisterConfigAnalyzers(filePatterns []string) error {
 	analyzer.RegisterAnalyzer(hcl.NewConfigAnalyzer(hclRegexp))
 	analyzer.RegisterAnalyzer(json.NewConfigAnalyzer(jsonRegexp))
 	analyzer.RegisterAnalyzer(terraform.NewConfigAnalyzer())
+	analyzer.RegisterAnalyzer(cloudformation.NewConfigAnalyzer())
 	analyzer.RegisterAnalyzer(toml.NewConfigAnalyzer(tomlRegexp))
 	analyzer.RegisterAnalyzer(yaml.NewConfigAnalyzer(yamlRegexp))
 
