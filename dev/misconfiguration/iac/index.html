@@ -17,7 +17,7 @@
         
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.4+insiders-3.1.4">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.6+insiders-3.2.2">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.2b73a8c3.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.b941530a.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.1d832a92.min.css">
@@ -1065,6 +1065,8 @@
       </a>
       
         
+
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -2012,6 +2014,8 @@
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
+
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -2062,7 +2066,7 @@
                 
                 <h1 id="infrastructure-as-code-iac">Infrastructure as Code (IaC)</h1>
 <h2 id="quick-start">Quick start</h2>
-<p>Simply specify a directory containing IaC files such as Terraform and Dockerfile.</p>
+<p>Simply specify a directory containing IaC files such as Terraform, CloudFormation and Dockerfile.</p>
 <div class="highlight"><pre><span></span><code>$ trivy config <span class="o">[</span>YOUR_IaC_DIRECTORY<span class="o">]</span>
 </code></pre></div>
 <p>Trivy will automatically fetch the managed policies and will keep them up-to-date in future scans.</p>
@@ -2092,7 +2096,7 @@ Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 <h2 id="type-detection">Type detection</h2>
 <p>The specified directory can contain mixed types of IaC files.
 Trivy automatically detects config types and applies relevant policies.</p>
-<p>For example, the following example holds IaC files for Terraform, Kubernetes, and Dockerfile in the same directory.</p>
+<p>For example, the following example holds IaC files for Terraform, CloudFormation, Kubernetes, and Dockerfile in the same directory.</p>
 <div class="highlight"><pre><span></span><code>$ ls iac/
 Dockerfile  deployment.yaml  main.tf
 $ trivy conf --severity HIGH,CRITICAL ./iac
@@ -2201,14 +2205,18 @@ Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class=
 Failures: <span class="m">9</span> <span class="o">(</span>HIGH: <span class="m">6</span>, CRITICAL: <span class="m">1</span><span class="o">)</span>
 
 ...
+
+bucket.yaml <span class="o">(</span>cloudformation<span class="o">)</span>
+<span class="o">============================</span>
+Tests: <span class="m">9</span> <span class="o">(</span>SUCCESSES: <span class="m">3</span>, FAILURES: <span class="m">6</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">6</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">2</span>, HIGH: <span class="m">4</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 </code></pre></div>
 </div>
 <h2 id="example">Example</h2>
 <p>See <a href="https://github.com/aquasecurity/trivy/tree/125c457517f05b6498bc68eaeec6e683dd36c49a/examples/misconf/mixed">here</a></p>
                 
-                  
 
-                
+
                 
               
               
@@ -2281,7 +2289,7 @@ Failures: <span class="m">9</span> <span class="o">(</span>HIGH: <span class="m"
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.d5944110.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.4b1ed6f7.min.js"></script>
+      <script src="../../assets/javascripts/bundle.e1f47d4a.min.js"></script>
       
     
   </body>
