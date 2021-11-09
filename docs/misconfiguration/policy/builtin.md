@@ -4,17 +4,18 @@
 
 Built-in policies are mainly written in [Rego][rego].
 Those policies are managed under [AppShield repository][appshield].
-Only Terraform's policies are currently powered by [tfsec][tfsec].
+Terraform policies are currently powered by [tfsec][tfsec] and CloudFormation policies are powered by [cfsec][cfsec].
 
 | Config type    | Source                        |
 | ---------------| ----------------------------- |
 | Kubernetes     | [AppShield][kubernetes]       |
 | Dockerfile     | [AppShield][docker]           |
 | Terraform      | [tfsec][tfsec-checks]         |
+| CloudFormation | [cfsec][cfsec-checks]         |
 
-For suggestions or issues regarding policy content, please open an issue under [AppShield][appshield] or [tfsec][tfsec] repository.
+For suggestions or issues regarding policy content, please open an issue under [AppShield][appshield], [tfsec][tfsec] or [cfsec][cfsec] repository.
 
-CloudFormation and Ansible are coming soon.
+Ansible are coming soon.
 
 ## Policy Distribution
 AppShield policies are distributed as an OPA bundle on [GitHub Container Registry][ghcr] (GHCR).
