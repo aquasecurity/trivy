@@ -190,6 +190,14 @@ github.com/apparentlymart/go-textseg v1.0.0/go.mod h1:z96Txxhf3xSFMPmb5X/1W05FF/
 github.com/apparentlymart/go-textseg/v12 v12.0.0/go.mod h1:S/4uRK2UtaQttw1GenVJEynmyUenKwP++x/+DdGV/Ec=
 github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6iT90AvPUL1NNfNw=
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
+github.com/aquasecurity/cfsec v0.0.4-0.20211101203401-7d62b2c76423 h1:Nz1b0JXWrKre1V6BUR9sxcL6ZELf89pcifOvFTiyXIU=
+github.com/aquasecurity/cfsec v0.0.4-0.20211101203401-7d62b2c76423/go.mod h1:26CqZRuXnPWAEqN2duORHQAPfz8Fh5FjVE+AT0wu78k=
+github.com/aquasecurity/cfsec v0.0.4-0.20211102120804-8f0d236ef6b9 h1:aw6BNdD41/cmq5JwNrTAvuErJfJpQ0rXSHM+PURQEos=
+github.com/aquasecurity/cfsec v0.0.4-0.20211102120804-8f0d236ef6b9/go.mod h1:26CqZRuXnPWAEqN2duORHQAPfz8Fh5FjVE+AT0wu78k=
+github.com/aquasecurity/cfsec v0.0.4-0.20211102125145-e913da5f0019 h1:vYUQxcaZlNE+xk6rrK/OjdzDT6PtUAUF6izUPFZg2lY=
+github.com/aquasecurity/cfsec v0.0.4-0.20211102125145-e913da5f0019/go.mod h1:26CqZRuXnPWAEqN2duORHQAPfz8Fh5FjVE+AT0wu78k=
+github.com/aquasecurity/defsec v0.0.30 h1:7GSGUUH0xeWRlyLeksdYz+PLZqQu6taICzapGvdlu4c=
+github.com/aquasecurity/defsec v0.0.30/go.mod h1:E53TX/xJkcgpJyF5GPSat3Z+cZiLyvSNBdJAyfdl3fc=
 github.com/aquasecurity/go-dep-parser v0.0.0-20211013074621-eb58e8565220 h1:4ck6/2PNmzcNPUgFT3gCq6oVFB/Do/qiasRuBL9xGDI=
 github.com/aquasecurity/go-dep-parser v0.0.0-20211013074621-eb58e8565220/go.mod h1:Zc7Eo6tFl9l4XcqsWeabD7jHnXRBK/LdgZuu9GTSVLU=
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516 h1:moQmzbpLo5dxHQCyEhqzizsDSNrNhn/7uRTCZzo4A1o=
@@ -888,6 +896,8 @@ github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/liamg/clinch v1.5.6/go.mod h1:IXM+nLBuZ5sOQAYYf9+G51nkaA0WY9cszxE5nPXexhE=
 github.com/liamg/gifwrap v0.0.6/go.mod h1:oW1r2vIWLYyxW+U0io7YbpPSDIJ79FTlZ+hPnXFLW6E=
+github.com/liamg/jfather v0.0.2 h1:OXKKl9ZAAu9VqIs0D9kgiBTr6lXqlmvc72o/e/VPnHk=
+github.com/liamg/jfather v0.0.2/go.mod h1:xXBGiBoiZ6tmHhfy5Jzw8sugzajwYdi6VosIpB3/cPM=
 github.com/liamg/tml v0.3.0/go.mod h1:0h4EAV/zBOsqI91EWONedjRpO8O0itjGJVd+wG5eC+E=
 github.com/liamg/tml v0.4.0/go.mod h1:0h4EAV/zBOsqI91EWONedjRpO8O0itjGJVd+wG5eC+E=
 github.com/lib/pq v1.0.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
