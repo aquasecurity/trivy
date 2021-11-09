@@ -2,7 +2,7 @@
 
 ## Quick start
 
-Simply specify a directory containing IaC files such as Terraform and Dockerfile.
+Simply specify a directory containing IaC files such as Terraform, CloudFormation and Dockerfile.
 
 ``` bash
 $ trivy config [YOUR_IaC_DIRECTORY]
@@ -37,7 +37,7 @@ Trivy will automatically fetch the managed policies and will keep them up-to-dat
 The specified directory can contain mixed types of IaC files.
 Trivy automatically detects config types and applies relevant policies.
 
-For example, the following example holds IaC files for Terraform, Kubernetes, and Dockerfile in the same directory.
+For example, the following example holds IaC files for Terraform, CloudFormation, Kubernetes, and Dockerfile in the same directory.
 
 ``` bash
 $ ls iac/
@@ -149,8 +149,14 @@ You can see the config type next to each file name.
     ===================
     Tests: 23 (SUCCESSES: 14, FAILURES: 9, EXCEPTIONS: 0)
     Failures: 9 (HIGH: 6, CRITICAL: 1)
-    
+
     ...
+
+    bucket.yaml (cloudformation)
+    ============================
+    Tests: 9 (SUCCESSES: 3, FAILURES: 6, EXCEPTIONS: 0)
+    Failures: 6 (UNKNOWN: 0, LOW: 0, MEDIUM: 2, HIGH: 4, CRITICAL: 0)
+
     ```
 
 ## Example
