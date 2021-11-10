@@ -20,12 +20,19 @@ type MisconfResult struct {
 	Query          string `json:",omitempty"`
 	Message        string `json:",omitempty"`
 	PolicyMetadata `json:",omitempty"`
+	IacMetadata    `json:",omitempty"`
 
 	// For debugging
 	Traces []string `json:",omitempty"`
 }
 
 type MisconfResults []MisconfResult
+
+type IacMetadata struct {
+	Resource  string `json:",omitempty"`
+	StartLine int `json:",omitempty"`
+	EndLine   int `json:",omitempty"`
+}
 
 type PolicyMetadata struct {
 	ID                 string   `json:",omitempty"`
