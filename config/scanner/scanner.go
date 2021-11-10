@@ -35,7 +35,7 @@ func New(rootDir string, namespaces, policyPaths, dataPaths []string, trace bool
 		rootDir:    rootDir,
 		namespaces: namespaces,
 		tfscanner:  tfExternal.NewExternalScanner(tfExternal.OptionIncludePassed()),
-		cfScanner: cfExternal.NewExternalScanner(cfExternal.OptionIncludePassed()),
+		cfScanner:  cfExternal.NewExternalScanner(cfExternal.OptionIncludePassed()),
 	}
 
 	if len(namespaces) > 0 && len(policyPaths) > 0 {
@@ -143,6 +143,11 @@ func (s Scanner) scanCloudFormationByCFSec(files []types.Config) ([]types.Miscon
 					RecommendedActions: result.Resolution,
 					References:         result.Links,
 				},
+				IacMetadata: types.IacMetadata{
+					Resource:  result.Resource,
+					StartLine: result.Location.StartLine,
+					EndLine:   result.Location.EndLine,
+				},
 			}
 
 			filePath, err := filepath.Rel(rootDir, result.Location.Filename)
@@ -169,7 +174,6 @@ func (s Scanner) scanCloudFormationByCFSec(files []types.Config) ([]types.Miscon
 
 	return types.ToMisconfigurations(misConfs), nil
 }
-
 
 // scanTerraformByTFSec scans terraform files by using tfsec/tfsec
 func (s Scanner) scanTerraformByTFSec(files []types.Config) ([]types.Misconfiguration, error) {
@@ -204,6 +208,11 @@ func (s Scanner) scanTerraformByTFSec(files []types.Config) ([]types.Misconfigur
 				Severity:           string(result.Severity),
 				RecommendedActions: result.Resolution,
 				References:         result.Links,
+			},
+			IacMetadata: types.IacMetadata{
+				Resource:  result.Resource,
+				StartLine: result.Location.StartLine,
+				EndLine:   result.Location.EndLine,
 			},
 		}
 
