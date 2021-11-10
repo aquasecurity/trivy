@@ -34,4 +34,9 @@ var (
 		{"Django", "2.3.4", ""},
 		{"SomeProject", "5.4", ""},
 	}
+
+	requirementsHash = []types.Library{
+		{"FooProject", "1.2", ""},
+		{"Jinja2", "3.0.0", ""},
+	}
 )

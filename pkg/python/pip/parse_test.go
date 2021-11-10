@@ -36,6 +36,10 @@ func TestParse(t *testing.T) {
 			file: "testdata/requirements_operator.txt",
 			want: requirementsOperator,
 		},
+		{
+			file: "testdata/requirements_hash.txt",
+			want: requirementsHash,
+		},
 	}
 
 	for _, v := range vectors {

@@ -13,6 +13,7 @@ import (
 const (
 	commentMarker string = "#"
 	endColon      string = ";"
+	hashMarker    string = "--"
 )
 
 func Parse(r io.Reader) ([]types.Library, error) {
@@ -21,8 +22,10 @@ func Parse(r io.Reader) ([]types.Library, error) {
 	for scanner.Scan() {
 		line := scanner.Text()
 		line = strings.ReplaceAll(line, " ", "")
+		line = strings.ReplaceAll(line, `\`, "")
 		line = rStripByKey(line, commentMarker)
 		line = rStripByKey(line, endColon)
+		line = rStripByKey(line, hashMarker)
 		s := strings.Split(line, "==")
 		if len(s) != 2 {
 			continue
