@@ -101,19 +101,17 @@ func (tw TemplateWriter) Write(report Report) error {
 }
 
 func toSarifRuleName(vulnerabilityType string) string {
-	var ruleName string
 	switch vulnerabilityType {
 	case vulnerability.Ubuntu, vulnerability.Alpine, vulnerability.RedHat, vulnerability.RedHatOVAL,
 		vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
 		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon,
 		vulnerability.CentOS:
-		ruleName = "OS Package Vulnerability"
+		return "OS Package Vulnerability"
 	case "npm", "yarn", "nuget", "pipenv", "poetry", "bundler", "cargo", "composer":
-		ruleName = "Programming Language Vulnerability"
+		return "Programming Language Vulnerability"
 	default:
-		ruleName = "Other Vulnerability"
+		return "Other Vulnerability"
 	}
-	return fmt.Sprintf("%s (%s)", ruleName, strings.Title(vulnerabilityType))
 }
 
 func toSarifErrorLevel(severity string) string {
