@@ -46,6 +46,16 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 		}
 		return escaped.String()
 	}
+	templateFuncMap["makeRuleMap"] = func() map[string]int {
+		return make(map[string]int)
+	}
+	templateFuncMap["indexRule"] = func(rules map[string]int, vulnerabilityID string) bool {
+		if _, ok := rules[vulnerabilityID]; !ok {
+			rules[vulnerabilityID] = len(rules) + 1
+			return true
+		}
+		return false
+	}
 	templateFuncMap["toSarifErrorLevel"] = toSarifErrorLevel
 	templateFuncMap["toSarifRuleName"] = toSarifRuleName
 	templateFuncMap["endWithPeriod"] = func(input string) string {
