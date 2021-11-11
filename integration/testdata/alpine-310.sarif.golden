@@ -10,219 +10,95 @@
           "fullName": "Trivy Vulnerability Scanner",
           "version": "0.15.0",
           "rules": [
-            {
-              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1549",
-              "name": "OS Package Vulnerability (Alpine)",
-              "shortDescription": {
-                "text": "CVE-2019-1549 Package: libcrypto1.1"
-              },
-              "fullDescription": {
-                "text": "openssl: information disclosure in fork()."
-              },
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1549",
-              "help": {
-                "text": "Vulnerability CVE-2019-1549\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)",
-                "markdown": "**Vulnerability CVE-2019-1549**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)|\n"
-              },
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "MEDIUM",
-                  "libcrypto1.1"
-                ],
-                "precision": "very-high"
-              }
-            },
-            {
-              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1551",
-              "name": "OS Package Vulnerability (Alpine)",
-              "shortDescription": {
-                "text": "CVE-2019-1551 Package: libcrypto1.1"
-              },
-              "fullDescription": {
-                "text": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64."
-              },
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1551",
-              "help": {
-                "text": "Vulnerability CVE-2019-1551\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r2\nLink: [CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)",
-                "markdown": "**Vulnerability CVE-2019-1551**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1d-r2|[CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)|\n"
-              },
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "MEDIUM",
-                  "libcrypto1.1"
-                ],
-                "precision": "very-high"
-              }
-            },
-            {
-              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1563",
-              "name": "OS Package Vulnerability (Alpine)",
-              "shortDescription": {
-                "text": "CVE-2019-1563 Package: libcrypto1.1"
-              },
-              "fullDescription": {
-                "text": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey."
-              },
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1563",
-              "help": {
-                "text": "Vulnerability CVE-2019-1563\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1563](https://avd.aquasec.com/nvd/cve-2019-1563)",
-                "markdown": "**Vulnerability CVE-2019-1563**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1563](https://avd.aquasec.com/nvd/cve-2019-1563)|\n"
-              },
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "MEDIUM",
-                  "libcrypto1.1"
-                ],
-                "precision": "very-high"
-              }
-            },
-            {
-              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1547",
-              "name": "OS Package Vulnerability (Alpine)",
-              "shortDescription": {
-                "text": "CVE-2019-1547 Package: libcrypto1.1"
-              },
-              "fullDescription": {
-                "text": "openssl: side-channel weak encryption vulnerability."
-              },
-              "defaultConfiguration": {
-                "level": "note"
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1547",
-              "help": {
-                "text": "Vulnerability CVE-2019-1547\nSeverity: LOW\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1547](https://avd.aquasec.com/nvd/cve-2019-1547)",
-                "markdown": "**Vulnerability CVE-2019-1547**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libcrypto1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1547](https://avd.aquasec.com/nvd/cve-2019-1547)|\n"
-              },
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "LOW",
-                  "libcrypto1.1"
-                ],
-                "precision": "very-high"
-              }
-            },
-            {
-              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1549",
-              "name": "OS Package Vulnerability (Alpine)",
-              "shortDescription": {
-                "text": "CVE-2019-1549 Package: libssl1.1"
-              },
-              "fullDescription": {
-                "text": "openssl: information disclosure in fork()."
-              },
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1549",
-              "help": {
-                "text": "Vulnerability CVE-2019-1549\nSeverity: MEDIUM\nPackage: libssl1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)",
-                "markdown": "**Vulnerability CVE-2019-1549**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libssl1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)|\n"
-              },
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "MEDIUM",
-                  "libssl1.1"
-                ],
-                "precision": "very-high"
-              }
-            },
-            {
-              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1551",
-              "name": "OS Package Vulnerability (Alpine)",
-              "shortDescription": {
-                "text": "CVE-2019-1551 Package: libssl1.1"
-              },
-              "fullDescription": {
-                "text": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64."
-              },
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1551",
-              "help": {
-                "text": "Vulnerability CVE-2019-1551\nSeverity: MEDIUM\nPackage: libssl1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r2\nLink: [CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)",
-                "markdown": "**Vulnerability CVE-2019-1551**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libssl1.1|1.1.1c-r0|1.1.1d-r2|[CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)|\n"
-              },
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "MEDIUM",
-                  "libssl1.1"
-                ],
-                "precision": "very-high"
-              }
-            },
-            {
-              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1563",
-              "name": "OS Package Vulnerability (Alpine)",
-              "shortDescription": {
-                "text": "CVE-2019-1563 Package: libssl1.1"
-              },
-              "fullDescription": {
-                "text": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey."
-              },
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1563",
-              "help": {
-                "text": "Vulnerability CVE-2019-1563\nSeverity: MEDIUM\nPackage: libssl1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1563](https://avd.aquasec.com/nvd/cve-2019-1563)",
-                "markdown": "**Vulnerability CVE-2019-1563**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libssl1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1563](https://avd.aquasec.com/nvd/cve-2019-1563)|\n"
-              },
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "MEDIUM",
-                  "libssl1.1"
-                ],
-                "precision": "very-high"
-              }
-            },
-            {
-              "id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1547",
-              "name": "OS Package Vulnerability (Alpine)",
-              "shortDescription": {
-                "text": "CVE-2019-1547 Package: libssl1.1"
-              },
-              "fullDescription": {
-                "text": "openssl: side-channel weak encryption vulnerability."
-              },
-              "defaultConfiguration": {
-                "level": "note"
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1547",
-              "help": {
-                "text": "Vulnerability CVE-2019-1547\nSeverity: LOW\nPackage: libssl1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1547](https://avd.aquasec.com/nvd/cve-2019-1547)",
-                "markdown": "**Vulnerability CVE-2019-1547**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libssl1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1547](https://avd.aquasec.com/nvd/cve-2019-1547)|\n"
-              },
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "LOW",
-                  "libssl1.1"
-                ],
-                "precision": "very-high"
-              }
-            }]
+                {
+                  "id": "CVE-2019-1549",
+                  "name": "OS Package Vulnerability",
+                  "shortDescription": {
+                    "text": "CVE-2019-1549"
+                  },
+                  "fullDescription": {
+                    "text": "openssl: information disclosure in fork()."
+                  },
+                  "defaultConfiguration": {
+                    "level": "warning"
+                  },
+                  "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1549",
+                  "properties": {
+                    "tags": [
+                      "vulnerability",
+                      "MEDIUM"
+                    ],
+                    "precision": "very-high"
+                  }
+                },
+                {
+                  "id": "CVE-2019-1551",
+                  "name": "OS Package Vulnerability",
+                  "shortDescription": {
+                    "text": "CVE-2019-1551"
+                  },
+                  "fullDescription": {
+                    "text": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64."
+                  },
+                  "defaultConfiguration": {
+                    "level": "warning"
+                  },
+                  "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1551",
+                  "properties": {
+                    "tags": [
+                      "vulnerability",
+                      "MEDIUM"
+                    ],
+                    "precision": "very-high"
+                  }
+                },
+                {
+                  "id": "CVE-2019-1563",
+                  "name": "OS Package Vulnerability",
+                  "shortDescription": {
+                    "text": "CVE-2019-1563"
+                  },
+                  "fullDescription": {
+                    "text": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey."
+                  },
+                  "defaultConfiguration": {
+                    "level": "warning"
+                  },
+                  "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1563",
+                  "properties": {
+                    "tags": [
+                      "vulnerability",
+                      "MEDIUM"
+                    ],
+                    "precision": "very-high"
+                  }
+                },
+                {
+                  "id": "CVE-2019-1547",
+                  "name": "OS Package Vulnerability",
+                  "shortDescription": {
+                    "text": "CVE-2019-1547"
+                  },
+                  "fullDescription": {
+                    "text": "openssl: side-channel weak encryption vulnerability."
+                  },
+                  "defaultConfiguration": {
+                    "level": "note"
+                  },
+                  "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1547",
+                  "properties": {
+                    "tags": [
+                      "vulnerability",
+                      "LOW"
+                    ],
+                    "precision": "very-high"
+                  }
+                }]
         }
       },
       "results": [
         {
-          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1549",
+          "ruleId": "CVE-2019-1549",
           "ruleIndex": 0,
           "level": "warning",
           "message": {
@@ -238,7 +114,7 @@
           }]
         },
         {
-          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1551",
+          "ruleId": "CVE-2019-1551",
           "ruleIndex": 1,
           "level": "warning",
           "message": {
@@ -254,7 +130,7 @@
           }]
         },
         {
-          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1563",
+          "ruleId": "CVE-2019-1563",
           "ruleIndex": 2,
           "level": "warning",
           "message": {
@@ -270,7 +146,7 @@
           }]
         },
         {
-          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libcrypto1.1-1.1.1c-r0 CVE-2019-1547",
+          "ruleId": "CVE-2019-1547",
           "ruleIndex": 3,
           "level": "note",
           "message": {
@@ -286,8 +162,8 @@
           }]
         },
         {
-          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1549",
-          "ruleIndex": 4,
+          "ruleId": "CVE-2019-1549",
+          "ruleIndex": 0,
           "level": "warning",
           "message": {
             "text": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c)."
@@ -302,8 +178,8 @@
           }]
         },
         {
-          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1551",
-          "ruleIndex": 5,
+          "ruleId": "CVE-2019-1551",
+          "ruleIndex": 1,
           "level": "warning",
           "message": {
             "text": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e-dev (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u-dev (Affected 1.0.2-1.0.2t)."
@@ -318,8 +194,8 @@
           }]
         },
         {
-          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1563",
-          "ruleIndex": 6,
+          "ruleId": "CVE-2019-1563",
+          "ruleIndex": 2,
           "level": "warning",
           "message": {
             "text": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s)."
@@ -334,8 +210,8 @@
           }]
         },
         {
-          "ruleId": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2): libssl1.1-1.1.1c-r0 CVE-2019-1547",
-          "ruleIndex": 7,
+          "ruleId": "CVE-2019-1547",
+          "ruleIndex": 3,
           "level": "note",
           "message": {
             "text": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s)."
