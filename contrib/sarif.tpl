@@ -25,7 +25,7 @@
                   "id": {{ .VulnerabilityID | toJson }},
                   "name": "{{ toSarifRuleName $vulnerabilityType }}",
                   "shortDescription": {
-                    "text": {{ .VulnerabilityID | toJson }},
+                    "text": {{ .VulnerabilityID | toJson }}
                   },
                   "fullDescription": {
                     "text": {{ endWithPeriod (escapeString .Title) | printf "%q" }}
