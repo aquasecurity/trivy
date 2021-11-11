@@ -12,7 +12,7 @@
           "version": "0.15.0",
           "rules": [
         {{- $t_first := true }}
-        {{- range $idx, $result := . }}
+        {{- range $result := . }}
             {{- $vulnerabilityType := .Type }}
             {{- range .Vulnerabilities -}}
                 {{- if indexRule $rules .VulnerabilityID -}}
