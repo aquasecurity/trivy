@@ -14,91 +14,91 @@ func TestReportWriter_toSarifRuleName(t *testing.T) {
 	}{
 		{
 			vulnerabilityType: vulnerability.Ubuntu,
-			sarifRuleName:     "OS Package Vulnerability (Ubuntu)",
+			sarifRuleName:     "OS Package Vulnerability",
 		},
 		{
 			vulnerabilityType: vulnerability.Alpine,
-			sarifRuleName:     "OS Package Vulnerability (Alpine)",
+			sarifRuleName:     "OS Package Vulnerability",
 		},
 		{
 			vulnerabilityType: vulnerability.RedHat,
-			sarifRuleName:     "OS Package Vulnerability (Redhat)",
+			sarifRuleName:     "OS Package Vulnerability",
 		},
 		{
 			vulnerabilityType: vulnerability.RedHatOVAL,
-			sarifRuleName:     "OS Package Vulnerability (Redhat-Oval)",
+			sarifRuleName:     "OS Package Vulnerability",
 		},
 		{
 			vulnerabilityType: vulnerability.Debian,
-			sarifRuleName:     "OS Package Vulnerability (Debian)",
+			sarifRuleName:     "OS Package Vulnerability",
 		},
 		{
 			vulnerabilityType: vulnerability.DebianOVAL,
-			sarifRuleName:     "OS Package Vulnerability (Debian-Oval)",
+			sarifRuleName:     "OS Package Vulnerability",
 		},
 		{
 			vulnerabilityType: vulnerability.Fedora,
-			sarifRuleName:     "OS Package Vulnerability (Fedora)",
+			sarifRuleName:     "OS Package Vulnerability",
 		},
 		{
 			vulnerabilityType: vulnerability.Amazon,
-			sarifRuleName:     "OS Package Vulnerability (Amazon)",
+			sarifRuleName:     "OS Package Vulnerability",
 		},
 		{
 			vulnerabilityType: vulnerability.OracleOVAL,
-			sarifRuleName:     "OS Package Vulnerability (Oracle-Oval)",
+			sarifRuleName:     "OS Package Vulnerability",
 		},
 		{
 			vulnerabilityType: vulnerability.SuseCVRF,
-			sarifRuleName:     "OS Package Vulnerability (Suse-Cvrf)",
+			sarifRuleName:     "OS Package Vulnerability",
 		},
 		{
 			vulnerabilityType: vulnerability.OpenSuseCVRF,
-			sarifRuleName:     "OS Package Vulnerability (Opensuse-Cvrf)",
+			sarifRuleName:     "OS Package Vulnerability",
 		},
 		{
 			vulnerabilityType: vulnerability.Photon,
-			sarifRuleName:     "OS Package Vulnerability (Photon)",
+			sarifRuleName:     "OS Package Vulnerability",
 		},
 		{
 			vulnerabilityType: vulnerability.CentOS,
-			sarifRuleName:     "OS Package Vulnerability (Centos)",
+			sarifRuleName:     "OS Package Vulnerability",
 		},
 		{
 			vulnerabilityType: "npm",
-			sarifRuleName:     "Programming Language Vulnerability (Npm)",
+			sarifRuleName:     "Programming Language Vulnerability",
 		},
 		{
 			vulnerabilityType: "yarn",
-			sarifRuleName:     "Programming Language Vulnerability (Yarn)",
+			sarifRuleName:     "Programming Language Vulnerability",
 		},
 		{
 			vulnerabilityType: "nuget",
-			sarifRuleName:     "Programming Language Vulnerability (Nuget)",
+			sarifRuleName:     "Programming Language Vulnerability",
 		},
 		{
 			vulnerabilityType: "pipenv",
-			sarifRuleName:     "Programming Language Vulnerability (Pipenv)",
+			sarifRuleName:     "Programming Language Vulnerability",
 		},
 		{
 			vulnerabilityType: "poetry",
-			sarifRuleName:     "Programming Language Vulnerability (Poetry)",
+			sarifRuleName:     "Programming Language Vulnerability",
 		},
 		{
 			vulnerabilityType: "bundler",
-			sarifRuleName:     "Programming Language Vulnerability (Bundler)",
+			sarifRuleName:     "Programming Language Vulnerability",
 		},
 		{
 			vulnerabilityType: "cargo",
-			sarifRuleName:     "Programming Language Vulnerability (Cargo)",
+			sarifRuleName:     "Programming Language Vulnerability",
 		},
 		{
 			vulnerabilityType: "composer",
-			sarifRuleName:     "Programming Language Vulnerability (Composer)",
+			sarifRuleName:     "Programming Language Vulnerability",
 		},
 		{
 			vulnerabilityType: "redis",
-			sarifRuleName:     "Other Vulnerability (Redis)",
+			sarifRuleName:     "Other Vulnerability",
 		},
 	}
 	for _, tc := range tests {
