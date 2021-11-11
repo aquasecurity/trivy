@@ -78,7 +78,6 @@ nav:
           - GitLab CI: advanced/integrations/gitlab-ci.md
           - AWS CodePipeline: advanced/integrations/aws-codepipeline.md
           - AWS Security Hub: advanced/integrations/aws-security-hub.md
-          - Community Integrations: advanced/integrations/community.md
       - Container Image:
           - Embed in Dockerfile: advanced/container/embed-in-dockerfile.md
           - Unpacked container image filesystem: advanced/container/unpacked-filesystem.md
@@ -93,6 +92,9 @@ nav:
       - Modes:
           - Standalone: advanced/modes/standalone.md
           - Client/Server: advanced/modes/client-server.md
+      - Community:
+          - Tools: advanced/community/tools.md
+          - References: advanced/community/references.md
       - Maintainer:
           - Help Wanted: advanced/contrib/help-wanted.md
           - Triage: advanced/contrib/triage.md
