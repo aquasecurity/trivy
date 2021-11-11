@@ -51,7 +51,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 	}
 	templateFuncMap["indexRule"] = func(rules map[string]int, vulnerabilityID string) bool {
 		if _, ok := rules[vulnerabilityID]; !ok {
-			rules[vulnerabilityID] = len(rules) + 1
+			rules[vulnerabilityID] = len(rules)
 			return true
 		}
 		return false
