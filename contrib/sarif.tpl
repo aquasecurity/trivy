@@ -66,7 +66,7 @@
             ,
           {{- end }}
         {
-          "ruleId": {{ printf "%s: %s-%s %s" $result.Target .PkgName .InstalledVersion .VulnerabilityID | toJson }},
+          "ruleId": {{ .VulnerabilityID | toJson }},
           "ruleIndex": {{ $index }},
           "level": "{{ toSarifErrorLevel $vulnerability.Vulnerability.Severity }}",
           "message": {
