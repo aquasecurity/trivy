@@ -10,116 +10,90 @@
           "fullName": "Trivy Vulnerability Scanner",
           "version": "0.15.0",
           "rules": [
-            {
-              "id": "CVE-2019-1549",
-              "name": "OS Package Vulnerability",
-              "shortDescription": {
-                "text": "CVE-2019-1549"
-              },
-              "fullDescription": {
-                "text": "openssl: information disclosure in fork()."
-              },
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1549",
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "MEDIUM",
-                  "libcrypto1.1"
-                ],
-                "precision": "very-high"
-              }
-            },
-            {
-              "id": "CVE-2019-1551",
-              "name": "OS Package Vulnerability",
-              "shortDescription": {
-                "text": "CVE-2019-1551"
-              },
-              "fullDescription": {
-                "text": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64."
-              },
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1551",
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "MEDIUM",
-                  "libcrypto1.1"
-                ],
-                "precision": "very-high"
-              }
-            },
-            {
-              "id": "CVE-2019-1563",
-              "name": "OS Package Vulnerability",
-              "shortDescription": {
-                "text": "CVE-2019-1563"
-              },
-              "fullDescription": {
-                "text": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey."
-              },
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1563",
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "MEDIUM",
-                  "libcrypto1.1"
-                ],
-                "precision": "very-high"
-              }
-            },
-            {
-              "id": "CVE-2019-1547",
-              "name": "OS Package Vulnerability",
-              "shortDescription": {
-                "text": "CVE-2019-1547"
-              },
-              "fullDescription": {
-                "text": "openssl: side-channel weak encryption vulnerability."
-              },
-              "defaultConfiguration": {
-                "level": "note"
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1547",
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "LOW",
-                  "libcrypto1.1"
-                ],
-                "precision": "very-high"
-              }
-            },
-            {
-              "id": "CVE-2019-1549",
-              "name": "OS Package Vulnerability",
-              "shortDescription": {
-                "text": "CVE-2019-1549"
-              },
-              "fullDescription": {
-                "text": "openssl: information disclosure in fork()."
-              },
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1549",
-              "properties": {
-                "tags": [
-                  "vulnerability",
-                  "MEDIUM",
-                  "libssl1.1"
-                ],
-                "precision": "very-high"
-              }
-            }]
+                {
+                  "id": "CVE-2019-1549",
+                  "name": "OS Package Vulnerability",
+                  "shortDescription": {
+                    "text": "CVE-2019-1549"
+                  },
+                  "fullDescription": {
+                    "text": "openssl: information disclosure in fork()."
+                  },
+                  "defaultConfiguration": {
+                    "level": "warning"
+                  },
+                  "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1549",
+                  "properties": {
+                    "tags": [
+                      "vulnerability",
+                      "MEDIUM"
+                    ],
+                    "precision": "very-high"
+                  }
+                },
+                {
+                  "id": "CVE-2019-1551",
+                  "name": "OS Package Vulnerability",
+                  "shortDescription": {
+                    "text": "CVE-2019-1551"
+                  },
+                  "fullDescription": {
+                    "text": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64."
+                  },
+                  "defaultConfiguration": {
+                    "level": "warning"
+                  },
+                  "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1551",
+                  "properties": {
+                    "tags": [
+                      "vulnerability",
+                      "MEDIUM"
+                    ],
+                    "precision": "very-high"
+                  }
+                },
+                {
+                  "id": "CVE-2019-1563",
+                  "name": "OS Package Vulnerability",
+                  "shortDescription": {
+                    "text": "CVE-2019-1563"
+                  },
+                  "fullDescription": {
+                    "text": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey."
+                  },
+                  "defaultConfiguration": {
+                    "level": "warning"
+                  },
+                  "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1563",
+                  "properties": {
+                    "tags": [
+                      "vulnerability",
+                      "MEDIUM"
+                    ],
+                    "precision": "very-high"
+                  }
+                },
+                {
+                  "id": "CVE-2019-1547",
+                  "name": "OS Package Vulnerability",
+                  "shortDescription": {
+                    "text": "CVE-2019-1547"
+                  },
+                  "fullDescription": {
+                    "text": "openssl: side-channel weak encryption vulnerability."
+                  },
+                  "defaultConfiguration": {
+                    "level": "note"
+                  },
+                  "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1547",
+                  "properties": {
+                    "tags": [
+                      "vulnerability",
+                      "LOW"
+                    ],
+                    "precision": "very-high"
+                  }
+                }]
         }
       },
       "results": [
