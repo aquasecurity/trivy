@@ -20,7 +20,7 @@ Have you created a tool that’s not listed? Add the name and description of you
 
 | Name                                     | Description                               |
 | -----------------------------------------| ----------------------------------------- |
-| [Trivy Vulnerability Explorer][explorer] | Format vulnerabilities on your browser    |
+| [Trivy Vulnerability Explorer][explorer] | Explore trivy vulnerability reports in your browser and create .trivyignore files interactively. Can be integrated in your CI/CD tooling with deep links.   |
 
 
 [trivy-github-issues]: https://github.com/marketplace/actions/trivy-github-issues
