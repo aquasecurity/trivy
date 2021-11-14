@@ -11,27 +11,27 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/getting-started/cli/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/advanced/integrations/bitbucket/">
       
       
         
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.6+insiders-3.2.2">
     
     
       
-        <title>Overview - Trivy</title>
+        <title>Bitbucket Pipelines - Trivy</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.2a337feb.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2a337feb.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.1d832a92.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.1d832a92.min.css">
         
       
-      <link rel="preload" as="style" href="../../assets/stylesheets/vendor/mermaid.733f213f.min.css">
+      <link rel="preload" as="style" href="../../../assets/stylesheets/vendor/mermaid.733f213f.min.css">
       
     
     
@@ -45,7 +45,7 @@
     
     
     
-    <script>function __md_scope(e,t,_){return new URL(_||(t===localStorage?"../..":"../.."),location).pathname+"."+e}function __md_get(e,t=localStorage,_){return JSON.parse(t.getItem(__md_scope(e,t,_)))}function __md_set(e,t,_=localStorage,o){try{_.setItem(__md_scope(e,_,o),JSON.stringify(t))}catch(e){}}</script>
+    <script>function __md_scope(e,t,_){return new URL(_||(t===localStorage?"../../..":"../../.."),location).pathname+"."+e}function __md_get(e,t=localStorage,_){return JSON.parse(t.getItem(__md_scope(e,t,_)))}function __md_set(e,t,_=localStorage,o){try{_.setItem(__md_scope(e,_,o),JSON.stringify(t))}catch(e){}}</script>
     
       
 
@@ -70,6 +70,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#bitbucket-pipelines" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -88,9 +93,9 @@
 
 <header class="md-header md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../imgs/logo-white.svg" alt="logo">
+  <img src="../../../imgs/logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -106,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              Bitbucket Pipelines
             
           </span>
         </div>
@@ -177,7 +182,7 @@
 
 
   <li class="md-tabs__item">
-    <a href="../.." class="md-tabs__link">
+    <a href="../../.." class="md-tabs__link">
       HOME
     </a>
   </li>
@@ -186,15 +191,13 @@
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../overview/" class="md-tabs__link md-tabs__link--active">
+      <a href="../../../getting-started/overview/" class="md-tabs__link">
         Getting started
       </a>
     </li>
@@ -215,7 +218,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../vulnerability/scanning/" class="md-tabs__link">
+      <a href="../../../vulnerability/scanning/" class="md-tabs__link">
         Vulnerability
       </a>
     </li>
@@ -238,7 +241,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../misconfiguration/" class="md-tabs__link">
+      <a href="../../../misconfiguration/" class="md-tabs__link">
         Misconfiguration
       </a>
     </li>
@@ -250,13 +253,15 @@
         
   
   
+    
+  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="../../advanced/" class="md-tabs__link">
+      <a href="../../" class="md-tabs__link md-tabs__link--active">
         Advanced
       </a>
     </li>
@@ -290,9 +295,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../imgs/logo-white.svg" alt="logo">
+  <img src="../../../imgs/logo-white.svg" alt="logo">
 
     </a>
     Trivy
@@ -321,7 +326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         HOME
       </a>
     </li>
@@ -334,14 +339,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
       
       
       
@@ -364,7 +367,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../overview/" class="md-nav__link">
+      <a href="../../../getting-started/overview/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -378,7 +381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../installation/" class="md-nav__link">
+      <a href="../../../getting-started/installation/" class="md-nav__link">
         Installation
       </a>
     </li>
@@ -392,7 +395,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../quickstart/" class="md-nav__link">
+      <a href="../../../getting-started/quickstart/" class="md-nav__link">
         Quick Start
       </a>
     </li>
@@ -406,7 +409,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../troubleshooting/" class="md-nav__link">
+      <a href="../../../getting-started/troubleshooting/" class="md-nav__link">
         Troubleshooting
       </a>
     </li>
@@ -420,7 +423,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../further/" class="md-nav__link">
+      <a href="../../../getting-started/further/" class="md-nav__link">
         Further Reading
       </a>
     </li>
@@ -434,7 +437,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../credit/" class="md-nav__link">
+      <a href="../../../getting-started/credit/" class="md-nav__link">
         Credits
       </a>
     </li>
@@ -446,16 +449,14 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_7" type="checkbox" id="__nav_2_7" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_7" type="checkbox" id="__nav_2_7" >
       
       
       
@@ -476,14 +477,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_7_1" type="checkbox" id="__nav_2_7_1" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_7_1" type="checkbox" id="__nav_2_7_1" >
       
       
       
@@ -504,19 +503,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../getting-started/cli/" class="md-nav__link">
         Overview
       </a>
-      
     </li>
   
 
@@ -528,7 +519,7 @@
   
   
     <li class="md-nav__item">
-      <a href="image/" class="md-nav__link">
+      <a href="../../../getting-started/cli/image/" class="md-nav__link">
         Image
       </a>
     </li>
@@ -542,7 +533,7 @@
   
   
     <li class="md-nav__item">
-      <a href="config/" class="md-nav__link">
+      <a href="../../../getting-started/cli/config/" class="md-nav__link">
         Config
       </a>
     </li>
@@ -556,7 +547,7 @@
   
   
     <li class="md-nav__item">
-      <a href="fs/" class="md-nav__link">
+      <a href="../../../getting-started/cli/fs/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -570,7 +561,7 @@
   
   
     <li class="md-nav__item">
-      <a href="rootfs/" class="md-nav__link">
+      <a href="../../../getting-started/cli/rootfs/" class="md-nav__link">
         Rootfs
       </a>
     </li>
@@ -584,7 +575,7 @@
   
   
     <li class="md-nav__item">
-      <a href="repo/" class="md-nav__link">
+      <a href="../../../getting-started/cli/repo/" class="md-nav__link">
         Repository
       </a>
     </li>
@@ -598,7 +589,7 @@
   
   
     <li class="md-nav__item">
-      <a href="client/" class="md-nav__link">
+      <a href="../../../getting-started/cli/client/" class="md-nav__link">
         Client
       </a>
     </li>
@@ -612,7 +603,7 @@
   
   
     <li class="md-nav__item">
-      <a href="server/" class="md-nav__link">
+      <a href="../../../getting-started/cli/server/" class="md-nav__link">
         Server
       </a>
     </li>
@@ -702,7 +693,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -716,7 +707,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/image/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/image/" class="md-nav__link">
         Container Image
       </a>
     </li>
@@ -730,7 +721,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/filesystem/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -744,7 +735,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/rootfs/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/rootfs/" class="md-nav__link">
         Rootfs
       </a>
     </li>
@@ -758,7 +749,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/git-repository/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/git-repository/" class="md-nav__link">
         Git Repository
       </a>
     </li>
@@ -807,7 +798,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/detection/os/" class="md-nav__link">
+      <a href="../../../vulnerability/detection/os/" class="md-nav__link">
         OS Packages
       </a>
     </li>
@@ -821,7 +812,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/detection/language/" class="md-nav__link">
+      <a href="../../../vulnerability/detection/language/" class="md-nav__link">
         Language-specific Packages
       </a>
     </li>
@@ -835,7 +826,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/detection/data-source/" class="md-nav__link">
+      <a href="../../../vulnerability/detection/data-source/" class="md-nav__link">
         Data Sources
       </a>
     </li>
@@ -849,7 +840,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/detection/supported/" class="md-nav__link">
+      <a href="../../../vulnerability/detection/supported/" class="md-nav__link">
         Supported
       </a>
     </li>
@@ -898,7 +889,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/examples/filter/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/filter/" class="md-nav__link">
         Vulnerability Filtering
       </a>
     </li>
@@ -912,7 +903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/examples/report/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/report/" class="md-nav__link">
         Report Formats
       </a>
     </li>
@@ -926,7 +917,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/examples/db/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/db/" class="md-nav__link">
         Vulnerability DB
       </a>
     </li>
@@ -940,7 +931,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/examples/cache/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/cache/" class="md-nav__link">
         Cache
       </a>
     </li>
@@ -954,7 +945,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/examples/others/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/others/" class="md-nav__link">
         Others
       </a>
     </li>
@@ -1037,7 +1028,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/" class="md-nav__link">
+      <a href="../../../misconfiguration/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1051,7 +1042,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/iac/" class="md-nav__link">
+      <a href="../../../misconfiguration/iac/" class="md-nav__link">
         Infrastructure as Code
       </a>
     </li>
@@ -1065,7 +1056,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/filesystem/" class="md-nav__link">
+      <a href="../../../misconfiguration/filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -1114,7 +1105,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/policy/builtin/" class="md-nav__link">
+      <a href="../../../misconfiguration/policy/builtin/" class="md-nav__link">
         Built-in Policies
       </a>
     </li>
@@ -1128,7 +1119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/policy/exceptions/" class="md-nav__link">
+      <a href="../../../misconfiguration/policy/exceptions/" class="md-nav__link">
         Exceptions
       </a>
     </li>
@@ -1177,7 +1168,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/custom/" class="md-nav__link">
+      <a href="../../../misconfiguration/custom/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1191,7 +1182,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/custom/data/" class="md-nav__link">
+      <a href="../../../misconfiguration/custom/data/" class="md-nav__link">
         Data
       </a>
     </li>
@@ -1205,7 +1196,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/custom/combine/" class="md-nav__link">
+      <a href="../../../misconfiguration/custom/combine/" class="md-nav__link">
         Combine
       </a>
     </li>
@@ -1219,7 +1210,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/custom/testing/" class="md-nav__link">
+      <a href="../../../misconfiguration/custom/testing/" class="md-nav__link">
         Testing
       </a>
     </li>
@@ -1233,7 +1224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/custom/debug/" class="md-nav__link">
+      <a href="../../../misconfiguration/custom/debug/" class="md-nav__link">
         Debugging Policies
       </a>
     </li>
@@ -1247,7 +1238,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/custom/examples/" class="md-nav__link">
+      <a href="../../../misconfiguration/custom/examples/" class="md-nav__link">
         Examples
       </a>
     </li>
@@ -1296,7 +1287,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/options/policy/" class="md-nav__link">
+      <a href="../../../misconfiguration/options/policy/" class="md-nav__link">
         Policy
       </a>
     </li>
@@ -1310,7 +1301,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/options/filter/" class="md-nav__link">
+      <a href="../../../misconfiguration/options/filter/" class="md-nav__link">
         Filtering
       </a>
     </li>
@@ -1324,7 +1315,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/options/report/" class="md-nav__link">
+      <a href="../../../misconfiguration/options/report/" class="md-nav__link">
         Report Formats
       </a>
     </li>
@@ -1338,7 +1329,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/options/others/" class="md-nav__link">
+      <a href="../../../misconfiguration/options/others/" class="md-nav__link">
         Others
       </a>
     </li>
@@ -1387,7 +1378,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/comparison/conftest/" class="md-nav__link">
+      <a href="../../../misconfiguration/comparison/conftest/" class="md-nav__link">
         vs Conftest
       </a>
     </li>
@@ -1401,7 +1392,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/comparison/tfsec/" class="md-nav__link">
+      <a href="../../../misconfiguration/comparison/tfsec/" class="md-nav__link">
         vs tfsec
       </a>
     </li>
@@ -1428,12 +1419,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
       
       
       
@@ -1456,7 +1449,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/" class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1470,7 +1463,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/plugins/" class="md-nav__link">
+      <a href="../../plugins/" class="md-nav__link">
         Plugins
       </a>
     </li>
@@ -1484,7 +1477,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/air-gap/" class="md-nav__link">
+      <a href="../../air-gap/" class="md-nav__link">
         Air-Gapped Environment
       </a>
     </li>
@@ -1496,14 +1489,16 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_4" type="checkbox" id="__nav_5_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_4" type="checkbox" id="__nav_5_4" checked>
       
       
       
@@ -1526,7 +1521,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1540,7 +1535,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/github-actions/" class="md-nav__link">
+      <a href="../github-actions/" class="md-nav__link">
         GitHub Actions
       </a>
     </li>
@@ -1554,7 +1549,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/circleci/" class="md-nav__link">
+      <a href="../circleci/" class="md-nav__link">
         CircleCI
       </a>
     </li>
@@ -1568,7 +1563,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/travis-ci/" class="md-nav__link">
+      <a href="../travis-ci/" class="md-nav__link">
         Travis CI
       </a>
     </li>
@@ -1582,7 +1577,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/gitlab-ci/" class="md-nav__link">
+      <a href="../gitlab-ci/" class="md-nav__link">
         GitLab CI
       </a>
     </li>
@@ -1594,11 +1589,21 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../advanced/integrations/bitbucket/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Bitbucket Pipelines
       </a>
+      
     </li>
   
 
@@ -1610,7 +1615,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/aws-codepipeline/" class="md-nav__link">
+      <a href="../aws-codepipeline/" class="md-nav__link">
         AWS CodePipeline
       </a>
     </li>
@@ -1624,7 +1629,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/aws-security-hub/" class="md-nav__link">
+      <a href="../aws-security-hub/" class="md-nav__link">
         AWS Security Hub
       </a>
     </li>
@@ -1673,7 +1678,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
+      <a href="../../container/embed-in-dockerfile/" class="md-nav__link">
         Embed in Dockerfile
       </a>
     </li>
@@ -1687,7 +1692,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/container/unpacked-filesystem/" class="md-nav__link">
+      <a href="../../container/unpacked-filesystem/" class="md-nav__link">
         Unpacked container image filesystem
       </a>
     </li>
@@ -1701,7 +1706,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/container/oci/" class="md-nav__link">
+      <a href="../../container/oci/" class="md-nav__link">
         OCI Image
       </a>
     </li>
@@ -1715,7 +1720,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/container/podman/" class="md-nav__link">
+      <a href="../../container/podman/" class="md-nav__link">
         Podman
       </a>
     </li>
@@ -1755,7 +1760,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/private-registries/" class="md-nav__link">
+      <a href="../../private-registries/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1769,7 +1774,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/private-registries/docker-hub/" class="md-nav__link">
+      <a href="../../private-registries/docker-hub/" class="md-nav__link">
         Docker Hub
       </a>
     </li>
@@ -1783,7 +1788,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/private-registries/ecr/" class="md-nav__link">
+      <a href="../../private-registries/ecr/" class="md-nav__link">
         AWS ECR (Elastic Container Registry)
       </a>
     </li>
@@ -1797,7 +1802,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/private-registries/gcr/" class="md-nav__link">
+      <a href="../../private-registries/gcr/" class="md-nav__link">
         GCR (Google Container Registry)
       </a>
     </li>
@@ -1811,7 +1816,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/private-registries/self/" class="md-nav__link">
+      <a href="../../private-registries/self/" class="md-nav__link">
         Self-Hosted
       </a>
     </li>
@@ -1867,7 +1872,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/modes/standalone/" class="md-nav__link">
+      <a href="../../modes/standalone/" class="md-nav__link">
         Standalone
       </a>
     </li>
@@ -1881,7 +1886,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/modes/client-server/" class="md-nav__link">
+      <a href="../../modes/client-server/" class="md-nav__link">
         Client/Server
       </a>
     </li>
@@ -1930,7 +1935,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/community/tools/" class="md-nav__link">
+      <a href="../../community/tools/" class="md-nav__link">
         Tools
       </a>
     </li>
@@ -1944,7 +1949,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/community/references/" class="md-nav__link">
+      <a href="../../community/references/" class="md-nav__link">
         References
       </a>
     </li>
@@ -1993,7 +1998,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/contrib/help-wanted/" class="md-nav__link">
+      <a href="../../contrib/help-wanted/" class="md-nav__link">
         Help Wanted
       </a>
     </li>
@@ -2007,7 +2012,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/contrib/triage/" class="md-nav__link">
+      <a href="../../contrib/triage/" class="md-nav__link">
         Triage
       </a>
     </li>
@@ -2035,6 +2040,25 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content" data-md-component="content">
             <article class="md-content__inner md-typeset">
@@ -2042,35 +2066,8 @@
                 
                 
                 
-                  <h1>Overview</h1>
-                
-                <p>Trivy has several sub commands, image, fs, repo, client and server.</p>
-<div class="highlight"><pre><span></span><code>NAME:
-   trivy - A simple and comprehensive vulnerability scanner <span class="k">for</span> containers
-
-USAGE:
-   trivy <span class="o">[</span>global options<span class="o">]</span> <span class="nb">command</span> <span class="o">[</span><span class="nb">command</span> options<span class="o">]</span> target
-
-VERSION:
-   dev
-
-COMMANDS:
-   image, i          scan an image
-   filesystem, fs    scan <span class="nb">local</span> filesystem
-   repository, repo  scan remote repository
-   client, c         client mode
-   server, s         server mode
-   config, conf      scan config files
-   plugin, p         manage plugins
-   help, h           Shows a list of commands or <span class="nb">help</span> <span class="k">for</span> one <span class="nb">command</span>
-
-GLOBAL OPTIONS:
-   --quiet, -q        suppress progress bar and log output <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_QUIET</span><span class="o">]</span>
-   --debug, -d        debug mode <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_DEBUG</span><span class="o">]</span>
-   --cache-dir value  cache directory <span class="o">(</span>default: <span class="s2">&quot;/Users/teppei/Library/Caches/trivy&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CACHE_DIR</span><span class="o">]</span>
-   --help, -h         show <span class="nb">help</span> <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span>
-   --version, -v      print the version <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span>
-</code></pre></div>
+                <h1 id="bitbucket-pipelines">Bitbucket Pipelines</h1>
+<p>See <a href="https://github.com/aquasecurity/trivy-pipe">trivy-pipe</a> for the details.</p>
                 
 
 
@@ -2094,7 +2091,7 @@ GLOBAL OPTIONS:
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../credit/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Credits" rel="prev">
+        <a href="../gitlab-ci/" class="md-footer__link md-footer__link--prev" aria-label="Previous: GitLab CI" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -2103,20 +2100,20 @@ GLOBAL OPTIONS:
               <span class="md-footer__direction">
                 Previous
               </span>
-              Credits
+              GitLab CI
             </div>
           </div>
         </a>
       
       
         
-        <a href="image/" class="md-footer__link md-footer__link--next" aria-label="Next: Image" rel="next">
+        <a href="../aws-codepipeline/" class="md-footer__link md-footer__link--next" aria-label="Next: AWS CodePipeline" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Image
+              AWS CodePipeline
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -2143,10 +2140,10 @@ GLOBAL OPTIONS:
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.d5944110.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.d5944110.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.c453595a.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.c453595a.min.js"></script>
       
     
   </body>
