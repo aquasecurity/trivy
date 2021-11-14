@@ -76,6 +76,7 @@ nav:
           - CircleCI: advanced/integrations/circleci.md
           - Travis CI: advanced/integrations/travis-ci.md
           - GitLab CI: advanced/integrations/gitlab-ci.md
+          - Bitbucket Pipelines: advanced/integrations/bitbucket.md
           - AWS CodePipeline: advanced/integrations/aws-codepipeline.md
           - AWS Security Hub: advanced/integrations/aws-security-hub.md
       - Container Image:
