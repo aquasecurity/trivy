@@ -92,6 +92,9 @@ nav:
       - Modes:
           - Standalone: advanced/modes/standalone.md
           - Client/Server: advanced/modes/client-server.md
+      - Community:
+          - Tools: advanced/community/tools.md
+          - References: advanced/community/references.md
       - Maintainer:
           - Help Wanted: advanced/contrib/help-wanted.md
           - Triage: advanced/contrib/triage.md
