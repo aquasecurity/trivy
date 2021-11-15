@@ -75,6 +75,9 @@
               "artifactLocation": {
                 "uri": "{{ toPathUri $filePath }}",
                 "uriBaseId": "ROOTPATH"
+              },
+              "region" : {
+                "startLine": 1
               }
             }
           }]
@@ -85,7 +88,7 @@
       "columnKind": "utf16CodeUnits",
       "originalUriBaseIds": {
         "ROOTPATH": {
-          "uri": "/"
+          "uri": "file:///"
         }
       }
     }

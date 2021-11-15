@@ -106,11 +106,11 @@ func toSarifRuleName(vulnerabilityType string) string {
 		vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
 		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon,
 		vulnerability.CentOS:
-		return "OS Package Vulnerability"
+		return "OsPackageVulnerability"
 	case "npm", "yarn", "nuget", "pipenv", "poetry", "bundler", "cargo", "composer":
-		return "Programming Language Vulnerability"
+		return "ProgrammingLanguageVulnerability"
 	default:
-		return "Other Vulnerability"
+		return "OtherVulnerability"
 	}
 }
 
