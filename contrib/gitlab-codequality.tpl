@@ -13,7 +13,7 @@
       "type": "issue",
       "check_name": "container_scanning",
       "categories": [ "Security" ],
-      "description": "{{ .VulnerabilityID }}: {{ .Title }}",
+      "description": {{ cat .VulnerabilityID ": " .Title|toJson }},
       "content": {{ .Description | printf "%q" }},
       "severity": {{ if eq .Severity "LOW" -}}
                     "info"
