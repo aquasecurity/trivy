@@ -12,7 +12,7 @@
           "rules": [
                 {
                   "id": "CVE-2019-1549",
-                  "name": "OS Package Vulnerability",
+                  "name": "OsPackageVulnerability",
                   "shortDescription": {
                     "text": "CVE-2019-1549"
                   },
@@ -33,7 +33,7 @@
                 },
                 {
                   "id": "CVE-2019-1551",
-                  "name": "OS Package Vulnerability",
+                  "name": "OsPackageVulnerability",
                   "shortDescription": {
                     "text": "CVE-2019-1551"
                   },
@@ -54,7 +54,7 @@
                 },
                 {
                   "id": "CVE-2019-1563",
-                  "name": "OS Package Vulnerability",
+                  "name": "OsPackageVulnerability",
                   "shortDescription": {
                     "text": "CVE-2019-1563"
                   },
@@ -75,7 +75,7 @@
                 },
                 {
                   "id": "CVE-2019-1547",
-                  "name": "OS Package Vulnerability",
+                  "name": "OsPackageVulnerability",
                   "shortDescription": {
                     "text": "CVE-2019-1547"
                   },
@@ -109,6 +109,9 @@
               "artifactLocation": {
                 "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
+              },
+              "region" : {
+                "startLine": 1
               }
             }
           }]
@@ -125,6 +128,9 @@
               "artifactLocation": {
                 "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
+              },
+              "region" : {
+                "startLine": 1
               }
             }
           }]
@@ -141,6 +147,9 @@
               "artifactLocation": {
                 "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
+              },
+              "region" : {
+                "startLine": 1
               }
             }
           }]
@@ -157,6 +166,9 @@
               "artifactLocation": {
                 "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
+              },
+              "region" : {
+                "startLine": 1
               }
             }
           }]
@@ -173,6 +185,9 @@
               "artifactLocation": {
                 "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
+              },
+              "region" : {
+                "startLine": 1
               }
             }
           }]
@@ -189,6 +204,9 @@
               "artifactLocation": {
                 "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
+              },
+              "region" : {
+                "startLine": 1
               }
             }
           }]
@@ -205,6 +223,9 @@
               "artifactLocation": {
                 "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
+              },
+              "region" : {
+                "startLine": 1
               }
             }
           }]
@@ -221,6 +242,9 @@
               "artifactLocation": {
                 "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
+              },
+              "region" : {
+                "startLine": 1
               }
             }
           }]
@@ -228,7 +252,7 @@
       "columnKind": "utf16CodeUnits",
       "originalUriBaseIds": {
         "ROOTPATH": {
-          "uri": "/"
+          "uri": "file:///"
         }
       }
     }
