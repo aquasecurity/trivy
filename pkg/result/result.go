@@ -189,8 +189,10 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 
 			// Ignore unfixed vulnerabilities
 			if ignoreUnfixed && vuln.FixedVersion == "" {
+				log.Logger.Debugf("Ignoring unfixed vulnerability %s", vuln.VulnerabilityID)
 				continue
 			} else if utils.StringInSlice(vuln.VulnerabilityID, ignoredIDs) {
+				log.Logger.Debugf("Ignoring vulnerability %s", vuln.VulnerabilityID)
 				continue
 			}
 
@@ -335,6 +337,9 @@ func getIgnoredIDs(ignoreFile string) []string {
 		}
 		ignoredIDs = append(ignoredIDs, line)
 	}
+
+	log.Logger.Debugf("Found ignore file %s with %d IDs to ignore", ignoreFile, len(ignoredIDs))
+
 	return ignoredIDs
 }
 
