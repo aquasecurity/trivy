@@ -11,7 +11,6 @@ This section describes the differences between Trivy and cfsec.
 | Show Successes              | :material-check:                        | :material-check:     |
 | Disable Policies            | :material-check:                        | :material-check:     |
 | Show Issue Lines            | :material-close:                        | :material-check:     |
-| Support .tfvars             | :material-close:                        | :material-check:     |
 | View Statistics             | :material-close:                        | :material-check:     |
 | Filtering by Severity       | :material-check:                        | :material-close:     |
 | Supported Formats           | Dockerfile, JSON, YAML, Terraform, etc. | CloudFormation JSON and YAML       |
