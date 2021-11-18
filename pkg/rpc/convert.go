@@ -60,20 +60,6 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 	return pkgs
 }
 
-// ConvertFromRPCMalwares returns list of malware package objects
-func ConvertFromRPCMalwares(rpcMalwares []*scanner.Malware) []report.Malware {
-	var malwares []report.Malware
-	for _, m := range rpcMalwares {
-		malwares = append(malwares, report.Malware{
-			Source:   m.Source,
-			Malware:  m.Malware,
-			Hash:     m.Hash,
-			Filepath: m.Filepath,
-		})
-	}
-	return malwares
-}
-
 // ConvertFromRPCLibraries returns list of Fanal library
 func ConvertFromRPCLibraries(rpcLibs []*common.Library) []ftypes.Package {
 	var pkgs []ftypes.Package
@@ -363,7 +349,7 @@ func ConvertFromRPCMisconfResults(rpcResults []*common.MisconfResult) []ftypes.M
 }
 
 // ConvertFromRPCCustomResources converts array of cache.CustomResource to fanal.CustomResource
-func ConvertFromRPCCustomResources(rpcCustomResources []*cache.CustomResource) []ftypes.CustomResource {
+func ConvertFromRPCCustomResources(rpcCustomResources []*common.CustomResource) []ftypes.CustomResource {
 	var resources []ftypes.CustomResource
 	for _, res := range rpcCustomResources {
 		resources = append(resources, ftypes.CustomResource{
@@ -474,13 +460,13 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 			Exceptions: ConvertToMisconfResults(m.Exceptions),
 		})
 	}
-	var customResources []*cache.CustomResource
+	var customResources []*common.CustomResource
 	for _, res := range blobInfo.CustomResources {
 		info, err := structpb.NewStruct(res.Info)
 		if err != nil {
 
 		} else {
-			customResources = append(customResources, &cache.CustomResource{
+			customResources = append(customResources, &common.CustomResource{
 				Type:     res.Type,
 				Filepath: res.FilePath,
 				Info:     info,

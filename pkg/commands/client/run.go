@@ -165,7 +165,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 
 	if opt.Input != "" {
 		// Scan tar file
-		s, err := initializeArchiveScanner(ctx, opt.Input, remoteCache, client.CustomHeaders(opt.CustomHeaders),
+		s, err := initializeArchiveScanner(ctx, opt.Input, remoteCache, nil, client.CustomHeaders(opt.CustomHeaders),
 			client.RemoteURL(opt.RemoteAddr), opt.Timeout, artifactOpt, configScannerOptions)
 		if err != nil {
 			return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
@@ -174,7 +174,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	}
 
 	// Scan an image in Docker Engine or Docker Registry
-	s, cleanup, err := initializeDockerScanner(ctx, opt.Target, remoteCache, client.CustomHeaders(opt.CustomHeaders),
+	s, cleanup, err := initializeDockerScanner(ctx, opt.Target, remoteCache, nil, client.CustomHeaders(opt.CustomHeaders),
 		client.RemoteURL(opt.RemoteAddr), opt.Timeout, artifactOpt, configScannerOptions)
 	if err != nil {
 		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the docker scanner: %w", err)

@@ -121,9 +121,8 @@ message CVSS {
   double v3_score  = 4;
 }
 
-message Malware {
-  string filepath = 1;
-  string md5      = 2;
-  string sha      = 3;
-  string source   = 4;
+message CustomResource {
+  string                 type     = 1;
+  string                 filepath = 2;
+  google.protobuf.Struct info     = 3;
 }

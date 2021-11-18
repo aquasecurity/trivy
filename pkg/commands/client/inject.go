@@ -17,14 +17,14 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )
 
-func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders,
+func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, extraCaches []cache.ArtifactCache, customHeaders client.CustomHeaders,
 	url client.RemoteURL, timeout time.Duration, artifactOption artifact.Option, configScannerOption config.ScannerOption) (
 	scanner.Scanner, func(), error) {
 	wire.Build(scanner.RemoteDockerSet)
 	return scanner.Scanner{}, nil, nil
 }
 
-func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
+func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, extraCaches []cache.ArtifactCache,
 	customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration, artifactOption artifact.Option,
 	configScannerOption config.ScannerOption) (scanner.Scanner, error) {
 	wire.Build(scanner.RemoteArchiveSet)

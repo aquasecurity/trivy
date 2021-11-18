@@ -23,7 +23,7 @@ import (
 var StandaloneSuperSet = wire.NewSet(
 	local.SuperSet,
 	wire.Bind(new(Driver), new(local.Scanner)),
-	NewScanner,
+	NewScannerLite,
 )
 
 // StandaloneDockerSet binds docker dependencies
@@ -58,7 +58,7 @@ var RemoteSuperSet = wire.NewSet(
 	aimage.NewArtifact,
 	client.SuperSet,
 	wire.Bind(new(Driver), new(client.Scanner)),
-	NewScanner,
+	NewScannerLite,
 )
 
 // RemoteDockerSet binds remote docker dependencies
@@ -76,9 +76,9 @@ var RemoteArchiveSet = wire.NewSet(
 
 // Scanner implements the Artifact and Driver operations
 type Scanner struct {
-	driver        Driver
-	artifact      artifact.Artifact
-	customDrivers []Driver
+	driver       Driver
+	artifact     artifact.Artifact
+	extraDrivers []Driver
 }
 
 // Driver defines operations of scanner
@@ -89,8 +89,21 @@ type Driver interface {
 }
 
 // NewScanner is the factory method of Scanner
-func NewScanner(driver Driver, customdrivers []Driver, ar artifact.Artifact) Scanner {
-	return Scanner{drivers: []Driver{driver}, artifact: ar}
+func NewScanner(driver Driver, ed []Driver, ar artifact.Artifact) Scanner {
+	return Scanner{
+		driver:       driver,
+		extraDrivers: ed,
+		artifact:     ar,
+	}
+}
+
+// NewScanner is the factory method of Scanner
+func NewScannerLite(driver Driver, ar artifact.Artifact) Scanner {
+	return Scanner{
+		driver:       driver,
+		extraDrivers: []Driver{},
+		artifact:     ar,
+	}
 }
 
 // ScanArtifact scans the artifacts and returns results
@@ -99,21 +112,23 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 	if err != nil {
 		return report.Report{}, xerrors.Errorf("failed analysis: %w", err)
 	}
-	results := report.Results{}
-	var os *ftypes.OS
-	for _, driver := range s.drivers {
-		driverResults, osFound, err := driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs[driver.GetCache()], options)
+
+	results, osFound, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
+	if err != nil {
+		return report.Report{}, xerrors.Errorf("scan failed: %w", err)
+	}
+
+	if osFound != nil && osFound.Eosl {
+		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
+		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
+	}
+
+	// Scan for Secondary Drivers
+	for _, driver := range s.extraDrivers {
+		driverResults, _, err := driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.ExtraBlobIDs[driver.GetCache()], options)
 		if err != nil {
 			return report.Report{}, xerrors.Errorf("scan failed: %w", err)
 		}
-		if osFound != nil {
-			os = osFound // Assuming only 1 driver will return operating System
-			if osFound.Eosl {
-				log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
-				log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
-			}
-		}
-
 		results = append(results, driverResults...)
 	}
 
@@ -127,7 +142,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 		ArtifactName:  artifactInfo.Name,
 		ArtifactType:  artifactInfo.Type,
 		Metadata: report.Metadata{
-			OS:          os,
+			OS:          osFound,
 			ImageID:     artifactInfo.ImageMetadata.ID,
 			DiffIDs:     artifactInfo.ImageMetadata.DiffIDs,
 			RepoTags:    artifactInfo.ImageMetadata.RepoTags,

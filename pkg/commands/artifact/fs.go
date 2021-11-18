@@ -14,7 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )
 
-func filesystemScanner(ctx context.Context, dir string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
+func filesystemScanner(ctx context.Context, dir string, ac cache.ArtifactCache, lac cache.LocalArtifactCache, extracache []cache.ArtifactCache,
 	_ time.Duration, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeFilesystemScanner(ctx, dir, ac, lac, artifactOpt, scannerOpt)
 	if err != nil {

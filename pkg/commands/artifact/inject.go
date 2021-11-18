@@ -17,14 +17,14 @@ import (
 )
 
 func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache,
-	localArtifactCache cache.LocalArtifactCache, timeout time.Duration, artifactOption artifact.Option,
+	localArtifactCache cache.LocalArtifactCache, extraCaches []cache.ArtifactCache, timeout time.Duration, artifactOption artifact.Option,
 	configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneDockerSet)
 	return scanner.Scanner{}, nil, nil
 }
 
 func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
-	localArtifactCache cache.LocalArtifactCache, timeout time.Duration, artifactOption artifact.Option,
+	localArtifactCache cache.LocalArtifactCache, extraCaches []cache.ArtifactCache, timeout time.Duration, artifactOption artifact.Option,
 	configScannerOption config.ScannerOption) (scanner.Scanner, error) {
 	wire.Build(scanner.StandaloneArchiveSet)
 	return scanner.Scanner{}, nil

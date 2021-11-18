@@ -15,7 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func repositoryScanner(ctx context.Context, dir string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
+func repositoryScanner(ctx context.Context, dir string, ac cache.ArtifactCache, lac cache.LocalArtifactCache, extracache []cache.ArtifactCache,
 	_ time.Duration, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeRepositoryScanner(ctx, dir, ac, lac, artifactOpt, scannerOpt)
 	if err != nil {

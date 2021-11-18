@@ -14,18 +14,18 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )
 
-func archiveScanner(ctx context.Context, input string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
+func archiveScanner(ctx context.Context, input string, ac cache.ArtifactCache, lac cache.LocalArtifactCache, extracache []cache.ArtifactCache,
 	timeout time.Duration, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (scanner.Scanner, func(), error) {
-	s, err := initializeArchiveScanner(ctx, input, ac, lac, timeout, artifactOpt, scannerOpt)
+	s, err := initializeArchiveScanner(ctx, input, ac, lac, extracache, timeout, artifactOpt, scannerOpt)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 	}
 	return s, func() {}, nil
 }
 
-func dockerScanner(ctx context.Context, imageName string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
+func dockerScanner(ctx context.Context, imageName string, ac cache.ArtifactCache, lac cache.LocalArtifactCache, extracache []cache.ArtifactCache,
 	timeout time.Duration, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeDockerScanner(ctx, imageName, ac, lac, timeout, artifactOpt, scannerOpt)
+	s, cleanup, err := initializeDockerScanner(ctx, imageName, ac, lac, extracache, timeout, artifactOpt, scannerOpt)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a docker scanner: %w", err)
 	}

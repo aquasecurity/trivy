@@ -27,7 +27,7 @@ const defaultPolicyNamespace = "appshield"
 var errSkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanner defines the initialize function signature of scanner
-type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration,
+type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, []cache.ArtifactCache, time.Duration,
 	artifact.Option, config.ScannerOption) (scanner.Scanner, func(), error)
 
 // InitCache defines cache initializer
@@ -205,7 +205,10 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		SkipDirs:          opt.SkipDirs,
 	}
 
-	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Timeout, artifactOpt, configScannerOptions)
+	// TODO: receive extra cache details from cmd args and forward
+	extracache := []cache.ArtifactCache{}
+
+	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, extracache, opt.Timeout, artifactOpt, configScannerOptions)
 	if err != nil {
 		return pkgReport.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
