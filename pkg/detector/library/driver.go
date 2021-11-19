@@ -5,6 +5,7 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
+	ecosystemOsv "github.com/aquasecurity/trivy-db/pkg/vulnsrc/osv"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
 	"github.com/aquasecurity/trivy/pkg/detector/library/cargo"
@@ -13,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
 	"github.com/aquasecurity/trivy/pkg/detector/library/maven"
 	"github.com/aquasecurity/trivy/pkg/detector/library/npm"
+	"github.com/aquasecurity/trivy/pkg/detector/library/osv"
 	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -40,10 +42,7 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.Jar:
 		driver = newMavenDriver()
 	case ftypes.GoBinary, ftypes.GoMod:
-		driver = Driver{
-			ecosystem:  vulnerability.Go,
-			advisories: []advisory{NewAdvisory(vulnerability.Go, comparer.GenericComparer{})},
-		}
+		driver = newGoDriver()
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
 	}
@@ -100,8 +99,9 @@ func newComposerDriver() Driver {
 }
 
 func newCargoDriver() Driver {
+	c := comparer.GenericComparer{}
 	return Aggregate(vulnerability.Cargo, cargo.NewAdvisory(),
-		NewAdvisory(vulnerability.Cargo, comparer.GenericComparer{}))
+		NewAdvisory(vulnerability.Cargo, c), osv.NewAdvisory(ecosystemOsv.Rust, c))
 }
 
 func newNpmDriver() Driver {
@@ -113,7 +113,7 @@ func newNpmDriver() Driver {
 func newPipDriver() Driver {
 	c := comparer.GenericComparer{}
 	return Aggregate(vulnerability.Pip, ghsa.NewAdvisory(ecosystem.Pip, c),
-		python.NewAdvisory(), NewAdvisory(vulnerability.Pip, c))
+		python.NewAdvisory(), NewAdvisory(vulnerability.Pip, c), osv.NewAdvisory(ecosystemOsv.Python, c))
 }
 
 func newNugetDriver() Driver {
@@ -126,4 +126,10 @@ func newMavenDriver() Driver {
 	c := maven.Comparer{}
 	return Aggregate(vulnerability.Maven, ghsa.NewAdvisory(ecosystem.Maven, c),
 		NewAdvisory(vulnerability.Maven, c))
+}
+
+func newGoDriver() Driver {
+	c := comparer.GenericComparer{}
+	return Aggregate(vulnerability.Go, NewAdvisory(vulnerability.Go, c),
+		osv.NewAdvisory(ecosystemOsv.Go, c))
 }
