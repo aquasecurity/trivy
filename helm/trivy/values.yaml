@@ -4,7 +4,7 @@ fullnameOverride: ""
 image:
   registry: docker.io
   repository: aquasec/trivy
-  tag: 0.18.3
+  tag: 0.21.0
   pullPolicy: IfNotPresent
   pullSecret: ""
 
@@ -85,7 +85,7 @@ trivy:
   cache:
     redis:
       enabled: false
-      url: "" # e.g. redis://redis.redis.svc:6379
+      url: ""  # e.g. redis://redis.redis.svc:6379
 
 service:
   # type Kubernetes service type

@@ -9,6 +9,8 @@ env:
   HELM_REP: helm-charts
   GH_OWNER: aquasecurity
   CHART_DIR: helm/trivy
+  KIND_VERSION: "v0.11.1"
+  KIND_IMAGE: "kindest/node:v1.21.1@sha256:69860bda5563ac81e3c0057d654b5253219618a22ec3a346306239bba8cfa1a6"  
 jobs:
   release:
     runs-on: ubuntu-20.04
@@ -21,6 +23,26 @@ jobs:
         uses: azure/setup-helm@v1
         with:
           version: v3.5.0
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Setup Chart Linting
+        id: lint
+        uses: helm/chart-testing-action@v2.1.0
+      - name: Setup Kubernetes cluster (KIND)
+        uses: engineerd/setup-kind@v0.5.0
+        with:
+          version: ${{ env.KIND_VERSION }}
+          image: ${{ env.KIND_IMAGE }}
+      - name: Run chart-testing (w/Ingress)
+        run: ct lint-and-install --validate-maintainers=false --charts helm/trivy
+
+      - name: Run chart-testing (Ingress)
+        run: |
+          sed -i -e '97s,false,'true',g' ./helm/trivy/values.yaml
+          ct lint-and-install --validate-maintainers=false --charts helm/trivy
+
       - name: Install chart-releaser
         run: |
           wget https://github.com/helm/chart-releaser/releases/download/v1.1.1/chart-releaser_1.1.1_linux_amd64.tar.gz
