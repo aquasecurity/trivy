@@ -269,6 +269,9 @@ func ConvertFromRPCMisconfs(rpcMisconfs []*common.DetectedMisconfiguration) []ty
 
 // ConvertFromRPCLayer converts *common.Layer to fanal.Layer
 func ConvertFromRPCLayer(rpcLayer *common.Layer) ftypes.Layer {
+	if rpcLayer == nil {
+		return ftypes.Layer{}
+	}
 	return ftypes.Layer{
 		Digest: rpcLayer.Digest,
 		DiffID: rpcLayer.DiffId,
