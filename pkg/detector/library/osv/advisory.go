@@ -11,14 +11,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// VulnSrc defines the operations on vulnerability source
-type VulnSrc interface {
-	Get(pkgName string) ([]dbTypes.Advisory, error)
-}
-
 // Advisory implements VulnSrc
 type Advisory struct {
-	vs       VulnSrc
+	vs       osv.VulnSrc
 	comparer comparer.Comparer
 }
 
