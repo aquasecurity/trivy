@@ -1,7 +1,0 @@
-- bucket: Osv Security Advisories PyPI
-  pairs:
-    - bucket: "bikeshed"
-      pairs:
-        - key: CVE-2021-23422
-          value:
-            PatchedVersions: malformed

@@ -5,7 +5,6 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
-	ecosystemOsv "github.com/aquasecurity/trivy-db/pkg/vulnsrc/osv"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
 	"github.com/aquasecurity/trivy/pkg/detector/library/cargo"
@@ -14,7 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
 	"github.com/aquasecurity/trivy/pkg/detector/library/maven"
 	"github.com/aquasecurity/trivy/pkg/detector/library/npm"
-	"github.com/aquasecurity/trivy/pkg/detector/library/osv"
 	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -101,7 +99,7 @@ func newComposerDriver() Driver {
 func newCargoDriver() Driver {
 	c := comparer.GenericComparer{}
 	return Aggregate(vulnerability.Cargo, cargo.NewAdvisory(),
-		NewAdvisory(vulnerability.Cargo, c), osv.NewAdvisory(ecosystemOsv.Rust, c))
+		NewAdvisory(vulnerability.Cargo, c))
 }
 
 func newNpmDriver() Driver {
@@ -113,7 +111,7 @@ func newNpmDriver() Driver {
 func newPipDriver() Driver {
 	c := comparer.GenericComparer{}
 	return Aggregate(vulnerability.Pip, ghsa.NewAdvisory(ecosystem.Pip, c),
-		python.NewAdvisory(), NewAdvisory(vulnerability.Pip, c), osv.NewAdvisory(ecosystemOsv.Python, c))
+		python.NewAdvisory(), NewAdvisory(vulnerability.Pip, c))
 }
 
 func newNugetDriver() Driver {
@@ -130,6 +128,5 @@ func newMavenDriver() Driver {
 
 func newGoDriver() Driver {
 	c := comparer.GenericComparer{}
-	return Aggregate(vulnerability.Go, NewAdvisory(vulnerability.Go, c),
-		osv.NewAdvisory(ecosystemOsv.Go, c))
+	return Aggregate(vulnerability.Go, NewAdvisory(vulnerability.Go, c))
 }
