@@ -1,10 +1,12 @@
+//go:build integration
 // +build integration
 
 package integration
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -376,11 +378,10 @@ func TestRun_WithTar(t *testing.T) {
 
 	// Setup CLI App
 	app := commands.NewApp("dev")
-	app.Writer = ioutil.Discard
+	app.Writer = io.Discard
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-
 			osArgs := []string{"trivy"}
 			osArgs = append(osArgs, "--cache-dir", cacheDir)
 			if c.testArgs.WithImageSubcommand {
@@ -401,7 +402,7 @@ func TestRun_WithTar(t *testing.T) {
 			}
 			if len(c.testArgs.IgnoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
-				err := ioutil.WriteFile(trivyIgnore, []byte(strings.Join(c.testArgs.IgnoreIDs, "\n")), 0444)
+				err := os.WriteFile(trivyIgnore, []byte(strings.Join(c.testArgs.IgnoreIDs, "\n")), 0444)
 				assert.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
@@ -422,14 +423,9 @@ func TestRun_WithTar(t *testing.T) {
 			}
 
 			// Setup the output file
-			var outputFile string
+			outputFile := filepath.Join(t.TempDir(), "output.json")
 			if *update {
 				outputFile = c.golden
-			} else {
-				output, _ := ioutil.TempFile("", "integration")
-				assert.Nil(t, output.Close())
-				defer os.Remove(output.Name())
-				outputFile = output.Name()
 			}
 
 			osArgs = append(osArgs, []string{"--output", outputFile}...)
@@ -438,12 +434,7 @@ func TestRun_WithTar(t *testing.T) {
 			assert.Nil(t, app.Run(osArgs))
 
 			// Compare want and got
-			want, err := ioutil.ReadFile(c.golden)
-			assert.NoError(t, err)
-			got, err := ioutil.ReadFile(outputFile)
-			assert.NoError(t, err)
-
-			assert.JSONEq(t, string(want), string(got))
+			compareReports(t, c.golden, outputFile)
 		})
 	}
 }

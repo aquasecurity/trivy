@@ -152,6 +152,27 @@ func TestScanner_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
+			name:     "the installed version has ksplice2",
+			fixtures: []string{"testdata/fixtures/oracle7.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "glibc",
+						Epoch:      2,
+						Version:    "2.28",
+						Release:    "151.0.1.ksplice2.el8",
+						Arch:       "x86_64",
+						SrcEpoch:   2,
+						SrcName:    "glibc",
+						SrcVersion: "2.28",
+						SrcRelease: "151.0.1.ksplice2.el8",
+					},
+				},
+			},
+			want: nil,
+		},
+		{
 			name:     "with ksplice",
 			fixtures: []string{"testdata/fixtures/oracle7.yaml"},
 			args: args{

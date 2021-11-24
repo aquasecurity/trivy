@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/url"
 	"os"
 
@@ -78,7 +77,7 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 	if err != nil {
 		return err
 	}
-	if _, err = io.Copy(ioutil.Discard, resp.Body); err != nil {
+	if _, err = io.Copy(io.Discard, resp.Body); err != nil {
 		return err
 	}
 	defer resp.Body.Close()
@@ -110,7 +109,7 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 	}
 	defer pushOut.Close()
 
-	if _, err = io.Copy(ioutil.Discard, pushOut); err != nil {
+	if _, err = io.Copy(io.Discard, pushOut); err != nil {
 		return err
 	}
 	return nil

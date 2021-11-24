@@ -1,728 +1,777 @@
-[
-  {
-    "Target": "testdata/fixtures/images/debian-buster.tar.gz (debian 10.1)",
-    "Class": "os-pkgs",
-    "Type": "debian",
-    "Vulnerabilities": [
-      {
-        "VulnerabilityID": "CVE-2019-5094",
-        "PkgName": "e2fsprogs",
-        "InstalledVersion": "1.44.5-1+deb10u1",
-        "FixedVersion": "1.44.5-1+deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/images/debian-buster.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "debian",
+      "Name": "10.1"
+    },
+    "ImageID": "sha256:c2c03a296d2329a4f3ab72a7bf38b78a8a80108204d326b0139d6af700e152d1",
+    "DiffIDs": [
+      "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "container": "cbb6a20ddb7dedfeee41aeb21e9780f14afbb0f47a6b1ffa514a1822f45d0a51",
+      "created": "2019-09-11T23:21:51.562946709Z",
+      "docker_version": "18.06.1-ce",
+      "history": [
+        {
+          "created": "2019-09-11T23:21:51.123609274Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:770e381defc5e4a0ba5df52265a96494b9f5d94309234cb3f7bc6b00e1d18f9a in / "
         },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
-        "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
-        "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
-            "V3Score": 6.4
-          }
-        },
-        "References": [
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
-          "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
-          "https://seclists.org/bugtraq/2019/Sep/58",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
-          "https://usn.ubuntu.com/4142-2/",
-          "https://usn.ubuntu.com/usn/usn-4142-1",
-          "https://usn.ubuntu.com/usn/usn-4142-2",
-          "https://www.debian.org/security/2019/dsa-4535"
-        ],
-        "PublishedDate": "2019-09-24T22:15:00Z",
-        "LastModifiedDate": "2019-09-28T03:15:00Z"
+        {
+          "created": "2019-09-11T23:21:51.562946709Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"bash\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+        ]
       },
-      {
-        "VulnerabilityID": "CVE-2019-5188",
-        "PkgName": "e2fsprogs",
-        "InstalledVersion": "1.44.5-1+deb10u1",
-        "FixedVersion": "1.44.5-1+deb10u3",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
-        "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
+      "config": {
+        "Cmd": [
+          "bash"
         ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
-            "V3Score": 7.5
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/",
-          "https://usn.ubuntu.com/usn/usn-4249-1"
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         ],
-        "PublishedDate": "2020-01-08T16:15:00Z",
-        "LastModifiedDate": "2020-01-28T06:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-5094",
-        "PkgName": "libcom-err2",
-        "InstalledVersion": "1.44.5-1+deb10u1",
-        "FixedVersion": "1.44.5-1+deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
-        "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
-        "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
-            "V3Score": 6.4
-          }
-        },
-        "References": [
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
-          "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
-          "https://seclists.org/bugtraq/2019/Sep/58",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
-          "https://usn.ubuntu.com/4142-2/",
-          "https://usn.ubuntu.com/usn/usn-4142-1",
-          "https://usn.ubuntu.com/usn/usn-4142-2",
-          "https://www.debian.org/security/2019/dsa-4535"
-        ],
-        "PublishedDate": "2019-09-24T22:15:00Z",
-        "LastModifiedDate": "2019-09-28T03:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-5188",
-        "PkgName": "libcom-err2",
-        "InstalledVersion": "1.44.5-1+deb10u1",
-        "FixedVersion": "1.44.5-1+deb10u3",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
-        "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
-            "V3Score": 7.5
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/",
-          "https://usn.ubuntu.com/usn/usn-4249-1"
-        ],
-        "PublishedDate": "2020-01-08T16:15:00Z",
-        "LastModifiedDate": "2020-01-28T06:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-5094",
-        "PkgName": "libext2fs2",
-        "InstalledVersion": "1.44.5-1+deb10u1",
-        "FixedVersion": "1.44.5-1+deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
-        "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
-        "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
-            "V3Score": 6.4
-          }
-        },
-        "References": [
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
-          "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
-          "https://seclists.org/bugtraq/2019/Sep/58",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
-          "https://usn.ubuntu.com/4142-2/",
-          "https://usn.ubuntu.com/usn/usn-4142-1",
-          "https://usn.ubuntu.com/usn/usn-4142-2",
-          "https://www.debian.org/security/2019/dsa-4535"
-        ],
-        "PublishedDate": "2019-09-24T22:15:00Z",
-        "LastModifiedDate": "2019-09-28T03:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-5188",
-        "PkgName": "libext2fs2",
-        "InstalledVersion": "1.44.5-1+deb10u1",
-        "FixedVersion": "1.44.5-1+deb10u3",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
-        "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
-            "V3Score": 7.5
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/",
-          "https://usn.ubuntu.com/usn/usn-4249-1"
-        ],
-        "PublishedDate": "2020-01-08T16:15:00Z",
-        "LastModifiedDate": "2020-01-28T06:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-18224",
-        "PkgName": "libidn2-0",
-        "InstalledVersion": "2.0.5-1",
-        "FixedVersion": "2.0.5-1+deb10u1",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
-        "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
-        "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
-        "Severity": "HIGH",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 5.6
-          }
-        },
-        "References": [
-          "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
-          "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c",
-          "https://github.com/libidn/libidn2/compare/libidn2-2.1.0...libidn2-2.1.1",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
-          "https://usn.ubuntu.com/4168-1/",
-          "https://usn.ubuntu.com/usn/usn-4168-1"
-        ],
-        "PublishedDate": "2019-10-21T17:15:00Z",
-        "LastModifiedDate": "2019-10-29T19:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-17594",
-        "PkgName": "libncursesw6",
-        "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "FixedVersion": "6.1+20181013-2+deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "debian",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
-        "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
-        "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-125"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 5.3
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ],
-        "PublishedDate": "2019-10-14T21:15:00Z",
-        "LastModifiedDate": "2019-12-26T15:35:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-17595",
-        "PkgName": "libncursesw6",
-        "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "FixedVersion": "6.1+20181013-2+deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "debian",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
-        "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
-        "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-125"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
-            "V2Score": 5.8
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
-            "V3Score": 5.4
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ],
-        "PublishedDate": "2019-10-14T21:15:00Z",
-        "LastModifiedDate": "2019-12-23T19:26:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-5094",
-        "PkgName": "libss2",
-        "InstalledVersion": "1.44.5-1+deb10u1",
-        "FixedVersion": "1.44.5-1+deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
-        "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
-        "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
-            "V3Score": 6.4
-          }
-        },
-        "References": [
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
-          "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
-          "https://seclists.org/bugtraq/2019/Sep/58",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
-          "https://usn.ubuntu.com/4142-2/",
-          "https://usn.ubuntu.com/usn/usn-4142-1",
-          "https://usn.ubuntu.com/usn/usn-4142-2",
-          "https://www.debian.org/security/2019/dsa-4535"
-        ],
-        "PublishedDate": "2019-09-24T22:15:00Z",
-        "LastModifiedDate": "2019-09-28T03:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-5188",
-        "PkgName": "libss2",
-        "InstalledVersion": "1.44.5-1+deb10u1",
-        "FixedVersion": "1.44.5-1+deb10u3",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
-        "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
-        "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
-            "V3Score": 7.5
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
-          "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
-          "https://usn.ubuntu.com/4249-1/",
-          "https://usn.ubuntu.com/usn/usn-4249-1"
-        ],
-        "PublishedDate": "2020-01-08T16:15:00Z",
-        "LastModifiedDate": "2020-01-28T06:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-15718",
-        "PkgName": "libsystemd0",
-        "InstalledVersion": "241-7~deb10u1",
-        "FixedVersion": "241-7~deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-15718",
-        "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
-        "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-284"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",
-            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
-            "V2Score": 2.1,
-            "V3Score": 5.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 5.3
-          }
-        },
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2019-15718.html",
-          "http://linux.oracle.com/errata/ELSA-2019-3592.html",
-          "http://www.openwall.com/lists/oss-security/2019/09/03/1",
-          "https://bugzilla.redhat.com/show_bug.cgi?id=1746057",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15718",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/",
-          "https://usn.ubuntu.com/usn/usn-4120-1"
-        ],
-        "PublishedDate": "2019-09-04T12:15:00Z",
-        "LastModifiedDate": "2019-09-19T04:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-17594",
-        "PkgName": "libtinfo6",
-        "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "FixedVersion": "6.1+20181013-2+deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "debian",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
-        "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
-        "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-125"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 5.3
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ],
-        "PublishedDate": "2019-10-14T21:15:00Z",
-        "LastModifiedDate": "2019-12-26T15:35:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-17595",
-        "PkgName": "libtinfo6",
-        "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "FixedVersion": "6.1+20181013-2+deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "debian",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
-        "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
-        "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-125"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
-            "V2Score": 5.8
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
-            "V3Score": 5.4
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ],
-        "PublishedDate": "2019-10-14T21:15:00Z",
-        "LastModifiedDate": "2019-12-23T19:26:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-15718",
-        "PkgName": "libudev1",
-        "InstalledVersion": "241-7~deb10u1",
-        "FixedVersion": "241-7~deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "nvd",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-15718",
-        "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
-        "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-284"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",
-            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
-            "V2Score": 2.1,
-            "V3Score": 5.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 5.3
-          }
-        },
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2019-15718.html",
-          "http://linux.oracle.com/errata/ELSA-2019-3592.html",
-          "http://www.openwall.com/lists/oss-security/2019/09/03/1",
-          "https://bugzilla.redhat.com/show_bug.cgi?id=1746057",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15718",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/",
-          "https://usn.ubuntu.com/usn/usn-4120-1"
-        ],
-        "PublishedDate": "2019-09-04T12:15:00Z",
-        "LastModifiedDate": "2019-09-19T04:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-17594",
-        "PkgName": "ncurses-base",
-        "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "FixedVersion": "6.1+20181013-2+deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "debian",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
-        "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
-        "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-125"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 5.3
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ],
-        "PublishedDate": "2019-10-14T21:15:00Z",
-        "LastModifiedDate": "2019-12-26T15:35:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-17595",
-        "PkgName": "ncurses-base",
-        "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "FixedVersion": "6.1+20181013-2+deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "debian",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
-        "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
-        "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-125"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
-            "V2Score": 5.8
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
-            "V3Score": 5.4
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ],
-        "PublishedDate": "2019-10-14T21:15:00Z",
-        "LastModifiedDate": "2019-12-23T19:26:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-17594",
-        "PkgName": "ncurses-bin",
-        "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "FixedVersion": "6.1+20181013-2+deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "debian",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
-        "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
-        "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-125"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 5.3
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ],
-        "PublishedDate": "2019-10-14T21:15:00Z",
-        "LastModifiedDate": "2019-12-26T15:35:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-17595",
-        "PkgName": "ncurses-bin",
-        "InstalledVersion": "6.1+20181013-2+deb10u1",
-        "FixedVersion": "6.1+20181013-2+deb10u2",
-        "Layer": {
-          "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
-        },
-        "SeveritySource": "debian",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
-        "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
-        "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-125"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
-            "V2Score": 5.8
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
-            "V3Score": 5.4
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
-          "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
-        ],
-        "PublishedDate": "2019-10-14T21:15:00Z",
-        "LastModifiedDate": "2019-12-23T19:26:00Z"
+        "Image": "sha256:5519bb349f72eef81944da56843c995b1b81ed67c8e7e48ac29dd6c543c1dd2d",
+        "ArgsEscaped": true
       }
-    ]
-  }
-]
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/debian-buster.tar.gz (debian 10.1)",
+      "Class": "os-pkgs",
+      "Type": "debian",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-5094",
+          "PkgName": "e2fsprogs",
+          "InstalledVersion": "1.44.5-1+deb10u1",
+          "FixedVersion": "1.44.5-1+deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
+          "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
+          "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 6.4
+            }
+          },
+          "References": [
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+            "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+            "https://seclists.org/bugtraq/2019/Sep/58",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+            "https://usn.ubuntu.com/4142-2/",
+            "https://usn.ubuntu.com/usn/usn-4142-1",
+            "https://usn.ubuntu.com/usn/usn-4142-2",
+            "https://www.debian.org/security/2019/dsa-4535"
+          ],
+          "PublishedDate": "2019-09-24T22:15:00Z",
+          "LastModifiedDate": "2019-09-28T03:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5188",
+          "PkgName": "e2fsprogs",
+          "InstalledVersion": "1.44.5-1+deb10u1",
+          "FixedVersion": "1.44.5-1+deb10u3",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
+          "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+          "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
+            "https://usn.ubuntu.com/4249-1/",
+            "https://usn.ubuntu.com/usn/usn-4249-1"
+          ],
+          "PublishedDate": "2020-01-08T16:15:00Z",
+          "LastModifiedDate": "2020-01-28T06:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5094",
+          "PkgName": "libcom-err2",
+          "InstalledVersion": "1.44.5-1+deb10u1",
+          "FixedVersion": "1.44.5-1+deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
+          "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
+          "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 6.4
+            }
+          },
+          "References": [
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+            "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+            "https://seclists.org/bugtraq/2019/Sep/58",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+            "https://usn.ubuntu.com/4142-2/",
+            "https://usn.ubuntu.com/usn/usn-4142-1",
+            "https://usn.ubuntu.com/usn/usn-4142-2",
+            "https://www.debian.org/security/2019/dsa-4535"
+          ],
+          "PublishedDate": "2019-09-24T22:15:00Z",
+          "LastModifiedDate": "2019-09-28T03:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5188",
+          "PkgName": "libcom-err2",
+          "InstalledVersion": "1.44.5-1+deb10u1",
+          "FixedVersion": "1.44.5-1+deb10u3",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
+          "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+          "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
+            "https://usn.ubuntu.com/4249-1/",
+            "https://usn.ubuntu.com/usn/usn-4249-1"
+          ],
+          "PublishedDate": "2020-01-08T16:15:00Z",
+          "LastModifiedDate": "2020-01-28T06:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5094",
+          "PkgName": "libext2fs2",
+          "InstalledVersion": "1.44.5-1+deb10u1",
+          "FixedVersion": "1.44.5-1+deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
+          "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
+          "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 6.4
+            }
+          },
+          "References": [
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+            "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+            "https://seclists.org/bugtraq/2019/Sep/58",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+            "https://usn.ubuntu.com/4142-2/",
+            "https://usn.ubuntu.com/usn/usn-4142-1",
+            "https://usn.ubuntu.com/usn/usn-4142-2",
+            "https://www.debian.org/security/2019/dsa-4535"
+          ],
+          "PublishedDate": "2019-09-24T22:15:00Z",
+          "LastModifiedDate": "2019-09-28T03:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5188",
+          "PkgName": "libext2fs2",
+          "InstalledVersion": "1.44.5-1+deb10u1",
+          "FixedVersion": "1.44.5-1+deb10u3",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
+          "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+          "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
+            "https://usn.ubuntu.com/4249-1/",
+            "https://usn.ubuntu.com/usn/usn-4249-1"
+          ],
+          "PublishedDate": "2020-01-08T16:15:00Z",
+          "LastModifiedDate": "2020-01-28T06:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-18224",
+          "PkgName": "libidn2-0",
+          "InstalledVersion": "2.0.5-1",
+          "FixedVersion": "2.0.5-1+deb10u1",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
+          "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
+          "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 5.6
+            }
+          },
+          "References": [
+            "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
+            "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c",
+            "https://github.com/libidn/libidn2/compare/libidn2-2.1.0...libidn2-2.1.1",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
+            "https://usn.ubuntu.com/4168-1/",
+            "https://usn.ubuntu.com/usn/usn-4168-1"
+          ],
+          "PublishedDate": "2019-10-21T17:15:00Z",
+          "LastModifiedDate": "2019-10-29T19:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-17594",
+          "PkgName": "libncursesw6",
+          "InstalledVersion": "6.1+20181013-2+deb10u1",
+          "FixedVersion": "6.1+20181013-2+deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "debian",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
+          "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
+          "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-125"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
+          ],
+          "PublishedDate": "2019-10-14T21:15:00Z",
+          "LastModifiedDate": "2019-12-26T15:35:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-17595",
+          "PkgName": "libncursesw6",
+          "InstalledVersion": "6.1+20181013-2+deb10u1",
+          "FixedVersion": "6.1+20181013-2+deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "debian",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
+          "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
+          "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-125"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
+              "V2Score": 5.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
+              "V3Score": 5.4
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
+          ],
+          "PublishedDate": "2019-10-14T21:15:00Z",
+          "LastModifiedDate": "2019-12-23T19:26:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5094",
+          "PkgName": "libss2",
+          "InstalledVersion": "1.44.5-1+deb10u1",
+          "FixedVersion": "1.44.5-1+deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
+          "Title": "e2fsprogs: crafted ext4 partition leads to out-of-bounds write",
+          "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 6.4
+            }
+          },
+          "References": [
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
+            "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
+            "https://seclists.org/bugtraq/2019/Sep/58",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0887",
+            "https://usn.ubuntu.com/4142-2/",
+            "https://usn.ubuntu.com/usn/usn-4142-1",
+            "https://usn.ubuntu.com/usn/usn-4142-2",
+            "https://www.debian.org/security/2019/dsa-4535"
+          ],
+          "PublishedDate": "2019-09-24T22:15:00Z",
+          "LastModifiedDate": "2019-09-28T03:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5188",
+          "PkgName": "libss2",
+          "InstalledVersion": "1.44.5-1+deb10u1",
+          "FixedVersion": "1.44.5-1+deb10u3",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5188",
+          "Title": "e2fsprogs: Out-of-bounds write in  e2fsck/rehash.c",
+          "Description": "A code execution vulnerability exists in the directory rehashing functionality of E2fsprogs e2fsck 1.45.4. A specially crafted ext4 directory can cause an out-of-bounds write on the stack, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-02/msg00004.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5188",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://talosintelligence.com/vulnerability_reports/TALOS-2019-0973",
+            "https://usn.ubuntu.com/4249-1/",
+            "https://usn.ubuntu.com/usn/usn-4249-1"
+          ],
+          "PublishedDate": "2020-01-08T16:15:00Z",
+          "LastModifiedDate": "2020-01-28T06:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-15718",
+          "PkgName": "libsystemd0",
+          "InstalledVersion": "241-7~deb10u1",
+          "FixedVersion": "241-7~deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-15718",
+          "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
+          "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-284"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+              "V2Score": 2.1,
+              "V3Score": 5.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://linux.oracle.com/cve/CVE-2019-15718.html",
+            "http://linux.oracle.com/errata/ELSA-2019-3592.html",
+            "http://www.openwall.com/lists/oss-security/2019/09/03/1",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=1746057",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15718",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/",
+            "https://usn.ubuntu.com/usn/usn-4120-1"
+          ],
+          "PublishedDate": "2019-09-04T12:15:00Z",
+          "LastModifiedDate": "2019-09-19T04:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-17594",
+          "PkgName": "libtinfo6",
+          "InstalledVersion": "6.1+20181013-2+deb10u1",
+          "FixedVersion": "6.1+20181013-2+deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "debian",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
+          "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
+          "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-125"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
+          ],
+          "PublishedDate": "2019-10-14T21:15:00Z",
+          "LastModifiedDate": "2019-12-26T15:35:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-17595",
+          "PkgName": "libtinfo6",
+          "InstalledVersion": "6.1+20181013-2+deb10u1",
+          "FixedVersion": "6.1+20181013-2+deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "debian",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
+          "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
+          "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-125"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
+              "V2Score": 5.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
+              "V3Score": 5.4
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
+          ],
+          "PublishedDate": "2019-10-14T21:15:00Z",
+          "LastModifiedDate": "2019-12-23T19:26:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-15718",
+          "PkgName": "libudev1",
+          "InstalledVersion": "241-7~deb10u1",
+          "FixedVersion": "241-7~deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-15718",
+          "Title": "systemd: systemd-resolved allows unprivileged users to configure DNS",
+          "Description": "In systemd 240, bus_open_system_watch_bind_with_description in shared/bus-util.c (as used by systemd-resolved to connect to the system D-Bus instance), calls sd_bus_set_trusted, which disables access controls for incoming D-Bus messages. An unprivileged user can exploit this by executing D-Bus methods that should be restricted to privileged users, in order to change the system's DNS resolver settings.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-284"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:N/I:P/A:N",
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+              "V2Score": 2.1,
+              "V3Score": 5.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://linux.oracle.com/cve/CVE-2019-15718.html",
+            "http://linux.oracle.com/errata/ELSA-2019-3592.html",
+            "http://www.openwall.com/lists/oss-security/2019/09/03/1",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=1746057",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15718",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BRE5IS24XTF5WNZGH2L7GSQJKARBOEGL/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HIKGKXZ5OEGOEYURHLJHEMFYNLEGAW5B/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/U2WNHRJW4XI6H5YMDG4BUFGPAXWUMUVG/",
+            "https://usn.ubuntu.com/usn/usn-4120-1"
+          ],
+          "PublishedDate": "2019-09-04T12:15:00Z",
+          "LastModifiedDate": "2019-09-19T04:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-17594",
+          "PkgName": "ncurses-base",
+          "InstalledVersion": "6.1+20181013-2+deb10u1",
+          "FixedVersion": "6.1+20181013-2+deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "debian",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
+          "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
+          "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-125"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
+          ],
+          "PublishedDate": "2019-10-14T21:15:00Z",
+          "LastModifiedDate": "2019-12-26T15:35:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-17595",
+          "PkgName": "ncurses-base",
+          "InstalledVersion": "6.1+20181013-2+deb10u1",
+          "FixedVersion": "6.1+20181013-2+deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "debian",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
+          "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
+          "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-125"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
+              "V2Score": 5.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
+              "V3Score": 5.4
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
+          ],
+          "PublishedDate": "2019-10-14T21:15:00Z",
+          "LastModifiedDate": "2019-12-23T19:26:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-17594",
+          "PkgName": "ncurses-bin",
+          "InstalledVersion": "6.1+20181013-2+deb10u1",
+          "FixedVersion": "6.1+20181013-2+deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "debian",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17594",
+          "Title": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
+          "Description": "There is a heap-based buffer over-read in the _nc_find_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-125"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17594",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00017.html",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
+          ],
+          "PublishedDate": "2019-10-14T21:15:00Z",
+          "LastModifiedDate": "2019-12-26T15:35:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-17595",
+          "PkgName": "ncurses-bin",
+          "InstalledVersion": "6.1+20181013-2+deb10u1",
+          "FixedVersion": "6.1+20181013-2+deb10u2",
+          "Layer": {
+            "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+          },
+          "SeveritySource": "debian",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-17595",
+          "Title": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
+          "Description": "There is a heap-based buffer over-read in the fmt_entry function in tinfo/comp_hash.c in the terminfo library in ncurses before 6.1-20191012.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-125"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:P",
+              "V2Score": 5.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:L",
+              "V3Score": 5.4
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00059.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00061.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-17595",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00013.html",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2019-10/msg00045.html"
+          ],
+          "PublishedDate": "2019-10-14T21:15:00Z",
+          "LastModifiedDate": "2019-12-23T19:26:00Z"
+        }
+      ]
+    }
+  ]
+}

@@ -20,6 +20,7 @@ builds:
       - arm
       - arm64
       - ppc64le
+      - s390x
     goarm:
       - 7
     ignore:
@@ -86,9 +87,9 @@ brews:
       owner: aquasecurity
       name: homebrew-trivy
     homepage: "https://github.com/aquasecurity/trivy"
-    description: ""
+    description: "Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues"
     test: |
-      system "#{bin}/program --version"
+      system "#{bin}/trivy", "--version"
 
 dockers:
   - image_templates:

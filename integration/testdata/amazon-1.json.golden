@@ -1,670 +1,719 @@
-[
-  {
-    "Target": "testdata/fixtures/images/amazon-1.tar.gz (amazon AMI release 2018.03)",
-    "Class": "os-pkgs",
-    "Type": "amazon",
-    "Vulnerabilities": [
-      {
-        "VulnerabilityID": "CVE-2019-5481",
-        "PkgName": "curl",
-        "InstalledVersion": "7.61.1-11.91.amzn1",
-        "FixedVersion": "7.61.1-12.93.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/images/amazon-1.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "amazon",
+      "Name": "AMI release 2018.03"
+    },
+    "ImageID": "sha256:961c4ee06269351d858969ea0426878675ed708d3a140246eabbc0bfc352bffa",
+    "DiffIDs": [
+      "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "container": "ef1b126795001e9b4bdc14a01180e4d8146282d279f53e05adfaa8195ecda20e",
+      "created": "2019-09-05T23:37:46.854286502Z",
+      "docker_version": "18.06.1-ce",
+      "history": [
+        {
+          "created": "2019-09-05T23:37:46.575366692Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:45ed06ba8960dec70e01e809fe38df2718d4b16aa2b0f88835522d8366de71e3 in / "
         },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
-        "Title": "curl: double free due to subsequent call of realloc()",
-        "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-415"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:H",
-            "V3Score": 5.7
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
-          "https://curl.haxx.se/docs/CVE-2019-5481.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
-          "https://usn.ubuntu.com/usn/usn-4129-1"
-        ],
-        "PublishedDate": "2019-09-16T19:15:00Z",
-        "LastModifiedDate": "2019-09-18T00:15:00Z"
+        {
+          "created": "2019-09-05T23:37:46.854286502Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/bash\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+        ]
       },
-      {
-        "VulnerabilityID": "CVE-2019-5482",
-        "PkgName": "curl",
-        "InstalledVersion": "7.61.1-11.91.amzn1",
-        "FixedVersion": "7.61.1-12.93.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5482",
-        "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
-        "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-120"
+      "config": {
+        "Cmd": [
+          "/bin/bash"
         ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 6.3
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
-          "https://curl.haxx.se/docs/CVE-2019-5482.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
-          "https://usn.ubuntu.com/usn/usn-4129-1",
-          "https://usn.ubuntu.com/usn/usn-4129-2"
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         ],
-        "PublishedDate": "2019-09-16T19:15:00Z",
-        "LastModifiedDate": "2019-09-18T00:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-18218",
-        "PkgName": "file-libs",
-        "InstalledVersion": "5.34-3.37.amzn1",
-        "FixedVersion": "5.37-8.48.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18218",
-        "Title": "file: heap-based buffer overflow in cdf_read_property_info in cdf.c",
-        "Description": "cdf_read_property_info in cdf.c in file through 5.37 does not restrict the number of CDF_VECTOR elements, which allows a heap-based buffer overflow (4-byte out-of-bounds write).",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-            "V3Score": 7.8
-          }
-        },
-        "References": [
-          "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=16780",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18218",
-          "https://github.com/file/file/commit/46a8443f76cec4b41ec736eca396984c74664f84",
-          "https://lists.debian.org/debian-lts-announce/2019/10/msg00032.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CV6PFCEYHYALMTT45QE2U5C5TEJZQPXJ/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VBK6XOJR6OVWT2FUEBO7V7KCOSSLAP52/",
-          "https://usn.ubuntu.com/4172-1/",
-          "https://usn.ubuntu.com/4172-2/",
-          "https://usn.ubuntu.com/usn/usn-4172-1",
-          "https://usn.ubuntu.com/usn/usn-4172-2",
-          "https://www.debian.org/security/2019/dsa-4550"
-        ],
-        "PublishedDate": "2019-10-21T05:15:00Z",
-        "LastModifiedDate": "2019-10-26T11:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2016-10739",
-        "PkgName": "glibc",
-        "InstalledVersion": "2.17-260.175.amzn1",
-        "FixedVersion": "2.17-292.178.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10739",
-        "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
-        "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-20"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-            "V2Score": 4.6,
-            "V3Score": 5.3
-          },
-          "redhat": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          }
-        },
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2016-10739.html",
-          "http://linux.oracle.com/errata/ELSA-2019-3513.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
-          "http://www.securityfocus.com/bid/106672",
-          "https://access.redhat.com/errata/RHSA-2019:2118",
-          "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
-        ],
-        "PublishedDate": "2019-01-21T19:29:00Z",
-        "LastModifiedDate": "2019-08-06T17:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2016-10739",
-        "PkgName": "glibc-common",
-        "InstalledVersion": "2.17-260.175.amzn1",
-        "FixedVersion": "2.17-292.178.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10739",
-        "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
-        "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-20"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-            "V2Score": 4.6,
-            "V3Score": 5.3
-          },
-          "redhat": {
-            "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 4.6
-          }
-        },
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2016-10739.html",
-          "http://linux.oracle.com/errata/ELSA-2019-3513.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
-          "http://www.securityfocus.com/bid/106672",
-          "https://access.redhat.com/errata/RHSA-2019:2118",
-          "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
-          "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
-        ],
-        "PublishedDate": "2019-01-21T19:29:00Z",
-        "LastModifiedDate": "2019-08-06T17:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-5481",
-        "PkgName": "libcurl",
-        "InstalledVersion": "7.61.1-11.91.amzn1",
-        "FixedVersion": "7.61.1-12.93.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
-        "Title": "curl: double free due to subsequent call of realloc()",
-        "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-415"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:H",
-            "V3Score": 5.7
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
-          "https://curl.haxx.se/docs/CVE-2019-5481.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
-          "https://usn.ubuntu.com/usn/usn-4129-1"
-        ],
-        "PublishedDate": "2019-09-16T19:15:00Z",
-        "LastModifiedDate": "2019-09-18T00:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-5482",
-        "PkgName": "libcurl",
-        "InstalledVersion": "7.61.1-11.91.amzn1",
-        "FixedVersion": "7.61.1-12.93.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5482",
-        "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
-        "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-120"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 6.3
-          }
-        },
-        "References": [
-          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
-          "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
-          "https://curl.haxx.se/docs/CVE-2019-5482.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
-          "https://usn.ubuntu.com/usn/usn-4129-1",
-          "https://usn.ubuntu.com/usn/usn-4129-2"
-        ],
-        "PublishedDate": "2019-09-16T19:15:00Z",
-        "LastModifiedDate": "2019-09-18T00:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-12290",
-        "PkgName": "libidn2",
-        "InstalledVersion": "0.16-1.2.amzn1",
-        "FixedVersion": "2.3.0-1.4.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-12290",
-        "Description": "GNU libidn2 before 2.2.0 fails to perform the roundtrip checks specified in RFC3490 Section 4.2 when converting A-labels to U-labels. This makes it possible in some circumstances for one domain to impersonate another. By creating a malicious domain that matches a target domain except for the inclusion of certain punycoded Unicode characters (that would be discarded when converted first to a Unicode label and then back to an ASCII label), arbitrary domains can be impersonated.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-20"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:N",
-            "V2Score": 5
-          }
-        },
-        "References": [
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12290",
-          "https://gitlab.com/libidn/libidn2/commit/241e8f486134793cb0f4a5b0e5817a97883401f5",
-          "https://gitlab.com/libidn/libidn2/commit/614117ef6e4c60e1950d742e3edf0a0ef8d389de",
-          "https://gitlab.com/libidn/libidn2/merge_requests/71",
-          "https://usn.ubuntu.com/4168-1/",
-          "https://usn.ubuntu.com/usn/usn-4168-1"
-        ],
-        "PublishedDate": "2019-10-22T16:15:00Z",
-        "LastModifiedDate": "2019-10-29T19:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-18224",
-        "PkgName": "libidn2",
-        "InstalledVersion": "0.16-1.2.amzn1",
-        "FixedVersion": "2.3.0-1.4.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
-        "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
-        "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-787"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-            "V2Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 5.6
-          }
-        },
-        "References": [
-          "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
-          "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c",
-          "https://github.com/libidn/libidn2/compare/libidn2-2.1.0...libidn2-2.1.1",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
-          "https://usn.ubuntu.com/4168-1/",
-          "https://usn.ubuntu.com/usn/usn-4168-1"
-        ],
-        "PublishedDate": "2019-10-21T17:15:00Z",
-        "LastModifiedDate": "2019-10-29T19:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-9511",
-        "PkgName": "libnghttp2",
-        "InstalledVersion": "1.21.1-1.4.amzn1",
-        "FixedVersion": "1.31.1-2.5.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9511",
-        "Title": "HTTP/2: large amount of data requests leads to denial of service",
-        "Description": "Some HTTP/2 implementations are vulnerable to window size manipulation and stream prioritization manipulation, potentially leading to a denial of service. The attacker requests a large amount of data from a specified resource over multiple streams. They manipulate window size and stream priority to force the server to queue the data in 1-byte chunks. Depending on how efficiently this data is queued, this can consume excess CPU, memory, or both.",
-        "Severity": "HIGH",
-        "CweIDs": [
-          "CWE-400"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:C",
-            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-            "V2Score": 7.8,
-            "V3Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
-            "V3Score": 6.5
-          }
-        },
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2019-9511.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2925.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9511",
-          "https://github.com/Netflix/security-bulletins/blob/master/advisories/third-party/2019-002.md",
-          "https://kb.cert.org/vuls/id/605641/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BP556LEG3WENHZI5TAQ6ZEBFTJB4E2IS/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JUBYAF6ED3O4XCHQ5C2HYENJLXYXZC4M/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/LZLUYPYY3RX4ZJDWZRJIKSULYRJ4PXW7/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TAZZEVTCN2B4WT6AIBJ7XGYJMBTORJU5/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XHTKU7YQ5EEP2XNSAV4M4VJ7QCBOJMOD/",
-          "https://nodejs.org/en/blog/vulnerability/aug-2019-security-releases/",
-          "https://seclists.org/bugtraq/2019/Aug/40",
-          "https://security.netapp.com/advisory/ntap-20190823-0002/",
-          "https://security.netapp.com/advisory/ntap-20190823-0005/",
-          "https://support.f5.com/csp/article/K02591030",
-          "https://usn.ubuntu.com/4099-1/",
-          "https://usn.ubuntu.com/usn/usn-4099-1",
-          "https://www.debian.org/security/2019/dsa-4505",
-          "https://www.nginx.com/blog/nginx-updates-mitigate-august-2019-http-2-vulnerabilities/",
-          "https://www.synology.com/security/advisory/Synology_SA_19_33"
-        ],
-        "PublishedDate": "2019-08-13T21:15:00Z",
-        "LastModifiedDate": "2019-08-23T21:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-9513",
-        "PkgName": "libnghttp2",
-        "InstalledVersion": "1.21.1-1.4.amzn1",
-        "FixedVersion": "1.31.1-2.5.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9513",
-        "Title": "HTTP/2: flood using PRIORITY frames results in excessive resource consumption",
-        "Description": "Some HTTP/2 implementations are vulnerable to resource loops, potentially leading to a denial of service. The attacker creates multiple request streams and continually shuffles the priority of the streams in a way that causes substantial churn to the priority tree. This can consume excess CPU.",
-        "Severity": "HIGH",
-        "CweIDs": [
-          "CWE-400"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:C",
-            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-            "V2Score": 7.8,
-            "V3Score": 7.5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-            "V3Score": 7.5
-          }
-        },
-        "References": [
-          "http://linux.oracle.com/cve/CVE-2019-9513.html",
-          "http://linux.oracle.com/errata/ELSA-2019-2925.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9513",
-          "https://github.com/Netflix/security-bulletins/blob/master/advisories/third-party/2019-002.md",
-          "https://kb.cert.org/vuls/id/605641/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4ZQGHE3WTYLYAYJEIDJVF2FIGQTAYPMC/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CMNFX5MNYRWWIMO4BTKYQCGUDMHO3AXP/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JUBYAF6ED3O4XCHQ5C2HYENJLXYXZC4M/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/LZLUYPYY3RX4ZJDWZRJIKSULYRJ4PXW7/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TAZZEVTCN2B4WT6AIBJ7XGYJMBTORJU5/",
-          "https://nghttp2.org/blog/2019/08/19/nghttp2-v1-39-2/",
-          "https://nodejs.org/en/blog/vulnerability/aug-2019-security-releases/",
-          "https://seclists.org/bugtraq/2019/Aug/40",
-          "https://security.netapp.com/advisory/ntap-20190823-0002/",
-          "https://security.netapp.com/advisory/ntap-20190823-0005/",
-          "https://support.f5.com/csp/article/K02591030",
-          "https://usn.ubuntu.com/4099-1/",
-          "https://usn.ubuntu.com/usn/usn-4099-1",
-          "https://www.debian.org/security/2019/dsa-4505",
-          "https://www.nginx.com/blog/nginx-updates-mitigate-august-2019-http-2-vulnerabilities/",
-          "https://www.synology.com/security/advisory/Synology_SA_19_33"
-        ],
-        "PublishedDate": "2019-08-13T21:15:00Z",
-        "LastModifiedDate": "2019-08-23T21:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-1563",
-        "PkgName": "openssl",
-        "InstalledVersion": "1:1.0.2k-16.150.amzn1",
-        "FixedVersion": "1:1.0.2k-16.151.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1563",
-        "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
-        "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
-        "Severity": "LOW",
-        "CweIDs": [
-          "CWE-311"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
-            "V2Score": 4.3
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
-            "V3Score": 3.7
-          }
-        },
-        "References": [
-          "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563",
-          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=08229ad838c50f644d7e928e2eef147b4308ad64",
-          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=631f94db0065c78181ca9ba5546ebc8bb3884b97",
-          "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f",
-          "https://seclists.org/bugtraq/2019/Sep/25",
-          "https://security.netapp.com/advisory/ntap-20190919-0002/",
-          "https://www.openssl.org/news/secadv/20190910.txt"
-        ],
-        "PublishedDate": "2019-09-10T17:15:00Z",
-        "LastModifiedDate": "2019-09-12T11:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-16056",
-        "PkgName": "python27",
-        "InstalledVersion": "2.7.16-1.129.amzn1",
-        "FixedVersion": "2.7.16-1.130.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16056",
-        "Title": "python: email.utils.parseaddr wrongly parses email addresses",
-        "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-20"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
-            "V2Score": 5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 7.3
-          }
-        },
-        "References": [
-          "https://bugs.python.org/issue34155",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16056",
-          "https://github.com/python/cpython/commit/8cb65d1381b027f0b09ee36bfed7f35bb4dec9a9",
-          "https://lists.debian.org/debian-lts-announce/2019/09/msg00018.html",
-          "https://lists.debian.org/debian-lts-announce/2019/09/msg00019.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/E2HP37NUVLQSBW3J735A2DQDOZ4ZGBLY/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ER6LONC2B2WYIO56GBQUDU6QTWZDPUNQ/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K4KZEFP6E4YPYB52AF4WXCUDSGQOTF37/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/NF3DRDGMVIRYNZMSLJIHNW47HOUQYXVG/",
-          "https://usn.ubuntu.com/usn/usn-4151-1",
-          "https://usn.ubuntu.com/usn/usn-4151-2"
-        ],
-        "PublishedDate": "2019-09-06T18:15:00Z",
-        "LastModifiedDate": "2019-09-11T05:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-16935",
-        "PkgName": "python27",
-        "InstalledVersion": "2.7.16-1.129.amzn1",
-        "FixedVersion": "2.7.16-1.131.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16935",
-        "Title": "python: XSS vulnerability in the documentation XML-RPC server in server_title field",
-        "Description": "The documentation XML-RPC server in Python through 2.7.16, 3.x through 3.6.9, and 3.7.x through 3.7.4 has XSS via the server_title field. This occurs in Lib/DocXMLRPCServer.py in Python 2.x, and in Lib/xmlrpc/server.py in Python 3.x. If set_server_title is called with untrusted input, arbitrary JavaScript can be delivered to clients that visit the http URL for this server.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-79"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
-            "V2Score": 4.3
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
-            "V3Score": 6.1
-          }
-        },
-        "References": [
-          "https://bugs.python.org/issue38243",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16935",
-          "https://github.com/python/cpython/blob/35c0809158be7feae4c4f877a08b93baea2d8291/Lib/xmlrpc/server.py#L897",
-          "https://github.com/python/cpython/blob/e007860b8b3609ce0bc62b1780efaa06241520bd/Lib/DocXMLRPCServer.py#L213",
-          "https://github.com/python/cpython/pull/16373",
-          "https://security.netapp.com/advisory/ntap-20191017-0004/",
-          "https://usn.ubuntu.com/4151-1/",
-          "https://usn.ubuntu.com/4151-2/",
-          "https://usn.ubuntu.com/usn/usn-4151-1",
-          "https://usn.ubuntu.com/usn/usn-4151-2"
-        ],
-        "PublishedDate": "2019-09-28T02:15:00Z",
-        "LastModifiedDate": "2019-10-09T16:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-16056",
-        "PkgName": "python27-libs",
-        "InstalledVersion": "2.7.16-1.129.amzn1",
-        "FixedVersion": "2.7.16-1.130.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16056",
-        "Title": "python: email.utils.parseaddr wrongly parses email addresses",
-        "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-20"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
-            "V2Score": 5
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
-            "V3Score": 7.3
-          }
-        },
-        "References": [
-          "https://bugs.python.org/issue34155",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16056",
-          "https://github.com/python/cpython/commit/8cb65d1381b027f0b09ee36bfed7f35bb4dec9a9",
-          "https://lists.debian.org/debian-lts-announce/2019/09/msg00018.html",
-          "https://lists.debian.org/debian-lts-announce/2019/09/msg00019.html",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/E2HP37NUVLQSBW3J735A2DQDOZ4ZGBLY/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ER6LONC2B2WYIO56GBQUDU6QTWZDPUNQ/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K4KZEFP6E4YPYB52AF4WXCUDSGQOTF37/",
-          "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/NF3DRDGMVIRYNZMSLJIHNW47HOUQYXVG/",
-          "https://usn.ubuntu.com/usn/usn-4151-1",
-          "https://usn.ubuntu.com/usn/usn-4151-2"
-        ],
-        "PublishedDate": "2019-09-06T18:15:00Z",
-        "LastModifiedDate": "2019-09-11T05:15:00Z"
-      },
-      {
-        "VulnerabilityID": "CVE-2019-16935",
-        "PkgName": "python27-libs",
-        "InstalledVersion": "2.7.16-1.129.amzn1",
-        "FixedVersion": "2.7.16-1.131.amzn1",
-        "Layer": {
-          "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
-        },
-        "SeveritySource": "amazon",
-        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16935",
-        "Title": "python: XSS vulnerability in the documentation XML-RPC server in server_title field",
-        "Description": "The documentation XML-RPC server in Python through 2.7.16, 3.x through 3.6.9, and 3.7.x through 3.7.4 has XSS via the server_title field. This occurs in Lib/DocXMLRPCServer.py in Python 2.x, and in Lib/xmlrpc/server.py in Python 3.x. If set_server_title is called with untrusted input, arbitrary JavaScript can be delivered to clients that visit the http URL for this server.",
-        "Severity": "MEDIUM",
-        "CweIDs": [
-          "CWE-79"
-        ],
-        "CVSS": {
-          "nvd": {
-            "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
-            "V2Score": 4.3
-          },
-          "redhat": {
-            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
-            "V3Score": 6.1
-          }
-        },
-        "References": [
-          "https://bugs.python.org/issue38243",
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16935",
-          "https://github.com/python/cpython/blob/35c0809158be7feae4c4f877a08b93baea2d8291/Lib/xmlrpc/server.py#L897",
-          "https://github.com/python/cpython/blob/e007860b8b3609ce0bc62b1780efaa06241520bd/Lib/DocXMLRPCServer.py#L213",
-          "https://github.com/python/cpython/pull/16373",
-          "https://security.netapp.com/advisory/ntap-20191017-0004/",
-          "https://usn.ubuntu.com/4151-1/",
-          "https://usn.ubuntu.com/4151-2/",
-          "https://usn.ubuntu.com/usn/usn-4151-1",
-          "https://usn.ubuntu.com/usn/usn-4151-2"
-        ],
-        "PublishedDate": "2019-09-28T02:15:00Z",
-        "LastModifiedDate": "2019-10-09T16:15:00Z"
+        "Image": "sha256:8db654f611aca1693ac658bd981ee35e4b6517e6ef74fa608c4b3b3595a986c8",
+        "ArgsEscaped": true
       }
-    ]
-  }
-]
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/amazon-1.tar.gz (amazon AMI release 2018.03)",
+      "Class": "os-pkgs",
+      "Type": "amazon",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-5481",
+          "PkgName": "curl",
+          "InstalledVersion": "7.61.1-11.91.amzn1",
+          "FixedVersion": "7.61.1-12.93.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
+          "Title": "curl: double free due to subsequent call of realloc()",
+          "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-415"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:H",
+              "V3Score": 5.7
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
+            "https://curl.haxx.se/docs/CVE-2019-5481.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+            "https://usn.ubuntu.com/usn/usn-4129-1"
+          ],
+          "PublishedDate": "2019-09-16T19:15:00Z",
+          "LastModifiedDate": "2019-09-18T00:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5482",
+          "PkgName": "curl",
+          "InstalledVersion": "7.61.1-11.91.amzn1",
+          "FixedVersion": "7.61.1-12.93.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5482",
+          "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
+          "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-120"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 6.3
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
+            "https://curl.haxx.se/docs/CVE-2019-5482.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+            "https://usn.ubuntu.com/usn/usn-4129-1",
+            "https://usn.ubuntu.com/usn/usn-4129-2"
+          ],
+          "PublishedDate": "2019-09-16T19:15:00Z",
+          "LastModifiedDate": "2019-09-18T00:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-18218",
+          "PkgName": "file-libs",
+          "InstalledVersion": "5.34-3.37.amzn1",
+          "FixedVersion": "5.37-8.48.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18218",
+          "Title": "file: heap-based buffer overflow in cdf_read_property_info in cdf.c",
+          "Description": "cdf_read_property_info in cdf.c in file through 5.37 does not restrict the number of CDF_VECTOR elements, which allows a heap-based buffer overflow (4-byte out-of-bounds write).",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 7.8
+            }
+          },
+          "References": [
+            "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=16780",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18218",
+            "https://github.com/file/file/commit/46a8443f76cec4b41ec736eca396984c74664f84",
+            "https://lists.debian.org/debian-lts-announce/2019/10/msg00032.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CV6PFCEYHYALMTT45QE2U5C5TEJZQPXJ/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/VBK6XOJR6OVWT2FUEBO7V7KCOSSLAP52/",
+            "https://usn.ubuntu.com/4172-1/",
+            "https://usn.ubuntu.com/4172-2/",
+            "https://usn.ubuntu.com/usn/usn-4172-1",
+            "https://usn.ubuntu.com/usn/usn-4172-2",
+            "https://www.debian.org/security/2019/dsa-4550"
+          ],
+          "PublishedDate": "2019-10-21T05:15:00Z",
+          "LastModifiedDate": "2019-10-26T11:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2016-10739",
+          "PkgName": "glibc",
+          "InstalledVersion": "2.17-260.175.amzn1",
+          "FixedVersion": "2.17-292.178.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10739",
+          "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
+          "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-20"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+              "V2Score": 4.6,
+              "V3Score": 5.3
+            },
+            "redhat": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            }
+          },
+          "References": [
+            "http://linux.oracle.com/cve/CVE-2016-10739.html",
+            "http://linux.oracle.com/errata/ELSA-2019-3513.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
+            "http://www.securityfocus.com/bid/106672",
+            "https://access.redhat.com/errata/RHSA-2019:2118",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
+            "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
+          ],
+          "PublishedDate": "2019-01-21T19:29:00Z",
+          "LastModifiedDate": "2019-08-06T17:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2016-10739",
+          "PkgName": "glibc-common",
+          "InstalledVersion": "2.17-260.175.amzn1",
+          "FixedVersion": "2.17-292.178.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10739",
+          "Title": "glibc: getaddrinfo should reject IP addresses with trailing characters",
+          "Description": "In the GNU C Library (aka glibc or libc6) through 2.28, the getaddrinfo function would successfully parse a string that contained an IPv4 address followed by whitespace and arbitrary characters, which could lead applications to incorrectly assume that it had parsed a valid string, without the possibility of embedded HTTP headers or other potentially dangerous substrings.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-20"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+              "V2Score": 4.6,
+              "V3Score": 5.3
+            },
+            "redhat": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 4.6
+            }
+          },
+          "References": [
+            "http://linux.oracle.com/cve/CVE-2016-10739.html",
+            "http://linux.oracle.com/errata/ELSA-2019-3513.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-04/msg00082.html",
+            "http://www.securityfocus.com/bid/106672",
+            "https://access.redhat.com/errata/RHSA-2019:2118",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=1347549",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10739",
+            "https://sourceware.org/bugzilla/show_bug.cgi?id=20018"
+          ],
+          "PublishedDate": "2019-01-21T19:29:00Z",
+          "LastModifiedDate": "2019-08-06T17:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5481",
+          "PkgName": "libcurl",
+          "InstalledVersion": "7.61.1-11.91.amzn1",
+          "FixedVersion": "7.61.1-12.93.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
+          "Title": "curl: double free due to subsequent call of realloc()",
+          "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-415"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:N/I:N/A:H",
+              "V3Score": 5.7
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
+            "https://curl.haxx.se/docs/CVE-2019-5481.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+            "https://usn.ubuntu.com/usn/usn-4129-1"
+          ],
+          "PublishedDate": "2019-09-16T19:15:00Z",
+          "LastModifiedDate": "2019-09-18T00:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-5482",
+          "PkgName": "libcurl",
+          "InstalledVersion": "7.61.1-11.91.amzn1",
+          "FixedVersion": "7.61.1-12.93.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5482",
+          "Title": "curl: heap buffer overflow in function tftp_receive_packet()",
+          "Description": "Heap buffer overflow in the TFTP protocol handler in cURL 7.19.4 to 7.65.3.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-120"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:A/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 6.3
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
+            "https://curl.haxx.se/docs/CVE-2019-5482.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5482",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RGDVKSLY5JUNJRLYRUA6CXGQ2LM63XC3/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/UA7KDM2WPM5CJDDGOEGFV6SSGD2J7RNT/",
+            "https://usn.ubuntu.com/usn/usn-4129-1",
+            "https://usn.ubuntu.com/usn/usn-4129-2"
+          ],
+          "PublishedDate": "2019-09-16T19:15:00Z",
+          "LastModifiedDate": "2019-09-18T00:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-12290",
+          "PkgName": "libidn2",
+          "InstalledVersion": "0.16-1.2.amzn1",
+          "FixedVersion": "2.3.0-1.4.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-12290",
+          "Description": "GNU libidn2 before 2.2.0 fails to perform the roundtrip checks specified in RFC3490 Section 4.2 when converting A-labels to U-labels. This makes it possible in some circumstances for one domain to impersonate another. By creating a malicious domain that matches a target domain except for the inclusion of certain punycoded Unicode characters (that would be discarded when converted first to a Unicode label and then back to an ASCII label), arbitrary domains can be impersonated.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-20"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:N",
+              "V2Score": 5
+            }
+          },
+          "References": [
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12290",
+            "https://gitlab.com/libidn/libidn2/commit/241e8f486134793cb0f4a5b0e5817a97883401f5",
+            "https://gitlab.com/libidn/libidn2/commit/614117ef6e4c60e1950d742e3edf0a0ef8d389de",
+            "https://gitlab.com/libidn/libidn2/merge_requests/71",
+            "https://usn.ubuntu.com/4168-1/",
+            "https://usn.ubuntu.com/usn/usn-4168-1"
+          ],
+          "PublishedDate": "2019-10-22T16:15:00Z",
+          "LastModifiedDate": "2019-10-29T19:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-18224",
+          "PkgName": "libidn2",
+          "InstalledVersion": "0.16-1.2.amzn1",
+          "FixedVersion": "2.3.0-1.4.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
+          "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
+          "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V2Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 5.6
+            }
+          },
+          "References": [
+            "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
+            "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c",
+            "https://github.com/libidn/libidn2/compare/libidn2-2.1.0...libidn2-2.1.1",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JDQVQ2XPV5BTZUFINT7AFJSKNNBVURNJ/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MINU5RKDFE6TKAFY5DRFN3WSFDS4DYVS/",
+            "https://usn.ubuntu.com/4168-1/",
+            "https://usn.ubuntu.com/usn/usn-4168-1"
+          ],
+          "PublishedDate": "2019-10-21T17:15:00Z",
+          "LastModifiedDate": "2019-10-29T19:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-9511",
+          "PkgName": "libnghttp2",
+          "InstalledVersion": "1.21.1-1.4.amzn1",
+          "FixedVersion": "1.31.1-2.5.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9511",
+          "Title": "HTTP/2: large amount of data requests leads to denial of service",
+          "Description": "Some HTTP/2 implementations are vulnerable to window size manipulation and stream prioritization manipulation, potentially leading to a denial of service. The attacker requests a large amount of data from a specified resource over multiple streams. They manipulate window size and stream priority to force the server to queue the data in 1-byte chunks. Depending on how efficiently this data is queued, this can consume excess CPU, memory, or both.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-400"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:C",
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V2Score": 7.8,
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 6.5
+            }
+          },
+          "References": [
+            "http://linux.oracle.com/cve/CVE-2019-9511.html",
+            "http://linux.oracle.com/errata/ELSA-2019-2925.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9511",
+            "https://github.com/Netflix/security-bulletins/blob/master/advisories/third-party/2019-002.md",
+            "https://kb.cert.org/vuls/id/605641/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/BP556LEG3WENHZI5TAQ6ZEBFTJB4E2IS/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JUBYAF6ED3O4XCHQ5C2HYENJLXYXZC4M/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/LZLUYPYY3RX4ZJDWZRJIKSULYRJ4PXW7/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TAZZEVTCN2B4WT6AIBJ7XGYJMBTORJU5/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XHTKU7YQ5EEP2XNSAV4M4VJ7QCBOJMOD/",
+            "https://nodejs.org/en/blog/vulnerability/aug-2019-security-releases/",
+            "https://seclists.org/bugtraq/2019/Aug/40",
+            "https://security.netapp.com/advisory/ntap-20190823-0002/",
+            "https://security.netapp.com/advisory/ntap-20190823-0005/",
+            "https://support.f5.com/csp/article/K02591030",
+            "https://usn.ubuntu.com/4099-1/",
+            "https://usn.ubuntu.com/usn/usn-4099-1",
+            "https://www.debian.org/security/2019/dsa-4505",
+            "https://www.nginx.com/blog/nginx-updates-mitigate-august-2019-http-2-vulnerabilities/",
+            "https://www.synology.com/security/advisory/Synology_SA_19_33"
+          ],
+          "PublishedDate": "2019-08-13T21:15:00Z",
+          "LastModifiedDate": "2019-08-23T21:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-9513",
+          "PkgName": "libnghttp2",
+          "InstalledVersion": "1.21.1-1.4.amzn1",
+          "FixedVersion": "1.31.1-2.5.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-9513",
+          "Title": "HTTP/2: flood using PRIORITY frames results in excessive resource consumption",
+          "Description": "Some HTTP/2 implementations are vulnerable to resource loops, potentially leading to a denial of service. The attacker creates multiple request streams and continually shuffles the priority of the streams in a way that causes substantial churn to the priority tree. This can consume excess CPU.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-400"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:C",
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V2Score": 7.8,
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "http://linux.oracle.com/cve/CVE-2019-9513.html",
+            "http://linux.oracle.com/errata/ELSA-2019-2925.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9513",
+            "https://github.com/Netflix/security-bulletins/blob/master/advisories/third-party/2019-002.md",
+            "https://kb.cert.org/vuls/id/605641/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4ZQGHE3WTYLYAYJEIDJVF2FIGQTAYPMC/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/CMNFX5MNYRWWIMO4BTKYQCGUDMHO3AXP/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/JUBYAF6ED3O4XCHQ5C2HYENJLXYXZC4M/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/LZLUYPYY3RX4ZJDWZRJIKSULYRJ4PXW7/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/TAZZEVTCN2B4WT6AIBJ7XGYJMBTORJU5/",
+            "https://nghttp2.org/blog/2019/08/19/nghttp2-v1-39-2/",
+            "https://nodejs.org/en/blog/vulnerability/aug-2019-security-releases/",
+            "https://seclists.org/bugtraq/2019/Aug/40",
+            "https://security.netapp.com/advisory/ntap-20190823-0002/",
+            "https://security.netapp.com/advisory/ntap-20190823-0005/",
+            "https://support.f5.com/csp/article/K02591030",
+            "https://usn.ubuntu.com/4099-1/",
+            "https://usn.ubuntu.com/usn/usn-4099-1",
+            "https://www.debian.org/security/2019/dsa-4505",
+            "https://www.nginx.com/blog/nginx-updates-mitigate-august-2019-http-2-vulnerabilities/",
+            "https://www.synology.com/security/advisory/Synology_SA_19_33"
+          ],
+          "PublishedDate": "2019-08-13T21:15:00Z",
+          "LastModifiedDate": "2019-08-23T21:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-1563",
+          "PkgName": "openssl",
+          "InstalledVersion": "1:1.0.2k-16.150.amzn1",
+          "FixedVersion": "1:1.0.2k-16.151.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1563",
+          "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
+          "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-311"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+              "V2Score": 4.3
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
+              "V3Score": 3.7
+            }
+          },
+          "References": [
+            "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=08229ad838c50f644d7e928e2eef147b4308ad64",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=631f94db0065c78181ca9ba5546ebc8bb3884b97",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f",
+            "https://seclists.org/bugtraq/2019/Sep/25",
+            "https://security.netapp.com/advisory/ntap-20190919-0002/",
+            "https://www.openssl.org/news/secadv/20190910.txt"
+          ],
+          "PublishedDate": "2019-09-10T17:15:00Z",
+          "LastModifiedDate": "2019-09-12T11:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-16056",
+          "PkgName": "python27",
+          "InstalledVersion": "2.7.16-1.129.amzn1",
+          "FixedVersion": "2.7.16-1.130.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16056",
+          "Title": "python: email.utils.parseaddr wrongly parses email addresses",
+          "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-20"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+              "V2Score": 5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 7.3
+            }
+          },
+          "References": [
+            "https://bugs.python.org/issue34155",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16056",
+            "https://github.com/python/cpython/commit/8cb65d1381b027f0b09ee36bfed7f35bb4dec9a9",
+            "https://lists.debian.org/debian-lts-announce/2019/09/msg00018.html",
+            "https://lists.debian.org/debian-lts-announce/2019/09/msg00019.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/E2HP37NUVLQSBW3J735A2DQDOZ4ZGBLY/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ER6LONC2B2WYIO56GBQUDU6QTWZDPUNQ/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K4KZEFP6E4YPYB52AF4WXCUDSGQOTF37/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/NF3DRDGMVIRYNZMSLJIHNW47HOUQYXVG/",
+            "https://usn.ubuntu.com/usn/usn-4151-1",
+            "https://usn.ubuntu.com/usn/usn-4151-2"
+          ],
+          "PublishedDate": "2019-09-06T18:15:00Z",
+          "LastModifiedDate": "2019-09-11T05:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-16935",
+          "PkgName": "python27",
+          "InstalledVersion": "2.7.16-1.129.amzn1",
+          "FixedVersion": "2.7.16-1.131.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16935",
+          "Title": "python: XSS vulnerability in the documentation XML-RPC server in server_title field",
+          "Description": "The documentation XML-RPC server in Python through 2.7.16, 3.x through 3.6.9, and 3.7.x through 3.7.4 has XSS via the server_title field. This occurs in Lib/DocXMLRPCServer.py in Python 2.x, and in Lib/xmlrpc/server.py in Python 3.x. If set_server_title is called with untrusted input, arbitrary JavaScript can be delivered to clients that visit the http URL for this server.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-79"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
+              "V2Score": 4.3
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+              "V3Score": 6.1
+            }
+          },
+          "References": [
+            "https://bugs.python.org/issue38243",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16935",
+            "https://github.com/python/cpython/blob/35c0809158be7feae4c4f877a08b93baea2d8291/Lib/xmlrpc/server.py#L897",
+            "https://github.com/python/cpython/blob/e007860b8b3609ce0bc62b1780efaa06241520bd/Lib/DocXMLRPCServer.py#L213",
+            "https://github.com/python/cpython/pull/16373",
+            "https://security.netapp.com/advisory/ntap-20191017-0004/",
+            "https://usn.ubuntu.com/4151-1/",
+            "https://usn.ubuntu.com/4151-2/",
+            "https://usn.ubuntu.com/usn/usn-4151-1",
+            "https://usn.ubuntu.com/usn/usn-4151-2"
+          ],
+          "PublishedDate": "2019-09-28T02:15:00Z",
+          "LastModifiedDate": "2019-10-09T16:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-16056",
+          "PkgName": "python27-libs",
+          "InstalledVersion": "2.7.16-1.129.amzn1",
+          "FixedVersion": "2.7.16-1.130.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16056",
+          "Title": "python: email.utils.parseaddr wrongly parses email addresses",
+          "Description": "An issue was discovered in Python through 2.7.16, 3.x through 3.5.7, 3.6.x through 3.6.9, and 3.7.x through 3.7.4. The email module wrongly parses email addresses that contain multiple @ characters. An application that uses the email module and implements some kind of checks on the From/To headers of a message could be tricked into accepting an email address that should be denied. An attack may be the same as in CVE-2019-11340; however, this CVE applies to Python more generally.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-20"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+              "V2Score": 5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 7.3
+            }
+          },
+          "References": [
+            "https://bugs.python.org/issue34155",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16056",
+            "https://github.com/python/cpython/commit/8cb65d1381b027f0b09ee36bfed7f35bb4dec9a9",
+            "https://lists.debian.org/debian-lts-announce/2019/09/msg00018.html",
+            "https://lists.debian.org/debian-lts-announce/2019/09/msg00019.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/E2HP37NUVLQSBW3J735A2DQDOZ4ZGBLY/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ER6LONC2B2WYIO56GBQUDU6QTWZDPUNQ/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/K4KZEFP6E4YPYB52AF4WXCUDSGQOTF37/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/NF3DRDGMVIRYNZMSLJIHNW47HOUQYXVG/",
+            "https://usn.ubuntu.com/usn/usn-4151-1",
+            "https://usn.ubuntu.com/usn/usn-4151-2"
+          ],
+          "PublishedDate": "2019-09-06T18:15:00Z",
+          "LastModifiedDate": "2019-09-11T05:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-16935",
+          "PkgName": "python27-libs",
+          "InstalledVersion": "2.7.16-1.129.amzn1",
+          "FixedVersion": "2.7.16-1.131.amzn1",
+          "Layer": {
+            "DiffID": "sha256:984fe1509738f6f00f34d9be7398b07ebeb8b98dda077ff6be2cdb87111b73cf"
+          },
+          "SeveritySource": "amazon",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-16935",
+          "Title": "python: XSS vulnerability in the documentation XML-RPC server in server_title field",
+          "Description": "The documentation XML-RPC server in Python through 2.7.16, 3.x through 3.6.9, and 3.7.x through 3.7.4 has XSS via the server_title field. This occurs in Lib/DocXMLRPCServer.py in Python 2.x, and in Lib/xmlrpc/server.py in Python 3.x. If set_server_title is called with untrusted input, arbitrary JavaScript can be delivered to clients that visit the http URL for this server.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-79"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
+              "V2Score": 4.3
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+              "V3Score": 6.1
+            }
+          },
+          "References": [
+            "https://bugs.python.org/issue38243",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16935",
+            "https://github.com/python/cpython/blob/35c0809158be7feae4c4f877a08b93baea2d8291/Lib/xmlrpc/server.py#L897",
+            "https://github.com/python/cpython/blob/e007860b8b3609ce0bc62b1780efaa06241520bd/Lib/DocXMLRPCServer.py#L213",
+            "https://github.com/python/cpython/pull/16373",
+            "https://security.netapp.com/advisory/ntap-20191017-0004/",
+            "https://usn.ubuntu.com/4151-1/",
+            "https://usn.ubuntu.com/4151-2/",
+            "https://usn.ubuntu.com/usn/usn-4151-1",
+            "https://usn.ubuntu.com/usn/usn-4151-2"
+          ],
+          "PublishedDate": "2019-09-28T02:15:00Z",
+          "LastModifiedDate": "2019-10-09T16:15:00Z"
+        }
+      ]
+    }
+  ]
+}

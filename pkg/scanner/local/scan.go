@@ -3,8 +3,6 @@ package local
 import (
 	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -15,6 +13,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	_ "github.com/aquasecurity/fanal/analyzer/all"
 	"github.com/aquasecurity/fanal/applier"
+	_ "github.com/aquasecurity/fanal/hook/all"
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
@@ -23,6 +22,15 @@ import (
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
+)
+
+var (
+	pkgTargets = map[string]string{
+		ftypes.PythonPkg: "Python",
+		ftypes.GemSpec:   "Ruby",
+		ftypes.NodePkg:   "Node.js",
+		ftypes.Jar:       "Java",
+	}
 )
 
 // SuperSet binds dependencies for Local scan
@@ -182,9 +190,6 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		if len(app.Libraries) == 0 {
 			continue
 		}
-		if skipped(app.FilePath, options.SkipFiles, options.SkipDirs) {
-			continue
-		}
 
 		// Prevent the same log messages from being displayed many times for the same type.
 		if _, ok := printedTypes[app.Type]; !ok {
@@ -198,25 +203,20 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		}
 
+		target := app.FilePath
+		if t, ok := pkgTargets[app.Type]; ok && target == "" {
+			// When the file path is empty, we will overwrite it with the pre-defined value.
+			target = t
+		}
+
 		libReport := report.Result{
-			Target:          app.FilePath,
+			Target:          target,
 			Vulnerabilities: vulns,
 			Class:           report.ClassLangPkg,
 			Type:            app.Type,
 		}
 		if options.ListAllPackages {
-			var pkgs []ftypes.Package
-			for _, lib := range app.Libraries {
-				pkgs = append(pkgs, ftypes.Package{
-					Name:    lib.Library.Name,
-					Version: lib.Library.Version,
-					Layer:   lib.Layer,
-				})
-			}
-			sort.Slice(pkgs, func(i, j int) bool {
-				return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
-			})
-			libReport.Packages = pkgs
+			libReport.Packages = app.Libraries
 		}
 		results = append(results, libReport)
 	}
@@ -230,10 +230,6 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 	log.Logger.Infof("Detected config files: %d", len(misconfs))
 	var results report.Results
 	for _, misconf := range misconfs {
-		if skipped(misconf.FilePath, options.SkipFiles, options.SkipDirs) {
-			continue
-		}
-
 		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
 
 		var detected []types.DetectedMisconfiguration
@@ -310,30 +306,12 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		Status:      status,
 		Layer:       layer,
 		Traces:      res.Traces,
+		IacMetadata: ftypes.IacMetadata{
+			Resource:  res.Resource,
+			StartLine: res.StartLine,
+			EndLine:   res.EndLine,
+		},
 	}
-}
-
-func skipped(filePath string, skipFiles, skipDirs []string) bool {
-	filePath = strings.TrimLeft(filepath.Clean(filePath), string(os.PathSeparator))
-	for _, skipFile := range skipFiles {
-		skipFile = strings.TrimLeft(filepath.Clean(skipFile), string(os.PathSeparator))
-		if filePath == skipFile {
-			return true
-		}
-	}
-
-	for _, skipDir := range skipDirs {
-		skipDir = strings.TrimLeft(filepath.Clean(skipDir), string(os.PathSeparator))
-		rel, err := filepath.Rel(skipDir, filePath)
-		if err != nil {
-			log.Logger.Warnf("Unexpected error while skipping directories: %s", err)
-			return false
-		}
-		if !strings.HasPrefix(rel, "..") {
-			return true
-		}
-	}
-	return false
 }
 
 func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {

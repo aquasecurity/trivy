@@ -23,4 +23,4 @@ tfsec is designed for Terraform.
 People who use only Terraform should use tfsec.
 People who want to scan a wide range of configuration files should use Trivy.
 
-[tfsec]: https://github.com/tfsec/tfsec
+[tfsec]: https://github.com/aquasecurity/tfsec

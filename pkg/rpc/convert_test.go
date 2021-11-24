@@ -40,7 +40,11 @@ func TestConvertToRpcPkgs(t *testing.T) {
 						SrcVersion: "1.2.3",
 						SrcRelease: "1",
 						SrcEpoch:   2,
-						License: "MIT",
+						License:    "MIT",
+						Layer: ftypes.Layer{
+							Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
+							DiffID: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
+						},
 					},
 				},
 			},
@@ -55,7 +59,11 @@ func TestConvertToRpcPkgs(t *testing.T) {
 					SrcVersion: "1.2.3",
 					SrcRelease: "1",
 					SrcEpoch:   2,
-					License: "MIT",
+					License:    "MIT",
+					Layer: &common.Layer{
+						Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
+						DiffId: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
+					},
 				},
 			},
 		},
@@ -90,7 +98,11 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 						SrcVersion: "1.2.3",
 						SrcRelease: "1",
 						SrcEpoch:   2,
-						License: "MIT",
+						License:    "MIT",
+						Layer: &common.Layer{
+							Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
+							DiffId: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
+						},
 					},
 				},
 			},
@@ -105,7 +117,11 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 					SrcVersion: "1.2.3",
 					SrcRelease: "1",
 					SrcEpoch:   2,
-					License: "MIT",
+					License:    "MIT",
+					Layer: ftypes.Layer{
+						Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
+						DiffID: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
+					},
 				},
 			},
 		},
@@ -125,7 +141,7 @@ func TestConvertFromRpcLibraries(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []ftypes.LibraryInfo
+		want []ftypes.Package
 	}{
 		{
 			name: "happy path",
@@ -135,9 +151,9 @@ func TestConvertFromRpcLibraries(t *testing.T) {
 					{Name: "bar", Version: "4.5.6"},
 				},
 			},
-			want: []ftypes.LibraryInfo{
-				{Library: ptypes.Library{Name: "foo", Version: "1.2.3"}},
-				{Library: ptypes.Library{Name: "bar", Version: "4.5.6"}},
+			want: []ftypes.Package{
+				{Name: "foo", Version: "1.2.3"},
+				{Name: "bar", Version: "4.5.6"},
 			},
 		},
 	}
@@ -329,7 +345,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 							Title:            "DoS",
 							Description:      "Denial of Service",
 							Severity:         common.Severity_MEDIUM,
-							SeveritySource:   vulnerability.Nvd,
+							SeveritySource:   vulnerability.NVD,
 							CweIds:           []string{"CWE-123", "CWE-456"},
 							Cvss: map[string]*common.CVSS{
 								"redhat": {
@@ -365,7 +381,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 								DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 							},
-							SeveritySource: vulnerability.Nvd,
+							SeveritySource: vulnerability.NVD,
 							PrimaryURL:     "https://avd.aquasec.com/nvd/CVE-2019-0001",
 							Vulnerability: dbTypes.Vulnerability{
 								Title:          "DoS",
@@ -405,7 +421,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 							Title:            "DoS",
 							Description:      "Denial of Service",
 							Severity:         common.Severity_MEDIUM,
-							SeveritySource:   vulnerability.Nvd,
+							SeveritySource:   vulnerability.NVD,
 							CweIds:           []string{"CWE-123", "CWE-456"},
 							Cvss: map[string]*common.CVSS{
 								"redhat": {
@@ -441,7 +457,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 								Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 								DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 							},
-							SeveritySource: vulnerability.Nvd,
+							SeveritySource: vulnerability.NVD,
 							PrimaryURL:     "https://avd.aquasec.com/nvd/CVE-2019-0001",
 							Vulnerability: dbTypes.Vulnerability{
 								Title:          "DoS",

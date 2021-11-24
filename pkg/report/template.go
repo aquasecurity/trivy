@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"html"
 	"io"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"strconv"
@@ -32,7 +31,7 @@ type TemplateWriter struct {
 // NewTemplateWriter is the factory method to return TemplateWriter object
 func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter, error) {
 	if strings.HasPrefix(outputTemplate, "@") {
-		buf, err := ioutil.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
+		buf, err := os.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
 		if err != nil {
 			return nil, xerrors.Errorf("error retrieving template from path: %w", err)
 		}
@@ -47,6 +46,16 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 			return input
 		}
 		return escaped.String()
+	}
+	templateFuncMap["makeRuleMap"] = func() map[string]int {
+		return make(map[string]int)
+	}
+	templateFuncMap["indexRule"] = func(rules map[string]int, vulnerabilityID string) bool {
+		if _, ok := rules[vulnerabilityID]; !ok {
+			rules[vulnerabilityID] = len(rules)
+			return true
+		}
+		return false
 	}
 	templateFuncMap["toSarifErrorLevel"] = toSarifErrorLevel
 	templateFuncMap["toSarifRuleName"] = toSarifRuleName
@@ -99,19 +108,17 @@ func (tw TemplateWriter) Write(report Report) error {
 }
 
 func toSarifRuleName(vulnerabilityType string) string {
-	var ruleName string
 	switch vulnerabilityType {
 	case vulnerability.Ubuntu, vulnerability.Alpine, vulnerability.RedHat, vulnerability.RedHatOVAL,
 		vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
 		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon,
 		vulnerability.CentOS:
-		ruleName = "OS Package Vulnerability"
+		return "OsPackageVulnerability"
 	case "npm", "yarn", "nuget", "pipenv", "poetry", "bundler", "cargo", "composer":
-		ruleName = "Programming Language Vulnerability"
+		return "ProgrammingLanguageVulnerability"
 	default:
-		ruleName = "Other Vulnerability"
+		return "OtherVulnerability"
 	}
-	return fmt.Sprintf("%s (%s)", ruleName, strings.Title(vulnerabilityType))
 }
 
 func toSarifErrorLevel(severity string) string {
