@@ -89,41 +89,34 @@ func (d *Driver) Type() string {
 
 func newRubyGemsDriver() Driver {
 	c := bundler.RubyGemsComparer{}
-	return Aggregate(vulnerability.RubyGems, ghsa.NewAdvisory(ecosystem.Rubygems, c), bundler.NewAdvisory(),
-		NewAdvisory(vulnerability.RubyGems, c))
+	return Aggregate(vulnerability.RubyGems, NewAdvisory(vulnerability.RubyGems, c), bundler.NewAdvisory(), ghsa.NewAdvisory(ecosystem.Rubygems, c))
 }
 
 func newComposerDriver() Driver {
 	c := comparer.GenericComparer{}
-	return Aggregate(vulnerability.Composer, ghsa.NewAdvisory(ecosystem.Composer, c), composer.NewAdvisory(),
-		NewAdvisory(vulnerability.Composer, c))
+	return Aggregate(vulnerability.Composer, NewAdvisory(vulnerability.Composer, c), composer.NewAdvisory(), ghsa.NewAdvisory(ecosystem.Composer, c))
 }
 
 func newCargoDriver() Driver {
-	return Aggregate(vulnerability.Cargo, cargo.NewAdvisory(),
-		NewAdvisory(vulnerability.Cargo, comparer.GenericComparer{}))
+	return Aggregate(vulnerability.Cargo, NewAdvisory(vulnerability.Cargo, comparer.GenericComparer{}), cargo.NewAdvisory())
 }
 
 func newNpmDriver() Driver {
 	c := npm.Comparer{}
-	return Aggregate(vulnerability.Npm, ghsa.NewAdvisory(ecosystem.Npm, c),
-		npm.NewAdvisory(), NewAdvisory(vulnerability.Npm, c))
+	return Aggregate(vulnerability.Npm, NewAdvisory(vulnerability.Npm, c), npm.NewAdvisory(), ghsa.NewAdvisory(ecosystem.Npm, c))
 }
 
 func newPipDriver() Driver {
 	c := comparer.GenericComparer{}
-	return Aggregate(vulnerability.Pip, ghsa.NewAdvisory(ecosystem.Pip, c),
-		python.NewAdvisory(), NewAdvisory(vulnerability.Pip, c))
+	return Aggregate(vulnerability.Pip, NewAdvisory(vulnerability.Pip, c), python.NewAdvisory(), ghsa.NewAdvisory(ecosystem.Pip, c))
 }
 
 func newNugetDriver() Driver {
 	c := comparer.GenericComparer{}
-	return Aggregate(vulnerability.NuGet, ghsa.NewAdvisory(ecosystem.Nuget, c),
-		NewAdvisory(vulnerability.NuGet, c))
+	return Aggregate(vulnerability.NuGet, NewAdvisory(vulnerability.NuGet, c), ghsa.NewAdvisory(ecosystem.Nuget, c))
 }
 
 func newMavenDriver() Driver {
 	c := maven.Comparer{}
-	return Aggregate(vulnerability.Maven, ghsa.NewAdvisory(ecosystem.Maven, c),
-		NewAdvisory(vulnerability.Maven, c))
+	return Aggregate(vulnerability.Maven, NewAdvisory(vulnerability.Maven, c), ghsa.NewAdvisory(ecosystem.Maven, c))
 }
