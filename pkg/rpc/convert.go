@@ -355,7 +355,11 @@ func ConvertFromRPCCustomResources(rpcCustomResources []*common.CustomResource) 
 		resources = append(resources, ftypes.CustomResource{
 			Type:     res.Type,
 			FilePath: res.Filepath,
-			Info:     DecodeToMap(res.Info),
+			Layer: ftypes.Layer{
+				Digest: res.Layer.Digest,
+				DiffID: res.Layer.DiffId,
+			},
+			Info: res.Info,
 		})
 	}
 	return resources
@@ -462,14 +466,18 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 	}
 	var customResources []*common.CustomResource
 	for _, res := range blobInfo.CustomResources {
-		info, err := structpb.NewStruct(res.Info)
+		info, err := structpb.NewValue(res.Info)
 		if err != nil {
 
 		} else {
 			customResources = append(customResources, &common.CustomResource{
 				Type:     res.Type,
 				Filepath: res.FilePath,
-				Info:     info,
+				Layer: &common.Layer{
+					Digest: res.Layer.Digest,
+					DiffId: res.Layer.DiffID,
+				},
+				Info: info,
 			})
 		}
 	}

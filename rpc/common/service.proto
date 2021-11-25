@@ -124,5 +124,6 @@ message CVSS {
 message CustomResource {
   string                 type     = 1;
   string                 filepath = 2;
-  google.protobuf.Struct info     = 3;
+  Layer                  layer    = 3;
+  google.protobuf.Value  info     = 4;
 }
