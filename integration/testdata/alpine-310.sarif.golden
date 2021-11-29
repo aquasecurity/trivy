@@ -11,188 +11,6 @@
           "version": "0.15.0",
           "rules": [
                 {
-                  "id": "CVE-2021-36159",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2021-36159"
-                  },
-                  "fullDescription": {
-                    "text": "."
-                  },
-                  "defaultConfiguration": {
-                    "level": "error"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2021-36159",
-                  "help": {
-                    "text": "Vulnerability CVE-2021-36159\nSeverity: CRITICAL\nPackage: apk-tools\nInstalled Version: 2.10.4-r2\nFixed Version: 2.10.7-r0\nLink: [CVE-2021-36159](https://avd.aquasec.com/nvd/cve-2021-36159)",
-                    "markdown": "**Vulnerability CVE-2021-36159**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|CRITICAL|apk-tools|2.10.4-r2|2.10.7-r0|[CVE-2021-36159](https://avd.aquasec.com/nvd/cve-2021-36159)|\n"
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "CRITICAL",
-                      "apk-tools"
-                    ],
-                    "precision": "very-high"
-                  }
-                },
-                {
-                  "id": "CVE-2021-30139",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2021-30139"
-                  },
-                  "fullDescription": {
-                    "text": "."
-                  },
-                  "defaultConfiguration": {
-                    "level": "error"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2021-30139",
-                  "help": {
-                    "text": "Vulnerability CVE-2021-30139\nSeverity: HIGH\nPackage: apk-tools\nInstalled Version: 2.10.4-r2\nFixed Version: 2.10.6-r0\nLink: [CVE-2021-30139](https://avd.aquasec.com/nvd/cve-2021-30139)",
-                    "markdown": "**Vulnerability CVE-2021-30139**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|HIGH|apk-tools|2.10.4-r2|2.10.6-r0|[CVE-2021-30139](https://avd.aquasec.com/nvd/cve-2021-30139)|\n"
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "HIGH",
-                      "apk-tools"
-                    ],
-                    "precision": "very-high"
-                  }
-                },
-                {
-                  "id": "CVE-2021-28831",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2021-28831"
-                  },
-                  "fullDescription": {
-                    "text": "busybox: invalid free or segmentation fault via malformed gzip data."
-                  },
-                  "defaultConfiguration": {
-                    "level": "error"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2021-28831",
-                  "help": {
-                    "text": "Vulnerability CVE-2021-28831\nSeverity: HIGH\nPackage: busybox\nInstalled Version: 1.30.1-r2\nFixed Version: 1.30.1-r5\nLink: [CVE-2021-28831](https://avd.aquasec.com/nvd/cve-2021-28831)",
-                    "markdown": "**Vulnerability CVE-2021-28831**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|HIGH|busybox|1.30.1-r2|1.30.1-r5|[CVE-2021-28831](https://avd.aquasec.com/nvd/cve-2021-28831)|\n"
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "HIGH",
-                      "busybox"
-                    ],
-                    "precision": "very-high"
-                  }
-                },
-                {
-                  "id": "CVE-2020-1967",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2020-1967"
-                  },
-                  "fullDescription": {
-                    "text": "openssl: Segmentation fault in SSL_check_chain causes denial of service."
-                  },
-                  "defaultConfiguration": {
-                    "level": "error"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2020-1967",
-                  "help": {
-                    "text": "Vulnerability CVE-2020-1967\nSeverity: HIGH\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1g-r0\nLink: [CVE-2020-1967](https://avd.aquasec.com/nvd/cve-2020-1967)",
-                    "markdown": "**Vulnerability CVE-2020-1967**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|HIGH|libcrypto1.1|1.1.1c-r0|1.1.1g-r0|[CVE-2020-1967](https://avd.aquasec.com/nvd/cve-2020-1967)|\n"
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "HIGH",
-                      "libcrypto1.1"
-                    ],
-                    "precision": "very-high"
-                  }
-                },
-                {
-                  "id": "CVE-2021-23840",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2021-23840"
-                  },
-                  "fullDescription": {
-                    "text": "openssl: integer overflow in CipherUpdate."
-                  },
-                  "defaultConfiguration": {
-                    "level": "error"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2021-23840",
-                  "help": {
-                    "text": "Vulnerability CVE-2021-23840\nSeverity: HIGH\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1j-r0\nLink: [CVE-2021-23840](https://avd.aquasec.com/nvd/cve-2021-23840)",
-                    "markdown": "**Vulnerability CVE-2021-23840**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|HIGH|libcrypto1.1|1.1.1c-r0|1.1.1j-r0|[CVE-2021-23840](https://avd.aquasec.com/nvd/cve-2021-23840)|\n"
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "HIGH",
-                      "libcrypto1.1"
-                    ],
-                    "precision": "very-high"
-                  }
-                },
-                {
-                  "id": "CVE-2021-3450",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2021-3450"
-                  },
-                  "fullDescription": {
-                    "text": "openssl: CA certificate check bypass with X509_V_FLAG_X509_STRICT."
-                  },
-                  "defaultConfiguration": {
-                    "level": "error"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2021-3450",
-                  "help": {
-                    "text": "Vulnerability CVE-2021-3450\nSeverity: HIGH\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1k-r0\nLink: [CVE-2021-3450](https://avd.aquasec.com/nvd/cve-2021-3450)",
-                    "markdown": "**Vulnerability CVE-2021-3450**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|HIGH|libcrypto1.1|1.1.1c-r0|1.1.1k-r0|[CVE-2021-3450](https://avd.aquasec.com/nvd/cve-2021-3450)|\n"
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "HIGH",
-                      "libcrypto1.1"
-                    ],
-                    "precision": "very-high"
-                  }
-                },
-                {
-                  "id": "CVE-2019-1547",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2019-1547"
-                  },
-                  "fullDescription": {
-                    "text": "openssl: side-channel weak encryption vulnerability."
-                  },
-                  "defaultConfiguration": {
-                    "level": "warning"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1547",
-                  "help": {
-                    "text": "Vulnerability CVE-2019-1547\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1547](https://avd.aquasec.com/nvd/cve-2019-1547)",
-                    "markdown": "**Vulnerability CVE-2019-1547**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1547](https://avd.aquasec.com/nvd/cve-2019-1547)|\n"
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "MEDIUM",
-                      "libcrypto1.1"
-                    ],
-                    "precision": "very-high"
-                  }
-                },
-                {
                   "id": "CVE-2019-1549",
                   "name": "OsPackageVulnerability",
                   "shortDescription": {
@@ -245,84 +63,6 @@
                   }
                 },
                 {
-                  "id": "CVE-2020-1971",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2020-1971"
-                  },
-                  "fullDescription": {
-                    "text": "openssl: EDIPARTYNAME NULL pointer de-reference."
-                  },
-                  "defaultConfiguration": {
-                    "level": "warning"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2020-1971",
-                  "help": {
-                    "text": "Vulnerability CVE-2020-1971\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1i-r0\nLink: [CVE-2020-1971](https://avd.aquasec.com/nvd/cve-2020-1971)",
-                    "markdown": "**Vulnerability CVE-2020-1971**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1i-r0|[CVE-2020-1971](https://avd.aquasec.com/nvd/cve-2020-1971)|\n"
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "MEDIUM",
-                      "libcrypto1.1"
-                    ],
-                    "precision": "very-high"
-                  }
-                },
-                {
-                  "id": "CVE-2021-23841",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2021-23841"
-                  },
-                  "fullDescription": {
-                    "text": "openssl: NULL pointer dereference in X509_issuer_and_serial_hash()."
-                  },
-                  "defaultConfiguration": {
-                    "level": "warning"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2021-23841",
-                  "help": {
-                    "text": "Vulnerability CVE-2021-23841\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1j-r0\nLink: [CVE-2021-23841](https://avd.aquasec.com/nvd/cve-2021-23841)",
-                    "markdown": "**Vulnerability CVE-2021-23841**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1j-r0|[CVE-2021-23841](https://avd.aquasec.com/nvd/cve-2021-23841)|\n"
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "MEDIUM",
-                      "libcrypto1.1"
-                    ],
-                    "precision": "very-high"
-                  }
-                },
-                {
-                  "id": "CVE-2021-3449",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2021-3449"
-                  },
-                  "fullDescription": {
-                    "text": "openssl: NULL pointer dereference in signature_algorithms processing."
-                  },
-                  "defaultConfiguration": {
-                    "level": "warning"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2021-3449",
-                  "help": {
-                    "text": "Vulnerability CVE-2021-3449\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1k-r0\nLink: [CVE-2021-3449](https://avd.aquasec.com/nvd/cve-2021-3449)",
-                    "markdown": "**Vulnerability CVE-2021-3449**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1k-r0|[CVE-2021-3449](https://avd.aquasec.com/nvd/cve-2021-3449)|\n"
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "MEDIUM",
-                      "libcrypto1.1"
-                    ],
-                    "precision": "very-high"
-                  }
-                },
-                {
                   "id": "CVE-2019-1563",
                   "name": "OsPackageVulnerability",
                   "shortDescription": {
@@ -332,70 +72,44 @@
                     "text": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey."
                   },
                   "defaultConfiguration": {
-                    "level": "note"
+                    "level": "warning"
                   },
                   "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1563",
                   "help": {
-                    "text": "Vulnerability CVE-2019-1563\nSeverity: LOW\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1563](https://avd.aquasec.com/nvd/cve-2019-1563)",
-                    "markdown": "**Vulnerability CVE-2019-1563**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libcrypto1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1563](https://avd.aquasec.com/nvd/cve-2019-1563)|\n"
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "LOW",
-                      "libcrypto1.1"
-                    ],
-                    "precision": "very-high"
-                  }
-                },
-                {
-                  "id": "CVE-2021-23839",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2021-23839"
-                  },
-                  "fullDescription": {
-                    "text": "openssl: incorrect SSLv2 rollback protection."
-                  },
-                  "defaultConfiguration": {
-                    "level": "note"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2021-23839",
-                  "help": {
-                    "text": "Vulnerability CVE-2021-23839\nSeverity: LOW\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1j-r0\nLink: [CVE-2021-23839](https://avd.aquasec.com/nvd/cve-2021-23839)",
-                    "markdown": "**Vulnerability CVE-2021-23839**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libcrypto1.1|1.1.1c-r0|1.1.1j-r0|[CVE-2021-23839](https://avd.aquasec.com/nvd/cve-2021-23839)|\n"
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "LOW",
-                      "libcrypto1.1"
-                    ],
-                    "precision": "very-high"
-                  }
-                },
-                {
-                  "id": "CVE-2020-28928",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2020-28928"
-                  },
-                  "fullDescription": {
-                    "text": "."
-                  },
-                  "defaultConfiguration": {
-                    "level": "warning"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2020-28928",
-                  "help": {
-                    "text": "Vulnerability CVE-2020-28928\nSeverity: MEDIUM\nPackage: musl\nInstalled Version: 1.1.22-r3\nFixed Version: 1.1.22-r4\nLink: [CVE-2020-28928](https://avd.aquasec.com/nvd/cve-2020-28928)",
-                    "markdown": "**Vulnerability CVE-2020-28928**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|musl|1.1.22-r3|1.1.22-r4|[CVE-2020-28928](https://avd.aquasec.com/nvd/cve-2020-28928)|\n"
+                    "text": "Vulnerability CVE-2019-1563\nSeverity: MEDIUM\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1563](https://avd.aquasec.com/nvd/cve-2019-1563)",
+                    "markdown": "**Vulnerability CVE-2019-1563**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1563](https://avd.aquasec.com/nvd/cve-2019-1563)|\n"
                   },
                   "properties": {
                     "tags": [
                       "vulnerability",
                       "MEDIUM",
-                      "musl"
+                      "libcrypto1.1"
+                    ],
+                    "precision": "very-high"
+                  }
+                },
+                {
+                  "id": "CVE-2019-1547",
+                  "name": "OsPackageVulnerability",
+                  "shortDescription": {
+                    "text": "CVE-2019-1547"
+                  },
+                  "fullDescription": {
+                    "text": "openssl: side-channel weak encryption vulnerability."
+                  },
+                  "defaultConfiguration": {
+                    "level": "note"
+                  },
+                  "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1547",
+                  "help": {
+                    "text": "Vulnerability CVE-2019-1547\nSeverity: LOW\nPackage: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1547](https://avd.aquasec.com/nvd/cve-2019-1547)",
+                    "markdown": "**Vulnerability CVE-2019-1547**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|LOW|libcrypto1.1|1.1.1c-r0|1.1.1d-r0|[CVE-2019-1547](https://avd.aquasec.com/nvd/cve-2019-1547)|\n"
+                  },
+                  "properties": {
+                    "tags": [
+                      "vulnerability",
+                      "LOW",
+                      "libcrypto1.1"
                     ],
                     "precision": "very-high"
                   }
@@ -404,16 +118,16 @@
       },
       "results": [
         {
-          "ruleId": "CVE-2021-36159",
+          "ruleId": "CVE-2019-1549",
           "ruleIndex": 0,
-          "level": "error",
+          "level": "warning",
           "message": {
-            "text": "libfetch before 2021-07-26, as used in apk-tools, xbps, and other products, mishandles numeric strings for the FTP and HTTP protocols. The FTP passive mode implementation allows an out-of-bounds read because strtol is used to parse the relevant numbers into address bytes. It does not check if the line ends prematurely. If it does, the for-loop condition checks for the &#39;\\0&#39; terminator one byte too late."
+            "text": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c)."
           },
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               },
               "region" : {
@@ -423,206 +137,16 @@
           }]
         },
         {
-          "ruleId": "CVE-2021-30139",
+          "ruleId": "CVE-2019-1551",
           "ruleIndex": 1,
-          "level": "error",
-          "message": {
-            "text": "In Alpine Linux apk-tools before 2.12.5, the tarball parser allows a buffer overflow and crash."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2021-28831",
-          "ruleIndex": 2,
-          "level": "error",
-          "message": {
-            "text": "decompress_gunzip.c in BusyBox through 1.32.1 mishandles the error bit on the huft_build result pointer, with a resultant invalid free or segmentation fault, via malformed gzip data."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2020-1967",
-          "ruleIndex": 3,
-          "level": "error",
-          "message": {
-            "text": "Server or client applications that call the SSL_check_chain() function during or after a TLS 1.3 handshake may crash due to a NULL pointer dereference as a result of incorrect handling of the &#34;signature_algorithms_cert&#34; TLS extension. The crash occurs if an invalid or unrecognised signature algorithm is received from the peer. This could be exploited by a malicious peer in a Denial of Service attack. OpenSSL version 1.1.1d, 1.1.1e, and 1.1.1f are affected by this issue. This issue did not affect OpenSSL versions prior to 1.1.1d. Fixed in OpenSSL 1.1.1g (Affected 1.1.1d-1.1.1f)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2021-23840",
-          "ruleIndex": 4,
-          "level": "error",
-          "message": {
-            "text": "Calls to EVP_CipherUpdate, EVP_EncryptUpdate and EVP_DecryptUpdate may overflow the output length argument in some cases where the input length is close to the maximum permissable length for an integer on the platform. In such cases the return value from the function call will be 1 (indicating success), but the output length value will be negative. This could cause applications to behave incorrectly or crash. OpenSSL versions 1.1.1i and below are affected by this issue. Users of these versions should upgrade to OpenSSL 1.1.1j. OpenSSL versions 1.0.2x and below are affected by this issue. However OpenSSL 1.0.2 is out of support and no longer receiving public updates. Premium support customers of OpenSSL 1.0.2 should upgrade to 1.0.2y. Other users should upgrade to 1.1.1j. Fixed in OpenSSL 1.1.1j (Affected 1.1.1-1.1.1i). Fixed in OpenSSL 1.0.2y (Affected 1.0.2-1.0.2x)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2021-3450",
-          "ruleIndex": 5,
-          "level": "error",
-          "message": {
-            "text": "The X509_V_FLAG_X509_STRICT flag enables additional security checks of the certificates present in a certificate chain. It is not set by default. Starting from OpenSSL version 1.1.1h a check to disallow certificates in the chain that have explicitly encoded elliptic curve parameters was added as an additional strict check. An error in the implementation of this check meant that the result of a previous check to confirm that certificates in the chain are valid CA certificates was overwritten. This effectively bypasses the check that non-CA certificates must not be able to issue other certificates. If a &#34;purpose&#34; has been configured then there is a subsequent opportunity for checks that the certificate is a valid CA. All of the named &#34;purpose&#34; values implemented in libcrypto perform this check. Therefore, where a purpose is set the certificate chain will still be rejected even when the strict flag has been used. A purpose is set by default in libssl client and server certificate verification routines, but it can be overridden or removed by an application. In order to be affected, an application must explicitly set the X509_V_FLAG_X509_STRICT verification flag and either not set a purpose for the certificate verification or, in the case of TLS client or server applications, override the default purpose. OpenSSL versions 1.1.1h and newer are affected by this issue. Users of these versions should upgrade to OpenSSL 1.1.1k. OpenSSL 1.0.2 is not impacted by this issue. Fixed in OpenSSL 1.1.1k (Affected 1.1.1h-1.1.1j)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2019-1547",
-          "ruleIndex": 6,
           "level": "warning",
           "message": {
-            "text": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s)."
+            "text": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e-dev (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u-dev (Affected 1.0.2-1.0.2t)."
           },
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2019-1549",
-          "ruleIndex": 7,
-          "level": "warning",
-          "message": {
-            "text": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2019-1551",
-          "ruleIndex": 8,
-          "level": "warning",
-          "message": {
-            "text": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2020-1971",
-          "ruleIndex": 9,
-          "level": "warning",
-          "message": {
-            "text": "The X.509 GeneralName type is a generic type for representing different types of names. One of those name types is known as EDIPartyName. OpenSSL provides a function GENERAL_NAME_cmp which compares different instances of a GENERAL_NAME to see if they are equal or not. This function behaves incorrectly when both GENERAL_NAMEs contain an EDIPARTYNAME. A NULL pointer dereference and a crash may occur leading to a possible denial of service attack. OpenSSL itself uses the GENERAL_NAME_cmp function for two purposes: 1) Comparing CRL distribution point names between an available CRL and a CRL distribution point embedded in an X509 certificate 2) When verifying that a timestamp response token signer matches the timestamp authority name (exposed via the API functions TS_RESP_verify_response and TS_RESP_verify_token) If an attacker can control both items being compared then that attacker could trigger a crash. For example if the attacker can trick a client or server into checking a malicious certificate against a malicious CRL then this may occur. Note that some applications automatically download CRLs based on a URL embedded in a certificate. This checking happens prior to the signatures on the certificate and CRL being verified. OpenSSL&#39;s s_server, s_client and verify tools have support for the &#34;-crl_download&#34; option which implements automatic CRL downloading and this attack has been demonstrated to work against those tools. Note that an unrelated bug means that affected versions of OpenSSL cannot parse or construct correct encodings of EDIPARTYNAME. However it is possible to construct a malformed EDIPARTYNAME that OpenSSL&#39;s parser will accept and hence trigger this attack. All OpenSSL 1.1.1 and 1.0.2 versions are affected by this issue. Other OpenSSL releases are out of support and have not been checked. Fixed in OpenSSL 1.1.1i (Affected 1.1.1-1.1.1h). Fixed in OpenSSL 1.0.2x (Affected 1.0.2-1.0.2w)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2021-23841",
-          "ruleIndex": 10,
-          "level": "warning",
-          "message": {
-            "text": "The OpenSSL public API function X509_issuer_and_serial_hash() attempts to create a unique hash value based on the issuer and serial number data contained within an X509 certificate. However it fails to correctly handle any errors that may occur while parsing the issuer field (which might occur if the issuer field is maliciously constructed). This may subsequently result in a NULL pointer deref and a crash leading to a potential denial of service attack. The function X509_issuer_and_serial_hash() is never directly called by OpenSSL itself so applications are only vulnerable if they use this function directly and they use it on certificates that may have been obtained from untrusted sources. OpenSSL versions 1.1.1i and below are affected by this issue. Users of these versions should upgrade to OpenSSL 1.1.1j. OpenSSL versions 1.0.2x and below are affected by this issue. However OpenSSL 1.0.2 is out of support and no longer receiving public updates. Premium support customers of OpenSSL 1.0.2 should upgrade to 1.0.2y. Other users should upgrade to 1.1.1j. Fixed in OpenSSL 1.1.1j (Affected 1.1.1-1.1.1i). Fixed in OpenSSL 1.0.2y (Affected 1.0.2-1.0.2x)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2021-3449",
-          "ruleIndex": 11,
-          "level": "warning",
-          "message": {
-            "text": "An OpenSSL TLS server may crash if sent a maliciously crafted renegotiation ClientHello message from a client. If a TLSv1.2 renegotiation ClientHello omits the signature_algorithms extension (where it was present in the initial ClientHello), but includes a signature_algorithms_cert extension then a NULL pointer dereference will result, leading to a crash and a denial of service attack. A server is only vulnerable if it has TLSv1.2 and renegotiation enabled (which is the default configuration). OpenSSL TLS clients are not impacted by this issue. All OpenSSL 1.1.1 versions are affected by this issue. Users of these versions should upgrade to OpenSSL 1.1.1k. OpenSSL 1.0.2 is not impacted by this issue. Fixed in OpenSSL 1.1.1k (Affected 1.1.1-1.1.1j)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               },
               "region" : {
@@ -633,91 +157,15 @@
         },
         {
           "ruleId": "CVE-2019-1563",
-          "ruleIndex": 12,
-          "level": "note",
+          "ruleIndex": 2,
+          "level": "warning",
           "message": {
             "text": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s)."
           },
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2021-23839",
-          "ruleIndex": 13,
-          "level": "note",
-          "message": {
-            "text": "OpenSSL 1.0.2 supports SSLv2. If a client attempts to negotiate SSLv2 with a server that is configured to support both SSLv2 and more recent SSL and TLS versions then a check is made for a version rollback attack when unpadding an RSA signature. Clients that support SSL or TLS versions greater than SSLv2 are supposed to use a special form of padding. A server that supports greater than SSLv2 is supposed to reject connection attempts from a client where this special form of padding is present, because this indicates that a version rollback has occurred (i.e. both client and server support greater than SSLv2, and yet this is the version that is being requested). The implementation of this padding check inverted the logic so that the connection attempt is accepted if the padding is present, and rejected if it is absent. This means that such as server will accept a connection if a version rollback attack has occurred. Further the server will erroneously reject a connection if a normal SSLv2 connection attempt is made. Only OpenSSL 1.0.2 servers from version 1.0.2s to 1.0.2x are affected by this issue. In order to be vulnerable a 1.0.2 server must: 1) have configured SSLv2 support at compile time (this is off by default), 2) have configured SSLv2 support at runtime (this is off by default), 3) have configured SSLv2 ciphersuites (these are not in the default ciphersuite list) OpenSSL 1.1.1 does not have SSLv2 support and therefore is not vulnerable to this issue. The underlying error is in the implementation of the RSA_padding_check_SSLv23() function. This also affects the RSA_SSLV23_PADDING padding mode used by various other functions. Although 1.1.1 does not support SSLv2 the RSA_padding_check_SSLv23() function still exists, as does the RSA_SSLV23_PADDING padding mode. Applications that directly call that function or use that padding mode will encounter this issue. However since there is no support for the SSLv2 protocol in 1.1.1 this is considered a bug and not a security issue in that version. OpenSSL 1.0.2 is out of support and no longer receiving public updates. Premium support customers of OpenSSL 1.0.2 should upgrade to 1.0.2y. Other users should upgrade to 1.1.1j. Fixed in OpenSSL 1.0.2y (Affected 1.0.2s-1.0.2x)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2020-1967",
-          "ruleIndex": 3,
-          "level": "error",
-          "message": {
-            "text": "Server or client applications that call the SSL_check_chain() function during or after a TLS 1.3 handshake may crash due to a NULL pointer dereference as a result of incorrect handling of the &#34;signature_algorithms_cert&#34; TLS extension. The crash occurs if an invalid or unrecognised signature algorithm is received from the peer. This could be exploited by a malicious peer in a Denial of Service attack. OpenSSL version 1.1.1d, 1.1.1e, and 1.1.1f are affected by this issue. This issue did not affect OpenSSL versions prior to 1.1.1d. Fixed in OpenSSL 1.1.1g (Affected 1.1.1d-1.1.1f)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2021-23840",
-          "ruleIndex": 4,
-          "level": "error",
-          "message": {
-            "text": "Calls to EVP_CipherUpdate, EVP_EncryptUpdate and EVP_DecryptUpdate may overflow the output length argument in some cases where the input length is close to the maximum permissable length for an integer on the platform. In such cases the return value from the function call will be 1 (indicating success), but the output length value will be negative. This could cause applications to behave incorrectly or crash. OpenSSL versions 1.1.1i and below are affected by this issue. Users of these versions should upgrade to OpenSSL 1.1.1j. OpenSSL versions 1.0.2x and below are affected by this issue. However OpenSSL 1.0.2 is out of support and no longer receiving public updates. Premium support customers of OpenSSL 1.0.2 should upgrade to 1.0.2y. Other users should upgrade to 1.1.1j. Fixed in OpenSSL 1.1.1j (Affected 1.1.1-1.1.1i). Fixed in OpenSSL 1.0.2y (Affected 1.0.2-1.0.2x)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2021-3450",
-          "ruleIndex": 5,
-          "level": "error",
-          "message": {
-            "text": "The X509_V_FLAG_X509_STRICT flag enables additional security checks of the certificates present in a certificate chain. It is not set by default. Starting from OpenSSL version 1.1.1h a check to disallow certificates in the chain that have explicitly encoded elliptic curve parameters was added as an additional strict check. An error in the implementation of this check meant that the result of a previous check to confirm that certificates in the chain are valid CA certificates was overwritten. This effectively bypasses the check that non-CA certificates must not be able to issue other certificates. If a &#34;purpose&#34; has been configured then there is a subsequent opportunity for checks that the certificate is a valid CA. All of the named &#34;purpose&#34; values implemented in libcrypto perform this check. Therefore, where a purpose is set the certificate chain will still be rejected even when the strict flag has been used. A purpose is set by default in libssl client and server certificate verification routines, but it can be overridden or removed by an application. In order to be affected, an application must explicitly set the X509_V_FLAG_X509_STRICT verification flag and either not set a purpose for the certificate verification or, in the case of TLS client or server applications, override the default purpose. OpenSSL versions 1.1.1h and newer are affected by this issue. Users of these versions should upgrade to OpenSSL 1.1.1k. OpenSSL 1.0.2 is not impacted by this issue. Fixed in OpenSSL 1.1.1k (Affected 1.1.1h-1.1.1j)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               },
               "region" : {
@@ -728,15 +176,15 @@
         },
         {
           "ruleId": "CVE-2019-1547",
-          "ruleIndex": 6,
-          "level": "warning",
+          "ruleIndex": 3,
+          "level": "note",
           "message": {
             "text": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s)."
           },
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               },
               "region" : {
@@ -747,7 +195,7 @@
         },
         {
           "ruleId": "CVE-2019-1549",
-          "ruleIndex": 7,
+          "ruleIndex": 0,
           "level": "warning",
           "message": {
             "text": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c)."
@@ -755,7 +203,7 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               },
               "region" : {
@@ -766,72 +214,15 @@
         },
         {
           "ruleId": "CVE-2019-1551",
-          "ruleIndex": 8,
+          "ruleIndex": 1,
           "level": "warning",
           "message": {
-            "text": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t)."
+            "text": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e-dev (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u-dev (Affected 1.0.2-1.0.2t)."
           },
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2020-1971",
-          "ruleIndex": 9,
-          "level": "warning",
-          "message": {
-            "text": "The X.509 GeneralName type is a generic type for representing different types of names. One of those name types is known as EDIPartyName. OpenSSL provides a function GENERAL_NAME_cmp which compares different instances of a GENERAL_NAME to see if they are equal or not. This function behaves incorrectly when both GENERAL_NAMEs contain an EDIPARTYNAME. A NULL pointer dereference and a crash may occur leading to a possible denial of service attack. OpenSSL itself uses the GENERAL_NAME_cmp function for two purposes: 1) Comparing CRL distribution point names between an available CRL and a CRL distribution point embedded in an X509 certificate 2) When verifying that a timestamp response token signer matches the timestamp authority name (exposed via the API functions TS_RESP_verify_response and TS_RESP_verify_token) If an attacker can control both items being compared then that attacker could trigger a crash. For example if the attacker can trick a client or server into checking a malicious certificate against a malicious CRL then this may occur. Note that some applications automatically download CRLs based on a URL embedded in a certificate. This checking happens prior to the signatures on the certificate and CRL being verified. OpenSSL&#39;s s_server, s_client and verify tools have support for the &#34;-crl_download&#34; option which implements automatic CRL downloading and this attack has been demonstrated to work against those tools. Note that an unrelated bug means that affected versions of OpenSSL cannot parse or construct correct encodings of EDIPARTYNAME. However it is possible to construct a malformed EDIPARTYNAME that OpenSSL&#39;s parser will accept and hence trigger this attack. All OpenSSL 1.1.1 and 1.0.2 versions are affected by this issue. Other OpenSSL releases are out of support and have not been checked. Fixed in OpenSSL 1.1.1i (Affected 1.1.1-1.1.1h). Fixed in OpenSSL 1.0.2x (Affected 1.0.2-1.0.2w)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2021-23841",
-          "ruleIndex": 10,
-          "level": "warning",
-          "message": {
-            "text": "The OpenSSL public API function X509_issuer_and_serial_hash() attempts to create a unique hash value based on the issuer and serial number data contained within an X509 certificate. However it fails to correctly handle any errors that may occur while parsing the issuer field (which might occur if the issuer field is maliciously constructed). This may subsequently result in a NULL pointer deref and a crash leading to a potential denial of service attack. The function X509_issuer_and_serial_hash() is never directly called by OpenSSL itself so applications are only vulnerable if they use this function directly and they use it on certificates that may have been obtained from untrusted sources. OpenSSL versions 1.1.1i and below are affected by this issue. Users of these versions should upgrade to OpenSSL 1.1.1j. OpenSSL versions 1.0.2x and below are affected by this issue. However OpenSSL 1.0.2 is out of support and no longer receiving public updates. Premium support customers of OpenSSL 1.0.2 should upgrade to 1.0.2y. Other users should upgrade to 1.1.1j. Fixed in OpenSSL 1.1.1j (Affected 1.1.1-1.1.1i). Fixed in OpenSSL 1.0.2y (Affected 1.0.2-1.0.2x)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2021-3449",
-          "ruleIndex": 11,
-          "level": "warning",
-          "message": {
-            "text": "An OpenSSL TLS server may crash if sent a maliciously crafted renegotiation ClientHello message from a client. If a TLSv1.2 renegotiation ClientHello omits the signature_algorithms extension (where it was present in the initial ClientHello), but includes a signature_algorithms_cert extension then a NULL pointer dereference will result, leading to a crash and a denial of service attack. A server is only vulnerable if it has TLSv1.2 and renegotiation enabled (which is the default configuration). OpenSSL TLS clients are not impacted by this issue. All OpenSSL 1.1.1 versions are affected by this issue. Users of these versions should upgrade to OpenSSL 1.1.1k. OpenSSL 1.0.2 is not impacted by this issue. Fixed in OpenSSL 1.1.1k (Affected 1.1.1-1.1.1j)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               },
               "region" : {
@@ -842,15 +233,15 @@
         },
         {
           "ruleId": "CVE-2019-1563",
-          "ruleIndex": 12,
-          "level": "note",
+          "ruleIndex": 2,
+          "level": "warning",
           "message": {
             "text": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s)."
           },
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               },
               "region" : {
@@ -860,73 +251,16 @@
           }]
         },
         {
-          "ruleId": "CVE-2021-23839",
-          "ruleIndex": 13,
+          "ruleId": "CVE-2019-1547",
+          "ruleIndex": 3,
           "level": "note",
           "message": {
-            "text": "OpenSSL 1.0.2 supports SSLv2. If a client attempts to negotiate SSLv2 with a server that is configured to support both SSLv2 and more recent SSL and TLS versions then a check is made for a version rollback attack when unpadding an RSA signature. Clients that support SSL or TLS versions greater than SSLv2 are supposed to use a special form of padding. A server that supports greater than SSLv2 is supposed to reject connection attempts from a client where this special form of padding is present, because this indicates that a version rollback has occurred (i.e. both client and server support greater than SSLv2, and yet this is the version that is being requested). The implementation of this padding check inverted the logic so that the connection attempt is accepted if the padding is present, and rejected if it is absent. This means that such as server will accept a connection if a version rollback attack has occurred. Further the server will erroneously reject a connection if a normal SSLv2 connection attempt is made. Only OpenSSL 1.0.2 servers from version 1.0.2s to 1.0.2x are affected by this issue. In order to be vulnerable a 1.0.2 server must: 1) have configured SSLv2 support at compile time (this is off by default), 2) have configured SSLv2 support at runtime (this is off by default), 3) have configured SSLv2 ciphersuites (these are not in the default ciphersuite list) OpenSSL 1.1.1 does not have SSLv2 support and therefore is not vulnerable to this issue. The underlying error is in the implementation of the RSA_padding_check_SSLv23() function. This also affects the RSA_SSLV23_PADDING padding mode used by various other functions. Although 1.1.1 does not support SSLv2 the RSA_padding_check_SSLv23() function still exists, as does the RSA_SSLV23_PADDING padding mode. Applications that directly call that function or use that padding mode will encounter this issue. However since there is no support for the SSLv2 protocol in 1.1.1 this is considered a bug and not a security issue in that version. OpenSSL 1.0.2 is out of support and no longer receiving public updates. Premium support customers of OpenSSL 1.0.2 should upgrade to 1.0.2y. Other users should upgrade to 1.1.1j. Fixed in OpenSSL 1.0.2y (Affected 1.0.2s-1.0.2x)."
+            "text": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s)."
           },
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2020-28928",
-          "ruleIndex": 14,
-          "level": "warning",
-          "message": {
-            "text": "In musl libc through 1.2.1, wcsnrtombs mishandles particular combinations of destination buffer size and source character limit, as demonstrated by an invalid write access (buffer overflow)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2020-28928",
-          "ruleIndex": 14,
-          "level": "warning",
-          "message": {
-            "text": "In musl libc through 1.2.1, wcsnrtombs mishandles particular combinations of destination buffer size and source character limit, as demonstrated by an invalid write access (buffer overflow)."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
-              }
-            }
-          }]
-        },
-        {
-          "ruleId": "CVE-2021-28831",
-          "ruleIndex": 2,
-          "level": "error",
-          "message": {
-            "text": "decompress_gunzip.c in BusyBox through 1.32.1 mishandles the error bit on the huft_build result pointer, with a resultant invalid free or segmentation fault, via malformed gzip data."
-          },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
+                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               },
               "region" : {
