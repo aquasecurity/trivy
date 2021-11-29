@@ -38,6 +38,7 @@ func TestNewArtifact(t *testing.T) {
 	type args struct {
 		rawurl string
 		c      cache.ArtifactCache
+		quiet  bool
 	}
 	tests := []struct {
 		name    string
@@ -49,6 +50,15 @@ func TestNewArtifact(t *testing.T) {
 			args: args{
 				rawurl: ts.URL + "/test.git",
 				c:      nil,
+				quiet:  false,
+			},
+		},
+		{
+			name: "happy quiet",
+			args: args{
+				rawurl: ts.URL + "/test.git",
+				c:      nil,
+				quiet:  true,
 			},
 		},
 		{
@@ -56,6 +66,7 @@ func TestNewArtifact(t *testing.T) {
 			args: args{
 				rawurl: ts.URL + "/unknown.git",
 				c:      nil,
+				quiet:  false,
 			},
 			wantErr: true,
 		},
@@ -64,6 +75,7 @@ func TestNewArtifact(t *testing.T) {
 			args: args{
 				rawurl: "ht tp://foo.com",
 				c:      nil,
+				quiet:  false,
 			},
 			wantErr: true,
 		},
@@ -71,7 +83,7 @@ func TestNewArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{}, config.ScannerOption{})
+			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{Quiet: tt.args.quiet}, config.ScannerOption{})
 			assert.Equal(t, tt.wantErr, err != nil)
 			defer cleanup()
 		})
