@@ -1,67 +1,82 @@
-name: Publish Chart Helm
+
+name: Publish Helm chart
+
 on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'helm/trivy/**'
   push:
     branches: [main]
     paths:
       - 'helm/trivy/**'
-  workflow_dispatch:
 env:
   HELM_REP: helm-charts
   GH_OWNER: aquasecurity
   CHART_DIR: helm/trivy
   KIND_VERSION: "v0.11.1"
-  KIND_IMAGE: "kindest/node:v1.21.1@sha256:69860bda5563ac81e3c0057d654b5253219618a22ec3a346306239bba8cfa1a6"  
+  KIND_IMAGE: "kindest/node:v1.21.1@sha256:69860bda5563ac81e3c0057d654b5253219618a22ec3a346306239bba8cfa1a6"
 jobs:
-  release:
+  test-chart:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
         with:
           fetch-depth: 0
       - name: Install Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@18bc76811624f360dbd7f18c2d4ecb32c7b87bab #v1.1
         with:
           version: v3.5.0
       - name: Set up python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@0066b88440aa9562be742e2c60ee750fc57d8849 #v2.3.0
         with:
           python-version: 3.7
       - name: Setup Chart Linting
         id: lint
-        uses: helm/chart-testing-action@v2.1.0
+        uses: helm/chart-testing-action@5f16c27cf7a4fa9c776ff73734df3909b2b65127 #v2.1.0
       - name: Setup Kubernetes cluster (KIND)
-        uses: engineerd/setup-kind@v0.5.0
+        uses: helm/kind-action@94729529f85113b88f4f819c17ce61382e6d8478 #v1.2.0
         with:
           version: ${{ env.KIND_VERSION }}
           image: ${{ env.KIND_IMAGE }}
-      - name: Run chart-testing (w/Ingress)
+      - name: Run chart-testing
         run: ct lint-and-install --validate-maintainers=false --charts helm/trivy
-
-      - name: Run chart-testing (Ingress)
+      - name: Run chart-testing (Ingress enabled)
         run: |
           sed -i -e '97s,false,'true',g' ./helm/trivy/values.yaml
           ct lint-and-install --validate-maintainers=false --charts helm/trivy
 
+  publish-chart:
+    if: github.event_name == 'push'
+    needs:
+      - test-chart
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2.4.0
+        with:
+          fetch-depth: 0
       - name: Install chart-releaser
         run: |
-          wget https://github.com/helm/chart-releaser/releases/download/v1.1.1/chart-releaser_1.1.1_linux_amd64.tar.gz
-          tar xzvf chart-releaser_1.1.1_linux_amd64.tar.gz cr
+          wget https://github.com/helm/chart-releaser/releases/download/v1.3.0/chart-releaser_1.3.0_linux_amd64.tar.gz
+          echo "baed2315a9bb799efb71d512c5198a2a3b8dcd139d7f22f878777cffcd649a37  chart-releaser_1.3.0_linux_amd64.tar.gz" | sha256sum -c -
+          tar xzvf chart-releaser_1.3.0_linux_amd64.tar.gz cr
       - name: Package helm chart
         run: |
           ./cr package ${{ env.CHART_DIR }}
       - name: Upload helm chart
         # Failed with upload the same version: https://github.com/helm/chart-releaser/issues/101
         continue-on-error: true
-        ## Upload the tar in the Releases repository
         run: |
           ./cr upload -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} --token ${{ secrets.ORG_REPO_TOKEN }} -p .cr-release-packages
       - name: Index helm chart
         run: |
           ./cr index -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} -c https://${{ env.GH_OWNER }}.github.io/${{ env.HELM_REP }}/ -i index.yaml
-
       - name: Push index file
-        uses: dmnemec/copy_file_to_another_repo_action@v1.1.1
+        uses: dmnemec/copy_file_to_another_repo_action@c93037aa10fa8893de271f19978c980d0c1a9b37 #v1.1.1
         env:
           API_TOKEN_GITHUB: ${{ secrets.ORG_REPO_TOKEN }}
         with:
