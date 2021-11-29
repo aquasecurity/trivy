@@ -99,7 +99,7 @@ dockers:
       - "ghcr.io/aquasecurity/trivy:latest-amd64"
       - "public.ecr.aws/aquasecurity/trivy:latest-amd64"
       - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}-amd64"
-    use_buildx: true
+    use: buildx
     goos: linux
     goarch: amd64
     ids:
@@ -123,7 +123,7 @@ dockers:
       - "ghcr.io/aquasecurity/trivy:latest-arm64"
       - "public.ecr.aws/aquasecurity/trivy:latest-arm64"
       - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}-arm64"
-    use_buildx: true
+    use: buildx
     goos: linux
     goarch: arm64
     ids:
