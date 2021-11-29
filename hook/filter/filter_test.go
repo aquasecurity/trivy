@@ -138,6 +138,7 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 			blob: &types.BlobInfo{
 				Applications: []types.Application{
 					{
+						Type:     types.PythonPkg,
 						FilePath: "usr/lib/python2.7/lib-dynload/Python-2.7.egg-info",
 						Libraries: []types.Package{
 							{
@@ -150,6 +151,40 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 				},
 			},
 			want: &types.BlobInfo{},
+		},
+		{
+			name: "go is not affected",
+			blob: &types.BlobInfo{
+				Applications: []types.Application{
+					{
+						Type:     "gobinary",
+						FilePath: "usr/local/bin/goreleaser",
+						Libraries: []types.Package{
+							{
+								Name:    "github.com/sassoftware/go-rpmutils",
+								Version: "v0.0.0-20190420191620-a8f1baeba37b",
+							},
+						},
+					},
+				},
+				SystemFiles: []string{
+					"usr/local/bin/goreleaser",
+				},
+			},
+			want: &types.BlobInfo{
+				Applications: []types.Application{
+					{
+						Type:     "gobinary",
+						FilePath: "usr/local/bin/goreleaser",
+						Libraries: []types.Package{
+							{
+								Name:    "github.com/sassoftware/go-rpmutils",
+								Version: "v0.0.0-20190420191620-a8f1baeba37b",
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
