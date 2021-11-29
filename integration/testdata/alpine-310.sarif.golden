@@ -196,13 +196,13 @@
                   "id": "CVE-2019-1549",
                   "name": "OsPackageVulnerability",
                   "shortDescription": {
-                    "text": "CVE-2021-36159"
+                    "text": "CVE-2019-1549"
                   },
                   "fullDescription": {
-                    "text": "."
+                    "text": "openssl: information disclosure in fork()."
                   },
                   "defaultConfiguration": {
-                    "level": "error"
+                    "level": "warning"
                   },
                   "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1549",
                   "help": {
@@ -396,16 +396,6 @@
                       "vulnerability",
                       "MEDIUM",
                       "musl"
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2021-36159",
-                  "help": {
-                    "text": "Vulnerability CVE-2021-36159\nSeverity: CRITICAL\nPackage: apk-tools\nInstalled Version: 2.10.6-r0\nFixed Version: 2.10.7-r0\nLink: [CVE-2021-36159](https://avd.aquasec.com/nvd/cve-2021-36159)",
-                    "markdown": "**Vulnerability CVE-2021-36159**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|CRITICAL|apk-tools|2.10.6-r0|2.10.7-r0|[CVE-2021-36159](https://avd.aquasec.com/nvd/cve-2021-36159)|\n"
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "CRITICAL",
-                      "apk-tools"
                     ],
                     "precision": "very-high"
                   }
@@ -936,6 +926,7 @@
           "locations": [{
             "physicalLocation": {
               "artifactLocation": {
+                "uri": "integration/testdata/fixtures/images/alpine-310.tar.gz",
                 "uriBaseId": "ROOTPATH"
               },
               "region" : {
