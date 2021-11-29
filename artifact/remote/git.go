@@ -36,12 +36,19 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 		return nil, cleanup, err
 	}
 
-	_, err = git.PlainClone(tmpDir, false, &git.CloneOptions{
+	cloneOptions := git.CloneOptions{
 		URL:      u.String(),
 		Auth:     gitAuth(),
 		Progress: os.Stdout,
 		Depth:    1,
-	})
+	}
+
+	// suppress clone output if quiet
+	if artifactOpt.Quiet {
+		cloneOptions.Progress = nil
+	}
+
+	_, err = git.PlainClone(tmpDir, false, &cloneOptions)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("git error: %w", err)
 	}
