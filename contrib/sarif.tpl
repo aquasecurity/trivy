@@ -39,10 +39,15 @@
                   {{- else -}}
                   ,
                   {{- end }}
+                  "help": {
+                    "text": {{ printf "Vulnerability %v\nSeverity: %v\nPackage: %v\nInstalled Version: %v\nFixed Version: %v\nLink: [%v](%v)" .VulnerabilityID .Vulnerability.Severity .PkgName .InstalledVersion .FixedVersion .VulnerabilityID .PrimaryURL | printf "%q"}},
+                    "markdown": {{ printf "**Vulnerability %v**\n| Severity | Package | Installed Version | Fixed Version | Link |\n| --- | --- | --- | --- | --- |\n|%v|%v|%v|%v|[%v](%v)|\n" .VulnerabilityID .Vulnerability.Severity .PkgName .InstalledVersion .FixedVersion .VulnerabilityID .PrimaryURL | printf "%q"}}
+                  },
                   "properties": {
                     "tags": [
                       "vulnerability",
-                      "{{ .Vulnerability.Severity }}"
+                      "{{ .Vulnerability.Severity }}",
+                      {{ .PkgName | printf "%q" }}
                     ],
                     "precision": "very-high"
                   }
