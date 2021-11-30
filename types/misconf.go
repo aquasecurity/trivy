@@ -30,8 +30,10 @@ type MisconfResults []MisconfResult
 
 type IacMetadata struct {
 	Resource  string `json:",omitempty"`
-	StartLine int `json:",omitempty"`
-	EndLine   int `json:",omitempty"`
+	Provider  string `json:",omitempty"`
+	Service   string `json:",omitempty"`
+	StartLine int    `json:",omitempty"`
+	EndLine   int    `json:",omitempty"`
 }
 
 type PolicyMetadata struct {
