@@ -85,6 +85,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "S3Bucket",
+							Provider:  "AWS",
+							Service:   "s3",
 							StartLine: 12,
 							EndLine:   24,
 						},
@@ -101,6 +103,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 							References:         []string{"https://cfsec.dev/docs/s3/no-public-access-with-acl/#s3", "https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html"},
 						}, IacMetadata: types.IacMetadata{
 							Resource:  "S3Bucket",
+							Provider:  "AWS",
+							Service:   "s3",
 							StartLine: 12,
 							EndLine:   24,
 						},
@@ -118,6 +122,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "S3Bucket",
+							Provider:  "AWS",
+							Service:   "s3",
 							StartLine: 12,
 							EndLine:   24,
 						},
@@ -137,8 +143,10 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "S3Bucket",
-							StartLine: 12,
-							EndLine:   24,
+							Provider:  "AWS",
+							Service:   "s3",
+							StartLine: 18,
+							EndLine:   18,
 						},
 					},
 					{
@@ -154,8 +162,10 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "S3Bucket",
-							StartLine: 12,
-							EndLine:   24,
+							Provider:  "AWS",
+							Service:   "s3",
+							StartLine: 19,
+							EndLine:   19,
 						},
 					},
 					{
@@ -171,7 +181,9 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "S3Bucket",
-							StartLine: 12,
+							Provider:  "AWS",
+							Service:   "s3",
+							StartLine: 24,
 							EndLine:   24,
 						},
 					},
@@ -188,6 +200,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "S3Bucket",
+							Provider:  "AWS",
+							Service:   "s3",
 							StartLine: 12,
 							EndLine:   24,
 						},
@@ -205,6 +219,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "S3Bucket",
+							Provider:  "AWS",
+							Service:   "s3",
 							StartLine: 12,
 							EndLine:   24,
 						},
@@ -222,8 +238,10 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "S3Bucket",
-							StartLine: 12,
-							EndLine:   24,
+							Provider:  "AWS",
+							Service:   "s3",
+							StartLine: 21,
+							EndLine:   21,
 						},
 					},
 				},
@@ -253,6 +271,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "aws_security_group_rule.my-rule",
+							Provider:  "AWS",
+							Service:   "vpc",
 							StartLine: 1,
 							EndLine:   4,
 						},
@@ -268,6 +288,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "aws_security_group_rule.my-rule",
+							Provider:  "AWS",
+							Service:   "vpc",
 							StartLine: 1,
 							EndLine:   4,
 						},
@@ -283,6 +305,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "aws_security_group_rule.my-rule",
+							Provider:  "General",
+							Service:   "secrets",
 							StartLine: 1,
 							EndLine:   4,
 						},
@@ -298,6 +322,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "azurerm_managed_disk.source",
+							Provider:  "General",
+							Service:   "secrets",
 							StartLine: 10,
 							EndLine:   14,
 						},
@@ -313,6 +339,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "aws_security_group_rule.my-rule",
+							Provider:  "General",
+							Service:   "secrets",
 							StartLine: 1,
 							EndLine:   4,
 						},
@@ -328,6 +356,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "azurerm_managed_disk.source",
+							Provider:  "General",
+							Service:   "secrets",
 							StartLine: 10,
 							EndLine:   14,
 						},
@@ -344,6 +374,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "variable.enableEncryption",
+							Provider:  "General",
+							Service:   "secrets",
 							StartLine: 6,
 							EndLine:   8,
 						},
@@ -359,6 +391,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "variable.enableEncryption",
+							Provider:  "General",
+							Service:   "secrets",
 							StartLine: 6,
 							EndLine:   8,
 						},
@@ -375,7 +409,7 @@ func TestScanner_ScanConfig(t *testing.T) {
 							RecommendedActions: "Add descriptions for all security groups and rules",
 							Severity:           "LOW",
 							References: []string{
-								"https://tfsec.dev/docs/aws/vpc/add-description-to-security-group#aws/vpc",
+								"https://aquasecurity.github.io/tfsec/latest/checks/aws/vpc/add-description-to-security-group",
 								"https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group",
 								"https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule",
 								"https://www.cloudconformity.com/knowledge-base/aws/EC2/security-group-rules-description.html",
@@ -383,6 +417,8 @@ func TestScanner_ScanConfig(t *testing.T) {
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "aws_security_group_rule.my-rule",
+							Provider:  "AWS",
+							Service:   "vpc",
 							StartLine: 1,
 							EndLine:   4,
 						},
@@ -397,13 +433,15 @@ func TestScanner_ScanConfig(t *testing.T) {
 							RecommendedActions: "Set a more restrictive cidr range",
 							Severity:           "CRITICAL",
 							References: []string{
-								"https://tfsec.dev/docs/aws/vpc/no-public-ingress-sgr#aws/vpc",
+								"https://aquasecurity.github.io/tfsec/latest/checks/aws/vpc/no-public-ingress-sgr",
 								"https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule#cidr_blocks",
 								"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html",
 							},
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "aws_security_group_rule.my-rule",
+							Provider:  "AWS",
+							Service:   "vpc",
 							StartLine: 3,
 							EndLine:   3,
 						},
@@ -418,13 +456,15 @@ func TestScanner_ScanConfig(t *testing.T) {
 							RecommendedActions: "Enable encryption on managed disks",
 							Severity:           "HIGH",
 							References: []string{
-								"https://tfsec.dev/docs/azure/compute/enable-disk-encryption#azure/compute",
+								"https://aquasecurity.github.io/tfsec/latest/checks/azure/compute/enable-disk-encryption",
 								"https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/managed_disk",
 								"https://docs.microsoft.com/en-us/azure/virtual-machines/linux/disk-encryption",
 							},
 						},
 						IacMetadata: types.IacMetadata{
 							Resource:  "azurerm_managed_disk.source",
+							Provider:  "Azure",
+							Service:   "compute",
 							StartLine: 12,
 							EndLine:   12,
 						},
