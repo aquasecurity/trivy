@@ -24,7 +24,7 @@ The JSON file specified should have the following format provided by google's se
 ```
 
 # Usage
-If you want to use target project's repository, you can settle via `GOOGLE_APPLICATION_CREDENTIALS`.
+If you want to use target project's repository, you can set them via `GOOGLE_APPLICATION_CREDENTIALS`.
 ```bash
 # must set TRIVY_USERNAME empty char
 export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credential.json
