@@ -6,7 +6,7 @@ Credential file should have the `roles/storage.objectViewer` permissions.
 More information can be found in [Google's documentation](https://cloud.google.com/container-registry/docs/access-control)
 
 ## JSON File Format
-The JSON file specified has the following format (to know you are on the right track):
+The JSON file specified should have the following format provided by google's service account mechanisms:
 
 ```json
 {
