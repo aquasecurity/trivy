@@ -3,7 +3,7 @@ None, Trivy uses Google Cloud SDK. You don't need to install `gcloud` command.
 
 # Privileges
 Credential file should have the `roles/storage.objectViewer` permissions.
-More information can be found one [Google's documentation](https://cloud.google.com/container-registry/docs/access-control)
+More information can be found in [Google's documentation](https://cloud.google.com/container-registry/docs/access-control)
 
 ## JSON File Format
 The JSON file specified has the following format (to know you are on the right track):
