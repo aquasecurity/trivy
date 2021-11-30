@@ -135,7 +135,7 @@ func (s Scanner) scanCloudFormationByCFSec(files []types.Config) ([]types.Miscon
 			misconfResult := types.MisconfResult{
 				Message: result.Description,
 				PolicyMetadata: types.PolicyMetadata{
-					ID:                 result.AVDID,
+					ID:                 result.RuleID,
 					Type:               "Cloudformation Security Check powered by cfsec",
 					Title:              result.RuleSummary,
 					Description:        result.Impact,
@@ -145,14 +145,21 @@ func (s Scanner) scanCloudFormationByCFSec(files []types.Config) ([]types.Miscon
 				},
 				IacMetadata: types.IacMetadata{
 					Resource:  result.Resource,
+					Provider:  result.RuleProvider.DisplayName(),
+					Service:   result.RuleService,
 					StartLine: result.Location.StartLine,
 					EndLine:   result.Location.EndLine,
 				},
 			}
 
-			filePath, err := filepath.Rel(rootDir, result.Location.Filename)
+			filename := result.Location.Filename
+			if filename == "" {
+				filename = file.FilePath
+			}
+
+			filePath, err := filepath.Rel(rootDir, filename)
 			if err != nil {
-				return nil, xerrors.Errorf("filepath rel: %w", err)
+				return nil, xerrors.Errorf("filepath rel, root: [%s], result: [%s] %w", rootDir, file.FilePath, err)
 			}
 
 			misconf, ok := misConfs[filePath]
@@ -211,11 +218,12 @@ func (s Scanner) scanTerraformByTFSec(files []types.Config) ([]types.Misconfigur
 			},
 			IacMetadata: types.IacMetadata{
 				Resource:  result.Resource,
+				Provider:  result.RuleProvider.DisplayName(),
+				Service:   result.RuleService,
 				StartLine: result.Location.StartLine,
 				EndLine:   result.Location.EndLine,
 			},
 		}
-
 		filePath, err := filepath.Rel(rootDir, result.Range().Filename)
 		if err != nil {
 			return nil, xerrors.Errorf("filepath rel: %w", err)
