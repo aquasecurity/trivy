@@ -39,6 +39,10 @@
                   {{- else -}}
                   ,
                   {{- end }}
+                  "help": {
+                    "text": {{ printf "Vulnerability %v\n%v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)" .VulnerabilityID .Vulnerability.Description .Vulnerability.Severity .PkgName .FixedVersion .VulnerabilityID .PrimaryURL | printf "%q"}},                    
+                    "markdown": {{ printf "**Vulnerability %v**\n%v\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n" .VulnerabilityID .Vulnerability.Description .Vulnerability.Severity .PkgName .FixedVersion .VulnerabilityID .PrimaryURL | printf "%q"}}                    
+                  },
                   "properties": {
                     "tags": [
                       "vulnerability",
@@ -68,7 +72,7 @@
           "ruleIndex": {{ index $rules .VulnerabilityID }},
           "level": "{{ toSarifErrorLevel $vulnerability.Vulnerability.Severity }}",
           "message": {
-            "text": {{ endWithPeriod (escapeString $vulnerability.Description) | printf "%q" }}
+            "text": {{ printf "Package: %v\nInstalled Version: %v\nVulnerability %v\nSeverity: %v\nFixed Version: %v\nLink: [%v](%v)" .PkgName .InstalledVersion .VulnerabilityID .Vulnerability.Severity .FixedVersion .VulnerabilityID .PrimaryURL | printf "%q"}}
           },
           "locations": [{
             "physicalLocation": {
