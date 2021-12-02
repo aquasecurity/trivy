@@ -119,6 +119,8 @@ func Write(report Report, option Option) error {
 		if writer, err = NewTemplateWriter(option.Output, option.OutputTemplate); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
+	case "sarif":
+		writer = SarifWriter{Output: option.Output}
 	default:
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}
