@@ -61,7 +61,7 @@ $ trivy image --skip-update alpine:3.12
 
 ### Download misconfiguration policies
 At first, you need to download misconfiguration policies for use in air-gapped environments.
-Go to [oras][oras] and install it. Download `bundle.tar.gz`:
+Follow to [oras installation instruction][oras]. Download `bundle.tar.gz`:
 
 ```
 $ oras pull ghcr.io/aquasecurity/appshield:latest -a
