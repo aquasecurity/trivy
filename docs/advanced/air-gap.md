@@ -1,6 +1,6 @@
 # Air-Gapped Environment
 
-Trivy can be used in air-gapped environments. 
+Trivy can be used in air-gapped environments.
 
 
 ## Air-Gapped Environment for vulnerabilities
