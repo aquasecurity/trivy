@@ -111,7 +111,7 @@ In an air-gapped environment it is your responsibility to update policies on a r
 In an air-gapped environment, specify `--skip-policy-update` so that Trivy doesn't attempt to download the latest misconfiguration policies.
 
 ```
-$ trivy --skip-policy-update
+$ trivy conf --skip-policy-update /path/to/conf
 ```
 
 [trivy-db]: https://github.com/aquasecurity/trivy-db/releases
