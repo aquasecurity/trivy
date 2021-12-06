@@ -198,8 +198,6 @@ github.com/aquasecurity/go-dep-parser v0.0.0-20211110174639-8257534ffed3 h1:zYNh
 github.com/aquasecurity/go-dep-parser v0.0.0-20211110174639-8257534ffed3/go.mod h1:Zc7Eo6tFl9l4XcqsWeabD7jHnXRBK/LdgZuu9GTSVLU=
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516 h1:moQmzbpLo5dxHQCyEhqzizsDSNrNhn/7uRTCZzo4A1o=
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516/go.mod h1:gTd97VdQ0rg8Mkiic3rPgNOQdprZ7feTAhiD5mGQjgM=
-github.com/aquasecurity/tfsec v0.61.3 h1:jaBuFaq/0YDDqHeTR+SkD/A1XShN0+9W9/rPGlw7kmQ=
-github.com/aquasecurity/tfsec v0.61.3/go.mod h1:MR3uDlWu+fBTisFndR+NwjSGt06RBhkE++JzKRJ0Ggs=
 github.com/aquasecurity/tfsec v0.61.4-0.20211130135821-0a1997e494fa h1:mgG6allqccyBmaE0qnWFl39ju156yqNVTd0D/xwuVko=
 github.com/aquasecurity/tfsec v0.61.4-0.20211130135821-0a1997e494fa/go.mod h1:MR3uDlWu+fBTisFndR+NwjSGt06RBhkE++JzKRJ0Ggs=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
