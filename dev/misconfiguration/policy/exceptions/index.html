@@ -16,7 +16,7 @@
         
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.1+insiders-4.0.0">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.4+insiders-4.3.0">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.c296cc61.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.16e430b9.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.fe799546.min.css">
@@ -43,10 +43,9 @@
       
     
     
-    <script>function __md_scope(e,t,_){return new URL(_||(t===localStorage?"../../..":"../../.."),location).pathname+"."+e}function __md_get(e,t=localStorage,_){return JSON.parse(t.getItem(__md_scope(e,t,_)))}function __md_set(e,t,_=localStorage,o){try{_.setItem(__md_scope(e,_,o),JSON.stringify(t))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
-
 
     
     
@@ -79,9 +78,7 @@
     </div>
     
       <div data-md-component="outdated" hidden>
-        <aside class="md-banner md-banner--warning">
-          
-        </aside>
+        
       </div>
     
     
@@ -2160,7 +2157,7 @@ exception[ns] {
 </code></pre></div>
 </div>
 <p>This example exempts all built-in policies for Kubernetes.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/101d576025d2f2ddcd5971201253329202492ffe/examples/misconf/namespace-exception">an example</a>.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/3ae4de58699816bf6b08842b1333ddaf8af08ba3/examples/misconf/namespace-exception">an example</a>.</p>
 <h2 id="rule-based-exceptions">Rule-based exceptions</h2>
 <p>There are some cases where you need more flexibility and granularity in defining which cases to exempt.
 Rule-based exceptions lets you granularly choose which individual rules to exempt, while also declaring under which conditions to exempt them.</p>
@@ -2212,7 +2209,7 @@ exception[rules] {
 </div>
 <p>This exception is applied to <a href="https://github.com/aquasecurity/appshield/blob/57bccc1897b2500a731415bda3990b0d4fbc959e/kubernetes/policies/pss/restricted/3_runs_as_root.rego">KSV012</a> in AppShield.
 You can get the package names in <a href="https://github.com/aquasecurity/appshield/">AppShield repository</a> or the JSON output from Trivy.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/101d576025d2f2ddcd5971201253329202492ffe/examples/misconf/rule-exception">an example</a>.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/3ae4de58699816bf6b08842b1333ddaf8af08ba3/examples/misconf/rule-exception">an example</a>.</p>
 
 
 
@@ -2278,10 +2275,10 @@ You can get the package names in <a href="https://github.com/aquasecurity/appshi
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.81d897cb.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.51301f06.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.93302429.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.04e4bdfb.min.js"></script>
       
     
   </body>
