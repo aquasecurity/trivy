@@ -16,7 +16,7 @@
         
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.4+insiders-4.3.0">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.5+insiders-4.3.0">
     
     
       
@@ -66,6 +66,11 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#requirements" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -1801,6 +1806,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
       <a href="./" class="md-nav__link md-nav__link--active">
         GCR (Google Container Registry)
@@ -2041,6 +2048,24 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content" data-md-component="content">
             <article class="md-content__inner md-typeset">
@@ -2048,13 +2073,37 @@
                 
 
 
-  <h1>GCR (Google Container Registry)</h1>
-
-<p>Trivy uses Google Cloud SDK. You don't need to install <code>gcloud</code> command.</p>
-<p>If you want to use target project's repository, you can settle via <code>GOOGLE_APPLICATION_CREDENTIAL</code>.
+<h1 id="requirements">Requirements</h1>
+<p>None, Trivy uses Google Cloud SDK. You don't need to install <code>gcloud</code> command.</p>
+<h1 id="privileges">Privileges</h1>
+<p>Credential file must have the <code>roles/storage.objectViewer</code> permissions.
+More information can be found in <a href="https://cloud.google.com/container-registry/docs/access-control">Google's documentation</a></p>
+<h2 id="json-file-format">JSON File Format</h2>
+<p>The JSON file specified should have the following format provided by google's service account mechanisms:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;service_account&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;your_special_project&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;private_key_id&quot;</span><span class="p">:</span> <span class="s2">&quot;XXXXXXXXXXXXXXXXXXXXxx&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;private_key&quot;</span><span class="p">:</span> <span class="s2">&quot;-----BEGIN PRIVATE KEY-----\nNONONONO\n-----END PRIVATE KEY-----\n&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;client_email&quot;</span><span class="p">:</span> <span class="s2">&quot;somedude@your_special_project.iam.gserviceaccount.com&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;client_id&quot;</span><span class="p">:</span> <span class="s2">&quot;1234567890&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;auth_uri&quot;</span><span class="p">:</span> <span class="s2">&quot;https://accounts.google.com/o/oauth2/auth&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;token_uri&quot;</span><span class="p">:</span> <span class="s2">&quot;https://oauth2.googleapis.com/token&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;auth_provider_x509_cert_url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.googleapis.com/oauth2/v1/certs&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;client_x509_cert_url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.googleapis.com/robot/v1/metadata/x509/somedude%40your_special_project.iam.gserviceaccount.com&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h1 id="usage">Usage</h1>
+<p>If you want to use target project's repository, you can set them via <code>GOOGLE_APPLICATION_CREDENTIALS</code>.
 <div class="highlight"><pre><span></span><code><span class="c1"># must set TRIVY_USERNAME empty char</span>
 <span class="nb">export</span> <span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span>/path/to/credential.json
 </code></pre></div></p>
+<h1 id="testing">Testing</h1>
+<p>You can test credentials in the following manner (assuming they are in <code>/tmp</code> on host machine).</p>
+<div class="highlight"><pre><span></span><code>docker run -it --rm -v /tmp:/tmp<span class="se">\</span>
+  -e <span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span>/tmp/service_account.json<span class="se">\</span>
+  aquasec/trivy image gcr.io/your_special_project/your_special_image:your_special_tag
+</code></pre></div>
 
 
 
@@ -2123,7 +2172,7 @@
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.51301f06.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.04e4bdfb.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.bb54cbc5.min.js"></script>
       
     
   </body>
