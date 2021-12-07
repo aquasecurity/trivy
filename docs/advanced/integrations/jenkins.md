@@ -4,7 +4,7 @@ The result parser is included in an existing plugin called Warning NG (https://p
 
 Ensure that the plugin is installed, than you need to execute the scan in the shell
 ```
-sh "trivy image -f json -o results.json aquasec/trivy:0.19.2"
+sh "trivy image -f json -o results.json nginx:1.18"
 ```
 Now you cold collect the results immediatly or doing this in a post section on the stage or a post section at the end of he pipeline.
 ```
@@ -24,7 +24,7 @@ pipeline {
             // Or, to avoid YAML:
             containerTemplate {
                  name 'trivy'
-                 image 'aquasec/trivy:0.19.2'
+                 image 'aquasec/trivy:0.21.1'
                  command 'sleep'
                  args 'infinity'
             }
@@ -39,7 +39,7 @@ pipeline {
         
         stage('scan with trivy') {
             steps {
-                sh "trivy image -f json -o results.json aquasec/trivy:0.19.2"
+                sh "trivy image -f json -o results.json nginx:1.18"
                 recordIssues(tools: [trivy(pattern: 'results.json')])
             }
         }
