@@ -74,7 +74,6 @@ nav:
       - Integrations:
           - Overview: advanced/integrations/index.md
           - GitHub Actions: advanced/integrations/github-actions.md
-          - Semaphore: advanced/integrations/semaphoreci.md
           - CircleCI: advanced/integrations/circleci.md
           - Travis CI: advanced/integrations/travis-ci.md
           - GitLab CI: advanced/integrations/gitlab-ci.md
