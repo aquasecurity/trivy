@@ -120,7 +120,7 @@
         <th>Misconf ID</th>
         <th>Check</th>
         <th>Severity</th>
-        <th>Links</th>
+        <th>Message</th>
       </tr>
         {{- range .Misconfigurations }}
       <tr class="severity-{{ escapeXML .Severity }}">
@@ -128,10 +128,11 @@
         <td>{{ escapeXML .ID }}</td>
         <td class="misconf-check">{{ escapeXML .Title }}</td>
         <td class="severity">{{ escapeXML .Severity }}</td>
-        <td class="links" data-more-links="off">
-          {{- range .References }}
-          <a href={{ escapeXML . | printf "%q" }}>{{ escapeXML . }}</a>
-          {{- end }}
+        <td class="link" data-more-links="off"  style="white-space:normal;"">
+          {{ escapeXML .Message }}
+          <br>
+            <a href={{ escapeXML .PrimaryURL | printf "%q" }}>{{ escapeXML .PrimaryURL }}</a>
+          </br>
         </td>
       </tr>
         {{- end }}
