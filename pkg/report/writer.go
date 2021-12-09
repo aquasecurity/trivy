@@ -102,6 +102,7 @@ type Option struct {
 
 // Write writes the result to output, format as passed in argument
 func Write(report Report, option Option) error {
+
 	var writer Writer
 	switch option.Format {
 	case "table":
@@ -120,7 +121,7 @@ func Write(report Report, option Option) error {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
 	case "sarif":
-		writer = SarifWriter{Output: option.Output}
+		writer = SarifWriter{Output: option.Output, Version: "0.15.0"}
 	default:
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}
