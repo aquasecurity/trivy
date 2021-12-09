@@ -11,6 +11,8 @@ import (
 type SarifWriter struct {
 	Output  io.Writer
 	Version string
+	run     *sarif.Run
+	rules   map[string]bool
 }
 
 type sarifData struct {
@@ -25,7 +27,7 @@ type sarifData struct {
 	target          string
 }
 
-func addSarifRule(run *sarif.Run, data *sarifData) {
+func (sw *SarifWriter) addSarifRule(data *sarifData) {
 	description := data.description
 	if description == "" {
 		description = data.title
@@ -36,7 +38,7 @@ func addSarifRule(run *sarif.Run, data *sarifData) {
 	helpMarkdown := fmt.Sprintf("**Vulnerability %v**\n%v\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n",
 		data.vulnerabilityId, description, data.severity, data.pkgName, data.fixedVersion, data.vulnerabilityId, data.url)
 
-	run.AddRule(data.vulnerabilityId).
+	sw.run.AddRule(data.vulnerabilityId).
 		WithName(toSarifRuleName(data.resourceType)).
 		WithDescription(data.vulnerabilityId).
 		WithFullDescription(&sarif.MultiformatMessageString{Text: &description}).
@@ -51,7 +53,12 @@ func addSarifRule(run *sarif.Run, data *sarifData) {
 		})
 }
 
-func addSarifResult(run *sarif.Run, data *sarifData) {
+func (sw *SarifWriter) addSarifResult(data *sarifData) {
+	if !sw.rules[data.vulnerabilityId] {
+		sw.addSarifRule(data)
+		sw.rules[data.vulnerabilityId] = true
+	}
+
 	message := sarif.NewTextMessage(data.description)
 	region := sarif.NewSimpleRegion(1, 1)
 
@@ -59,8 +66,8 @@ func addSarifResult(run *sarif.Run, data *sarifData) {
 		WithArtifactLocation(sarif.NewSimpleArtifactLocation(data.target).WithUriBaseId("ROOTPATH")).
 		WithRegion(region)
 
-	ruleResult := run.AddResult(data.vulnerabilityId)
-	ruleResult.WithMessage(message).
+	sw.run.AddResult(data.vulnerabilityId).
+		WithMessage(message).
 		WithLevel(toSarifErrorLevel(data.severity)).
 		WithLocation(sarif.NewLocation().WithPhysicalLocation(location))
 }
@@ -70,12 +77,9 @@ func (sw SarifWriter) Write(report Report) error {
 	if err != nil {
 		return err
 	}
-	run := sarif.NewRun("Trivy", "https://github.com/aquasecurity/trivy")
-	run.Tool.Driver.WithVersion(sw.Version)
-
-	sarifReport.AddRun(run)
-
-	rules := map[string]bool{}
+	sw.run = sarif.NewRun("Trivy", "https://github.com/aquasecurity/trivy")
+	sw.run.Tool.Driver.WithVersion(sw.Version)
+	sw.rules = map[string]bool{}
 
 	for _, res := range report.Results {
 		for _, vuln := range res.Vulnerabilities {
@@ -90,12 +94,9 @@ func (sw SarifWriter) Write(report Report) error {
 				resourceType:    res.Type,
 				target:          res.Target,
 			}
-			if !rules[vuln.VulnerabilityID] {
-				addSarifRule(run, data)
-				rules[vuln.VulnerabilityID] = true
-			}
-			addSarifResult(run, data)
+			sw.addSarifResult(data)
 		}
 	}
+	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
 }
