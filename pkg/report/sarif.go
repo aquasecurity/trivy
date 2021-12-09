@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+
 	"github.com/owenrumney/go-sarif/sarif"
 )
 
