@@ -7,7 +7,6 @@ import (
 	"html"
 	"io"
 	"os"
-	"regexp"
 	"strings"
 	"text/template"
 	"time"
@@ -15,9 +14,6 @@ import (
 	"github.com/Masterminds/sprig"
 	"golang.org/x/xerrors"
 )
-
-// regex to extract file path in case string includes (distro:version)
-var re = regexp.MustCompile(`(?P<path>.+?)(?:\s*\((?:.*?)\).*?)?$`)
 
 // TemplateWriter write result in custom format defined by user's template
 type TemplateWriter struct {

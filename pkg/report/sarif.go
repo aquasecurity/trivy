@@ -3,10 +3,15 @@ package report
 import (
 	"fmt"
 	"io"
+	"regexp"
+	"strings"
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/owenrumney/go-sarif/sarif"
 )
+
+// regex to extract file path in case string includes (distro:version)
+var re = regexp.MustCompile(`(?P<path>.+?)(?:\s*\((?:.*?)\).*?)?$`)
 
 // SarifWriter implements result Writer
 type SarifWriter struct {
@@ -24,7 +29,7 @@ type sarifData struct {
 	fixedVersion    string
 	url             string
 	resourceType    string
-	target          string
+	filePath        string
 }
 
 func (sw *SarifWriter) addSarifRule(data *sarifData) {
@@ -60,7 +65,7 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 	region := sarif.NewSimpleRegion(1, 1)
 
 	location := sarif.NewPhysicalLocation().
-		WithArtifactLocation(sarif.NewSimpleArtifactLocation(data.target).WithUriBaseId("ROOTPATH")).
+		WithArtifactLocation(sarif.NewSimpleArtifactLocation(data.filePath).WithUriBaseId("ROOTPATH")).
 		WithRegion(region)
 
 	sw.run.AddResult(data.vulnerabilityId).
@@ -88,7 +93,7 @@ func (sw SarifWriter) Write(report Report) error {
 				fixedVersion:    vuln.FixedVersion,
 				url:             vuln.PrimaryURL,
 				resourceType:    res.Type,
-				target:          res.Target,
+				filePath:        toPathUri(res.Target),
 			})
 		}
 		for _, misconf := range res.Misconfigurations {
@@ -101,7 +106,7 @@ func (sw SarifWriter) Write(report Report) error {
 				fixedVersion:    "",
 				url:             misconf.PrimaryURL,
 				resourceType:    misconf.Type,
-				target:          res.Target,
+				filePath:        toPathUri(res.Target),
 			})
 		}
 	}
@@ -134,4 +139,12 @@ func toSarifErrorLevel(severity string) string {
 	default:
 		return "none"
 	}
+}
+
+func toPathUri(input string) string {
+	var matches = re.FindStringSubmatch(input)
+	if matches != nil {
+		input = matches[re.SubexpIndex("path")]
+	}
+	return strings.ReplaceAll(input, "\\", "/")
 }
