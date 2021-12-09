@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/owenrumney/go-sarif/sarif"
 )
 
@@ -106,4 +107,31 @@ func (sw SarifWriter) Write(report Report) error {
 	}
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
+}
+
+func toSarifRuleName(vulnerabilityType string) string {
+	switch vulnerabilityType {
+	case vulnerability.Ubuntu, vulnerability.Alpine, vulnerability.RedHat, vulnerability.RedHatOVAL,
+		vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
+		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon,
+		vulnerability.CentOS:
+		return "OsPackageVulnerability"
+	case "npm", "yarn", "nuget", "pipenv", "poetry", "bundler", "cargo", "composer":
+		return "ProgrammingLanguageVulnerability"
+	default:
+		return "OtherVulnerability"
+	}
+}
+
+func toSarifErrorLevel(severity string) string {
+	switch severity {
+	case "CRITICAL", "HIGH":
+		return "error"
+	case "MEDIUM":
+		return "warning"
+	case "LOW", "UNKNOWN":
+		return "note"
+	default:
+		return "none"
+	}
 }
