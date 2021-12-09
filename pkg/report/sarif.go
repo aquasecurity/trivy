@@ -12,7 +12,6 @@ type SarifWriter struct {
 	Output  io.Writer
 	Version string
 	run     *sarif.Run
-	rules   map[string]bool
 }
 
 type sarifData struct {
@@ -54,10 +53,7 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 }
 
 func (sw *SarifWriter) addSarifResult(data *sarifData) {
-	if !sw.rules[data.vulnerabilityId] {
-		sw.addSarifRule(data)
-		sw.rules[data.vulnerabilityId] = true
-	}
+	sw.addSarifRule(data)
 
 	message := sarif.NewTextMessage(data.description)
 	region := sarif.NewSimpleRegion(1, 1)
@@ -79,7 +75,6 @@ func (sw SarifWriter) Write(report Report) error {
 	}
 	sw.run = sarif.NewRun("Trivy", "https://github.com/aquasecurity/trivy")
 	sw.run.Tool.Driver.WithVersion(sw.Version)
-	sw.rules = map[string]bool{}
 
 	for _, res := range report.Results {
 		for _, vuln := range res.Vulnerabilities {
