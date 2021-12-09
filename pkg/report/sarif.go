@@ -83,7 +83,7 @@ func (sw SarifWriter) Write(report Report) error {
 
 	for _, res := range report.Results {
 		for _, vuln := range res.Vulnerabilities {
-			data := &sarifData{
+			sw.addSarifResult(&sarifData{
 				vulnerabilityId: vuln.VulnerabilityID,
 				title:           vuln.Title,
 				description:     vuln.Description,
@@ -93,8 +93,7 @@ func (sw SarifWriter) Write(report Report) error {
 				url:             vuln.PrimaryURL,
 				resourceType:    res.Type,
 				target:          res.Target,
-			}
-			sw.addSarifResult(data)
+			})
 		}
 	}
 	sarifReport.AddRun(sw.run)
