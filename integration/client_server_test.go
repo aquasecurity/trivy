@@ -306,8 +306,7 @@ func TestClientServerWithTemplate(t *testing.T) {
 		{
 			name: "alpine 3.10 integration with sarif template",
 			args: csArgs{
-				Format:       "template",
-				TemplatePath: "@../contrib/sarif.tpl",
+				Format:       "sarif",
 				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.sarif.golden",
