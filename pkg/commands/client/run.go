@@ -85,6 +85,7 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 	}
 
 	if err = pkgReport.Write(report, pkgReport.Option{
+		AppVersion:         opt.GlobalOption.AppVersion,
 		Format:             opt.Format,
 		Output:             opt.Output,
 		Severities:         opt.Severities,
