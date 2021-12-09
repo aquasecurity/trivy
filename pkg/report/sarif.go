@@ -90,6 +90,19 @@ func (sw SarifWriter) Write(report Report) error {
 				target:          res.Target,
 			})
 		}
+		for _, misconf := range res.Misconfigurations {
+			sw.addSarifResult(&sarifData{
+				vulnerabilityId: misconf.ID,
+				title:           misconf.Title,
+				description:     misconf.Description,
+				severity:        misconf.Severity,
+				pkgName:         res.Type,
+				fixedVersion:    "",
+				url:             misconf.PrimaryURL,
+				resourceType:    misconf.Type,
+				target:          res.Target,
+			})
+		}
 	}
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
