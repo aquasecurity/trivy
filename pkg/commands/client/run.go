@@ -138,7 +138,10 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 }
 
 func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func(), error) {
-	remoteCache := cache.NewRemoteCache(cache.RemoteURL(opt.RemoteAddr), opt.CustomHeaders)
+	remoteCache, err := cache.NewRemoteCache(cache.RemoteURL(opt.RemoteAddr), opt.CustomHeaders)
+	if err != nil {
+		return scanner.Scanner{}, nil, xerrors.Errorf("failed to initialize remote cache: %w", err)
+	}
 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption

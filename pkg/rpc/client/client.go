@@ -3,8 +3,8 @@ package client
 import (
 	"context"
 	"net/http"
-
-	"github.com/caarlos0/env/v6"
+	"os"
+	"strconv"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 
@@ -25,25 +25,26 @@ var SuperSet = wire.NewSet(
 // RemoteURL for RPC remote host
 type RemoteURL string
 
-// HTTPClientConfig holds the config of the HTTPClient
-type HTTPClientConfig struct {
-	Insecure bool `env:"TRIVY_INSECURE" envDefault:"false"`
-}
-
 // NewProtobufClient is the factory method to return RPC scanner
 func NewProtobufClient(remoteURL RemoteURL) (rpc.Scanner, error) {
-	httpClientConfig := HTTPClientConfig{}
-	if err := env.Parse(&httpClientConfig); err != nil {
-		return nil, xerrors.Errorf("unable to parse environment variables: %w", err)
+	var err error
+	httpsInsecure := false
+	value, exists := os.LookupEnv("TRIVY_INSECURE")
+	if exists && value != "" {
+		httpsInsecure, err = strconv.ParseBool(value)
+		if err != nil {
+			return nil, xerrors.Errorf("unable to parse environment variable TRIVY_INSECURE: %w", err)
+		}
 	}
 
 	httpTransport := http.DefaultTransport.(*http.Transport).Clone()
-	tlsConfig := httpTransport.TLSClientConfig.Clone()
-	tlsConfig.InsecureSkipVerify = httpClientConfig.Insecure
-	httpTransport.TLSClientConfig = tlsConfig
+	httpTransport.TLSClientConfig.InsecureSkipVerify = httpsInsecure
 
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = tlsConfig
-	return rpc.NewScannerProtobufClient(string(remoteURL), &http.Client{}), nil
+	httpClient := &http.Client{
+		Transport: httpTransport,
+	}
+
+	return rpc.NewScannerProtobufClient(string(remoteURL), httpClient), nil
 }
 
 // CustomHeaders for holding HTTP headers

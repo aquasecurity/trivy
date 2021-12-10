@@ -135,8 +135,9 @@ func TestRemoteCache_PutArtifact(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), tt.args.customHeaders)
-			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
+			c, err := cache.NewRemoteCache(cache.RemoteURL(ts.URL), tt.args.customHeaders)
+			assert.NoError(t, err, tt.name)
+			err = c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -196,8 +197,9 @@ func TestRemoteCache_PutBlob(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), tt.args.customHeaders)
-			err := c.PutBlob(tt.args.diffID, tt.args.layerInfo)
+			c, err := cache.NewRemoteCache(cache.RemoteURL(ts.URL), tt.args.customHeaders)
+			assert.NoError(t, err, tt.name)
+			err = c.PutBlob(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -274,7 +276,8 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), tt.args.customHeaders)
+			c, err := cache.NewRemoteCache(cache.RemoteURL(ts.URL), tt.args.customHeaders)
+			assert.NoError(t, err, tt.name)
 			gotMissingImage, gotMissingLayerIDs, err := c.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
@@ -286,6 +289,72 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 
 			assert.Equal(t, tt.wantMissingImage, gotMissingImage)
 			assert.Equal(t, tt.wantMissingLayerIDs, gotMissingLayerIDs)
+		})
+	}
+}
+
+func TestRemoteCache_TLSInsecure(t *testing.T) {
+	type args struct {
+		remoteUrl string
+	}
+
+	tests := []struct {
+		name                 string
+		args                 args
+		wantErr              string
+		environmentVariables map[string]string
+	}{
+		{
+			name: "happy path - insecure",
+			args: args{
+				remoteUrl: "https://www.example.com",
+			},
+			environmentVariables: map[string]string{
+				"TRIVY_INSECURE": "true",
+			},
+		},
+		{
+			name: "happy path - secure",
+			args: args{
+				remoteUrl: "https://www.example.com",
+			},
+			environmentVariables: map[string]string{
+				"TRIVY_INSECURE": "false",
+			},
+		},
+		{
+			name: "happy path - insecure without value",
+			args: args{
+				remoteUrl: "https://www.example.com",
+			},
+			environmentVariables: map[string]string{
+				"TRIVY_INSECURE": "",
+			},
+		},
+		{
+			name: "sad path - insecure",
+			args: args{
+				remoteUrl: "https://www.example.com",
+			},
+			environmentVariables: map[string]string{
+				"TRIVY_INSECURE": "x",
+			},
+			wantErr: "unable to parse environment variable TRIVY_INSECURE",
+		},
+	}
+	for _, tt := range tests {
+		for envVarKey, envVarValue := range tt.environmentVariables {
+			t.Setenv(envVarKey, envVarValue)
+		}
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := cache.NewRemoteCache(cache.RemoteURL(tt.args.remoteUrl), http.Header{})
+			if tt.wantErr != "" {
+				require.NotNil(t, err, tt.name)
+				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				return
+			} else {
+				assert.NoError(t, err, tt.name)
+			}
 		})
 	}
 }
