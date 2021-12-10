@@ -2,13 +2,15 @@ package plugin
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"golang.org/x/xerrors"
-	yaml "gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -181,6 +183,45 @@ func Install(ctx context.Context, url string, force bool) (Plugin, error) {
 func Uninstall(name string) error {
 	pluginDir := filepath.Join(dir(), name)
 	return os.RemoveAll(pluginDir)
+}
+
+// Information gets the information about an installed plugin
+func Information(name string) (string, error) {
+	pluginDir := filepath.Join(dir(), name)
+
+	if _, err := os.Stat(pluginDir); err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Sprintf("Could not find a plugin called '%s', did you install it?", name), nil
+		}
+		return "", err
+	}
+
+	plugin, err := loadMetadata(pluginDir)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf(`
+Plugin: %s
+  Description: %s
+  Version:     %s
+  Usage:       %s
+
+`, plugin.Name, plugin.Description, plugin.Version, plugin.Usage), nil
+}
+
+// List gets a list of all installed plugins
+func List() (string, error) {
+	plugins, err := LoadAll()
+	if err != nil {
+		return "", err
+	}
+	pluginList := []string{"Installed Plugins:"}
+	for _, plugin := range plugins {
+		pluginList = append(pluginList, fmt.Sprintf("  Name:    %s\n  Version: %s\n", plugin.Name, plugin.Version))
+	}
+
+	return strings.Join(pluginList, "\n"), nil
 }
 
 // LoadAll loads all plugins

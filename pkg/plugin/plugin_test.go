@@ -291,6 +291,41 @@ func TestUninstall(t *testing.T) {
 	assert.NoFileExists(t, pluginDir)
 }
 
+func TestInformation(t *testing.T) {
+	pluginName := "test_plugin"
+
+	tempDir := t.TempDir()
+	pluginDir := filepath.Join(tempDir, ".trivy", "plugins", pluginName)
+
+	os.Setenv("XDG_DATA_HOME", tempDir)
+	defer os.Unsetenv("XDG_DATA_HOME")
+
+	// Create the test plugin directory
+	err := os.MkdirAll(pluginDir, os.ModePerm)
+	require.NoError(t, err)
+	defer func() { _ = os.RemoveAll(pluginDir) }()
+
+	// write the plugin name
+	pluginMetadata := `name: "test_plugin"
+repository: github.com/aquasecurity/trivy-plugin-test
+version: "0.1.0"
+usage: test
+description: A simple test plugin`
+
+	err = os.WriteFile(filepath.Join(pluginDir, "plugin.yaml"), []byte(pluginMetadata), os.ModePerm)
+	require.NoError(t, err)
+
+	// Get Information for the plugin
+	info, err := plugin.Information(pluginName)
+	require.NoError(t, err)
+	assert.Equal(t, "\nPlugin: test_plugin\n  Description: A simple test plugin\n  Version:     0.1.0\n  Usage:       test\n\n", info)
+
+	// Get Information for unknown plugin
+	info, err = plugin.Information("unknown")
+	require.NoError(t, err)
+	assert.Equal(t, "Could not find a plugin called 'unknown', did you install it?", info)
+}
+
 func TestLoadAll1(t *testing.T) {
 	tests := []struct {
 		name    string
