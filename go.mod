@@ -37,7 +37,7 @@ require (
 	github.com/mitchellh/copystructure v1.1.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/open-policy-agent/opa v0.34.0
-	github.com/owenrumney/go-sarif v1.1.1
+	github.com/owenrumney/go-sarif v1.1.2-0.20211210075345-ef0908ada4df
 	github.com/spf13/afero v1.6.0
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
