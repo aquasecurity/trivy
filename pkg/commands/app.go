@@ -668,10 +668,10 @@ func NewPluginCommand() *cli.Command {
 				Action:    plugin.Uninstall,
 			},
 			{
-				Name:      "list",
-				Aliases:   []string{"l"},
-				Usage:     "list installed plugin",
-				Action:    plugin.List,
+				Name:    "list",
+				Aliases: []string{"l"},
+				Usage:   "list installed plugin",
+				Action:  plugin.List,
 			},
 			{
 				Name:      "info",
