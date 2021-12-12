@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	ftypes "github.com/aquasecurity/fanal/types"
 	"os"
 	"sort"
 	"strings"
@@ -13,6 +12,7 @@ import (
 	"github.com/open-policy-agent/opa/rego"
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
