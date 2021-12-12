@@ -8,7 +8,7 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 
-	"github.com/owenrumney/go-sarif/sarif"
+	"github.com/owenrumney/go-sarif/v2/sarif"
 )
 
 // regex to extract file path in case string includes (distro:version)
@@ -38,17 +38,21 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 	if description == "" {
 		description = data.title
 	}
-
 	helpText := fmt.Sprintf("Vulnerability %v\\n%v\\nSeverity: %v\\nPackage: %v\\nFixed Version: %v\\nLink: [%v](%v)",
 		data.vulnerabilityId, description, data.severity, data.pkgName, data.fixedVersion, data.vulnerabilityId, data.url)
 	helpMarkdown := fmt.Sprintf("**Vulnerability %v**\n%v\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n",
 		data.vulnerabilityId, description, data.severity, data.pkgName, data.fixedVersion, data.vulnerabilityId, data.url)
 
+	help := &sarif.MultiformatMessageString{
+		Text:     &helpText,
+		Markdown: &helpMarkdown,
+	}
+
 	sw.run.AddRule(data.vulnerabilityId).
 		WithName(toSarifRuleName(data.resourceType)).
 		WithDescription(data.vulnerabilityId).
 		WithFullDescription(&sarif.MultiformatMessageString{Text: &description}).
-		WithHelp(helpText).
+		WithHelp(help).
 		WithMarkdownHelp(helpMarkdown).
 		WithProperties(sarif.Properties{
 			"tags": []string{
@@ -68,11 +72,11 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 	location := sarif.NewPhysicalLocation().
 		WithArtifactLocation(sarif.NewSimpleArtifactLocation(data.filePath).WithUriBaseId("ROOTPATH")).
 		WithRegion(region)
-
-	sw.run.AddResult(data.vulnerabilityId).
+	result := sarif.NewRuleResult(data.vulnerabilityId).
 		WithMessage(message).
 		WithLevel(toSarifErrorLevel(data.severity)).
-		WithLocation(sarif.NewLocation().WithPhysicalLocation(location))
+		WithLocations([]*sarif.Location{sarif.NewLocation().WithPhysicalLocation(location)})
+	sw.run.AddResult(result)
 }
 
 func (sw SarifWriter) Write(report Report) error {
@@ -80,7 +84,10 @@ func (sw SarifWriter) Write(report Report) error {
 	if err != nil {
 		return err
 	}
-	sw.run = sarif.NewRun("Trivy", "https://github.com/aquasecurity/trivy")
+	toolComponent := sarif.NewDriver("Trivy").
+		WithVersion(sw.Version).
+		WithInformationURI("https://github.com/aquasecurity/trivy")
+	sw.run = sarif.NewRun(*sarif.NewTool(toolComponent))
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 
 	for _, res := range report.Results {
