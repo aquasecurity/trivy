@@ -675,7 +675,6 @@ func NewPluginCommand() *cli.Command {
 			},
 			{
 				Name:      "info",
-				Aliases:   []string{},
 				Usage:     "information about a plugin",
 				ArgsUsage: "PLUGIN_NAME",
 				Action:    plugin.Information,
