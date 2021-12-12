@@ -302,7 +302,6 @@ func TestInformation(t *testing.T) {
 	// Create the test plugin directory
 	err := os.MkdirAll(pluginDir, os.ModePerm)
 	require.NoError(t, err)
-	defer func() { _ = os.RemoveAll(pluginDir) }()
 
 	// write the plugin name
 	pluginMetadata := `name: "test_plugin"

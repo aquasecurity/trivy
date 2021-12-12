@@ -212,6 +212,12 @@ Plugin: %s
 
 // List gets a list of all installed plugins
 func List() (string, error) {
+	if _, err := os.Stat(dir()); err != nil {
+		if os.IsNotExist(err) {
+			return "No Installed Plugins\n", nil
+		}
+		return "", err
+	}
 	plugins, err := LoadAll()
 	if err != nil {
 		return "", err
