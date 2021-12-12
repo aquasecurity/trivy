@@ -31,6 +31,7 @@ type sarifData struct {
 	url             string
 	resourceType    string
 	filePath        string
+	resultIndex     int
 }
 
 func (sw *SarifWriter) addSarifRule(data *sarifData) {
@@ -73,10 +74,21 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 		WithArtifactLocation(sarif.NewSimpleArtifactLocation(data.filePath).WithUriBaseId("ROOTPATH")).
 		WithRegion(region)
 	result := sarif.NewRuleResult(data.vulnerabilityId).
+		WithRuleIndex(data.resultIndex).
 		WithMessage(message).
 		WithLevel(toSarifErrorLevel(data.severity)).
 		WithLocations([]*sarif.Location{sarif.NewLocation().WithPhysicalLocation(location)})
 	sw.run.AddResult(result)
+}
+
+func getRuleIndex(id string, indexes map[string]int) int {
+	if i, ok := indexes[id]; ok {
+		return i
+	} else {
+		l := len(indexes)
+		indexes[id] = l
+		return l
+	}
 }
 
 func (sw SarifWriter) Write(report Report) error {
@@ -90,6 +102,8 @@ func (sw SarifWriter) Write(report Report) error {
 	sw.run = sarif.NewRun(*sarif.NewTool(toolComponent))
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 
+	ruleIndexes := map[string]int{}
+
 	for _, res := range report.Results {
 		for _, vuln := range res.Vulnerabilities {
 			sw.addSarifResult(&sarifData{
@@ -102,6 +116,7 @@ func (sw SarifWriter) Write(report Report) error {
 				url:             vuln.PrimaryURL,
 				resourceType:    res.Type,
 				filePath:        toPathUri(res.Target),
+				resultIndex:     getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 			})
 		}
 		for _, misconf := range res.Misconfigurations {
@@ -115,6 +130,7 @@ func (sw SarifWriter) Write(report Report) error {
 				url:             misconf.PrimaryURL,
 				resourceType:    misconf.Type,
 				filePath:        toPathUri(res.Target),
+				resultIndex:     getRuleIndex(misconf.ID, ruleIndexes),
 			})
 		}
 	}
