@@ -80,7 +80,7 @@ func List(c *cli.Context) error {
 
 	info, err := plugin.List()
 	if err != nil {
-		return xerrors.Errorf("plugin information display error: %w", err)
+		return xerrors.Errorf("plugin list display error: %w", err)
 	}
 
 	if _, err := fmt.Fprintf(os.Stdout, info); err != nil {
