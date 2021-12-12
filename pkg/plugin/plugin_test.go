@@ -297,8 +297,7 @@ func TestInformation(t *testing.T) {
 	tempDir := t.TempDir()
 	pluginDir := filepath.Join(tempDir, ".trivy", "plugins", pluginName)
 
-	os.Setenv("XDG_DATA_HOME", tempDir)
-	defer os.Unsetenv("XDG_DATA_HOME")
+	t.Setenv("XDG_DATA_HOME", tempDir)
 
 	// Create the test plugin directory
 	err := os.MkdirAll(pluginDir, os.ModePerm)
