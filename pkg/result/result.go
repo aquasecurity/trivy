@@ -123,11 +123,10 @@ func (c Client) getVendorSeverity(vuln *dbTypes.Vulnerability, source string) (s
 		return vs.String(), vulnerability.NVD
 	}
 
-	for vendor, vs := range vuln.VendorSeverity {
-		return vs.String(), vendor
-	}
-
 	if vuln.Severity == "" {
+		for _, vs := range vuln.VendorSeverity {
+			return vs.String(), ""
+		}
 		return dbTypes.SeverityUnknown.String(), ""
 	}
 
