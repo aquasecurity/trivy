@@ -99,17 +99,17 @@ func (c Client) detectSource(reportType string) []string {
 	case vulnerability.CentOS: // CentOS doesn't have its own so we use RedHat
 		sources = []string{vulnerability.RedHat}
 	case "npm", "yarn":
-		sources = []string{vulnerability.NodejsSecurityWg}
+		sources = []string{vulnerability.NodejsSecurityWg, vulnerability.GHSANpm, vulnerability.GLAD}
 	case "nuget":
-		sources = []string{vulnerability.GHSANuget}
+		sources = []string{vulnerability.GHSANuget, vulnerability.GLAD}
 	case "pipenv", "poetry":
-		sources = []string{vulnerability.PythonSafetyDB}
+		sources = []string{vulnerability.PythonSafetyDB, vulnerability.GHSAPip, vulnerability.GLAD}
 	case "bundler":
-		sources = []string{vulnerability.RubySec}
+		sources = []string{vulnerability.RubySec, vulnerability.GHSARubygems}
 	case "cargo":
 		sources = []string{vulnerability.RustSec}
 	case "composer":
-		sources = []string{vulnerability.PhpSecurityAdvisories}
+		sources = []string{vulnerability.PhpSecurityAdvisories, vulnerability.GHSAComposer, vulnerability.GLAD}
 	case ftypes.Jar:
 		sources = []string{vulnerability.GHSAMaven, vulnerability.GLAD}
 	}
