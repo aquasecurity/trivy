@@ -320,8 +320,8 @@ description: A simple test plugin`
 
 	// Get Information for unknown plugin
 	info, err = plugin.Information("unknown")
-	require.NoError(t, err)
-	assert.Equal(t, "Could not find a plugin called 'unknown', did you install it?", info)
+	require.Error(t, err)
+	assert.Equal(t, "Could not find a plugin called 'unknown', did you install it?", err.Error())
 }
 
 func TestLoadAll1(t *testing.T) {
