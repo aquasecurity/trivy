@@ -1,0 +1,157 @@
+project_name: trivy
+checksum:
+  disable: true
+
+builds:
+  -
+    main: cmd/trivy/main.go
+    binary: trivy
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+    goarch:
+      - amd64
+
+archives:
+  -
+    format: tar.gz
+    name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+    replacements:
+      amd64: 64bit
+      windows: Windows
+    files:
+      - README.md
+      - LICENSE
+      - contrib/*.tpl
+
+dockers:
+  - image_templates:
+      - "docker.io/aquasec/trivy:{{ .Version }}-win2016"
+      - "docker.io/aquasec/trivy:latest-win2016"
+      - "ghcr.io/aquasecurity/trivy:{{ .Version }}-win2016"
+      - "ghcr.io/aquasecurity/trivy:latest-win2016"
+      - "public.ecr.aws/aquasecurity/trivy:latest-win2016"
+      - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}-win2016"
+    use: docker
+    dockerfile: Dockerfile.windows
+    goos: windows
+    goarch: amd64
+    ids:
+      - trivy
+    build_flag_templates:
+      - "--label=org.label-schema.schema-version=1.0"
+      - "--label=org.label-schema.name={{ .ProjectName }}"
+      - "--label=org.label-schema.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.label-schema.vendor=Aqua Security"
+      - "--label=org.label-schema.version={{ .Version }}"
+      - "--label=org.label-schema.build-date={{ .Date }}"
+      - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
+      - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
+      - "--build-arg=TAG=ltsc2016"
+    # extra_files:
+    # - contrib/
+  - image_templates:
+      - "docker.io/aquasec/trivy:{{ .Version }}-win2019"
+      - "docker.io/aquasec/trivy:latest-win2019"
+      - "ghcr.io/aquasecurity/trivy:{{ .Version }}-win2019"
+      - "ghcr.io/aquasecurity/trivy:latest-win2019"
+      - "public.ecr.aws/aquasecurity/trivy:latest-win2019"
+      - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}-win2019"
+    use: docker
+    dockerfile: Dockerfile.windows
+    goos: windows
+    goarch: amd64
+    ids:
+      - trivy
+    build_flag_templates:
+      - "--label=org.label-schema.schema-version=1.0"
+      - "--label=org.label-schema.name={{ .ProjectName }}"
+      - "--label=org.label-schema.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.label-schema.vendor=Aqua Security"
+      - "--label=org.label-schema.version={{ .Version }}"
+      - "--label=org.label-schema.build-date={{ .Date }}"
+      - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
+      - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
+      - "--build-arg=TAG=ltsc2019"
+    # extra_files:
+    # - contrib/
+  - image_templates:
+      - "docker.io/aquasec/trivy:{{ .Version }}-win-sac2004"
+      - "docker.io/aquasec/trivy:latest-win-sac2004"
+      - "ghcr.io/aquasecurity/trivy:{{ .Version }}-win-sac2004"
+      - "ghcr.io/aquasecurity/trivy:latest-win-sac2004"
+      - "public.ecr.aws/aquasecurity/trivy:latest-win-sac2004"
+      - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}-win-sac2004"
+    use: docker
+    dockerfile: Dockerfile.windows
+    goos: windows
+    goarch: amd64
+    ids:
+      - trivy
+    build_flag_templates:
+      - "--label=org.label-schema.schema-version=1.0"
+      - "--label=org.label-schema.name={{ .ProjectName }}"
+      - "--label=org.label-schema.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.label-schema.vendor=Aqua Security"
+      - "--label=org.label-schema.version={{ .Version }}"
+      - "--label=org.label-schema.build-date={{ .Date }}"
+      - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
+      - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
+      - "--build-arg=TAG=2004"
+    # extra_files:
+    # - contrib/
+  - image_templates:
+      - "docker.io/aquasec/trivy:{{ .Version }}-win-sac20H2"
+      - "docker.io/aquasec/trivy:latest-win-sac20H2"
+      - "ghcr.io/aquasecurity/trivy:{{ .Version }}-win-sac20H2"
+      - "ghcr.io/aquasecurity/trivy:latest-win-sac20H2"
+      - "public.ecr.aws/aquasecurity/trivy:latest-win-sac20H2"
+      - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}-win-sac20H2"
+    use: docker
+    dockerfile: Dockerfile.windows
+    goos: windows
+    goarch: amd64
+    ids:
+      - trivy
+    build_flag_templates:
+      - "--label=org.label-schema.schema-version=1.0"
+      - "--label=org.label-schema.name={{ .ProjectName }}"
+      - "--label=org.label-schema.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.label-schema.vendor=Aqua Security"
+      - "--label=org.label-schema.version={{ .Version }}"
+      - "--label=org.label-schema.build-date={{ .Date }}"
+      - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
+      - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
+      - "--build-arg=TAG=20H2"
+    # extra_files:
+    # - contrib/
+  - image_templates:
+      - "docker.io/aquasec/trivy:{{ .Version }}-win2022"
+      - "docker.io/aquasec/trivy:latest-win2022"
+      - "ghcr.io/aquasecurity/trivy:{{ .Version }}-win2022"
+      - "ghcr.io/aquasecurity/trivy:latest-win2022"
+      - "public.ecr.aws/aquasecurity/trivy:latest-win2022"
+      - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}-win2022"
+    use: docker
+    dockerfile: Dockerfile.windows
+    goos: windows
+    goarch: amd64
+    ids:
+      - trivy
+    build_flag_templates:
+      - "--label=org.label-schema.schema-version=1.0"
+      - "--label=org.label-schema.name={{ .ProjectName }}"
+      - "--label=org.label-schema.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.label-schema.vendor=Aqua Security"
+      - "--label=org.label-schema.version={{ .Version }}"
+      - "--label=org.label-schema.build-date={{ .Date }}"
+      - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
+      - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
+      - "--build-arg=TAG=ltsc2022"
+    # extra_files:
+    # - contrib/

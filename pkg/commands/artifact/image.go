@@ -2,6 +2,7 @@ package artifact
 
 import (
 	"context"
+	"runtime"
 	"time"
 
 	"github.com/urfave/cli/v2"
@@ -34,6 +35,11 @@ func dockerScanner(ctx context.Context, imageName string, ac cache.ArtifactCache
 
 // ImageRun runs scan on docker image
 func ImageRun(ctx *cli.Context) error {
+	os := runtime.GOOS
+	if os == "windows" {
+		return xerrors.Errorf("image scanning is not supported on %s", os)
+	}
+
 	opt, err := initOption(ctx)
 	if err != nil {
 		return xerrors.Errorf("option error: %w", err)

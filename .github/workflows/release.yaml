@@ -7,8 +7,8 @@ env:
   GO_VERSION: "1.17"
   GH_USER: "aqua-bot"
 jobs:
-  release:
-    name: Release
+  linux:
+    name: BSD/Darwin/Linux
     runs-on: ubuntu-18.04 # 20.04 doesn't provide createrepo for now
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
@@ -65,7 +65,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v2
         with:
           version: v0.183.0
-          args: release --rm-dist
+          args: release --rm-dist --skip-announce
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
       - name: Checkout trivy-repo
@@ -85,3 +85,83 @@ jobs:
         run: echo -e "${{ secrets.GPG_KEY }}" | gpg --import
       - name: Create deb repository
         run: ci/deploy-deb.sh
+  windows:
+    name: Windows
+    runs-on: windows-2022
+    env:
+      DOCKER_CLI_EXPERIMENTAL: "enabled"
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Cache Go modules
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Login to docker.io registry
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Login to ghcr.io registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ env.GH_USER }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to ECR
+        uses: docker/login-action@v1
+        with:
+          registry: public.ecr.aws
+          username: ${{ secrets.ECR_ACCESS_KEY_ID }}
+          password: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
+      - name: Release
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          version: v0.183.0
+          args: release --rm-dist --skip-announce --config goreleaser.windows.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+  manifest:
+    name: Docker Manifests
+    needs: [linux, windows]
+    runs-on: ubuntu-20.04
+    env:
+      DOCKER_CLI_EXPERIMENTAL: "enabled"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Login to docker.io registry
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Login to ghcr.io registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ env.GH_USER }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to ECR
+        uses: docker/login-action@v1
+        with:
+          registry: public.ecr.aws
+          username: ${{ secrets.ECR_ACCESS_KEY_ID }}
+          password: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
+      - name: Release
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          version: v0.183.0
+          args: release --config goreleaser.manifests.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}

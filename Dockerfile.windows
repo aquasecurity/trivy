@@ -1,0 +1,6 @@
+ARG TAG
+FROM mcr.microsoft.com/windows/servercore:${TAG}
+COPY /trivy.exe /
+# Temporarily disabled because of bug on goreleaser
+# COPY contrib/*.tpl contrib/
+ENTRYPOINT ["/trivy.exe"]
