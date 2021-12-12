@@ -191,7 +191,7 @@ func Information(name string) (string, error) {
 
 	if _, err := os.Stat(pluginDir); err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Sprintf("Could not find a plugin called '%s', did you install it?", name), nil
+			return "", xerrors.Errorf("Could not find a plugin called '%s', did you install it?", name)
 		}
 		return "", err
 	}
