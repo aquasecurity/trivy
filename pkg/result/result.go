@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	ftypes "github.com/aquasecurity/fanal/types"
 	"os"
 	"sort"
 	"strings"
@@ -66,10 +67,10 @@ func (c Client) FillVulnerabilityInfo(vulns []types.DetectedVulnerability, repor
 		}
 
 		// Detect which data source should be used.
-		source := c.detectSource(reportType)
+		sources := c.detectSource(reportType)
 
 		// Select the severity according to the detected source.
-		severity, severitySource := c.getVendorSeverity(&vuln, source)
+		severity, severitySource := c.getVendorSeverity(&vuln, sources)
 
 		// The vendor might provide package-specific severity like Debian.
 		// For example, CVE-2015-2328 in Debian has "unimportant" for mongodb and "low" for pcre3.
@@ -84,38 +85,42 @@ func (c Client) FillVulnerabilityInfo(vulns []types.DetectedVulnerability, repor
 
 		vulns[i].Severity = severity
 		vulns[i].SeveritySource = severitySource
-		vulns[i].PrimaryURL = c.getPrimaryURL(vulnID, vuln.References, source)
+		vulns[i].PrimaryURL = c.getPrimaryURL(vulnID, vuln.References, sources)
 		vulns[i].Vulnerability.VendorSeverity = nil // Remove VendorSeverity from Results
 	}
 }
-func (c Client) detectSource(reportType string) string {
-	var source string
+func (c Client) detectSource(reportType string) []string {
+	var sources []string
 	switch reportType {
 	case vulnerability.Ubuntu, vulnerability.Alpine, vulnerability.RedHat, vulnerability.RedHatOVAL,
 		vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
 		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon:
-		source = reportType
+		sources = []string{reportType}
 	case vulnerability.CentOS: // CentOS doesn't have its own so we use RedHat
-		source = vulnerability.RedHat
+		sources = []string{vulnerability.RedHat}
 	case "npm", "yarn":
-		source = vulnerability.NodejsSecurityWg
+		sources = []string{vulnerability.NodejsSecurityWg}
 	case "nuget":
-		source = vulnerability.GHSANuget
+		sources = []string{vulnerability.GHSANuget}
 	case "pipenv", "poetry":
-		source = vulnerability.PythonSafetyDB
+		sources = []string{vulnerability.PythonSafetyDB}
 	case "bundler":
-		source = vulnerability.RubySec
+		sources = []string{vulnerability.RubySec}
 	case "cargo":
-		source = vulnerability.RustSec
+		sources = []string{vulnerability.RustSec}
 	case "composer":
-		source = vulnerability.PhpSecurityAdvisories
+		sources = []string{vulnerability.PhpSecurityAdvisories}
+	case ftypes.Jar:
+		sources = []string{vulnerability.GHSAMaven, vulnerability.GLAD}
 	}
-	return source
+	return sources
 }
 
-func (c Client) getVendorSeverity(vuln *dbTypes.Vulnerability, source string) (string, string) {
-	if vs, ok := vuln.VendorSeverity[source]; ok {
-		return vs.String(), source
+func (c Client) getVendorSeverity(vuln *dbTypes.Vulnerability, sources []string) (string, string) {
+	for _, source := range sources {
+		if vs, ok := vuln.VendorSeverity[source]; ok {
+			return vs.String(), source
+		}
 	}
 
 	// Try NVD as a fallback if it exists
@@ -124,16 +129,13 @@ func (c Client) getVendorSeverity(vuln *dbTypes.Vulnerability, source string) (s
 	}
 
 	if vuln.Severity == "" {
-		for _, vs := range vuln.VendorSeverity {
-			return vs.String(), ""
-		}
 		return dbTypes.SeverityUnknown.String(), ""
 	}
 
 	return vuln.Severity, ""
 }
 
-func (c Client) getPrimaryURL(vulnID string, refs []string, source string) string {
+func (c Client) getPrimaryURL(vulnID string, refs []string, sources []string) string {
 	switch {
 	case strings.HasPrefix(vulnID, "CVE-"):
 		return "https://avd.aquasec.com/nvd/" + strings.ToLower(vulnID)
@@ -145,11 +147,13 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, source string) strin
 		return "https://security-tracker.debian.org/tracker/" + vulnID
 	}
 
-	prefixes := primaryURLPrefixes[source]
-	for _, pre := range prefixes {
-		for _, ref := range refs {
-			if strings.HasPrefix(ref, pre) {
-				return ref
+	for _, source := range sources {
+		prefixes := primaryURLPrefixes[source]
+		for _, pre := range prefixes {
+			for _, ref := range refs {
+				if strings.HasPrefix(ref, pre) {
+					return ref
+				}
 			}
 		}
 	}
