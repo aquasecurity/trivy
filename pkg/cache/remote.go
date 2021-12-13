@@ -3,8 +3,6 @@ package cache
 import (
 	"context"
 	"net/http"
-	"os"
-	"strconv"
 
 	"golang.org/x/xerrors"
 
@@ -24,22 +22,15 @@ type RemoteCache struct {
 // RemoteURL to hold remote host
 type RemoteURL string
 
+// Insecure for RPC remote host
+type Insecure bool
+
 // NewRemoteCache is the factory method for RemoteCache
-func NewRemoteCache(url RemoteURL, customHeaders http.Header) (cache.ArtifactCache, error) {
+func NewRemoteCache(url RemoteURL, insecure Insecure, customHeaders http.Header) (cache.ArtifactCache, error) {
 	ctx := client.WithCustomHeaders(context.Background(), customHeaders)
 
-	var err error
-	httpsInsecure := false
-	value, exists := os.LookupEnv("TRIVY_INSECURE")
-	if exists && value != "" {
-		httpsInsecure, err = strconv.ParseBool(value)
-		if err != nil {
-			return nil, xerrors.Errorf("unable to parse environment variable TRIVY_INSECURE: %w", err)
-		}
-	}
-
 	httpTransport := http.DefaultTransport.(*http.Transport).Clone()
-	httpTransport.TLSClientConfig.InsecureSkipVerify = httpsInsecure
+	httpTransport.TLSClientConfig.InsecureSkipVerify = bool(insecure)
 
 	httpClient := &http.Client{
 		Transport: httpTransport,

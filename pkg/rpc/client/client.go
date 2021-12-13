@@ -3,8 +3,6 @@ package client
 import (
 	"context"
 	"net/http"
-	"os"
-	"strconv"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 
@@ -25,20 +23,13 @@ var SuperSet = wire.NewSet(
 // RemoteURL for RPC remote host
 type RemoteURL string
 
-// NewProtobufClient is the factory method to return RPC scanner
-func NewProtobufClient(remoteURL RemoteURL) (rpc.Scanner, error) {
-	var err error
-	httpsInsecure := false
-	value, exists := os.LookupEnv("TRIVY_INSECURE")
-	if exists && value != "" {
-		httpsInsecure, err = strconv.ParseBool(value)
-		if err != nil {
-			return nil, xerrors.Errorf("unable to parse environment variable TRIVY_INSECURE: %w", err)
-		}
-	}
+// Insecure for RPC remote host
+type Insecure bool
 
+// NewProtobufClient is the factory method to return RPC scanner
+func NewProtobufClient(remoteURL RemoteURL, insecure Insecure) (rpc.Scanner, error) {
 	httpTransport := http.DefaultTransport.(*http.Transport).Clone()
-	httpTransport.TLSClientConfig.InsecureSkipVerify = httpsInsecure
+	httpTransport.TLSClientConfig.InsecureSkipVerify = bool(insecure)
 
 	httpClient := &http.Client{
 		Transport: httpTransport,

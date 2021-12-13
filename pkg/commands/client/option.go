@@ -27,6 +27,7 @@ type Option struct {
 	DisabledAnalyzers []analyzer.Type
 
 	RemoteAddr    string
+	Insecure      bool
 	token         string
 	tokenHeader   string
 	customHeaders []string
@@ -49,6 +50,7 @@ func NewOption(c *cli.Context) (Option, error) {
 		ConfigOption:   option.NewConfigOption(c),
 		NoProgress:     c.Bool("no-progress"),
 		RemoteAddr:     c.String("remote"),
+		Insecure:       c.Bool("insecure"),
 		token:          c.String("token"),
 		tokenHeader:    c.String("token-header"),
 		customHeaders:  c.StringSlice("custom-headers"),

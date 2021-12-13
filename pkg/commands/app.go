@@ -309,6 +309,7 @@ var (
 	insecureFlag = cli.BoolFlag{
 		Name:    "insecure",
 		Usage:   "allow insecure server connections when using SSL",
+		Value:   false,
 		EnvVars: []string{"TRIVY_INSECURE"},
 	}
 
@@ -585,6 +586,7 @@ func NewClientCommand() *cli.Command {
 			stringSliceFlag(configPolicy),
 			&listAllPackages,
 			&offlineScan,
+			&insecureFlag,
 
 			// original flags
 			&token,

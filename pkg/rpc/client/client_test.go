@@ -287,64 +287,32 @@ func TestScanner_Scan(t *testing.T) {
 func TestScanner_Insecure(t *testing.T) {
 	type args struct {
 		remoteUrl string
+		insecure  bool
 	}
 	tests := []struct {
-		name                 string
-		args                 args
-		wantErr              string
-		environmentVariables map[string]string
+		name    string
+		args    args
+		wantErr string
 	}{
 		{
 			name: "happy path: insecure",
 			args: args{
 				remoteUrl: "https://www.example.com",
-			},
-			environmentVariables: map[string]string{
-				"TRIVY_INSECURE": "true",
+				insecure:  true,
 			},
 		},
 		{
 			name: "happy path: secure",
 			args: args{
 				remoteUrl: "https://www.example.com",
+				insecure:  false,
 			},
-			environmentVariables: map[string]string{
-				"TRIVY_INSECURE": "false",
-			},
-		},
-		{
-			name: "happy path: no value",
-			args: args{
-				remoteUrl: "https://www.example.com",
-			},
-			environmentVariables: map[string]string{
-				"TRIVY_INSECURE": "",
-			},
-		},
-		{
-			name: "sad path: TLSInsecure wrong env var",
-			args: args{
-				remoteUrl: "https://www.example.com",
-			},
-			environmentVariables: map[string]string{
-				"TRIVY_INSECURE": "x",
-			},
-			wantErr: "unable to parse environment variable TRIVY_INSECURE",
 		},
 	}
 	for _, tt := range tests {
-		for envVarKey, envVarValue := range tt.environmentVariables {
-			t.Setenv(envVarKey, envVarValue)
-		}
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := NewProtobufClient(RemoteURL(tt.args.remoteUrl))
-			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
-				require.Contains(t, err.Error(), tt.wantErr, tt.name)
-				return
-			} else {
-				require.NoError(t, err, tt.name)
-			}
+			_, err := NewProtobufClient(RemoteURL(tt.args.remoteUrl), Insecure(tt.args.insecure))
+			require.NoError(t, err, tt.name)
 		})
 	}
 }

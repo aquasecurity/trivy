@@ -22,8 +22,8 @@ import (
 
 // Injectors from inject.go:
 
-func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, dockerOpt types.DockerOption, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
-	scannerScanner, err := client.NewProtobufClient(url)
+func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, insecure client.Insecure, dockerOpt types.DockerOption, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
+	scannerScanner, err := client.NewProtobufClient(url, insecure)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -43,8 +43,8 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 	}, nil
 }
 
-func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, error) {
-	scannerScanner, err := client.NewProtobufClient(url)
+func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, insecure client.Insecure, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, error) {
+	scannerScanner, err := client.NewProtobufClient(url, insecure)
 	if err != nil {
 		return scanner.Scanner{}, err
 	}
