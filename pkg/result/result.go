@@ -157,9 +157,9 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, source string) strin
 func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
 	severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool, ignoreFile, policyFile string) (
 	[]types.DetectedVulnerability, *report.MisconfSummary, []types.DetectedMisconfiguration, error) {
-	ignoredIDs := getIgnoredIDs(ignoreFile)
+	ignoredIDs, excludedSeveritySources := parseIgnoreFile(ignoreFile)
 
-	filteredVulns := filterVulnerabilities(vulns, severities, ignoreUnfixed, ignoredIDs)
+	filteredVulns := filterVulnerabilities(vulns, severities, ignoreUnfixed, ignoredIDs, excludedSeveritySources)
 	misconfSummary, filteredMisconfs := filterMisconfigurations(misconfs, severities, includeNonFailures, ignoredIDs)
 
 	if policyFile != "" {
@@ -175,7 +175,7 @@ func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability,
 }
 
 func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
-	ignoreUnfixed bool, ignoredIDs []string) []types.DetectedVulnerability {
+	ignoreUnfixed bool, ignoredIDs []string, excludedSeveritySources []string) []types.DetectedVulnerability {
 	uniqVulns := make(map[string]types.DetectedVulnerability)
 	for _, vuln := range vulns {
 		if vuln.Severity == "" {
@@ -191,6 +191,8 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 			if ignoreUnfixed && vuln.FixedVersion == "" {
 				continue
 			} else if utils.StringInSlice(vuln.VulnerabilityID, ignoredIDs) {
+				continue
+			} else if utils.StringInSlice(vuln.SeveritySource, excludedSeveritySources) {
 				continue
 			}
 
@@ -318,14 +320,13 @@ func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface
 	return ignore, nil
 }
 
-func getIgnoredIDs(ignoreFile string) []string {
+func parseIgnoreFile(ignoreFile string) (ignoredIDs []string, excludedSeveritySources []string) {
 	f, err := os.Open(ignoreFile)
 	if err != nil {
 		// trivy must work even if no .trivyignore exist
-		return nil
+		return nil, nil
 	}
 
-	var ignoredIDs []string
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -333,9 +334,16 @@ func getIgnoredIDs(ignoreFile string) []string {
 		if strings.HasPrefix(line, "#") || line == "" {
 			continue
 		}
-		ignoredIDs = append(ignoredIDs, line)
+		// Check if the line is CVE that should be filtered.
+		if strings.HasPrefix(line, "CVE") {
+			cve := line
+			ignoredIDs = append(ignoredIDs, cve)
+		} else if strings.HasPrefix(line, "SeveritySource:") { // Check if the line is severity source that should be filtered.
+			severitySource := strings.TrimSpace(line[len("SeveritySource:"):])
+			excludedSeveritySources = append(excludedSeveritySources, severitySource)
+		}
 	}
-	return ignoredIDs
+	return ignoredIDs, excludedSeveritySources
 }
 
 func shouldOverwrite(old, new types.DetectedVulnerability) bool {
