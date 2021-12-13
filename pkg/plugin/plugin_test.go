@@ -378,3 +378,46 @@ func TestLoadAll1(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdate(t *testing.T) {
+	pluginName := "test_plugin"
+
+	tempDir := t.TempDir()
+	pluginDir := filepath.Join(tempDir, ".trivy", "plugins", pluginName)
+
+	t.Setenv("XDG_DATA_HOME", tempDir)
+
+	// Create the test plugin directory
+	err := os.MkdirAll(pluginDir, os.ModePerm)
+	require.NoError(t, err)
+
+	// write the plugin name
+	pluginMetadata := `name: "test_plugin"
+repository: testdata/test_plugin
+version: "0.0.5"
+usage: test
+description: A simple test plugin`
+
+	err = os.WriteFile(filepath.Join(pluginDir, "plugin.yaml"), []byte(pluginMetadata), os.ModePerm)
+	require.NoError(t, err)
+
+	// verify initial version
+	verifyVersion(t, pluginName, "0.0.5")
+
+	// Update the existing plugin
+	err = plugin.Update(pluginName)
+	require.NoError(t, err)
+
+	// verify plugin updated
+	verifyVersion(t, pluginName, "0.1.0")
+}
+
+func verifyVersion(t *testing.T, pluginName, expectedVersion string) {
+	plugins, err := plugin.LoadAll()
+	require.NoError(t, err)
+	for _, plugin := range plugins {
+		if plugin.Name == pluginName {
+			assert.Equal(t, expectedVersion, plugin.Version)
+		}
+	}
+}
