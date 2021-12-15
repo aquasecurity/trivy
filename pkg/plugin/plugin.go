@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"golang.org/x/xerrors"
-	"gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -191,14 +191,14 @@ func Information(name string) (string, error) {
 
 	if _, err := os.Stat(pluginDir); err != nil {
 		if os.IsNotExist(err) {
-			return "", xerrors.Errorf("Could not find a plugin called '%s', did you install it?", name)
+			return "", xerrors.Errorf("could not find a plugin called '%s', did you install it?", name)
 		}
-		return "", err
+		return "", xerrors.Errorf("stat error: %w", err)
 	}
 
 	plugin, err := loadMetadata(pluginDir)
 	if err != nil {
-		return "", err
+		return "", xerrors.Errorf("unable to load metadata: %w", err)
 	}
 
 	return fmt.Sprintf(`
@@ -216,11 +216,11 @@ func List() (string, error) {
 		if os.IsNotExist(err) {
 			return "No Installed Plugins\n", nil
 		}
-		return "", err
+		return "", xerrors.Errorf("stat error: %w", err)
 	}
 	plugins, err := LoadAll()
 	if err != nil {
-		return "", err
+		return "", xerrors.Errorf("unable to load plugins: %w", err)
 	}
 	pluginList := []string{"Installed Plugins:"}
 	for _, plugin := range plugins {

@@ -56,7 +56,7 @@ func Information(c *cli.Context) error {
 	}
 
 	if err := initLogger(c); err != nil {
-		return xerrors.Errorf("initialize error: %w", err)
+		return xerrors.Errorf("initialize logger error: %w", err)
 	}
 
 	pluginName := c.Args().First()
@@ -65,8 +65,8 @@ func Information(c *cli.Context) error {
 		return xerrors.Errorf("plugin information display error: %w", err)
 	}
 
-	if _, err := fmt.Fprintf(os.Stdout, info); err != nil {
-		return err
+	if _, err = fmt.Fprintf(os.Stdout, info); err != nil {
+		return xerrors.Errorf("print error: %w", err)
 	}
 
 	return nil
@@ -83,8 +83,8 @@ func List(c *cli.Context) error {
 		return xerrors.Errorf("plugin list display error: %w", err)
 	}
 
-	if _, err := fmt.Fprintf(os.Stdout, info); err != nil {
-		return err
+	if _, err = fmt.Fprintf(os.Stdout, info); err != nil {
+		return xerrors.Errorf("print error: %w", err)
 	}
 
 	return nil
