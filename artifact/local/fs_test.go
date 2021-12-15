@@ -155,3 +155,32 @@ func TestArtifact_Inspect(t *testing.T) {
 		})
 	}
 }
+
+func TestBuildAbsPath(t *testing.T) {
+	tests := []struct {
+		name          string
+		base          string
+		paths         []string
+		expectedPaths []string
+	}{
+		{"absolute path", "/testBase", []string{"/testPath"}, []string{"/testPath"}},
+		{"relative path", "/testBase", []string{"testPath"}, []string{"/testBase/testPath"}},
+		{"path have '.'", "/testBase", []string{"./testPath"}, []string{"/testBase/testPath"}},
+		{"path have '..'", "/testBase", []string{"../testPath/"}, []string{"/testPath"}},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got := buildAbsPaths(test.base, test.paths)
+			if len(test.paths) != len(got) {
+				t.Errorf("paths not equals, expected: %s, got: %s", test.expectedPaths, got)
+			} else {
+				for i, path := range test.expectedPaths {
+					if path != got[i] {
+						t.Errorf("paths not equals, expected: %s, got: %s", test.expectedPaths, got)
+					}
+				}
+			}
+		})
+	}
+}
