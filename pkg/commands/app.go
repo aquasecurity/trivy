@@ -668,6 +668,18 @@ func NewPluginCommand() *cli.Command {
 				Action:    plugin.Uninstall,
 			},
 			{
+				Name:    "list",
+				Aliases: []string{"l"},
+				Usage:   "list installed plugin",
+				Action:  plugin.List,
+			},
+			{
+				Name:      "info",
+				Usage:     "information about a plugin",
+				ArgsUsage: "PLUGIN_NAME",
+				Action:    plugin.Information,
+			},
+			{
 				Name:      "run",
 				Aliases:   []string{"r"},
 				Usage:     "run a plugin on the fly",

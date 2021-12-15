@@ -2,6 +2,8 @@ package plugin
 
 import (
 	"context"
+	"fmt"
+	"os"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -42,6 +44,47 @@ func Uninstall(c *cli.Context) error {
 	pluginName := c.Args().First()
 	if err := plugin.Uninstall(pluginName); err != nil {
 		return xerrors.Errorf("plugin uninstall error: %w", err)
+	}
+
+	return nil
+}
+
+// Information displays information about the plugin
+func Information(c *cli.Context) error {
+	if c.NArg() != 1 {
+		cli.ShowSubcommandHelpAndExit(c, 1)
+	}
+
+	if err := initLogger(c); err != nil {
+		return xerrors.Errorf("initialize logger error: %w", err)
+	}
+
+	pluginName := c.Args().First()
+	info, err := plugin.Information(pluginName)
+	if err != nil {
+		return xerrors.Errorf("plugin information display error: %w", err)
+	}
+
+	if _, err = fmt.Fprintf(os.Stdout, info); err != nil {
+		return xerrors.Errorf("print error: %w", err)
+	}
+
+	return nil
+}
+
+// List displays a list of all of installed plugins
+func List(c *cli.Context) error {
+	if err := initLogger(c); err != nil {
+		return xerrors.Errorf("initialize error: %w", err)
+	}
+
+	info, err := plugin.List()
+	if err != nil {
+		return xerrors.Errorf("plugin list display error: %w", err)
+	}
+
+	if _, err = fmt.Fprintf(os.Stdout, info); err != nil {
+		return xerrors.Errorf("print error: %w", err)
 	}
 
 	return nil
