@@ -316,7 +316,7 @@ description: A simple test plugin`
 	// Get Information for the plugin
 	info, err := plugin.Information(pluginName)
 	require.NoError(t, err)
-	assert.Equal(t, "\nPlugin: test_plugin\n  Description: A simple test plugin\n  Version:     0.1.0\n  Usage:       test\n\n", info)
+	assert.Equal(t, "\nPlugin: test_plugin\n  Description: A simple test plugin\n  Version:     0.1.0\n  Usage:       test\n", info)
 
 	// Get Information for unknown plugin
 	info, err = plugin.Information("unknown")
