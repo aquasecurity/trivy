@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"golang.org/x/xerrors"
-	yaml "gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -206,7 +206,6 @@ Plugin: %s
   Description: %s
   Version:     %s
   Usage:       %s
-
 `, plugin.Name, plugin.Description, plugin.Version, plugin.Usage), nil
 }
 
@@ -228,6 +227,35 @@ func List() (string, error) {
 	}
 
 	return strings.Join(pluginList, "\n"), nil
+}
+
+// Update updates an existing plugin
+func Update(name string) error {
+	pluginDir := filepath.Join(dir(), name)
+
+	if _, err := os.Stat(pluginDir); err != nil {
+		if os.IsNotExist(err) {
+			return xerrors.Errorf("could not find a plugin called '%s' to update: %w", name, err)
+		}
+		return err
+	}
+
+	plugin, err := loadMetadata(pluginDir)
+	if err != nil {
+		return err
+	}
+	log.Logger.Infof("Updating plugin '%s'", name)
+	updated, err := Install(nil, plugin.Repository, true)
+	if err != nil {
+		return xerrors.Errorf("unable to perform an update installation: %w", err)
+	}
+
+	if plugin.Version == updated.Version {
+		log.Logger.Infof("The %s plugin is the latest version. [%s]", name, plugin.Version)
+	} else {
+		log.Logger.Infof("Updated '%s' from %s to %s", name, plugin.Version, updated.Version)
+	}
+	return nil
 }
 
 // LoadAll loads all plugins
