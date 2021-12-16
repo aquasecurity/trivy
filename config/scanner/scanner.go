@@ -34,8 +34,11 @@ func New(rootDir string, namespaces, policyPaths, dataPaths []string, trace bool
 	scanner := Scanner{
 		rootDir:    rootDir,
 		namespaces: namespaces,
-		tfscanner:  tfExternal.NewExternalScanner(tfExternal.OptionIncludePassed()),
-		cfScanner:  cfExternal.NewExternalScanner(cfExternal.OptionIncludePassed()),
+		tfscanner: tfExternal.NewExternalScanner(
+			tfExternal.OptionIncludePassed(),
+			tfExternal.OptionDebugEnabled(trace),
+		),
+		cfScanner: cfExternal.NewExternalScanner(cfExternal.OptionIncludePassed()),
 	}
 
 	if len(namespaces) > 0 && len(policyPaths) > 0 {

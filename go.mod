@@ -10,7 +10,7 @@ require (
 	github.com/aquasecurity/defsec v0.0.37
 	github.com/aquasecurity/go-dep-parser v0.0.0-20211110174639-8257534ffed3
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
-	github.com/aquasecurity/tfsec v0.61.4-0.20211130135821-0a1997e494fa
+	github.com/aquasecurity/tfsec v0.63.1
 	github.com/aws/aws-sdk-go v1.42.0
 	github.com/docker/docker v20.10.10+incompatible
 	github.com/docker/go-connections v0.4.0
