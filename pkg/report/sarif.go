@@ -2,6 +2,7 @@ package report
 
 import (
 	"fmt"
+	"html"
 	"io"
 	"regexp"
 	"strings"
@@ -22,16 +23,18 @@ type SarifWriter struct {
 }
 
 type sarifData struct {
-	vulnerabilityId string
-	title           string
-	description     string
-	severity        string
-	pkgName         string
-	fixedVersion    string
-	url             string
-	resourceType    string
-	filePath        string
-	resultIndex     int
+	caption          string
+	vulnerabilityId  string
+	title            string
+	description      string
+	severity         string
+	pkgName          string
+	installedVersion string
+	fixedVersion     string
+	url              string
+	resourceType     string
+	filePath         string
+	resultIndex      int
 }
 
 func (sw *SarifWriter) addSarifRule(data *sarifData) {
@@ -39,20 +42,26 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 	if description == "" {
 		description = data.title
 	}
-	helpText := fmt.Sprintf("Vulnerability %v\\n%v\\nSeverity: %v\\nPackage: %v\\nFixed Version: %v\\nLink: [%v](%v)",
-		data.vulnerabilityId, description, data.severity, data.pkgName, data.fixedVersion, data.vulnerabilityId, data.url)
-	helpMarkdown := fmt.Sprintf("**Vulnerability %v**\n%v\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n",
-		data.vulnerabilityId, description, data.severity, data.pkgName, data.fixedVersion, data.vulnerabilityId, data.url)
 
+	helpText := fmt.Sprintf("%s %v\n%v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)",
+		data.caption, data.vulnerabilityId, description, data.severity, data.pkgName, data.fixedVersion, data.vulnerabilityId, data.url)
+	helpMarkdown := fmt.Sprintf("**%s %v**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n%v\n",
+		data.caption, data.vulnerabilityId, data.severity, data.pkgName, data.fixedVersion, data.vulnerabilityId, data.url, description)
 	help := &sarif.MultiformatMessageString{
 		Text:     &helpText,
 		Markdown: &helpMarkdown,
 	}
 
-	sw.run.AddRule(data.vulnerabilityId).
+	fullDescription := data.title
+	if fullDescription == "" {
+		fullDescription = data.description
+	}
+	fullDescription = html.EscapeString(fullDescription)
+
+	r := sw.run.AddRule(data.vulnerabilityId).
 		WithName(toSarifRuleName(data.resourceType)).
 		WithDescription(data.vulnerabilityId).
-		WithFullDescription(&sarif.MultiformatMessageString{Text: &description}).
+		WithFullDescription(&sarif.MultiformatMessageString{Text: &fullDescription}).
 		WithHelp(help).
 		WithMarkdownHelp(helpMarkdown).
 		WithProperties(sarif.Properties{
@@ -62,13 +71,22 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 			},
 			"precision": "very-high",
 		})
+
+	r.DefaultConfiguration = &sarif.ReportingConfiguration{
+		Level: toSarifErrorLevel(data.severity),
+	}
+
+	if data.url != "" {
+		r.WithHelpURI(data.url)
+	}
 }
 
 func (sw *SarifWriter) addSarifResult(data *sarifData) {
 	sw.addSarifRule(data)
 
-	message := sarif.NewTextMessage(data.description)
-	region := sarif.NewSimpleRegion(1, 1)
+	message := sarif.NewTextMessage(fmt.Sprintf("Package: %v\nInstalled Version: %v\nVulnerability %v\nSeverity: %v\nFixed Version: %v\nLink: [%v](%v)",
+		data.pkgName, data.installedVersion, data.vulnerabilityId, data.severity, data.fixedVersion, data.vulnerabilityId, data.url))
+	region := sarif.NewRegion().WithStartLine(1)
 
 	location := sarif.NewPhysicalLocation().
 		WithArtifactLocation(sarif.NewSimpleArtifactLocation(data.filePath).WithUriBaseId("ROOTPATH")).
@@ -96,10 +114,7 @@ func (sw SarifWriter) Write(report Report) error {
 	if err != nil {
 		return err
 	}
-	toolComponent := sarif.NewDriver("Trivy").
-		WithVersion(sw.Version).
-		WithInformationURI("https://github.com/aquasecurity/trivy")
-	sw.run = sarif.NewRun(*sarif.NewTool(toolComponent))
+	sw.run = sarif.NewRunWithInformationURI("Trivy", "https://github.com/aquasecurity/trivy")
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 
 	ruleIndexes := map[string]int{}
@@ -107,26 +122,28 @@ func (sw SarifWriter) Write(report Report) error {
 	for _, res := range report.Results {
 		for _, vuln := range res.Vulnerabilities {
 			sw.addSarifResult(&sarifData{
-				vulnerabilityId: vuln.VulnerabilityID,
-				title:           vuln.Title,
-				description:     vuln.Description,
-				severity:        vuln.Severity,
-				pkgName:         vuln.PkgName,
-				fixedVersion:    vuln.FixedVersion,
-				url:             vuln.PrimaryURL,
-				resourceType:    res.Type,
-				filePath:        toPathUri(res.Target),
-				resultIndex:     getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
+				caption:          "Vulnerability",
+				vulnerabilityId:  vuln.VulnerabilityID,
+				title:            vuln.Title,
+				description:      vuln.Description,
+				severity:         vuln.Severity,
+				pkgName:          vuln.PkgName,
+				fixedVersion:     vuln.FixedVersion,
+				installedVersion: vuln.InstalledVersion,
+				url:              vuln.PrimaryURL,
+				resourceType:     res.Type,
+				filePath:         toPathUri(res.Target),
+				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 			})
 		}
 		for _, misconf := range res.Misconfigurations {
 			sw.addSarifResult(&sarifData{
+				caption:         "Misconfiguration",
 				vulnerabilityId: misconf.ID,
 				title:           misconf.Title,
 				description:     misconf.Description,
 				severity:        misconf.Severity,
 				pkgName:         res.Type,
-				fixedVersion:    "",
 				url:             misconf.PrimaryURL,
 				resourceType:    misconf.Type,
 				filePath:        toPathUri(res.Target),
