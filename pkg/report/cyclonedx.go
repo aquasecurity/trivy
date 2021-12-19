@@ -160,6 +160,22 @@ func parseProperties(pkg types.Package) []cdx.Property {
 			},
 		)
 	}
+	if pkg.SrcName != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertySrcName,
+				Value: pkg.SrcName,
+			},
+		)
+	}
+	if pkg.SrcVersion != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertySrcVersion,
+				Value: pkg.SrcVersion,
+			},
+		)
+	}
 	if pkg.SrcRelease != "" {
 		properties = append(properties,
 			cdx.Property{
@@ -184,18 +200,29 @@ func parseProperties(pkg types.Package) []cdx.Property {
 			},
 		)
 	}
-	if pkg.SrcName != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertySrcName,
-				Value: pkg.SrcName,
-			},
-		)
-	}
+
 	return properties
 }
 
 func NewPackageURL(t string, pkg types.Package) string {
+	switch t {
+	case "jar":
+		t = "maven"
+	case "alpine":
+		t = "apk"
+	case "debian":
+		t = "deb"
+	case "redhat":
+		t = "rpm"
+	case "centos":
+		t = "rpm"
+	case "opensuse.leap":
+		t = "rpm"
+	case "suse linux enterprise server":
+		t = "rpm"
+	default:
+	}
+
 	name := strings.ReplaceAll(pkg.Name, ":", "/")
 	index := strings.LastIndex(name, "/")
 

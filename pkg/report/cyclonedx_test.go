@@ -131,14 +131,14 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:  "pkg:centos/acl@2.2.53?release=1.el8&arch=aarch64&src_name=acl&src_version=2.2.53&src_release=1.el8",
+						BOMRef:  "pkg:rpm/acl@2.2.53?release=1.el8&arch=aarch64&src_name=acl&src_version=2.2.53&src_release=1.el8",
 						Type:    "library",
 						Name:    "acl",
 						Version: "2.2.53-1.el8",
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{Expression: "GPLv2+"},
 						},
-						PackageURL: "pkg:centos/acl@2.2.53?release=1.el8&arch=aarch64&src_name=acl&src_version=2.2.53&src_release=1.el8",
+						PackageURL: "pkg:rpm/acl@2.2.53?release=1.el8&arch=aarch64&src_name=acl&src_version=2.2.53&src_release=1.el8",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:release",
@@ -192,7 +192,7 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						Ref: "rails:latest (centos 8.3.2011)",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref: "pkg:centos/acl@2.2.53?release=1.el8&arch=aarch64&src_name=acl&src_version=2.2.53&src_release=1.el8",
+								Ref: "pkg:rpm/acl@2.2.53?release=1.el8&arch=aarch64&src_name=acl&src_version=2.2.53&src_release=1.el8",
 							},
 						},
 					},
@@ -216,7 +216,6 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			bom, err := report.ConvertToBom(tc.inputReport)
 			assert.NoError(t, err, tc.name)
-
 			assert.Equal(t, tc.expectedSBOM, bom)
 		})
 	}
