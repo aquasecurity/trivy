@@ -2,6 +2,7 @@ package report
 
 import (
 	"io"
+	"strings"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -9,6 +10,7 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -116,6 +118,11 @@ func Write(report Report, option Option) error {
 	case "json":
 		writer = &JSONWriter{Output: option.Output}
 	case "template":
+		if strings.HasSuffix(option.OutputTemplate, "sarif.tpl") {
+			log.Logger.Info("Using `sarif.tpl` template is deprecated. Not `trivy` has a new format option `sarif`.")
+			writer = SarifWriter{Output: option.Output, Version: option.AppVersion}
+			break
+		}
 		var err error
 		if writer, err = NewTemplateWriter(option.Output, option.OutputTemplate); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
