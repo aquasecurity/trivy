@@ -23,7 +23,9 @@ func init() {
 const version = 1
 
 var requiredFiles = []string{
+	"usr/lib/sysimage/rpm/Packages.db",
 	"usr/lib/sysimage/rpm/Packages",
+	"var/lib/rpm/Packages.db",
 	"var/lib/rpm/Packages",
 }
 var errUnexpectedNameFormat = xerrors.New("unexpected name format")
