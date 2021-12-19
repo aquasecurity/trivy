@@ -23,47 +23,30 @@ type SarifWriter struct {
 }
 
 type sarifData struct {
-	caption          string
 	vulnerabilityId  string
-	title            string
-	description      string
-	severity         string
-	pkgName          string
-	installedVersion string
-	fixedVersion     string
-	url              string
+	fullDescription  string
+	helpText         string
+	helpMarkdown     string
 	resourceType     string
-	filePath         string
+	severity         string
+	url              string
 	resultIndex      int
+	artifactLocation string
+	message          string
 }
 
 func (sw *SarifWriter) addSarifRule(data *sarifData) {
-	description := data.description
-	if description == "" {
-		description = data.title
-	}
-
-	helpText := fmt.Sprintf("%s %v\n%v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)",
-		data.caption, data.vulnerabilityId, description, data.severity, data.pkgName, data.fixedVersion, data.vulnerabilityId, data.url)
-	helpMarkdown := fmt.Sprintf("**%s %v**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n%v\n",
-		data.caption, data.vulnerabilityId, data.severity, data.pkgName, data.fixedVersion, data.vulnerabilityId, data.url, description)
-	help := &sarif.MultiformatMessageString{
-		Text:     &helpText,
-		Markdown: &helpMarkdown,
-	}
-
-	fullDescription := data.title
-	if fullDescription == "" {
-		fullDescription = data.description
-	}
-	fullDescription = html.EscapeString(fullDescription)
-
 	r := sw.run.AddRule(data.vulnerabilityId).
 		WithName(toSarifRuleName(data.resourceType)).
 		WithDescription(data.vulnerabilityId).
-		WithFullDescription(&sarif.MultiformatMessageString{Text: &fullDescription}).
-		WithHelp(help).
-		WithMarkdownHelp(helpMarkdown).
+		WithFullDescription(&sarif.MultiformatMessageString{Text: &data.fullDescription}).
+		WithHelp(&sarif.MultiformatMessageString{
+			Text:     &data.helpText,
+			Markdown: &data.helpMarkdown,
+		}).
+		WithDefaultConfiguration(&sarif.ReportingConfiguration{
+			Level: toSarifErrorLevel(data.severity),
+		}).
 		WithProperties(sarif.Properties{
 			"tags": []string{
 				"vulnerability",
@@ -71,11 +54,6 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 			},
 			"precision": "very-high",
 		})
-
-	r.DefaultConfiguration = &sarif.ReportingConfiguration{
-		Level: toSarifErrorLevel(data.severity),
-	}
-
 	if data.url != "" {
 		r.WithHelpURI(data.url)
 	}
@@ -84,16 +62,12 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 func (sw *SarifWriter) addSarifResult(data *sarifData) {
 	sw.addSarifRule(data)
 
-	message := sarif.NewTextMessage(fmt.Sprintf("Package: %v\nInstalled Version: %v\nVulnerability %v\nSeverity: %v\nFixed Version: %v\nLink: [%v](%v)",
-		data.pkgName, data.installedVersion, data.vulnerabilityId, data.severity, data.fixedVersion, data.vulnerabilityId, data.url))
-	region := sarif.NewRegion().WithStartLine(1)
-
 	location := sarif.NewPhysicalLocation().
-		WithArtifactLocation(sarif.NewSimpleArtifactLocation(data.filePath).WithUriBaseId("ROOTPATH")).
-		WithRegion(region)
+		WithArtifactLocation(sarif.NewSimpleArtifactLocation(data.artifactLocation).WithUriBaseId("ROOTPATH")).
+		WithRegion(sarif.NewRegion().WithStartLine(1))
 	result := sarif.NewRuleResult(data.vulnerabilityId).
 		WithRuleIndex(data.resultIndex).
-		WithMessage(message).
+		WithMessage(sarif.NewTextMessage(data.message)).
 		WithLevel(toSarifErrorLevel(data.severity)).
 		WithLocations([]*sarif.Location{sarif.NewLocation().WithPhysicalLocation(location)})
 	sw.run.AddResult(result)
@@ -116,38 +90,47 @@ func (sw SarifWriter) Write(report Report) error {
 	}
 	sw.run = sarif.NewRunWithInformationURI("Trivy", "https://github.com/aquasecurity/trivy")
 	sw.run.Tool.Driver.WithVersion(sw.Version)
+	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
 
 	ruleIndexes := map[string]int{}
-
 	for _, res := range report.Results {
 		for _, vuln := range res.Vulnerabilities {
+			fullDescription := vuln.Description
+			if fullDescription == "" {
+				fullDescription = vuln.Title
+			}
+
 			sw.addSarifResult(&sarifData{
-				caption:          "Vulnerability",
 				vulnerabilityId:  vuln.VulnerabilityID,
-				title:            vuln.Title,
-				description:      vuln.Description,
 				severity:         vuln.Severity,
-				pkgName:          vuln.PkgName,
-				fixedVersion:     vuln.FixedVersion,
-				installedVersion: vuln.InstalledVersion,
 				url:              vuln.PrimaryURL,
 				resourceType:     res.Type,
-				filePath:         toPathUri(res.Target),
+				artifactLocation: toPathUri(res.Target),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
+				fullDescription:  html.EscapeString(fullDescription),
+				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
+					vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
+				helpMarkdown: fmt.Sprintf("**Vulnerability %v**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n\n%v",
+					vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
+				message: fmt.Sprintf("Package: %v\nInstalled Version: %v\nVulnerability %v\nSeverity: %v\nFixed Version: %v\nLink: [%v](%v)",
+					vuln.PkgName, vuln.InstalledVersion, vuln.VulnerabilityID, vuln.Severity, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL),
 			})
 		}
 		for _, misconf := range res.Misconfigurations {
 			sw.addSarifResult(&sarifData{
-				caption:         "Misconfiguration",
-				vulnerabilityId: misconf.ID,
-				title:           misconf.Title,
-				description:     misconf.Description,
-				severity:        misconf.Severity,
-				pkgName:         res.Type,
-				url:             misconf.PrimaryURL,
-				resourceType:    misconf.Type,
-				filePath:        toPathUri(res.Target),
-				resultIndex:     getRuleIndex(misconf.ID, ruleIndexes),
+				vulnerabilityId:  misconf.ID,
+				severity:         misconf.Severity,
+				url:              misconf.PrimaryURL,
+				resourceType:     res.Type,
+				artifactLocation: toPathUri(res.Target),
+				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
+				fullDescription:  html.EscapeString(misconf.Description),
+				helpText: fmt.Sprintf("Misconfiguration %v\nType: %s\nSeverity: %v\nCheck: %v\nMessage: %v\nLink: [%v](%v)\n%s",
+					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
+				helpMarkdown: fmt.Sprintf("**Misconfiguration %v**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|%v|%v|%v|%s|[%v](%v)|\n\n%v",
+					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
+				message: fmt.Sprintf("Artifact: %v\nType: %v\nVulnerability %v\nSeverity: %v\nMessage: %v\nLink: [%v](%v)",
+					res.Target, res.Type, misconf.ID, misconf.Severity, misconf.Message, misconf.ID, misconf.PrimaryURL),
 			})
 		}
 	}
