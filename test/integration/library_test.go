@@ -87,6 +87,14 @@ var testCases = []testCase{
 		wantOS:          types.OS{Name: "15.1", Family: "opensuse.leap"},
 	},
 	{
+                // from registry.suse.com/suse/sle15:15.3.17.8.16
+		name:            "happy path, suse 15.3 (NDB)",
+		imageName:       "suse/sle15:15.3.17.8.16",
+		remoteImageName: "knqyf263/suse-sle15:15.3.17.8.16",
+		imageFile:       "testdata/fixtures/suse-15.3_ndb.tar.gz",
+		wantOS:          types.OS{Name: "15.3", Family: "suse linux enterprise server"},
+	},
+	{
 		name:                "happy path, vulnimage with lock files",
 		imageName:           "knqyf263/vuln-image:1.2.3",
 		remoteImageName:     "knqyf263/vuln-image:1.2.3",
