@@ -201,6 +201,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 
 	artifactOpt := artifact.Option{
 		DisabledAnalyzers: disabledAnalyzers(opt),
+		SkipCache:         opt.SkipCache,
 		SkipFiles:         opt.SkipFiles,
 		SkipDirs:          opt.SkipDirs,
 	}

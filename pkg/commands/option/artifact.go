@@ -14,6 +14,7 @@ type ArtifactOption struct {
 	Input      string
 	Timeout    time.Duration
 	ClearCache bool
+	SkipCache  bool
 
 	SkipDirs  []string
 	SkipFiles []string
@@ -28,6 +29,7 @@ func NewArtifactOption(c *cli.Context) ArtifactOption {
 		Input:      c.String("input"),
 		Timeout:    c.Duration("timeout"),
 		ClearCache: c.Bool("clear-cache"),
+		SkipCache:  c.Bool("skip-cache"),
 		SkipFiles:  c.StringSlice("skip-files"),
 		SkipDirs:   c.StringSlice("skip-dirs"),
 	}

@@ -225,6 +225,12 @@ var (
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
+	skipCache = cli.BoolFlag{
+		Name:    "skip-cache",
+		Usage:   "skip image caches during scanning ",
+		EnvVars: []string{"TRIVY_SKIP_CACHE"},
+	}
+
 	// For misconfigurations
 	configPolicy = cli.StringSliceFlag{
 		Name:    "config-policy",
@@ -309,6 +315,7 @@ var (
 		&ignorePolicy,
 		&listAllPackages,
 		&cacheBackendFlag,
+		&skipCache,
 		stringSliceFlag(skipFiles),
 		stringSliceFlag(skipDirs),
 	}
