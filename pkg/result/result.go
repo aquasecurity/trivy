@@ -334,13 +334,14 @@ func parseIgnoreFile(ignoreFile string) (ignoredIDs []string, excludedSeveritySo
 		if strings.HasPrefix(line, "#") || line == "" {
 			continue
 		}
-		// Check if the line is CVE that should be filtered.
-		if strings.HasPrefix(line, "CVE") {
-			cve := line
-			ignoredIDs = append(ignoredIDs, cve)
-		} else if strings.HasPrefix(line, "SeveritySource:") { // Check if the line is severity source that should be filtered.
+
+		// Check if the line is severity source that should be filtered.
+		if strings.HasPrefix(line, "SeveritySource:") {
 			severitySource := strings.TrimSpace(line[len("SeveritySource:"):])
 			excludedSeveritySources = append(excludedSeveritySources, severitySource)
+		} else { // Default is ignored ids (relevant for ignored vulnerabilities and ignored misconfigurations).
+			ignoredID := line
+			ignoredIDs = append(ignoredIDs, ignoredID)
 		}
 	}
 	return ignoredIDs, excludedSeveritySources
