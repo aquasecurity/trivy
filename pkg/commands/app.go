@@ -686,6 +686,12 @@ func NewPluginCommand() *cli.Command {
 				ArgsUsage: "PLUGIN_NAME [PLUGIN_OPTIONS]",
 				Action:    plugin.Run,
 			},
+			{
+				Name:      "update",
+				Usage:     "update an existing plugin",
+				ArgsUsage: "PLUGIN_NAME",
+				Action:    plugin.Update,
+			},
 		},
 	}
 }

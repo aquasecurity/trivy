@@ -90,6 +90,24 @@ func List(c *cli.Context) error {
 	return nil
 }
 
+// Update updates an existing plugin
+func Update(c *cli.Context) error {
+	if c.NArg() != 1 {
+		cli.ShowSubcommandHelpAndExit(c, 1)
+	}
+
+	if err := initLogger(c); err != nil {
+		return xerrors.Errorf("initialize error: %w", err)
+	}
+
+	pluginName := c.Args().First()
+	if err := plugin.Update(pluginName); err != nil {
+		return xerrors.Errorf("plugin update error: %w", err)
+	}
+
+	return nil
+}
+
 // Run runs the plugin
 func Run(c *cli.Context) error {
 	if c.NArg() < 1 {

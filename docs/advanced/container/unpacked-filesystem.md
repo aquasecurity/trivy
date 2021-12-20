@@ -1,6 +1,6 @@
 # Unpacked Filesystem
 
-Scan aan unpacked container image filesystem.
+Scan an unpacked container image filesystem.
 
 In this case, Trivy works the same way when scanning containers
 
