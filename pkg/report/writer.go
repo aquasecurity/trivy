@@ -119,7 +119,7 @@ func Write(report Report, option Option) error {
 		writer = &JSONWriter{Output: option.Output}
 	case "template":
 		if strings.HasSuffix(option.OutputTemplate, "sarif.tpl") {
-			log.Logger.Info("Using `sarif.tpl` template is deprecated. Not `trivy` has a new format option `sarif`.")
+			log.Logger.Info("Using `sarif.tpl` template is deprecated. Now `trivy` has a new format option `sarif`.")
 			writer = SarifWriter{Output: option.Output, Version: option.AppVersion}
 			break
 		}
