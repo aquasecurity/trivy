@@ -42,7 +42,7 @@ var (
 		Name:    "format",
 		Aliases: []string{"f"},
 		Value:   "table",
-		Usage:   "format (table, json, template)",
+		Usage:   "format (table, json, template, sarif)",
 		EnvVars: []string{"TRIVY_FORMAT"},
 	}
 
