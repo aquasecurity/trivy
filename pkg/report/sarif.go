@@ -2,6 +2,7 @@ package report
 
 import (
 	"fmt"
+	"golang.org/x/xerrors"
 	"html"
 	"io"
 	"regexp"
@@ -92,7 +93,7 @@ func getRuleIndex(id string, indexes map[string]int) int {
 func (sw SarifWriter) Write(report Report) error {
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
-		return err
+		return xerrors.Errorf("error creating a new sarif template: %w", err)
 	}
 	sw.run = sarif.NewRunWithInformationURI("Trivy", "https://github.com/aquasecurity/trivy")
 	sw.run.Tool.Driver.WithVersion(sw.Version)
