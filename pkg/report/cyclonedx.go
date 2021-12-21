@@ -24,15 +24,15 @@ const (
 	PropertySize            = Namespace + "Size"
 	PropertyDigest          = Namespace + "Digest"
 	PropertyTag             = Namespace + "Tag"
-	PropertyRelease         = Namespace + "release"
-	PropertyEpoch           = Namespace + "epoch"
-	PropertyArch            = Namespace + "arch"
-	PropertySrcName         = Namespace + "src_name"
-	PropertySrcVersion      = Namespace + "src_version"
-	PropertySrcRelease      = Namespace + "src_release"
-	PropertySrcEpoch        = Namespace + "src_epoch"
-	PropertyModularitylabel = Namespace + "modularitylabel"
-	PropertyFilePath        = Namespace + "file_path"
+	PropertyRelease         = Namespace + "Release"
+	PropertyEpoch           = Namespace + "Epoch"
+	PropertyArch            = Namespace + "Arch"
+	PropertySrcName         = Namespace + "SrcName"
+	PropertySrcVersion      = Namespace + "SrcVersion"
+	PropertySrcRelease      = Namespace + "SrcRelease"
+	PropertySrcEpoch        = Namespace + "SrcEpoch"
+	PropertyModularitylabel = Namespace + "Modularitylabel"
+	PropertyFilePath        = Namespace + "FilePath"
 )
 
 // CycloneDXWriter implements result Writer
@@ -128,84 +128,6 @@ func pkgToComponent(t string, pkg types.Package) (cdx.Component, error) {
 	return component, nil
 }
 
-func parseProperties(pkg types.Package) []cdx.Property {
-	properties := []cdx.Property{}
-	if pkg.FilePath != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertyFilePath,
-				Value: pkg.FilePath,
-			},
-		)
-	}
-	if pkg.Release != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertyRelease,
-				Value: pkg.Release,
-			},
-		)
-	}
-	if pkg.Epoch != 0 {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertyEpoch,
-				Value: strconv.Itoa(pkg.Epoch),
-			},
-		)
-	}
-	if pkg.Arch != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertyArch,
-				Value: pkg.Arch,
-			},
-		)
-	}
-	if pkg.SrcName != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertySrcName,
-				Value: pkg.SrcName,
-			},
-		)
-	}
-	if pkg.SrcVersion != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertySrcVersion,
-				Value: pkg.SrcVersion,
-			},
-		)
-	}
-	if pkg.SrcRelease != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertySrcRelease,
-				Value: pkg.SrcRelease,
-			},
-		)
-	}
-	if pkg.SrcEpoch != 0 {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertySrcEpoch,
-				Value: strconv.Itoa(pkg.SrcEpoch),
-			},
-		)
-	}
-	if pkg.Modularitylabel != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertyModularitylabel,
-				Value: pkg.Modularitylabel,
-			},
-		)
-	}
-
-	return properties
-}
-
 func NewPackageURL(t string, pkg types.Package) string {
 	name := strings.ReplaceAll(pkg.Name, ":", "/")
 	index := strings.LastIndex(name, "/")
@@ -219,65 +141,6 @@ func NewPackageURL(t string, pkg types.Package) string {
 	purl := packageurl.NewPackageURL(purlType(t), namespace, pkgName, pkg.Version, parseQualifier(pkg), "")
 
 	return purl.String()
-}
-
-func parseQualifier(pkg types.Package) packageurl.Qualifiers {
-	qualifiers := packageurl.Qualifiers{}
-	if pkg.Release != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "release",
-			Value: pkg.Release,
-		})
-	}
-	if pkg.Epoch != 0 {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "epoch",
-			Value: strconv.Itoa(pkg.Epoch),
-		})
-	}
-	if pkg.Arch != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "arch",
-			Value: pkg.Arch,
-		})
-	}
-	if pkg.SrcName != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "src_name",
-			Value: pkg.SrcName,
-		})
-	}
-	if pkg.SrcVersion != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "src_version",
-			Value: pkg.SrcVersion,
-		})
-	}
-	if pkg.SrcRelease != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "src_release",
-			Value: pkg.SrcRelease,
-		})
-	}
-	if pkg.SrcEpoch != 0 {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "src_epoch",
-			Value: strconv.Itoa(pkg.SrcEpoch),
-		})
-	}
-	if pkg.Modularitylabel != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "modularitylabel",
-			Value: pkg.Modularitylabel,
-		})
-	}
-	if pkg.FilePath != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "file_path",
-			Value: pkg.FilePath,
-		})
-	}
-	return qualifiers
 }
 
 func reportToComponent(r Report) *cdx.Component {
@@ -359,6 +222,143 @@ func resultToComponent(r Result, osFound *types.OS) cdx.Component {
 	}
 
 	return component
+}
+
+func parseProperties(pkg types.Package) []cdx.Property {
+	properties := []cdx.Property{}
+	if pkg.FilePath != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertyFilePath,
+				Value: pkg.FilePath,
+			},
+		)
+	}
+	if pkg.Release != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertyRelease,
+				Value: pkg.Release,
+			},
+		)
+	}
+	if pkg.Epoch != 0 {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertyEpoch,
+				Value: strconv.Itoa(pkg.Epoch),
+			},
+		)
+	}
+	if pkg.Arch != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertyArch,
+				Value: pkg.Arch,
+			},
+		)
+	}
+	if pkg.SrcName != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertySrcName,
+				Value: pkg.SrcName,
+			},
+		)
+	}
+	if pkg.SrcVersion != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertySrcVersion,
+				Value: pkg.SrcVersion,
+			},
+		)
+	}
+	if pkg.SrcRelease != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertySrcRelease,
+				Value: pkg.SrcRelease,
+			},
+		)
+	}
+	if pkg.SrcEpoch != 0 {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertySrcEpoch,
+				Value: strconv.Itoa(pkg.SrcEpoch),
+			},
+		)
+	}
+	if pkg.Modularitylabel != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertyModularitylabel,
+				Value: pkg.Modularitylabel,
+			},
+		)
+	}
+
+	return properties
+}
+
+func parseQualifier(pkg types.Package) packageurl.Qualifiers {
+	qualifiers := packageurl.Qualifiers{}
+	if pkg.Release != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "release",
+			Value: pkg.Release,
+		})
+	}
+	if pkg.Epoch != 0 {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "epoch",
+			Value: strconv.Itoa(pkg.Epoch),
+		})
+	}
+	if pkg.Arch != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "arch",
+			Value: pkg.Arch,
+		})
+	}
+	if pkg.SrcName != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "src_name",
+			Value: pkg.SrcName,
+		})
+	}
+	if pkg.SrcVersion != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "src_version",
+			Value: pkg.SrcVersion,
+		})
+	}
+	if pkg.SrcRelease != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "src_release",
+			Value: pkg.SrcRelease,
+		})
+	}
+	if pkg.SrcEpoch != 0 {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "src_epoch",
+			Value: strconv.Itoa(pkg.SrcEpoch),
+		})
+	}
+	if pkg.Modularitylabel != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "modularitylabel",
+			Value: pkg.Modularitylabel,
+		})
+	}
+	if pkg.FilePath != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "file_path",
+			Value: pkg.FilePath,
+		})
+	}
+	return qualifiers
 }
 
 func purlType(t string) string {

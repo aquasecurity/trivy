@@ -141,23 +141,23 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						PackageURL: "pkg:rpm/acl@2.2.53?release=1.el8&arch=aarch64&src_name=acl&src_version=2.2.53&src_release=1.el8",
 						Properties: &[]cdx.Property{
 							{
-								Name:  "aquasecurity:trivy:release",
+								Name:  "aquasecurity:trivy:Release",
 								Value: "1.el8",
 							},
 							{
-								Name:  "aquasecurity:trivy:arch",
+								Name:  "aquasecurity:trivy:Arch",
 								Value: "aarch64",
 							},
 							{
-								Name:  "aquasecurity:trivy:src_name",
+								Name:  "aquasecurity:trivy:SrcName",
 								Value: "acl",
 							},
 							{
-								Name:  "aquasecurity:trivy:src_version",
+								Name:  "aquasecurity:trivy:SrcVersion",
 								Value: "2.2.53",
 							},
 							{
-								Name:  "aquasecurity:trivy:src_release",
+								Name:  "aquasecurity:trivy:SrcRelease",
 								Value: "1.el8",
 							},
 						},
