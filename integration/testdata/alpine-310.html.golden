@@ -232,6 +232,7 @@
           <a href="https://www.openssl.org/news/secadv/20190910.txt">https://www.openssl.org/news/secadv/20190910.txt</a>
         </td>
       </tr>
+      <tr><th colspan="6">No Misconfigurations found</th></tr>
     </table>
   </body>
 </html>

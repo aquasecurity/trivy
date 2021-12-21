@@ -263,9 +263,9 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 
 func TestClient_getPrimaryURL(t *testing.T) {
 	type args struct {
-		vulnID string
-		refs   []string
-		source string
+		vulnID  string
+		refs    []string
+		sources []string
 	}
 	tests := []struct {
 		name string
@@ -275,36 +275,36 @@ func TestClient_getPrimaryURL(t *testing.T) {
 		{
 			name: "CVE-ID",
 			args: args{
-				vulnID: "CVE-2014-8484",
-				refs:   []string{"http://linux.oracle.com/cve/CVE-2014-8484.html"},
-				source: vulnerability.OracleOVAL,
+				vulnID:  "CVE-2014-8484",
+				refs:    []string{"http://linux.oracle.com/cve/CVE-2014-8484.html"},
+				sources: []string{vulnerability.OracleOVAL},
 			},
 			want: "https://avd.aquasec.com/nvd/cve-2014-8484",
 		},
 		{
 			name: "RUSTSEC",
 			args: args{
-				vulnID: "RUSTSEC-2018-0017",
-				refs:   []string{"https://github.com/rust-lang-deprecated/tempdir/pull/46"},
-				source: vulnerability.RustSec,
+				vulnID:  "RUSTSEC-2018-0017",
+				refs:    []string{"https://github.com/rust-lang-deprecated/tempdir/pull/46"},
+				sources: []string{vulnerability.RustSec},
 			},
 			want: "https://rustsec.org/advisories/RUSTSEC-2018-0017",
 		},
 		{
 			name: "GHSA",
 			args: args{
-				vulnID: "GHSA-28fw-88hq-6jmm",
-				refs:   []string{},
-				source: vulnerability.PhpSecurityAdvisories,
+				vulnID:  "GHSA-28fw-88hq-6jmm",
+				refs:    []string{},
+				sources: []string{vulnerability.PhpSecurityAdvisories},
 			},
 			want: "https://github.com/advisories/GHSA-28fw-88hq-6jmm",
 		},
 		{
 			name: "Debian temp vulnerability",
 			args: args{
-				vulnID: "TEMP-0841856-B18BAF",
-				refs:   []string{},
-				source: vulnerability.DebianOVAL,
+				vulnID:  "TEMP-0841856-B18BAF",
+				refs:    []string{},
+				sources: []string{vulnerability.DebianOVAL},
 			},
 			want: "https://security-tracker.debian.org/tracker/TEMP-0841856-B18BAF",
 		},
@@ -317,7 +317,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 					"https://github.com/lodash/lodash/pull/4759",
 					"https://www.npmjs.com/advisories/1523",
 				},
-				source: vulnerability.NodejsSecurityWg,
+				sources: []string{vulnerability.NodejsSecurityWg},
 			},
 			want: "https://www.npmjs.com/advisories/1523",
 		},
@@ -329,7 +329,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 					"http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00076.html",
 					"https://www.suse.com/support/security/rating/",
 				},
-				source: vulnerability.OpenSuseCVRF,
+				sources: []string{vulnerability.OpenSuseCVRF},
 			},
 			want: "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00076.html",
 		},
@@ -337,7 +337,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := Client{}
-			got := c.getPrimaryURL(tt.args.vulnID, tt.args.refs, tt.args.source)
+			got := c.getPrimaryURL(tt.args.vulnID, tt.args.refs, tt.args.sources)
 			assert.Equal(t, tt.want, got)
 		})
 	}

@@ -112,6 +112,31 @@
       </tr>
         {{- end }}
       {{- end }}
+      {{- if (eq (len .Misconfigurations ) 0) }}
+      <tr><th colspan="6">No Misconfigurations found</th></tr>
+      {{- else }}
+      <tr class="sub-header">
+        <th>Type</th>
+        <th>Misconf ID</th>
+        <th>Check</th>
+        <th>Severity</th>
+        <th>Message</th>
+      </tr>
+        {{- range .Misconfigurations }}
+      <tr class="severity-{{ escapeXML .Severity }}">
+        <td class="misconf-type">{{ escapeXML .Type }}</td>
+        <td>{{ escapeXML .ID }}</td>
+        <td class="misconf-check">{{ escapeXML .Title }}</td>
+        <td class="severity">{{ escapeXML .Severity }}</td>
+        <td class="link" data-more-links="off"  style="white-space:normal;"">
+          {{ escapeXML .Message }}
+          <br>
+            <a href={{ escapeXML .PrimaryURL | printf "%q" }}>{{ escapeXML .PrimaryURL }}</a>
+          </br>
+        </td>
+      </tr>
+        {{- end }}
+      {{- end }}
     {{- end }}
     </table>
 {{- else }}
