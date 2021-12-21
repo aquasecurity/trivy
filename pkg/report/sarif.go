@@ -12,6 +12,12 @@ import (
 	"github.com/owenrumney/go-sarif/v2/sarif"
 )
 
+const (
+	sarifOsPackageVulnerability        = "OsPackageVulnerability"
+	sarifLanguageSpecificVulnerability = "LanguageSpecificPackageVulnerability"
+	sarifOtherVulnerability            = "OtherVulnerability"
+)
+
 // regex to extract file path in case string includes (distro:version)
 var re = regexp.MustCompile(`(?P<path>.+?)(?:\s*\((?:.*?)\).*?)?$`)
 
@@ -99,13 +105,17 @@ func (sw SarifWriter) Write(report Report) error {
 			if fullDescription == "" {
 				fullDescription = vuln.Title
 			}
+			path := vuln.PkgPath
+			if path == "" {
+				path = res.Target
+			}
 
 			sw.addSarifResult(&sarifData{
 				vulnerabilityId:  vuln.VulnerabilityID,
 				severity:         vuln.Severity,
 				url:              vuln.PrimaryURL,
 				resourceType:     res.Type,
-				artifactLocation: toPathUri(res.Target),
+				artifactLocation: toPathUri(path),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 				fullDescription:  html.EscapeString(fullDescription),
 				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
@@ -144,11 +154,11 @@ func toSarifRuleName(vulnerabilityType string) string {
 		vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
 		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon,
 		vulnerability.CentOS:
-		return "OsPackageVulnerability"
+		return sarifOsPackageVulnerability
 	case "npm", "yarn", "nuget", "pipenv", "poetry", "bundler", "cargo", "composer":
-		return "ProgrammingLanguageVulnerability"
+		return sarifLanguageSpecificVulnerability
 	default:
-		return "OtherVulnerability"
+		return sarifOtherVulnerability
 	}
 }
 
