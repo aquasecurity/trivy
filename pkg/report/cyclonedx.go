@@ -10,6 +10,8 @@ import (
 	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/app"
 )
@@ -205,18 +207,6 @@ func parseProperties(pkg types.Package) []cdx.Property {
 }
 
 func NewPackageURL(t string, pkg types.Package) string {
-	switch t {
-	case "jar":
-		t = "maven"
-	case "alpine":
-		t = "apk"
-	case "debian", "ubuntu":
-		t = "deb"
-	case "redhat", "centos", "opensuse.leap", "suse linux enterprise server", "oracle", "amazon", "photon", "fedora":
-		t = "rpm"
-	default:
-	}
-
 	name := strings.ReplaceAll(pkg.Name, ":", "/")
 	index := strings.LastIndex(name, "/")
 
@@ -226,7 +216,7 @@ func NewPackageURL(t string, pkg types.Package) string {
 		namespace = name[:index]
 		pkgName = name[index+1:]
 	}
-	purl := packageurl.NewPackageURL(t, namespace, pkgName, pkg.Version, parseQualifier(pkg), "")
+	purl := packageurl.NewPackageURL(purlType(t), namespace, pkgName, pkg.Version, parseQualifier(pkg), "")
 
 	return purl.String()
 }
@@ -369,4 +359,28 @@ func resultToComponent(r Result, osFound *types.OS) cdx.Component {
 	}
 
 	return component
+}
+
+func purlType(t string) string {
+	switch t {
+	case string(analyzer.TypeJar):
+		return packageurl.TypeMaven
+	case string(analyzer.TypeBundler), string(analyzer.TypeGemSpec):
+		return packageurl.TypeGem
+	case string(analyzer.TypePythonPkg), string(analyzer.TypePip), string(analyzer.TypePipenv), string(analyzer.TypePoetry):
+		return packageurl.TypePyPi
+	case string(analyzer.TypeGoBinary), string(analyzer.TypeGoMod):
+		return packageurl.TypeGolang
+	case string(analyzer.TypeNpmPkgLock), string(analyzer.TypeNodePkg), string(analyzer.TypeYarn):
+		return packageurl.TypeNPM
+	case os.Alpine:
+		return string(analyzer.TypeApk)
+	case os.Debian, os.Ubuntu:
+		return string(analyzer.TypeDpkg)
+	case os.RedHat, os.CentOS, os.Rocky, os.Alma,
+		os.Amazon, os.Fedora, os.Oracle, os.OpenSUSE,
+		os.OpenSUSELeap, os.OpenSUSETumbleweed, os.SLES, os.Photon:
+		return packageurl.TypeRPM
+	}
+	return t
 }

@@ -179,11 +179,11 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:bundler/actioncable@7.0.0",
+						BOMRef:     "pkg:gem/actioncable@7.0.0",
 						Type:       "library",
 						Name:       "actioncable",
 						Version:    "7.0.0",
-						PackageURL: "pkg:bundler/actioncable@7.0.0",
+						PackageURL: "pkg:gem/actioncable@7.0.0",
 						Properties: &[]cdx.Property{},
 					},
 				},
@@ -200,7 +200,7 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						Ref: "app/Gemfile.lock",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref: "pkg:bundler/actioncable@7.0.0",
+								Ref: "pkg:gem/actioncable@7.0.0",
 							},
 						},
 					},
