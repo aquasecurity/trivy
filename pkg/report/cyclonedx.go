@@ -210,15 +210,9 @@ func NewPackageURL(t string, pkg types.Package) string {
 		t = "maven"
 	case "alpine":
 		t = "apk"
-	case "debian":
+	case "debian", "ubuntu":
 		t = "deb"
-	case "redhat":
-		t = "rpm"
-	case "centos":
-		t = "rpm"
-	case "opensuse.leap":
-		t = "rpm"
-	case "suse linux enterprise server":
+	case "redhat", "centos", "opensuse.leap", "suse linux enterprise server", "oracle", "amazon", "photon", "fedora":
 		t = "rpm"
 	default:
 	}
