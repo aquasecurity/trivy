@@ -14,91 +14,91 @@ func TestReportWriter_toSarifRuleName(t *testing.T) {
 	}{
 		{
 			vulnerabilityType: vulnerability.Ubuntu,
-			sarifRuleName:     "OsPackageVulnerability",
+			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
 			vulnerabilityType: vulnerability.Alpine,
-			sarifRuleName:     "OsPackageVulnerability",
+			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
 			vulnerabilityType: vulnerability.RedHat,
-			sarifRuleName:     "OsPackageVulnerability",
+			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
 			vulnerabilityType: vulnerability.RedHatOVAL,
-			sarifRuleName:     "OsPackageVulnerability",
+			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
 			vulnerabilityType: vulnerability.Debian,
-			sarifRuleName:     "OsPackageVulnerability",
+			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
 			vulnerabilityType: vulnerability.DebianOVAL,
-			sarifRuleName:     "OsPackageVulnerability",
+			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
 			vulnerabilityType: vulnerability.Fedora,
-			sarifRuleName:     "OsPackageVulnerability",
+			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
 			vulnerabilityType: vulnerability.Amazon,
-			sarifRuleName:     "OsPackageVulnerability",
+			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
 			vulnerabilityType: vulnerability.OracleOVAL,
-			sarifRuleName:     "OsPackageVulnerability",
+			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
 			vulnerabilityType: vulnerability.SuseCVRF,
-			sarifRuleName:     "OsPackageVulnerability",
+			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
 			vulnerabilityType: vulnerability.OpenSuseCVRF,
-			sarifRuleName:     "OsPackageVulnerability",
+			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
 			vulnerabilityType: vulnerability.Photon,
-			sarifRuleName:     "OsPackageVulnerability",
+			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
 			vulnerabilityType: vulnerability.CentOS,
-			sarifRuleName:     "OsPackageVulnerability",
+			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
 			vulnerabilityType: "npm",
-			sarifRuleName:     "ProgrammingLanguageVulnerability",
+			sarifRuleName:     sarifLanguageSpecificVulnerability,
 		},
 		{
 			vulnerabilityType: "yarn",
-			sarifRuleName:     "ProgrammingLanguageVulnerability",
+			sarifRuleName:     sarifLanguageSpecificVulnerability,
 		},
 		{
 			vulnerabilityType: "nuget",
-			sarifRuleName:     "ProgrammingLanguageVulnerability",
+			sarifRuleName:     sarifLanguageSpecificVulnerability,
 		},
 		{
 			vulnerabilityType: "pipenv",
-			sarifRuleName:     "ProgrammingLanguageVulnerability",
+			sarifRuleName:     sarifLanguageSpecificVulnerability,
 		},
 		{
 			vulnerabilityType: "poetry",
-			sarifRuleName:     "ProgrammingLanguageVulnerability",
+			sarifRuleName:     sarifLanguageSpecificVulnerability,
 		},
 		{
 			vulnerabilityType: "bundler",
-			sarifRuleName:     "ProgrammingLanguageVulnerability",
+			sarifRuleName:     sarifLanguageSpecificVulnerability,
 		},
 		{
 			vulnerabilityType: "cargo",
-			sarifRuleName:     "ProgrammingLanguageVulnerability",
+			sarifRuleName:     sarifLanguageSpecificVulnerability,
 		},
 		{
 			vulnerabilityType: "composer",
-			sarifRuleName:     "ProgrammingLanguageVulnerability",
+			sarifRuleName:     sarifLanguageSpecificVulnerability,
 		},
 		{
 			vulnerabilityType: "redis",
-			sarifRuleName:     "OtherVulnerability",
+			sarifRuleName:     sarifOtherVulnerability,
 		},
 	}
 	for _, tc := range tests {
