@@ -2,15 +2,15 @@ package report
 
 import (
 	"fmt"
-	"golang.org/x/xerrors"
 	"html"
 	"io"
 	"regexp"
 	"strings"
 
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-
 	"github.com/owenrumney/go-sarif/v2/sarif"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 )
 
 const (
