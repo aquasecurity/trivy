@@ -44,6 +44,8 @@ func (p *Parser) Parse(contents []byte) (interface{}, error) {
 
 	var stages []*instructions.Stage
 	for _, child := range parsed.AST.Children {
+		child.Value = strings.ToLower(child.Value)
+
 		instr, err := instructions.ParseInstruction(child)
 		if err != nil {
 			return nil, xerrors.Errorf("process dockerfile instructions: %w", err)
