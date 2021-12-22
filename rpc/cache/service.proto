@@ -37,6 +37,7 @@ message BlobInfo {
   repeated string                  whiteout_files    = 6;
   string                           digest            = 7;
   string                           diff_id           = 8;
+  repeated common.CustomResource   custom_resources  = 10;
 }
 
 message PutBlobRequest {
@@ -57,4 +58,12 @@ message MissingBlobsRequest {
 message MissingBlobsResponse {
   bool            missing_artifact = 1;
   repeated string missing_blob_ids = 2;
+}
+
+message GetBlobRequest {
+  string blob_id = 1;
+}
+
+message GetBlobResponse {
+  BlobInfo blob_info = 1;
 }

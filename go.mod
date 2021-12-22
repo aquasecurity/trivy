@@ -2,6 +2,8 @@ module github.com/aquasecurity/trivy
 
 go 1.16
 
+replace github.com/aquasecurity/fanal => github.com/ankk13/fanal v0.0.0-20211222074102-f827fa7c4671
+
 require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible

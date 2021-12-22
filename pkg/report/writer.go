@@ -64,6 +64,7 @@ type Result struct {
 	Vulnerabilities   []types.DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
 	MisconfSummary    *MisconfSummary                  `json:"MisconfSummary,omitempty"`
 	Misconfigurations []types.DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
+	CustomResources   []ftypes.CustomResource          `json:"CustomResources,omitempty"`
 }
 
 type MisconfSummary struct {

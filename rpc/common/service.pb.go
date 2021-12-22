@@ -1141,6 +1141,77 @@ func (x *CVSS) GetV3Score() float64 {
 	return 0
 }
 
+type CustomResource struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Type     string          `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	Filepath string          `protobuf:"bytes,2,opt,name=filepath,proto3" json:"filepath,omitempty"`
+	Layer    *Layer          `protobuf:"bytes,3,opt,name=layer,proto3" json:"layer,omitempty"`
+	Info     *structpb.Value `protobuf:"bytes,4,opt,name=info,proto3" json:"info,omitempty"`
+}
+
+func (x *CustomResource) Reset() {
+	*x = CustomResource{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_rpc_common_service_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CustomResource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CustomResource) ProtoMessage() {}
+
+func (x *CustomResource) ProtoReflect() protoreflect.Message {
+	mi := &file_rpc_common_service_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CustomResource.ProtoReflect.Descriptor instead.
+func (*CustomResource) Descriptor() ([]byte, []int) {
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *CustomResource) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *CustomResource) GetFilepath() string {
+	if x != nil {
+		return x.Filepath
+	}
+	return ""
+}
+
+func (x *CustomResource) GetLayer() *Layer {
+	if x != nil {
+		return x.Layer
+	}
+	return nil
+}
+
+func (x *CustomResource) GetInfo() *structpb.Value {
+	if x != nil {
+		return x.Info
+	}
+	return nil
+}
+
 var File_rpc_common_service_proto protoreflect.FileDescriptor
 
 var file_rpc_common_service_proto_rawDesc = []byte{
@@ -1531,6 +1602,18 @@ func file_rpc_common_service_proto_init() {
 		}
 		file_rpc_common_service_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CVSS); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_rpc_common_service_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CustomResource); i {
 			case 0:
 				return &v.state
 			case 1:
