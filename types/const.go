@@ -20,6 +20,7 @@ const (
 	NodePkg    = "node-pkg"
 	Yarn       = "yarn"
 	Jar        = "jar"
+	Pom        = "pom"
 	GoBinary   = "gobinary"
 	GoMod      = "gomod"
 	JavaScript = "javascript"
