@@ -3,24 +3,24 @@ package jar
 import (
 	"archive/zip"
 	"bufio"
-	"bytes"
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/hashicorp/go-retryablehttp"
+	retryablehttp "github.com/hashicorp/go-retryablehttp"
 	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/log"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
 )
@@ -64,7 +64,7 @@ func WithHTTPClient(client *http.Client) Option {
 	}
 }
 
-func Parse(r io.Reader, opts ...Option) ([]types.Library, error) {
+func Parse(r dio.ReadSeekerAt, size int64, opts ...Option) ([]types.Library, error) {
 	// for HTTP retry
 	retryClient := retryablehttp.NewClient()
 	retryClient.Logger = logger{}
@@ -81,19 +81,13 @@ func Parse(r io.Reader, opts ...Option) ([]types.Library, error) {
 		opt(&c)
 	}
 
-	return parseArtifact(c, c.rootFilePath, ioutil.NopCloser(r))
+	return parseArtifact(c, c.rootFilePath, r, size)
 }
 
-func parseArtifact(c conf, fileName string, r io.ReadCloser) ([]types.Library, error) {
-	defer r.Close()
-
+func parseArtifact(c conf, fileName string, r dio.ReadSeekerAt, size int64) ([]types.Library, error) {
 	log.Logger.Debugw("Parsing Java artifacts...", zap.String("file", fileName))
 
-	b, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to read the jar file: %w", err)
-	}
-	zr, err := zip.NewReader(bytes.NewReader(b), int64(len(b)))
+	zr, err := zip.NewReader(r, size)
 	if err != nil {
 		return nil, xerrors.Errorf("zip error: %w", err)
 	}
@@ -126,13 +120,7 @@ func parseArtifact(c conf, fileName string, r io.ReadCloser) ([]types.Library, e
 				return nil, xerrors.Errorf("failed to parse MANIFEST.MF: %w", err)
 			}
 		case isArtifact(fileInJar.Name):
-			fr, err := fileInJar.Open()
-			if err != nil {
-				return nil, xerrors.Errorf("unable to open %s: %w", fileInJar.Name, err)
-			}
-
-			// parse jar/war/ear recursively
-			innerLibs, err := parseArtifact(c, fileInJar.Name, fr)
+			innerLibs, err := parseInnerJar(c, fileInJar)
 			if err != nil {
 				return nil, xerrors.Errorf("failed to parse %s: %w", fileInJar.Name, err)
 			}
@@ -156,7 +144,7 @@ func parseArtifact(c conf, fileName string, r io.ReadCloser) ([]types.Library, e
 	}
 
 	// If groupId and artifactId are not found, call Maven Central's search API with SHA-1 digest.
-	p, err := searchBySHA1(c, b)
+	p, err := searchBySHA1(c, r)
 	if err == nil {
 		return append(libs, p.library()), nil
 	} else if !xerrors.Is(err, ArtifactNotFoundErr) {
@@ -182,6 +170,35 @@ func parseArtifact(c conf, fileName string, r io.ReadCloser) ([]types.Library, e
 	}
 
 	return libs, nil
+}
+
+func parseInnerJar(c conf, zf *zip.File) ([]types.Library, error) {
+	fr, err := zf.Open()
+	if err != nil {
+		return nil, xerrors.Errorf("unable to open %s: %w", zf.Name, err)
+	}
+
+	f, err := os.CreateTemp("", "inner")
+	if err != nil {
+		return nil, xerrors.Errorf("unable to create a temp file: %w", err)
+	}
+	defer func() {
+		f.Close()
+		os.Remove(f.Name())
+	}()
+
+	// Copy the file content to the temp file
+	if _, err = io.Copy(f, fr); err != nil {
+		return nil, xerrors.Errorf("file copy error: %w", err)
+	}
+
+	// Parse jar/war/ear recursively
+	innerLibs, err := parseArtifact(c, zf.Name, f, int64(zf.UncompressedSize64))
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse %s: %w", zf.Name, err)
+	}
+
+	return innerLibs, nil
 }
 
 func isArtifact(name string) bool {
@@ -419,10 +436,13 @@ func exists(c conf, p properties) (bool, error) {
 	return res.Response.NumFound > 0, nil
 }
 
-func searchBySHA1(c conf, data []byte) (properties, error) {
+func searchBySHA1(c conf, r io.ReadSeeker) (properties, error) {
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return properties{}, xerrors.Errorf("file seek error: %w", err)
+	}
+
 	h := sha1.New()
-	_, err := h.Write(data)
-	if err != nil {
+	if _, err := io.Copy(h, r); err != nil {
 		return properties{}, xerrors.Errorf("unable to calculate SHA-1: %w", err)
 	}
 	digest := hex.EncodeToString(h.Sum(nil))
