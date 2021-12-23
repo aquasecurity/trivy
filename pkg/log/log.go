@@ -8,7 +8,7 @@ var Logger *zap.SugaredLogger
 
 func init() {
 	config := zap.Config{
-		Level:            zap.NewAtomicLevelAt(zap.DebugLevel),
+		Level:            zap.NewAtomicLevelAt(zap.InfoLevel),
 		Development:      false,
 		Encoding:         "console",
 		EncoderConfig:    zap.NewDevelopmentEncoderConfig(),
