@@ -7,14 +7,18 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
-	"io"
 	"strings"
 
+	"golang.org/x/xerrors"
+
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
+var ErrNonGoBinary = xerrors.New("non go binary")
+
 // Parse scans file to try to report the Go and module versions.
-func Parse(r io.Reader) ([]types.Library, error) {
+func Parse(r dio.ReadSeekerAt) ([]types.Library, error) {
 	x, err := openExe(r)
 	if err != nil {
 		return nil, err
@@ -22,7 +26,7 @@ func Parse(r io.Reader) ([]types.Library, error) {
 
 	vers, mod := findVers(x)
 	if vers == "" {
-		return nil, nil
+		return nil, ErrNonGoBinary
 	}
 
 	var libs []types.Library

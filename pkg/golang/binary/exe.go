@@ -7,15 +7,15 @@ import (
 	"debug/elf"
 	"debug/macho"
 	"debug/pe"
-	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
+
+	"golang.org/x/xerrors"
+
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 )
 
-var (
-	ErrUnrecognizedExe = errors.New("unrecognized executable format")
-)
+var ErrUnrecognizedExe = xerrors.New("unrecognized executable format")
 
 // An exe is a generic interface to an OS executable (ELF, Mach-O, PE, XCOFF).
 type exe interface {
@@ -27,36 +27,31 @@ type exe interface {
 }
 
 // openExe opens file and returns it as an exe.
-func openExe(r io.Reader) (exe, error) {
-	b, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
-	}
-
-	br := bytes.NewReader(b)
-
+func openExe(r dio.ReadSeekerAt) (exe, error) {
 	data := make([]byte, 16)
-	if _, err := io.ReadFull(br, data); err != nil {
-		return nil, err
+	if _, err := io.ReadFull(r, data); err != nil {
+		return nil, xerrors.Errorf("read full: %w", err)
 	}
-	br.Seek(0, 0)
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return nil, xerrors.Errorf("file seek error: %w", err)
+	}
 
 	if bytes.HasPrefix(data, []byte("\x7FELF")) {
-		e, err := elf.NewFile(br)
+		e, err := elf.NewFile(r)
 		if err != nil {
 			return nil, err
 		}
 		return &elfExe{e}, nil
 	}
 	if bytes.HasPrefix(data, []byte("MZ")) {
-		e, err := pe.NewFile(br)
+		e, err := pe.NewFile(r)
 		if err != nil {
 			return nil, err
 		}
 		return &peExe{e}, nil
 	}
 	if bytes.HasPrefix(data, []byte("\xFE\xED\xFA")) || bytes.HasPrefix(data[1:], []byte("\xFA\xED\xFE")) {
-		e, err := macho.NewFile(br)
+		e, err := macho.NewFile(r)
 		if err != nil {
 			return nil, err
 		}
