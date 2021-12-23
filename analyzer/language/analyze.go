@@ -1,7 +1,6 @@
 package language
 
 import (
-	"bytes"
 	"io"
 
 	"golang.org/x/xerrors"
@@ -13,8 +12,7 @@ import (
 
 type Parser func(r io.Reader) ([]godeptypes.Library, error)
 
-func Analyze(fileType, filePath string, content []byte, parse Parser) (*analyzer.AnalysisResult, error) {
-	r := bytes.NewReader(content)
+func Analyze(fileType, filePath string, r io.Reader, parse Parser) (*analyzer.AnalysisResult, error) {
 	parsedLibs, err := parse(r)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)

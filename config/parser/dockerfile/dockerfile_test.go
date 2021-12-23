@@ -1,7 +1,7 @@
 package dockerfile_test
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -185,11 +185,12 @@ func TestParser_Parse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := ioutil.ReadFile(tt.inputFile)
+			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
+			defer f.Close()
 
 			p := dockerfile.Parser{}
-			got, err := p.Parse(b)
+			got, err := p.Parse(f)
 
 			if tt.wantErr != "" {
 				require.NotNil(t, err)

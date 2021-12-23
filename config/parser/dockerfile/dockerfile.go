@@ -1,8 +1,8 @@
 package dockerfile
 
 import (
-	"bytes"
 	"encoding/json"
+	"io"
 	"strings"
 
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
@@ -32,8 +32,7 @@ type Command struct {
 }
 
 // Parse parses Dockerfile
-func (p *Parser) Parse(contents []byte) (interface{}, error) {
-	r := bytes.NewReader(contents)
+func (p *Parser) Parse(r io.Reader) (interface{}, error) {
 	parsed, err := parser.Parse(r)
 	if err != nil {
 		return nil, xerrors.Errorf("dockerfile parse error: %w", err)

@@ -2,6 +2,7 @@ package walker_test
 
 import (
 	"errors"
+	"io"
 	"os"
 	"strings"
 	"testing"
@@ -32,7 +33,11 @@ func TestDir_Walk(t *testing.T) {
 				if filePath == "testdata/fs/bar" {
 					got, err := opener()
 					require.NoError(t, err)
-					assert.Equal(t, "bar", string(got))
+
+					b, err := io.ReadAll(got)
+					require.NoError(t, err)
+
+					assert.Equal(t, "bar", string(b))
 				}
 				return nil
 			},

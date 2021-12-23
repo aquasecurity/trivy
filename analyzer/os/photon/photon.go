@@ -2,7 +2,6 @@ package photon
 
 import (
 	"bufio"
-	"bytes"
 	"context"
 	"os"
 	"strings"
@@ -33,7 +32,7 @@ type photonOSAnalyzer struct{}
 
 func (a photonOSAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	photonName := ""
-	scanner := bufio.NewScanner(bytes.NewBuffer(target.Content))
+	scanner := bufio.NewScanner(target.Content)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.HasPrefix(line, "NAME=\"VMware Photon") {

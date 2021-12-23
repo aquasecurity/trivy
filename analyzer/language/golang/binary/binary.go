@@ -17,22 +17,19 @@ func init() {
 	analyzer.RegisterAnalyzer(&gobinaryLibraryAnalyzer{})
 }
 
-const (
-	version     = 1
-	MiB         = 1024 * 1024
-	MaxFileSize = 200 * MiB
-)
+const version = 1
 
 type gobinaryLibraryAnalyzer struct{}
 
 func (a gobinaryLibraryAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.GoBinary, target.FilePath, target.Content, binary.Parse)
-	if errors.Is(err, binary.ErrUnrecognizedExe) {
+	libs, err := binary.Parse(target.Content)
+	if errors.Is(err, binary.ErrUnrecognizedExe) || errors.Is(err, binary.ErrNonGoBinary) {
 		return nil, nil
 	} else if err != nil {
-		return nil, xerrors.Errorf("unable to parse %s: %w", target.FilePath, err)
+		return nil, xerrors.Errorf("go binary parse error: %w", err)
 	}
-	return res, nil
+
+	return language.ToAnalysisResult(types.GoBinary, target.FilePath, "", libs), nil
 }
 
 func (a gobinaryLibraryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
@@ -41,9 +38,6 @@ func (a gobinaryLibraryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
 		return false
 	}
 
-	if fileInfo.Size() > MaxFileSize {
-		return false
-	}
 	// Check executable file
 	if mode.Perm()&0111 != 0 {
 		return true

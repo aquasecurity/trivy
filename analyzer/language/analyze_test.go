@@ -2,6 +2,7 @@ package language_test
 
 import (
 	"io"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,7 +19,7 @@ func TestAnalyze(t *testing.T) {
 	type args struct {
 		analyzerType string
 		filePath     string
-		content      []byte
+		content      io.Reader
 	}
 	tests := []struct {
 		name    string
@@ -31,7 +32,7 @@ func TestAnalyze(t *testing.T) {
 			args: args{
 				analyzerType: types.GoBinary,
 				filePath:     "app/myweb",
-				content:      []byte("happy"),
+				content:      strings.NewReader("happy"),
 			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -53,7 +54,7 @@ func TestAnalyze(t *testing.T) {
 			args: args{
 				analyzerType: types.GoBinary,
 				filePath:     "app/myweb",
-				content:      []byte(""),
+				content:      strings.NewReader(""),
 			},
 			want: nil,
 		},
@@ -62,7 +63,7 @@ func TestAnalyze(t *testing.T) {
 			args: args{
 				analyzerType: types.Jar,
 				filePath:     "app/myweb",
-				content:      []byte("sad"),
+				content:      strings.NewReader("sad"),
 			},
 			wantErr: "unexpected error",
 		},

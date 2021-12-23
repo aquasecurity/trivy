@@ -2,7 +2,7 @@ package toml_test
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"testing"
 
@@ -85,19 +85,20 @@ func Test_tomlConfigAnalyzer_Analyze(t *testing.T) {
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
 			inputFile: "testdata/broken.toml",
-			wantErr:   "unable to parse TOML",
+			wantErr:   "unable to decode TOML",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := ioutil.ReadFile(tt.inputFile)
+			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
+			defer f.Close()
 
 			a := toml.NewConfigAnalyzer(nil)
 			ctx := context.Background()
 			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: tt.inputFile,
-				Content:  b,
+				Content:  f,
 			})
 
 			if tt.wantErr != "" {

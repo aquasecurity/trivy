@@ -1,7 +1,6 @@
 package gemspec
 
 import (
-	"bytes"
 	"context"
 	"os"
 	"path/filepath"
@@ -25,8 +24,7 @@ var fileRegex = regexp.MustCompile(`.*/specifications/.+\.gemspec`)
 type gemspecLibraryAnalyzer struct{}
 
 func (a gemspecLibraryAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	r := bytes.NewReader(target.Content)
-	parsedLib, err := gemspec.Parse(r)
+	parsedLib, err := gemspec.Parse(target.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", target.FilePath, err)
 	}

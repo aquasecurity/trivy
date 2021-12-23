@@ -34,13 +34,15 @@ func Test_almaOSAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := almaOSAnalyzer{}
-			b, err := os.ReadFile(tt.inputFile)
+			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
+			defer f.Close()
+
 			ctx := context.Background()
 
 			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: "etc/almalinux-release",
-				Content:  b,
+				Content:  f,
 			})
 			if tt.wantErr != "" {
 				require.Error(t, err)

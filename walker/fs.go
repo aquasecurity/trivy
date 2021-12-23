@@ -6,6 +6,8 @@ import (
 
 	swalker "github.com/saracen/walker"
 	"golang.org/x/xerrors"
+
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 )
 
 type Dir struct {
@@ -36,13 +38,7 @@ func (w Dir) Walk(root string, fn WalkFunc) error {
 			return nil
 		}
 
-		f, err := os.Open(pathname)
-		if err != nil {
-			return xerrors.Errorf("file open error (%s): %w", pathname, err)
-		}
-		defer f.Close()
-
-		if err = fn(pathname, fi, w.fileOnceOpener(f)); err != nil {
+		if err := fn(pathname, fi, w.fileOpener(pathname)); err != nil {
 			return xerrors.Errorf("failed to analyze file: %w", err)
 		}
 		return nil
@@ -64,4 +60,11 @@ func (w Dir) Walk(root string, fn WalkFunc) error {
 		return xerrors.Errorf("walk error: %w", err)
 	}
 	return nil
+}
+
+// fileOpener returns a function opening a file.
+func (w *walker) fileOpener(pathname string) func() (dio.ReadSeekCloserAt, error) {
+	return func() (dio.ReadSeekCloserAt, error) {
+		return os.Open(pathname)
+	}
 }

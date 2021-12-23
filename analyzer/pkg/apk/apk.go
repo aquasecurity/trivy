@@ -2,7 +2,6 @@ package apk
 
 import (
 	"bufio"
-	"bytes"
 	"context"
 	"log"
 	"os"
@@ -26,7 +25,7 @@ var requiredFiles = []string{"lib/apk/db/installed"}
 type alpinePkgAnalyzer struct{}
 
 func (a alpinePkgAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	scanner := bufio.NewScanner(bytes.NewBuffer(target.Content))
+	scanner := bufio.NewScanner(target.Content)
 	parsedPkgs, installedFiles := a.parseApkInfo(scanner)
 
 	return &analyzer.AnalysisResult{

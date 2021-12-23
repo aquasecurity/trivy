@@ -2,6 +2,7 @@ package yaml
 
 import (
 	"context"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -30,11 +31,16 @@ func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
 }
 
 func (a ConfigAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+	content, err := io.ReadAll(target.Content)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to read the yaml content: %w", err)
+	}
+
 	// YAML might have sub documents separated by "---"
 	//
 	// If the current configuration contains multiple configurations, evaluate each policy
-	// independent from one another and aggregate the results under the same file name.
-	docs := a.parser.SeparateSubDocuments(target.Content)
+	// independent of one another and aggregate the results under the same file name.
+	docs := a.parser.SeparateSubDocuments(content)
 
 	var configs []types.Config
 	for _, doc := range docs {
