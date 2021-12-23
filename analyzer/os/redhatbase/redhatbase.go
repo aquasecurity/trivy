@@ -2,8 +2,8 @@ package redhatbase
 
 import (
 	"bufio"
-	"bytes"
 	"context"
+	"io"
 	"os"
 	"regexp"
 	"strings"
@@ -40,8 +40,8 @@ func (a redhatOSAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTar
 
 }
 
-func (a redhatOSAnalyzer) parseRelease(content []byte) (types.OS, error) {
-	scanner := bufio.NewScanner(bytes.NewBuffer(content))
+func (a redhatOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
+	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		line := scanner.Text()
 		result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))

@@ -2,7 +2,7 @@ package json_test
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"testing"
 
@@ -122,21 +122,22 @@ func Test_jsonConfigAnalyzer_Analyze(t *testing.T) {
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
 			inputFile: "testdata/broken.json",
-			wantErr:   "unable to parse JSON",
+			wantErr:   "unable to decode JSON",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := ioutil.ReadFile(tt.inputFile)
+			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
+			defer f.Close()
 
 			s := json.NewConfigAnalyzer(nil)
 
 			ctx := context.Background()
 			got, err := s.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: tt.inputFile,
-				Content:  b,
+				Content:  f,
 			})
 
 			if tt.wantErr != "" {

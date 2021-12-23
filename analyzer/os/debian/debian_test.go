@@ -2,7 +2,7 @@ package debian
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	aos "github.com/aquasecurity/fanal/analyzer/os"
@@ -49,12 +49,15 @@ func Test_debianOSAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := debianOSAnalyzer{}
-			b, err := ioutil.ReadFile(tt.inputFile)
+			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
+			defer f.Close()
+
 			ctx := context.Background()
+
 			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: "etc/debian_version",
-				Content:  b,
+				Content:  f,
 			})
 			if tt.wantErr != "" {
 				require.NotNil(t, err)

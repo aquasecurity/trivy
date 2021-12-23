@@ -2,7 +2,7 @@ package gemspec
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -47,14 +47,15 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := ioutil.ReadFile(tt.inputFile)
+			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
+			defer f.Close()
 
 			a := gemspecLibraryAnalyzer{}
 			ctx := context.Background()
 			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: tt.inputFile,
-				Content:  b,
+				Content:  f,
 			})
 
 			if tt.wantErr != "" {

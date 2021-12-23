@@ -2,6 +2,7 @@ package hcl
 
 import (
 	"context"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -52,13 +53,18 @@ func (a ConfigAnalyzer) analyze(target analyzer.AnalysisTarget) (interface{}, er
 	var errs error
 	var parsed interface{}
 
-	if err := hcl2.Unmarshal(target.Content, &parsed); err != nil {
+	content, err := io.ReadAll(target.Content)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to read the HCL2 file: %w", err)
+	}
+
+	if err := hcl2.Unmarshal(content, &parsed); err != nil {
 		errs = multierror.Append(errs, xerrors.Errorf("unable to parse HCL2 (%s): %w", target.FilePath, err))
 	} else {
 		return parsed, nil
 	}
 
-	if err := hcl.Unmarshal(target.Content, &parsed); err != nil {
+	if err := hcl.Unmarshal(content, &parsed); err != nil {
 		errs = multierror.Append(errs, xerrors.Errorf("unable to parse HCL1 (%s): %w", target.FilePath, err))
 	} else {
 		return parsed, nil

@@ -2,14 +2,14 @@ package photon
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/aquasecurity/fanal/analyzer"
+	aos "github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/fanal/types"
 )
 
@@ -24,14 +24,14 @@ func Test_photonOSAnalyzer_Analyze(t *testing.T) {
 			name:      "happy path with Photon OS 3.0",
 			inputFile: "testdata/photon_3/os-release",
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{Family: os.Photon, Name: "3.0"},
+				OS: &types.OS{Family: aos.Photon, Name: "3.0"},
 			},
 		},
 		{
 			name:      "sad path",
 			inputFile: "testdata/not_photon/os-release",
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{Family: os.Photon, Name: "3.0"},
+				OS: &types.OS{Family: aos.Photon, Name: "3.0"},
 			},
 			wantErr: "photon: unable to analyze OS information",
 		},
@@ -39,13 +39,14 @@ func Test_photonOSAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := photonOSAnalyzer{}
-			b, err := ioutil.ReadFile(tt.inputFile)
+			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
+			defer f.Close()
 
 			ctx := context.Background()
 			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: "etc/os-release",
-				Content:  b,
+				Content:  f,
 			})
 			if tt.wantErr != "" {
 				require.NotNil(t, err)

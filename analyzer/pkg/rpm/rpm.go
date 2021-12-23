@@ -2,7 +2,7 @@ package rpm
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -49,17 +49,26 @@ func (a rpmPkgAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarge
 	}, nil
 }
 
-func (a rpmPkgAnalyzer) parsePkgInfo(packageBytes []byte) ([]types.Package, []string, error) {
-	tmpDir, err := ioutil.TempDir("", "rpm")
-	defer os.RemoveAll(tmpDir)
+func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, error) {
+	tmpDir, err := os.MkdirTemp("", "rpm")
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to create a temp dir: %w", err)
 	}
+	defer os.RemoveAll(tmpDir)
 
 	filename := filepath.Join(tmpDir, "Packages")
-	err = ioutil.WriteFile(filename, packageBytes, 0700)
+	f, err := os.Create(filename)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to write a package file: %w", err)
+		return nil, nil, xerrors.Errorf("failed to create a package file: %w", err)
+	}
+
+	if _, err = io.Copy(f, rc); err != nil {
+		return nil, nil, xerrors.Errorf("failed to copy a package file: %w", err)
+	}
+
+	// The temp file must be closed before being opened as Berkeley DB.
+	if err = f.Close(); err != nil {
+		return nil, nil, xerrors.Errorf("failed to close a temp file: %w", err)
 	}
 
 	// rpm-python 4.11.3 rpm-4.11.3-35.el7.src.rpm

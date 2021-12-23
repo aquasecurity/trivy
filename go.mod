@@ -8,7 +8,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.16.0
 	github.com/aquasecurity/cfsec v0.2.2
 	github.com/aquasecurity/defsec v0.0.37
-	github.com/aquasecurity/go-dep-parser v0.0.0-20211223121821-c532a40f0bee
+	github.com/aquasecurity/go-dep-parser v0.0.0-20211223152202-b497b40cd9d2
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aquasecurity/tfsec v0.63.1
 	github.com/aws/aws-sdk-go v1.42.0
@@ -19,7 +19,6 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/go-containerregistry v0.6.0
 	github.com/hashicorp/errwrap v1.1.0 // indirect
-	github.com/hashicorp/go-hclog v0.15.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/hcl v1.0.0
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f

@@ -1,7 +1,7 @@
 package rpm
 
 import (
-	"io/ioutil"
+	"os"
 	"sort"
 	"testing"
 
@@ -581,10 +581,11 @@ func TestParseRpmInfo(t *testing.T) {
 	a := rpmPkgAnalyzer{}
 	for testname, tc := range tests {
 		t.Run(testname, func(t *testing.T) {
-			bytes, err := ioutil.ReadFile(tc.path)
+			f, err := os.Open(tc.path)
 			require.NoError(t, err)
+			defer f.Close()
 
-			pkgs, _, err := a.parsePkgInfo(bytes)
+			pkgs, _, err := a.parsePkgInfo(f)
 			require.NoError(t, err)
 
 			sort.Slice(tc.pkgs, func(i, j int) bool {

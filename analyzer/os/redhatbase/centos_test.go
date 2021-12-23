@@ -2,7 +2,7 @@ package redhatbase
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -34,13 +34,15 @@ func Test_centosOSAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := centOSAnalyzer{}
-			b, err := ioutil.ReadFile(tt.inputFile)
+			f, err := os.Open(tt.inputFile)
+			defer f.Close()
+
 			require.NoError(t, err)
 			ctx := context.Background()
 
 			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: "etc/centos-release",
-				Content:  b,
+				Content:  f,
 			})
 			if tt.wantErr != "" {
 				require.NotNil(t, err)

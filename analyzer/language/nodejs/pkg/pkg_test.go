@@ -50,14 +50,15 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := os.ReadFile(tt.inputFile)
+			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
+			defer f.Close()
 
 			a := nodePkgLibraryAnalyzer{}
 			ctx := context.Background()
 			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: tt.inputFile,
-				Content:  b,
+				Content:  f,
 			})
 
 			if tt.wantErr != "" {

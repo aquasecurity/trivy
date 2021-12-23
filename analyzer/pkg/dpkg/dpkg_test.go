@@ -185,14 +185,15 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := os.ReadFile(tt.testFile)
+			f, err := os.Open(tt.testFile)
 			require.NoError(t, err)
+			defer f.Close()
 
 			a := dpkgAnalyzer{}
 			ctx := context.Background()
 			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: tt.filePath,
-				Content:  b,
+				Content:  f,
 			})
 
 			// Sort the result for consistency

@@ -13,6 +13,7 @@ import (
 	aos "github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/fanal/log"
 	"github.com/aquasecurity/fanal/types"
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 )
 
 var (
@@ -30,7 +31,8 @@ var (
 type AnalysisTarget struct {
 	Dir      string
 	FilePath string
-	Content  []byte
+	Info     os.FileInfo
+	Content  dio.ReadSeekerAt
 }
 
 type analyzer interface {
@@ -55,7 +57,7 @@ func RegisterConfigAnalyzer(analyzer configAnalyzer) {
 	configAnalyzers[analyzer.Type()] = analyzer
 }
 
-type Opener func() ([]byte, error)
+type Opener func() (dio.ReadSeekCloserAt, error)
 
 type AnalysisResult struct {
 	m                    sync.Mutex
@@ -122,9 +124,7 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 		r.Applications = append(r.Applications, new.Applications...)
 	}
 
-	for _, m := range new.Configs {
-		r.Configs = append(r.Configs, m)
-	}
+	r.Configs = append(r.Configs, new.Configs...)
 
 	r.SystemInstalledFiles = append(r.SystemInstalledFiles, new.SystemInstalledFiles...)
 }
@@ -195,9 +195,9 @@ func (a Analyzer) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *se
 		if !d.Required(strings.TrimLeft(filePath, "/"), info) {
 			continue
 		}
-		b, err := opener()
+		rc, err := opener()
 		if err != nil {
-			return xerrors.Errorf("unable to open a file (%s): %w", filePath, err)
+			return xerrors.Errorf("unable to open %s: %w", filePath, err)
 		}
 
 		if err = limit.Acquire(ctx, 1); err != nil {
@@ -208,6 +208,7 @@ func (a Analyzer) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *se
 		go func(a analyzer, target AnalysisTarget) {
 			defer limit.Release(1)
 			defer wg.Done()
+			defer rc.Close()
 
 			ret, err := a.Analyze(ctx, target)
 			if err != nil && !xerrors.Is(err, aos.AnalyzeOSError) {
@@ -215,8 +216,9 @@ func (a Analyzer) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *se
 				return
 			}
 			result.Merge(ret)
-		}(d, AnalysisTarget{Dir: dir, FilePath: filePath, Content: b})
+		}(d, AnalysisTarget{Dir: dir, FilePath: filePath, Info: info, Content: rc})
 	}
+
 	return nil
 }
 

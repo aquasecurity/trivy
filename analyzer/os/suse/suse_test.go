@@ -2,14 +2,14 @@ package suse
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/fanal/analyzer/os"
+	aos "github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/fanal/types"
 )
 
@@ -24,21 +24,21 @@ func Test_suseOSAnalyzer_Analyze(t *testing.T) {
 			name:      "happy path with openSUSE Leap 15.0",
 			inputFile: "testdata/opensuse_leap_150/os-release",
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{Family: os.OpenSUSELeap, Name: "15.0"},
+				OS: &types.OS{Family: aos.OpenSUSELeap, Name: "15.0"},
 			},
 		},
 		{
 			name:      "happy path with openSUSE Leap Tumbleweed",
 			inputFile: "testdata/opensuse_leap_tumbleweed/os-release",
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{Family: os.OpenSUSETumbleweed, Name: "20191204"},
+				OS: &types.OS{Family: aos.OpenSUSETumbleweed, Name: "20191204"},
 			},
 		},
 		{
 			name:      "happy path with SLES 15.1",
 			inputFile: "testdata/sles_151/os-release",
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{Family: os.SLES, Name: "15.1"},
+				OS: &types.OS{Family: aos.SLES, Name: "15.1"},
 			},
 		},
 		{
@@ -50,12 +50,14 @@ func Test_suseOSAnalyzer_Analyze(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := suseOSAnalyzer{}
-			b, err := ioutil.ReadFile(tt.inputFile)
+			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
+			defer f.Close()
+
 			ctx := context.Background()
 			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
 				FilePath: "etc/lsb-release",
-				Content:  b,
+				Content:  f,
 			})
 			if tt.wantErr != "" {
 				require.NotNil(t, err)

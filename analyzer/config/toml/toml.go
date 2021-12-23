@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/BurntSushi/toml"
 	"golang.org/x/xerrors"
 
+	"github.com/BurntSushi/toml"
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/types"
 )
@@ -29,8 +29,8 @@ func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
 
 func (a ConfigAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
 	var parsed interface{}
-	if err := toml.Unmarshal(target.Content, &parsed); err != nil {
-		return nil, xerrors.Errorf("unable to parse TOML (%s): %w", target.FilePath, err)
+	if _, err := toml.NewDecoder(target.Content).Decode(&parsed); err != nil {
+		return nil, xerrors.Errorf("unable to decode TOML (%s): %w", target.FilePath, err)
 	}
 
 	return &analyzer.AnalysisResult{
