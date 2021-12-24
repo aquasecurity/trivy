@@ -77,7 +77,7 @@ func (c Cache) ClearArtifacts() error {
 }
 
 // DownloadDB downloads the DB
-func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate, offline bool) error {
+func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) error {
 	client := initializeDBClient(cacheDir, quiet)
 	ctx := context.Background()
 	needsUpdate, err := client.NeedsUpdate(appVersion, light, skipUpdate)
@@ -87,11 +87,6 @@ func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate, offline b
 
 	if needsUpdate {
 		log.Logger.Info("Need to update DB")
-		if offline {
-			log.Logger.Error("Unable to download the vulnerability DB in offline mode. Try '--skip-update'.")
-			return xerrors.New("DB download error in offline mode")
-		}
-
 		log.Logger.Info("Downloading DB...")
 		if err = client.Download(ctx, cacheDir, light); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
@@ -109,7 +104,7 @@ func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate, offline b
 }
 
 // InitBuiltinPolicies downloads the built-in policies and loads them
-func InitBuiltinPolicies(ctx context.Context, skipUpdate, offline bool) ([]string, error) {
+func InitBuiltinPolicies(ctx context.Context, skipUpdate bool) ([]string, error) {
 	client, err := policy.NewClient()
 	if err != nil {
 		return nil, xerrors.Errorf("policy client error: %w", err)
@@ -125,11 +120,6 @@ func InitBuiltinPolicies(ctx context.Context, skipUpdate, offline bool) ([]strin
 
 	if needsUpdate {
 		log.Logger.Info("Need to update the built-in policies")
-		if offline {
-			log.Logger.Error("Unable to download the builtin policies in offline mode. Try '--skip-policy-update'.")
-			return nil, xerrors.New("builtin policies download error in offline mode")
-		}
-
 		log.Logger.Info("Downloading the built-in policies...")
 		if err = client.DownloadBuiltinPolicies(ctx); err != nil {
 			return nil, xerrors.Errorf("failed to download built-in policies: %w", err)
