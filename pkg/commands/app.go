@@ -225,6 +225,12 @@ var (
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
+	offlineScan = cli.BoolFlag{
+		Name:    "offline-scan",
+		Usage:   "do not issue API requests to identify dependencies",
+		EnvVars: []string{"TRIVY_OFFLINE_SCAN"},
+	}
+
 	// For misconfigurations
 	configPolicy = cli.StringSliceFlag{
 		Name:    "config-policy",
@@ -309,6 +315,7 @@ var (
 		&ignorePolicy,
 		&listAllPackages,
 		&cacheBackendFlag,
+		&offlineScan,
 		stringSliceFlag(skipFiles),
 		stringSliceFlag(skipDirs),
 	}
@@ -465,6 +472,7 @@ func NewFilesystemCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
+			&offlineScan,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
@@ -499,6 +507,7 @@ func NewRootfsCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
+			&offlineScan,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
@@ -536,6 +545,7 @@ func NewRepositoryCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
+			&offlineScan,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
@@ -569,6 +579,7 @@ func NewClientCommand() *cli.Command {
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
 			&listAllPackages,
+			&offlineScan,
 
 			// original flags
 			&token,

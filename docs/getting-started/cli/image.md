@@ -27,6 +27,7 @@ OPTIONS:
    --light                     light mode: it's faster, but vulnerability descriptions and references are not displayed (default: false) [$TRIVY_LIGHT]
    --ignore-policy value       specify the Rego file to evaluate each vulnerability [$TRIVY_IGNORE_POLICY]
    --list-all-pkgs             enabling the option will output all packages regardless of vulnerability (default: false) [$TRIVY_LIST_ALL_PKGS]
+   --offline-scan              do not issue API requests to identify dependencies (default: false) [$TRIVY_OFFLINE_SCAN]
    --skip-files value          specify the file path to skip traversal [$TRIVY_SKIP_FILES]
    --skip-dirs value           specify the directory where the traversal is skipped [$TRIVY_SKIP_DIRS]
    --cache-backend value       cache backend (e.g. redis://localhost:6379) (default: "fs") [$TRIVY_CACHE_BACKEND]
