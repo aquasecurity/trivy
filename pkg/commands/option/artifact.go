@@ -17,6 +17,7 @@ type ArtifactOption struct {
 
 	SkipDirs  []string
 	SkipFiles []string
+	Offline   bool
 
 	// this field is populated in Init()
 	Target string
@@ -30,6 +31,7 @@ func NewArtifactOption(c *cli.Context) ArtifactOption {
 		ClearCache: c.Bool("clear-cache"),
 		SkipFiles:  c.StringSlice("skip-files"),
 		SkipDirs:   c.StringSlice("skip-dirs"),
+		Offline:    c.Bool("offline"),
 	}
 }
 
