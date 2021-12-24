@@ -7,8 +7,8 @@ require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20211223122727-1ba1250da9f1
-	github.com/aquasecurity/go-dep-parser v0.0.0-20211223121821-c532a40f0bee
+	github.com/aquasecurity/fanal v0.0.0-20211223181536-672696605858
+	github.com/aquasecurity/go-dep-parser v0.0.0-20211223152202-b497b40cd9d2
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -28,6 +28,7 @@ require (
 	github.com/google/go-github/v33 v33.0.0
 	github.com/google/wire v0.4.0
 	github.com/hashicorp/go-getter v1.5.2
+	github.com/hashicorp/go-hclog v0.15.0 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
