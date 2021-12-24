@@ -49,11 +49,11 @@ $ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
     ```
 
 Trivy calls Maven API for better detection of JAR files, but many requests may exceed rate limiting.
-If it happens frequently, try the `--offline` option to stop Trivy from making API requests.
+If it happens frequently, try the `--offline-scan` option to stop Trivy from making API requests.
 This option affects only vulnerability scanning. The vulnerability database and builtin policies are downloaded as usual.
 If you want to skip them as well, you can try `--skip-update` and `--skip-policy-update`.
 
-Note that a number of vulnerabilities might be fewer than without the `--offline` option.
+Note that a number of vulnerabilities might be fewer than without the `--offline-scan` option.
 
 ### Running in parallel takes same time as series run
 When running trivy on multiple images simultaneously, it will take same time as running trivy in series.  

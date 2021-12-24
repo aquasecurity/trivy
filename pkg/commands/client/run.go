@@ -161,7 +161,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 		DisabledAnalyzers: disabledAnalyzers(opt),
 		SkipFiles:         opt.SkipFiles,
 		SkipDirs:          opt.SkipDirs,
-		Offline:           opt.Offline,
+		Offline:           opt.OfflineScan,
 	}
 
 	if opt.Input != "" {
