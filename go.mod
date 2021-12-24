@@ -7,8 +7,8 @@ require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20211221055805-49324ef1fe1f
-	github.com/aquasecurity/go-dep-parser v0.0.0-20211110174639-8257534ffed3
+	github.com/aquasecurity/fanal v0.0.0-20211223181536-672696605858
+	github.com/aquasecurity/go-dep-parser v0.0.0-20211223152202-b497b40cd9d2
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -17,7 +17,6 @@ require (
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.3
-	github.com/containerd/containerd v1.5.7 // indirect
 	github.com/docker/cli v20.10.9+incompatible // indirect
 	github.com/docker/docker v20.10.10+incompatible
 	github.com/docker/go-connections v0.4.0
@@ -29,6 +28,7 @@ require (
 	github.com/google/go-github/v33 v33.0.0
 	github.com/google/wire v0.4.0
 	github.com/hashicorp/go-getter v1.5.2
+	github.com/hashicorp/go-hclog v0.15.0 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
