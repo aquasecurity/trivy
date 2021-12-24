@@ -208,17 +208,17 @@ func toPathUri(input string) string {
 	return strings.ReplaceAll(input, "\\", "/")
 }
 
-func sarifSeverityLevel(severity string) float32 {
+func sarifSeverityLevel(severity string) string {
 	switch severity {
 	case "CRITICAL":
-		return 9.0
+		return "9.0"
 	case "HIGH":
-		return 8.0
+		return "8.0"
 	case "MEDIUM":
-		return 5.0
+		return "5.0"
 	case "LOW":
-		return 3.5
+		return "3.5"
 	default:
-		return 0.0
+		return "0.0"
 	}
 }
