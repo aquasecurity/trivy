@@ -50,11 +50,12 @@ $ rm trivy-offline.db.tgz
 
 In an air-gapped environment it is your responsibility to update the Trivy database on a regular basis, so that the scanner can detect recently-identified vulnerabilities. 
 
-### Run Trivy with --skip-update option
+### Run Trivy with --skip-update and --offline-scan option
 In an air-gapped environment, specify `--skip-update` so that Trivy doesn't attempt to download the latest database file.
+In addition, if you want to scan Java dependencies such as JAR and pom.xml, you need to specify `--offline-scan` since Trivy tries to issue API requests for scanning Java applications by default.
 
 ```
-$ trivy image --skip-update alpine:3.12
+$ trivy image --skip-update --offline-scan alpine:3.12
 ```
 
 ## Air-Gapped Environment for misconfigurations
