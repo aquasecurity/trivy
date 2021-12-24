@@ -10,6 +10,7 @@ import (
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 )
 
@@ -17,6 +18,10 @@ const (
 	sarifOsPackageVulnerability        = "OsPackageVulnerability"
 	sarifLanguageSpecificVulnerability = "LanguageSpecificPackageVulnerability"
 	sarifOtherVulnerability            = "OtherVulnerability"
+	sarifError                         = "error"
+	sarifWarning                       = "warning"
+	sarifNote                          = "note"
+	sarifNone                          = "none"
 )
 
 // regex to extract file path in case string includes (distro:version)
@@ -156,7 +161,7 @@ func toSarifRuleName(vulnerabilityType string) string {
 		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon,
 		vulnerability.CentOS:
 		return sarifOsPackageVulnerability
-	case "npm", "yarn", "nuget", "pipenv", "poetry", "bundler", "cargo", "composer":
+	case types.Npm, types.Yarn, types.NuGet, types.Cargo, types.Pipenv, types.Poetry, types.Bundler, types.Composer:
 		return sarifLanguageSpecificVulnerability
 	default:
 		return sarifOtherVulnerability
@@ -166,13 +171,13 @@ func toSarifRuleName(vulnerabilityType string) string {
 func toSarifErrorLevel(severity string) string {
 	switch severity {
 	case "CRITICAL", "HIGH":
-		return "error"
+		return sarifError
 	case "MEDIUM":
-		return "warning"
+		return sarifWarning
 	case "LOW", "UNKNOWN":
-		return "note"
+		return sarifNote
 	default:
-		return "none"
+		return sarifNone
 	}
 }
 
