@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ad3c33ca.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2fd069b6.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -2073,8 +2073,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#run-trivy-with-skip-update-option" class="md-nav__link">
-    Run Trivy with --skip-update option
+  <a href="#run-trivy-with-skip-update-and-offline-scan-option" class="md-nav__link">
+    Run Trivy with --skip-update and --offline-scan option
   </a>
   
 </li>
@@ -2871,8 +2871,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#run-trivy-with-skip-update-option" class="md-nav__link">
-    Run Trivy with --skip-update option
+  <a href="#run-trivy-with-skip-update-and-offline-scan-option" class="md-nav__link">
+    Run Trivy with --skip-update and --offline-scan option
   </a>
   
 </li>
@@ -2969,9 +2969,10 @@ x metadata.json
 $ rm trivy-offline.db.tgz
 </code></pre></div>
 <p>In an air-gapped environment it is your responsibility to update the Trivy database on a regular basis, so that the scanner can detect recently-identified vulnerabilities. </p>
-<h3 id="run-trivy-with-skip-update-option">Run Trivy with --skip-update option</h3>
-<p>In an air-gapped environment, specify <code>--skip-update</code> so that Trivy doesn't attempt to download the latest database file.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --skip-update alpine:3.12
+<h3 id="run-trivy-with-skip-update-and-offline-scan-option">Run Trivy with --skip-update and --offline-scan option</h3>
+<p>In an air-gapped environment, specify <code>--skip-update</code> so that Trivy doesn't attempt to download the latest database file.
+In addition, if you want to scan Java dependencies such as JAR and pom.xml, you need to specify <code>--offline-scan</code> since Trivy tries to issue API requests for scanning Java applications by default.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --skip-update --offline-scan alpine:3.12
 </code></pre></div>
 <h2 id="air-gapped-environment-for-misconfigurations">Air-Gapped Environment for misconfigurations</h2>
 <h3 id="download-misconfiguration-policies">Download misconfiguration policies</h3>

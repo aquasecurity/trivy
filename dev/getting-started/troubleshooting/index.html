@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ad3c33ca.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2fd069b6.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -695,6 +695,13 @@
           <li class="md-nav__item">
   <a href="#github-rate-limiting" class="md-nav__link">
     GitHub Rate limiting
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maven-rate-limiting" class="md-nav__link">
+    Maven rate limiting
   </a>
   
 </li>
@@ -2884,6 +2891,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#maven-rate-limiting" class="md-nav__link">
+    Maven rate limiting
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#running-in-parallel-takes-same-time-as-series-run" class="md-nav__link">
     Running in parallel takes same time as series run
   </a>
@@ -2994,6 +3008,19 @@ API rate limit exceeded <span class="k">for</span> xxx.xxx.xxx.xxx.
 https://developer.github.com/v3/#rate-limiting</p>
 <div class="highlight"><pre><span></span><code>$ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
 </code></pre></div>
+<h3 id="maven-rate-limiting">Maven rate limiting</h3>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<div class="highlight"><pre><span></span><code>$ trivy image ...
+...
+status <span class="m">403</span> Forbidden from http://search.maven.org/solrsearch/select
+</code></pre></div>
+</div>
+<p>Trivy calls Maven API for better detection of JAR files, but many requests may exceed rate limiting.
+If it happens frequently, try the <code>--offline-scan</code> option to stop Trivy from making API requests.
+This option affects only vulnerability scanning. The vulnerability database and builtin policies are downloaded as usual.
+If you want to skip them as well, you can try <code>--skip-update</code> and <code>--skip-policy-update</code>.</p>
+<p>Note that a number of vulnerabilities might be fewer than without the <code>--offline-scan</code> option.</p>
 <h3 id="running-in-parallel-takes-same-time-as-series-run">Running in parallel takes same time as series run</h3>
 <p>When running trivy on multiple images simultaneously, it will take same time as running trivy in series.<br />
 This is because of a limitation of boltdb.</p>
