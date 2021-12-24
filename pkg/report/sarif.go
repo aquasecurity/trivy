@@ -25,6 +25,11 @@ const (
 	sarifNone                          = "none"
 )
 
+var (
+	rootPath   = "file:///"
+	columnKind = "utf16CodeUnits"
+)
+
 // regex to extract file path in case string includes (distro:version)
 var re = regexp.MustCompile(`(?P<path>.+?)(?:\s*\((?:.*?)\).*?)?$`)
 
@@ -152,6 +157,10 @@ func (sw SarifWriter) Write(report Report) error {
 					res.Target, res.Type, misconf.ID, misconf.Severity, misconf.Message, misconf.ID, misconf.PrimaryURL),
 			})
 		}
+	}
+	sw.run.ColumnKind = columnKind
+	sw.run.OriginalUriBaseIDs = map[string]*sarif.ArtifactLocation{
+		"ROOTPATH": {URI: &rootPath},
 	}
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
