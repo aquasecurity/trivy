@@ -15,7 +15,6 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
-		target    analyzer.AnalysisTarget
 		want      *analyzer.AnalysisResult
 		wantErr   string
 	}{
@@ -50,7 +49,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			a := pomAnalyzer{}
-			got, err := a.Analyze(nil, analyzer.AnalysisTarget{
+			got, err := a.Analyze(nil, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
 			})

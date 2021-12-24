@@ -40,7 +40,7 @@ func Test_almaOSAnalyzer_Analyze(t *testing.T) {
 
 			ctx := context.Background()
 
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: "etc/almalinux-release",
 				Content:  f,
 			})

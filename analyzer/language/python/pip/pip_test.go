@@ -58,7 +58,7 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 
 			a := pipLibraryAnalyzer{}
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
 			})

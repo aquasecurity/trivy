@@ -30,17 +30,17 @@ func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
 	}
 }
 
-func (s ConfigAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	parsed, err := s.parser.Parse(target.Content)
+func (s ConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	parsed, err := s.parser.Parse(input.Content)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse Dockerfile (%s): %w", target.FilePath, err)
+		return nil, xerrors.Errorf("unable to parse Dockerfile (%s): %w", input.FilePath, err)
 	}
 
 	return &analyzer.AnalysisResult{
 		Configs: []types.Config{
 			{
 				Type:     types.Dockerfile,
-				FilePath: target.FilePath,
+				FilePath: input.FilePath,
 				Content:  parsed,
 			},
 		},

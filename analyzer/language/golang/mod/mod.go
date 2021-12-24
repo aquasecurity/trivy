@@ -24,10 +24,10 @@ var requiredFiles = []string{"go.sum"}
 
 type gomodAnalyzer struct{}
 
-func (a gomodAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.GoMod, target.FilePath, target.Content, mod.Parse)
+func (a gomodAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	res, err := language.Analyze(types.GoMod, input.FilePath, input.Content, mod.Parse)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to analyze %s: %w", target.FilePath, err)
+		return nil, xerrors.Errorf("failed to analyze %s: %w", input.FilePath, err)
 	}
 	return res, nil
 }

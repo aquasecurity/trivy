@@ -35,13 +35,13 @@ var (
 
 type dpkgAnalyzer struct{}
 
-func (a dpkgAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	scanner := bufio.NewScanner(target.Content)
-	if a.isListFile(filepath.Split(target.FilePath)) {
+func (a dpkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	scanner := bufio.NewScanner(input.Content)
+	if a.isListFile(filepath.Split(input.FilePath)) {
 		return a.parseDpkgInfoList(scanner)
 	}
 
-	return a.parseDpkgStatus(target.FilePath, scanner)
+	return a.parseDpkgStatus(input.FilePath, scanner)
 }
 
 // parseDpkgStatus parses /var/lib/dpkg/info/*.list

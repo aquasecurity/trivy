@@ -109,7 +109,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 
 			a := packagingAnalyzer{}
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Info:     stat,
 				Content:  f,

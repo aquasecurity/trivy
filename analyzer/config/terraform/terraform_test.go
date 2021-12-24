@@ -14,13 +14,13 @@ import (
 
 func TestConfigAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name   string
-		target analyzer.AnalysisTarget
-		want   *analyzer.AnalysisResult
+		name  string
+		input analyzer.AnalysisInput
+		want  *analyzer.AnalysisResult
 	}{
 		{
 			name: "happy path",
-			target: analyzer.AnalysisTarget{
+			input: analyzer.AnalysisInput{
 				Dir:      "path/to/",
 				FilePath: "main.tf",
 			},
@@ -38,7 +38,7 @@ func TestConfigAnalyzer_Analyze(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a := terraform.ConfigAnalyzer{}
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, tt.target)
+			got, err := a.Analyze(ctx, tt.input)
 
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)

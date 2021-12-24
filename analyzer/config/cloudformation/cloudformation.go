@@ -30,8 +30,8 @@ func NewConfigAnalyzer() ConfigAnalyzer {
 }
 
 // Analyze returns a results of CloudFormation file
-func (a ConfigAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	content, err := io.ReadAll(target.Content)
+func (a ConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	content, err := io.ReadAll(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to read the CloudFormation file: %w", err)
 	}
@@ -41,7 +41,7 @@ func (a ConfigAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarge
 			Configs: []types.Config{
 				{
 					Type:     types.CloudFormation,
-					FilePath: filepath.Join(target.Dir, target.FilePath),
+					FilePath: filepath.Join(input.Dir, input.FilePath),
 				},
 			},
 		}, nil

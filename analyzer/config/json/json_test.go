@@ -135,7 +135,7 @@ func Test_jsonConfigAnalyzer_Analyze(t *testing.T) {
 			s := json.NewConfigAnalyzer(nil)
 
 			ctx := context.Background()
-			got, err := s.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := s.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
 			})

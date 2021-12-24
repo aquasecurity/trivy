@@ -30,9 +30,9 @@ var requiredFiles = []string{
 
 type photonOSAnalyzer struct{}
 
-func (a photonOSAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a photonOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	photonName := ""
-	scanner := bufio.NewScanner(target.Content)
+	scanner := bufio.NewScanner(input.Content)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.HasPrefix(line, "NAME=\"VMware Photon") {

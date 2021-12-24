@@ -30,17 +30,17 @@ func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
 	}
 }
 
-func (a ConfigAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a ConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	var parsed interface{}
-	if err := json.NewDecoder(target.Content).Decode(&parsed); err != nil {
-		return nil, xerrors.Errorf("unable to decode JSON (%s): %w", target.FilePath, err)
+	if err := json.NewDecoder(input.Content).Decode(&parsed); err != nil {
+		return nil, xerrors.Errorf("unable to decode JSON (%s): %w", input.FilePath, err)
 	}
 
 	return &analyzer.AnalysisResult{
 		Configs: []types.Config{
 			{
 				Type:     types.JSON,
-				FilePath: target.FilePath,
+				FilePath: input.FilePath,
 				Content:  parsed,
 			},
 		},

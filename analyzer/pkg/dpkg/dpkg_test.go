@@ -191,7 +191,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 
 			a := dpkgAnalyzer{}
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.filePath,
 				Content:  f,
 			})

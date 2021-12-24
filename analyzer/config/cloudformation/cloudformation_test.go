@@ -125,7 +125,7 @@ spec:
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := ConfigAnalyzer{}
-			got, err := a.Analyze(context.Background(), analyzer.AnalysisTarget{
+			got, err := a.Analyze(context.Background(), analyzer.AnalysisInput{
 				FilePath: tt.filePath,
 				Content:  tt.content,
 			})

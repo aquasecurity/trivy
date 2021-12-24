@@ -13,9 +13,6 @@ import (
 )
 
 func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
-	type args struct {
-		target analyzer.AnalysisTarget
-	}
 	tests := []struct {
 		name      string
 		inputFile string
@@ -56,7 +53,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 
 			a := nodePkgLibraryAnalyzer{}
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
 			})

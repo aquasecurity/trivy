@@ -55,7 +55,7 @@ func Test_debianOSAnalyzer_Analyze(t *testing.T) {
 
 			ctx := context.Background()
 
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: "etc/debian_version",
 				Content:  f,
 			})

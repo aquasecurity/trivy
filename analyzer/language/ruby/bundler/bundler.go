@@ -26,8 +26,8 @@ var (
 
 type bundlerLibraryAnalyzer struct{}
 
-func (a bundlerLibraryAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.Bundler, target.FilePath, target.Content, bundler.Parse)
+func (a bundlerLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	res, err := language.Analyze(types.Bundler, input.FilePath, input.Content, bundler.Parse)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse Gemfile.lock: %w", err)
 	}

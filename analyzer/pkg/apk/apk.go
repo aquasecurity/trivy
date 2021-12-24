@@ -24,14 +24,14 @@ var requiredFiles = []string{"lib/apk/db/installed"}
 
 type alpinePkgAnalyzer struct{}
 
-func (a alpinePkgAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	scanner := bufio.NewScanner(target.Content)
+func (a alpinePkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	scanner := bufio.NewScanner(input.Content)
 	parsedPkgs, installedFiles := a.parseApkInfo(scanner)
 
 	return &analyzer.AnalysisResult{
 		PackageInfos: []types.PackageInfo{
 			{
-				FilePath: target.FilePath,
+				FilePath: input.FilePath,
 				Packages: parsedPkgs,
 			},
 		},

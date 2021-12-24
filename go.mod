@@ -8,7 +8,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.16.0
 	github.com/aquasecurity/cfsec v0.2.2
 	github.com/aquasecurity/defsec v0.0.37
-	github.com/aquasecurity/go-dep-parser v0.0.0-20211223152202-b497b40cd9d2
+	github.com/aquasecurity/go-dep-parser v0.0.0-20211224061556-d0e33761a8ab
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aquasecurity/tfsec v0.63.1
 	github.com/aws/aws-sdk-go v1.42.0

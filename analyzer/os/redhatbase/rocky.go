@@ -22,8 +22,8 @@ func init() {
 
 type rockyOSAnalyzer struct{}
 
-func (a rockyOSAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	scanner := bufio.NewScanner(target.Content)
+func (a rockyOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	scanner := bufio.NewScanner(input.Content)
 	for scanner.Scan() {
 		line := scanner.Text()
 		result := redhatRe.FindStringSubmatch(strings.TrimSpace(line))

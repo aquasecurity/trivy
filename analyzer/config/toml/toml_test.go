@@ -96,7 +96,7 @@ func Test_tomlConfigAnalyzer_Analyze(t *testing.T) {
 
 			a := toml.NewConfigAnalyzer(nil)
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
 			})

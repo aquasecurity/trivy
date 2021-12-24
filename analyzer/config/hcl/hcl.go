@@ -32,24 +32,24 @@ func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
 
 // Analyze analyzes HCL-based config files, defaulting to HCL2.0 spec
 // it returns error only if content does not comply to both HCL2.0 and HCL1.0 spec
-func (a ConfigAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	parsed, err := a.analyze(target)
+func (a ConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	parsed, err := a.analyze(input)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse HCL (%a): %w", target.FilePath, err)
+		return nil, xerrors.Errorf("unable to parse HCL (%a): %w", input.FilePath, err)
 	}
 
 	return &analyzer.AnalysisResult{
 		Configs: []types.Config{
 			{
 				Type:     types.HCL,
-				FilePath: target.FilePath,
+				FilePath: input.FilePath,
 				Content:  parsed,
 			},
 		},
 	}, nil
 }
 
-func (a ConfigAnalyzer) analyze(target analyzer.AnalysisTarget) (interface{}, error) {
+func (a ConfigAnalyzer) analyze(target analyzer.AnalysisInput) (interface{}, error) {
 	var errs error
 	var parsed interface{}
 

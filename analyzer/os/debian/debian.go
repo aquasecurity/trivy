@@ -23,8 +23,8 @@ var requiredFiles = []string{"etc/debian_version"}
 
 type debianOSAnalyzer struct{}
 
-func (a debianOSAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	scanner := bufio.NewScanner(target.Content)
+func (a debianOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	scanner := bufio.NewScanner(input.Content)
 	for scanner.Scan() {
 		line := scanner.Text()
 		return &analyzer.AnalysisResult{

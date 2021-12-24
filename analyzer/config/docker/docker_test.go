@@ -164,7 +164,7 @@ func Test_dockerConfigAnalyzer_Analyze(t *testing.T) {
 
 			a := docker.NewConfigAnalyzer(nil)
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
 			})
