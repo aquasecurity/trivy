@@ -161,7 +161,7 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
-			name:      "hard requirement",
+			name:      "hard requirement for the specified version",
 			inputFile: filepath.Join("testdata", "hard-requirement", "pom.xml"),
 			local:     true,
 			want: []types.Library{
@@ -176,6 +176,17 @@ func TestPom_Parse(t *testing.T) {
 				{
 					Name:    "org.example:example-dependency",
 					Version: "1.2.4",
+				},
+			},
+		},
+		{
+			name:      "version requirement",
+			inputFile: filepath.Join("testdata", "version-requirement", "pom.xml"),
+			local:     true,
+			want: []types.Library{
+				{
+					Name:    "com.example:hard",
+					Version: "1.0.0",
 				},
 			},
 		},

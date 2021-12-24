@@ -195,6 +195,7 @@ func (p *parser) resolve(art artifact) (analysisResult, error) {
 		return *result, nil
 	}
 
+	log.Logger.Debugf("Resolving %s:%s:%s...", art.GroupID, art.ArtifactID, art.Version)
 	pomContent, err := p.tryRepository(art.GroupID, art.ArtifactID, art.Version.String())
 	if err != nil {
 		log.Logger.Debug(err)

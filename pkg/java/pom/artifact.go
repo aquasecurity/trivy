@@ -60,18 +60,22 @@ type version struct {
 	hard bool
 }
 
-// TODO: refine version requirements
-// Only soft and hard requirements are supported at the moment.
+// Only soft and hard requirements for the specified version are supported at the moment.
 func newVersion(s string) version {
+	var hard bool
 	if strings.HasPrefix(s, "[") && strings.HasSuffix(s, "]") {
-		return version{
-			ver:  strings.Trim(s, "[]"),
-			hard: true,
-		}
+		s = strings.Trim(s, "[]")
+		hard = true
 	}
+
+	// TODO: Other requirements are not supported
+	if strings.ContainsAny(s, ",()[]") {
+		s = ""
+	}
+
 	return version{
 		ver:  s,
-		hard: false,
+		hard: hard,
 	}
 }
 
