@@ -10,13 +10,14 @@ import (
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 )
 
 const (
 	sarifOsPackageVulnerability        = "OsPackageVulnerability"
 	sarifLanguageSpecificVulnerability = "LanguageSpecificPackageVulnerability"
+	sarifConfigFiles                   = "ConfigFileMisconfiguration"
 	sarifOtherVulnerability            = "OtherVulnerability"
 	sarifError                         = "error"
 	sarifWarning                       = "warning"
@@ -62,9 +63,11 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 		WithProperties(sarif.Properties{
 			"tags": []string{
 				"vulnerability",
+				"security",
 				data.severity,
 			},
-			"precision": "very-high",
+			"precision":         "very-high",
+			"security-severity": sarifSeverityLevel(data.severity),
 		})
 	if data.url != "" {
 		r.WithHelpURI(data.url)
@@ -156,13 +159,20 @@ func (sw SarifWriter) Write(report Report) error {
 
 func toSarifRuleName(vulnerabilityType string) string {
 	switch vulnerabilityType {
-	case vulnerability.Ubuntu, vulnerability.Alpine, vulnerability.RedHat, vulnerability.RedHatOVAL,
-		vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
-		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon,
-		vulnerability.CentOS:
+	case os.RedHat, os.Debian, os.Ubuntu, os.CentOS, os.Rocky, os.Alma, os.Fedora,
+		os.Amazon, os.Oracle, os.OpenSUSE, os.OpenSUSELeap, os.OpenSUSETumbleweed, os.SLES,
+		os.Photon, os.Alpine, os.Windows:
 		return sarifOsPackageVulnerability
-	case types.Npm, types.Yarn, types.NuGet, types.Cargo, types.Pipenv, types.Poetry, types.Bundler, types.Composer:
+
+	case types.Bundler, types.GemSpec, types.Cargo, types.Composer, types.Npm, types.NuGet, types.Pip,
+		types.Pipenv, types.Poetry, types.PythonPkg, types.NodePkg, types.Yarn, types.Jar, types.Pom,
+		types.GoBinary, types.GoMod, types.JavaScript:
 		return sarifLanguageSpecificVulnerability
+
+	case types.YAML, types.JSON, types.TOML, types.Dockerfile, types.HCL, types.Terraform,
+		types.Kubernetes, types.CloudFormation, types.Ansible:
+		return sarifConfigFiles
+
 	default:
 		return sarifOtherVulnerability
 	}
@@ -187,4 +197,19 @@ func toPathUri(input string) string {
 		input = matches[re.SubexpIndex("path")]
 	}
 	return strings.ReplaceAll(input, "\\", "/")
+}
+
+func sarifSeverityLevel(severity string) float32 {
+	switch severity {
+	case "CRITICAL":
+		return 9.0
+	case "HIGH":
+		return 8.0
+	case "MEDIUM":
+		return 5.0
+	case "LOW":
+		return 3.5
+	default:
+		return 0.0
+	}
 }
