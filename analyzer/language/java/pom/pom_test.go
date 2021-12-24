@@ -37,6 +37,24 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "unsupported requirement",
+			inputFile: "testdata/requirements/pom.xml",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Pom,
+						FilePath: "testdata/requirements/pom.xml",
+						Libraries: []types.Package{
+							{
+								Name:    "com.example:example",
+								Version: "2.0.0",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "sad path",
 			inputFile: "testdata/broken/pom.xml",
 			wantErr:   "xml decode error",
