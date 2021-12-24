@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	tdb "github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -351,7 +352,10 @@ func NewApp(version string) *cli.App {
 
 	runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN")
 	if runAsPlugin == "" {
-		app.Action = artifact.ImageRun
+		app.Action = func(ctx *cli.Context) error {
+			log.Logger.Warn("The root command will be removed. Please migrate to 'trivy image' command. See https://github.com/aquasecurity/trivy/discussions/1515")
+			return artifact.ImageRun(ctx)
+		}
 	} else {
 		app.Action = func(ctx *cli.Context) error {
 			return plugin.RunWithArgs(ctx.Context, runAsPlugin, ctx.Args().Slice())
