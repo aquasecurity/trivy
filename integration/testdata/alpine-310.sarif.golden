@@ -28,7 +28,7 @@
               },
               "properties": {
                 "precision": "very-high",
-                "security-severity": 5,
+                "security-severity": "5.0",
                 "tags": [
                   "vulnerability",
                   "security",
@@ -55,7 +55,7 @@
               },
               "properties": {
                 "precision": "very-high",
-                "security-severity": 5,
+                "security-severity": "5.0",
                 "tags": [
                   "vulnerability",
                   "security",
@@ -82,7 +82,7 @@
               },
               "properties": {
                 "precision": "very-high",
-                "security-severity": 5,
+                "security-severity": "5.0",
                 "tags": [
                   "vulnerability",
                   "security",
@@ -109,7 +109,7 @@
               },
               "properties": {
                 "precision": "very-high",
-                "security-severity": 3.5,
+                "security-severity": "3.5",
                 "tags": [
                   "vulnerability",
                   "security",
