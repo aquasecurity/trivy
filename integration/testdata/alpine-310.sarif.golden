@@ -28,8 +28,10 @@
               },
               "properties": {
                 "precision": "very-high",
+                "security-severity": 5,
                 "tags": [
                   "vulnerability",
+                  "security",
                   "MEDIUM"
                 ]
               }
@@ -53,8 +55,10 @@
               },
               "properties": {
                 "precision": "very-high",
+                "security-severity": 5,
                 "tags": [
                   "vulnerability",
+                  "security",
                   "MEDIUM"
                 ]
               }
@@ -78,8 +82,10 @@
               },
               "properties": {
                 "precision": "very-high",
+                "security-severity": 5,
                 "tags": [
                   "vulnerability",
+                  "security",
                   "MEDIUM"
                 ]
               }
@@ -103,8 +109,10 @@
               },
               "properties": {
                 "precision": "very-high",
+                "security-severity": 3.5,
                 "tags": [
                   "vulnerability",
+                  "security",
                   "LOW"
                 ]
               }
@@ -282,7 +290,13 @@
             }
           ]
         }
-      ]
+      ],
+      "columnKind": "utf16CodeUnits",
+      "originalUriBaseIds": {
+        "ROOTPATH": {
+          "uri": "file:///"
+        }
+      }
     }
   ]
 }
