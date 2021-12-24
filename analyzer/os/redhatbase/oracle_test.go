@@ -39,7 +39,7 @@ func Test_oracleOSAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: "etc/oracle-release",
 				Content:  f,
 			})

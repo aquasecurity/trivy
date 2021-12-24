@@ -21,11 +21,10 @@ const version = 1
 // pomAnalyzer analyzes pom.xml
 type pomAnalyzer struct{}
 
-func (a pomAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	// TODO: support offline mode
-	p := pom.NewParser(target.FilePath)
+func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	p := pom.NewParser(input.FilePath, pom.WithOffline(input.Options.Offline))
 
-	return language.Analyze(types.Pom, target.FilePath, target.Content, p.Parse)
+	return language.Analyze(types.Pom, input.FilePath, input.Content, p.Parse)
 }
 
 func (a pomAnalyzer) Required(filePath string, _ os.FileInfo) bool {

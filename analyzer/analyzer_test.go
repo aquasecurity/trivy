@@ -372,6 +372,7 @@ func TestAnalyzeFile(t *testing.T) {
 					}
 					return os.Open(tt.args.testFilePath)
 				},
+				analyzer.AnalysisOptions{},
 			)
 
 			wg.Wait()

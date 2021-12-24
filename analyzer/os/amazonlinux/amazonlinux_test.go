@@ -17,13 +17,13 @@ import (
 func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name    string
-		target  analyzer.AnalysisTarget
+		input   analyzer.AnalysisInput
 		want    *analyzer.AnalysisResult
 		wantErr string
 	}{
 		{
 			name: "happy path amazon linux 1",
-			target: analyzer.AnalysisTarget{
+			input: analyzer.AnalysisInput{
 				FilePath: "etc/system-release",
 				Content:  strings.NewReader(`Amazon Linux AMI release 2018.03`),
 			},
@@ -36,7 +36,7 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "happy path amazon linux 2",
-			target: analyzer.AnalysisTarget{
+			input: analyzer.AnalysisInput{
 				FilePath: "etc/system-release",
 				Content:  strings.NewReader(`Amazon Linux release 2 (Karoo)`),
 			},
@@ -49,7 +49,7 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "sad path amazon linux 2 without code name",
-			target: analyzer.AnalysisTarget{
+			input: analyzer.AnalysisInput{
 				FilePath: "etc/system-release",
 				Content:  strings.NewReader(`Amazon Linux release 2`),
 			},
@@ -57,7 +57,7 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "sad path",
-			target: analyzer.AnalysisTarget{
+			input: analyzer.AnalysisInput{
 				FilePath: "etc/system-release",
 				Content:  strings.NewReader(`foo bar`),
 			},
@@ -68,7 +68,7 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a := amazonlinuxOSAnalyzer{}
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, tt.target)
+			got, err := a.Analyze(ctx, tt.input)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

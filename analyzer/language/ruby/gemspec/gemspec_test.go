@@ -53,7 +53,7 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 
 			a := gemspecLibraryAnalyzer{}
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
 			})

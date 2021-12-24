@@ -200,7 +200,8 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobIn
 	limit := semaphore.NewWeighted(parallel)
 
 	opqDirs, whFiles, err := a.walker.Walk(r, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener); err != nil {
+		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
+		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
 		return nil

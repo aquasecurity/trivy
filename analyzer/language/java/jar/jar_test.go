@@ -58,7 +58,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 
 			a := javaLibraryAnalyzer{}
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Info:     stat,
 				Content:  f,

@@ -41,12 +41,12 @@ var (
 type packagingAnalyzer struct{}
 
 // Analyze analyzes egg and wheel files.
-func (a packagingAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	var r io.Reader = target.Content
+func (a packagingAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	var r io.Reader = input.Content
 
 	// .egg file is zip format and PKG-INFO needs to be extracted from the zip file.
-	if strings.HasSuffix(target.FilePath, ".egg") {
-		pkginfoInZip, err := a.analyzeEggZip(target.Content, target.Info.Size())
+	if strings.HasSuffix(input.FilePath, ".egg") {
+		pkginfoInZip, err := a.analyzeEggZip(input.Content, input.Info.Size())
 		if err != nil {
 			return nil, xerrors.Errorf("egg analysis error: %w", err)
 		}
@@ -56,19 +56,19 @@ func (a packagingAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTa
 
 	lib, err := packaging.Parse(r)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse %s: %w", target.FilePath, err)
+		return nil, xerrors.Errorf("unable to parse %s: %w", input.FilePath, err)
 	}
 
 	return &analyzer.AnalysisResult{Applications: []types.Application{
 		{
 			Type:     types.PythonPkg,
-			FilePath: target.FilePath,
+			FilePath: input.FilePath,
 			Libraries: []types.Package{
 				{
 					Name:     lib.Name,
 					Version:  lib.Version,
 					License:  lib.License,
-					FilePath: target.FilePath,
+					FilePath: input.FilePath,
 				},
 			},
 		},

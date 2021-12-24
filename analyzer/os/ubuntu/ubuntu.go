@@ -24,9 +24,9 @@ var requiredFiles = []string{"etc/lsb-release"}
 
 type ubuntuOSAnalyzer struct{}
 
-func (a ubuntuOSAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a ubuntuOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	isUbuntu := false
-	scanner := bufio.NewScanner(target.Content)
+	scanner := bufio.NewScanner(input.Content)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "DISTRIB_ID=Ubuntu" {

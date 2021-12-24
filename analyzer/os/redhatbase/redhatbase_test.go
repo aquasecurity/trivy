@@ -39,7 +39,7 @@ func Test_redhatOSAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: "etc/redhat-release",
 				Content:  f,
 			})

@@ -44,7 +44,7 @@ func Test_photonOSAnalyzer_Analyze(t *testing.T) {
 			defer f.Close()
 
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: "etc/os-release",
 				Content:  f,
 			})

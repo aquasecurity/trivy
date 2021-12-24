@@ -40,7 +40,7 @@ func Test_centosOSAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			ctx := context.Background()
 
-			got, err := a.Analyze(ctx, analyzer.AnalysisTarget{
+			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: "etc/centos-release",
 				Content:  f,
 			})

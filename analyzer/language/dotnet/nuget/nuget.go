@@ -29,16 +29,16 @@ var requiredFiles = []string{lockFile, configFile}
 
 type nugetLibraryAnalyzer struct{}
 
-func (a nugetLibraryAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
+func (a nugetLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	// Set the default parser
 	parser := lock.Parse
 
-	targetFile := filepath.Base(target.FilePath)
+	targetFile := filepath.Base(input.FilePath)
 	if targetFile == configFile {
 		parser = config.Parse
 	}
 
-	res, err := language.Analyze(types.NuGet, target.FilePath, target.Content, parser)
+	res, err := language.Analyze(types.NuGet, input.FilePath, input.Content, parser)
 	if err != nil {
 		return nil, xerrors.Errorf("NuGet analysis error: %w", err)
 	}

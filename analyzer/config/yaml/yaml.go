@@ -30,8 +30,8 @@ func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
 	}
 }
 
-func (a ConfigAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarget) (*analyzer.AnalysisResult, error) {
-	content, err := io.ReadAll(target.Content)
+func (a ConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	content, err := io.ReadAll(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to read the yaml content: %w", err)
 	}
@@ -46,12 +46,12 @@ func (a ConfigAnalyzer) Analyze(_ context.Context, target analyzer.AnalysisTarge
 	for _, doc := range docs {
 		parsed, err := a.parser.Parse(doc)
 		if err != nil {
-			return nil, xerrors.Errorf("unable to parse YAML (%a): %w", target.FilePath, err)
+			return nil, xerrors.Errorf("unable to parse YAML (%a): %w", input.FilePath, err)
 		}
 
 		configs = append(configs, types.Config{
 			Type:     types.YAML,
-			FilePath: target.FilePath,
+			FilePath: input.FilePath,
 			Content:  parsed,
 		})
 	}
