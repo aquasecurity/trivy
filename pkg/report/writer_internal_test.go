@@ -25,15 +25,7 @@ func TestReportWriter_toSarifRuleName(t *testing.T) {
 			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
-			vulnerabilityType: vulnerability.RedHatOVAL,
-			sarifRuleName:     sarifOsPackageVulnerability,
-		},
-		{
 			vulnerabilityType: vulnerability.Debian,
-			sarifRuleName:     sarifOsPackageVulnerability,
-		},
-		{
-			vulnerabilityType: vulnerability.DebianOVAL,
 			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
@@ -42,18 +34,6 @@ func TestReportWriter_toSarifRuleName(t *testing.T) {
 		},
 		{
 			vulnerabilityType: vulnerability.Amazon,
-			sarifRuleName:     sarifOsPackageVulnerability,
-		},
-		{
-			vulnerabilityType: vulnerability.OracleOVAL,
-			sarifRuleName:     sarifOsPackageVulnerability,
-		},
-		{
-			vulnerabilityType: vulnerability.SuseCVRF,
-			sarifRuleName:     sarifOsPackageVulnerability,
-		},
-		{
-			vulnerabilityType: vulnerability.OpenSuseCVRF,
 			sarifRuleName:     sarifOsPackageVulnerability,
 		},
 		{
