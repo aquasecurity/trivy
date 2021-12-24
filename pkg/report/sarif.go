@@ -9,16 +9,13 @@ import (
 
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/fanal/analyzer/os"
-	"github.com/aquasecurity/fanal/types"
 )
 
 const (
 	sarifOsPackageVulnerability        = "OsPackageVulnerability"
 	sarifLanguageSpecificVulnerability = "LanguageSpecificPackageVulnerability"
-	sarifConfigFiles                   = "ConfigFileMisconfiguration"
-	sarifOtherVulnerability            = "OtherVulnerability"
+	sarifConfigFiles                   = "Misconfiguration"
+	sarifUnknownIssue                  = "UnknownIssue"
 	sarifError                         = "error"
 	sarifWarning                       = "warning"
 	sarifNote                          = "note"
@@ -45,7 +42,7 @@ type sarifData struct {
 	fullDescription  string
 	helpText         string
 	helpMarkdown     string
-	resourceType     string
+	resourceClass    string
 	severity         string
 	url              string
 	resultIndex      int
@@ -55,7 +52,7 @@ type sarifData struct {
 
 func (sw *SarifWriter) addSarifRule(data *sarifData) {
 	r := sw.run.AddRule(data.vulnerabilityId).
-		WithName(toSarifRuleName(data.resourceType)).
+		WithName(toSarifRuleName(data.resourceClass)).
 		WithDescription(data.vulnerabilityId).
 		WithFullDescription(&sarif.MultiformatMessageString{Text: &data.fullDescription}).
 		WithHelp(&sarif.MultiformatMessageString{
@@ -128,7 +125,7 @@ func (sw SarifWriter) Write(report Report) error {
 				vulnerabilityId:  vuln.VulnerabilityID,
 				severity:         vuln.Severity,
 				url:              vuln.PrimaryURL,
-				resourceType:     res.Type,
+				resourceClass:    string(res.Class),
 				artifactLocation: toPathUri(path),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 				fullDescription:  html.EscapeString(fullDescription),
@@ -145,7 +142,7 @@ func (sw SarifWriter) Write(report Report) error {
 				vulnerabilityId:  misconf.ID,
 				severity:         misconf.Severity,
 				url:              misconf.PrimaryURL,
-				resourceType:     res.Type,
+				resourceClass:    string(res.Class),
 				artifactLocation: toPathUri(res.Target),
 				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
 				fullDescription:  html.EscapeString(misconf.Description),
@@ -166,24 +163,16 @@ func (sw SarifWriter) Write(report Report) error {
 	return sarifReport.PrettyWrite(sw.Output)
 }
 
-func toSarifRuleName(vulnerabilityType string) string {
-	switch vulnerabilityType {
-	case os.RedHat, os.Debian, os.Ubuntu, os.CentOS, os.Rocky, os.Alma, os.Fedora,
-		os.Amazon, os.Oracle, os.OpenSUSE, os.OpenSUSELeap, os.OpenSUSETumbleweed, os.SLES,
-		os.Photon, os.Alpine, os.Windows:
+func toSarifRuleName(class string) string {
+	switch class {
+	case ClassOSPkg:
 		return sarifOsPackageVulnerability
-
-	case types.Bundler, types.GemSpec, types.Cargo, types.Composer, types.Npm, types.NuGet, types.Pip,
-		types.Pipenv, types.Poetry, types.PythonPkg, types.NodePkg, types.Yarn, types.Jar, types.Pom,
-		types.GoBinary, types.GoMod, types.JavaScript:
+	case ClassLangPkg:
 		return sarifLanguageSpecificVulnerability
-
-	case types.YAML, types.JSON, types.TOML, types.Dockerfile, types.HCL, types.Terraform,
-		types.Kubernetes, types.CloudFormation, types.Ansible:
+	case ClassConfig:
 		return sarifConfigFiles
-
 	default:
-		return sarifOtherVulnerability
+		return sarifUnknownIssue
 	}
 }
 

@@ -53,7 +53,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			expectedRules: []*sarif.ReportingDescriptor{
 				{
 					ID:               "CVE-2020-0001",
-					Name:             getStringPointer("OtherVulnerability"),
+					Name:             getStringPointer("UnknownIssue"),
 					ShortDescription: &sarif.MultiformatMessageString{Text: getStringPointer("CVE-2020-0001")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: getStringPointer("baz")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
@@ -161,7 +161,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			expectedRules: []*sarif.ReportingDescriptor{
 				{
 					ID:               "KSV001",
-					Name:             getStringPointer("OtherVulnerability"),
+					Name:             getStringPointer("UnknownIssue"),
 					ShortDescription: &sarif.MultiformatMessageString{Text: getStringPointer("KSV001")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: getStringPointer("")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
@@ -184,7 +184,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 				},
 				{
 					ID:               "KSV002",
-					Name:             getStringPointer("OtherVulnerability"),
+					Name:             getStringPointer("UnknownIssue"),
 					ShortDescription: &sarif.MultiformatMessageString{Text: getStringPointer("KSV002")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: getStringPointer("")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{

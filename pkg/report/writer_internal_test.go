@@ -3,87 +3,34 @@ package report
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestReportWriter_toSarifRuleName(t *testing.T) {
 	tests := []struct {
-		vulnerabilityType string
-		sarifRuleName     string
+		resourceClass string
+		sarifRuleName string
 	}{
 		{
-			vulnerabilityType: vulnerability.Ubuntu,
-			sarifRuleName:     sarifOsPackageVulnerability,
+			resourceClass: "os-pkgs",
+			sarifRuleName: sarifOsPackageVulnerability,
 		},
 		{
-			vulnerabilityType: vulnerability.Alpine,
-			sarifRuleName:     sarifOsPackageVulnerability,
+			resourceClass: "lang-pkgs",
+			sarifRuleName: sarifLanguageSpecificVulnerability,
 		},
 		{
-			vulnerabilityType: vulnerability.RedHat,
-			sarifRuleName:     sarifOsPackageVulnerability,
+			resourceClass: "config",
+			sarifRuleName: sarifConfigFiles,
 		},
 		{
-			vulnerabilityType: vulnerability.Debian,
-			sarifRuleName:     sarifOsPackageVulnerability,
-		},
-		{
-			vulnerabilityType: vulnerability.Fedora,
-			sarifRuleName:     sarifOsPackageVulnerability,
-		},
-		{
-			vulnerabilityType: vulnerability.Amazon,
-			sarifRuleName:     sarifOsPackageVulnerability,
-		},
-		{
-			vulnerabilityType: vulnerability.Photon,
-			sarifRuleName:     sarifOsPackageVulnerability,
-		},
-		{
-			vulnerabilityType: vulnerability.CentOS,
-			sarifRuleName:     sarifOsPackageVulnerability,
-		},
-		{
-			vulnerabilityType: "npm",
-			sarifRuleName:     sarifLanguageSpecificVulnerability,
-		},
-		{
-			vulnerabilityType: "yarn",
-			sarifRuleName:     sarifLanguageSpecificVulnerability,
-		},
-		{
-			vulnerabilityType: "nuget",
-			sarifRuleName:     sarifLanguageSpecificVulnerability,
-		},
-		{
-			vulnerabilityType: "pipenv",
-			sarifRuleName:     sarifLanguageSpecificVulnerability,
-		},
-		{
-			vulnerabilityType: "poetry",
-			sarifRuleName:     sarifLanguageSpecificVulnerability,
-		},
-		{
-			vulnerabilityType: "bundler",
-			sarifRuleName:     sarifLanguageSpecificVulnerability,
-		},
-		{
-			vulnerabilityType: "cargo",
-			sarifRuleName:     sarifLanguageSpecificVulnerability,
-		},
-		{
-			vulnerabilityType: "composer",
-			sarifRuleName:     sarifLanguageSpecificVulnerability,
-		},
-		{
-			vulnerabilityType: "redis",
-			sarifRuleName:     sarifOtherVulnerability,
+			resourceClass: "redis",
+			sarifRuleName: sarifUnknownIssue,
 		},
 	}
 	for _, tc := range tests {
-		t.Run(tc.vulnerabilityType, func(t *testing.T) {
-			assert.Equal(t, tc.sarifRuleName, toSarifRuleName(tc.vulnerabilityType), tc.vulnerabilityType)
+		t.Run(tc.resourceClass, func(t *testing.T) {
+			assert.Equal(t, tc.sarifRuleName, toSarifRuleName(tc.resourceClass), tc.resourceClass)
 		})
 	}
 }
