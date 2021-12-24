@@ -42,6 +42,7 @@ type conf struct {
 	baseURL      string
 	rootFilePath string
 	httpClient   *http.Client
+	offline      bool
 }
 
 type Option func(*conf)
@@ -62,6 +63,13 @@ func WithHTTPClient(client *http.Client) Option {
 	return func(c *conf) {
 		c.httpClient = client
 	}
+}
+
+func WithOffline(offline bool) Option {
+	return func(c *conf) {
+		c.offline = offline
+	}
+
 }
 
 func Parse(r dio.ReadSeekerAt, size int64, opts ...Option) ([]types.Library, error) {
@@ -134,6 +142,15 @@ func parseArtifact(c conf, fileName string, r dio.ReadSeekerAt, size int64) ([]t
 	}
 
 	manifestProps := m.properties()
+	if c.offline {
+		// In offline mode, we will not check if the artifact information is correct.
+		if !manifestProps.valid() {
+			log.Logger.Debugw("Unable to identify POM in offline mode", zap.String("file", fileName))
+			return libs, nil
+		}
+		return append(libs, manifestProps.library()), nil
+	}
+
 	if manifestProps.valid() {
 		// Even if MANIFEST.MF is found, the groupId and artifactId might not be valid.
 		// We have to make sure that the artifact exists actually.

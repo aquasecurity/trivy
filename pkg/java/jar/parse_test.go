@@ -47,6 +47,11 @@ var (
 		{"org.springframework:spring-core", "5.3.3", ""},
 	}
 
+	// offline
+	wantOffline = []types.Library{
+		{"org.springframework:Spring Framework", "2.5.6.SEC03", ""},
+	}
+
 	// manually created
 	wantHeuristic = []types.Library{
 		{"com.example:heuristic", "1.0.0-SNAPSHOT", ""},
@@ -82,9 +87,10 @@ type doc struct {
 
 func TestParse(t *testing.T) {
 	vectors := []struct {
-		name string
-		file string // Test input file
-		want []types.Library
+		name    string
+		file    string // Test input file
+		offline bool
+		want    []types.Library
 	}{
 		{
 			name: "maven",
@@ -100,6 +106,12 @@ func TestParse(t *testing.T) {
 			name: "sha1 search",
 			file: "testdata/test.jar",
 			want: wantSHA1,
+		},
+		{
+			name:    "offline",
+			file:    "testdata/test.jar",
+			offline: true,
+			want:    wantOffline,
 		},
 		{
 			name: "artifactId search",
@@ -159,7 +171,8 @@ func TestParse(t *testing.T) {
 			stat, err := f.Stat()
 			require.NoError(t, err)
 
-			got, err := jar.Parse(f, stat.Size(), jar.WithURL(ts.URL), jar.WithFilePath(v.file), jar.WithHTTPClient(ts.Client()))
+			got, err := jar.Parse(f, stat.Size(), jar.WithURL(ts.URL), jar.WithFilePath(v.file),
+				jar.WithHTTPClient(ts.Client()), jar.WithOffline(v.offline))
 			require.NoError(t, err)
 
 			sort.Slice(got, func(i, j int) bool {
