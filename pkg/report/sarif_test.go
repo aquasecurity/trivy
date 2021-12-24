@@ -63,9 +63,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 					Properties: map[string]interface{}{
 						"tags": []interface{}{
 							"vulnerability",
+							"security",
 							"HIGH",
 						},
-						"precision": "very-high",
+						"precision":         "very-high",
+						"security-severity": 8.0,
 					},
 					Help: &sarif.MultiformatMessageString{
 						Text:     getStringPointer("Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nbaz"),
