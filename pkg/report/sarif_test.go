@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/owenrumney/go-sarif/v2/sarif"
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -12,67 +13,21 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-type sarifTemplate struct {
-	Schema string      `json:"$schema"`
-	Runs   []sarifRuns `json:"runs"`
+func getStringPointer(s string) *string {
+	return &s
 }
-type sarifRuns struct {
-	Tool    sarifTool     `json:"tool"`
-	Results []sarifResult `json:"results"`
+func getUintPointer(i uint) *uint {
+	return &i
 }
-type sarifTool struct {
-	Driver sarifDriver `json:"driver"`
+func getIntPointer(i int) *int {
+	return &i
 }
-type sarifDriver struct {
-	Rules []sarifRule
-}
-type sarifRule struct {
-	Id               string                `json:"id"`
-	ShortDescription sarifShortDescription `json:"shortDescription"`
-	FullDescription  sarifFullDescription  `json:"fullDescription"`
-	Help             sarifHelp             `json:"help"`
-}
-type sarifShortDescription struct {
-	Text string `json:"text"`
-}
-type sarifFullDescription struct {
-	Text string `json:"text"`
-}
-type sarifHelp struct {
-	Text     string `json:"text"`
-	Markdown string `json:"markdown"`
-}
-
-type sarifResult struct {
-	RuleId    string           `json:"ruleId"`
-	RuleIndex int              `json:"ruleIndex"`
-	Level     string           `json:"level"`
-	Message   sarifMessage     `json:"message"`
-	Locations []sarifLocations `json:"locations"`
-}
-type sarifLocations struct {
-	PhysicalLocation sarifPhysicalLocation `json:"physicalLocation"`
-}
-type sarifPhysicalLocation struct {
-	ArtifactLocation sarifArtifactLocation `json:"artifactLocation"`
-	Region           sarifRegion           `json:"region"`
-}
-type sarifArtifactLocation struct {
-	Uri string `json:"uri"`
-}
-type sarifRegion struct {
-	StartLine int `json:"startLine"`
-}
-type sarifMessage struct {
-	Text string `json:"text"`
-}
-
 func TestReportWriter_Sarif(t *testing.T) {
 	testCases := []struct {
 		name            string
 		results         report.Results
-		expectedRules   []sarifRule
-		expectedResults []sarifResult
+		expectedRules   []*sarif.ReportingDescriptor
+		expectedResults []*sarif.Result
 	}{
 		{
 			name: "happy path vulnerabilities",
@@ -95,27 +50,46 @@ func TestReportWriter_Sarif(t *testing.T) {
 					},
 				},
 			},
-			expectedRules: []sarifRule{
+			expectedRules: []*sarif.ReportingDescriptor{
 				{
-					Id:               "CVE-2020-0001",
-					ShortDescription: sarifShortDescription{Text: "CVE-2020-0001"},
-					FullDescription:  sarifFullDescription{Text: "baz"},
-					Help: sarifHelp{
-						Text:     "Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nbaz",
-						Markdown: "**Vulnerability CVE-2020-0001**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|foo|3.4.5|[CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)|\n\nbaz",
+					ID:               "CVE-2020-0001",
+					Name:             getStringPointer("OtherVulnerability"),
+					ShortDescription: &sarif.MultiformatMessageString{Text: getStringPointer("CVE-2020-0001")},
+					FullDescription:  &sarif.MultiformatMessageString{Text: getStringPointer("baz")},
+					DefaultConfiguration: &sarif.ReportingConfiguration{
+						Level: "error",
+					},
+					HelpURI: getStringPointer("https://avd.aquasec.com/nvd/cve-2020-0001"),
+					Properties: map[string]interface{}{
+						"tags": []interface{}{
+							"vulnerability",
+							"HIGH",
+						},
+						"precision": "very-high",
+					},
+					Help: &sarif.MultiformatMessageString{
+						Text:     getStringPointer("Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nbaz"),
+						Markdown: getStringPointer("**Vulnerability CVE-2020-0001**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|foo|3.4.5|[CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)|\n\nbaz"),
 					},
 				},
 			},
-			expectedResults: []sarifResult{
+			expectedResults: []*sarif.Result{
 				{
-					RuleId:    "CVE-2020-0001",
-					RuleIndex: 0,
-					Level:     "error",
-					Message:   sarifMessage{Text: "Package: foo\nInstalled Version: 1.2.3\nVulnerability CVE-2020-0001\nSeverity: HIGH\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)"},
-					Locations: []sarifLocations{{PhysicalLocation: sarifPhysicalLocation{
-						ArtifactLocation: sarifArtifactLocation{Uri: "test"},
-						Region:           sarifRegion{StartLine: 1},
-					}}},
+					RuleID:    getStringPointer("CVE-2020-0001"),
+					RuleIndex: getUintPointer(0),
+					Level:     getStringPointer("error"),
+					Message:   sarif.Message{Text: getStringPointer("Package: foo\nInstalled Version: 1.2.3\nVulnerability CVE-2020-0001\nSeverity: HIGH\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)")},
+					Locations: []*sarif.Location{
+						{
+							PhysicalLocation: &sarif.PhysicalLocation{
+								ArtifactLocation: &sarif.ArtifactLocation{
+									URI:       getStringPointer("test"),
+									URIBaseId: getStringPointer("ROOTPATH"),
+								},
+								Region: &sarif.Region{StartLine: getIntPointer(1)},
+							},
+						},
+					},
 				},
 			},
 		},
@@ -168,7 +142,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			})
 			assert.NoError(t, err)
 
-			result := &sarifTemplate{}
+			result := &sarif.Report{}
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedRules, result.Runs[0].Tool.Driver.Rules, tc.name)
