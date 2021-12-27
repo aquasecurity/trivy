@@ -207,13 +207,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 				},
 			},
 		},
-		/*
-			{
-				name:            "no vulns",
-				expectedResults: []*sarif.Result{},
-				expectedRules:   []*sarif.ReportingDescriptor{},
-			},
-		*/
+		{
+			name:            "no vulns",
+			expectedResults: []*sarif.Result{},
+			expectedRules:   []*sarif.ReportingDescriptor{},
+		},
 	}
 
 	for _, tc := range testCases {
