@@ -114,6 +114,8 @@ func Write(report Report, option Option) error {
 		}
 	case "json":
 		writer = &JSONWriter{Output: option.Output}
+	case "gsbom":
+		writer = &GsbomWriter{Output: option.Output}
 	case "template":
 		var err error
 		if writer, err = NewTemplateWriter(option.Output, option.OutputTemplate); err != nil {
