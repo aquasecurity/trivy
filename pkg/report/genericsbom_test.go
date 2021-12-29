@@ -26,7 +26,9 @@ func TestReportWriter_gSBOM(t *testing.T) {
 				ArtifactName:  "alpine:3.14",
 				Results: report.Results{
 					{
-						Target: "foojson",
+						Target: "yarn.lock",
+						Class:  "lang-pkgs",
+						Type:   "yarn",
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								VulnerabilityID:  "CVE-2020-0001",
@@ -45,10 +47,14 @@ func TestReportWriter_gSBOM(t *testing.T) {
 				},
 			},
 			want: map[string]report.GsbomManifest{
-				"foojson": {
+				"yarn.lock": {
+					Name: "yarn",
+					File: &report.GsbomFile{
+						SrcLocation: "yarn.lock",
+					},
 					Resolved: map[string]report.GsbomPackage{
 						"foo": {
-							Purl: "pkg:/foo@1.2.3",
+							Purl: "pkg:npm/foo@1.2.3",
 						},
 					},
 				},
@@ -61,7 +67,9 @@ func TestReportWriter_gSBOM(t *testing.T) {
 				ArtifactName:  "alpine:3.14",
 				Results: report.Results{
 					{
-						Target: "foojson",
+						Target: "yarn.lock",
+						Class:  "lang-pkgs",
+						Type:   "yarn",
 						Packages: []ftypes.Package{
 							{
 								Name:    "@xtuc/ieee754",
@@ -72,7 +80,6 @@ func TestReportWriter_gSBOM(t *testing.T) {
 								Version: "4.2.2",
 							},
 						},
-
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								VulnerabilityID:  "CVE-2020-0001",
@@ -91,13 +98,57 @@ func TestReportWriter_gSBOM(t *testing.T) {
 				},
 			},
 			want: map[string]report.GsbomManifest{
-				"foojson": {
+				"yarn.lock": {
+					Name: "yarn",
+					File: &report.GsbomFile{
+						SrcLocation: "yarn.lock",
+					},
 					Resolved: map[string]report.GsbomPackage{
 						"@xtuc/ieee754": {
-							Purl: "pkg:/@xtuc%2Fieee754@1.2.0",
+							Purl: "pkg:npm/@xtuc%2Fieee754@1.2.0",
 						},
 						"@xtuc/long": {
-							Purl: "pkg:/@xtuc%2Flong@4.2.2",
+							Purl: "pkg:npm/@xtuc%2Flong@4.2.2",
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy path - maven",
+			report: report.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "my-java-app",
+				Results: report.Results{
+					{
+						Target: "pom.xml",
+						Class:  "lang-pkgs",
+						Type:   "pom",
+						Packages: []ftypes.Package{
+							{
+								Name:    "com.google.code.gson:gson",
+								Version: "2.2.2",
+							},
+							{
+								Name:    "net.sf.opencsv:opencsv",
+								Version: "2.3",
+							},
+						},
+					},
+				},
+			},
+			want: map[string]report.GsbomManifest{
+				"pom.xml": {
+					Name: "pom",
+					File: &report.GsbomFile{
+						SrcLocation: "pom.xml",
+					},
+					Resolved: map[string]report.GsbomPackage{
+						"com.google.code.gson:gson": {
+							Purl: "pkg:maven/com.google.code.gson/gson@2.2.2",
+						},
+						"net.sf.opencsv:opencsv": {
+							Purl: "pkg:maven/net.sf.opencsv/opencsv@2.3",
 						},
 					},
 				},

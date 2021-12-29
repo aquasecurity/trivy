@@ -90,8 +90,15 @@ func (gsbmw GsbomWriter) Write(report Report) error {
 	return nil
 }
 func buildPurl(pkgName, version, pkgType string) string {
-	//TODO fix maven namespace
-	return packageurl.NewPackageURL(toPurlType(pkgType), "", pkgName, version, nil, "").ToString()
+	purlPackageType := toPurlType(pkgType)
+	var purlNs string
+	//Maven groupid is purl namespace
+	if purlPackageType == "maven" {
+		parts := strings.Split(pkgName, ":")
+		purlNs = parts[0]
+		pkgName = parts[1]
+	}
+	return packageurl.NewPackageURL(purlPackageType, purlNs, pkgName, version, nil, "").ToString()
 }
 
 var resolvedFromVulns = func(result Result) map[string]GsbomPackage {
