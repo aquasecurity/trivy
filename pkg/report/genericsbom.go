@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/url"
 	"strings"
 	"time"
 
+	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 )
 
@@ -47,6 +47,7 @@ type Gsbom struct {
 type GsbomWriter struct {
 	Output io.Writer
 }
+type depsRslvr func(result Result) map[string]GsbomPackage
 
 func (gsbmw GsbomWriter) Write(report Report) error {
 	gsbom := &Gsbom{}
@@ -66,7 +67,7 @@ func (gsbmw GsbomWriter) Write(report Report) error {
 				SrcLocation: result.Target,
 			}
 		}
-		var resolver func(result Result) map[string]GsbomPackage
+		var resolver depsRslvr
 		if result.Packages != nil {
 			resolver = resolvedFromPackages
 		} else {
@@ -89,7 +90,7 @@ func (gsbmw GsbomWriter) Write(report Report) error {
 	return nil
 }
 func buildPurl(pkgName, version, pkgType string) string {
-	return fmt.Sprintf("pkg:/%s/%s@%s", toPurlType(pkgType), url.QueryEscape(pkgName), version)
+	return packageurl.NewPackageURL(toPurlType(pkgType), "", pkgName, version, nil, "").ToString()
 }
 
 var resolvedFromVulns = func(result Result) map[string]GsbomPackage {
@@ -113,17 +114,17 @@ var resolvedFromPackages = func(result Result) map[string]GsbomPackage {
 
 func toPurlType(ecosystem string) string {
 	switch strings.ToLower(ecosystem) {
-	case "go", "golang":
+	case "go":
 		return "golang"
-	case "maven", "gradle":
+	case "gradle", "pom":
 		return "maven"
-	case "npm", "yarn":
+	case "yarn":
 		return "npm"
-	case "packagist", "composer":
+	case "packagist":
 		return "composer"
 	case "pip", "pipenv", "poetry":
-		return "pipi"
-	case "gem", "bundler", "rubygems":
+		return "pypi"
+	case "bundler", "rubygems":
 		return "gem"
 	default:
 		return ecosystem
