@@ -82,7 +82,8 @@ type Scanner struct {
 
 // Driver defines operations of scanner
 type Driver interface {
-	Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (results report.Results, osFound *ftypes.OS, eols bool, err error)
+	Scan(target string, artifactKey string, blobKeys []string, options types.ScanOptions) (
+		results report.Results, osFound *ftypes.OS, err error)
 }
 
 // NewScanner is the factory method of Scanner
@@ -91,23 +92,55 @@ func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
 }
 
 // ScanArtifact scans the artifacts and returns results
-func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (report.Results, error) {
+func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (report.Report, error) {
 	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {
-		return nil, xerrors.Errorf("failed analysis: %w", err)
+		return report.Report{}, xerrors.Errorf("failed analysis: %w", err)
 	}
 
-	log.Logger.Debugf("Artifact ID: %s", artifactInfo.ID)
-	log.Logger.Debugf("Blob IDs: %v", artifactInfo.BlobIDs)
-
-	results, osFound, eosl, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
+	results, osFound, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
-		return nil, xerrors.Errorf("scan failed: %w", err)
+		return report.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
-	if eosl {
+
+	if osFound != nil && osFound.Eosl {
 		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
 		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
 	}
 
-	return results, nil
+	// Layer makes sense only when scanning container images
+	if artifactInfo.Type != ftypes.ArtifactContainerImage {
+		removeLayer(results)
+	}
+
+	return report.Report{
+		SchemaVersion: report.SchemaVersion,
+		ArtifactName:  artifactInfo.Name,
+		ArtifactType:  artifactInfo.Type,
+		Metadata: report.Metadata{
+			OS:          osFound,
+			ImageID:     artifactInfo.ImageMetadata.ID,
+			DiffIDs:     artifactInfo.ImageMetadata.DiffIDs,
+			RepoTags:    artifactInfo.ImageMetadata.RepoTags,
+			RepoDigests: artifactInfo.ImageMetadata.RepoDigests,
+			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
+		},
+		Results: results,
+	}, nil
+}
+
+func removeLayer(results report.Results) {
+	for i := range results {
+		result := results[i]
+
+		for j := range result.Packages {
+			result.Packages[j].Layer = ftypes.Layer{}
+		}
+		for j := range result.Vulnerabilities {
+			result.Vulnerabilities[j].Layer = ftypes.Layer{}
+		}
+		for j := range result.Misconfigurations {
+			result.Misconfigurations[j].Layer = ftypes.Layer{}
+		}
+	}
 }

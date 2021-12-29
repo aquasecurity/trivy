@@ -4,6 +4,10 @@
 *.dll
 *.so
 *.dylib
+trivy
+
+## chart release
+.cr-release-packages
 
 # Test binary, build with `go test -c`
 *.test
@@ -19,4 +23,10 @@ thumbs.db
 
 # test fixtures
 coverage.txt
-integration/testdata/fixtures/
+integration/testdata/fixtures/images
+
+# SBOMs generated during CI
+/bom.json
+
+# goreleaser output
+dist

@@ -1,17 +1,20 @@
-package redhat
+package redhat_test
 
 import (
 	"os"
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/stretchr/testify/require"
 
+	fake "k8s.io/utils/clock/testing"
+
 	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/db/dbtest"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(m *testing.M) {
@@ -52,13 +55,16 @@ func TestScanner_Detect(t *testing.T) {
 						Layer: ftypes.Layer{
 							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						},
-						ContentSets: []string{"rhel-7-server-rpms"}},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-7-server-rpms"},
+						},
+					},
 				},
 			},
 			want: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "CVE-2019-12735",
-					VendorID:         "RHSA-2019:1619",
+					VendorIDs:        []string{"RHSA-2019:1619"},
 					PkgName:          "vim-minimal",
 					InstalledVersion: "2:7.4.160-5.el7",
 					FixedVersion:     "2:7.4.160-6.el7_6",
@@ -97,14 +103,16 @@ func TestScanner_Detect(t *testing.T) {
 						Layer: ftypes.Layer{
 							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						},
-						ContentSets: []string{"rhel-7-server-rpms"},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-7-server-rpms"},
+						},
 					},
 				},
 			},
 			want: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "CVE-2018-12404",
-					VendorID:         "RHSA-2019:2237",
+					VendorIDs:        []string{"RHSA-2019:2237"},
 					PkgName:          "nss",
 					InstalledVersion: "3.36.0-7.1.el7_6",
 					FixedVersion:     "3.44.0-4.el7",
@@ -186,14 +194,16 @@ func TestScanner_Detect(t *testing.T) {
 						Layer: ftypes.Layer{
 							DiffID: "sha256:3e968ecc016e1b9aa19023798229bf2d25c813d1bf092533f38b056aff820524",
 						},
-						ContentSets: []string{"rhel-8-for-x86_64-appstream-rpms"},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-8-for-x86_64-appstream-rpms"},
+						},
 					},
 				},
 			},
 			want: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "CVE-2019-11043",
-					VendorID:         "RHSA-2019:3736",
+					VendorIDs:        []string{"RHSA-2019:3736"},
 					PkgName:          "php",
 					InstalledVersion: "7.2.24-1.module_el8.2.0+313+b04d0a66",
 					FixedVersion:     "7.3.5-5.module+el8.1.0+4560+e0eee7d6",
@@ -254,7 +264,7 @@ func TestScanner_Detect(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			dbtest.InitDB(t, tt.fixtures)
 
-			s := NewScanner()
+			s := redhat.NewScanner()
 			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)
 			require.Equal(t, tt.wantErr, err != nil, err)
 			assert.Equal(t, tt.want, got)
@@ -263,100 +273,67 @@ func TestScanner_Detect(t *testing.T) {
 }
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
-	vectors := map[string]struct {
-		now       time.Time
-		osFamily  string
-		osVersion string
-		expected  bool
+	type args struct {
+		osFamily string
+		osVer    string
+	}
+	tests := []struct {
+		name string
+		now  time.Time
+		args args
+		want bool
 	}{
-		"centos5": {
-			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "centos",
-			osVersion: "5.0",
-			expected:  false,
+		{
+			name: "centos 6",
+			now:  time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "centos",
+				osVer:    "6.8",
+			},
+			want: true,
 		},
-		"centos6": {
-			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "centos",
-			osVersion: "6.7",
-			expected:  true,
+		{
+			name: "centos 6 EOL",
+			now:  time.Date(2020, 12, 1, 0, 0, 0, 0, time.UTC),
+			args: args{
+				osFamily: "centos",
+				osVer:    "6.7",
+			},
+			want: false,
 		},
-		"centos6 (eol ends)": {
-			now:       time.Date(2020, 12, 1, 0, 0, 0, 0, time.UTC),
-			osFamily:  "centos",
-			osVersion: "6.7",
-			expected:  false,
+		{
+			name: "two dots",
+			now:  time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "centos",
+				osVer:    "8.0.1",
+			},
+			want: true,
 		},
-		"centos7": {
-			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "centos",
-			osVersion: "7.5",
-			expected:  true,
+		{
+			name: "rhel 8",
+			now:  time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "redhat",
+				osVer:    "8.0",
+			},
+			want: true,
 		},
-		"centos8": {
-			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "centos",
-			osVersion: "8.0",
-			expected:  true,
-		},
-		"two dots": {
-			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "centos",
-			osVersion: "8.0.1",
-			expected:  true,
-		},
-		"redhat5": {
-			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "redhat",
-			osVersion: "5.0",
-			expected:  true,
-		},
-		"redhat6": {
-			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "redhat",
-			osVersion: "6.7",
-			expected:  true,
-		},
-		"redhat6 (eol ends)": {
-			now:       time.Date(2024, 7, 1, 0, 0, 0, 0, time.UTC),
-			osFamily:  "redhat",
-			osVersion: "6.7",
-			expected:  false,
-		},
-		"redhat7": {
-			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "redhat",
-			osVersion: "7.5",
-			expected:  true,
-		},
-		"redhat8": {
-			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "redhat",
-			osVersion: "8.0",
-			expected:  true,
-		},
-		"no dot": {
-			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "redhat",
-			osVersion: "8",
-			expected:  true,
-		},
-		"debian": {
-			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
-			osFamily:  "debian",
-			osVersion: "8",
-			expected:  false,
+		{
+			name: "unknown",
+			now:  time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "unknown",
+				osVer:    "8.0",
+			},
+			want: false,
 		},
 	}
-
-	for testName, v := range vectors {
-		s := NewScanner()
-		t.Run(testName, func(t *testing.T) {
-			actual := s.isSupportedVersion(v.now, v.osFamily, v.osVersion)
-			if actual != v.expected {
-				t.Errorf("[%s] got %v, want %v", testName, actual, v.expected)
-			}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := redhat.NewScanner(redhat.WithClock(fake.NewFakeClock(tt.now)))
+			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
+			assert.Equal(t, tt.want, got)
 		})
 	}
-
 }

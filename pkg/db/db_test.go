@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"os"
 	"testing"
 	"time"
@@ -22,7 +21,6 @@ import (
 	clocktesting "k8s.io/utils/clock/testing"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -159,10 +157,6 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		},
 	}
 
-	if err := log.InitLogger(false, true); err != nil {
-		require.NoError(t, err, "failed to init logger")
-	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			fs := afero.NewMemMapFs()
@@ -241,9 +235,6 @@ func TestClient_Download(t *testing.T) {
 		},
 	}
 
-	err := log.InitLogger(false, true)
-	require.NoError(t, err, "failed to init logger")
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			mockConfig := new(mockDbOperation)
@@ -254,7 +245,7 @@ func TestClient_Download(t *testing.T) {
 			fs := afero.NewMemMapFs()
 			metadata := NewMetadata(fs, "/cache")
 
-			dir, err := ioutil.TempDir("", "db")
+			dir, err := os.MkdirTemp("", "db")
 			require.NoError(t, err, tc.name)
 			defer os.RemoveAll(dir)
 
@@ -351,16 +342,13 @@ func TestClient_UpdateMetadata(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			mockConfig := new(mockDbOperation)
-			err := log.InitLogger(false, true)
-			require.NoError(t, err, "failed to init logger")
-
 			mockConfig.ApplyGetMetadataExpectation(tc.getMetadataExpectation)
 			mockConfig.ApplyStoreMetadataExpectation(tc.storeMetadataExpectation)
 
 			fs := afero.NewMemMapFs()
 			metadata := NewMetadata(fs, "/cache")
 
-			dir, err := ioutil.TempDir("", "db")
+			dir, err := os.MkdirTemp("", "db")
 			require.NoError(t, err, tc.name)
 			defer os.RemoveAll(dir)
 

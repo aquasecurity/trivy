@@ -1,27 +1,20 @@
 package oracle
 
 import (
-	"os"
 	"testing"
 	"time"
 
-	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
-	"github.com/aquasecurity/trivy/pkg/log"
-
 	"k8s.io/utils/clock"
 	clocktesting "k8s.io/utils/clock/testing"
-)
 
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	os.Exit(m.Run())
-}
+	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy-db/pkg/db"
+	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
+	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/pkg/types"
+)
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
 	vectors := map[string]struct {
@@ -159,6 +152,27 @@ func TestScanner_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
+			name:     "the installed version has ksplice2",
+			fixtures: []string{"testdata/fixtures/oracle7.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "glibc",
+						Epoch:      2,
+						Version:    "2.28",
+						Release:    "151.0.1.ksplice2.el8",
+						Arch:       "x86_64",
+						SrcEpoch:   2,
+						SrcName:    "glibc",
+						SrcVersion: "2.28",
+						SrcRelease: "151.0.1.ksplice2.el8",
+					},
+				},
+			},
+			want: nil,
+		},
+		{
 			name:     "with ksplice",
 			fixtures: []string{"testdata/fixtures/oracle7.yaml"},
 			args: args{
@@ -209,8 +223,8 @@ func TestScanner_Detect(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dir := utils.InitTestDB(t, tt.fixtures)
-			defer os.RemoveAll(dir)
+			_ = dbtest.InitDB(t, tt.fixtures)
+			defer db.Close()
 
 			s := NewScanner()
 			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)

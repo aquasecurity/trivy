@@ -10,7 +10,6 @@ import (
 
 	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	susecvrf "github.com/aquasecurity/trivy-db/pkg/vulnsrc/suse-cvrf"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -38,10 +37,11 @@ var (
 		"12.5": time.Date(2024, 10, 31, 23, 59, 59, 0, time.UTC),
 		"15":   time.Date(2019, 12, 31, 23, 59, 59, 0, time.UTC),
 		"15.1": time.Date(2021, 1, 31, 23, 59, 59, 0, time.UTC),
-		// 6 months after SLES 15 SP3 release
-		"15.2": time.Date(2021, 10, 31, 23, 59, 59, 0, time.UTC),
+		"15.2": time.Date(2021, 12, 31, 23, 59, 59, 0, time.UTC),
 		// 6 months after SLES 15 SP4 release
-		// "15.3":   time.Date(2028, 7, 31, 23, 59, 59, 0, time.UTC),
+		"15.3": time.Date(2028, 7, 31, 23, 59, 59, 0, time.UTC),
+		// 6 months after SLES 15 SP5 release
+		// "15.4":   time.Date(2028, 7, 31, 23, 59, 59, 0, time.UTC),
 	}
 
 	opensuseEolDates = map[string]time.Time{
@@ -52,16 +52,23 @@ var (
 		"15.0": time.Date(2019, 12, 3, 23, 59, 59, 0, time.UTC),
 		"15.1": time.Date(2020, 11, 30, 23, 59, 59, 0, time.UTC),
 		"15.2": time.Date(2021, 11, 30, 23, 59, 59, 0, time.UTC),
+		"15.3": time.Date(2022, 11, 30, 23, 59, 59, 0, time.UTC),
 	}
 )
 
-// Scanner implements suse scanner
-type Scanner struct {
-	vs    dbTypes.VulnSrc
+type options struct {
 	clock clock.Clock
 }
 
-// Type to define SUSE type
+type option func(*options)
+
+func WithClock(clock clock.Clock) option {
+	return func(opts *options) {
+		opts.clock = clock
+	}
+}
+
+// Type defines SUSE type
 type Type int
 
 const (
@@ -71,18 +78,32 @@ const (
 	OpenSUSE
 )
 
+// Scanner implements the Alpine scanner
+type Scanner struct {
+	vs susecvrf.VulnSrc
+	*options
+}
+
 // NewScanner is the factory method for Scanner
-func NewScanner(t Type) *Scanner {
+func NewScanner(t Type, opts ...option) *Scanner {
+	o := &options{
+		clock: clock.RealClock{},
+	}
+
+	for _, opt := range opts {
+		opt(o)
+	}
+
 	switch t {
 	case SUSEEnterpriseLinux:
 		return &Scanner{
-			vs:    susecvrf.NewVulnSrc(susecvrf.SUSEEnterpriseLinux),
-			clock: clock.RealClock{},
+			vs:      susecvrf.NewVulnSrc(susecvrf.SUSEEnterpriseLinux),
+			options: o,
 		}
 	case OpenSUSE:
 		return &Scanner{
-			vs:    susecvrf.NewVulnSrc(susecvrf.OpenSUSE),
-			clock: clock.RealClock{},
+			vs:      susecvrf.NewVulnSrc(susecvrf.OpenSUSE),
+			options: o,
 		}
 	}
 	return nil
@@ -110,6 +131,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				Layer:            pkg.Layer,
+				Custom:           adv.Custom,
 			}
 			if installedVersion.LessThan(fixedVersion) {
 				vuln.FixedVersion = adv.FixedVersion

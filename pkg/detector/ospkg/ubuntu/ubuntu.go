@@ -5,9 +5,9 @@ import (
 
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ubuntu"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -48,18 +48,42 @@ var (
 		"19.04": time.Date(2020, 1, 18, 23, 59, 59, 0, time.UTC),
 		"19.10": time.Date(2020, 7, 17, 23, 59, 59, 0, time.UTC),
 		"20.04": time.Date(2030, 4, 23, 23, 59, 59, 0, time.UTC),
+		"20.10": time.Date(2021, 7, 22, 23, 59, 59, 0, time.UTC),
+		"21.04": time.Date(2022, 1, 22, 23, 59, 59, 0, time.UTC),
+		"21.10": time.Date(2022, 7, 22, 23, 59, 59, 0, time.UTC),
 	}
 )
 
-// Scanner implements the Ubuntu scanner
+type options struct {
+	clock clock.Clock
+}
+
+type option func(*options)
+
+func WithClock(clock clock.Clock) option {
+	return func(opts *options) {
+		opts.clock = clock
+	}
+}
+
+// Scanner implements the Alpine scanner
 type Scanner struct {
-	vs dbTypes.VulnSrc
+	vs ubuntu.VulnSrc
+	*options
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner() *Scanner {
+func NewScanner(opts ...option) *Scanner {
+	o := &options{
+		clock: clock.RealClock{},
+	}
+
+	for _, opt := range opts {
+		opt(o)
+	}
 	return &Scanner{
-		vs: ubuntu.NewVulnSrc(),
+		vs:      ubuntu.NewVulnSrc(),
+		options: o,
 	}
 }
 
@@ -90,6 +114,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
+				Custom:           adv.Custom,
 			}
 
 			if adv.FixedVersion == "" {
@@ -113,15 +138,10 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 // IsSupportedVersion checks is OSFamily can be scanned using Ubuntu scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	now := time.Now()
-	return s.isSupportedVersion(now, osFamily, osVer)
-}
-
-func (s *Scanner) isSupportedVersion(now time.Time, osFamily, osVer string) bool {
 	eol, ok := eolDates[osVer]
 	if !ok {
 		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
 		return false
 	}
-	return now.Before(eol)
+	return s.clock.Now().Before(eol)
 }

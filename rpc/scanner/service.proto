@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package trivy.scanner.v1;
-option  go_package = "scanner";
+option  go_package = "github.com/aquasecurity/trivy/rpc/scanner;scanner";
 
 import "github.com/aquasecurity/trivy/rpc/common/service.proto";
 
@@ -17,18 +17,22 @@ message ScanRequest {
 }
 
 message ScanOptions {
-  repeated string vuln_type = 1;
+  repeated string vuln_type         = 1;
+  repeated string security_checks   = 2;
+  bool            list_all_packages = 3;
 }
 
 message ScanResponse {
   common.OS       os      = 1;
-  bool            eosl    = 2;
   repeated Result results = 3;
 }
 
 // Result is the same as github.com/aquasecurity/trivy/pkg/report.Result
 message Result {
-  string   target                               = 1;
-  repeated common.Vulnerability vulnerabilities = 2;
-  string                        type            = 3;
+  string   target                                            = 1;
+  repeated common.Vulnerability vulnerabilities              = 2;
+  repeated common.DetectedMisconfiguration misconfigurations = 4;
+  string class                                               = 6;
+  string   type                                              = 3;
+  repeated common.Package packages                           = 5;
 }

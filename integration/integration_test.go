@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package integration
@@ -8,51 +9,41 @@ import (
 	"encoding/json"
 	"flag"
 	"io"
-	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
+	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/spf13/afero"
+	"github.com/aquasecurity/trivy/pkg/report"
 )
 
 var update = flag.Bool("update", false, "update golden files")
 
-func gunzipDB() (string, error) {
+func gunzipDB(t *testing.T) string {
 	gz, err := os.Open("testdata/trivy.db.gz")
-	if err != nil {
-		return "", err
-	}
+	require.NoError(t, err)
+
 	zr, err := gzip.NewReader(gz)
-	if err != nil {
-		return "", err
-	}
+	require.NoError(t, err)
 
-	tmpDir, err := ioutil.TempDir("", "integration")
-	if err != nil {
-		return "", err
-	}
-
+	tmpDir := t.TempDir()
 	dbPath := db.Path(tmpDir)
 	dbDir := filepath.Dir(dbPath)
 	err = os.MkdirAll(dbDir, 0700)
-	if err != nil {
-		return "", err
-	}
+	require.NoError(t, err)
 
 	file, err := os.Create(dbPath)
-	if err != nil {
-		return "", err
-	}
+	require.NoError(t, err)
 	defer file.Close()
 
-	if _, err = io.Copy(file, zr); err != nil {
-		return "", err
-	}
+	_, err = io.Copy(file, zr)
+	require.NoError(t, err)
 
-	fs := afero.NewOsFs()
 	metadataFile := filepath.Join(dbDir, "metadata.json")
 	b, err := json.Marshal(db.Metadata{
 		Version:    1,
@@ -60,15 +51,12 @@ func gunzipDB() (string, error) {
 		NextUpdate: time.Time{},
 		UpdatedAt:  time.Time{},
 	})
-	if err != nil {
-		return "", err
-	}
-	err = afero.WriteFile(fs, metadataFile, b, 0600)
-	if err != nil {
-		return "", err
-	}
+	require.NoError(t, err)
 
-	return tmpDir, nil
+	err = os.WriteFile(metadataFile, b, 0600)
+	require.NoError(t, err)
+
+	return tmpDir
 }
 
 func getFreePort() (int, error) {
@@ -98,4 +86,30 @@ func waitPort(ctx context.Context, addr string) error {
 			time.Sleep(1 * time.Second)
 		}
 	}
+}
+
+func readReport(t *testing.T, filePath string) report.Report {
+	t.Helper()
+
+	f, err := os.Open(filePath)
+	require.NoError(t, err, filePath)
+	defer f.Close()
+
+	var res report.Report
+	err = json.NewDecoder(f).Decode(&res)
+	require.NoError(t, err, filePath)
+
+	// We don't compare history because the nano-seconds in "created" don't match
+	res.Metadata.ImageConfig.History = nil
+
+	// We don't compare repo tags because the archive doesn't support it
+	res.Metadata.RepoTags = nil
+
+	return res
+}
+
+func compareReports(t *testing.T, wantFile, gotFile string) {
+	want := readReport(t, wantFile)
+	got := readReport(t, gotFile)
+	assert.Equal(t, want, got)
 }

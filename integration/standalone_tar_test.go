@@ -1,17 +1,18 @@
+//go:build integration
 // +build integration
 
 package integration
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/internal"
+	"github.com/aquasecurity/trivy/pkg/commands"
 )
 
 func TestRun_WithTar(t *testing.T) {
@@ -38,7 +39,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/alpine-310.tar.gz",
+				Input:      "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.json.golden",
 		},
@@ -49,7 +50,7 @@ func TestRun_WithTar(t *testing.T) {
 				WithImageSubcommand: true,
 				SkipUpdate:          true,
 				Format:              "json",
-				Input:               "testdata/fixtures/alpine-310.tar.gz",
+				Input:               "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.json.golden",
 		},
@@ -60,7 +61,7 @@ func TestRun_WithTar(t *testing.T) {
 				SkipUpdate:    true,
 				IgnoreUnfixed: true,
 				Format:        "json",
-				Input:         "testdata/fixtures/alpine-310.tar.gz",
+				Input:         "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310-ignore-unfixed.json.golden",
 		},
@@ -72,7 +73,7 @@ func TestRun_WithTar(t *testing.T) {
 				IgnoreUnfixed: true,
 				Severity:      []string{"MEDIUM", "HIGH"},
 				Format:        "json",
-				Input:         "testdata/fixtures/alpine-310.tar.gz",
+				Input:         "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310-medium-high.json.golden",
 		},
@@ -84,7 +85,7 @@ func TestRun_WithTar(t *testing.T) {
 				IgnoreUnfixed: false,
 				IgnoreIDs:     []string{"CVE-2019-1549", "CVE-2019-1563"},
 				Format:        "json",
-				Input:         "testdata/fixtures/alpine-310.tar.gz",
+				Input:         "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310-ignore-cveids.json.golden",
 		},
@@ -94,7 +95,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/alpine-39.tar.gz",
+				Input:      "testdata/fixtures/images/alpine-39.tar.gz",
 			},
 			golden: "testdata/alpine-39.json.golden",
 		},
@@ -104,7 +105,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/debian-buster.tar.gz",
+				Input:      "testdata/fixtures/images/debian-buster.tar.gz",
 			},
 			golden: "testdata/debian-buster.json.golden",
 		},
@@ -115,7 +116,7 @@ func TestRun_WithTar(t *testing.T) {
 				SkipUpdate:    true,
 				IgnoreUnfixed: true,
 				Format:        "json",
-				Input:         "testdata/fixtures/debian-buster.tar.gz",
+				Input:         "testdata/fixtures/images/debian-buster.tar.gz",
 			},
 			golden: "testdata/debian-buster-ignore-unfixed.json.golden",
 		},
@@ -125,7 +126,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/debian-stretch.tar.gz",
+				Input:      "testdata/fixtures/images/debian-stretch.tar.gz",
 			},
 			golden: "testdata/debian-stretch.json.golden",
 		},
@@ -135,7 +136,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/ubuntu-1804.tar.gz",
+				Input:      "testdata/fixtures/images/ubuntu-1804.tar.gz",
 			},
 			golden: "testdata/ubuntu-1804.json.golden",
 		},
@@ -146,7 +147,7 @@ func TestRun_WithTar(t *testing.T) {
 				SkipUpdate:    true,
 				IgnoreUnfixed: true,
 				Format:        "json",
-				Input:         "testdata/fixtures/ubuntu-1804.tar.gz",
+				Input:         "testdata/fixtures/images/ubuntu-1804.tar.gz",
 			},
 			golden: "testdata/ubuntu-1804-ignore-unfixed.json.golden",
 		},
@@ -156,7 +157,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/ubuntu-1604.tar.gz",
+				Input:      "testdata/fixtures/images/ubuntu-1604.tar.gz",
 			},
 			golden: "testdata/ubuntu-1604.json.golden",
 		},
@@ -166,7 +167,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/centos-7.tar.gz",
+				Input:      "testdata/fixtures/images/centos-7.tar.gz",
 			},
 			golden: "testdata/centos-7.json.golden",
 		},
@@ -177,7 +178,7 @@ func TestRun_WithTar(t *testing.T) {
 				SkipUpdate:    true,
 				IgnoreUnfixed: true,
 				Format:        "json",
-				Input:         "testdata/fixtures/centos-7.tar.gz",
+				Input:         "testdata/fixtures/images/centos-7.tar.gz",
 			},
 			golden: "testdata/centos-7-ignore-unfixed.json.golden",
 		},
@@ -189,7 +190,7 @@ func TestRun_WithTar(t *testing.T) {
 				IgnoreUnfixed: true,
 				Severity:      []string{"LOW", "HIGH"},
 				Format:        "json",
-				Input:         "testdata/fixtures/centos-7.tar.gz",
+				Input:         "testdata/fixtures/images/centos-7.tar.gz",
 			},
 			golden: "testdata/centos-7-low-high.json.golden",
 		},
@@ -199,7 +200,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/centos-6.tar.gz",
+				Input:      "testdata/fixtures/images/centos-6.tar.gz",
 			},
 			golden: "testdata/centos-6.json.golden",
 		},
@@ -209,7 +210,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/ubi-7.tar.gz",
+				Input:      "testdata/fixtures/images/ubi-7.tar.gz",
 			},
 			golden: "testdata/ubi-7.json.golden",
 		},
@@ -219,7 +220,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/distroless-base.tar.gz",
+				Input:      "testdata/fixtures/images/distroless-base.tar.gz",
 			},
 			golden: "testdata/distroless-base.json.golden",
 		},
@@ -230,7 +231,7 @@ func TestRun_WithTar(t *testing.T) {
 				SkipUpdate:    true,
 				IgnoreUnfixed: true,
 				Format:        "json",
-				Input:         "testdata/fixtures/distroless-base.tar.gz",
+				Input:         "testdata/fixtures/images/distroless-base.tar.gz",
 			},
 			golden: "testdata/distroless-base-ignore-unfixed.json.golden",
 		},
@@ -240,7 +241,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/distroless-python27.tar.gz",
+				Input:      "testdata/fixtures/images/distroless-python27.tar.gz",
 			},
 			golden: "testdata/distroless-python27.json.golden",
 		},
@@ -250,7 +251,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/amazon-1.tar.gz",
+				Input:      "testdata/fixtures/images/amazon-1.tar.gz",
 			},
 			golden: "testdata/amazon-1.json.golden",
 		},
@@ -260,7 +261,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/amazon-2.tar.gz",
+				Input:      "testdata/fixtures/images/amazon-2.tar.gz",
 			},
 			golden: "testdata/amazon-2.json.golden",
 		},
@@ -270,7 +271,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/oraclelinux-6-slim.tar.gz",
+				Input:      "testdata/fixtures/images/oraclelinux-6-slim.tar.gz",
 			},
 			golden: "testdata/oraclelinux-6-slim.json.golden",
 		},
@@ -280,7 +281,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/oraclelinux-7-slim.tar.gz",
+				Input:      "testdata/fixtures/images/oraclelinux-7-slim.tar.gz",
 			},
 			golden: "testdata/oraclelinux-7-slim.json.golden",
 		},
@@ -290,7 +291,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/oraclelinux-8-slim.tar.gz",
+				Input:      "testdata/fixtures/images/oraclelinux-8-slim.tar.gz",
 			},
 			golden: "testdata/oraclelinux-8-slim.json.golden",
 		},
@@ -300,7 +301,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/opensuse-leap-151.tar.gz",
+				Input:      "testdata/fixtures/images/opensuse-leap-151.tar.gz",
 			},
 			golden: "testdata/opensuse-leap-151.json.golden",
 		},
@@ -310,7 +311,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/opensuse-leap-423.tar.gz",
+				Input:      "testdata/fixtures/images/opensuse-leap-423.tar.gz",
 			},
 			golden: "testdata/opensuse-leap-423.json.golden",
 		},
@@ -320,7 +321,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/photon-10.tar.gz",
+				Input:      "testdata/fixtures/images/photon-10.tar.gz",
 			},
 			golden: "testdata/photon-10.json.golden",
 		},
@@ -330,7 +331,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/photon-20.tar.gz",
+				Input:      "testdata/fixtures/images/photon-20.tar.gz",
 			},
 			golden: "testdata/photon-20.json.golden",
 		},
@@ -340,7 +341,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/photon-30.tar.gz",
+				Input:      "testdata/fixtures/images/photon-30.tar.gz",
 			},
 			golden: "testdata/photon-30.json.golden",
 		},
@@ -350,7 +351,7 @@ func TestRun_WithTar(t *testing.T) {
 				Version:    "dev",
 				SkipUpdate: true,
 				Format:     "json",
-				Input:      "testdata/fixtures/busybox-with-lockfile.tar.gz",
+				Input:      "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
 			},
 			golden: "testdata/busybox-with-lockfile.json.golden",
 		},
@@ -361,7 +362,7 @@ func TestRun_WithTar(t *testing.T) {
 				SkipUpdate:    true,
 				IgnoreUnfixed: true,
 				Format:        "json",
-				Input:         "testdata/fixtures/fluentd-multiple-lockfiles.tar.gz",
+				Input:         "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
 				SkipFiles:     []string{"/Gemfile.lock"},
 				SkipDirs: []string{
 					"/var/lib/gems/2.5.0/gems/http_parser.rb-0.6.0",
@@ -372,18 +373,15 @@ func TestRun_WithTar(t *testing.T) {
 		},
 	}
 
-	// Copy DB file
-	cacheDir, err := gunzipDB()
-	require.NoError(t, err)
-	defer os.RemoveAll(cacheDir)
+	// Set up testing DB
+	cacheDir := gunzipDB(t)
 
 	// Setup CLI App
-	app := internal.NewApp("dev")
-	app.Writer = ioutil.Discard
+	app := commands.NewApp("dev")
+	app.Writer = io.Discard
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-
 			osArgs := []string{"trivy"}
 			osArgs = append(osArgs, "--cache-dir", cacheDir)
 			if c.testArgs.WithImageSubcommand {
@@ -404,7 +402,7 @@ func TestRun_WithTar(t *testing.T) {
 			}
 			if len(c.testArgs.IgnoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
-				err := ioutil.WriteFile(trivyIgnore, []byte(strings.Join(c.testArgs.IgnoreIDs, "\n")), 0444)
+				err := os.WriteFile(trivyIgnore, []byte(strings.Join(c.testArgs.IgnoreIDs, "\n")), 0444)
 				assert.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
@@ -413,21 +411,21 @@ func TestRun_WithTar(t *testing.T) {
 			}
 
 			if len(c.testArgs.SkipFiles) != 0 {
-				osArgs = append(osArgs, "--skip-files", strings.Join(c.testArgs.SkipFiles, ","))
+				for _, skipFile := range c.testArgs.SkipFiles {
+					osArgs = append(osArgs, "--skip-files", skipFile)
+				}
 			}
+
 			if len(c.testArgs.SkipDirs) != 0 {
-				osArgs = append(osArgs, "--skip-dirs", strings.Join(c.testArgs.SkipDirs, ","))
+				for _, skipDir := range c.testArgs.SkipDirs {
+					osArgs = append(osArgs, "--skip-dirs", skipDir)
+				}
 			}
 
 			// Setup the output file
-			var outputFile string
+			outputFile := filepath.Join(t.TempDir(), "output.json")
 			if *update {
 				outputFile = c.golden
-			} else {
-				output, _ := ioutil.TempFile("", "integration")
-				assert.Nil(t, output.Close())
-				defer os.Remove(output.Name())
-				outputFile = output.Name()
 			}
 
 			osArgs = append(osArgs, []string{"--output", outputFile}...)
@@ -436,12 +434,7 @@ func TestRun_WithTar(t *testing.T) {
 			assert.Nil(t, app.Run(osArgs))
 
 			// Compare want and got
-			want, err := ioutil.ReadFile(c.golden)
-			assert.NoError(t, err)
-			got, err := ioutil.ReadFile(outputFile)
-			assert.NoError(t, err)
-
-			assert.JSONEq(t, string(want), string(got))
+			compareReports(t, c.golden, outputFile)
 		})
 	}
 }

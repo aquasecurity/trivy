@@ -2,30 +2,61 @@ package amazon
 
 import (
 	"strings"
+	"time"
+
+	"k8s.io/utils/clock"
 
 	version "github.com/knqyf263/go-deb-version"
 	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/amazon"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+var (
+	eolDates = map[string]time.Time{
+		"1": time.Date(2023, 6, 30, 23, 59, 59, 0, time.UTC),
+		// N/A
+		"2": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+	}
+)
+
+type options struct {
+	clock clock.Clock
+	l     *zap.SugaredLogger
+}
+
+type option func(*options)
+
+func WithClock(clock clock.Clock) option {
+	return func(opts *options) {
+		opts.clock = clock
+	}
+}
+
 // Scanner to scan amazon vulnerabilities
 type Scanner struct {
-	l  *zap.SugaredLogger
-	ac dbTypes.VulnSrc
+	ac amazon.VulnSrc
+	options
 }
 
 // NewScanner is the factory method to return Amazon scanner
-func NewScanner() *Scanner {
+func NewScanner(opts ...option) *Scanner {
+	o := &options{
+		l:     log.Logger,
+		clock: clock.RealClock{},
+	}
+
+	for _, opt := range opts {
+		opt(o)
+	}
 	return &Scanner{
-		l:  log.Logger,
-		ac: amazon.NewVulnSrc(),
+		ac:      amazon.NewVulnSrc(),
+		options: *o,
 	}
 }
 
@@ -72,6 +103,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 					InstalledVersion: installed,
 					FixedVersion:     adv.FixedVersion,
 					Layer:            pkg.Layer,
+					Custom:           adv.Custom,
 				}
 				vulns = append(vulns, vuln)
 			}
@@ -82,5 +114,15 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 // IsSupportedVersion checks if os can be scanned using amazon scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	return true
+	osVer = strings.Fields(osVer)[0]
+	if osVer != "2" {
+		osVer = "1"
+	}
+	eol, ok := eolDates[osVer]
+	if !ok {
+		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
+		return false
+	}
+
+	return s.clock.Now().Before(eol)
 }

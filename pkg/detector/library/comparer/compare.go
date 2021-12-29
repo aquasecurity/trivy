@@ -19,6 +19,12 @@ type matchVersion func(currentVersion, constraint string) (bool, error)
 
 // IsVulnerable checks if the package version is vulnerable to the advisory.
 func IsVulnerable(pkgVer string, advisory dbTypes.Advisory, match matchVersion) bool {
+	// If one of vulnerable/patched versions is empty, we should detect it anyway.
+	for _, v := range append(advisory.VulnerableVersions, advisory.PatchedVersions...) {
+		if v == "" {
+			return true
+		}
+	}
 	var matched bool
 	var err error
 

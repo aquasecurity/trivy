@@ -1,0 +1,11 @@
+- bucket: vulnerability
+  pairs:
+    - key: CVE-2020-0001
+      value:
+        Title: dos
+        Severity: MEDIUM
+        VendorSeverity:
+          ubuntu: 1
+    - key: CVE-2020-0002
+      value:
+        Title: dos

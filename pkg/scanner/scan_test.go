@@ -3,7 +3,6 @@ package scanner
 import (
 	"context"
 	"errors"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,16 +10,9 @@ import (
 
 	"github.com/aquasecurity/fanal/artifact"
 	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
-
-func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
-	code := m.Run()
-	os.Exit(code)
-}
 
 func TestScanner_ScanArtifact(t *testing.T) {
 	type args struct {
@@ -31,7 +23,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 		args               args
 		inspectExpectation artifact.ArtifactInspectExpectation
 		scanExpectation    DriverScanExpectation
-		wantResults        report.Results
+		want               report.Report
 		wantErr            string
 	}{
 		{
@@ -46,8 +38,15 @@ func TestScanner_ScanArtifact(t *testing.T) {
 				Returns: artifact.ArtifactInspectReturns{
 					Reference: ftypes.ArtifactReference{
 						Name:    "alpine:3.11",
+						Type:    ftypes.ArtifactContainerImage,
 						ID:      "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 						BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+						ImageMetadata: ftypes.ImageMetadata{
+							ID:          "sha256:e389ae58922402a7ded319e79f06ac428d05698d8e61ecbe88d2cf850e42651d",
+							DiffIDs:     []string{"sha256:9a5d14f9f5503e55088666beef7e85a8d9625d4fa7418e2fe269e9c54bcb853c"},
+							RepoTags:    []string{"alpine:3.11"},
+							RepoDigests: []string{"alpine@sha256:0bd0e9e03a022c3b0226667621da84fc9bf562a9056130424b5bfbd8bcb0397f"},
+						},
 					},
 				},
 			},
@@ -91,37 +90,53 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					OsFound: &ftypes.OS{
 						Family: "alpine",
 						Name:   "3.10",
+						Eosl:   true,
 					},
-					Eols: true,
 				},
 			},
-			wantResults: report.Results{
-				{
-					Target: "alpine:3.11",
-					Vulnerabilities: []types.DetectedVulnerability{
-						{
-							VulnerabilityID:  "CVE-2019-9999",
-							PkgName:          "vim",
-							InstalledVersion: "1.2.3",
-							FixedVersion:     "1.2.4",
-							Layer: ftypes.Layer{
-								Digest: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
-								DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+			want: report.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "alpine:3.11",
+				ArtifactType:  ftypes.ArtifactContainerImage,
+				Metadata: report.Metadata{
+					OS: &ftypes.OS{
+						Family: "alpine",
+						Name:   "3.10",
+						Eosl:   true,
+					},
+					ImageID:     "sha256:e389ae58922402a7ded319e79f06ac428d05698d8e61ecbe88d2cf850e42651d",
+					DiffIDs:     []string{"sha256:9a5d14f9f5503e55088666beef7e85a8d9625d4fa7418e2fe269e9c54bcb853c"},
+					RepoTags:    []string{"alpine:3.11"},
+					RepoDigests: []string{"alpine@sha256:0bd0e9e03a022c3b0226667621da84fc9bf562a9056130424b5bfbd8bcb0397f"},
+				},
+				Results: report.Results{
+					{
+						Target: "alpine:3.11",
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2019-9999",
+								PkgName:          "vim",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "1.2.4",
+								Layer: ftypes.Layer{
+									Digest: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+									DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+								},
 							},
 						},
 					},
-				},
-				{
-					Target: "node-app/package-lock.json",
-					Vulnerabilities: []types.DetectedVulnerability{
-						{
-							VulnerabilityID:  "CVE-2019-11358",
-							PkgName:          "jquery",
-							InstalledVersion: "3.3.9",
-							FixedVersion:     ">=3.4.0",
+					{
+						Target: "node-app/package-lock.json",
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2019-11358",
+								PkgName:          "jquery",
+								InstalledVersion: "3.3.9",
+								FixedVersion:     ">=3.4.0",
+							},
 						},
+						Type: "npm",
 					},
-					Type: "npm",
 				},
 			},
 		},
@@ -180,7 +195,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			mockArtifact.ApplyInspectExpectation(tt.inspectExpectation)
 
 			s := NewScanner(d, mockArtifact)
-			gotResults, err := s.ScanArtifact(context.Background(), tt.args.options)
+			got, err := s.ScanArtifact(context.Background(), tt.args.options)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -189,7 +204,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 				require.NoError(t, err, tt.name)
 			}
 
-			assert.Equal(t, tt.wantResults, gotResults, tt.name)
+			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
 }

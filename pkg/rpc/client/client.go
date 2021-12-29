@@ -45,7 +45,7 @@ func NewScanner(customHeaders CustomHeaders, s rpc.Scanner) Scanner {
 }
 
 // Scan scans the image
-func (s Scanner) Scan(target string, imageID string, layerIDs []string, options types.ScanOptions) (report.Results, *ftypes.OS, bool, error) {
+func (s Scanner) Scan(target, artifactKey string, blobKeys []string, options types.ScanOptions) (report.Results, *ftypes.OS, error) {
 	ctx := WithCustomHeaders(context.Background(), http.Header(s.customHeaders))
 
 	var res *rpc.ScanResponse
@@ -53,17 +53,19 @@ func (s Scanner) Scan(target string, imageID string, layerIDs []string, options 
 		var err error
 		res, err = s.client.Scan(ctx, &rpc.ScanRequest{
 			Target:     target,
-			ArtifactId: imageID,
-			BlobIds:    layerIDs,
+			ArtifactId: artifactKey,
+			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
-				VulnType: options.VulnType,
+				VulnType:        options.VulnType,
+				SecurityChecks:  options.SecurityChecks,
+				ListAllPackages: options.ListAllPackages,
 			},
 		})
 		return err
 	})
 	if err != nil {
-		return nil, nil, false, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
+		return nil, nil, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)
 	}
 
-	return r.ConvertFromRPCResults(res.Results), r.ConvertFromRPCOS(res.Os), res.Eosl, nil
+	return r.ConvertFromRPCResults(res.Results), r.ConvertFromRPCOS(res.Os), nil
 }

@@ -20,11 +20,17 @@ builds:
       - arm
       - arm64
       - ppc64le
+      - s390x
     goarm:
       - 7
     ignore:
       - goos: darwin
         goarch: 386
+
+release:
+    extra_files:
+      - glob: ./bom.json
+    discussion_category_name: Announcements
 
 nfpms:
   -
@@ -49,6 +55,9 @@ nfpms:
       netbsd: NetBSD
       freebsd: FreeBSD
       dragonfly: DragonFlyBSD
+    contents:
+     - src: contrib/*.tpl
+       dst: /usr/local/share/trivy/templates
 
 archives:
   -
@@ -78,17 +87,22 @@ brews:
       owner: aquasecurity
       name: homebrew-trivy
     homepage: "https://github.com/aquasecurity/trivy"
-    description: ""
+    description: "Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues"
     test: |
-      system "#{bin}/program --version"
+      system "#{bin}/trivy", "--version"
 
 dockers:
   - image_templates:
-      - "docker.io/aquasec/trivy:{{ .Version }}"
-      - "docker.io/aquasec/trivy:latest"
-      - "ghcr.io/aquasecurity/trivy:{{ .Version }}"
-      - "ghcr.io/aquasecurity/trivy:latest"
-    binaries:
+      - "docker.io/aquasec/trivy:{{ .Version }}-amd64"
+      - "docker.io/aquasec/trivy:latest-amd64"
+      - "ghcr.io/aquasecurity/trivy:{{ .Version }}-amd64"
+      - "ghcr.io/aquasecurity/trivy:latest-amd64"
+      - "public.ecr.aws/aquasecurity/trivy:latest-amd64"
+      - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}-amd64"
+    use: buildx
+    goos: linux
+    goarch: amd64
+    ids:
       - trivy
     build_flag_templates:
       - "--label=org.label-schema.schema-version=1.0"
@@ -99,6 +113,56 @@ dockers:
       - "--label=org.label-schema.build-date={{ .Date }}"
       - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
       - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
+      - "--platform=linux/amd64"
+    extra_files:
+    - contrib/
+  - image_templates:
+      - "docker.io/aquasec/trivy:{{ .Version }}-arm64"
+      - "docker.io/aquasec/trivy:latest-arm64"
+      - "ghcr.io/aquasecurity/trivy:{{ .Version }}-arm64"
+      - "ghcr.io/aquasecurity/trivy:latest-arm64"
+      - "public.ecr.aws/aquasecurity/trivy:latest-arm64"
+      - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}-arm64"
+    use: buildx
+    goos: linux
+    goarch: arm64
+    ids:
+      - trivy
+    build_flag_templates:
+      - "--label=org.label-schema.schema-version=1.0"
+      - "--label=org.label-schema.name={{ .ProjectName }}"
+      - "--label=org.label-schema.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.label-schema.vendor=Aqua Security"
+      - "--label=org.label-schema.version={{ .Version }}"
+      - "--label=org.label-schema.build-date={{ .Date }}"
+      - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
+      - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
+      - "--platform=linux/arm64"
     extra_files:
     - contrib/
 
+docker_manifests:
+  - name_template: 'aquasec/trivy:{{ .Version }}'
+    image_templates:
+    - 'aquasec/trivy:{{ .Version }}-amd64'
+    - 'aquasec/trivy:{{ .Version }}-arm64'
+  - name_template: 'ghcr.io/aquasecurity/trivy:{{ .Version }}'
+    image_templates:
+    - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-amd64'
+    - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-arm64'
+  - name_template: 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}'
+    image_templates:
+    - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-amd64'
+    - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-arm64'
+  - name_template: 'aquasec/trivy:latest'
+    image_templates:
+    - 'aquasec/trivy:{{ .Version }}-amd64'
+    - 'aquasec/trivy:{{ .Version }}-arm64'
+  - name_template: 'ghcr.io/aquasecurity/trivy:latest'
+    image_templates:
+    - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-amd64'
+    - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-arm64'
+  - name_template: 'public.ecr.aws/aquasecurity/trivy:latest'
+    image_templates: 
+    - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-amd64'
+    - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-arm64'

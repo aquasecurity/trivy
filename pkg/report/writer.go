@@ -1,59 +1,129 @@
 package report
 
 import (
-	"bytes"
-	"encoding/json"
-	"encoding/xml"
-	"fmt"
-	"html"
 	"io"
-	"io/ioutil"
-	"os"
-	"strings"
-	"text/template"
 	"time"
 
-	"github.com/olekukonko/tablewriter"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
+)
+
+const (
+	SchemaVersion = 2
 )
 
 // Now returns the current time
 var Now = time.Now
 
+// Report represents a scan result
+type Report struct {
+	SchemaVersion int                 `json:",omitempty"`
+	ArtifactName  string              `json:",omitempty"`
+	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
+	Metadata      Metadata            `json:",omitempty"`
+	Results       Results             `json:",omitempty"`
+}
+
+// Metadata represents a metadata of artifact
+type Metadata struct {
+	Size int64      `json:",omitempty"`
+	OS   *ftypes.OS `json:",omitempty"`
+
+	// Container image
+	ImageID     string        `json:",omitempty"`
+	DiffIDs     []string      `json:",omitempty"`
+	RepoTags    []string      `json:",omitempty"`
+	RepoDigests []string      `json:",omitempty"`
+	ImageConfig v1.ConfigFile `json:",omitempty"`
+}
+
 // Results to hold list of Result
 type Results []Result
 
-// Result to hold image scan results
+type ResultClass string
+
+const (
+	ClassOSPkg   = "os-pkgs"
+	ClassLangPkg = "lang-pkgs"
+	ClassConfig  = "config"
+)
+
+// Result holds a target and detected vulnerabilities
 type Result struct {
-	Target          string                        `json:"Target"`
-	Type            string                        `json:"Type,omitempty"`
-	Packages        []ftypes.Package              `json:"Packages,omitempty"`
-	Vulnerabilities []types.DetectedVulnerability `json:"Vulnerabilities"`
+	Target            string                           `json:"Target"`
+	Class             ResultClass                      `json:"Class,omitempty"`
+	Type              string                           `json:"Type,omitempty"`
+	Packages          []ftypes.Package                 `json:"Packages,omitempty"`
+	Vulnerabilities   []types.DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
+	MisconfSummary    *MisconfSummary                  `json:"MisconfSummary,omitempty"`
+	Misconfigurations []types.DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
 }
 
-// WriteResults writes the result to output, format as passed in argument
-func WriteResults(format string, output io.Writer, severities []dbTypes.Severity, results Results, outputTemplate string, light bool) error {
+type MisconfSummary struct {
+	Successes  int
+	Failures   int
+	Exceptions int
+}
+
+func (s MisconfSummary) Empty() bool {
+	return s.Successes == 0 && s.Failures == 0 && s.Exceptions == 0
+}
+
+// Failed returns whether the result includes any vulnerabilities or misconfigurations
+func (results Results) Failed() bool {
+	for _, r := range results {
+		if len(r.Vulnerabilities) > 0 {
+			return true
+		}
+		for _, m := range r.Misconfigurations {
+			if m.Status == types.StatusFailure {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+type Option struct {
+	Format         string
+	Output         io.Writer
+	Severities     []dbTypes.Severity
+	OutputTemplate string
+	Light          bool
+
+	// For misconfigurations
+	IncludeNonFailures bool
+	Trace              bool
+}
+
+// Write writes the result to output, format as passed in argument
+func Write(report Report, option Option) error {
 	var writer Writer
-	switch format {
+	switch option.Format {
 	case "table":
-		writer = &TableWriter{Output: output, Light: light, Severities: severities}
+		writer = &TableWriter{
+			Output:             option.Output,
+			Severities:         option.Severities,
+			Light:              option.Light,
+			IncludeNonFailures: option.IncludeNonFailures,
+			Trace:              option.Trace,
+		}
 	case "json":
-		writer = &JSONWriter{Output: output}
+		writer = &JSONWriter{Output: option.Output}
 	case "template":
 		var err error
-		if writer, err = NewTemplateWriter(output, outputTemplate); err != nil {
+		if writer, err = NewTemplateWriter(option.Output, option.OutputTemplate); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
 	default:
-		return xerrors.Errorf("unknown format: %v", format)
+		return xerrors.Errorf("unknown format: %v", option.Format)
 	}
 
-	if err := writer.Write(results); err != nil {
+	if err := writer.Write(report); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
 	return nil
@@ -61,167 +131,5 @@ func WriteResults(format string, output io.Writer, severities []dbTypes.Severity
 
 // Writer defines the result write operation
 type Writer interface {
-	Write(Results) error
-}
-
-// TableWriter implements Writer and output in tabular form
-type TableWriter struct {
-	Severities []dbTypes.Severity
-	Output     io.Writer
-	Light      bool
-}
-
-// Write writes the result on standard output
-func (tw TableWriter) Write(results Results) error {
-	for _, result := range results {
-		tw.write(result)
-	}
-	return nil
-}
-
-// nolint: gocyclo
-// TODO: refactror and fix cyclometic complexity
-func (tw TableWriter) write(result Result) {
-	table := tablewriter.NewWriter(tw.Output)
-	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version"}
-	if !tw.Light {
-		header = append(header, "Title")
-	}
-	table.SetHeader(header)
-
-	severityCount := map[string]int{}
-	for _, v := range result.Vulnerabilities {
-		severityCount[v.Severity]++
-
-		title := v.Title
-		if title == "" {
-			title = v.Description
-		}
-		splittedTitle := strings.Split(title, " ")
-		if len(splittedTitle) >= 12 {
-			title = strings.Join(splittedTitle[:12], " ") + "..."
-		}
-
-		if len(v.PrimaryURL) > 0 {
-			r := strings.NewReplacer("https://", "", "http://", "")
-			title = fmt.Sprintf("%s -->%s", title, r.Replace(v.PrimaryURL))
-		}
-
-		var row []string
-		if tw.Output == os.Stdout {
-			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
-				v.InstalledVersion, v.FixedVersion}
-		} else {
-			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion}
-		}
-
-		if !tw.Light {
-			row = append(row, strings.TrimSpace(title))
-		}
-		table.Append(row)
-	}
-
-	var results []string
-
-	var severities []string
-	for _, sev := range tw.Severities {
-		severities = append(severities, sev.String())
-	}
-
-	for _, severity := range dbTypes.SeverityNames {
-		if !utils.StringInSlice(severity, severities) {
-			continue
-		}
-		r := fmt.Sprintf("%s: %d", severity, severityCount[severity])
-		results = append(results, r)
-	}
-
-	fmt.Printf("\n%s\n", result.Target)
-	fmt.Println(strings.Repeat("=", len(result.Target)))
-	fmt.Printf("Total: %d (%s)\n\n", len(result.Vulnerabilities), strings.Join(results, ", "))
-
-	if len(result.Vulnerabilities) == 0 {
-		return
-	}
-
-	table.SetAutoMergeCells(true)
-	table.SetRowLine(true)
-	table.Render()
-	return
-}
-
-// JSONWriter implements result Writer
-type JSONWriter struct {
-	Output io.Writer
-}
-
-// Write writes the results in JSON format
-func (jw JSONWriter) Write(results Results) error {
-	output, err := json.MarshalIndent(results, "", "  ")
-	if err != nil {
-		return xerrors.Errorf("failed to marshal json: %w", err)
-	}
-
-	if _, err = fmt.Fprint(jw.Output, string(output)); err != nil {
-		return xerrors.Errorf("failed to write json: %w", err)
-	}
-	return nil
-}
-
-// TemplateWriter write result in custom format defined by user's template
-type TemplateWriter struct {
-	Output   io.Writer
-	Template *template.Template
-}
-
-// NewTemplateWriter is the factory method to return TemplateWriter object
-func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter, error) {
-	if strings.HasPrefix(outputTemplate, "@") {
-		buf, err := ioutil.ReadFile(strings.TrimPrefix(outputTemplate, "@"))
-		if err != nil {
-			return nil, xerrors.Errorf("error retrieving template from path: %w", err)
-		}
-		outputTemplate = string(buf)
-	}
-	tmpl, err := template.New("output template").Funcs(template.FuncMap{
-		"escapeXML": func(input string) string {
-			escaped := &bytes.Buffer{}
-			if err := xml.EscapeText(escaped, []byte(input)); err != nil {
-				fmt.Printf("error while escapeString to XML: %v", err.Error())
-				return input
-			}
-			return escaped.String()
-		},
-		"endWithPeriod": func(input string) string {
-			if !strings.HasSuffix(input, ".") {
-				input += "."
-			}
-			return input
-		},
-		"toLower": func(input string) string {
-			return strings.ToLower(input)
-		},
-		"escapeString": func(input string) string {
-			return html.EscapeString(input)
-		},
-		"getEnv": func(key string) string {
-			return os.Getenv(key)
-		},
-		"getCurrentTime": func() string {
-			return Now().UTC().Format(time.RFC3339Nano)
-		},
-	}).Parse(outputTemplate)
-	if err != nil {
-		return nil, xerrors.Errorf("error parsing template: %w", err)
-	}
-	return &TemplateWriter{Output: output, Template: tmpl}, nil
-}
-
-// Write writes result
-func (tw TemplateWriter) Write(results Results) error {
-	err := tw.Template.Execute(tw.Output, results)
-	if err != nil {
-		return xerrors.Errorf("failed to write with template: %w", err)
-	}
-	return nil
+	Write(Report) error
 }

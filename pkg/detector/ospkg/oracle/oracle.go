@@ -9,7 +9,6 @@ import (
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -32,7 +31,7 @@ var (
 
 // Scanner implements oracle vulnerability scanner
 type Scanner struct {
-	vs    dbTypes.VulnSrc
+	vs    oracleoval.VulnSrc
 	clock clock.Clock
 }
 
@@ -42,6 +41,16 @@ func NewScanner() *Scanner {
 		vs:    oracleoval.NewVulnSrc(),
 		clock: clock.RealClock{},
 	}
+}
+
+func extractKsplice(v string) string {
+	subs := strings.Split(strings.ToLower(v), ".")
+	for _, s := range subs {
+		if strings.HasPrefix(s, "ksplice") {
+			return s
+		}
+	}
+	return ""
 }
 
 // Detect scans and return vulnerability in Oracle scanner
@@ -57,7 +66,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.vs.Get(osVer, pkg.SrcName)
+		advisories, err := s.vs.Get(osVer, pkg.Name)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Oracle Linux advisory: %w", err)
 		}
@@ -65,16 +74,20 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 		installed := utils.FormatVersion(pkg)
 		installedVersion := version.NewVersion(installed)
 		for _, adv := range advisories {
-			// Skip if only one of them contains .ksplice1.
-			if strings.Contains(adv.FixedVersion, ".ksplice1.") != strings.Contains(pkg.Release, ".ksplice1.") {
+			// when one of them doesn't have ksplice, we'll also skip it
+			// extract kspliceX and compare it with kspliceY in advisories
+			// if kspliceX and kspliceY are different, we will skip the advisory
+			if extractKsplice(adv.FixedVersion) != extractKsplice(pkg.Release) {
 				continue
 			}
+
 			fixedVersion := version.NewVersion(adv.FixedVersion)
 			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				Layer:            pkg.Layer,
+				Custom:           adv.Custom,
 			}
 			if installedVersion.LessThan(fixedVersion) {
 				vuln.FixedVersion = adv.FixedVersion
