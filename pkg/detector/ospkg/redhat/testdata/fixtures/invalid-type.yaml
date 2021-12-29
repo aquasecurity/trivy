@@ -1,9 +1,7 @@
-- bucket: Red Hat Enterprise Linux 7
+- bucket: Red Hat
   pairs:
     - bucket: nss
       pairs:
-        - key: CVE-2015-2808
+        - key: RHSA-2021:0538
           value:
-            FixedVersion:
-              - foo
-              - bar
+            Entries: broken

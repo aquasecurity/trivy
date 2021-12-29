@@ -1,6 +1,8 @@
 package redhat
 
 import (
+	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -10,13 +12,30 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ustrings "github.com/aquasecurity/trivy-db/pkg/utils/strings"
+	redhat "github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat-oval"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var (
+	defaultContentSets = map[string][]string{
+		"6": {
+			"rhel-6-server-rpms",
+			"rhel-6-server-extras-rpms",
+		},
+		"7": {
+			"rhel-7-server-rpms",
+			"rhel-7-server-extras-rpms",
+		},
+		"8": {
+			"rhel-8-for-x86_64-baseos-rpms",
+			"rhel-8-for-x86_64-appstream-rpms",
+		},
+	}
 	redhatEOLDates = map[string]time.Time{
 		"4": time.Date(2017, 5, 31, 23, 59, 59, 0, time.UTC),
 		"5": time.Date(2020, 11, 30, 23, 59, 59, 0, time.UTC),
@@ -77,35 +96,39 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
-	log.Logger.Debugf("redhat: os version: %s", osVer)
-	log.Logger.Debugf("redhat: the number of packages: %d", len(pkgs))
+	log.Logger.Debugf("Red Hat: os version: %s", osVer)
+	log.Logger.Debugf("Red Hat: the number of packages: %d", len(pkgs))
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		if !s.isFromSupportedVendor(pkg) {
+		if !isFromSupportedVendor(pkg) {
 			log.Logger.Debugf("Skipping %s: unsupported vendor", pkg.Name)
 			continue
 		}
 
-		detectedVulns, err := s.detectFixedVulnerabilities(osVer, pkg)
+		detectedVulns, err := s.detect(osVer, pkg)
 		if err != nil {
-			return nil, err
-		}
-		vulns = append(vulns, detectedVulns...)
-
-		detectedVulns, err = s.detectUnfixedVulnerabilities(osVer, pkg)
-		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("redhat vulnerability detection error: %w", err)
 		}
 		vulns = append(vulns, detectedVulns...)
 	}
 	return vulns, nil
 }
 
-func (s *Scanner) detectFixedVulnerabilities(osVer string, pkg ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVulnerability, error) {
 	// For Red Hat OVAL v2 containing only binary package names
 	pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
-	advisories, err := s.oval.Get(osVer, pkgName, pkg.ContentSets)
+
+	var contentSets []string
+	var nvr string
+	if pkg.BuildInfo == nil {
+		contentSets = defaultContentSets[osVer]
+	} else {
+		contentSets = pkg.BuildInfo.ContentSets
+		nvr = fmt.Sprintf("%s-%s", pkg.BuildInfo.Nvr, pkg.BuildInfo.Arch)
+	}
+
+	advisories, err := s.vs.Get(pkgName, contentSets, []string{nvr})
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
 	}
@@ -113,43 +136,57 @@ func (s *Scanner) detectFixedVulnerabilities(osVer string, pkg ftypes.Package) (
 	installed := utils.FormatVersion(pkg)
 	installedVersion := version.NewVersion(installed)
 
-	var vulns []types.DetectedVulnerability
+	uniqVulns := map[string]types.DetectedVulnerability{}
 	for _, adv := range advisories {
-		fixedVersion := version.NewVersion(adv.FixedVersion)
-		if installedVersion.LessThan(fixedVersion) {
-			vuln := types.DetectedVulnerability{
-				VulnerabilityID:  adv.VulnerabilityID,
-				VendorID:         adv.VendorID,
-				PkgName:          pkg.Name,
-				InstalledVersion: installed,
-				FixedVersion:     fixedVersion.String(),
-				Layer:            pkg.Layer,
-				Custom:           adv.Custom,
-			}
-			vulns = append(vulns, vuln)
-		}
-	}
-	return vulns, nil
-}
-
-func (s *Scanner) detectUnfixedVulnerabilities(osVer string, pkg ftypes.Package) ([]types.DetectedVulnerability, error) {
-	// For Red Hat Security Data API containing only source package names
-	pkgName := addModularNamespace(pkg.SrcName, pkg.Modularitylabel)
-	advisories, err := s.api.Get(osVer, pkgName)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
-	}
-
-	var vulns []types.DetectedVulnerability
-	for _, adv := range advisories {
+		vulnID := adv.VulnerabilityID
 		vuln := types.DetectedVulnerability{
-			VulnerabilityID:  adv.VulnerabilityID,
+			VulnerabilityID:  vulnID,
 			PkgName:          pkg.Name,
 			InstalledVersion: utils.FormatVersion(pkg),
 			Layer:            pkg.Layer,
+			SeveritySource:   vulnerability.RedHat,
+			Vulnerability: dbTypes.Vulnerability{
+				Severity: adv.Severity.String(),
+			},
+			Custom: adv.Custom,
 		}
+
+		// unpatched vulnerabilities
+		if adv.FixedVersion == "" {
+			uniqVulns[vulnID] = vuln
+			continue
+		}
+
+		// patched vulnerabilities
+		fixedVersion := version.NewVersion(adv.FixedVersion)
+		if installedVersion.LessThan(fixedVersion) {
+			vuln.VendorIDs = adv.VendorIDs
+			vuln.FixedVersion = fixedVersion.String()
+
+			if v, ok := uniqVulns[vulnID]; ok {
+				// In case two advisories resolve the same CVE-ID.
+				// e.g. The first fix might be incomplete.
+				v.VendorIDs = ustrings.Unique(append(v.VendorIDs, vuln.VendorIDs...))
+
+				// The newer fixed version should be taken.
+				if version.NewVersion(v.FixedVersion).LessThan(fixedVersion) {
+					v.FixedVersion = vuln.FixedVersion
+				}
+				uniqVulns[vulnID] = v
+			} else {
+				uniqVulns[vulnID] = vuln
+			}
+		}
+	}
+
+	var vulns []types.DetectedVulnerability
+	for _, vuln := range uniqVulns {
 		vulns = append(vulns, vuln)
 	}
+
+	sort.Slice(vulns, func(i, j int) bool {
+		return vulns[i].VulnerabilityID < vulns[j].VulnerabilityID
+	})
 
 	return vulns, nil
 }
@@ -175,9 +212,9 @@ func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	return s.clock.Now().Before(eolDate)
 }
 
-func (s *Scanner) isFromSupportedVendor(pkg ftypes.Package) bool {
-	for _, s := range excludedVendorsSuffix {
-		if strings.HasSuffix(pkg.Release, s) {
+func isFromSupportedVendor(pkg ftypes.Package) bool {
+	for _, suffix := range excludedVendorsSuffix {
+		if strings.HasSuffix(pkg.Release, suffix) {
 			return false
 		}
 	}
