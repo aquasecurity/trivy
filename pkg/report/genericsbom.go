@@ -90,6 +90,7 @@ func (gsbmw GsbomWriter) Write(report Report) error {
 	return nil
 }
 func buildPurl(pkgName, version, pkgType string) string {
+	//TODO fix maven namespace
 	return packageurl.NewPackageURL(toPurlType(pkgType), "", pkgName, version, nil, "").ToString()
 }
 
