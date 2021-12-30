@@ -25,6 +25,7 @@
           "PkgName": "Werkzeug",
           "InstalledVersion": "0.11",
           "FixedVersion": "0.15.3",
+          "Layer": {},
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14806",
           "Title": "python-werkzeug: insufficient debugger PIN randomness vulnerability",
@@ -48,74 +49,56 @@
           "References": [
             "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00034.html",
             "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00047.html",
+            "https://access.redhat.com/security/cve/CVE-2019-14806",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14806",
+            "https://github.com/advisories/GHSA-gq9m-qvpx-68hc",
             "https://github.com/pallets/werkzeug/blob/7fef41b120327d3912fbe12fb64f1951496fcf3e/src/werkzeug/debug/__init__.py#L168",
             "https://github.com/pallets/werkzeug/commit/00bc43b1672e662e5e3b8cecd79e67fc968fa246",
             "https://nvd.nist.gov/vuln/detail/CVE-2019-14806",
-            "https://palletsprojects.com/blog/werkzeug-0-15-3-released/"
+            "https://palletsprojects.com/blog/werkzeug-0-15-3-released/",
+            "https://ubuntu.com/security/notices/USN-4655-1"
           ],
           "PublishedDate": "2019-08-09T15:15:00Z",
           "LastModifiedDate": "2019-09-11T00:15:00Z"
-        },
-        {
-          "VulnerabilityID": "CVE-2016-10516",
-          "PkgName": "Werkzeug",
-          "InstalledVersion": "0.11",
-          "FixedVersion": "0.11.11",
-          "SeveritySource": "nvd",
-          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-10516",
-          "Title": "python-werkzeug: Cross-site scripting in render_full function in debug/tbtools.py",
-          "Description": "Cross-site scripting (XSS) vulnerability in the render_full function in debug/tbtools.py in the debugger in Pallets Werkzeug before 0.11.11 (as used in Pallets Flask and other products) allows remote attackers to inject arbitrary web script or HTML via a field that contains an exception message.",
-          "Severity": "MEDIUM",
-          "CweIDs": [
-            "CWE-79"
-          ],
-          "CVSS": {
-            "nvd": {
-              "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
-              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
-              "V2Score": 4.3,
-              "V3Score": 6.1
-            },
-            "redhat": {
-              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:L",
-              "V3Score": 7.1
-            }
-          },
-          "References": [
-            "http://blog.neargle.com/2016/09/21/flask-src-review-get-a-xss-from-debuger/",
-            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-10516",
-            "https://github.com/pallets/werkzeug/pull/1001",
-            "https://lists.debian.org/debian-lts-announce/2017/11/msg00037.html",
-            "https://usn.ubuntu.com/usn/usn-3463-1"
-          ],
-          "PublishedDate": "2017-10-23T16:29:00Z",
-          "LastModifiedDate": "2018-02-04T02:29:00Z"
         },
         {
           "VulnerabilityID": "CVE-2020-28724",
           "PkgName": "Werkzeug",
           "InstalledVersion": "0.11",
           "FixedVersion": "0.11.6",
+          "Layer": {},
+          "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-28724",
-          "Title": "Werkzeug before 0.11.6 includes an open redirect vulnerability via a double slash in the URL. See CVE-2020-28724.",
-          "Severity": "UNKNOWN"
-        },
-        {
-          "VulnerabilityID": "pyup.io-26435",
-          "PkgName": "Werkzeug",
-          "InstalledVersion": "0.11",
-          "FixedVersion": "0.12",
-          "Title": "The defaults of ``generate_password_hash`` in werkzeug 0.12 have been changed to more secure ones, see pull request ``#753``.",
-          "Severity": "UNKNOWN"
-        },
-        {
-          "VulnerabilityID": "pyup.io-36967",
-          "PkgName": "Werkzeug",
-          "InstalledVersion": "0.11",
-          "FixedVersion": "0.15.0",
-          "Title": "Werkzeug 0.15.0 refactors class:`~middleware.proxy_fix.ProxyFix` to support more headers, multiple values, and a more secure configuration.",
-          "Severity": "UNKNOWN"
+          "Title": "python-werkzeug: open redirect via double slash in the URL",
+          "Description": "Open redirect vulnerability in werkzeug before 0.11.6 via a double slash in the URL.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-601"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+              "V2Score": 5.8,
+              "V3Score": 6.1
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N",
+              "V3Score": 5.4
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2020-28724",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-28724",
+            "https://github.com/advisories/GHSA-3p3h-qghp-hvh2",
+            "https://github.com/pallets/flask/issues/1639",
+            "https://github.com/pallets/werkzeug/issues/822",
+            "https://github.com/pallets/werkzeug/pull/890/files",
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-28724",
+            "https://ubuntu.com/security/notices/USN-4655-1"
+          ],
+          "PublishedDate": "2020-11-18T15:15:00Z",
+          "LastModifiedDate": "2020-12-01T16:05:00Z"
         }
       ]
     }

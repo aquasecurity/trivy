@@ -33,17 +33,45 @@
         }
       ],
       "links": [{
+          "url": "https://access.redhat.com/security/cve/CVE-2019-1549"
+        },{
           "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549"
         },{
           "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1b0fe00e2704b5e20334a16d3c9099d1ba2ef1be"
         },{
+          "url": "https://linux.oracle.com/cve/CVE-2019-1549.html"
+        },{
+          "url": "https://linux.oracle.com/errata/ELSA-2020-1840.html"
+        },{
           "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZN4VVQJ3JDCHGIHV4Y2YTXBYQZ6PWQ7E/"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/1"
         },{
           "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
         },{
           "url": "https://support.f5.com/csp/article/K44070243"
         },{
+          "url": "https://support.f5.com/csp/article/K44070243?utm_source=f5support&amp;utm_medium=RSS"
+        },{
+          "url": "https://ubuntu.com/security/notices/USN-4376-1"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4539"
+        },{
           "url": "https://www.openssl.org/news/secadv/20190910.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuapr2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuoct2020.html"
+        },{
+          "url": "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
         }
       ]
     },
@@ -51,7 +79,7 @@
       "id": "CVE-2019-1551",
       "category": "container_scanning",
       "message": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
-      "description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e-dev (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u-dev (Affected 1.0.2-1.0.2t).",
+      "description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
       "cve": "CVE-2019-1551",
       "severity": "Medium",
       "confidence": "Unknown",
@@ -79,7 +107,11 @@
         }
       ],
       "links": [{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html"
+        },{
           "url": "http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html"
+        },{
+          "url": "https://access.redhat.com/security/cve/CVE-2019-1551"
         },{
           "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551"
         },{
@@ -89,119 +121,51 @@
         },{
           "url": "https://github.com/openssl/openssl/pull/10575"
         },{
+          "url": "https://linux.oracle.com/cve/CVE-2019-1551.html"
+        },{
+          "url": "https://linux.oracle.com/errata/ELSA-2020-4514.html"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DDHOAATPWJCXRNFMJ2SASDBBNU5RJONY/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EXDDAOWSAIEFQNBHWYE6PPYFV4QXGMCD/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XVEP3LAK4JSPRXFO4QF4GG2IVXADV3SO/"
+        },{
           "url": "https://seclists.org/bugtraq/2019/Dec/39"
         },{
           "url": "https://seclists.org/bugtraq/2019/Dec/46"
         },{
+          "url": "https://security.gentoo.org/glsa/202004-10"
+        },{
           "url": "https://security.netapp.com/advisory/ntap-20191210-0001/"
+        },{
+          "url": "https://ubuntu.com/security/notices/USN-4376-1"
+        },{
+          "url": "https://ubuntu.com/security/notices/USN-4504-1"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://usn.ubuntu.com/4504-1/"
         },{
           "url": "https://www.debian.org/security/2019/dsa-4594"
         },{
+          "url": "https://www.debian.org/security/2021/dsa-4855"
+        },{
           "url": "https://www.openssl.org/news/secadv/20191206.txt"
         },{
+          "url": "https://www.oracle.com/security-alerts/cpuApr2021.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2021.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
           "url": "https://www.tenable.com/security/tns-2019-09"
-        }
-      ]
-    },
-    {
-      "id": "CVE-2019-1563",
-      "category": "container_scanning",
-      "message": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
-      "description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
-      "cve": "CVE-2019-1563",
-      "severity": "Medium",
-      "confidence": "Unknown",
-      "solution": "Upgrade libcrypto1.1 to 1.1.1d-r0",
-      "scanner": {
-        "id": "trivy",
-        "name": "trivy"
-      },
-      "location": {
-        "dependency": {
-          "package": {
-            "name": "libcrypto1.1"
-          },
-          "version": "1.1.1c-r0"
-        },
-        "operating_system": "Unknown",
-        "image": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)"
-      },
-      "identifiers": [
-        {
-          "type": "cve",
-          "name": "CVE-2019-1563",
-          "value": "CVE-2019-1563",
-          "url": "https://avd.aquasec.com/nvd/cve-2019-1563"
-        }
-      ],
-      "links": [{
-          "url": "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html"
         },{
-          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563"
+          "url": "https://www.tenable.com/security/tns-2020-03"
         },{
-          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=08229ad838c50f644d7e928e2eef147b4308ad64"
+          "url": "https://www.tenable.com/security/tns-2020-11"
         },{
-          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=631f94db0065c78181ca9ba5546ebc8bb3884b97"
-        },{
-          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f"
-        },{
-          "url": "https://seclists.org/bugtraq/2019/Sep/25"
-        },{
-          "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
-        },{
-          "url": "https://www.openssl.org/news/secadv/20190910.txt"
-        }
-      ]
-    },
-    {
-      "id": "CVE-2019-1547",
-      "category": "container_scanning",
-      "message": "openssl: side-channel weak encryption vulnerability",
-      "description": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
-      "cve": "CVE-2019-1547",
-      "severity": "Low",
-      "confidence": "Unknown",
-      "solution": "Upgrade libcrypto1.1 to 1.1.1d-r0",
-      "scanner": {
-        "id": "trivy",
-        "name": "trivy"
-      },
-      "location": {
-        "dependency": {
-          "package": {
-            "name": "libcrypto1.1"
-          },
-          "version": "1.1.1c-r0"
-        },
-        "operating_system": "Unknown",
-        "image": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)"
-      },
-      "identifiers": [
-        {
-          "type": "cve",
-          "name": "CVE-2019-1547",
-          "value": "CVE-2019-1547",
-          "url": "https://avd.aquasec.com/nvd/cve-2019-1547"
-        }
-      ],
-      "links": [{
-          "url": "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html"
-        },{
-          "url": "https://arxiv.org/abs/1909.01785"
-        },{
-          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1547"
-        },{
-          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=21c856b75d81eff61aa63b4f036bb64a85bf6d46"
-        },{
-          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=30c22fa8b1d840036b8e203585738df62a03cec8"
-        },{
-          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=7c1709c2da5414f5b6133d00a03fc8c5bf996c7a"
-        },{
-          "url": "https://seclists.org/bugtraq/2019/Sep/25"
-        },{
-          "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
-        },{
-          "url": "https://www.openssl.org/news/secadv/20190910.txt"
+          "url": "https://www.tenable.com/security/tns-2021-10"
         }
       ]
     },
@@ -237,17 +201,45 @@
         }
       ],
       "links": [{
+          "url": "https://access.redhat.com/security/cve/CVE-2019-1549"
+        },{
           "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549"
         },{
           "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1b0fe00e2704b5e20334a16d3c9099d1ba2ef1be"
         },{
+          "url": "https://linux.oracle.com/cve/CVE-2019-1549.html"
+        },{
+          "url": "https://linux.oracle.com/errata/ELSA-2020-1840.html"
+        },{
           "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GY6SNRJP2S7Y42GIIDO3HXPNMDYN2U3A/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZN4VVQJ3JDCHGIHV4Y2YTXBYQZ6PWQ7E/"
+        },{
+          "url": "https://seclists.org/bugtraq/2019/Oct/1"
         },{
           "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
         },{
           "url": "https://support.f5.com/csp/article/K44070243"
         },{
+          "url": "https://support.f5.com/csp/article/K44070243?utm_source=f5support&amp;utm_medium=RSS"
+        },{
+          "url": "https://ubuntu.com/security/notices/USN-4376-1"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://www.debian.org/security/2019/dsa-4539"
+        },{
           "url": "https://www.openssl.org/news/secadv/20190910.txt"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuapr2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpuoct2020.html"
+        },{
+          "url": "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html"
         }
       ]
     },
@@ -255,7 +247,7 @@
       "id": "CVE-2019-1551",
       "category": "container_scanning",
       "message": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
-      "description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e-dev (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u-dev (Affected 1.0.2-1.0.2t).",
+      "description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
       "cve": "CVE-2019-1551",
       "severity": "Medium",
       "confidence": "Unknown",
@@ -283,7 +275,11 @@
         }
       ],
       "links": [{
+          "url": "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html"
+        },{
           "url": "http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html"
+        },{
+          "url": "https://access.redhat.com/security/cve/CVE-2019-1551"
         },{
           "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551"
         },{
@@ -293,119 +289,51 @@
         },{
           "url": "https://github.com/openssl/openssl/pull/10575"
         },{
+          "url": "https://linux.oracle.com/cve/CVE-2019-1551.html"
+        },{
+          "url": "https://linux.oracle.com/errata/ELSA-2020-4514.html"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DDHOAATPWJCXRNFMJ2SASDBBNU5RJONY/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EXDDAOWSAIEFQNBHWYE6PPYFV4QXGMCD/"
+        },{
+          "url": "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XVEP3LAK4JSPRXFO4QF4GG2IVXADV3SO/"
+        },{
           "url": "https://seclists.org/bugtraq/2019/Dec/39"
         },{
           "url": "https://seclists.org/bugtraq/2019/Dec/46"
         },{
+          "url": "https://security.gentoo.org/glsa/202004-10"
+        },{
           "url": "https://security.netapp.com/advisory/ntap-20191210-0001/"
+        },{
+          "url": "https://ubuntu.com/security/notices/USN-4376-1"
+        },{
+          "url": "https://ubuntu.com/security/notices/USN-4504-1"
+        },{
+          "url": "https://usn.ubuntu.com/4376-1/"
+        },{
+          "url": "https://usn.ubuntu.com/4504-1/"
         },{
           "url": "https://www.debian.org/security/2019/dsa-4594"
         },{
+          "url": "https://www.debian.org/security/2021/dsa-4855"
+        },{
           "url": "https://www.openssl.org/news/secadv/20191206.txt"
         },{
+          "url": "https://www.oracle.com/security-alerts/cpuApr2021.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujan2021.html"
+        },{
+          "url": "https://www.oracle.com/security-alerts/cpujul2020.html"
+        },{
           "url": "https://www.tenable.com/security/tns-2019-09"
-        }
-      ]
-    },
-    {
-      "id": "CVE-2019-1563",
-      "category": "container_scanning",
-      "message": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
-      "description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
-      "cve": "CVE-2019-1563",
-      "severity": "Medium",
-      "confidence": "Unknown",
-      "solution": "Upgrade libssl1.1 to 1.1.1d-r0",
-      "scanner": {
-        "id": "trivy",
-        "name": "trivy"
-      },
-      "location": {
-        "dependency": {
-          "package": {
-            "name": "libssl1.1"
-          },
-          "version": "1.1.1c-r0"
-        },
-        "operating_system": "Unknown",
-        "image": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)"
-      },
-      "identifiers": [
-        {
-          "type": "cve",
-          "name": "CVE-2019-1563",
-          "value": "CVE-2019-1563",
-          "url": "https://avd.aquasec.com/nvd/cve-2019-1563"
-        }
-      ],
-      "links": [{
-          "url": "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html"
         },{
-          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563"
+          "url": "https://www.tenable.com/security/tns-2020-03"
         },{
-          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=08229ad838c50f644d7e928e2eef147b4308ad64"
+          "url": "https://www.tenable.com/security/tns-2020-11"
         },{
-          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=631f94db0065c78181ca9ba5546ebc8bb3884b97"
-        },{
-          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=e21f8cf78a125cd3c8c0d1a1a6c8bb0b901f893f"
-        },{
-          "url": "https://seclists.org/bugtraq/2019/Sep/25"
-        },{
-          "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
-        },{
-          "url": "https://www.openssl.org/news/secadv/20190910.txt"
-        }
-      ]
-    },
-    {
-      "id": "CVE-2019-1547",
-      "category": "container_scanning",
-      "message": "openssl: side-channel weak encryption vulnerability",
-      "description": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
-      "cve": "CVE-2019-1547",
-      "severity": "Low",
-      "confidence": "Unknown",
-      "solution": "Upgrade libssl1.1 to 1.1.1d-r0",
-      "scanner": {
-        "id": "trivy",
-        "name": "trivy"
-      },
-      "location": {
-        "dependency": {
-          "package": {
-            "name": "libssl1.1"
-          },
-          "version": "1.1.1c-r0"
-        },
-        "operating_system": "Unknown",
-        "image": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)"
-      },
-      "identifiers": [
-        {
-          "type": "cve",
-          "name": "CVE-2019-1547",
-          "value": "CVE-2019-1547",
-          "url": "https://avd.aquasec.com/nvd/cve-2019-1547"
-        }
-      ],
-      "links": [{
-          "url": "http://packetstormsecurity.com/files/154467/Slackware-Security-Advisory-openssl-Updates.html"
-        },{
-          "url": "https://arxiv.org/abs/1909.01785"
-        },{
-          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1547"
-        },{
-          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=21c856b75d81eff61aa63b4f036bb64a85bf6d46"
-        },{
-          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=30c22fa8b1d840036b8e203585738df62a03cec8"
-        },{
-          "url": "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=7c1709c2da5414f5b6133d00a03fc8c5bf996c7a"
-        },{
-          "url": "https://seclists.org/bugtraq/2019/Sep/25"
-        },{
-          "url": "https://security.netapp.com/advisory/ntap-20190919-0002/"
-        },{
-          "url": "https://www.openssl.org/news/secadv/20190910.txt"
+          "url": "https://www.tenable.com/security/tns-2021-10"
         }
       ]
     }
