@@ -210,10 +210,6 @@ func TestRegistry(t *testing.T) {
 			for i := range want.Results {
 				want.Results[i].Target = fmt.Sprintf("%s (alpine 3.10.2)", s)
 			}
-			want.Metadata.RepoDigests = []string{
-				fmt.Sprintf("%s/alpine@sha256:d9b1a0d4fab413443a22e550cb8720de487295cebca3f9b2fcbf8882192a9bf9",
-					registryURL.Host),
-			}
 
 			// 5. Compare want and got
 			assert.Equal(t, want, got)
