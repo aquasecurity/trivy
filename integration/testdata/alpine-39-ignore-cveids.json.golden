@@ -1,0 +1,185 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/images/alpine-39.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "alpine",
+      "Name": "3.9.4",
+      "EOSL": true
+    },
+    "ImageID": "sha256:055936d3920576da37aa9bc460d70c5f212028bda1c08c0879aedf03d7a66ea1",
+    "DiffIDs": [
+      "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "container": "c10d36fa368a7ea673683682666758adf35efe98e10989505f4f566b5b18538f",
+      "created": "2019-05-11T00:07:03.510395965Z",
+      "docker_version": "18.06.1-ce",
+      "history": [
+        {
+          "created": "2019-05-11T00:07:03.358250803Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:a86aea1f3a7d68f6ae03397b99ea77f2e9ee901c5c59e59f76f93adbb4035913 in / "
+        },
+        {
+          "created": "2019-05-11T00:07:03.510395965Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/bin/sh"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "Image": "sha256:09f2bbe58e774849d74dc1391c2e01731896c745c4aba1ecf69a283bdb4b537a",
+        "ArgsEscaped": true
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/alpine-39.tar.gz (alpine 3.9.4)",
+      "Class": "os-pkgs",
+      "Type": "alpine",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-1551",
+          "PkgName": "libcrypto1.1",
+          "InstalledVersion": "1.1.1b-r1",
+          "FixedVersion": "1.1.1d-r2",
+          "Layer": {
+            "DiffID": "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1551",
+          "Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
+          "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-200"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+              "V2Score": 5,
+              "V3Score": 5.3
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N",
+              "V3Score": 4.8
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
+            "http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html",
+            "https://access.redhat.com/security/cve/CVE-2019-1551",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f1c5eea8a817075d31e43f5876993c6710238c98",
+            "https://github.com/openssl/openssl/pull/10575",
+            "https://linux.oracle.com/cve/CVE-2019-1551.html",
+            "https://linux.oracle.com/errata/ELSA-2020-4514.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DDHOAATPWJCXRNFMJ2SASDBBNU5RJONY/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EXDDAOWSAIEFQNBHWYE6PPYFV4QXGMCD/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XVEP3LAK4JSPRXFO4QF4GG2IVXADV3SO/",
+            "https://seclists.org/bugtraq/2019/Dec/39",
+            "https://seclists.org/bugtraq/2019/Dec/46",
+            "https://security.gentoo.org/glsa/202004-10",
+            "https://security.netapp.com/advisory/ntap-20191210-0001/",
+            "https://ubuntu.com/security/notices/USN-4376-1",
+            "https://ubuntu.com/security/notices/USN-4504-1",
+            "https://usn.ubuntu.com/4376-1/",
+            "https://usn.ubuntu.com/4504-1/",
+            "https://www.debian.org/security/2019/dsa-4594",
+            "https://www.debian.org/security/2021/dsa-4855",
+            "https://www.openssl.org/news/secadv/20191206.txt",
+            "https://www.oracle.com/security-alerts/cpuApr2021.html",
+            "https://www.oracle.com/security-alerts/cpujan2021.html",
+            "https://www.oracle.com/security-alerts/cpujul2020.html",
+            "https://www.tenable.com/security/tns-2019-09",
+            "https://www.tenable.com/security/tns-2020-03",
+            "https://www.tenable.com/security/tns-2020-11",
+            "https://www.tenable.com/security/tns-2021-10"
+          ],
+          "PublishedDate": "2019-12-06T18:15:00Z",
+          "LastModifiedDate": "2021-06-14T18:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-1551",
+          "PkgName": "libssl1.1",
+          "InstalledVersion": "1.1.1b-r1",
+          "FixedVersion": "1.1.1d-r2",
+          "Layer": {
+            "DiffID": "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1551",
+          "Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
+          "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-200"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+              "V2Score": 5,
+              "V3Score": 5.3
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N",
+              "V3Score": 4.8
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
+            "http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html",
+            "https://access.redhat.com/security/cve/CVE-2019-1551",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f1c5eea8a817075d31e43f5876993c6710238c98",
+            "https://github.com/openssl/openssl/pull/10575",
+            "https://linux.oracle.com/cve/CVE-2019-1551.html",
+            "https://linux.oracle.com/errata/ELSA-2020-4514.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/DDHOAATPWJCXRNFMJ2SASDBBNU5RJONY/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/EXDDAOWSAIEFQNBHWYE6PPYFV4QXGMCD/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/XVEP3LAK4JSPRXFO4QF4GG2IVXADV3SO/",
+            "https://seclists.org/bugtraq/2019/Dec/39",
+            "https://seclists.org/bugtraq/2019/Dec/46",
+            "https://security.gentoo.org/glsa/202004-10",
+            "https://security.netapp.com/advisory/ntap-20191210-0001/",
+            "https://ubuntu.com/security/notices/USN-4376-1",
+            "https://ubuntu.com/security/notices/USN-4504-1",
+            "https://usn.ubuntu.com/4376-1/",
+            "https://usn.ubuntu.com/4504-1/",
+            "https://www.debian.org/security/2019/dsa-4594",
+            "https://www.debian.org/security/2021/dsa-4855",
+            "https://www.openssl.org/news/secadv/20191206.txt",
+            "https://www.oracle.com/security-alerts/cpuApr2021.html",
+            "https://www.oracle.com/security-alerts/cpujan2021.html",
+            "https://www.oracle.com/security-alerts/cpujul2020.html",
+            "https://www.tenable.com/security/tns-2019-09",
+            "https://www.tenable.com/security/tns-2020-03",
+            "https://www.tenable.com/security/tns-2020-11",
+            "https://www.tenable.com/security/tns-2021-10"
+          ],
+          "PublishedDate": "2019-12-06T18:15:00Z",
+          "LastModifiedDate": "2021-06-14T18:15:00Z"
+        }
+      ]
+    }
+  ]
+}
