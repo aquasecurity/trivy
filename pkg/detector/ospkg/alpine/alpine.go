@@ -41,6 +41,7 @@ var (
 		"3.12": time.Date(2022, 5, 1, 23, 59, 59, 0, time.UTC),
 		"3.13": time.Date(2022, 11, 1, 23, 59, 59, 0, time.UTC),
 		"3.14": time.Date(2023, 5, 1, 23, 59, 59, 0, time.UTC),
+		"3.15": time.Date(2023, 11, 1, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -110,8 +111,8 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
+				Custom:           adv.Custom,
 			})
-
 		}
 	}
 	return vulns, nil

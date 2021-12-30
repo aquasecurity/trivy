@@ -1,11 +1,11 @@
 apiVersion: v2
 name: trivy
-version: 0.4.4
-appVersion: "0.18.3"
+version: 0.4.8
+appVersion: "0.21.0"
 description: Trivy helm chart
 keywords:
   - scanner
   - trivy
   - vulnerability
 sources:
-- https://github.com/aquasecurity/trivy
+  - https://github.com/aquasecurity/trivy

@@ -27,3 +27,6 @@ integration/testdata/fixtures/images
 
 # SBOMs generated during CI
 /bom.json
+
+# goreleaser output
+dist

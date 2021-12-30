@@ -39,6 +39,22 @@ https://developer.github.com/v3/#rate-limiting
 $ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
 ```
 
+### Maven rate limiting
+
+!!! error
+    ``` bash
+    $ trivy image ...
+    ...
+    status 403 Forbidden from http://search.maven.org/solrsearch/select
+    ```
+
+Trivy calls Maven API for better detection of JAR files, but many requests may exceed rate limiting.
+If it happens frequently, try the `--offline-scan` option to stop Trivy from making API requests.
+This option affects only vulnerability scanning. The vulnerability database and builtin policies are downloaded as usual.
+If you want to skip them as well, you can try `--skip-update` and `--skip-policy-update`.
+
+Note that a number of vulnerabilities might be fewer than without the `--offline-scan` option.
+
 ### Running in parallel takes same time as series run
 When running trivy on multiple images simultaneously, it will take same time as running trivy in series.  
 This is because of a limitation of boltdb.

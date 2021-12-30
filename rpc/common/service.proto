@@ -5,6 +5,8 @@ import "google/protobuf/timestamp.proto";
 package trivy.common;
 option  go_package = "github.com/aquasecurity/trivy/rpc/common;common";
 
+import "google/protobuf/struct.proto";
+
 message OS {
   string family = 1;
   string name   = 2;
@@ -36,8 +38,8 @@ message Package {
   string src_version = 7;
   string src_release = 8;
   int32  src_epoch   = 9;
-  string license = 10;
-  Layer  layer = 11;
+  string license     = 10;
+  Layer  layer       = 11;
 }
 
 message Library {
@@ -80,21 +82,23 @@ message DetectedMisconfiguration {
 }
 
 message Vulnerability {
-  string                    vulnerability_id   = 1;
-  string                    pkg_name           = 2;
-  string                    installed_version  = 3;
-  string                    fixed_version      = 4;
-  string                    title              = 5;
-  string                    description        = 6;
-  Severity                  severity           = 7;
-  repeated string           references         = 8;
-  Layer                     layer              = 10;
-  string                    severity_source    = 11;
-  map<string, CVSS>         cvss               = 12;
-  repeated string           cwe_ids            = 13;
-  string                    primary_url        = 14;
-  google.protobuf.Timestamp published_date     = 15;
-  google.protobuf.Timestamp last_modified_date = 16;
+  string                    vulnerability_id     = 1;
+  string                    pkg_name             = 2;
+  string                    installed_version    = 3;
+  string                    fixed_version        = 4;
+  string                    title                = 5;
+  string                    description          = 6;
+  Severity                  severity             = 7;
+  repeated string           references           = 8;
+  Layer                     layer                = 10;
+  string                    severity_source      = 11;
+  map<string, CVSS>         cvss                 = 12;
+  repeated string           cwe_ids              = 13;
+  string                    primary_url          = 14;
+  google.protobuf.Timestamp published_date       = 15;
+  google.protobuf.Timestamp last_modified_date   = 16;
+  google.protobuf.Value     custom_advisory_data = 17;
+  google.protobuf.Value     custom_vuln_data     = 18;
 }
 
 message Layer {

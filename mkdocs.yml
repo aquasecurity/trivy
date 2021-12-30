@@ -66,6 +66,7 @@ nav:
       - Comparison:
           - vs Conftest: misconfiguration/comparison/conftest.md
           - vs tfsec: misconfiguration/comparison/tfsec.md
+          - vs cfsec: misconfiguration/comparison/cfsec.md
   - Advanced:
       - Overview: advanced/index.md
       - Plugins: advanced/plugins.md
@@ -76,6 +77,7 @@ nav:
           - CircleCI: advanced/integrations/circleci.md
           - Travis CI: advanced/integrations/travis-ci.md
           - GitLab CI: advanced/integrations/gitlab-ci.md
+          - Bitbucket Pipelines: advanced/integrations/bitbucket.md
           - AWS CodePipeline: advanced/integrations/aws-codepipeline.md
           - AWS Security Hub: advanced/integrations/aws-security-hub.md
       - Container Image:
@@ -92,6 +94,9 @@ nav:
       - Modes:
           - Standalone: advanced/modes/standalone.md
           - Client/Server: advanced/modes/client-server.md
+      - Community:
+          - Tools: advanced/community/tools.md
+          - References: advanced/community/references.md
       - Maintainer:
           - Help Wanted: advanced/contrib/help-wanted.md
           - Triage: advanced/contrib/triage.md
