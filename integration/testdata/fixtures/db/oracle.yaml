@@ -1,0 +1,10 @@
+- bucket: Oracle Linux 8
+  pairs:
+    - bucket: curl
+      pairs:
+        - key: CVE-2019-3823
+          value:
+            FixedVersion: 7.61.1-11.el8
+        - key: CVE-2019-5436
+          value:
+            FixedVersion: 7.61.1-12.el8
