@@ -1,0 +1,13 @@
+- bucket: rust-advisory-db
+  pairs:
+    - bucket: ammonia
+      pairs:
+        - key: RUSTSEC-2019-0001
+          value:
+            PatchedVersions:
+              - ">= 2.1.0"
+        - key: RUSTSEC-2021-0074
+          value:
+            PatchedVersions:
+              - ">= 3.1.0"
+              - ">= 2.1.3, < 3.0.0"

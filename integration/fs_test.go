@@ -85,7 +85,7 @@ func TestFilesystem(t *testing.T) {
 	}
 
 	// Set up testing DB
-	cacheDir := gunzipDB(t)
+	cacheDir := initDB(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -105,9 +105,7 @@ func TestFilesystem(t *testing.T) {
 			}
 
 			if len(tt.args.severity) != 0 {
-				osArgs = append(osArgs,
-					[]string{"--severity", strings.Join(tt.args.severity, ",")}...,
-				)
+				osArgs = append(osArgs, "--severity", strings.Join(tt.args.severity, ","))
 			}
 
 			if len(tt.args.ignoreIDs) != 0 {
@@ -134,10 +132,7 @@ func TestFilesystem(t *testing.T) {
 			assert.Nil(t, app.Run(osArgs))
 
 			// Compare want and got
-			want := readReport(t, tt.golden)
-			got := readReport(t, outputFile)
-
-			assert.Equal(t, want, got)
+			compareReports(t, tt.golden, outputFile)
 		})
 	}
 }

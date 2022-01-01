@@ -42,54 +42,46 @@ func TestClientServer(t *testing.T) {
 		wantErr string
 	}{
 		{
-			name: "alpine 3.10 integration",
-			args: csArgs{
-				Input: "testdata/fixtures/images/alpine-310.tar.gz",
-			},
-			golden: "testdata/alpine-310.json.golden",
-		},
-		{
-			name: "alpine 3.10 integration with --ignore-unfixed option",
-			args: csArgs{
-				IgnoreUnfixed: true,
-				Input:         "testdata/fixtures/images/alpine-310.tar.gz",
-			},
-			golden: "testdata/alpine-310-ignore-unfixed.json.golden",
-		},
-		{
-			name: "alpine 3.10 integration with medium and high severity",
-			args: csArgs{
-				IgnoreUnfixed: true,
-				Severity:      []string{"MEDIUM", "HIGH"},
-				Input:         "testdata/fixtures/images/alpine-310.tar.gz",
-			},
-			golden: "testdata/alpine-310-medium-high.json.golden",
-		},
-		{
-			name: "alpine 3.10 integration with .trivyignore",
-			args: csArgs{
-				IgnoreUnfixed: false,
-				IgnoreIDs:     []string{"CVE-2019-1549", "CVE-2019-1563"},
-				Input:         "testdata/fixtures/images/alpine-310.tar.gz",
-			},
-			golden: "testdata/alpine-310-ignore-cveids.json.golden",
-		},
-		{
-			name: "alpine 3.9 integration",
+			name: "alpine 3.9",
 			args: csArgs{
 				Input: "testdata/fixtures/images/alpine-39.tar.gz",
 			},
 			golden: "testdata/alpine-39.json.golden",
 		},
 		{
-			name: "debian buster integration",
+			name: "alpine 3.9 with high and critical severity",
+			args: csArgs{
+				IgnoreUnfixed: true,
+				Severity:      []string{"HIGH", "CRITICAL"},
+				Input:         "testdata/fixtures/images/alpine-39.tar.gz",
+			},
+			golden: "testdata/alpine-39-high-critical.json.golden",
+		},
+		{
+			name: "alpine 3.9 with .trivyignore",
+			args: csArgs{
+				IgnoreUnfixed: false,
+				IgnoreIDs:     []string{"CVE-2019-1549", "CVE-2019-14697"},
+				Input:         "testdata/fixtures/images/alpine-39.tar.gz",
+			},
+			golden: "testdata/alpine-39-ignore-cveids.json.golden",
+		},
+		{
+			name: "alpine 3.10",
+			args: csArgs{
+				Input: "testdata/fixtures/images/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.json.golden",
+		},
+		{
+			name: "debian buster/10",
 			args: csArgs{
 				Input: "testdata/fixtures/images/debian-buster.tar.gz",
 			},
 			golden: "testdata/debian-buster.json.golden",
 		},
 		{
-			name: "debian buster integration with --ignore-unfixed option",
+			name: "debian buster/10 with --ignore-unfixed option",
 			args: csArgs{
 				IgnoreUnfixed: true,
 				Input:         "testdata/fixtures/images/debian-buster.tar.gz",
@@ -97,166 +89,109 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/debian-buster-ignore-unfixed.json.golden",
 		},
 		{
-			name: "debian stretch integration",
+			name: "debian stretch/9",
 			args: csArgs{
 				Input: "testdata/fixtures/images/debian-stretch.tar.gz",
 			},
 			golden: "testdata/debian-stretch.json.golden",
 		},
 		{
-			name: "ubuntu 18.04 integration",
+			name: "ubuntu 18.04",
 			args: csArgs{
 				Input: "testdata/fixtures/images/ubuntu-1804.tar.gz",
 			},
 			golden: "testdata/ubuntu-1804.json.golden",
 		},
+		// TODO :fix them after support for Red Hat OVALv2
+		//{
+		//	name: "centos 7 integration",
+		//	args: csArgs{
+		//		Input: "testdata/fixtures/images/centos-7.tar.gz",
+		//	},
+		//	golden: "testdata/centos-7.json.golden",
+		//},
+		//{
+		//	name: "centos 7 integration with --ignore-unfixed option",
+		//	args: csArgs{
+		//		IgnoreUnfixed: true,
+		//		Input:         "testdata/fixtures/images/centos-7.tar.gz",
+		//	},
+		//	golden: "testdata/centos-7-ignore-unfixed.json.golden",
+		//},
+		//{
+		//	name: "centos 7 integration with low and high severity",
+		//	args: csArgs{
+		//		IgnoreUnfixed: true,
+		//		Severity:      []string{"LOW", "HIGH"},
+		//		Input:         "testdata/fixtures/images/centos-7.tar.gz",
+		//	},
+		//	golden: "testdata/centos-7-low-high.json.golden",
+		//},
+		//{
+		//	name: "centos 6 integration",
+		//	args: csArgs{
+		//		Input: "testdata/fixtures/images/centos-6.tar.gz",
+		//	},
+		//	golden: "testdata/centos-6.json.golden",
+		//},
+		//{
+		//	name: "ubi 7 integration",
+		//	args: csArgs{
+		//		Input: "testdata/fixtures/images/ubi-7.tar.gz",
+		//	},
+		//	golden: "testdata/ubi-7.json.golden",
+		//},
 		{
-			name: "ubuntu 18.04 integration with --ignore-unfixed option",
-			args: csArgs{
-				IgnoreUnfixed: true,
-				Input:         "testdata/fixtures/images/ubuntu-1804.tar.gz",
-			},
-			golden: "testdata/ubuntu-1804-ignore-unfixed.json.golden",
-		},
-		{
-			name: "ubuntu 16.04 integration",
-			args: csArgs{
-				Input: "testdata/fixtures/images/ubuntu-1604.tar.gz",
-			},
-			golden: "testdata/ubuntu-1604.json.golden",
-		},
-		{
-			name: "centos 7 integration",
-			args: csArgs{
-				Input: "testdata/fixtures/images/centos-7.tar.gz",
-			},
-			golden: "testdata/centos-7.json.golden",
-		},
-		{
-			name: "centos 7 integration with --ignore-unfixed option",
-			args: csArgs{
-				IgnoreUnfixed: true,
-				Input:         "testdata/fixtures/images/centos-7.tar.gz",
-			},
-			golden: "testdata/centos-7-ignore-unfixed.json.golden",
-		},
-		{
-			name: "centos 7 integration with low and high severity",
-			args: csArgs{
-				IgnoreUnfixed: true,
-				Severity:      []string{"LOW", "HIGH"},
-				Input:         "testdata/fixtures/images/centos-7.tar.gz",
-			},
-			golden: "testdata/centos-7-low-high.json.golden",
-		},
-		{
-			name: "centos 6 integration",
-			args: csArgs{
-				Input: "testdata/fixtures/images/centos-6.tar.gz",
-			},
-			golden: "testdata/centos-6.json.golden",
-		},
-		{
-			name: "ubi 7 integration",
-			args: csArgs{
-				Input: "testdata/fixtures/images/ubi-7.tar.gz",
-			},
-			golden: "testdata/ubi-7.json.golden",
-		},
-		{
-			name: "distroless base integration",
+			name: "distroless base",
 			args: csArgs{
 				Input: "testdata/fixtures/images/distroless-base.tar.gz",
 			},
 			golden: "testdata/distroless-base.json.golden",
 		},
 		{
-			name: "distroless base integration with --ignore-unfixed option",
-			args: csArgs{
-				IgnoreUnfixed: true,
-				Input:         "testdata/fixtures/images/distroless-base.tar.gz",
-			},
-			golden: "testdata/distroless-base-ignore-unfixed.json.golden",
-		},
-		{
-			name: "distroless python27 integration",
+			name: "distroless python27",
 			args: csArgs{
 				Input: "testdata/fixtures/images/distroless-python27.tar.gz",
 			},
 			golden: "testdata/distroless-python27.json.golden",
 		},
 		{
-			name: "amazon 1 integration",
+			name: "amazon 1",
 			args: csArgs{
 				Input: "testdata/fixtures/images/amazon-1.tar.gz",
 			},
 			golden: "testdata/amazon-1.json.golden",
 		},
 		{
-			name: "amazon 2 integration",
+			name: "amazon 2",
 			args: csArgs{
 				Input: "testdata/fixtures/images/amazon-2.tar.gz",
 			},
 			golden: "testdata/amazon-2.json.golden",
 		},
 		{
-			name: "oracle 6 integration",
-			args: csArgs{
-				Input: "testdata/fixtures/images/oraclelinux-6-slim.tar.gz",
-			},
-			golden: "testdata/oraclelinux-6-slim.json.golden",
-		},
-		{
-			name: "oracle 7 integration",
-			args: csArgs{
-				Input: "testdata/fixtures/images/oraclelinux-7-slim.tar.gz",
-			},
-			golden: "testdata/oraclelinux-7-slim.json.golden",
-		},
-		{
-			name: "oracle 8 integration",
+			name: "oracle 8",
 			args: csArgs{
 				Input: "testdata/fixtures/images/oraclelinux-8-slim.tar.gz",
 			},
 			golden: "testdata/oraclelinux-8-slim.json.golden",
 		},
 		{
-			name: "opensuse leap 15.1 integration",
+			name: "opensuse leap 15.1",
 			args: csArgs{
 				Input: "testdata/fixtures/images/opensuse-leap-151.tar.gz",
 			},
 			golden: "testdata/opensuse-leap-151.json.golden",
 		},
 		{
-			name: "opensuse leap 42.3 integration",
-			args: csArgs{
-				Input: "testdata/fixtures/images/opensuse-leap-423.tar.gz",
-			},
-			golden: "testdata/opensuse-leap-423.json.golden",
-		},
-		{
-			name: "photon 1.0 integration",
-			args: csArgs{
-				Input: "testdata/fixtures/images/photon-10.tar.gz",
-			},
-			golden: "testdata/photon-10.json.golden",
-		},
-		{
-			name: "photon 2.0 integration",
-			args: csArgs{
-				Input: "testdata/fixtures/images/photon-20.tar.gz",
-			},
-			golden: "testdata/photon-20.json.golden",
-		},
-		{
-			name: "photon 3.0 integration",
+			name: "photon 3.0",
 			args: csArgs{
 				Input: "testdata/fixtures/images/photon-30.tar.gz",
 			},
 			golden: "testdata/photon-30.json.golden",
 		},
 		{
-			name: "buxybox with Cargo.lock integration",
+			name: "buxybox with Cargo.lock",
 			args: csArgs{
 				Input: "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
 			},
@@ -286,7 +221,7 @@ func TestClientServerWithTemplate(t *testing.T) {
 		golden string
 	}{
 		{
-			name: "alpine 3.10 integration with gitlab template",
+			name: "alpine 3.10 with gitlab template",
 			args: csArgs{
 				Format:       "template",
 				TemplatePath: "@../contrib/gitlab.tpl",
@@ -295,7 +230,7 @@ func TestClientServerWithTemplate(t *testing.T) {
 			golden: "testdata/alpine-310.gitlab.golden",
 		},
 		{
-			name: "alpine 3.10 integration with gitlab-codequality template",
+			name: "alpine 3.10 with gitlab-codequality template",
 			args: csArgs{
 				Format:       "template",
 				TemplatePath: "@../contrib/gitlab-codequality.tpl",
@@ -304,7 +239,7 @@ func TestClientServerWithTemplate(t *testing.T) {
 			golden: "testdata/alpine-310.gitlab-codequality.golden",
 		},
 		{
-			name: "alpine 3.10 integration with sarif template",
+			name: "alpine 3.10 with sarif template",
 			args: csArgs{
 				Format:       "template",
 				TemplatePath: "@../contrib/sarif.tpl",
@@ -313,7 +248,7 @@ func TestClientServerWithTemplate(t *testing.T) {
 			golden: "testdata/alpine-310.sarif.golden",
 		},
 		{
-			name: "alpine 3.10 integration with ASFF template",
+			name: "alpine 3.10 with ASFF template",
 			args: csArgs{
 				Format:       "template",
 				TemplatePath: "@../contrib/asff.tpl",
@@ -322,7 +257,7 @@ func TestClientServerWithTemplate(t *testing.T) {
 			golden: "testdata/alpine-310.asff.golden",
 		},
 		{
-			name: "alpine 3.10 integration with html template",
+			name: "alpine 3.10 with html template",
 			args: csArgs{
 				Format:       "template",
 				TemplatePath: "@../contrib/html.tpl",
@@ -366,13 +301,13 @@ func TestClientServerWithToken(t *testing.T) {
 		wantErr string
 	}{
 		{
-			name: "alpine 3.10 integration with token",
+			name: "alpine 3.9 with token",
 			args: csArgs{
-				Input:             "testdata/fixtures/images/alpine-310.tar.gz",
+				Input:             "testdata/fixtures/images/alpine-39.tar.gz",
 				ClientToken:       "token",
 				ClientTokenHeader: "Trivy-Token",
 			},
-			golden: "testdata/alpine-310.json.golden",
+			golden: "testdata/alpine-39.json.golden",
 		},
 		{
 			name: "invalid token",
@@ -387,8 +322,8 @@ func TestClientServerWithToken(t *testing.T) {
 			name: "invalid token header",
 			args: csArgs{
 				Input:             "testdata/fixtures/images/distroless-base.tar.gz",
-				ClientToken:       "valid-token",
-				ClientTokenHeader: "Trivy-Token",
+				ClientToken:       "token",
+				ClientTokenHeader: "Unknown-Header",
 			},
 			wantErr: "twirp error unauthenticated: invalid token",
 		},
@@ -432,11 +367,11 @@ func TestClientServerWithRedis(t *testing.T) {
 
 	// Test parameters
 	testArgs := csArgs{
-		Input: "testdata/fixtures/images/centos-7.tar.gz",
+		Input: "testdata/fixtures/images/alpine-39.tar.gz",
 	}
-	golden := "testdata/centos-7.json.golden"
+	golden := "testdata/alpine-39.json.golden"
 
-	t.Run("centos 7", func(t *testing.T) {
+	t.Run("alpine 3.9", func(t *testing.T) {
 		osArgs, outputFile := setupClient(t, testArgs, addr, cacheDir, golden)
 
 		// Run Trivy client
@@ -470,7 +405,7 @@ func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 	version := "dev"
 
 	// Set up testing DB
-	cacheDir := gunzipDB(t)
+	cacheDir := initDB(t)
 
 	port, err := getFreePort()
 	assert.NoError(t, err)
@@ -526,7 +461,7 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 	}
 	if len(c.Severity) != 0 {
 		osArgs = append(osArgs,
-			[]string{"--severity", strings.Join(c.Severity, ",")}...,
+			"--severity", strings.Join(c.Severity, ","),
 		)
 	}
 
@@ -534,22 +469,22 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 		trivyIgnore := filepath.Join(t.TempDir(), ".trivyignore")
 		err := os.WriteFile(trivyIgnore, []byte(strings.Join(c.IgnoreIDs, "\n")), 0444)
 		require.NoError(t, err, "failed to write .trivyignore")
-		osArgs = append(osArgs, []string{"--ignorefile", trivyIgnore}...)
+		osArgs = append(osArgs, "--ignorefile", trivyIgnore)
 	}
 	if c.ClientToken != "" {
-		osArgs = append(osArgs, []string{"--token", c.ClientToken, "--token-header", c.ClientTokenHeader}...)
+		osArgs = append(osArgs, "--token", c.ClientToken, "--token-header", c.ClientTokenHeader)
 	}
 	if c.Input != "" {
-		osArgs = append(osArgs, []string{"--input", c.Input}...)
+		osArgs = append(osArgs, "--input", c.Input)
 	}
 
-	// Setup the output file
+	// Set up the output file
 	outputFile := filepath.Join(t.TempDir(), "output.json")
 	if *update {
 		outputFile = golden
 	}
 
-	osArgs = append(osArgs, []string{"--output", outputFile}...)
+	osArgs = append(osArgs, "--output", outputFile)
 
 	return osArgs, outputFile
 }

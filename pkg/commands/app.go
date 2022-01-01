@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	tdb "github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -225,6 +226,12 @@ var (
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
 	}
 
+	offlineScan = cli.BoolFlag{
+		Name:    "offline-scan",
+		Usage:   "do not issue API requests to identify dependencies",
+		EnvVars: []string{"TRIVY_OFFLINE_SCAN"},
+	}
+
 	// For misconfigurations
 	configPolicy = cli.StringSliceFlag{
 		Name:    "config-policy",
@@ -309,6 +316,7 @@ var (
 		&ignorePolicy,
 		&listAllPackages,
 		&cacheBackendFlag,
+		&offlineScan,
 		stringSliceFlag(skipFiles),
 		stringSliceFlag(skipDirs),
 	}
@@ -344,7 +352,10 @@ func NewApp(version string) *cli.App {
 
 	runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN")
 	if runAsPlugin == "" {
-		app.Action = artifact.ImageRun
+		app.Action = func(ctx *cli.Context) error {
+			log.Logger.Warn("The root command will be removed. Please migrate to 'trivy image' command. See https://github.com/aquasecurity/trivy/discussions/1515")
+			return artifact.ImageRun(ctx)
+		}
 	} else {
 		app.Action = func(ctx *cli.Context) error {
 			return plugin.RunWithArgs(ctx.Context, runAsPlugin, ctx.Args().Slice())
@@ -465,6 +476,7 @@ func NewFilesystemCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
+			&offlineScan,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
@@ -499,6 +511,7 @@ func NewRootfsCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
+			&offlineScan,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
@@ -536,6 +549,7 @@ func NewRepositoryCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
+			&offlineScan,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
@@ -569,6 +583,7 @@ func NewClientCommand() *cli.Command {
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
 			&listAllPackages,
+			&offlineScan,
 
 			// original flags
 			&token,
@@ -668,11 +683,29 @@ func NewPluginCommand() *cli.Command {
 				Action:    plugin.Uninstall,
 			},
 			{
+				Name:    "list",
+				Aliases: []string{"l"},
+				Usage:   "list installed plugin",
+				Action:  plugin.List,
+			},
+			{
+				Name:      "info",
+				Usage:     "information about a plugin",
+				ArgsUsage: "PLUGIN_NAME",
+				Action:    plugin.Information,
+			},
+			{
 				Name:      "run",
 				Aliases:   []string{"r"},
 				Usage:     "run a plugin on the fly",
 				ArgsUsage: "PLUGIN_NAME [PLUGIN_OPTIONS]",
 				Action:    plugin.Run,
+			},
+			{
+				Name:      "update",
+				Usage:     "update an existing plugin",
+				ArgsUsage: "PLUGIN_NAME",
+				Action:    plugin.Update,
 			},
 		},
 	}

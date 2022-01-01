@@ -62,30 +62,11 @@ spec:
           {{- end }}
           args:
             - server
-          env:
-            - name: "TRIVY_LISTEN"
-              value: "0.0.0.0:{{ .Values.service.port | default 4954 }}"
-            - name: "TRIVY_CACHE_DIR"
-              value: "/home/scanner/.cache/trivy"
-            {{- if .Values.trivy.cache.redis.enabled }}
-            - name: "TRIVY_CACHE_BACKEND"
-              value: {{ .Values.trivy.cache.redis.url | quote }}
-            {{- end }}
-            - name: "TRIVY_DEBUG"
-              value: {{ .Values.trivy.debugMode | default false | quote }}
-            - name: "TRIVY_SKIP_UPDATE"
-              value: {{ .Values.trivy.skipUpdate | default false | quote }}
-            - name: "GITHUB_TOKEN"
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "trivy.fullname" . }}
-                  key: gitHubToken
-            - name: "HTTP_PROXY"
-              value: {{ .Values.httpProxy | quote }}
-            - name: "HTTPS_PROXY"
-              value: {{ .Values.httpsProxy | quote }}
-            - name: "NO_PROXY"
-              value: {{ .Values.noProxy | quote }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "trivy.fullname" . }}
+            - secretRef:
+                name: {{ include "trivy.fullname" . }}
           ports:
             - name: trivy-http
               containerPort: {{ .Values.service.port }}

@@ -34,8 +34,8 @@
                         "PkgName": "libcrypto1.1",
                         "Installed Package": "1.1.1c-r0",
                         "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
+                        "NvdCvssScoreV3": "5.3",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
                         "NvdCvssScoreV2": "5",
                         "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
                     }
@@ -57,7 +57,7 @@
             "Label": "MEDIUM"
         },
         "Title": "Trivy found a vulnerability to CVE-2019-1551 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-        "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e-dev (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u-dev (Affected 1.0.2-1.0.2t).",
+        "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
@@ -79,100 +79,10 @@
                         "PkgName": "libcrypto1.1",
                         "Installed Package": "1.1.1c-r0",
                         "Patched Package": "1.1.1d-r2",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
+                        "NvdCvssScoreV3": "5.3",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
                         "NvdCvssScoreV2": "5",
                         "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
-                    }
-                }
-            }
-        ],
-        "RecordState": "ACTIVE"
-    },
-    {
-        "SchemaVersion": "2018-10-08",
-        "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1563",
-        "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
-        "GeneratorId": "Trivy",
-        "AwsAccountId": "123456789012",
-        "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
-        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
-        "Severity": {
-            "Label": "MEDIUM"
-        },
-        "Title": "Trivy found a vulnerability to CVE-2019-1563 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-        "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
-        "Remediation": {
-            "Recommendation": {
-                "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "https://avd.aquasec.com/nvd/cve-2019-1563"
-            }
-        },
-        "ProductFields": { "Product Name": "Trivy" },
-        "Resources": [
-            {
-                "Type": "Container",
-                "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-                "Partition": "aws",
-                "Region": "test-region",
-                "Details": {
-                    "Container": { "ImageName": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)" },
-                    "Other": {
-                        "CVE ID": "CVE-2019-1563",
-                        "CVE Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
-                        "PkgName": "libcrypto1.1",
-                        "Installed Package": "1.1.1c-r0",
-                        "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "4.3",
-                        "NvdCvssVectorV2": "AV:N/AC:M/Au:N/C:P/I:N/A:N"
-                    }
-                }
-            }
-        ],
-        "RecordState": "ACTIVE"
-    },
-    {
-        "SchemaVersion": "2018-10-08",
-        "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1547",
-        "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
-        "GeneratorId": "Trivy",
-        "AwsAccountId": "123456789012",
-        "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
-        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
-        "Severity": {
-            "Label": "LOW"
-        },
-        "Title": "Trivy found a vulnerability to CVE-2019-1547 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-        "Description": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
-        "Remediation": {
-            "Recommendation": {
-                "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "https://avd.aquasec.com/nvd/cve-2019-1547"
-            }
-        },
-        "ProductFields": { "Product Name": "Trivy" },
-        "Resources": [
-            {
-                "Type": "Container",
-                "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-                "Partition": "aws",
-                "Region": "test-region",
-                "Details": {
-                    "Container": { "ImageName": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)" },
-                    "Other": {
-                        "CVE ID": "CVE-2019-1547",
-                        "CVE Title": "openssl: side-channel weak encryption vulnerability",
-                        "PkgName": "libcrypto1.1",
-                        "Installed Package": "1.1.1c-r0",
-                        "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "1.9",
-                        "NvdCvssVectorV2": "AV:L/AC:M/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
@@ -214,8 +124,8 @@
                         "PkgName": "libssl1.1",
                         "Installed Package": "1.1.1c-r0",
                         "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
+                        "NvdCvssScoreV3": "5.3",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
                         "NvdCvssScoreV2": "5",
                         "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
                     }
@@ -237,7 +147,7 @@
             "Label": "MEDIUM"
         },
         "Title": "Trivy found a vulnerability to CVE-2019-1551 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-        "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e-dev (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u-dev (Affected 1.0.2-1.0.2t).",
+        "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
         "Remediation": {
             "Recommendation": {
                 "Text": "More information on this vulnerability is provided in the hyperlink",
@@ -259,100 +169,10 @@
                         "PkgName": "libssl1.1",
                         "Installed Package": "1.1.1c-r0",
                         "Patched Package": "1.1.1d-r2",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
+                        "NvdCvssScoreV3": "5.3",
+                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
                         "NvdCvssScoreV2": "5",
                         "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
-                    }
-                }
-            }
-        ],
-        "RecordState": "ACTIVE"
-    },
-    {
-        "SchemaVersion": "2018-10-08",
-        "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1563",
-        "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
-        "GeneratorId": "Trivy",
-        "AwsAccountId": "123456789012",
-        "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
-        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
-        "Severity": {
-            "Label": "MEDIUM"
-        },
-        "Title": "Trivy found a vulnerability to CVE-2019-1563 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-        "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
-        "Remediation": {
-            "Recommendation": {
-                "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "https://avd.aquasec.com/nvd/cve-2019-1563"
-            }
-        },
-        "ProductFields": { "Product Name": "Trivy" },
-        "Resources": [
-            {
-                "Type": "Container",
-                "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-                "Partition": "aws",
-                "Region": "test-region",
-                "Details": {
-                    "Container": { "ImageName": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)" },
-                    "Other": {
-                        "CVE ID": "CVE-2019-1563",
-                        "CVE Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
-                        "PkgName": "libssl1.1",
-                        "Installed Package": "1.1.1c-r0",
-                        "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "4.3",
-                        "NvdCvssVectorV2": "AV:N/AC:M/Au:N/C:P/I:N/A:N"
-                    }
-                }
-            }
-        ],
-        "RecordState": "ACTIVE"
-    },
-    {
-        "SchemaVersion": "2018-10-08",
-        "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1547",
-        "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
-        "GeneratorId": "Trivy",
-        "AwsAccountId": "123456789012",
-        "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
-        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
-        "Severity": {
-            "Label": "LOW"
-        },
-        "Title": "Trivy found a vulnerability to CVE-2019-1547 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-        "Description": "Normally in OpenSSL EC groups always have a co-factor present and this is used in side channel resistant code paths. However, in some cases, it is possible to construct a group using explicit parameters (instead of using a named curve). In those cases it is possible that such a group does not have the cofactor present. This can occur even where all the parameters match a known named curve. If such a curve is used then OpenSSL falls back to non-side channel resistant code paths which may result in full key recovery during an ECDSA signature operation. In order to be vulnerable an attacker would have to have the ability to time the creation of a large number of signatures where explicit parameters with no co-factor present are in use by an application using libcrypto. For the avoidance of doubt libssl is not vulnerable because explicit parameters are never used. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
-        "Remediation": {
-            "Recommendation": {
-                "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "https://avd.aquasec.com/nvd/cve-2019-1547"
-            }
-        },
-        "ProductFields": { "Product Name": "Trivy" },
-        "Resources": [
-            {
-                "Type": "Container",
-                "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-                "Partition": "aws",
-                "Region": "test-region",
-                "Details": {
-                    "Container": { "ImageName": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)" },
-                    "Other": {
-                        "CVE ID": "CVE-2019-1547",
-                        "CVE Title": "openssl: side-channel weak encryption vulnerability",
-                        "PkgName": "libssl1.1",
-                        "Installed Package": "1.1.1c-r0",
-                        "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "0",
-                        "NvdCvssVectorV3": "",
-                        "NvdCvssScoreV2": "1.9",
-                        "NvdCvssVectorV2": "AV:L/AC:M/Au:N/C:P/I:N/A:N"
                     }
                 }
             }
