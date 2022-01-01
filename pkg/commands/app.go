@@ -12,7 +12,6 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	appinfo "github.com/aquasecurity/trivy/pkg/app"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/client"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
@@ -322,14 +321,14 @@ var (
 )
 
 // NewApp is the factory method to return Trivy CLI
-func NewApp() *cli.App {
+func NewApp(version string) *cli.App {
 	cli.VersionPrinter = func(c *cli.Context) {
 		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
 	}
 
 	app := cli.NewApp()
-	app.Name = appinfo.Name
-	app.Version = appinfo.Version
+	app.Name = "trivy"
+	app.Version = version
 	app.ArgsUsage = "target"
 	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
 	app.EnableBashCompletion = true

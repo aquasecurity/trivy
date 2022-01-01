@@ -13,7 +13,6 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/app"
 )
 
 const (
@@ -37,12 +36,13 @@ const (
 
 // CycloneDXWriter implements result Writer
 type CycloneDXWriter struct {
-	Output io.Writer
+	Output  io.Writer
+	Version string
 }
 
 // Write writes the results in CycloneDX format
 func (cw CycloneDXWriter) Write(report Report) error {
-	bom, err := ConvertToBom(report)
+	bom, err := ConvertToBom(report, cw.Version)
 	if err != nil {
 		return xerrors.Errorf("failed to convert to bom: %w", err)
 	}
@@ -53,15 +53,15 @@ func (cw CycloneDXWriter) Write(report Report) error {
 	return nil
 }
 
-func ConvertToBom(r Report) (*cdx.BOM, error) {
+func ConvertToBom(r Report, version string) (*cdx.BOM, error) {
 	bom := cdx.NewBOM()
 	bom.Metadata = &cdx.Metadata{
 		Timestamp: Now().UTC().Format(time.RFC3339Nano),
 		Tools: &[]cdx.Tool{
 			{
-				Vendor:  app.Vendor,
-				Name:    app.Name,
-				Version: app.Version,
+				Vendor:  "aquasecurity",
+				Name:    "trivy",
+				Version: version,
 			},
 		},
 		Component: reportToComponent(r),

@@ -233,8 +233,7 @@ func scan(t *testing.T, imageRef name.Reference, baseDir, goldenFile string, opt
 	}
 
 	// Setup CLI App
-	appinfo.Version = "dev"
-	app := commands.NewApp()
+	app := commands.NewApp("dev")
 	app.Writer = io.Discard
 
 	osArgs := []string{"trivy", "--cache-dir", cacheDir, "image", "--format", "json", "--skip-update",

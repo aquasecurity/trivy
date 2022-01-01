@@ -117,7 +117,7 @@ func Write(report Report, option Option) error {
 	case "json":
 		writer = &JSONWriter{Output: option.Output}
 	case "cyclonedx":
-		writer = &CycloneDXWriter{Output: option.Output}
+		writer = &CycloneDXWriter{Output: option.Output, Version: option.AppVersion}
 	case "template":
 		// We keep `sarif.tpl` template working for backward compatibility for a while.
 		if strings.HasPrefix(option.OutputTemplate, "@") && filepath.Base(option.OutputTemplate) == "sarif.tpl" {

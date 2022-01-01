@@ -12,7 +12,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	appinfo "github.com/aquasecurity/trivy/pkg/app"
 	"github.com/aquasecurity/trivy/pkg/commands"
 )
 
@@ -134,8 +133,7 @@ func TestFilesystem(t *testing.T) {
 			osArgs = append(osArgs, tt.args.input)
 
 			// Setup CLI App
-			appinfo.Version = "dev"
-			app := commands.NewApp()
+			app := commands.NewApp("dev")
 			app.Writer = io.Discard
 
 			// Run "trivy fs"

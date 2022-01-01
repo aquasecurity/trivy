@@ -6,7 +6,6 @@ import (
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/app"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/stretchr/testify/assert"
 )
@@ -211,10 +210,9 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 	report.Now = func() time.Time {
 		return time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC)
 	}
-	app.Version = "cyclonedx"
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			bom, err := report.ConvertToBom(tc.inputReport)
+			bom, err := report.ConvertToBom(tc.inputReport, "cyclonedx")
 			assert.NoError(t, err, tc.name)
 			assert.Equal(t, tc.expectedSBOM, bom)
 		})
