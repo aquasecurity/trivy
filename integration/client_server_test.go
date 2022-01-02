@@ -431,7 +431,7 @@ type setupOptions struct {
 
 func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 	t.Helper()
-	version = "dev"
+	version := "dev"
 
 	// Set up testing DB
 	cacheDir := initDB(t)
