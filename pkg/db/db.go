@@ -85,7 +85,7 @@ func (c *Client) NeedsUpdate(cliVersion string, skip bool) (bool, error) {
 			log.Logger.Error("The first run cannot skip downloading DB")
 			return false, xerrors.New("--skip-update cannot be specified on the first run")
 		}
-		meta = metadata.Metadata{Version: dbVersion}
+		meta = metadata.Metadata{Version: db.SchemaVersion}
 	}
 
 	if db.SchemaVersion < meta.Version {
