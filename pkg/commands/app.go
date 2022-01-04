@@ -181,9 +181,10 @@ var (
 		EnvVars: []string{"TRIVY_TIMEOUT"},
 	}
 
+	// TODO: remove this flag after a sufficient deprecation period.
 	lightFlag = cli.BoolFlag{
 		Name:    "light",
-		Usage:   "light mode: it's faster, but vulnerability descriptions and references are not displayed",
+		Usage:   "deprecated",
 		EnvVars: []string{"TRIVY_LIGHT"},
 	}
 

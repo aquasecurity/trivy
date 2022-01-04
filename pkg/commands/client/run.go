@@ -89,7 +89,6 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 		Output:             opt.Output,
 		Severities:         opt.Severities,
 		OutputTemplate:     opt.Template,
-		Light:              false,
 		IncludeNonFailures: opt.IncludeNonFailures,
 		Trace:              opt.Trace,
 	}); err != nil {
