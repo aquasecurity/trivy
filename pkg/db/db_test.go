@@ -2,11 +2,10 @@ package db_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/google/go-containerregistry/pkg/v1"
 	fakei "github.com/google/go-containerregistry/pkg/v1/fake"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
@@ -16,7 +15,10 @@ import (
 	"k8s.io/utils/clock"
 	clocktesting "k8s.io/utils/clock/testing"
 
+	tdb "github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	"github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/oci"
 )
 
 const mediaType = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
@@ -52,7 +54,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			name:  "happy path",
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
 			metadata: metadata.Metadata{
-				Version:    1,
+				Version:    tdb.SchemaVersion,
 				NextUpdate: timeNextUpdateDay1,
 			},
 			want: true,
@@ -76,7 +78,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			name:  "happy path with --skip-update",
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
 			metadata: metadata.Metadata{
-				Version:    1,
+				Version:    tdb.SchemaVersion,
 				NextUpdate: timeNextUpdateDay1,
 			},
 			skip: true,
@@ -86,7 +88,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			name:  "skip downloading DB",
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
 			metadata: metadata.Metadata{
-				Version:    1,
+				Version:    tdb.SchemaVersion,
 				NextUpdate: timeNextUpdateDay2,
 			},
 			want: false,
@@ -95,10 +97,11 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			name:  "newer schema version",
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
 			metadata: metadata.Metadata{
-				Version:    2,
+				Version:    tdb.SchemaVersion + 1,
 				NextUpdate: timeNextUpdateDay2,
 			},
-			wantErr: "the version of DB schema doesn't match. Local DB: 2, Expected: 1",
+			wantErr: fmt.Sprintf("the version of DB schema doesn't match. Local DB: %d, Expected: %d",
+				tdb.SchemaVersion+1, tdb.SchemaVersion),
 		},
 		{
 			name:     "--skip-update on the first run",
@@ -121,7 +124,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			name:  "happy with old DownloadedAt",
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
 			metadata: metadata.Metadata{
-				Version:      1,
+				Version:      tdb.SchemaVersion,
 				NextUpdate:   timeNextUpdateDay1,
 				DownloadedAt: time.Date(2019, 9, 30, 22, 30, 0, 0, time.UTC),
 			},
@@ -131,7 +134,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			name:  "skip downloading DB with recent DownloadedAt",
 			clock: clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC)),
 			metadata: metadata.Metadata{
-				Version:      1,
+				Version:      tdb.SchemaVersion,
 				NextUpdate:   timeNextUpdateDay1,
 				DownloadedAt: time.Date(2019, 9, 30, 23, 30, 0, 0, time.UTC),
 			},
