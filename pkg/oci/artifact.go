@@ -5,11 +5,14 @@ import (
 	"io"
 	"os"
 
-	"github.com/aquasecurity/trivy/pkg/downloader"
+	"github.com/cheggaaa/pb/v3"
+
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/downloader"
 )
 
 type options struct {
@@ -30,10 +33,11 @@ func WithImage(img v1.Image) Option {
 type Artifact struct {
 	image v1.Image
 	layer v1.Layer // Take the first layer as OCI artifact
+	quiet bool
 }
 
 // NewArtifact returns a new artifact
-func NewArtifact(repo, mediaType string, opts ...Option) (Artifact, error) {
+func NewArtifact(repo, mediaType string, quiet bool, opts ...Option) (*Artifact, error) {
 	o := &options{}
 
 	for _, opt := range opts {
@@ -43,23 +47,23 @@ func NewArtifact(repo, mediaType string, opts ...Option) (Artifact, error) {
 	if o.img == nil {
 		ref, err := name.ParseReference(repo)
 		if err != nil {
-			return Artifact{}, xerrors.Errorf("repository name error (%s): %w", repo, err)
+			return nil, xerrors.Errorf("repository name error (%s): %w", repo, err)
 		}
 
 		o.img, err = remote.Image(ref)
 		if err != nil {
-			return Artifact{}, xerrors.Errorf("OCI repository error: %w", err)
+			return nil, xerrors.Errorf("OCI repository error: %w", err)
 		}
 	}
 
 	layers, err := o.img.Layers()
 	if err != nil {
-		return Artifact{}, xerrors.Errorf("OCI layer error: %w", err)
+		return nil, xerrors.Errorf("OCI layer error: %w", err)
 	}
 
 	// A single layer is only supported now.
 	if len(layers) != 1 {
-		return Artifact{}, xerrors.Errorf("OCI artifact must be a single layer: %w", err)
+		return nil, xerrors.Errorf("OCI artifact must be a single layer")
 	}
 
 	// Take the first layer
@@ -67,23 +71,37 @@ func NewArtifact(repo, mediaType string, opts ...Option) (Artifact, error) {
 
 	layerMediaType, err := layer.MediaType()
 	if err != nil {
-		return Artifact{}, xerrors.Errorf("media type error: %w", err)
+		return nil, xerrors.Errorf("media type error: %w", err)
 	} else if mediaType != string(layerMediaType) {
-		return Artifact{}, xerrors.Errorf("unacceptable media type: %s", string(layerMediaType))
+		return nil, xerrors.Errorf("unacceptable media type: %s", string(layerMediaType))
 	}
 
-	return Artifact{
+	return &Artifact{
 		image: o.img,
 		layer: layer,
+		quiet: quiet,
 	}, nil
 }
 
 func (a Artifact) Download(ctx context.Context, dir string) error {
+	size, err := a.layer.Size()
+	if err != nil {
+		return xerrors.Errorf("size error: %w", err)
+	}
+
 	rc, err := a.layer.Compressed()
 	if err != nil {
 		return xerrors.Errorf("failed to fetch the layer: %w", err)
 	}
 	defer rc.Close()
+
+	// Show progress bar
+	bar := pb.Full.Start64(size)
+	if a.quiet {
+		bar.SetWriter(io.Discard)
+	}
+	pr := bar.NewProxyReader(rc)
+	defer bar.Finish()
 
 	// https://github.com/hashicorp/go-getter/issues/326
 	f, err := os.CreateTemp("", "artifact-*.tar.gz")
@@ -96,7 +114,7 @@ func (a Artifact) Download(ctx context.Context, dir string) error {
 	}()
 
 	// Download the layer content into a temporal file
-	if _, err = io.Copy(f, rc); err != nil {
+	if _, err = io.Copy(f, pr); err != nil {
 		return xerrors.Errorf("copy error: %w", err)
 	}
 
