@@ -47,7 +47,7 @@ func initDB(t *testing.T) string {
 	require.NoError(t, err)
 
 	err = json.NewEncoder(f).Encode(metadata.Metadata{
-		Version:    1,
+		Version:    db.SchemaVersion,
 		NextUpdate: time.Now().Add(24 * time.Hour),
 		UpdatedAt:  time.Now(),
 	})
