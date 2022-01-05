@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"sync"
@@ -140,7 +139,7 @@ func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 }
 
 func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, requestWg *sync.WaitGroup) error {
-	tmpDir, err := ioutil.TempDir("", "db")
+	tmpDir, err := os.MkdirTemp("", "db")
 	if err != nil {
 		return xerrors.Errorf("failed to create a temp dir: %w", err)
 	}

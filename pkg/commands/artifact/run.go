@@ -6,12 +6,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
+	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/hook"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -25,9 +26,9 @@ const defaultPolicyNamespace = "appshield"
 
 var errSkipScan = errors.New("skip subsequent processes")
 
-// InitializeScanner type to define initialize function signature
+// InitializeScanner defines the initialize function signature of scanner
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration,
-	[]analyzer.Type, []hook.Type, config.ScannerOption) (scanner.Scanner, func(), error)
+	artifact.Option, config.ScannerOption) (scanner.Scanner, func(), error)
 
 // InitCache defines cache initializer
 type InitCache func(c Option) (cache.Cache, error)
@@ -134,6 +135,38 @@ func initDB(c Option) error {
 	return nil
 }
 
+func initOption(ctx *cli.Context) (Option, error) {
+	opt, err := NewOption(ctx)
+	if err != nil {
+		return Option{}, xerrors.Errorf("option error: %w", err)
+	}
+
+	// initialize options
+	if err = opt.Init(); err != nil {
+		return Option{}, xerrors.Errorf("option initialize error: %w", err)
+	}
+
+	return opt, nil
+}
+
+func disabledAnalyzers(opt Option) []analyzer.Type {
+	// Specified analyzers to be disabled depending on scanning modes
+	// e.g. The 'image' subcommand should disable the lock file scanning.
+	analyzers := opt.DisabledAnalyzers
+
+	// It doesn't analyze apk commands by default.
+	if !opt.ScanRemovedPkgs {
+		analyzers = append(analyzers, analyzer.TypeApkCommand)
+	}
+
+	// Don't analyze programming language packages when not running in 'library' mode
+	if !utils.StringInSlice(types.VulnTypeLibrary, opt.VulnType) {
+		analyzers = append(analyzers, analyzer.TypeLanguages...)
+	}
+
+	return analyzers
+}
+
 func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, cacheClient cache.Cache) (
 	pkgReport.Report, error) {
 	target := opt.Target
@@ -146,16 +179,8 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		SecurityChecks:      opt.SecurityChecks,
 		ScanRemovedPackages: opt.ScanRemovedPkgs, // this is valid only for image subcommand
 		ListAllPackages:     opt.ListAllPkgs,
-		SkipFiles:           opt.SkipFiles,
-		SkipDirs:            opt.SkipDirs,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
-
-	// It doesn't analyze apk commands by default.
-	disabledAnalyzers := []analyzer.Type{analyzer.TypeApkCommand}
-	if opt.ScanRemovedPkgs {
-		disabledAnalyzers = []analyzer.Type{}
-	}
 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
@@ -174,8 +199,14 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		}
 	}
 
-	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Timeout,
-		disabledAnalyzers, nil, configScannerOptions)
+	artifactOpt := artifact.Option{
+		DisabledAnalyzers: disabledAnalyzers(opt),
+		SkipFiles:         opt.SkipFiles,
+		SkipDirs:          opt.SkipDirs,
+		Offline:           opt.OfflineScan,
+	}
+
+	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Timeout, artifactOpt, configScannerOptions)
 	if err != nil {
 		return pkgReport.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}

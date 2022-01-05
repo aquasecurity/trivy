@@ -193,6 +193,12 @@ Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 # Documentation
 The official documentation, which provides detailed installation, configuration, and quick start guides, is available at https://aquasecurity.github.io/trivy/.
 
+---
+
+Trivy is an [Aqua Security][aquasec] open source project.  
+Learn about our open source work and portfolio [here][oss].  
+Contact us about any matter by opening a GitHub Discussion [here][discussions]
+
 [test]: https://github.com/aquasecurity/trivy/actions/workflows/test.yaml
 [test-img]: https://github.com/aquasecurity/trivy/actions/workflows/test.yaml/badge.svg
 [go-report]: https://goreportcard.com/report/github.com/aquasecurity/trivy
@@ -207,3 +213,7 @@ The official documentation, which provides detailed installation, configuration,
 [alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
 [action]: https://github.com/aquasecurity/trivy-action
 [vscode]: https://github.com/aquasecurity/trivy-vscode-extension
+
+[aquasec]: https://aquasec.com
+[oss]: https://www.aquasec.com/products/open-source-projects/
+[discussions]: https://github.com/aquasecurity/trivy/discussions

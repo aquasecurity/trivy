@@ -15,7 +15,6 @@ import (
 
 	"github.com/aquasecurity/fanal/cache"
 	ftypes "github.com/aquasecurity/fanal/types"
-	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
@@ -310,6 +309,10 @@ func TestCacheServer_PutBlob(t *testing.T) {
 										SrcVersion: "1.2.3",
 										SrcRelease: "1",
 										SrcEpoch:   2,
+										Layer: &common.Layer{
+											Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+											DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+										},
 									},
 									{
 										Name:       "vim-minimal",
@@ -321,6 +324,22 @@ func TestCacheServer_PutBlob(t *testing.T) {
 										SrcVersion: "7.4.160",
 										SrcRelease: "5.el7",
 										SrcEpoch:   2,
+										Layer: &common.Layer{
+											Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+											DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+										},
+									},
+									{
+										Name:       "node-minimal",
+										Version:    "17.1.0",
+										Release:    "5.el7",
+										Epoch:      2,
+										Arch:       "x86_64",
+										SrcName:    "node",
+										SrcVersion: "17.1.0",
+										SrcRelease: "5.el7",
+										SrcEpoch:   2,
+										Layer:      nil,
 									},
 								},
 							},
@@ -371,6 +390,10 @@ func TestCacheServer_PutBlob(t *testing.T) {
 										SrcVersion: "1.2.3",
 										SrcRelease: "1",
 										SrcEpoch:   2,
+										Layer: ftypes.Layer{
+											Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+											DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+										},
 									},
 									{
 										Name:       "vim-minimal",
@@ -382,6 +405,22 @@ func TestCacheServer_PutBlob(t *testing.T) {
 										SrcVersion: "7.4.160",
 										SrcRelease: "5.el7",
 										SrcEpoch:   2,
+										Layer: ftypes.Layer{
+											Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+											DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+										},
+									},
+									{
+										Name:       "node-minimal",
+										Version:    "17.1.0",
+										Release:    "5.el7",
+										Epoch:      2,
+										Arch:       "x86_64",
+										SrcName:    "node",
+										SrcVersion: "17.1.0",
+										SrcRelease: "5.el7",
+										SrcEpoch:   2,
+										Layer:      ftypes.Layer{},
 									},
 								},
 							},
@@ -390,18 +429,14 @@ func TestCacheServer_PutBlob(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "php-app/composer.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: deptypes.Library{
-											Name:    "guzzlehttp/guzzle",
-											Version: "6.2.0",
-										},
+										Name:    "guzzlehttp/guzzle",
+										Version: "6.2.0",
 									},
 									{
-										Library: deptypes.Library{
-											Name:    "guzzlehttp/promises",
-											Version: "v1.3.1",
-										},
+										Name:    "guzzlehttp/promises",
+										Version: "v1.3.1",
 									},
 								},
 							},

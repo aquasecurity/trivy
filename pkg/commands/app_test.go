@@ -3,7 +3,6 @@ package commands
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -36,7 +35,7 @@ func Test_showVersion(t *testing.T) {
 			},
 			expectedOutput: `Version: v1.2.3
 Vulnerability DB:
-  Type: Light
+  Type: Full
   Version: 42
   UpdatedAt: 2020-03-16 23:40:20 +0000 UTC
   NextUpdate: 2020-03-16 23:57:00 +0000 UTC
@@ -81,7 +80,7 @@ Vulnerability DB:
 			case tt.args.cacheDir != "":
 				cacheDir = tt.args.cacheDir
 			default:
-				cacheDir, _ = ioutil.TempDir("", "Test_showVersion-*")
+				cacheDir, _ = os.MkdirTemp("", "Test_showVersion-*")
 				defer os.RemoveAll(cacheDir)
 			}
 

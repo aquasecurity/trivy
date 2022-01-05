@@ -4,12 +4,14 @@
 package integration
 
 import (
+	"bytes"
+	"compress/gzip"
 	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -17,20 +19,20 @@ import (
 	"testing"
 
 	"github.com/docker/go-connections/nat"
+	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
+	"github.com/google/go-containerregistry/pkg/v1/remote"
+	"github.com/google/go-containerregistry/pkg/v1/tarball"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	testcontainers "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	_ "github.com/aquasecurity/fanal/analyzer"
-	testdocker "github.com/aquasecurity/trivy/integration/docker"
 	"github.com/aquasecurity/trivy/pkg/commands"
-	"github.com/aquasecurity/trivy/pkg/report"
 )
 
 const (
-	registryImage = "registry:2"
+	registryImage = "registry:2.7.0"
 	registryPort  = "5443/tcp"
 
 	authImage    = "cesanta/docker_auth:1"
@@ -53,6 +55,7 @@ func setupRegistry(ctx context.Context, baseDir string, authURL *url.URL) (testc
 			"REGISTRY_AUTH_TOKEN_SERVICE":        "registry.docker.io",
 			"REGISTRY_AUTH_TOKEN_ISSUER":         "Trivy auth server",
 			"REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE": "/certs/cert.pem",
+			"REGISTRY_AUTH_TOKEN_AUTOREDIRECT":   "false",
 		},
 		BindMounts: map[string]string{
 			filepath.Join(baseDir, "data", "certs"): "/certs",
@@ -134,13 +137,12 @@ func TestRegistry(t *testing.T) {
 	registryURL, err := getURL(ctx, registryC, registryPort)
 	require.NoError(t, err)
 
-	config := testdocker.RegistryConfig{
-		URL:      registryURL,
+	auth := &authn.Basic{
 		Username: authUsername,
 		Password: authPassword,
 	}
 
-	testCases := []struct {
+	tests := []struct {
 		name      string
 		imageName string
 		imageFile string
@@ -179,98 +181,73 @@ func TestRegistry(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
+	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			d, err := testdocker.New()
-			require.NoError(t, err)
-
 			s := fmt.Sprintf("%s/%s", registryURL.Host, tc.imageName)
 			imageRef, err := name.ParseReference(s)
 			require.NoError(t, err)
 
 			// 1. Load a test image from the tar file, tag it and push to the test registry.
-			err = d.ReplicateImage(ctx, tc.imageName, tc.imageFile, config)
+			err = replicateImage(imageRef, tc.imageFile, auth)
 			require.NoError(t, err)
 
 			// 2. Scan it
-			resultFile, cleanup, err := scan(t, imageRef, baseDir, tc.golden, tc.option)
+			resultFile, err := scan(t, imageRef, baseDir, tc.golden, tc.option)
 
 			if tc.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.wantErr, err)
 				return
-			} else {
-				require.NoError(t, err)
 			}
-			defer cleanup()
-
-			// 3. Compare want and got
-			golden, err := os.Open(tc.golden)
-			assert.NoError(t, err)
-
-			var want report.Results
-			err = json.NewDecoder(golden).Decode(&want)
 			require.NoError(t, err)
 
-			result, err := os.Open(resultFile)
-			assert.NoError(t, err)
+			// 3. Read want and got
+			want := readReport(t, tc.golden)
+			got := readReport(t, resultFile)
 
-			var got report.Results
-			err = json.NewDecoder(result).Decode(&got)
-			require.NoError(t, err)
+			// 4 Update some dynamic fields
+			want.ArtifactName = s
+			for i := range want.Results {
+				want.Results[i].Target = fmt.Sprintf("%s (alpine 3.10.2)", s)
+			}
 
-			assert.Equal(t, want[0].Vulnerabilities, got[0].Vulnerabilities)
-			assert.Equal(t, want[0].Vulnerabilities, got[0].Vulnerabilities)
+			// 5. Compare want and got
+			assert.Equal(t, want, got)
 		})
 	}
 }
 
-func scan(t *testing.T, imageRef name.Reference, baseDir, goldenFile string, opt registryOption) (string, func(), error) {
-	cleanup := func() {}
-
+func scan(t *testing.T, imageRef name.Reference, baseDir, goldenFile string, opt registryOption) (string, error) {
 	// Set up testing DB
-	cacheDir := gunzipDB(t)
+	cacheDir := initDB(t)
 
 	// Setup the output file
-	var outputFile string
-	if *update && goldenFile != "" {
+	outputFile := filepath.Join(t.TempDir(), "output.json")
+	if *update {
 		outputFile = goldenFile
-	} else {
-		output, err := ioutil.TempFile("", "integration")
-		if err != nil {
-			return "", cleanup, err
-		}
-		defer output.Close()
-
-		outputFile = output.Name()
-		cleanup = func() {
-			os.Remove(outputFile)
-		}
 	}
 
 	// Setup env
-	if err := setupEnv(imageRef, baseDir, opt); err != nil {
-		return "", cleanup, err
+	if err := setupEnv(t, imageRef, baseDir, opt); err != nil {
+		return "", err
 	}
-	defer unsetEnv()
 
 	// Setup CLI App
 	app := commands.NewApp("dev")
-	app.Writer = ioutil.Discard
+	app.Writer = io.Discard
 
-	osArgs := []string{"trivy", "--cache-dir", cacheDir, "--format", "json", "--skip-update", "--output", outputFile, imageRef.Name()}
+	osArgs := []string{"trivy", "--cache-dir", cacheDir, "image", "--format", "json", "--skip-update",
+		"--output", outputFile, imageRef.Name()}
 
 	// Run Trivy
 	if err := app.Run(osArgs); err != nil {
-		return "", cleanup, err
+		return "", err
 	}
-	return outputFile, cleanup, nil
+	return outputFile, nil
 }
 
-func setupEnv(imageRef name.Reference, baseDir string, opt registryOption) error {
-	if err := os.Setenv("TRIVY_INSECURE", "true"); err != nil {
-		return err
-	}
+func setupEnv(t *testing.T, imageRef name.Reference, baseDir string, opt registryOption) error {
+	t.Setenv("TRIVY_INSECURE", "true")
 
 	if opt.Username != "" && opt.Password != "" {
 		if opt.RegistryToken {
@@ -279,26 +256,10 @@ func setupEnv(imageRef name.Reference, baseDir string, opt registryOption) error
 			if err != nil {
 				return err
 			}
-			if err := os.Setenv("TRIVY_REGISTRY_TOKEN", token); err != nil {
-				return err
-			}
+			t.Setenv("TRIVY_REGISTRY_TOKEN", token)
 		} else {
-			if err := os.Setenv("TRIVY_USERNAME", opt.Username); err != nil {
-				return err
-			}
-			if err := os.Setenv("TRIVY_PASSWORD", opt.Password); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
-
-func unsetEnv() error {
-	envs := []string{"TRIVY_INSECURE", "TRIVY_USERNAME", "TRIVY_PASSWORD", "TRIVY_REGISTRY_TOKEN"}
-	for _, e := range envs {
-		if err := os.Unsetenv(e); err != nil {
-			return err
+			t.Setenv("TRIVY_USERNAME", opt.Username)
+			t.Setenv("TRIVY_PASSWORD", opt.Password)
 		}
 	}
 	return nil
@@ -306,7 +267,7 @@ func unsetEnv() error {
 
 func requestRegistryToken(imageRef name.Reference, baseDir string, opt registryOption) (string, error) {
 	// Create a CA certificate pool and add cert.pem to it
-	caCert, err := ioutil.ReadFile(filepath.Join(baseDir, "data", "certs", "cert.pem"))
+	caCert, err := os.ReadFile(filepath.Join(baseDir, "data", "certs", "cert.pem"))
 	if err != nil {
 		return "", err
 	}
@@ -351,4 +312,33 @@ func requestRegistryToken(imageRef name.Reference, baseDir string, opt registryO
 	}
 
 	return r.AccessToken, nil
+}
+
+// ReplicateImage tags the given imagePath and pushes it to the given dest registry.
+func replicateImage(imageRef name.Reference, imagePath string, auth authn.Authenticator) error {
+	img, err := tarball.Image(func() (io.ReadCloser, error) {
+		b, err := os.ReadFile(imagePath)
+		if err != nil {
+			return nil, err
+		}
+		gr, err := gzip.NewReader(bytes.NewReader(b))
+		if err != nil {
+			return nil, err
+		}
+		return io.NopCloser(gr), nil
+	}, nil)
+	if err != nil {
+		return err
+	}
+
+	t := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
+	err = remote.Write(imageRef, img, remote.WithAuth(auth), remote.WithTransport(t))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

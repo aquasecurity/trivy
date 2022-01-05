@@ -9,7 +9,6 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	ftypes "github.com/aquasecurity/fanal/types"
-	dtypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
@@ -68,9 +67,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     ftypes.Bundler,
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "4.0.2"},
+										Name:    "rails",
+										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 										},
@@ -194,9 +194,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "4.0.2"},
+										Name:    "rails",
+										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 										},
@@ -331,9 +332,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "4.0.2"},
+										Name:    "rails",
+										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 										},
@@ -389,9 +391,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "4.0.2"},
+										Name:    "rails",
+										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 										},
@@ -467,9 +470,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "4.0.2"},
+										Name:    "rails",
+										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 										},
@@ -567,9 +571,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "4.0.2"},
+										Name:    "rails",
+										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
 										},
@@ -579,9 +584,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "composer",
 								FilePath: "/app/composer-lock.json",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "laravel/framework", Version: "6.0.0"},
+										Name:    "laravel/framework",
+										Version: "6.0.0",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
 										},
@@ -611,95 +617,6 @@ func TestScanner_Scan(t *testing.T) {
 				},
 				{
 					Target: "/app/composer-lock.json",
-					Vulnerabilities: []types.DetectedVulnerability{
-						{
-							VulnerabilityID:  "CVE-2021-21263",
-							PkgName:          "laravel/framework",
-							InstalledVersion: "6.0.0",
-							FixedVersion:     "8.22.1, 7.30.3, 6.20.12",
-							Layer: ftypes.Layer{
-								DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
-							},
-						},
-					},
-					Class: report.ClassLangPkg,
-					Type:  ftypes.Composer,
-				},
-			},
-			wantOS: &ftypes.OS{
-				Family: "alpine",
-				Name:   "3.11",
-			},
-		},
-		{
-			name: "happy path with skip directories",
-			args: args{
-				target:   "alpine:latest",
-				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				options: types.ScanOptions{
-					VulnType:       []string{types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability, types.SecurityCheckConfig},
-					SkipDirs:       []string{"/usr/lib/ruby/gems", "/app/k8s"},
-				},
-			},
-			fixtures: []string{"testdata/fixtures/happy.yaml"},
-			applyLayersExpectation: ApplierApplyLayersExpectation{
-				Args: ApplierApplyLayersArgs{
-					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-				},
-				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						OS: &ftypes.OS{
-							Family: "alpine",
-							Name:   "3.11",
-						},
-						Packages: []ftypes.Package{
-							{Name: "musl", Version: "1.2.3"},
-						},
-						Applications: []ftypes.Application{
-							{
-								Type:     "bundler",
-								FilePath: "usr/lib/ruby/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
-									{
-										Library: dtypes.Library{Name: "rails", Version: "5.1"},
-										Layer: ftypes.Layer{
-											DiffID: "sha256:5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
-										},
-									},
-								},
-							},
-							{
-								Type:     "composer",
-								FilePath: "app/composer-lock.json",
-								Libraries: []ftypes.LibraryInfo{
-									{
-										Library: dtypes.Library{Name: "laravel/framework", Version: "6.0.0"},
-										Layer: ftypes.Layer{
-											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
-										},
-									},
-								},
-							},
-						},
-						Misconfigurations: []ftypes.Misconfiguration{
-							{
-								FileType: ftypes.Kubernetes,
-								FilePath: "/app/k8s/deployment.yaml",
-								Failures: ftypes.MisconfResults{
-									{
-										Namespace: "appshield.kubernetes.id100",
-										Message:   "something bad",
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			wantResults: report.Results{
-				{
-					Target: "app/composer-lock.json",
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2021-21263",
@@ -979,9 +896,10 @@ func TestScanner_Scan(t *testing.T) {
 							{
 								Type:     "bundler",
 								FilePath: "/app/Gemfile.lock",
-								Libraries: []ftypes.LibraryInfo{
+								Libraries: []ftypes.Package{
 									{
-										Library: dtypes.Library{Name: "rails", Version: "6.0"},
+										Name:    "rails",
+										Version: "6.0",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6",
 										},
@@ -1022,74 +940,6 @@ func TestScanner_Scan(t *testing.T) {
 
 			applier.AssertExpectations(t)
 			ospkgDetector.AssertExpectations(t)
-		})
-	}
-}
-
-func Test_skipped(t *testing.T) {
-	type args struct {
-		filePath  string
-		skipFiles []string
-		skipDirs  []string
-	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{
-			name: "no skip directory",
-			args: args{
-				filePath: "app/Gemfile.lock",
-				skipDirs: []string{},
-			},
-			want: false,
-		},
-		{
-			name: "skip directory with the leading slash",
-			args: args{
-				filePath: "app/Gemfile.lock",
-				skipDirs: []string{"/app"},
-			},
-			want: true,
-		},
-		{
-			name: "skip directory without a slash",
-			args: args{
-				filePath: "usr/lib/ruby/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock",
-				skipDirs: []string{"/usr/lib/ruby"},
-			},
-			want: true,
-		},
-		{
-			name: "skip file with the leading slash",
-			args: args{
-				filePath:  "Gemfile.lock",
-				skipFiles: []string{"/Gemfile.lock"},
-			},
-			want: true,
-		},
-		{
-			name: "skip file without a slash",
-			args: args{
-				filePath:  "Gemfile.lock",
-				skipFiles: []string{"Gemfile.lock"},
-			},
-			want: true,
-		},
-		{
-			name: "not skipped",
-			args: args{
-				filePath: "usr/lib/ruby/gems/2.5.0/gems/http_parser.rb-0.6.0/Gemfile.lock",
-				skipDirs: []string{"lib/ruby"},
-			},
-			want: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := skipped(tt.args.filePath, tt.args.skipFiles, tt.args.skipDirs)
-			assert.Equal(t, tt.want, got)
 		})
 	}
 }

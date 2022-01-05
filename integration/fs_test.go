@@ -6,11 +6,11 @@ package integration
 import (
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/commands"
 )
@@ -85,7 +85,7 @@ func TestFilesystem(t *testing.T) {
 	}
 
 	// Set up testing DB
-	cacheDir := gunzipDB(t)
+	cacheDir := initDB(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -105,9 +105,7 @@ func TestFilesystem(t *testing.T) {
 			}
 
 			if len(tt.args.severity) != 0 {
-				osArgs = append(osArgs,
-					[]string{"--severity", strings.Join(tt.args.severity, ",")}...,
-				)
+				osArgs = append(osArgs, "--severity", strings.Join(tt.args.severity, ","))
 			}
 
 			if len(tt.args.ignoreIDs) != 0 {
@@ -118,15 +116,9 @@ func TestFilesystem(t *testing.T) {
 			}
 
 			// Setup the output file
-			var outputFile string
+			outputFile := filepath.Join(t.TempDir(), "output.json")
 			if *update {
 				outputFile = tt.golden
-			} else {
-				output, err := os.CreateTemp("", "integration")
-				require.NoError(t, err)
-				assert.Nil(t, output.Close())
-				defer os.Remove(output.Name())
-				outputFile = output.Name()
 			}
 
 			osArgs = append(osArgs, "--output", outputFile)
@@ -140,12 +132,7 @@ func TestFilesystem(t *testing.T) {
 			assert.Nil(t, app.Run(osArgs))
 
 			// Compare want and got
-			want, err := os.ReadFile(tt.golden)
-			assert.NoError(t, err)
-			got, err := os.ReadFile(outputFile)
-			assert.NoError(t, err)
-
-			assert.JSONEq(t, string(want), string(got))
+			compareReports(t, tt.golden, outputFile)
 		})
 	}
 }

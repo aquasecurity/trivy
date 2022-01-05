@@ -5,6 +5,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
@@ -32,6 +33,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int32(pkg.SrcEpoch),
 			License:    pkg.License,
+			Layer:      ConvertToRPCLayer(pkg.Layer),
 		})
 	}
 	return rpcPkgs
@@ -52,24 +54,23 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int(pkg.SrcEpoch),
 			License:    pkg.License,
+			Layer:      ConvertFromRPCLayer(pkg.Layer),
 		})
 	}
 	return pkgs
 }
 
 // ConvertFromRPCLibraries returns list of Fanal library
-func ConvertFromRPCLibraries(rpcLibs []*common.Library) []ftypes.LibraryInfo {
-	var libs []ftypes.LibraryInfo
+func ConvertFromRPCLibraries(rpcLibs []*common.Library) []ftypes.Package {
+	var pkgs []ftypes.Package
 	for _, l := range rpcLibs {
-		libs = append(libs, ftypes.LibraryInfo{
-			Library: deptypes.Library{
-				Name:    l.Name,
-				Version: l.Version,
-				License: l.License,
-			},
+		pkgs = append(pkgs, ftypes.Package{
+			Name:    l.Name,
+			Version: l.Version,
+			License: l.License,
 		})
 	}
-	return libs
+	return pkgs
 }
 
 // ConvertToRPCLibraries returns list of libraries
@@ -112,22 +113,33 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			publishedDate, _ = ptypes.TimestampProto(*vuln.PublishedDate) // nolint: errcheck
 		}
 
+		var customAdvisoryData, customVulnData *structpb.Value
+		if vuln.Custom != nil {
+			customAdvisoryData, _ = structpb.NewValue(vuln.Custom) // nolint: errcheck
+		}
+		if vuln.Vulnerability.Custom != nil {
+			customVulnData, _ = structpb.NewValue(vuln.Vulnerability.Custom) // nolint: errcheck
+		}
+
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
-			VulnerabilityId:  vuln.VulnerabilityID,
-			PkgName:          vuln.PkgName,
-			InstalledVersion: vuln.InstalledVersion,
-			FixedVersion:     vuln.FixedVersion,
-			Title:            vuln.Title,
-			Description:      vuln.Description,
-			Severity:         common.Severity(severity),
-			References:       vuln.References,
-			Layer:            ConvertToRPCLayer(vuln.Layer),
-			Cvss:             cvssMap,
-			SeveritySource:   vuln.SeveritySource,
-			CweIds:           vuln.CweIDs,
-			PrimaryUrl:       vuln.PrimaryURL,
-			LastModifiedDate: lastModifiedDate,
-			PublishedDate:    publishedDate,
+			VulnerabilityId:    vuln.VulnerabilityID,
+			VendorIds:          vuln.VendorIDs,
+			PkgName:            vuln.PkgName,
+			InstalledVersion:   vuln.InstalledVersion,
+			FixedVersion:       vuln.FixedVersion,
+			Title:              vuln.Title,
+			Description:        vuln.Description,
+			Severity:           common.Severity(severity),
+			References:         vuln.References,
+			Layer:              ConvertToRPCLayer(vuln.Layer),
+			Cvss:               cvssMap,
+			SeveritySource:     vuln.SeveritySource,
+			CweIds:             vuln.CweIDs,
+			PrimaryUrl:         vuln.PrimaryURL,
+			LastModifiedDate:   lastModifiedDate,
+			PublishedDate:      publishedDate,
+			CustomAdvisoryData: customAdvisoryData,
+			CustomVulnData:     customVulnData,
 		})
 	}
 	return rpcVulns
@@ -211,6 +223,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 
 		vulns = append(vulns, types.DetectedVulnerability{
 			VulnerabilityID:  vuln.VulnerabilityId,
+			VendorIDs:        vuln.VendorIds,
 			PkgName:          vuln.PkgName,
 			InstalledVersion: vuln.InstalledVersion,
 			FixedVersion:     vuln.FixedVersion,
@@ -223,10 +236,12 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				CweIDs:           vuln.CweIds,
 				LastModifiedDate: lastModifiedDate,
 				PublishedDate:    publishedDate,
+				Custom:           vuln.CustomVulnData.AsInterface(),
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: vuln.SeveritySource,
 			PrimaryURL:     vuln.PrimaryUrl,
+			Custom:         vuln.CustomAdvisoryData.AsInterface(),
 		})
 	}
 	return vulns
@@ -256,6 +271,9 @@ func ConvertFromRPCMisconfs(rpcMisconfs []*common.DetectedMisconfiguration) []ty
 
 // ConvertFromRPCLayer converts *common.Layer to fanal.Layer
 func ConvertFromRPCLayer(rpcLayer *common.Layer) ftypes.Layer {
+	if rpcLayer == nil {
+		return ftypes.Layer{}
+	}
 	return ftypes.Layer{
 		Digest: rpcLayer.Digest,
 		DiffID: rpcLayer.DiffId,
@@ -370,6 +388,7 @@ func ConvertToRPCOS(fos *ftypes.OS) *common.OS {
 	return &common.OS{
 		Family: fos.Family,
 		Name:   fos.Name,
+		Eosl:   fos.Eosl,
 	}
 }
 
@@ -408,9 +427,9 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 		var libs []*common.Library
 		for _, lib := range app.Libraries {
 			libs = append(libs, &common.Library{
-				Name:    lib.Library.Name,
-				Version: lib.Library.Version,
-				License: lib.Library.License,
+				Name:    lib.Name,
+				Version: lib.Version,
+				License: lib.License,
 			})
 		}
 		applications = append(applications, &common.Application{
@@ -474,14 +493,7 @@ func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.Miss
 }
 
 // ConvertToRPCScanResponse converts report.Result to ScanResponse
-func ConvertToRPCScanResponse(results report.Results, os *ftypes.OS) *scanner.ScanResponse {
-	rpcOS := &common.OS{}
-	if os != nil {
-		rpcOS.Family = os.Family
-		rpcOS.Name = os.Name
-		rpcOS.Eosl = os.Eosl
-	}
-
+func ConvertToRPCScanResponse(results report.Results, fos *ftypes.OS) *scanner.ScanResponse {
 	var rpcResults []*scanner.Result
 	for _, result := range results {
 		rpcResults = append(rpcResults, &scanner.Result{
@@ -495,7 +507,7 @@ func ConvertToRPCScanResponse(results report.Results, os *ftypes.OS) *scanner.Sc
 	}
 
 	return &scanner.ScanResponse{
-		Os:      rpcOS,
+		Os:      ConvertToRPCOS(fos),
 		Results: rpcResults,
 	}
 }

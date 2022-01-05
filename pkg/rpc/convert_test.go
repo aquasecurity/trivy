@@ -41,6 +41,10 @@ func TestConvertToRpcPkgs(t *testing.T) {
 						SrcRelease: "1",
 						SrcEpoch:   2,
 						License:    "MIT",
+						Layer: ftypes.Layer{
+							Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
+							DiffID: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
+						},
 					},
 				},
 			},
@@ -56,6 +60,10 @@ func TestConvertToRpcPkgs(t *testing.T) {
 					SrcRelease: "1",
 					SrcEpoch:   2,
 					License:    "MIT",
+					Layer: &common.Layer{
+						Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
+						DiffId: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
+					},
 				},
 			},
 		},
@@ -91,6 +99,10 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 						SrcRelease: "1",
 						SrcEpoch:   2,
 						License:    "MIT",
+						Layer: &common.Layer{
+							Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
+							DiffId: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
+						},
 					},
 				},
 			},
@@ -106,6 +118,10 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 					SrcRelease: "1",
 					SrcEpoch:   2,
 					License:    "MIT",
+					Layer: ftypes.Layer{
+						Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
+						DiffID: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
+					},
 				},
 			},
 		},
@@ -125,7 +141,7 @@ func TestConvertFromRpcLibraries(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []ftypes.LibraryInfo
+		want []ftypes.Package
 	}{
 		{
 			name: "happy path",
@@ -135,9 +151,9 @@ func TestConvertFromRpcLibraries(t *testing.T) {
 					{Name: "bar", Version: "4.5.6"},
 				},
 			},
-			want: []ftypes.LibraryInfo{
-				{Library: ptypes.Library{Name: "foo", Version: "1.2.3"}},
-				{Library: ptypes.Library{Name: "bar", Version: "4.5.6"}},
+			want: []ftypes.Package{
+				{Name: "foo", Version: "1.2.3"},
+				{Name: "bar", Version: "4.5.6"},
 			},
 		},
 	}

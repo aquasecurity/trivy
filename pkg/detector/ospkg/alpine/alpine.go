@@ -9,6 +9,7 @@ import (
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alpine"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -40,6 +41,7 @@ var (
 		"3.12": time.Date(2022, 5, 1, 23, 59, 59, 0, time.UTC),
 		"3.13": time.Date(2022, 11, 1, 23, 59, 59, 0, time.UTC),
 		"3.14": time.Date(2023, 5, 1, 23, 59, 59, 0, time.UTC),
+		"3.15": time.Date(2023, 11, 1, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -100,24 +102,53 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 		}
 
 		for _, adv := range advisories {
-			fixedVersion, err := version.NewVersion(adv.FixedVersion)
-			if err != nil {
-				log.Logger.Debugf("failed to parse Alpine Linux fixed version: %s", err)
+			if !s.isVulnerable(installedVersion, adv) {
 				continue
 			}
-			if installedVersion.LessThan(fixedVersion) {
-				vuln := types.DetectedVulnerability{
-					VulnerabilityID:  adv.VulnerabilityID,
-					PkgName:          pkg.Name,
-					InstalledVersion: installed,
-					FixedVersion:     adv.FixedVersion,
-					Layer:            pkg.Layer,
-				}
-				vulns = append(vulns, vuln)
-			}
+			vulns = append(vulns, types.DetectedVulnerability{
+				VulnerabilityID:  adv.VulnerabilityID,
+				PkgName:          pkg.Name,
+				InstalledVersion: installed,
+				FixedVersion:     adv.FixedVersion,
+				Layer:            pkg.Layer,
+				Custom:           adv.Custom,
+			})
 		}
 	}
 	return vulns, nil
+}
+
+func (s *Scanner) isVulnerable(installedVersion version.Version, adv dbTypes.Advisory) bool {
+	// This logic is for unfixed vulnerabilities, but Trivy DB doesn't have advisories for unfixed vulnerabilities for now
+	// because Alpine just provides potentially vulnerable packages. It will cause a lot of false positives.
+	// This is for Aqua commercial products.
+	if adv.AffectedVersion != "" {
+		// AffectedVersion means which version introduced this vulnerability.
+		affectedVersion, err := version.NewVersion(adv.AffectedVersion)
+		if err != nil {
+			log.Logger.Debugf("failed to parse Alpine Linux affected package version: %s", err)
+			return false
+		}
+		if affectedVersion.GreaterThan(installedVersion) {
+			return false
+		}
+	}
+
+	// This logic is also for unfixed vulnerabilities.
+	if adv.FixedVersion == "" {
+		// It means the unfixed vulnerability
+		return true
+	}
+
+	// Compare versions for fixed vulnerabilities
+	fixedVersion, err := version.NewVersion(adv.FixedVersion)
+	if err != nil {
+		log.Logger.Debugf("failed to parse Alpine Linux fixed version: %s", err)
+		return false
+	}
+
+	// It means the fixed vulnerability
+	return installedVersion.LessThan(fixedVersion)
 }
 
 // IsSupportedVersion checks the OSFamily can be scanned using Alpine scanner

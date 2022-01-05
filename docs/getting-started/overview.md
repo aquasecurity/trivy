@@ -8,7 +8,7 @@ Trivy detects two types of security issues:
 Trivy can scan three different artifacts:
 
 - [Container Images][container]
-- [Filesystem][filesystem]
+- [Filesystem][filesystem] and [Rootfs][rootfs]
 - [Git Repositories][repo]
 
 Trivy can be run in two different modes:
@@ -53,7 +53,7 @@ See [Integrations][integrations] for details.
         - A remote image in Docker Registry such as Docker Hub, ECR, GCR and ACR
         - A tar archive stored in the `docker save` / `podman save` formatted file
         - An image directory compliant with [OCI Image Format][oci]
-    - local filesystem
+    - local filesystem and rootfs
     - remote git repository
 
 Please see [LICENSE][license] for Trivy licensing information.
@@ -64,6 +64,7 @@ Please see [LICENSE][license] for Trivy licensing information.
 [vuln]: ../vulnerability/scanning/index.md
 [misconf]: ../misconfiguration/index.md
 [container]: ../vulnerability/scanning/image.md
+[rootfs]: ../vulnerability/scanning/rootfs.md
 [filesystem]: ../vulnerability/scanning/filesystem.md
 [repo]: ../vulnerability/scanning/git-repository.md
 

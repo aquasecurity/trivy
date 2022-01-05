@@ -3,8 +3,6 @@ package local
 import (
 	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -31,6 +29,7 @@ var (
 		ftypes.PythonPkg: "Python",
 		ftypes.GemSpec:   "Ruby",
 		ftypes.NodePkg:   "Node.js",
+		ftypes.Jar:       "Java",
 	}
 )
 
@@ -191,9 +190,6 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		if len(app.Libraries) == 0 {
 			continue
 		}
-		if skipped(app.FilePath, options.SkipFiles, options.SkipDirs) {
-			continue
-		}
 
 		// Prevent the same log messages from being displayed many times for the same type.
 		if _, ok := printedTypes[app.Type]; !ok {
@@ -220,7 +216,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 			Type:            app.Type,
 		}
 		if options.ListAllPackages {
-			libReport.Packages = s.listAllPkgs(app)
+			libReport.Packages = app.Libraries
 		}
 		results = append(results, libReport)
 	}
@@ -230,31 +226,10 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 	return results, nil
 }
 
-func (s Scanner) listAllPkgs(app ftypes.Application) []ftypes.Package {
-	var pkgs []ftypes.Package
-	for _, lib := range app.Libraries {
-		pkgs = append(pkgs, ftypes.Package{
-			Name:    lib.Library.Name,
-			Version: lib.Library.Version,
-			License: lib.Library.License,
-			Layer:   lib.Layer,
-		})
-	}
-	sort.Slice(pkgs, func(i, j int) bool {
-		return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
-	})
-
-	return pkgs
-}
-
 func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) report.Results {
 	log.Logger.Infof("Detected config files: %d", len(misconfs))
 	var results report.Results
 	for _, misconf := range misconfs {
-		if skipped(misconf.FilePath, options.SkipFiles, options.SkipDirs) {
-			continue
-		}
-
 		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
 
 		var detected []types.DetectedMisconfiguration
@@ -331,30 +306,14 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		Status:      status,
 		Layer:       layer,
 		Traces:      res.Traces,
+		IacMetadata: ftypes.IacMetadata{
+			Resource:  res.Resource,
+			Provider:  res.Provider,
+			Service:   res.Service,
+			StartLine: res.StartLine,
+			EndLine:   res.EndLine,
+		},
 	}
-}
-
-func skipped(filePath string, skipFiles, skipDirs []string) bool {
-	filePath = strings.TrimLeft(filepath.Clean(filePath), string(os.PathSeparator))
-	for _, skipFile := range skipFiles {
-		skipFile = strings.TrimLeft(filepath.Clean(skipFile), string(os.PathSeparator))
-		if filePath == skipFile {
-			return true
-		}
-	}
-
-	for _, skipDir := range skipDirs {
-		skipDir = strings.TrimLeft(filepath.Clean(skipDir), string(os.PathSeparator))
-		rel, err := filepath.Rel(skipDir, filePath)
-		if err != nil {
-			log.Logger.Warnf("Unexpected error while skipping directories: %s", err)
-			return false
-		}
-		if !strings.HasPrefix(rel, "..") {
-			return true
-		}
-	}
-	return false
 }
 
 func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {

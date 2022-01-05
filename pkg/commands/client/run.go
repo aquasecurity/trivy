@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
+	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -30,6 +31,9 @@ func Run(cliCtx *cli.Context) error {
 
 	ctx, cancel := context.WithTimeout(cliCtx.Context, opt.Timeout)
 	defer cancel()
+
+	// Disable the lock file scanning
+	opt.DisabledAnalyzers = analyzer.TypeLockfiles
 
 	err = runWithTimeout(ctx, opt)
 	if xerrors.Is(err, context.DeadlineExceeded) {
@@ -115,19 +119,31 @@ func initialize(opt *Option) error {
 	return nil
 }
 
+func disabledAnalyzers(opt Option) []analyzer.Type {
+	// Specified analyzers to be disabled depending on scanning modes
+	// e.g. The 'image' subcommand should disable the lock file scanning.
+	analyzers := opt.DisabledAnalyzers
+
+	// It doesn't analyze apk commands by default.
+	if !opt.ScanRemovedPkgs {
+		analyzers = append(analyzers, analyzer.TypeApkCommand)
+	}
+
+	// Don't analyze programming language packages when not running in 'library' mode
+	if !utils.StringInSlice(types.VulnTypeLibrary, opt.VulnType) {
+		analyzers = append(analyzers, analyzer.TypeLanguages...)
+	}
+
+	return analyzers
+}
+
 func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func(), error) {
 	remoteCache := cache.NewRemoteCache(cache.RemoteURL(opt.RemoteAddr), opt.CustomHeaders)
-
-	// By default, apk commands are not analyzed.
-	disabledAnalyzers := []analyzer.Type{analyzer.TypeApkCommand}
-	if opt.ScanRemovedPkgs {
-		disabledAnalyzers = []analyzer.Type{}
-	}
 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
-		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, false)
+		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.SkipPolicyUpdate)
 		if err != nil {
 			return scanner.Scanner{}, nil, xerrors.Errorf("failed to initialize default policies: %w", err)
 		}
@@ -141,10 +157,17 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 		}
 	}
 
+	artifactOpt := artifact.Option{
+		DisabledAnalyzers: disabledAnalyzers(opt),
+		SkipFiles:         opt.SkipFiles,
+		SkipDirs:          opt.SkipDirs,
+		Offline:           opt.OfflineScan,
+	}
+
 	if opt.Input != "" {
 		// Scan tar file
 		s, err := initializeArchiveScanner(ctx, opt.Input, remoteCache, client.CustomHeaders(opt.CustomHeaders),
-			client.RemoteURL(opt.RemoteAddr), opt.Timeout, disabledAnalyzers, nil, configScannerOptions)
+			client.RemoteURL(opt.RemoteAddr), opt.Timeout, artifactOpt, configScannerOptions)
 		if err != nil {
 			return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 		}
@@ -153,7 +176,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 
 	// Scan an image in Docker Engine or Docker Registry
 	s, cleanup, err := initializeDockerScanner(ctx, opt.Target, remoteCache, client.CustomHeaders(opt.CustomHeaders),
-		client.RemoteURL(opt.RemoteAddr), opt.Timeout, disabledAnalyzers, nil, configScannerOptions)
+		client.RemoteURL(opt.RemoteAddr), opt.Timeout, artifactOpt, configScannerOptions)
 	if err != nil {
 		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the docker scanner: %w", err)
 	}

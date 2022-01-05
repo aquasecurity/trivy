@@ -10,7 +10,7 @@ on:
       - 'LICENSE'
   pull_request:
 env:
-  GO_VERSION: "1.16"
+  GO_VERSION: "1.17"
 jobs:
   test:
     name: Test
@@ -75,7 +75,7 @@ jobs:
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v2
       with:
-        version: v0.164.0
+        version: v0.183.0
         args: release --snapshot --rm-dist --skip-publish
 
   build-documents:

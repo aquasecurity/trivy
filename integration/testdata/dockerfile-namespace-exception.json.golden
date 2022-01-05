@@ -1,12 +1,29 @@
-[
-  {
-    "Target": "Dockerfile",
-    "Class": "config",
-    "Type": "dockerfile",
-    "MisconfSummary": {
-      "Successes": 0,
-      "Failures": 0,
-      "Exceptions": 1
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/fs/namespace-exception",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
     }
-  }
-]
+  },
+  "Results": [
+    {
+      "Target": "Dockerfile",
+      "Class": "config",
+      "Type": "dockerfile",
+      "MisconfSummary": {
+        "Successes": 0,
+        "Failures": 0,
+        "Exceptions": 1
+      }
+    }
+  ]
+}

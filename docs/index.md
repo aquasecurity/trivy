@@ -32,8 +32,18 @@ All you need to do for scanning is to specify a target such as an image name of 
   <figcaption>Demo: Misconfiguration Detection</figcaption>
 </figure>
 
+---
+
+Trivy is an [Aqua Security][aquasec] open source project.  
+Learn about our open source work and portfolio [here][oss].  
+Contact us about any matter by opening a GitHub Discussion [here][discussions]
+
 [vulnerability]: vulnerability/scanning/index.md
 [misconf]: misconfiguration/index.md
 [os]: vulnerability/detection/os.md
 [lang]: vulnerability/detection/language.md
 [iac]: misconfiguration/iac.md
+
+[aquasec]: https://aquasec.com
+[oss]: https://www.aquasec.com/products/open-source-projects/
+[discussions]: https://github.com/aquasecurity/trivy/discussions
