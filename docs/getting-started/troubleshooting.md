@@ -69,11 +69,10 @@ Reference : [boltdb: Opening a database][boltdb].
 !!! error
     FATAL failed to download vulnerability DB
 
-If trivy is running behind corporate firewall try to whitelist urls below:
+If trivy is running behind corporate firewall, you have to add the following urls to your allowlist.
 
-- api.github.com
-- github.com
-- github-releases.githubusercontent.com
+- ghcr.io
+- pkg-containers.githubusercontent.com
 
 ## Homebrew
 ### Scope error
