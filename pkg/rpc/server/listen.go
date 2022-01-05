@@ -22,7 +22,7 @@ import (
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
-const updateInterval = 1 * time.Minute
+const updateInterval = 1 * time.Hour
 
 // Server represents Trivy server
 type Server struct {
