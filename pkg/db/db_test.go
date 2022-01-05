@@ -168,6 +168,8 @@ func TestClient_NeedsUpdate(t *testing.T) {
 }
 
 func TestClient_Download(t *testing.T) {
+	timeDownloadedAt := clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC))
+
 	tests := []struct {
 		name    string
 		input   string
@@ -178,9 +180,10 @@ func TestClient_Download(t *testing.T) {
 			name:  "happy path",
 			input: "testdata/db.tar.gz",
 			want: metadata.Metadata{
-				Version:    1,
-				NextUpdate: time.Date(3000, 1, 1, 18, 5, 43, 198355188, time.UTC),
-				UpdatedAt:  time.Date(3000, 1, 1, 12, 5, 43, 198355588, time.UTC),
+				Version:      1,
+				NextUpdate:   time.Date(3000, 1, 1, 18, 5, 43, 198355188, time.UTC),
+				UpdatedAt:    time.Date(3000, 1, 1, 12, 5, 43, 198355588, time.UTC),
+				DownloadedAt: time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
 		{
@@ -202,7 +205,7 @@ func TestClient_Download(t *testing.T) {
 			art, err := oci.NewArtifact("db", mediaType, true, oci.WithImage(img))
 			require.NoError(t, err)
 
-			client := db.NewClient(cacheDir, true, db.WithOCIArtifact(art))
+			client := db.NewClient(cacheDir, true, db.WithOCIArtifact(art), db.WithClock(timeDownloadedAt))
 			err = client.Download(context.Background(), cacheDir)
 			if tt.wantErr != "" {
 				require.Error(t, err)
@@ -215,64 +218,6 @@ func TestClient_Download(t *testing.T) {
 			got, err := meta.Get()
 			require.NoError(t, err)
 
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
-
-func TestClient_UpdateMetadata(t *testing.T) {
-	timeDownloadedAt := clocktesting.NewFakeClock(time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC))
-	tests := []struct {
-		name     string
-		metadata *metadata.Metadata
-		clock    clock.Clock
-		want     metadata.Metadata
-		wantErr  string
-	}{
-		{
-			name: "happy path",
-			metadata: &metadata.Metadata{
-				Version:    1,
-				NextUpdate: time.Date(3000, 1, 1, 18, 5, 43, 0, time.UTC),
-				UpdatedAt:  time.Date(3000, 1, 1, 12, 5, 43, 0, time.UTC),
-			},
-			clock: timeDownloadedAt,
-			want: metadata.Metadata{
-				Version:      1,
-				NextUpdate:   time.Date(3000, 1, 1, 18, 5, 43, 0, time.UTC),
-				UpdatedAt:    time.Date(3000, 1, 1, 12, 5, 43, 0, time.UTC),
-				DownloadedAt: time.Date(2019, 10, 1, 0, 0, 0, 0, time.UTC),
-			},
-		},
-		{
-			name:    "sad path, get metadata fails",
-			clock:   timeDownloadedAt,
-			wantErr: "no such file or directory",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cacheDir := t.TempDir()
-			mc := metadata.NewClient(cacheDir)
-
-			if tt.metadata != nil {
-				err := mc.Update(*tt.metadata)
-				require.NoError(t, err)
-			}
-
-			client := db.NewClient(cacheDir, true, db.WithClock(tt.clock))
-			err := client.UpdateDownloadedAt()
-			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
-			}
-
-			got, err := mc.Get()
-			require.NoError(t, err)
-
-			assert.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got)
 		})
 	}
