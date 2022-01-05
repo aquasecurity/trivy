@@ -91,9 +91,6 @@ func DownloadDB(appVersion, cacheDir string, quiet, skipUpdate bool) error {
 		if err = client.Download(ctx, cacheDir); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}
-		if err = client.UpdateDownloadedAt(); err != nil {
-			return xerrors.Errorf("unable to update database metadata: %w", err)
-		}
 	}
 
 	// for debug

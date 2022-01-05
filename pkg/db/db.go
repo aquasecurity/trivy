@@ -24,7 +24,6 @@ const (
 type Operation interface {
 	NeedsUpdate(cliVersion string, skip bool) (need bool, err error)
 	Download(ctx context.Context, dst string) (err error)
-	UpdateDownloadedAt() error
 }
 
 type options struct {
@@ -131,7 +130,7 @@ func (c *Client) isNewDB(meta metadata.Metadata) bool {
 
 // Download downloads the DB file
 func (c *Client) Download(ctx context.Context, dst string) error {
-	// Remove the metadata file before downloading DB
+	// Remove the metadata file under the cache directory before downloading DB
 	if err := c.metadata.Delete(); err != nil {
 		log.Logger.Debug("no metadata file")
 	}
@@ -144,26 +143,25 @@ func (c *Client) Download(ctx context.Context, dst string) error {
 		return xerrors.Errorf("database download error: %w", err)
 	}
 
+	if err := c.updateDownloadedAt(dst); err != nil {
+		return xerrors.Errorf("failed to update downloaded_at: %w", err)
+	}
 	return nil
 }
 
-// UpdateDownloadedAt updates the downloaded at
-func (c *Client) UpdateDownloadedAt() error {
+func (c *Client) updateDownloadedAt(dst string) error {
 	log.Logger.Debug("Updating database metadata...")
 
-	// make sure the DB has been successfully downloaded
-	if err := db.Init(c.cacheDir); err != nil {
-		return xerrors.Errorf("DB error: %w", err)
-	}
-	defer db.Close()
-
-	meta, err := c.metadata.Get()
+	// We have to initialize a metadata client here
+	// since the destination may be different from the cache directory.
+	client := metadata.NewClient(dst)
+	meta, err := client.Get()
 	if err != nil {
 		return xerrors.Errorf("unable to get metadata: %w", err)
 	}
 
 	meta.DownloadedAt = c.clock.Now().UTC()
-	if err = c.metadata.Update(meta); err != nil {
+	if err = client.Update(meta); err != nil {
 		return xerrors.Errorf("failed to update metadata: %w", err)
 	}
 

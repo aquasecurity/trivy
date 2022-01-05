@@ -122,36 +122,3 @@ func (_m *MockOperation) NeedsUpdate(cliVersion string, skip bool) (bool, error)
 
 	return r0, r1
 }
-
-type OperationUpdateDownloadedAtReturns struct {
-	_a0 error
-}
-
-type OperationUpdateDownloadedAtExpectation struct {
-	Returns OperationUpdateDownloadedAtReturns
-}
-
-func (_m *MockOperation) ApplyUpdateDownloadedAtExpectation(e OperationUpdateDownloadedAtExpectation) {
-	var args []interface{}
-	_m.On("UpdateDownloadedAt", args...).Return(e.Returns._a0)
-}
-
-func (_m *MockOperation) ApplyUpdateDownloadedAtExpectations(expectations []OperationUpdateDownloadedAtExpectation) {
-	for _, e := range expectations {
-		_m.ApplyUpdateDownloadedAtExpectation(e)
-	}
-}
-
-// UpdateDownloadedAt provides a mock function with given fields:
-func (_m *MockOperation) UpdateDownloadedAt() error {
-	ret := _m.Called()
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func() error); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
