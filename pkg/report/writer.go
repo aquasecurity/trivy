@@ -93,7 +93,6 @@ type Option struct {
 	Output         io.Writer
 	Severities     []dbTypes.Severity
 	OutputTemplate string
-	Light          bool
 
 	// For misconfigurations
 	IncludeNonFailures bool
@@ -108,7 +107,6 @@ func Write(report Report, option Option) error {
 		writer = &TableWriter{
 			Output:             option.Output,
 			Severities:         option.Severities,
-			Light:              option.Light,
 			IncludeNonFailures: option.IncludeNonFailures,
 			Trace:              option.Trace,
 		}

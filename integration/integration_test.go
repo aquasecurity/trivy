@@ -17,6 +17,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/report"
 )
@@ -45,9 +46,8 @@ func initDB(t *testing.T) string {
 	f, err := os.Create(metadataFile)
 	require.NoError(t, err)
 
-	err = json.NewEncoder(f).Encode(db.Metadata{
-		Version:    1,
-		Type:       1,
+	err = json.NewEncoder(f).Encode(metadata.Metadata{
+		Version:    db.SchemaVersion,
 		NextUpdate: time.Now().Add(24 * time.Hour),
 		UpdatedAt:  time.Now(),
 	})

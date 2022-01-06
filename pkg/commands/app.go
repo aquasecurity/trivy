@@ -8,16 +8,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/afero"
 	"github.com/urfave/cli/v2"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/client"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
-	tdb "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -26,8 +24,8 @@ import (
 
 // VersionInfo holds the trivy DB version Info
 type VersionInfo struct {
-	Version         string       `json:",omitempty"`
-	VulnerabilityDB *db.Metadata `json:",omitempty"`
+	Version         string             `json:",omitempty"`
+	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
 }
 
 var (
@@ -183,9 +181,10 @@ var (
 		EnvVars: []string{"TRIVY_TIMEOUT"},
 	}
 
+	// TODO: remove this flag after a sufficient deprecation period.
 	lightFlag = cli.BoolFlag{
 		Name:    "light",
-		Usage:   "light mode: it's faster, but vulnerability descriptions and references are not displayed",
+		Usage:   "deprecated",
 		EnvVars: []string{"TRIVY_LIGHT"},
 	}
 
@@ -405,16 +404,16 @@ func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
 }
 
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
-	var dbMeta *db.Metadata
+	var dbMeta *metadata.Metadata
 
-	metadata, _ := tdb.NewMetadata(afero.NewOsFs(), cacheDir).Get() // nolint: errcheck
-	if !metadata.UpdatedAt.IsZero() && !metadata.NextUpdate.IsZero() && metadata.Version != 0 {
-		dbMeta = &db.Metadata{
-			Version:      metadata.Version,
-			Type:         metadata.Type,
-			NextUpdate:   metadata.NextUpdate.UTC(),
-			UpdatedAt:    metadata.UpdatedAt.UTC(),
-			DownloadedAt: metadata.DownloadedAt.UTC(),
+	mc := metadata.NewClient(cacheDir)
+	meta, _ := mc.Get() // nolint: errcheck
+	if !meta.UpdatedAt.IsZero() && !meta.NextUpdate.IsZero() && meta.Version != 0 {
+		dbMeta = &metadata.Metadata{
+			Version:      meta.Version,
+			NextUpdate:   meta.NextUpdate.UTC(),
+			UpdatedAt:    meta.UpdatedAt.UTC(),
+			DownloadedAt: meta.DownloadedAt.UTC(),
 		}
 	}
 
@@ -428,20 +427,12 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 	default:
 		output := fmt.Sprintf("Version: %s\n", version)
 		if dbMeta != nil {
-			var dbType string
-			switch dbMeta.Type {
-			case db.TypeFull:
-				dbType = "Full"
-			case db.TypeLight:
-				dbType = "Light"
-			}
 			output += fmt.Sprintf(`Vulnerability DB:
-  Type: %s
   Version: %d
   UpdatedAt: %s
   NextUpdate: %s
   DownloadedAt: %s
-`, dbType, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC(), dbMeta.DownloadedAt.UTC())
+`, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC(), dbMeta.DownloadedAt.UTC())
 		}
 		fmt.Fprintf(outputWriter, output)
 	}
@@ -587,6 +578,7 @@ func NewClientCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,
+			&noProgressFlag,
 			&ignorePolicy,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),

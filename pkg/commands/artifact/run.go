@@ -81,7 +81,6 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		Output:             opt.Output,
 		Severities:         opt.Severities,
 		OutputTemplate:     opt.Template,
-		Light:              opt.Light,
 		IncludeNonFailures: opt.IncludeNonFailures,
 		Trace:              opt.Trace,
 	}); err != nil {
@@ -121,7 +120,7 @@ func initFSCache(c Option) (cache.Cache, error) {
 func initDB(c Option) error {
 	// download the database file
 	noProgress := c.Quiet || c.NoProgress
-	if err := operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.Light, c.SkipDBUpdate); err != nil {
+	if err := operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.SkipDBUpdate); err != nil {
 		return err
 	}
 
@@ -185,7 +184,8 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
-		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.SkipPolicyUpdate)
+		noProgress := opt.Quiet || opt.NoProgress
+		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.CacheDir, noProgress, opt.SkipPolicyUpdate)
 		if err != nil {
 			return pkgReport.Report{}, xerrors.Errorf("failed to initialize built-in policies: %w", err)
 		}

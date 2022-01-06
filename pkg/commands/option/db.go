@@ -3,6 +3,8 @@ package option
 import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // DBOption holds the options for trivy DB
@@ -29,6 +31,9 @@ func NewDBOption(c *cli.Context) DBOption {
 func (c *DBOption) Init() (err error) {
 	if c.SkipDBUpdate && c.DownloadDBOnly {
 		return xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
+	}
+	if c.Light {
+		log.Logger.Warn("'--light' option is deprecated and will be removed")
 	}
 	return nil
 }
