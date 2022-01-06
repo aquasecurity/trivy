@@ -109,8 +109,8 @@ func (c *Client) NeedsUpdate(cliVersion string, skip bool) (bool, error) {
 
 func (c *Client) validate(meta metadata.Metadata) error {
 	if db.SchemaVersion != meta.Version {
-		log.Logger.Error("The local DB is old and needs to be updated")
-		return xerrors.New("--skip-update cannot be specified with the old DB")
+		log.Logger.Error("The local DB has an old schema version which is not supported by the current version of Trivy CLI. It needs to be updated.")
+		return xerrors.New("--skip-update cannot be specified with the old DB schema")
 	}
 	return nil
 }
