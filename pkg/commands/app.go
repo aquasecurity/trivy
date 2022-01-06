@@ -338,6 +338,26 @@ func NewApp(version string) *cli.App {
 	flags := append(globalFlags, setHidden(imageFlags, true)...)
 
 	app.Flags = flags
+
+	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
+		app.Action = func(ctx *cli.Context) error {
+			return plugin.RunWithArgs(ctx.Context, runAsPlugin, ctx.Args().Slice())
+		}
+		app.HideVersion = true
+		app.HideHelp = true
+		app.HideHelpCommand = true
+		app.Flags = append(app.Flags, &cli.BoolFlag{
+			Name:    "help",
+			Aliases: []string{"h"},
+		})
+		return app
+	}
+
+	app.Action = func(ctx *cli.Context) error {
+		log.Logger.Warn("The root command will be removed. Please migrate to 'trivy image' command. See https://github.com/aquasecurity/trivy/discussions/1515")
+		return artifact.ImageRun(ctx)
+	}
+
 	app.Commands = []*cli.Command{
 		NewImageCommand(),
 		NewFilesystemCommand(),
@@ -350,17 +370,6 @@ func NewApp(version string) *cli.App {
 	}
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
 
-	runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN")
-	if runAsPlugin == "" {
-		app.Action = func(ctx *cli.Context) error {
-			log.Logger.Warn("The root command will be removed. Please migrate to 'trivy image' command. See https://github.com/aquasecurity/trivy/discussions/1515")
-			return artifact.ImageRun(ctx)
-		}
-	} else {
-		app.Action = func(ctx *cli.Context) error {
-			return plugin.RunWithArgs(ctx.Context, runAsPlugin, ctx.Args().Slice())
-		}
-	}
 	return app
 }
 
