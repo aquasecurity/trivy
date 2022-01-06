@@ -16,7 +16,7 @@
         
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.3+insiders-4.5.0">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.4+insiders-4.5.1">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.2fd069b6.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.f8ad3a65.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -2747,18 +2747,18 @@
 More information can be found in <a href="https://cloud.google.com/container-registry/docs/access-control">Google's documentation</a></p>
 <h2 id="json-file-format">JSON File Format</h2>
 <p>The JSON file specified should have the following format provided by google's service account mechanisms:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-  <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;service_account&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;your_special_project&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;private_key_id&quot;</span><span class="p">:</span> <span class="s2">&quot;XXXXXXXXXXXXXXXXXXXXxx&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;private_key&quot;</span><span class="p">:</span> <span class="s2">&quot;-----BEGIN PRIVATE KEY-----\nNONONONO\n-----END PRIVATE KEY-----\n&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;client_email&quot;</span><span class="p">:</span> <span class="s2">&quot;somedude@your_special_project.iam.gserviceaccount.com&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;client_id&quot;</span><span class="p">:</span> <span class="s2">&quot;1234567890&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;auth_uri&quot;</span><span class="p">:</span> <span class="s2">&quot;https://accounts.google.com/o/oauth2/auth&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;token_uri&quot;</span><span class="p">:</span> <span class="s2">&quot;https://oauth2.googleapis.com/token&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;auth_provider_x509_cert_url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.googleapis.com/oauth2/v1/certs&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;client_x509_cert_url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.googleapis.com/robot/v1/metadata/x509/somedude%40your_special_project.iam.gserviceaccount.com&quot;</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;service_account&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;project_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;your_special_project&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;private_key_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;XXXXXXXXXXXXXXXXXXXXxx&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;private_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;-----BEGIN PRIVATE KEY-----\nNONONONO\n-----END PRIVATE KEY-----\n&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;client_email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;somedude@your_special_project.iam.gserviceaccount.com&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;client_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1234567890&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;auth_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://accounts.google.com/o/oauth2/auth&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;token_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://oauth2.googleapis.com/token&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;auth_provider_x509_cert_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://www.googleapis.com/oauth2/v1/certs&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;client_x509_cert_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://www.googleapis.com/robot/v1/metadata/x509/somedude%40your_special_project.iam.gserviceaccount.com&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <h1 id="usage">Usage</h1>
 <p>If you want to use target project's repository, you can set them via <code>GOOGLE_APPLICATION_CREDENTIALS</code>.
@@ -2836,10 +2836,10 @@ More information can be found in <a href="https://cloud.google.com/container-reg
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.2c14e664.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.e72f9a50.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.21ccbe1b.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.568b24b3.min.js"></script>
       
     
   </body>

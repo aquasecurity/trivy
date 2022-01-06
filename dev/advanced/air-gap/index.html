@@ -16,7 +16,7 @@
         
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.3+insiders-4.5.0">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.4+insiders-4.5.1">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.2fd069b6.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.f8ad3a65.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -2938,17 +2938,17 @@
 
 
 <h1 id="air-gapped-environment">Air-Gapped Environment</h1>
-<p>Trivy can be used in air-gapped environments.</p>
+<p>Trivy can be used in air-gapped environments. Note that an allowlist is <a href="../../getting-started/troubleshooting/">here</a>.</p>
 <h2 id="air-gapped-environment-for-vulnerabilities">Air-Gapped Environment for vulnerabilities</h2>
 <h3 id="download-the-vulnerability-database">Download the vulnerability database</h3>
 <p>At first, you need to download the vulnerability database for use in air-gapped environments.
-Go to <a href="https://github.com/aquasecurity/trivy-db/releases">trivy-db</a> and download <code>trivy-offline.db.tgz</code> in the latest release.
-If you download <code>trivy-light-offline.db.tgz</code>, you have to run Trivy with <code>--light</code> option.</p>
-<div class="highlight"><pre><span></span><code>$ wget https://github.com/aquasecurity/trivy-db/releases/latest/download/trivy-offline.db.tgz
+Please follow <a href="https://oras.land/cli/">oras installation instruction</a>.</p>
+<p>Download <code>db.tar.gz</code>:</p>
+<div class="highlight"><pre><span></span><code>$ oras pull ghcr.io/aquasecurity/trivy-db:2 -a
 </code></pre></div>
 <h3 id="transfer-the-db-file-into-the-air-gapped-environment">Transfer the DB file into the air-gapped environment</h3>
 <p>The way of transfer depends on the environment.</p>
-<div class="highlight"><pre><span></span><code>$ rsync -av -e ssh /path/to/trivy-offline.db.tgz [user]@[host]:dst
+<div class="highlight"><pre><span></span><code>$ rsync -av -e ssh /path/to/db.tar.gz [user]@[host]:dst
 </code></pre></div>
 <h3 id="put-the-db-file-in-trivys-cache-directory">Put the DB file in Trivy's cache directory</h3>
 <p>You have to know where to put the DB file. The following command shows the default cache directory.</p>
@@ -2959,14 +2959,10 @@ $ trivy -h | grep cache
 <p>Put the DB file in the cache directory + <code>/db</code>.</p>
 <div class="highlight"><pre><span></span><code>$ mkdir -p /home/myuser/.cache/trivy/db
 $ cd /home/myuser/.cache/trivy/db
-$ mv /path/to/trivy-offline.db.tgz .
-</code></pre></div>
-<p>Then, decompress it.
-<code>trivy-offline.db.tgz</code> file includes two files, <code>trivy.db</code> and <code>metadata.json</code>.</p>
-<div class="highlight"><pre><span></span><code>$ tar xvf trivy-offline.db.tgz
+$ tar xvf /path/to/db.tar.gz -C /home/myuser/.cache/trivy/db
 x trivy.db
 x metadata.json
-$ rm trivy-offline.db.tgz
+$ rm /path/to/db.tar.gz
 </code></pre></div>
 <p>In an air-gapped environment it is your responsibility to update the Trivy database on a regular basis, so that the scanner can detect recently-identified vulnerabilities. </p>
 <h3 id="run-trivy-with-skip-update-and-offline-scan-option">Run Trivy with --skip-update and --offline-scan option</h3>
@@ -2977,8 +2973,8 @@ In addition, if you want to scan Java dependencies such as JAR and pom.xml, you 
 <h2 id="air-gapped-environment-for-misconfigurations">Air-Gapped Environment for misconfigurations</h2>
 <h3 id="download-misconfiguration-policies">Download misconfiguration policies</h3>
 <p>At first, you need to download misconfiguration policies for use in air-gapped environments.
-Please follow <a href="https://oras.land/cli/">oras installation instruction</a>. \
-Download <code>bundle.tar.gz</code>:</p>
+Please follow <a href="https://oras.land/cli/">oras installation instruction</a>.</p>
+<p>Download <code>bundle.tar.gz</code>:</p>
 <div class="highlight"><pre><span></span><code>$ oras pull ghcr.io/aquasecurity/appshield:latest -a
 </code></pre></div>
 <h3 id="transfer-misconfiguration-policies-into-the-air-gapped-environment">Transfer misconfiguration policies into the air-gapped environment</h3>
@@ -3076,10 +3072,10 @@ $ rm bundle.tar.gz
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.2c14e664.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.e72f9a50.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.21ccbe1b.min.js"></script>
+      <script src="../../assets/javascripts/bundle.568b24b3.min.js"></script>
       
     
   </body>

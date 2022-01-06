@@ -16,7 +16,7 @@
         
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.3+insiders-4.5.0">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.4+insiders-4.5.1">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.2fd069b6.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.f8ad3a65.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -2970,246 +2970,246 @@
 <h1 id="examples">Examples</h1>
 <h2 id="custom-policy">Custom Policy</h2>
 <h3 id="kubernetes">Kubernetes</h3>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/76249bdcf0905fb25e74033bd9044f54eb4c1256/examples/misconf/custom-policy/kubernetes/">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/e65274e0efd4fdafdac3145913a3b5dae410eecd/examples/misconf/custom-policy/kubernetes/">here</a>.</p>
 <p>The custom policy is defined in <code>user.kubernetes.ID001</code> package.
 You need to pass the package prefix you want to evaluate through <code>--namespaces</code> option.
 In this case, the package prefix should be <code>user</code>, <code>user.kuberntes</code>, or <code>user.kubernetes.ID001</code>.</p>
 <h3 id="dockerfile">Dockerfile</h3>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/76249bdcf0905fb25e74033bd9044f54eb4c1256/examples/misconf/custom-policy/dockerfile/">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/e65274e0efd4fdafdac3145913a3b5dae410eecd/examples/misconf/custom-policy/dockerfile/">here</a>.</p>
 <p>The input will be a dictionary of stages.</p>
 <h4 id="single-stage">Single Stage</h4>
 <details class="example">
 <summary>Example</summary>
 <p>Dockerfile
-<div class="highlight"><pre><span></span><code><span class="k">FROM</span> <span class="s">foo</span>
-<span class="k">COPY</span> . /
-<span class="k">RUN</span> <span class="nb">echo</span> hello
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">foo</span>
+<span class="k">COPY</span><span class="w"> </span>. /
+<span class="k">RUN</span><span class="w"> </span><span class="nb">echo</span> hello
 </code></pre></div></p>
 <p>Rego Input
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-    <span class="nt">&quot;stages&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;foo&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="nt">&quot;Cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;from&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;EndLine&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="nt">&quot;Flags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="nt">&quot;JSON&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-                <span class="nt">&quot;Original&quot;</span><span class="p">:</span> <span class="s2">&quot;FROM foo&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Stage&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                <span class="nt">&quot;StartLine&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;foo&quot;</span>
-                <span class="p">]</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="nt">&quot;Cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;copy&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;EndLine&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-                <span class="nt">&quot;Flags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="nt">&quot;JSON&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-                <span class="nt">&quot;Original&quot;</span><span class="p">:</span> <span class="s2">&quot;COPY . /&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Stage&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                <span class="nt">&quot;StartLine&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-                <span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;.&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;/&quot;</span>
-                <span class="p">]</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="nt">&quot;Cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;EndLine&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-                <span class="nt">&quot;Flags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="nt">&quot;JSON&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-                <span class="nt">&quot;Original&quot;</span><span class="p">:</span> <span class="s2">&quot;RUN echo hello&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Stage&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                <span class="nt">&quot;StartLine&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-                <span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;echo hello&quot;</span>
-                <span class="p">]</span>
-            <span class="p">}</span>
-        <span class="p">]</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;stages&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;foo&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;from&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;JSON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Original&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FROM foo&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Stage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;foo&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;copy&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;JSON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Original&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;COPY . /&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Stage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;/&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;run&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;JSON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Original&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RUN echo hello&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Stage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;echo hello&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div></p>
 </details>
 <h4 id="multi-stage">Multi Stage</h4>
 <details class="example">
 <summary>Example</summary>
 <p>Dockerfile
-<div class="highlight"><pre><span></span><code><span class="k">FROM</span> <span class="s">golang:1.16</span> <span class="k">AS</span> <span class="s">builder</span>
-<span class="k">WORKDIR</span><span class="s"> /go/src/github.com/alexellis/href-counter/</span>
-<span class="k">RUN</span> go get -d -v golang.org/x/net/html
-<span class="k">COPY</span> app.go .
-<span class="k">RUN</span> <span class="nv">CGO_ENABLED</span><span class="o">=</span><span class="m">0</span> <span class="nv">GOOS</span><span class="o">=</span>linux go build -a -installsuffix cgo -o app .
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">golang:1.16</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">builder</span>
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/go/src/github.com/alexellis/href-counter/</span>
+<span class="k">RUN</span><span class="w"> </span>go get -d -v golang.org/x/net/html
+<span class="k">COPY</span><span class="w"> </span>app.go .
+<span class="k">RUN</span><span class="w"> </span><span class="nv">CGO_ENABLED</span><span class="o">=</span><span class="m">0</span> <span class="nv">GOOS</span><span class="o">=</span>linux go build -a -installsuffix cgo -o app .
 
-<span class="k">FROM</span> <span class="s">alpine:latest</span>
-<span class="k">RUN</span> apk --no-cache add ca-certificates <span class="se">\</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">alpine:latest</span>
+<span class="k">RUN</span><span class="w"> </span>apk --no-cache add ca-certificates <span class="se">\</span>
 <span class="o">&amp;&amp;</span> apk add --no-cache bash
-<span class="k">WORKDIR</span><span class="s"> /root/</span>
-<span class="k">COPY</span> --from<span class="o">=</span>builder /go/src/github.com/alexellis/href-counter/app .
-<span class="k">CMD</span> <span class="p">[</span><span class="s2">&quot;./app&quot;</span><span class="p">]</span>
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/root/</span>
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>builder /go/src/github.com/alexellis/href-counter/app .
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./app&quot;</span><span class="p">]</span>
 </code></pre></div></p>
 <p>Rego Input
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-    <span class="nt">&quot;stages&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;alpine:latest&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="nt">&quot;Cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;from&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;EndLine&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
-                <span class="nt">&quot;Flags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="nt">&quot;JSON&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-                <span class="nt">&quot;Original&quot;</span><span class="p">:</span> <span class="s2">&quot;FROM alpine:latest&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Stage&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="nt">&quot;StartLine&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
-                <span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;alpine:latest&quot;</span>
-                <span class="p">]</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="nt">&quot;Cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;EndLine&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
-                <span class="nt">&quot;Flags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="nt">&quot;JSON&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-                <span class="nt">&quot;Original&quot;</span><span class="p">:</span> <span class="s2">&quot;RUN apk --no-cache add ca-certificates     \u0026\u0026 apk add --no-cache bash&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Stage&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="nt">&quot;StartLine&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-                <span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;apk --no-cache add ca-certificates     \u0026\u0026 apk add --no-cache bash&quot;</span>
-                <span class="p">]</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="nt">&quot;Cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;workdir&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;EndLine&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
-                <span class="nt">&quot;Flags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="nt">&quot;JSON&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-                <span class="nt">&quot;Original&quot;</span><span class="p">:</span> <span class="s2">&quot;WORKDIR /root/&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Stage&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="nt">&quot;StartLine&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
-                <span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;/root/&quot;</span>
-                <span class="p">]</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="nt">&quot;Cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;copy&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;EndLine&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
-                <span class="nt">&quot;Flags&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;--from=builder&quot;</span>
-                <span class="p">],</span>
-                <span class="nt">&quot;JSON&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-                <span class="nt">&quot;Original&quot;</span><span class="p">:</span> <span class="s2">&quot;COPY --from=builder /go/src/github.com/alexellis/href-counter/app .&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Stage&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="nt">&quot;StartLine&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
-                <span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;/go/src/github.com/alexellis/href-counter/app&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;.&quot;</span>
-                <span class="p">]</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="nt">&quot;Cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;cmd&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;EndLine&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-                <span class="nt">&quot;Flags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="nt">&quot;JSON&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-                <span class="nt">&quot;Original&quot;</span><span class="p">:</span> <span class="s2">&quot;CMD [\&quot;./app\&quot;]&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Stage&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="nt">&quot;StartLine&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-                <span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;./app&quot;</span>
-                <span class="p">]</span>
-            <span class="p">}</span>
-        <span class="p">],</span>
-        <span class="nt">&quot;golang:1.16 AS builder&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="nt">&quot;Cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;from&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;EndLine&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="nt">&quot;Flags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="nt">&quot;JSON&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-                <span class="nt">&quot;Original&quot;</span><span class="p">:</span> <span class="s2">&quot;FROM golang:1.16 AS builder&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Stage&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                <span class="nt">&quot;StartLine&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;golang:1.16&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;AS&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;builder&quot;</span>
-                <span class="p">]</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="nt">&quot;Cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;workdir&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;EndLine&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-                <span class="nt">&quot;Flags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="nt">&quot;JSON&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-                <span class="nt">&quot;Original&quot;</span><span class="p">:</span> <span class="s2">&quot;WORKDIR /go/src/github.com/alexellis/href-counter/&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Stage&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                <span class="nt">&quot;StartLine&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-                <span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;/go/src/github.com/alexellis/href-counter/&quot;</span>
-                <span class="p">]</span>
-                <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="nt">&quot;Cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;EndLine&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-                <span class="nt">&quot;Flags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="nt">&quot;JSON&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-                <span class="nt">&quot;Original&quot;</span><span class="p">:</span> <span class="s2">&quot;RUN go get -d -v golang.org/x/net/html&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Stage&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                <span class="nt">&quot;StartLine&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-                <span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;go get -d -v golang.org/x/net/html&quot;</span>
-                <span class="p">]</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="nt">&quot;Cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;copy&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;EndLine&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-                <span class="nt">&quot;Flags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="nt">&quot;JSON&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-                <span class="nt">&quot;Original&quot;</span><span class="p">:</span> <span class="s2">&quot;COPY app.go .&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Stage&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                <span class="nt">&quot;StartLine&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-                <span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;app.go&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;.&quot;</span>
-                <span class="p">]</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="nt">&quot;Cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;EndLine&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-                <span class="nt">&quot;Flags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="nt">&quot;JSON&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-                <span class="nt">&quot;Original&quot;</span><span class="p">:</span> <span class="s2">&quot;RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Stage&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                <span class="nt">&quot;StartLine&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-                <span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&quot;CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .&quot;</span>
-                <span class="p">]</span>
-            <span class="p">}</span>
-        <span class="p">]</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;stages&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;alpine:latest&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;from&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;JSON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Original&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FROM alpine:latest&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Stage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;alpine:latest&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;run&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;JSON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Original&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RUN apk --no-cache add ca-certificates     \u0026\u0026 apk add --no-cache bash&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Stage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;apk --no-cache add ca-certificates     \u0026\u0026 apk add --no-cache bash&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;workdir&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;JSON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Original&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;WORKDIR /root/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Stage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;/root/&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;copy&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;--from=builder&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;JSON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Original&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;COPY --from=builder /go/src/github.com/alexellis/href-counter/app .&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Stage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;/go/src/github.com/alexellis/href-counter/app&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;.&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cmd&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;JSON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Original&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CMD [\&quot;./app\&quot;]&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Stage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;./app&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">],</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;golang:1.16 AS builder&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;from&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;JSON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Original&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FROM golang:1.16 AS builder&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Stage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;golang:1.16&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;AS&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;builder&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;workdir&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;JSON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Original&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;WORKDIR /go/src/github.com/alexellis/href-counter/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Stage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;/go/src/github.com/alexellis/href-counter/&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">                </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;run&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;JSON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Original&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RUN go get -d -v golang.org/x/net/html&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Stage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;go get -d -v golang.org/x/net/html&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;copy&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;JSON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Original&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;COPY app.go .&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Stage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;app.go&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;.&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;run&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;JSON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Original&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Stage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;SubCmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                    </span><span class="s2">&quot;CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .&quot;</span><span class="w"></span>
+<span class="w">                </span><span class="p">]</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div></p>
 </details>
 <h3 id="docker-compose">Docker Compose</h3>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/76249bdcf0905fb25e74033bd9044f54eb4c1256/examples/misconf/custom-policy/docker-compose/">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/e65274e0efd4fdafdac3145913a3b5dae410eecd/examples/misconf/custom-policy/docker-compose/">here</a>.</p>
 <p>Docker Compose uses YAML format for configurations. You can apply your Rego policies to <code>docker-compose.yml</code>.</p>
 <h3 id="hcl">HCL</h3>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/76249bdcf0905fb25e74033bd9044f54eb4c1256/examples/misconf/custom-policy/hcl/">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/e65274e0efd4fdafdac3145913a3b5dae410eecd/examples/misconf/custom-policy/hcl/">here</a>.</p>
 <p>Trivy parses HCL files and converts into structured data.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Terraform HCL files are not supported yet.</p>
 </div>
 <h3 id="terraform-plan">Terraform Plan</h3>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/76249bdcf0905fb25e74033bd9044f54eb4c1256/examples/misconf/custom-policy/terraform-plan/">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/e65274e0efd4fdafdac3145913a3b5dae410eecd/examples/misconf/custom-policy/terraform-plan/">here</a>.</p>
 <p>Use the command <a href="https://www.terraform.io/docs/cli/commands/show.html">terraform show</a> to convert the Terraform plan into JSON so that OPA can read the plan.</p>
 <div class="highlight"><pre><span></span><code>$ terraform init
 $ terraform plan --out tfplan.binary
@@ -3217,14 +3217,14 @@ $ terraform show -json tfplan.binary &gt; tfplan.json
 </code></pre></div>
 <p>For more details, see also <a href="https://www.openpolicyagent.org/docs/latest/terraform/">OPA document</a>.</p>
 <h3 id="serverless-framework">Serverless Framework</h3>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/76249bdcf0905fb25e74033bd9044f54eb4c1256/examples/misconf/custom-policy/serverless/">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/e65274e0efd4fdafdac3145913a3b5dae410eecd/examples/misconf/custom-policy/serverless/">here</a>.</p>
 <p>Server Framework uses YAML format for configurations. You can apply your Rego policies to <code>serverless.yaml</code>.</p>
 <h2 id="custom-data">Custom Data</h2>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/76249bdcf0905fb25e74033bd9044f54eb4c1256/examples/misconf/custom-data">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/e65274e0efd4fdafdac3145913a3b5dae410eecd/examples/misconf/custom-data">here</a>.</p>
 <h2 id="combined-input">Combined Input</h2>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/76249bdcf0905fb25e74033bd9044f54eb4c1256/examples/misconf/combine">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/e65274e0efd4fdafdac3145913a3b5dae410eecd/examples/misconf/combine">here</a>.</p>
 <h2 id="go-testing">Go Testing</h2>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/76249bdcf0905fb25e74033bd9044f54eb4c1256/examples/misconf/go-testing">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/e65274e0efd4fdafdac3145913a3b5dae410eecd/examples/misconf/go-testing">here</a>.</p>
 
 
 
@@ -3290,10 +3290,10 @@ $ terraform show -json tfplan.binary &gt; tfplan.json
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.2c14e664.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.e72f9a50.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.21ccbe1b.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.568b24b3.min.js"></script>
       
     
   </body>
