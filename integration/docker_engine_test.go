@@ -104,6 +104,12 @@ func TestDockerEngine(t *testing.T) {
 		//	testfile:       "testdata/fixtures/images/ubi-7.tar.gz",
 		//},
 		{
+			name:           "almalinux 8",
+			imageTag:       "almalinux:8",
+			wantOutputFile: "testdata/almalinux-8.json.golden",
+			testfile:       "testdata/fixtures/images/almalinux-8.tar.gz",
+		},
+		{
 			name:           "debian buster/10",
 			imageTag:       "debian:buster",
 			wantOutputFile: "testdata/debian-buster.json.golden",
