@@ -62,7 +62,6 @@
             "https://access.redhat.com/errata/RHSA-2019:2587",
             "https://access.redhat.com/errata/RHSA-2019:3023",
             "https://access.redhat.com/errata/RHSA-2019:3024",
-            "https://access.redhat.com/security/cve/CVE-2019-11358",
             "https://backdropcms.org/security/backdrop-sa-core-2019-009",
             "https://blog.jquery.com/2019/04/10/jquery-3-4-0-released/",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11358",
@@ -74,7 +73,7 @@
             "https://hackerone.com/reports/454365",
             "https://kb.pulsesecure.net/articles/Pulse_Security_Advisories/SA44601",
             "https://linux.oracle.com/cve/CVE-2019-11358.html",
-            "https://linux.oracle.com/errata/ELSA-2020-3936.html",
+            "https://linux.oracle.com/errata/ELSA-2020-4847.html",
             "https://lists.apache.org/thread.html/08720ef215ee7ab3386c05a1a90a7d1c852bf0706f176a7816bf65fc@%3Ccommits.airflow.apache.org%3E",
             "https://lists.apache.org/thread.html/519eb0fd45642dcecd9ff74cb3e71c20a4753f7d82e2f07864b5108f@%3Cdev.drill.apache.org%3E",
             "https://lists.apache.org/thread.html/5928aa293e39d248266472210c50f176cac1535220f2486e6a7fa844@%3Ccommits.airflow.apache.org%3E",
@@ -112,12 +111,14 @@
             "https://www.debian.org/security/2019/dsa-4434",
             "https://www.debian.org/security/2019/dsa-4460",
             "https://www.drupal.org/sa-core-2019-006",
+            "https://www.oracle.com//security-alerts/cpujul2021.html",
             "https://www.oracle.com/security-alerts/cpuApr2021.html",
             "https://www.oracle.com/security-alerts/cpuapr2020.html",
             "https://www.oracle.com/security-alerts/cpujan2020.html",
             "https://www.oracle.com/security-alerts/cpujan2021.html",
             "https://www.oracle.com/security-alerts/cpujul2020.html",
             "https://www.oracle.com/security-alerts/cpuoct2020.html",
+            "https://www.oracle.com/security-alerts/cpuoct2021.html",
             "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html",
             "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html",
             "https://www.privacy-wise.com/mitigating-cve-2019-11358-in-old-versions-of-jquery/",
@@ -126,7 +127,7 @@
             "https://www.tenable.com/security/tns-2020-02"
           ],
           "PublishedDate": "2019-04-20T00:29:00Z",
-          "LastModifiedDate": "2021-06-14T18:15:00Z"
+          "LastModifiedDate": "2021-10-20T11:15:00Z"
         },
         {
           "VulnerabilityID": "CVE-2019-10744",
@@ -138,7 +139,7 @@
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-10744",
           "Title": "nodejs-lodash: prototype pollution in defaultsDeep function leading to modifying properties",
           "Description": "Versions of lodash lower than 4.17.12 are vulnerable to Prototype Pollution. The function defaultsDeep could be tricked into adding or modifying properties of Object.prototype using a constructor payload.",
-          "Severity": "HIGH",
+          "Severity": "CRITICAL",
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:P",
@@ -153,12 +154,13 @@
           },
           "References": [
             "https://access.redhat.com/errata/RHSA-2019:3024",
-            "https://access.redhat.com/security/cve/CVE-2019-10744",
             "https://github.com/advisories/GHSA-jf85-cpcp-j695",
+            "https://github.com/lodash/lodash/pull/4336",
             "https://nvd.nist.gov/vuln/detail/CVE-2019-10744",
             "https://security.netapp.com/advisory/ntap-20191004-0005/",
             "https://snyk.io/vuln/SNYK-JS-LODASH-450202",
             "https://support.f5.com/csp/article/K47105354?utm_source=f5support\u0026amp;utm_medium=RSS",
+            "https://www.npmjs.com/advisories/1065",
             "https://www.oracle.com/security-alerts/cpujan2021.html",
             "https://www.oracle.com/security-alerts/cpuoct2020.html"
           ],

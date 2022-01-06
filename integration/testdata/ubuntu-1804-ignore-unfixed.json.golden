@@ -99,7 +99,6 @@
             }
           },
           "References": [
-            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
@@ -148,7 +147,6 @@
             }
           },
           "References": [
-            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
@@ -197,7 +195,6 @@
             }
           },
           "References": [
-            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
@@ -246,7 +243,6 @@
             }
           },
           "References": [
-            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
