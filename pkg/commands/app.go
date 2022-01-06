@@ -343,6 +343,13 @@ func NewApp(version string) *cli.App {
 		app.Action = func(ctx *cli.Context) error {
 			return plugin.RunWithArgs(ctx.Context, runAsPlugin, ctx.Args().Slice())
 		}
+		app.HideVersion = true
+		app.HideHelp = true
+		app.HideHelpCommand = true
+		app.Flags = append(app.Flags, &cli.BoolFlag{
+			Name:    "help",
+			Aliases: []string{"h"},
+		})
 		return app
 	}
 
