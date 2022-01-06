@@ -66,7 +66,7 @@ func TestReportWriter_toSarifRuleName(t *testing.T) {
 		},
 		{
 			vulnerabilityType: vulnerability.Alma,
-			sarifRuleName:     "OS Package Vulnerability (Alma)",
+			sarifRuleName:     "OsPackageVulnerability",
 		},
 		{
 			vulnerabilityType: "npm",
