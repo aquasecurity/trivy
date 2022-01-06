@@ -83,7 +83,6 @@
           "References": [
             "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
             "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
-            "https://access.redhat.com/security/cve/CVE-2019-5481",
             "https://curl.haxx.se/docs/CVE-2019-5481.html",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
             "https://linux.oracle.com/cve/CVE-2019-5481.html",
@@ -135,7 +134,6 @@
             "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00008.html",
             "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00017.html",
             "http://www.openwall.com/lists/oss-security/2019/09/11/6",
-            "https://access.redhat.com/security/cve/CVE-2019-5436",
             "https://curl.haxx.se/docs/CVE-2019-5436.html",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5436",
             "https://linux.oracle.com/cve/CVE-2019-5436.html",
