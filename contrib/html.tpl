@@ -21,6 +21,7 @@
         border-collapse: collapse;
         white-space: nowrap;
         padding: .3em;
+        text-align: left;
       }
       table {
         margin: 0 auto;
@@ -52,7 +53,7 @@
       }
       a.toggle-more-links { cursor: pointer; }
     </style>
-    <title>{{- escapeXML ( index . 0 ).Target }} - Trivy Report - {{ getCurrentTime }}</title>
+    <title>Trivy Report - {{ getCurrentTime }}</title>
     <script>
       window.onload = function() {
         document.querySelectorAll('td.links').forEach(function(linkCell) {
@@ -82,13 +83,19 @@
     </script>
   </head>
   <body>
-    <h1>{{- escapeXML ( index . 0 ).Target }} - Trivy Report - {{ getCurrentTime }}</h1>
+    <h1>Trivy Report - {{ getCurrentTime }}</h1>
     <table>
     {{- range . }}
-      <tr class="group-header"><th colspan="6">{{ escapeXML .Type }}</th></tr>
+      <tr class="group-header">
+        <th colspan="1">Type: {{ escapeXML .Type }}</th>
+        <th colspan="5">Target: {{ escapeXML .Target }}</th>
+     </tr>
       {{- if (eq (len .Vulnerabilities) 0) }}
       <tr><th colspan="6">No Vulnerabilities found</th></tr>
       {{- else }}
+      <tr class="sub-header">
+        <th colspan=2>Vulnerabilities found:</th>
+      </tr>
       <tr class="sub-header">
         <th>Package</th>
         <th>Vulnerability ID</th>
@@ -115,6 +122,9 @@
       {{- if (eq (len .Misconfigurations ) 0) }}
       <tr><th colspan="6">No Misconfigurations found</th></tr>
       {{- else }}
+      <tr class="sub-header">
+        <td colspan=6>Misconfigurations found: {{ .MisconfSummary.Failures }}</td>
+      </tr>
       <tr class="sub-header">
         <th>Type</th>
         <th>Misconf ID</th>
