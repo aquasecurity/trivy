@@ -135,14 +135,14 @@ trivy:
     # Build image
     - docker build -t $IMAGE .
     # Build report
-    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab-codeclimate.tpl" -o gl-codeclimate.json $IMAGE
+    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab-codequality.tpl" -o gl-codeclimate.json $IMAGE
   cache:
     paths:
       - .trivycache/
   # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/ (Container Scanning report is available on GitLab EE Ultimate or GitLab.com Gold)
   artifacts:
     paths:
-      gl-codeclimate.json
+      - gl-codeclimate.json
     reports:
       codequality: gl-codeclimate.json
 ```
