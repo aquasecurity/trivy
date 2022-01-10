@@ -359,7 +359,7 @@ func TestAnalyzeFile(t *testing.T) {
 			limit := semaphore.NewWeighted(3)
 
 			got := new(analyzer.AnalysisResult)
-			a := analyzer.NewAnalyzer(tt.args.disabledAnalyzers)
+			a := analyzer.NewAnalyzerGroup(analyzer.GroupBuiltin, tt.args.disabledAnalyzers)
 
 			info, err := os.Stat(tt.args.testFilePath)
 			require.NoError(t, err)
@@ -436,7 +436,7 @@ func TestAnalyzeConfig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := analyzer.NewAnalyzer(tt.args.disabledAnalyzers)
+			a := analyzer.NewAnalyzerGroup(analyzer.GroupBuiltin, tt.args.disabledAnalyzers)
 			got := a.AnalyzeImageConfig(tt.args.targetOS, tt.args.configBlob)
 			assert.Equal(t, tt.want, got)
 		})
@@ -490,7 +490,6 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 			name:     "disable analyzers",
 			disabled: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeUbuntu},
 			want: map[string]int{
-				"alpine":     0,
 				"amazon":     1,
 				"apk":        1,
 				"bundler":    1,
@@ -517,7 +516,6 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 				"redhat":     1,
 				"rpm":        1,
 				"suse":       1,
-				"ubuntu":     0,
 				"yarn":       1,
 				"python-pkg": 1,
 				"gemspec":    1,
@@ -526,7 +524,7 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := analyzer.NewAnalyzer(tt.disabled)
+			a := analyzer.NewAnalyzerGroup(analyzer.GroupBuiltin, tt.disabled)
 			got := a.AnalyzerVersions()
 			fmt.Printf("%v\n", got)
 			assert.Equal(t, tt.want, got)
@@ -552,14 +550,13 @@ func TestAnalyzer_ImageConfigAnalyzerVersions(t *testing.T) {
 			name:     "disable analyzers",
 			disabled: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeApkCommand},
 			want: map[string]int{
-				"apk-command": 0,
-				"test":        1,
+				"test": 1,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := analyzer.NewAnalyzer(tt.disabled)
+			a := analyzer.NewAnalyzerGroup(analyzer.GroupBuiltin, tt.disabled)
 			got := a.ImageConfigAnalyzerVersions()
 			assert.Equal(t, tt.want, got)
 		})

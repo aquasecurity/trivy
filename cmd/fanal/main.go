@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/urfave/cli/v2"
@@ -233,10 +232,7 @@ func inspect(ctx context.Context, art artifact.Artifact, c cache.LocalArtifactCa
 
 func imageArtifact(ctx context.Context, imageName string, c cache.ArtifactCache,
 	artifactOpt artifact.Option, scannerOpt config.ScannerOption) (artifact.Artifact, func(), error) {
-	img, cleanup, err := image.NewDockerImage(ctx, imageName, types.DockerOption{
-		Timeout:  600 * time.Second,
-		SkipPing: true,
-	})
+	img, cleanup, err := image.NewDockerImage(ctx, imageName, types.DockerOption{})
 	if err != nil {
 		return nil, func() {}, err
 	}

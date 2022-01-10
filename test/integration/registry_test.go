@@ -11,7 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
@@ -93,7 +92,6 @@ func TestTLSRegistry(t *testing.T) {
 			imageName: "alpine:3.10",
 			imageFile: "testdata/fixtures/alpine-310.tar.gz",
 			option: types.DockerOption{
-				Timeout:               60 * time.Second,
 				UserName:              registryUsername,
 				Password:              registryPassword,
 				InsecureSkipTLSVerify: true,
@@ -106,7 +104,6 @@ func TestTLSRegistry(t *testing.T) {
 			imageName: "alpine:3.10",
 			imageFile: "testdata/fixtures/alpine-310.tar.gz",
 			option: types.DockerOption{
-				Timeout:               60 * time.Second,
 				InsecureSkipTLSVerify: true,
 			},
 			login:      true,
@@ -118,7 +115,6 @@ func TestTLSRegistry(t *testing.T) {
 			imageName: "alpine:3.10",
 			imageFile: "testdata/fixtures/alpine-310.tar.gz",
 			option: types.DockerOption{
-				Timeout:  60 * time.Second,
 				UserName: registryUsername,
 				Password: registryPassword,
 			},
@@ -129,7 +125,6 @@ func TestTLSRegistry(t *testing.T) {
 			imageName: "alpine:3.10",
 			imageFile: "testdata/fixtures/alpine-310.tar.gz",
 			option: types.DockerOption{
-				Timeout:               60 * time.Second,
 				InsecureSkipTLSVerify: true,
 			},
 			wantErr: true,

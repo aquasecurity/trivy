@@ -31,7 +31,7 @@ type Artifact struct {
 	image       types.Image
 	cache       cache.ArtifactCache
 	walker      walker.LayerTar
-	analyzer    analyzer.Analyzer
+	analyzer    analyzer.AnalyzerGroup
 	hookManager hook.Manager
 	scanner     scanner.Scanner
 
@@ -54,7 +54,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, artifactOpt artifact.Op
 		image:       img,
 		cache:       c,
 		walker:      walker.NewLayerTar(artifactOpt.SkipFiles, artifactOpt.SkipDirs),
-		analyzer:    analyzer.NewAnalyzer(artifactOpt.DisabledAnalyzers),
+		analyzer:    analyzer.NewAnalyzerGroup(artifactOpt.AnalyzerGroup, artifactOpt.DisabledAnalyzers),
 		hookManager: hook.NewManager(artifactOpt.DisabledHooks),
 		scanner:     s,
 
@@ -121,7 +121,6 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 }
 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, map[string]string, error) {
-
 	// Pass an empty config scanner option so that the cache key can be the same, even when policies are updated.
 	imageKey, err := cache.CalcKey(imageID, a.analyzer.ImageConfigAnalyzerVersions(), nil, artifact.Option{}, config.ScannerOption{})
 	if err != nil {

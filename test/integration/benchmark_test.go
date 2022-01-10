@@ -1,3 +1,4 @@
+//go:build performance
 // +build performance
 
 package integration
@@ -54,9 +55,7 @@ func run(b *testing.B, ctx context.Context, imageName string, c cache.Cache, opt
 func BenchmarkDockerMode_WithoutCache(b *testing.B) {
 	for _, tc := range testCases {
 		b.Run(tc.name, func(b *testing.B) {
-			benchCache, err := ioutil.TempDir("", "DockerMode_WithoutCache_")
-			require.NoError(b, err)
-			defer os.RemoveAll(benchCache)
+			cacheDir := b.TempDir()
 
 			ctx, imageName, cli := setup(b, tc)
 
@@ -64,10 +63,11 @@ func BenchmarkDockerMode_WithoutCache(b *testing.B) {
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				b.StopTimer()
-				c, opt := initialize(b, benchCache)
+				c, err := cache.NewFSCache(cacheDir)
+				require.NoError(b, err)
 				b.StartTimer()
 
-				run(b, ctx, imageName, c, opt)
+				run(b, ctx, imageName, c, types.DockerOption{})
 
 				b.StopTimer()
 				_ = c.Clear()
@@ -83,21 +83,20 @@ func BenchmarkDockerMode_WithoutCache(b *testing.B) {
 func BenchmarkDockerMode_WithCache(b *testing.B) {
 	for _, tc := range testCases {
 		b.Run(tc.name, func(b *testing.B) {
-			benchCache, err := ioutil.TempDir("", "DockerMode_WithCache_")
-			require.NoError(b, err)
-			defer os.RemoveAll(benchCache)
+			cacheDir := b.TempDir()
 
 			ctx, imageName, cli := setup(b, tc)
 
-			c, opt := initialize(b, benchCache)
+			c, err := cache.NewFSCache(cacheDir)
+			require.NoError(b, err)
 
 			// run once to generate cache
-			run(b, ctx, imageName, c, opt)
+			run(b, ctx, imageName, c, types.DockerOption{})
 
 			b.ReportAllocs()
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
-				run(b, ctx, imageName, c, opt)
+				run(b, ctx, imageName, c, types.DockerOption{})
 			}
 			b.StopTimer()
 
@@ -152,15 +151,4 @@ func setup(b *testing.B, tc testCase) (context.Context, string, *client.Client) 
 	require.NoError(b, err, tc.name)
 
 	return ctx, imageName, cli
-}
-
-func initialize(b *testing.B, cacheDir string) (cache.Cache, types.DockerOption) {
-	c, err := cache.NewFSCache(cacheDir)
-	require.NoError(b, err)
-
-	opt := types.DockerOption{
-		Timeout:  600 * time.Second,
-		SkipPing: true,
-	}
-	return c, opt
 }
