@@ -5,6 +5,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+
+	"golang.org/x/xerrors"
 )
 
 var cacheDir string
@@ -42,7 +44,7 @@ func StringInSlice(a string, list []string) bool {
 func CopyFile(src, dst string) (int64, error) {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
-		return 0, err
+		return 0, xerrors.Errorf("file (%s) stat error: %w", src, err)
 	}
 
 	if !sourceFileStat.Mode().IsRegular() {

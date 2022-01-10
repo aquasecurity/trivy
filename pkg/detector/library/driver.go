@@ -37,7 +37,7 @@ func NewDriver(libType string) (Driver, error) {
 		driver = newPipDriver()
 	case ftypes.NuGet:
 		driver = newNugetDriver()
-	case ftypes.Jar:
+	case ftypes.Jar, ftypes.Pom:
 		driver = newMavenDriver()
 	case ftypes.GoBinary, ftypes.GoMod:
 		driver = Driver{

@@ -1,0 +1,10 @@
+- bucket: alma 8
+  pairs:
+    - bucket: python3-libs
+      pairs:
+        - key: CVE-2019-16935
+          value:
+            FixedVersion: "3.6.8-31.el8.alma"
+        - key: CVE-2020-26116
+          value:
+            FixedVersion: "3.6.8-37.el8.alma"
