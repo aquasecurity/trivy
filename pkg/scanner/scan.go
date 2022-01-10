@@ -49,7 +49,6 @@ var StandaloneFilesystemSet = wire.NewSet(
 
 // StandaloneRepositorySet binds repository dependencies
 var StandaloneRepositorySet = wire.NewSet(
-	types.InsecureSkipTLSForRepo,
 	remote.NewArtifact,
 	StandaloneSuperSet,
 )

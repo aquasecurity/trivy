@@ -83,8 +83,7 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	localScanner := local.NewScanner(applierApplier, detector)
-	bool2 := types.InsecureSkipTLSForRepo()
-	artifactArtifact, cleanup, err := remote.NewArtifact(url, bool2, artifactCache, artifactOption, configScannerOption)
+	artifactArtifact, cleanup, err := remote.NewArtifact(url, artifactCache, artifactOption, configScannerOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
