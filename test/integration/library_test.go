@@ -14,7 +14,6 @@ import (
 	"sort"
 	"strings"
 	"testing"
-	"time"
 
 	_ "github.com/aquasecurity/fanal/analyzer/all"
 	"github.com/aquasecurity/fanal/analyzer/config"
@@ -87,7 +86,7 @@ var testCases = []testCase{
 		wantOS:          types.OS{Name: "15.1", Family: "opensuse.leap"},
 	},
 	{
-                // from registry.suse.com/suse/sle15:15.3.17.8.16
+		// from registry.suse.com/suse/sle15:15.3.17.8.16
 		name:            "happy path, suse 15.3 (NDB)",
 		imageName:       "suse/sle15:15.3.17.8.16",
 		remoteImageName: "knqyf263/suse-sle15:15.3.17.8.16",
@@ -116,11 +115,6 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 			c, err := cache.NewFSCache(d)
 			require.NoError(t, err, tc.name)
 
-			opt := types.DockerOption{
-				Timeout:  600 * time.Second,
-				SkipPing: true,
-			}
-
 			cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 			require.NoError(t, err, tc.name)
 
@@ -130,7 +124,7 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 				PruneChildren: true,
 			})
 
-			img, cleanup, err := image.NewDockerImage(ctx, tc.remoteImageName, opt)
+			img, cleanup, err := image.NewDockerImage(ctx, tc.remoteImageName, types.DockerOption{})
 			require.NoError(t, err, tc.name)
 			defer cleanup()
 
@@ -160,10 +154,6 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 
 			c, err := cache.NewFSCache(d)
 			require.NoError(t, err)
-			opt := types.DockerOption{
-				Timeout:  600 * time.Second,
-				SkipPing: true,
-			}
 
 			cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 			require.NoError(t, err, tc.name)
@@ -180,7 +170,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			err = cli.ImageTag(ctx, tc.imageName, tc.imageFile)
 			require.NoError(t, err, tc.name)
 
-			img, cleanup, err := image.NewDockerImage(ctx, tc.imageFile, opt)
+			img, cleanup, err := image.NewDockerImage(ctx, tc.imageFile, types.DockerOption{})
 			require.NoError(t, err, tc.name)
 			defer cleanup()
 

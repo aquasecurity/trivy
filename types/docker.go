@@ -1,7 +1,5 @@
 package types
 
-import "time"
-
 type DockerOption struct {
 	// Auth
 	UserName string
@@ -19,8 +17,7 @@ type DockerOption struct {
 	// GCP
 	GcpCredPath string
 
+	// SSL/TLS
 	InsecureSkipTLSVerify bool
 	NonSSL                bool
-	SkipPing              bool // this is ignored now
-	Timeout               time.Duration
 }
