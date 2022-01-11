@@ -65,6 +65,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 							"vulnerability",
 							"security",
 							"HIGH",
+							"8.0",
 						},
 						"precision":         "very-high",
 						"security-severity": "8.0",
@@ -170,9 +171,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 					HelpURI: getStringPointer("https://avd.aquasec.com/appshield/ksv001"),
 					Properties: map[string]interface{}{
 						"tags": []interface{}{
-							"vulnerability",
+							"misconfiguration",
 							"security",
 							"HIGH",
+							"8.0",
 						},
 						"precision":         "very-high",
 						"security-severity": "8.0",
@@ -193,12 +195,13 @@ func TestReportWriter_Sarif(t *testing.T) {
 					HelpURI: getStringPointer("https://avd.aquasec.com/appshield/ksv002"),
 					Properties: map[string]interface{}{
 						"tags": []interface{}{
-							"vulnerability",
+							"misconfiguration",
 							"security",
 							"CRITICAL",
+							"9.5",
 						},
 						"precision":         "very-high",
-						"security-severity": "9.0",
+						"security-severity": "9.5",
 					},
 					Help: &sarif.MultiformatMessageString{
 						Text:     getStringPointer("Misconfiguration KSV002\nType: Kubernetes Security Check\nSeverity: CRITICAL\nCheck: SYS_ADMIN capability added\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)\n"),
