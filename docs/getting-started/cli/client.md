@@ -9,7 +9,7 @@ USAGE:
 
 OPTIONS:
    --template value, -t value  output template [$TRIVY_TEMPLATE]
-   --format value, -f value    format (table, json, template) (default: "table") [$TRIVY_FORMAT]
+   --format value, -f value    format (table, json, sarif, template) (default: "table") [$TRIVY_FORMAT]
    --input value, -i value     input file path instead of image name [$TRIVY_INPUT]
    --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
    --output value, -o value    output file name [$TRIVY_OUTPUT]
