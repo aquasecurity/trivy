@@ -15,8 +15,9 @@ type ArtifactOption struct {
 	Timeout    time.Duration
 	ClearCache bool
 
-	SkipDirs  []string
-	SkipFiles []string
+	SkipDirs    []string
+	SkipFiles   []string
+	OfflineScan bool
 
 	// this field is populated in Init()
 	Target string
@@ -25,11 +26,12 @@ type ArtifactOption struct {
 // NewArtifactOption is the factory method to return artifact option
 func NewArtifactOption(c *cli.Context) ArtifactOption {
 	return ArtifactOption{
-		Input:      c.String("input"),
-		Timeout:    c.Duration("timeout"),
-		ClearCache: c.Bool("clear-cache"),
-		SkipFiles:  c.StringSlice("skip-files"),
-		SkipDirs:   c.StringSlice("skip-dirs"),
+		Input:       c.String("input"),
+		Timeout:     c.Duration("timeout"),
+		ClearCache:  c.Bool("clear-cache"),
+		SkipFiles:   c.StringSlice("skip-files"),
+		SkipDirs:    c.StringSlice("skip-dirs"),
+		OfflineScan: c.Bool("offline-scan"),
 	}
 }
 

@@ -6,35 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestReportWriter_toSarifRuleName(t *testing.T) {
-	tests := []struct {
-		resourceClass string
-		sarifRuleName string
-	}{
-		{
-			resourceClass: "os-pkgs",
-			sarifRuleName: sarifOsPackageVulnerability,
-		},
-		{
-			resourceClass: "lang-pkgs",
-			sarifRuleName: sarifLanguageSpecificVulnerability,
-		},
-		{
-			resourceClass: "config",
-			sarifRuleName: sarifConfigFiles,
-		},
-		{
-			resourceClass: "redis",
-			sarifRuleName: sarifUnknownIssue,
-		},
-	}
-	for _, tc := range tests {
-		t.Run(tc.resourceClass, func(t *testing.T) {
-			assert.Equal(t, tc.sarifRuleName, toSarifRuleName(tc.resourceClass), tc.resourceClass)
-		})
-	}
-}
-
 func TestReportWriter_toSarifErrorLevel(t *testing.T) {
 	tests := []struct {
 		severity        string

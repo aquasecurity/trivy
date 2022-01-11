@@ -16,7 +16,7 @@ import proto "google.golang.org/protobuf/proto"
 import twirp "github.com/twitchtv/twirp"
 import ctxsetters "github.com/twitchtv/twirp/ctxsetters"
 
-import google_protobuf1 "google.golang.org/protobuf/types/known/emptypb"
+import google_protobuf2 "google.golang.org/protobuf/types/known/emptypb"
 
 import bytes "bytes"
 import errors "errors"
@@ -35,9 +35,9 @@ const _ = twirp.TwirpPackageMinVersion_8_1_0
 // ===============
 
 type Cache interface {
-	PutArtifact(context.Context, *PutArtifactRequest) (*google_protobuf1.Empty, error)
+	PutArtifact(context.Context, *PutArtifactRequest) (*google_protobuf2.Empty, error)
 
-	PutBlob(context.Context, *PutBlobRequest) (*google_protobuf1.Empty, error)
+	PutBlob(context.Context, *PutBlobRequest) (*google_protobuf2.Empty, error)
 
 	MissingBlobs(context.Context, *MissingBlobsRequest) (*MissingBlobsResponse, error)
 }
@@ -90,13 +90,13 @@ func NewCacheProtobufClient(baseURL string, client HTTPClient, opts ...twirp.Cli
 	}
 }
 
-func (c *cacheProtobufClient) PutArtifact(ctx context.Context, in *PutArtifactRequest) (*google_protobuf1.Empty, error) {
+func (c *cacheProtobufClient) PutArtifact(ctx context.Context, in *PutArtifactRequest) (*google_protobuf2.Empty, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "trivy.cache.v1")
 	ctx = ctxsetters.WithServiceName(ctx, "Cache")
 	ctx = ctxsetters.WithMethodName(ctx, "PutArtifact")
 	caller := c.callPutArtifact
 	if c.interceptor != nil {
-		caller = func(ctx context.Context, req *PutArtifactRequest) (*google_protobuf1.Empty, error) {
+		caller = func(ctx context.Context, req *PutArtifactRequest) (*google_protobuf2.Empty, error) {
 			resp, err := c.interceptor(
 				func(ctx context.Context, req interface{}) (interface{}, error) {
 					typedReq, ok := req.(*PutArtifactRequest)
@@ -107,9 +107,9 @@ func (c *cacheProtobufClient) PutArtifact(ctx context.Context, in *PutArtifactRe
 				},
 			)(ctx, req)
 			if resp != nil {
-				typedResp, ok := resp.(*google_protobuf1.Empty)
+				typedResp, ok := resp.(*google_protobuf2.Empty)
 				if !ok {
-					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf1.Empty) when calling interceptor")
+					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf2.Empty) when calling interceptor")
 				}
 				return typedResp, err
 			}
@@ -119,8 +119,8 @@ func (c *cacheProtobufClient) PutArtifact(ctx context.Context, in *PutArtifactRe
 	return caller(ctx, in)
 }
 
-func (c *cacheProtobufClient) callPutArtifact(ctx context.Context, in *PutArtifactRequest) (*google_protobuf1.Empty, error) {
-	out := new(google_protobuf1.Empty)
+func (c *cacheProtobufClient) callPutArtifact(ctx context.Context, in *PutArtifactRequest) (*google_protobuf2.Empty, error) {
+	out := new(google_protobuf2.Empty)
 	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[0], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
@@ -136,13 +136,13 @@ func (c *cacheProtobufClient) callPutArtifact(ctx context.Context, in *PutArtifa
 	return out, nil
 }
 
-func (c *cacheProtobufClient) PutBlob(ctx context.Context, in *PutBlobRequest) (*google_protobuf1.Empty, error) {
+func (c *cacheProtobufClient) PutBlob(ctx context.Context, in *PutBlobRequest) (*google_protobuf2.Empty, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "trivy.cache.v1")
 	ctx = ctxsetters.WithServiceName(ctx, "Cache")
 	ctx = ctxsetters.WithMethodName(ctx, "PutBlob")
 	caller := c.callPutBlob
 	if c.interceptor != nil {
-		caller = func(ctx context.Context, req *PutBlobRequest) (*google_protobuf1.Empty, error) {
+		caller = func(ctx context.Context, req *PutBlobRequest) (*google_protobuf2.Empty, error) {
 			resp, err := c.interceptor(
 				func(ctx context.Context, req interface{}) (interface{}, error) {
 					typedReq, ok := req.(*PutBlobRequest)
@@ -153,9 +153,9 @@ func (c *cacheProtobufClient) PutBlob(ctx context.Context, in *PutBlobRequest) (
 				},
 			)(ctx, req)
 			if resp != nil {
-				typedResp, ok := resp.(*google_protobuf1.Empty)
+				typedResp, ok := resp.(*google_protobuf2.Empty)
 				if !ok {
-					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf1.Empty) when calling interceptor")
+					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf2.Empty) when calling interceptor")
 				}
 				return typedResp, err
 			}
@@ -165,8 +165,8 @@ func (c *cacheProtobufClient) PutBlob(ctx context.Context, in *PutBlobRequest) (
 	return caller(ctx, in)
 }
 
-func (c *cacheProtobufClient) callPutBlob(ctx context.Context, in *PutBlobRequest) (*google_protobuf1.Empty, error) {
-	out := new(google_protobuf1.Empty)
+func (c *cacheProtobufClient) callPutBlob(ctx context.Context, in *PutBlobRequest) (*google_protobuf2.Empty, error) {
+	out := new(google_protobuf2.Empty)
 	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[1], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
@@ -276,13 +276,13 @@ func NewCacheJSONClient(baseURL string, client HTTPClient, opts ...twirp.ClientO
 	}
 }
 
-func (c *cacheJSONClient) PutArtifact(ctx context.Context, in *PutArtifactRequest) (*google_protobuf1.Empty, error) {
+func (c *cacheJSONClient) PutArtifact(ctx context.Context, in *PutArtifactRequest) (*google_protobuf2.Empty, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "trivy.cache.v1")
 	ctx = ctxsetters.WithServiceName(ctx, "Cache")
 	ctx = ctxsetters.WithMethodName(ctx, "PutArtifact")
 	caller := c.callPutArtifact
 	if c.interceptor != nil {
-		caller = func(ctx context.Context, req *PutArtifactRequest) (*google_protobuf1.Empty, error) {
+		caller = func(ctx context.Context, req *PutArtifactRequest) (*google_protobuf2.Empty, error) {
 			resp, err := c.interceptor(
 				func(ctx context.Context, req interface{}) (interface{}, error) {
 					typedReq, ok := req.(*PutArtifactRequest)
@@ -293,9 +293,9 @@ func (c *cacheJSONClient) PutArtifact(ctx context.Context, in *PutArtifactReques
 				},
 			)(ctx, req)
 			if resp != nil {
-				typedResp, ok := resp.(*google_protobuf1.Empty)
+				typedResp, ok := resp.(*google_protobuf2.Empty)
 				if !ok {
-					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf1.Empty) when calling interceptor")
+					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf2.Empty) when calling interceptor")
 				}
 				return typedResp, err
 			}
@@ -305,8 +305,8 @@ func (c *cacheJSONClient) PutArtifact(ctx context.Context, in *PutArtifactReques
 	return caller(ctx, in)
 }
 
-func (c *cacheJSONClient) callPutArtifact(ctx context.Context, in *PutArtifactRequest) (*google_protobuf1.Empty, error) {
-	out := new(google_protobuf1.Empty)
+func (c *cacheJSONClient) callPutArtifact(ctx context.Context, in *PutArtifactRequest) (*google_protobuf2.Empty, error) {
+	out := new(google_protobuf2.Empty)
 	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[0], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
@@ -322,13 +322,13 @@ func (c *cacheJSONClient) callPutArtifact(ctx context.Context, in *PutArtifactRe
 	return out, nil
 }
 
-func (c *cacheJSONClient) PutBlob(ctx context.Context, in *PutBlobRequest) (*google_protobuf1.Empty, error) {
+func (c *cacheJSONClient) PutBlob(ctx context.Context, in *PutBlobRequest) (*google_protobuf2.Empty, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "trivy.cache.v1")
 	ctx = ctxsetters.WithServiceName(ctx, "Cache")
 	ctx = ctxsetters.WithMethodName(ctx, "PutBlob")
 	caller := c.callPutBlob
 	if c.interceptor != nil {
-		caller = func(ctx context.Context, req *PutBlobRequest) (*google_protobuf1.Empty, error) {
+		caller = func(ctx context.Context, req *PutBlobRequest) (*google_protobuf2.Empty, error) {
 			resp, err := c.interceptor(
 				func(ctx context.Context, req interface{}) (interface{}, error) {
 					typedReq, ok := req.(*PutBlobRequest)
@@ -339,9 +339,9 @@ func (c *cacheJSONClient) PutBlob(ctx context.Context, in *PutBlobRequest) (*goo
 				},
 			)(ctx, req)
 			if resp != nil {
-				typedResp, ok := resp.(*google_protobuf1.Empty)
+				typedResp, ok := resp.(*google_protobuf2.Empty)
 				if !ok {
-					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf1.Empty) when calling interceptor")
+					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf2.Empty) when calling interceptor")
 				}
 				return typedResp, err
 			}
@@ -351,8 +351,8 @@ func (c *cacheJSONClient) PutBlob(ctx context.Context, in *PutBlobRequest) (*goo
 	return caller(ctx, in)
 }
 
-func (c *cacheJSONClient) callPutBlob(ctx context.Context, in *PutBlobRequest) (*google_protobuf1.Empty, error) {
-	out := new(google_protobuf1.Empty)
+func (c *cacheJSONClient) callPutBlob(ctx context.Context, in *PutBlobRequest) (*google_protobuf2.Empty, error) {
+	out := new(google_protobuf2.Empty)
 	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[1], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
@@ -569,7 +569,7 @@ func (s *cacheServer) servePutArtifactJSON(ctx context.Context, resp http.Respon
 
 	handler := s.Cache.PutArtifact
 	if s.interceptor != nil {
-		handler = func(ctx context.Context, req *PutArtifactRequest) (*google_protobuf1.Empty, error) {
+		handler = func(ctx context.Context, req *PutArtifactRequest) (*google_protobuf2.Empty, error) {
 			resp, err := s.interceptor(
 				func(ctx context.Context, req interface{}) (interface{}, error) {
 					typedReq, ok := req.(*PutArtifactRequest)
@@ -580,9 +580,9 @@ func (s *cacheServer) servePutArtifactJSON(ctx context.Context, resp http.Respon
 				},
 			)(ctx, req)
 			if resp != nil {
-				typedResp, ok := resp.(*google_protobuf1.Empty)
+				typedResp, ok := resp.(*google_protobuf2.Empty)
 				if !ok {
-					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf1.Empty) when calling interceptor")
+					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf2.Empty) when calling interceptor")
 				}
 				return typedResp, err
 			}
@@ -591,7 +591,7 @@ func (s *cacheServer) servePutArtifactJSON(ctx context.Context, resp http.Respon
 	}
 
 	// Call service method
-	var respContent *google_protobuf1.Empty
+	var respContent *google_protobuf2.Empty
 	func() {
 		defer ensurePanicResponses(ctx, resp, s.hooks)
 		respContent, err = handler(ctx, reqContent)
@@ -602,7 +602,7 @@ func (s *cacheServer) servePutArtifactJSON(ctx context.Context, resp http.Respon
 		return
 	}
 	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf1.Empty and nil error while calling PutArtifact. nil responses are not supported"))
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf2.Empty and nil error while calling PutArtifact. nil responses are not supported"))
 		return
 	}
 
@@ -650,7 +650,7 @@ func (s *cacheServer) servePutArtifactProtobuf(ctx context.Context, resp http.Re
 
 	handler := s.Cache.PutArtifact
 	if s.interceptor != nil {
-		handler = func(ctx context.Context, req *PutArtifactRequest) (*google_protobuf1.Empty, error) {
+		handler = func(ctx context.Context, req *PutArtifactRequest) (*google_protobuf2.Empty, error) {
 			resp, err := s.interceptor(
 				func(ctx context.Context, req interface{}) (interface{}, error) {
 					typedReq, ok := req.(*PutArtifactRequest)
@@ -661,9 +661,9 @@ func (s *cacheServer) servePutArtifactProtobuf(ctx context.Context, resp http.Re
 				},
 			)(ctx, req)
 			if resp != nil {
-				typedResp, ok := resp.(*google_protobuf1.Empty)
+				typedResp, ok := resp.(*google_protobuf2.Empty)
 				if !ok {
-					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf1.Empty) when calling interceptor")
+					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf2.Empty) when calling interceptor")
 				}
 				return typedResp, err
 			}
@@ -672,7 +672,7 @@ func (s *cacheServer) servePutArtifactProtobuf(ctx context.Context, resp http.Re
 	}
 
 	// Call service method
-	var respContent *google_protobuf1.Empty
+	var respContent *google_protobuf2.Empty
 	func() {
 		defer ensurePanicResponses(ctx, resp, s.hooks)
 		respContent, err = handler(ctx, reqContent)
@@ -683,7 +683,7 @@ func (s *cacheServer) servePutArtifactProtobuf(ctx context.Context, resp http.Re
 		return
 	}
 	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf1.Empty and nil error while calling PutArtifact. nil responses are not supported"))
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf2.Empty and nil error while calling PutArtifact. nil responses are not supported"))
 		return
 	}
 
@@ -749,7 +749,7 @@ func (s *cacheServer) servePutBlobJSON(ctx context.Context, resp http.ResponseWr
 
 	handler := s.Cache.PutBlob
 	if s.interceptor != nil {
-		handler = func(ctx context.Context, req *PutBlobRequest) (*google_protobuf1.Empty, error) {
+		handler = func(ctx context.Context, req *PutBlobRequest) (*google_protobuf2.Empty, error) {
 			resp, err := s.interceptor(
 				func(ctx context.Context, req interface{}) (interface{}, error) {
 					typedReq, ok := req.(*PutBlobRequest)
@@ -760,9 +760,9 @@ func (s *cacheServer) servePutBlobJSON(ctx context.Context, resp http.ResponseWr
 				},
 			)(ctx, req)
 			if resp != nil {
-				typedResp, ok := resp.(*google_protobuf1.Empty)
+				typedResp, ok := resp.(*google_protobuf2.Empty)
 				if !ok {
-					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf1.Empty) when calling interceptor")
+					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf2.Empty) when calling interceptor")
 				}
 				return typedResp, err
 			}
@@ -771,7 +771,7 @@ func (s *cacheServer) servePutBlobJSON(ctx context.Context, resp http.ResponseWr
 	}
 
 	// Call service method
-	var respContent *google_protobuf1.Empty
+	var respContent *google_protobuf2.Empty
 	func() {
 		defer ensurePanicResponses(ctx, resp, s.hooks)
 		respContent, err = handler(ctx, reqContent)
@@ -782,7 +782,7 @@ func (s *cacheServer) servePutBlobJSON(ctx context.Context, resp http.ResponseWr
 		return
 	}
 	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf1.Empty and nil error while calling PutBlob. nil responses are not supported"))
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf2.Empty and nil error while calling PutBlob. nil responses are not supported"))
 		return
 	}
 
@@ -830,7 +830,7 @@ func (s *cacheServer) servePutBlobProtobuf(ctx context.Context, resp http.Respon
 
 	handler := s.Cache.PutBlob
 	if s.interceptor != nil {
-		handler = func(ctx context.Context, req *PutBlobRequest) (*google_protobuf1.Empty, error) {
+		handler = func(ctx context.Context, req *PutBlobRequest) (*google_protobuf2.Empty, error) {
 			resp, err := s.interceptor(
 				func(ctx context.Context, req interface{}) (interface{}, error) {
 					typedReq, ok := req.(*PutBlobRequest)
@@ -841,9 +841,9 @@ func (s *cacheServer) servePutBlobProtobuf(ctx context.Context, resp http.Respon
 				},
 			)(ctx, req)
 			if resp != nil {
-				typedResp, ok := resp.(*google_protobuf1.Empty)
+				typedResp, ok := resp.(*google_protobuf2.Empty)
 				if !ok {
-					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf1.Empty) when calling interceptor")
+					return nil, twirp.InternalError("failed type assertion resp.(*google_protobuf2.Empty) when calling interceptor")
 				}
 				return typedResp, err
 			}
@@ -852,7 +852,7 @@ func (s *cacheServer) servePutBlobProtobuf(ctx context.Context, resp http.Respon
 	}
 
 	// Call service method
-	var respContent *google_protobuf1.Empty
+	var respContent *google_protobuf2.Empty
 	func() {
 		defer ensurePanicResponses(ctx, resp, s.hooks)
 		respContent, err = handler(ctx, reqContent)
@@ -863,7 +863,7 @@ func (s *cacheServer) servePutBlobProtobuf(ctx context.Context, resp http.Respon
 		return
 	}
 	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf1.Empty and nil error while calling PutBlob. nil responses are not supported"))
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *google_protobuf2.Empty and nil error while calling PutBlob. nil responses are not supported"))
 		return
 	}
 
