@@ -79,7 +79,7 @@ func TestDir_Walk(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			w := walker.NewDir(tt.fields.skipFiles, tt.fields.skipDirs)
+			w := walker.NewFS(tt.fields.skipFiles, tt.fields.skipDirs)
 
 			err := w.Walk(tt.rootDir, tt.analyzeFn)
 			if tt.wantErr != "" {

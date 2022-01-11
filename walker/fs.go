@@ -10,19 +10,19 @@ import (
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 )
 
-type Dir struct {
+type FS struct {
 	walker
 }
 
-func NewDir(skipFiles, skipDirs []string) Dir {
-	return Dir{
+func NewFS(skipFiles, skipDirs []string) FS {
+	return FS{
 		walker: newWalker(skipFiles, skipDirs),
 	}
 }
 
 // Walk walks the file tree rooted at root, calling WalkFunc for each file or
 // directory in the tree, including root, but a directory to be ignored will be skipped.
-func (w Dir) Walk(root string, fn WalkFunc) error {
+func (w FS) Walk(root string, fn WalkFunc) error {
 	// walk function called for every path found
 	walkFn := func(pathname string, fi os.FileInfo) error {
 		pathname = filepath.Clean(pathname)

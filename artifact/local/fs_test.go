@@ -36,7 +36,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name: "happy path",
 			fields: fields{
-				dir: "./testdata",
+				dir: "./testdata/alpine",
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
@@ -72,7 +72,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name: "disable analyzers",
 			fields: fields{
-				dir: "./testdata",
+				dir: "./testdata/alpine",
 			},
 			artifactOpt: artifact.Option{
 				DisabledAnalyzers: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeApk},
@@ -99,7 +99,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name: "sad path PutBlob returns an error",
 			fields: fields{
-				dir: "./testdata",
+				dir: "./testdata/alpine",
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
@@ -133,6 +133,78 @@ func TestArtifact_Inspect(t *testing.T) {
 				dir: "./testdata/unknown",
 			},
 			wantErr: "no such file or directory",
+		},
+		{
+			name: "happy path with single file",
+			fields: fields{
+				dir: "testdata/requirements.txt",
+			},
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobID: "sha256:66ba8d6fd07f032638ec8ee517f85b3aad8c6b263c9b1f784237511558002851",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+						DiffID:        "sha256:de52b03af926ba8f646bd11b794f014161b11a3dbad0213d556ea9af120e1623",
+						Applications: []types.Application{
+							{
+								Type:     "pip",
+								FilePath: "requirements.txt",
+								Libraries: []types.Package{
+									{
+										Name:    "Flask",
+										Version: "2.0.0",
+									},
+								},
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: types.ArtifactReference{
+				Name: "testdata/requirements.txt",
+				Type: types.ArtifactFilesystem,
+				ID:   "sha256:66ba8d6fd07f032638ec8ee517f85b3aad8c6b263c9b1f784237511558002851",
+				BlobIDs: []string{
+					"sha256:66ba8d6fd07f032638ec8ee517f85b3aad8c6b263c9b1f784237511558002851",
+				},
+			},
+		},
+		{
+			name: "happy path with single file using relative path",
+			fields: fields{
+				dir: "./testdata/requirements.txt",
+			},
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobID: "sha256:66ba8d6fd07f032638ec8ee517f85b3aad8c6b263c9b1f784237511558002851",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+						DiffID:        "sha256:de52b03af926ba8f646bd11b794f014161b11a3dbad0213d556ea9af120e1623",
+						Applications: []types.Application{
+							{
+								Type:     "pip",
+								FilePath: "requirements.txt",
+								Libraries: []types.Package{
+									{
+										Name:    "Flask",
+										Version: "2.0.0",
+									},
+								},
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: types.ArtifactReference{
+				Name: "testdata/requirements.txt",
+				Type: types.ArtifactFilesystem,
+				ID:   "sha256:66ba8d6fd07f032638ec8ee517f85b3aad8c6b263c9b1f784237511558002851",
+				BlobIDs: []string{
+					"sha256:66ba8d6fd07f032638ec8ee517f85b3aad8c6b263c9b1f784237511558002851",
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
