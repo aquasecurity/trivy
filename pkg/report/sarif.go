@@ -10,8 +10,7 @@ import (
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -19,19 +18,21 @@ const (
 	sarifLanguageSpecificVulnerability = "LanguageSpecificPackageVulnerability"
 	sarifConfigFiles                   = "Misconfiguration"
 	sarifUnknownIssue                  = "UnknownIssue"
-	sarifError                         = "error"
-	sarifWarning                       = "warning"
-	sarifNote                          = "note"
-	sarifNone                          = "none"
-)
 
-var (
-	rootPath   = "file:///"
+	sarifError   = "error"
+	sarifWarning = "warning"
+	sarifNote    = "note"
+	sarifNone    = "none"
+
 	columnKind = "utf16CodeUnits"
 )
 
-// regex to extract file path in case string includes (distro:version)
-var re = regexp.MustCompile(`(?P<path>.+?)(?:\s*\((?:.*?)\).*?)?$`)
+var (
+	rootPath = "file:///"
+
+	// pathRegex to extract file path in case string includes (distro:version)
+	pathRegex = regexp.MustCompile(`(?P<path>.+?)(?:\s*\((?:.*?)\).*?)?$`)
+)
 
 // SarifWriter implements result Writer
 type SarifWriter struct {
@@ -72,7 +73,6 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 				data.title,
 				"security",
 				data.severity,
-				data.cvssScore,
 			},
 			"precision":         "very-high",
 			"security-severity": data.cvssScore,
@@ -130,7 +130,7 @@ func (sw SarifWriter) Write(report Report) error {
 				title:            "vulnerability",
 				vulnerabilityId:  vuln.VulnerabilityID,
 				severity:         vuln.Severity,
-				cvssScore:        getSeverityLevel(&vuln.Vulnerability),
+				cvssScore:        getCVSSScore(&vuln),
 				url:              vuln.PrimaryURL,
 				resourceClass:    string(res.Class),
 				artifactLocation: toPathUri(path),
@@ -149,7 +149,7 @@ func (sw SarifWriter) Write(report Report) error {
 				title:            "misconfiguration",
 				vulnerabilityId:  misconf.ID,
 				severity:         misconf.Severity,
-				cvssScore:        getDefaultSeverityLevel(misconf.Severity),
+				cvssScore:        severityToScore(misconf.Severity),
 				url:              misconf.PrimaryURL,
 				resourceClass:    string(res.Class),
 				artifactLocation: toPathUri(res.Target),
@@ -199,26 +199,24 @@ func toSarifErrorLevel(severity string) string {
 }
 
 func toPathUri(input string) string {
-	var matches = re.FindStringSubmatch(input)
+	var matches = pathRegex.FindStringSubmatch(input)
 	if matches != nil {
-		input = matches[re.SubexpIndex("path")]
+		input = matches[pathRegex.SubexpIndex("path")]
 	}
 	return strings.ReplaceAll(input, "\\", "/")
 }
 
-func getSeverityLevel(vuln *types.Vulnerability) string {
-	// If there is CVSS from NVD, take this one.
-	// else take the first existed CVSS
-	if nvd, ok := vuln.CVSS[vulnerability.NVD]; ok {
-		return fmt.Sprintf("%.1f", nvd.V3Score)
-	}
-	for _, cvss := range vuln.CVSS {
+func getCVSSScore(vuln *types.DetectedVulnerability) string {
+	// Take the vendor score
+	if cvss, ok := vuln.CVSS[vuln.SeveritySource]; ok {
 		return fmt.Sprintf("%.1f", cvss.V3Score)
 	}
-	return getDefaultSeverityLevel(vuln.Severity)
+
+	// Converts severity to score
+	return severityToScore(vuln.Severity)
 }
 
-func getDefaultSeverityLevel(severity string) string {
+func severityToScore(severity string) string {
 	switch severity {
 	case "CRITICAL":
 		return "9.5"

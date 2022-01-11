@@ -23,17 +23,18 @@ func getIntPointer(i int) *int {
 	return &i
 }
 func TestReportWriter_Sarif(t *testing.T) {
-	testCases := []struct {
-		name            string
-		results         report.Results
-		expectedRules   []*sarif.ReportingDescriptor
-		expectedResults []*sarif.Result
+	tests := []struct {
+		name        string
+		input       report.Results
+		wantRules   []*sarif.ReportingDescriptor
+		wantResults []*sarif.Result
 	}{
 		{
 			name: "report with vulnerabilities",
-			results: report.Results{
+			input: report.Results{
 				{
 					Target: "test",
+					Class:  report.ClassOSPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-0001",
@@ -41,19 +42,30 @@ func TestReportWriter_Sarif(t *testing.T) {
 							InstalledVersion: "1.2.3",
 							FixedVersion:     "3.4.5",
 							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
+							SeveritySource:   "redhat",
 							Vulnerability: dbTypes.Vulnerability{
 								Title:       "foobar",
 								Description: "baz",
 								Severity:    "HIGH",
+								CVSS: map[string]dbTypes.CVSS{
+									"nvd": {
+										V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+										V3Score:  9.8,
+									},
+									"redhat": {
+										V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+										V3Score:  7.5,
+									},
+								},
 							},
 						},
 					},
 				},
 			},
-			expectedRules: []*sarif.ReportingDescriptor{
+			wantRules: []*sarif.ReportingDescriptor{
 				{
 					ID:               "CVE-2020-0001",
-					Name:             getStringPointer("UnknownIssue"),
+					Name:             getStringPointer("OsPackageVulnerability"),
 					ShortDescription: &sarif.MultiformatMessageString{Text: getStringPointer("CVE-2020-0001")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: getStringPointer("baz")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
@@ -65,10 +77,9 @@ func TestReportWriter_Sarif(t *testing.T) {
 							"vulnerability",
 							"security",
 							"HIGH",
-							"8.0",
 						},
 						"precision":         "very-high",
-						"security-severity": "8.0",
+						"security-severity": "7.5",
 					},
 					Help: &sarif.MultiformatMessageString{
 						Text:     getStringPointer("Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nbaz"),
@@ -76,7 +87,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 					},
 				},
 			},
-			expectedResults: []*sarif.Result{
+			wantResults: []*sarif.Result{
 				{
 					RuleID:    getStringPointer("CVE-2020-0001"),
 					RuleIndex: getUintPointer(0),
@@ -98,9 +109,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 		},
 		{
 			name: "report with misconfigurations",
-			results: report.Results{
+			input: report.Results{
 				{
 					Target: "test",
+					Class:  report.ClassConfig,
 					Misconfigurations: []types.DetectedMisconfiguration{
 						{
 							Type:       "Kubernetes Security Check",
@@ -123,7 +135,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 					},
 				},
 			},
-			expectedResults: []*sarif.Result{
+			wantResults: []*sarif.Result{
 				{
 					RuleID:    getStringPointer("KSV001"),
 					RuleIndex: getUintPointer(0),
@@ -159,10 +171,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 					},
 				},
 			},
-			expectedRules: []*sarif.ReportingDescriptor{
+			wantRules: []*sarif.ReportingDescriptor{
 				{
 					ID:               "KSV001",
-					Name:             getStringPointer("UnknownIssue"),
+					Name:             getStringPointer("Misconfiguration"),
 					ShortDescription: &sarif.MultiformatMessageString{Text: getStringPointer("KSV001")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: getStringPointer("")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
@@ -174,7 +186,6 @@ func TestReportWriter_Sarif(t *testing.T) {
 							"misconfiguration",
 							"security",
 							"HIGH",
-							"8.0",
 						},
 						"precision":         "very-high",
 						"security-severity": "8.0",
@@ -186,7 +197,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 				},
 				{
 					ID:               "KSV002",
-					Name:             getStringPointer("UnknownIssue"),
+					Name:             getStringPointer("Misconfiguration"),
 					ShortDescription: &sarif.MultiformatMessageString{Text: getStringPointer("KSV002")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: getStringPointer("")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
@@ -198,7 +209,6 @@ func TestReportWriter_Sarif(t *testing.T) {
 							"misconfiguration",
 							"security",
 							"CRITICAL",
-							"9.5",
 						},
 						"precision":         "very-high",
 						"security-severity": "9.5",
@@ -211,16 +221,16 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 		},
 		{
-			name:            "no vulns",
-			expectedResults: []*sarif.Result{},
-			expectedRules:   []*sarif.ReportingDescriptor{},
+			name:        "no vulns",
+			wantResults: []*sarif.Result{},
+			wantRules:   []*sarif.ReportingDescriptor{},
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			sarifWritten := bytes.Buffer{}
-			err := report.Write(report.Report{Results: tc.results}, report.Option{
+			err := report.Write(report.Report{Results: tt.input}, report.Option{
 				Format: "sarif",
 				Output: &sarifWritten,
 			})
@@ -229,8 +239,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 			result := &sarif.Report{}
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
 			assert.NoError(t, err)
-			assert.Equal(t, tc.expectedRules, result.Runs[0].Tool.Driver.Rules, tc.name)
-			assert.Equal(t, tc.expectedResults, result.Runs[0].Results, tc.name)
+			assert.Equal(t, tt.wantRules, result.Runs[0].Tool.Driver.Rules, tt.name)
+			assert.Equal(t, tt.wantResults, result.Runs[0].Results, tt.name)
 		})
 	}
 }
