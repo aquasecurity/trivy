@@ -28,11 +28,12 @@
               },
               "properties": {
                 "precision": "very-high",
-                "security-severity": "5.0",
+                "security-severity": "5.3",
                 "tags": [
                   "vulnerability",
                   "security",
-                  "MEDIUM"
+                  "MEDIUM",
+                  "5.3"
                 ]
               }
             },
@@ -55,11 +56,12 @@
               },
               "properties": {
                 "precision": "very-high",
-                "security-severity": "5.0",
+                "security-severity": "5.3",
                 "tags": [
                   "vulnerability",
                   "security",
-                  "MEDIUM"
+                  "MEDIUM",
+                  "5.3"
                 ]
               }
             }
