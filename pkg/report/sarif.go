@@ -9,6 +9,9 @@ import (
 
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 )
 
 const (
@@ -38,6 +41,7 @@ type SarifWriter struct {
 }
 
 type sarifData struct {
+	title            string
 	vulnerabilityId  string
 	fullDescription  string
 	helpText         string
@@ -48,6 +52,7 @@ type sarifData struct {
 	resultIndex      int
 	artifactLocation string
 	message          string
+	cvssScore        string
 }
 
 func (sw *SarifWriter) addSarifRule(data *sarifData) {
@@ -64,12 +69,13 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 		}).
 		WithProperties(sarif.Properties{
 			"tags": []string{
-				"vulnerability",
+				data.title,
 				"security",
 				data.severity,
+				data.cvssScore,
 			},
 			"precision":         "very-high",
-			"security-severity": sarifSeverityLevel(data.severity),
+			"security-severity": data.cvssScore,
 		})
 	if data.url != "" {
 		r.WithHelpURI(data.url)
@@ -120,10 +126,11 @@ func (sw SarifWriter) Write(report Report) error {
 			if path == "" {
 				path = res.Target
 			}
-
 			sw.addSarifResult(&sarifData{
+				title:            "vulnerability",
 				vulnerabilityId:  vuln.VulnerabilityID,
 				severity:         vuln.Severity,
+				cvssScore:        getSeverityLevel(&vuln.Vulnerability),
 				url:              vuln.PrimaryURL,
 				resourceClass:    string(res.Class),
 				artifactLocation: toPathUri(path),
@@ -139,8 +146,10 @@ func (sw SarifWriter) Write(report Report) error {
 		}
 		for _, misconf := range res.Misconfigurations {
 			sw.addSarifResult(&sarifData{
+				title:            "misconfiguration",
 				vulnerabilityId:  misconf.ID,
 				severity:         misconf.Severity,
+				cvssScore:        getDefaultSeverityLevel(misconf.Severity),
 				url:              misconf.PrimaryURL,
 				resourceClass:    string(res.Class),
 				artifactLocation: toPathUri(res.Target),
@@ -197,16 +206,28 @@ func toPathUri(input string) string {
 	return strings.ReplaceAll(input, "\\", "/")
 }
 
-func sarifSeverityLevel(severity string) string {
+func getSeverityLevel(vuln *types.Vulnerability) string {
+	// If there is CVSS from NVD, take this one.
+	// else take the first existed CVSS
+	if nvd, ok := vuln.CVSS[vulnerability.NVD]; ok {
+		return fmt.Sprintf("%.1f", nvd.V3Score)
+	}
+	for _, cvss := range vuln.CVSS {
+		return fmt.Sprintf("%.1f", cvss.V3Score)
+	}
+	return getDefaultSeverityLevel(vuln.Severity)
+}
+
+func getDefaultSeverityLevel(severity string) string {
 	switch severity {
 	case "CRITICAL":
-		return "9.0"
+		return "9.5"
 	case "HIGH":
 		return "8.0"
 	case "MEDIUM":
-		return "5.0"
+		return "5.5"
 	case "LOW":
-		return "3.5"
+		return "2.0"
 	default:
 		return "0.0"
 	}
