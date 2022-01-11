@@ -3,6 +3,7 @@ package report
 import (
 	"io"
 	"path/filepath"
+	"strings"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -118,7 +119,7 @@ func Write(report Report, option Option) error {
 		writer = &JSONWriter{Output: option.Output}
 	case "template":
 		// We keep `sarif.tpl` template working for backward compatibility for a while.
-		if filepath.Base(option.OutputTemplate) == "sarif.tpl" {
+		if strings.HasPrefix(option.OutputTemplate, "@") && filepath.Base(option.OutputTemplate) == "sarif.tpl" {
 			log.Logger.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--report sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
 			writer = SarifWriter{Output: option.Output, Version: option.AppVersion}
 			break
