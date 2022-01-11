@@ -149,6 +149,13 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/almalinux-8.json.golden",
 		},
 		{
+			name: "rocky linux 8",
+			args: csArgs{
+				Input: "testdata/fixtures/images/rockylinux-8.tar.gz",
+			},
+			golden: "testdata/rockylinux-8.json.golden",
+		},
+		{
 			name: "distroless base",
 			args: csArgs{
 				Input: "testdata/fixtures/images/distroless-base.tar.gz",

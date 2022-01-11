@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/oracle"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/photon"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/suse"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -76,6 +77,8 @@ func newDriver(osFamily, osName string) Driver {
 		return ubuntu.NewScanner()
 	case fos.RedHat, fos.CentOS:
 		return redhat.NewScanner()
+	case fos.Rocky:
+		return rocky.NewScanner()
 	case fos.Amazon:
 		return amazon.NewScanner()
 	case fos.Oracle:
