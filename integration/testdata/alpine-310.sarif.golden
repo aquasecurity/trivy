@@ -32,7 +32,7 @@
                 "tags": [
                   "vulnerability",
                   "security",
-                  "MEDIUM",
+                  "MEDIUM"
                 ]
               }
             },
@@ -59,8 +59,7 @@
                 "tags": [
                   "vulnerability",
                   "security",
-                  "MEDIUM",
-                  "5.3"
+                  "MEDIUM"
                 ]
               }
             }
