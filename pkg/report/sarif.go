@@ -130,7 +130,7 @@ func (sw SarifWriter) Write(report Report) error {
 				title:            "vulnerability",
 				vulnerabilityId:  vuln.VulnerabilityID,
 				severity:         vuln.Severity,
-				cvssScore:        getCVSSScore(&vuln),
+				cvssScore:        getCVSSScore(vuln),
 				url:              vuln.PrimaryURL,
 				resourceClass:    string(res.Class),
 				artifactLocation: toPathUri(path),
@@ -206,7 +206,7 @@ func toPathUri(input string) string {
 	return strings.ReplaceAll(input, "\\", "/")
 }
 
-func getCVSSScore(vuln *types.DetectedVulnerability) string {
+func getCVSSScore(vuln types.DetectedVulnerability) string {
 	// Take the vendor score
 	if cvss, ok := vuln.CVSS[vuln.SeveritySource]; ok {
 		return fmt.Sprintf("%.1f", cvss.V3Score)
