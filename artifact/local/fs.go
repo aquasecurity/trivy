@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -29,9 +28,9 @@ const (
 )
 
 type Artifact struct {
-	dir         string
+	rootPath    string
 	cache       cache.ArtifactCache
-	walker      walker.Dir
+	walker      walker.FS
 	analyzer    analyzer.AnalyzerGroup
 	hookManager hook.Manager
 	scanner     scanner.Scanner
@@ -40,21 +39,21 @@ type Artifact struct {
 	configScannerOption config.ScannerOption
 }
 
-func NewArtifact(dir string, c cache.ArtifactCache, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (artifact.Artifact, error) {
+func NewArtifact(rootPath string, c cache.ArtifactCache, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (artifact.Artifact, error) {
 	// Register config analyzers
 	if err := config.RegisterConfigAnalyzers(scannerOpt.FilePatterns); err != nil {
 		return nil, xerrors.Errorf("config analyzer error: %w", err)
 	}
 
-	s, err := scanner.New(dir, scannerOpt.Namespaces, scannerOpt.PolicyPaths, scannerOpt.DataPaths, scannerOpt.Trace)
+	s, err := scanner.New(rootPath, scannerOpt.Namespaces, scannerOpt.PolicyPaths, scannerOpt.DataPaths, scannerOpt.Trace)
 	if err != nil {
 		return nil, xerrors.Errorf("scanner error: %w", err)
 	}
 
 	return Artifact{
-		dir:         dir,
+		rootPath:    filepath.Clean(rootPath),
 		cache:       c,
-		walker:      walker.NewDir(buildAbsPaths(dir, artifactOpt.SkipFiles), buildAbsPaths(dir, artifactOpt.SkipDirs)),
+		walker:      walker.NewFS(buildAbsPaths(rootPath, artifactOpt.SkipFiles), buildAbsPaths(rootPath, artifactOpt.SkipDirs)),
 		analyzer:    analyzer.NewAnalyzerGroup(artifactOpt.AnalyzerGroup, artifactOpt.DisabledAnalyzers),
 		hookManager: hook.NewManager(artifactOpt.DisabledHooks),
 		scanner:     s,
@@ -81,21 +80,29 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	result := new(analyzer.AnalysisResult)
 	limit := semaphore.NewWeighted(parallel)
 
-	err := a.walker.Walk(a.dir, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err := a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+		directory := a.rootPath
+
+		// When the directory is the same as the filePath, a file was given
+		// instead of a directory, rewrite the directory in this case.
+		if a.rootPath == filePath {
+			directory = filepath.Dir(a.rootPath)
+		}
+
 		// For exported rootfs (e.g. images/alpine/etc/alpine-release)
-		filePath, err := filepath.Rel(a.dir, filePath)
+		filePath, err := filepath.Rel(directory, filePath)
 		if err != nil {
 			return xerrors.Errorf("filepath rel (%s): %w", filePath, err)
 		}
 
 		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
-		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, a.dir, filePath, info, opener, opts); err != nil {
+		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, directory, filePath, info, opener, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
 		}
 		return nil
 	})
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("walk dir: %w", err)
+		return types.ArtifactReference{}, xerrors.Errorf("walk filesystem: %w", err)
 	}
 
 	// Wait for all the goroutine to finish.
@@ -144,11 +151,11 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 
 	// get hostname
 	var hostName string
-	b, err := ioutil.ReadFile(filepath.Join(a.dir, "etc", "hostname"))
+	b, err := os.ReadFile(filepath.Join(a.rootPath, "etc", "hostname"))
 	if err == nil && string(b) != "" {
 		hostName = strings.TrimSpace(string(b))
 	} else {
-		hostName = a.dir
+		hostName = a.rootPath
 	}
 
 	return types.ArtifactReference{
