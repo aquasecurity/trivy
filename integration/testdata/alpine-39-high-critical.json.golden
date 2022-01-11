@@ -1,0 +1,121 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/images/alpine-39.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "alpine",
+      "Name": "3.9.4",
+      "EOSL": true
+    },
+    "ImageID": "sha256:055936d3920576da37aa9bc460d70c5f212028bda1c08c0879aedf03d7a66ea1",
+    "DiffIDs": [
+      "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "container": "c10d36fa368a7ea673683682666758adf35efe98e10989505f4f566b5b18538f",
+      "created": "2019-05-11T00:07:03.510395965Z",
+      "docker_version": "18.06.1-ce",
+      "history": [
+        {
+          "created": "2019-05-11T00:07:03.358250803Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:a86aea1f3a7d68f6ae03397b99ea77f2e9ee901c5c59e59f76f93adbb4035913 in / "
+        },
+        {
+          "created": "2019-05-11T00:07:03.510395965Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/bin/sh"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "Image": "sha256:09f2bbe58e774849d74dc1391c2e01731896c745c4aba1ecf69a283bdb4b537a",
+        "ArgsEscaped": true
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/alpine-39.tar.gz (alpine 3.9.4)",
+      "Class": "os-pkgs",
+      "Type": "alpine",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-14697",
+          "PkgName": "musl",
+          "InstalledVersion": "1.1.20-r4",
+          "FixedVersion": "1.1.20-r5",
+          "Layer": {
+            "DiffID": "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14697",
+          "Description": "musl libc through 1.1.23 has an x87 floating-point stack adjustment imbalance, related to the math/i386/ directory. In some cases, use of this library could introduce out-of-bounds writes that are not present in an application's source code.",
+          "Severity": "CRITICAL",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.5,
+              "V3Score": 9.8
+            }
+          },
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2019/08/06/4",
+            "https://security.gentoo.org/glsa/202003-13",
+            "https://www.openwall.com/lists/musl/2019/08/06/1"
+          ],
+          "PublishedDate": "2019-08-06T16:15:00Z",
+          "LastModifiedDate": "2020-03-14T19:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-14697",
+          "PkgName": "musl-utils",
+          "InstalledVersion": "1.1.20-r4",
+          "FixedVersion": "1.1.20-r5",
+          "Layer": {
+            "DiffID": "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14697",
+          "Description": "musl libc through 1.1.23 has an x87 floating-point stack adjustment imbalance, related to the math/i386/ directory. In some cases, use of this library could introduce out-of-bounds writes that are not present in an application's source code.",
+          "Severity": "CRITICAL",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.5,
+              "V3Score": 9.8
+            }
+          },
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2019/08/06/4",
+            "https://security.gentoo.org/glsa/202003-13",
+            "https://www.openwall.com/lists/musl/2019/08/06/1"
+          ],
+          "PublishedDate": "2019-08-06T16:15:00Z",
+          "LastModifiedDate": "2020-03-14T19:15:00Z"
+        }
+      ]
+    }
+  ]
+}

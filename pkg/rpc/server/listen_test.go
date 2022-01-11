@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"path"
-	"path/filepath"
 	"sync"
 	"testing"
 	"time"
@@ -18,7 +17,9 @@ import (
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbFile "github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/utils"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
 
@@ -52,7 +53,7 @@ func Test_dbWorker_update(t *testing.T) {
 		needsUpdate needsUpdate
 		download    download
 		args        args
-		want        db.Metadata
+		want        metadata.Metadata
 		wantErr     string
 	}{
 		{
@@ -65,9 +66,8 @@ func Test_dbWorker_update(t *testing.T) {
 				call: true,
 			},
 			args: args{appVersion: "1"},
-			want: db.Metadata{
+			want: metadata.Metadata{
 				Version:    1,
-				Type:       db.TypeFull,
 				NextUpdate: timeNextUpdate,
 				UpdatedAt:  timeUpdateAt,
 			},
@@ -105,51 +105,50 @@ func Test_dbWorker_update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cacheDir, err := os.MkdirTemp("", "server-test")
-			require.NoError(t, err, tt.name)
+			cacheDir := t.TempDir()
 
 			require.NoError(t, db.Init(cacheDir), tt.name)
 
 			mockDBClient := new(dbFile.MockOperation)
 			mockDBClient.On("NeedsUpdate",
-				tt.needsUpdate.input.appVersion, false, tt.needsUpdate.input.skip).Return(
+				tt.needsUpdate.input.appVersion, tt.needsUpdate.input.skip).Return(
 				tt.needsUpdate.output.needsUpdate, tt.needsUpdate.output.err)
-			mockDBClient.On("UpdateMetadata", mock.Anything).Return(nil)
 
 			if tt.download.call {
-				mockDBClient.On("Download", mock.Anything, mock.Anything, false).Run(
+				mockDBClient.On("Download", mock.Anything, mock.Anything).Run(
 					func(args mock.Arguments) {
 						// fake download: copy testdata/new.db to tmpDir/db/trivy.db
-						content, err := os.ReadFile("testdata/new.db")
-						require.NoError(t, err, tt.name)
-
 						tmpDir := args.String(1)
-						dbPath := db.Path(tmpDir)
-						require.NoError(t, os.MkdirAll(filepath.Dir(dbPath), 0777), tt.name)
-						err = os.WriteFile(dbPath, content, 0444)
-						require.NoError(t, err, tt.name)
+						err := os.MkdirAll(db.Dir(tmpDir), 0744)
+						require.NoError(t, err)
+
+						_, err = utils.CopyFile("testdata/new.db", db.Path(tmpDir))
+						require.NoError(t, err)
+
+						// fake download: copy testdata/metadata.json to tmpDir/db/metadata.json
+						_, err = utils.CopyFile("testdata/metadata.json", metadata.Path(tmpDir))
+						require.NoError(t, err)
 					}).Return(tt.download.err)
 			}
 
 			w := newDBWorker(mockDBClient)
 
 			var dbUpdateWg, requestWg sync.WaitGroup
-			err = w.update(context.Background(), tt.args.appVersion, cacheDir,
+			err := w.update(context.Background(), tt.args.appVersion, cacheDir,
 				&dbUpdateWg, &requestWg)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
-			} else {
-				assert.NoError(t, err, tt.name)
 			}
+			require.NoError(t, err, tt.name)
 
 			if !tt.download.call {
 				return
 			}
 
-			dbc := db.Config{}
-			got, err := dbc.GetMetadata()
+			mc := metadata.NewClient(cacheDir)
+			got, err := mc.Get()
 			assert.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got, tt.name)
 
