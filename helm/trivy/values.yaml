@@ -70,6 +70,24 @@ trivy:
   # You can create a GitHub token by following the instructions in
   # https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
   gitHubToken: ""
+  # Docker registry credentials
+  # See also: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/
+  #
+  # Either
+  # Directly in this file
+  #
+  # TRIVY_USERNAME
+  registryUsername: ""
+  # TRIVY_PASSWORD
+  registryPassword: ""
+  #
+  # Or
+  # From an existing secret
+  #
+  # The secret must be Opaque and just contain "TRIVY_USERNAME: your_user" and "TRIVY_PASSWORD: your_password" as k/v pairs.
+  # NOTE: When this is set the previous parameters are ignored.
+  #
+  # registryCredentialsExistingSecret: name-of-existing-secret
   # skipUpdate the flag to enable or disable Trivy DB downloads from GitHub
   #
   # You might want to enable this flag in test or CI/CD environments to avoid GitHub rate limiting issues.
