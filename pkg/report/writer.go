@@ -117,7 +117,7 @@ func Write(report Report, option Option) error {
 	case "json":
 		writer = &JSONWriter{Output: option.Output}
 	case "template":
-		// We should keep `sarif.tpl` template for backward compatibility for a while.
+		// We keep `sarif.tpl` template working for backward compatibility for a while.
 		if filepath.Base(option.OutputTemplate) == "sarif.tpl" {
 			log.Logger.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--report sarif`.")
 			writer = SarifWriter{Output: option.Output, Version: option.AppVersion}
