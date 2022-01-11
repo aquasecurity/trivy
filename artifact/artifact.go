@@ -17,6 +17,7 @@ type Option struct {
 	SkipDirs          []string
 	Quiet             bool
 	Offline           bool
+	InsecureSkipTLS   bool
 }
 
 func (o *Option) Sort() {

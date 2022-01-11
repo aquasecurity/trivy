@@ -37,10 +37,11 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 	}
 
 	cloneOptions := git.CloneOptions{
-		URL:      u.String(),
-		Auth:     gitAuth(),
-		Progress: os.Stdout,
-		Depth:    1,
+		URL:             u.String(),
+		Auth:            gitAuth(),
+		Progress:        os.Stdout,
+		Depth:           1,
+		InsecureSkipTLS: artifactOpt.InsecureSkipTLS,
 	}
 
 	// suppress clone output if quiet
