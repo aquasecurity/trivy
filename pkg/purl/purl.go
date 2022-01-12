@@ -7,6 +7,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/fanal/types"
+
 	"github.com/package-url/packageurl-go"
 )
 
