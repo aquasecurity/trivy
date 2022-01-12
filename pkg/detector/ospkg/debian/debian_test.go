@@ -88,7 +88,7 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			wantErr: "failed to get Debian OVAL advisories",
+			wantErr: "failed to unmarshal advisory JSON",
 		},
 	}
 	for _, tt := range tests {
