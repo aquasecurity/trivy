@@ -19,14 +19,13 @@ require (
 	github.com/cheggaaa/pb/v3 v3.0.3
 	github.com/docker/docker v20.10.11+incompatible
 	github.com/docker/go-connections v0.4.0
-	github.com/fatih/color v1.10.0
+	github.com/fatih/color v1.13.0
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/goccy/go-yaml v1.8.2 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-containerregistry v0.7.1-0.20211214010025-a65b7844a475
 	github.com/google/wire v0.4.0
 	github.com/hashicorp/go-getter v1.5.2
-	github.com/hashicorp/go-hclog v0.15.0 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
@@ -34,7 +33,7 @@ require (
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/mitchellh/copystructure v1.1.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.5
-	github.com/open-policy-agent/opa v0.34.0
+	github.com/open-policy-agent/opa v0.36.0
 	github.com/owenrumney/go-sarif/v2 v2.0.17
 	github.com/spf13/afero v1.6.0
 	github.com/stretchr/objx v0.3.0 // indirect
