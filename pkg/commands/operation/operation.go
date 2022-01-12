@@ -7,10 +7,10 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
-	"github.com/spf13/afero"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
@@ -77,10 +77,10 @@ func (c Cache) ClearArtifacts() error {
 }
 
 // DownloadDB downloads the DB
-func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) error {
-	client := initializeDBClient(cacheDir, quiet)
+func DownloadDB(appVersion, cacheDir string, quiet, skipUpdate bool) error {
+	client := db.NewClient(cacheDir, quiet)
 	ctx := context.Background()
-	needsUpdate, err := client.NeedsUpdate(appVersion, light, skipUpdate)
+	needsUpdate, err := client.NeedsUpdate(appVersion, skipUpdate)
 	if err != nil {
 		return xerrors.Errorf("database error: %w", err)
 	}
@@ -88,11 +88,8 @@ func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) erro
 	if needsUpdate {
 		log.Logger.Info("Need to update DB")
 		log.Logger.Info("Downloading DB...")
-		if err = client.Download(ctx, cacheDir, light); err != nil {
+		if err = client.Download(ctx, cacheDir); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
-		}
-		if err = client.UpdateMetadata(cacheDir); err != nil {
-			return xerrors.Errorf("unable to update database metadata: %w", err)
 		}
 	}
 
@@ -104,8 +101,8 @@ func DownloadDB(appVersion, cacheDir string, quiet, light, skipUpdate bool) erro
 }
 
 // InitBuiltinPolicies downloads the built-in policies and loads them
-func InitBuiltinPolicies(ctx context.Context, skipUpdate bool) ([]string, error) {
-	client, err := policy.NewClient()
+func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate bool) ([]string, error) {
+	client, err := policy.NewClient(cacheDir, quiet)
 	if err != nil {
 		return nil, xerrors.Errorf("policy client error: %w", err)
 	}
@@ -138,12 +135,12 @@ func InitBuiltinPolicies(ctx context.Context, skipUpdate bool) ([]string, error)
 }
 
 func showDBInfo(cacheDir string) error {
-	m := db.NewMetadata(afero.NewOsFs(), cacheDir)
-	metadata, err := m.Get()
+	m := metadata.NewClient(cacheDir)
+	meta, err := m.Get()
 	if err != nil {
 		return xerrors.Errorf("something wrong with DB: %w", err)
 	}
-	log.Logger.Debugf("DB Schema: %d, Type: %d, UpdatedAt: %s, NextUpdate: %s, DownloadedAt: %s",
-		metadata.Version, metadata.Type, metadata.UpdatedAt, metadata.NextUpdate, metadata.DownloadedAt)
+	log.Logger.Debugf("DB Schema: %d, UpdatedAt: %s, NextUpdate: %s, DownloadedAt: %s",
+		meta.Version, meta.UpdatedAt, meta.NextUpdate, meta.DownloadedAt)
 	return nil
 }

@@ -8,6 +8,7 @@ import (
 
 	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
@@ -63,12 +64,12 @@ func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []ftypes.
 }
 
 // nolint: gocyclo
-// TODO: fix cyclometic complexity by removing default
 func newDriver(osFamily, osName string) Driver {
-	// TODO: use DI and change struct names
 	switch osFamily {
 	case fos.Alpine:
 		return alpine.NewScanner()
+	case fos.Alma:
+		return alma.NewScanner()
 	case fos.Debian:
 		return debian.NewScanner()
 	case fos.Ubuntu:

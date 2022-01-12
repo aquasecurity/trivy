@@ -70,114 +70,19 @@
           ]
         },
         {
-          "VulnerabilityID": "RUSTSEC-2016-0001",
-          "PkgName": "openssl",
-          "InstalledVersion": "0.8.3",
-          "FixedVersion": "\u003e= 0.9.0",
+          "VulnerabilityID": "RUSTSEC-2021-0074",
+          "PkgName": "ammonia",
+          "InstalledVersion": "1.9.0",
+          "FixedVersion": "\u003e= 3.1.0, \u003e= 2.1.3, \u003c 3.0.0",
           "Layer": {
             "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
           },
-          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2016-0001",
-          "Title": "SSL/TLS MitM vulnerability due to insecure defaults",
-          "Description": "All versions of rust-openssl prior to 0.9.0 contained numerous insecure defaults\nincluding off-by-default certificate verification and no API to perform hostname\nverification.\n\nUnless configured correctly by a developer, these defaults could allow an attacker\nto perform man-in-the-middle attacks.\n\nThe problem was addressed in newer versions by enabling certificate verification\nby default and exposing APIs to perform hostname verification. Use the\n`SslConnector` and `SslAcceptor` types to take advantage of these new features\n(as opposed to the lower-level `SslContext` type).",
+          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2021-0074",
+          "Title": "Incorrect handling of embedded SVG and MathML leads to mutation XSS",
+          "Description": "Affected versions of this crate did not account for namespace-related parsing\ndifferences between HTML, SVG, and MathML. Even if the `svg` and `math` elements\nare not allowed, the underlying HTML parser still treats them differently.\nRunning cleanup without accounting for these differing namespaces resulted in an \"impossible\"\nDOM, which appeared \"safe\" when examining the DOM tree, but when serialized and deserialized,\ncould be exploited to inject abitrary markup.\n\nTo exploit this, the application using this library must allow a tag that is parsed as raw text in HTML.\nThese [elements] are:\n\n* title\n* textarea\n* xmp\n* iframe\n* noembed\n* noframes\n* plaintext\n* noscript\n* style\n* script\n\nApplications that do not explicitly allow any of these tags should not be affected, since none are allowed by default.\n\n[elements]: https://github.com/servo/html5ever/blob/57eb334c0ffccc6f88d563419f0fbeef6ff5741c/html5ever/src/tree_builder/rules.rs",
           "Severity": "UNKNOWN",
           "References": [
-            "https://github.com/sfackler/rust-openssl/releases/tag/v0.9.0"
-          ]
-        },
-        {
-          "VulnerabilityID": "RUSTSEC-2019-0035",
-          "PkgName": "rand_core",
-          "InstalledVersion": "0.3.1",
-          "FixedVersion": "\u003e= 0.4.2",
-          "Layer": {
-            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
-          },
-          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0035",
-          "Title": "Unaligned memory access",
-          "Description": "Affected versions of this crate violated alignment when casting byte slices to\ninteger slices, resulting in undefined behavior.\n\nThe flaw was corrected by Ralf Jung and Diggory Hardy.",
-          "Severity": "UNKNOWN",
-          "References": [
-            "https://github.com/rust-random/rand/blob/master/rand_core/CHANGELOG.md#050---2019-06-06"
-          ]
-        },
-        {
-          "VulnerabilityID": "RUSTSEC-2019-0035",
-          "PkgName": "rand_core",
-          "InstalledVersion": "0.4.0",
-          "FixedVersion": "\u003e= 0.4.2",
-          "Layer": {
-            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
-          },
-          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0035",
-          "Title": "Unaligned memory access",
-          "Description": "Affected versions of this crate violated alignment when casting byte slices to\ninteger slices, resulting in undefined behavior.\n\nThe flaw was corrected by Ralf Jung and Diggory Hardy.",
-          "Severity": "UNKNOWN",
-          "References": [
-            "https://github.com/rust-random/rand/blob/master/rand_core/CHANGELOG.md#050---2019-06-06"
-          ]
-        },
-        {
-          "VulnerabilityID": "RUSTSEC-2018-0018",
-          "PkgName": "smallvec",
-          "InstalledVersion": "0.6.9",
-          "FixedVersion": "\u003e= 0.6.13",
-          "Layer": {
-            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
-          },
-          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2018-0018",
-          "Title": "smallvec creates uninitialized value of any type",
-          "Description": "Affected versions of this crate called `mem::uninitialized()` to create values of a user-supplied type `T`.\nThis is unsound e.g. if `T` is a reference type (which must be non-null and thus may not remain uninitialized).\n \nThe flaw was corrected by avoiding the use of `mem::uninitialized()`, using `MaybeUninit` instead.",
-          "Severity": "UNKNOWN",
-          "References": [
-            "https://github.com/servo/rust-smallvec/issues/126"
-          ]
-        },
-        {
-          "VulnerabilityID": "RUSTSEC-2019-0009",
-          "PkgName": "smallvec",
-          "InstalledVersion": "0.6.9",
-          "FixedVersion": "\u003e= 0.6.10",
-          "Layer": {
-            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
-          },
-          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0009",
-          "Title": "Double-free and use-after-free in SmallVec::grow()",
-          "Description": "Attempting to call `grow` on a spilled SmallVec with a value equal to the current capacity causes it to free the existing data. This performs a double free immediately and may lead to use-after-free on subsequent accesses to the SmallVec contents.\n\nAn attacker that controls the value passed to `grow` may exploit this flaw to obtain memory contents or gain remote code execution.\n\nCredits to @ehuss for discovering, reporting and fixing the bug.",
-          "Severity": "UNKNOWN",
-          "References": [
-            "https://github.com/servo/rust-smallvec/issues/148"
-          ]
-        },
-        {
-          "VulnerabilityID": "RUSTSEC-2019-0012",
-          "PkgName": "smallvec",
-          "InstalledVersion": "0.6.9",
-          "FixedVersion": "\u003e= 0.6.10",
-          "Layer": {
-            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
-          },
-          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2019-0012",
-          "Title": "Memory corruption in SmallVec::grow()",
-          "Description": "Attempting to call `grow` on a spilled SmallVec with a value less than the current capacity causes corruption of memory allocator data structures.\n\nAn attacker that controls the value passed to `grow` may exploit this flaw to obtain memory contents or gain remote code execution.\n\nCredits to @ehuss for discovering, reporting and fixing the bug.",
-          "Severity": "UNKNOWN",
-          "References": [
-            "https://github.com/servo/rust-smallvec/issues/149"
-          ]
-        },
-        {
-          "VulnerabilityID": "RUSTSEC-2018-0017",
-          "PkgName": "tempdir",
-          "InstalledVersion": "0.3.7",
-          "Layer": {
-            "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
-          },
-          "PrimaryURL": "https://rustsec.org/advisories/RUSTSEC-2018-0017",
-          "Title": "`tempdir` crate has been deprecated; use `tempfile` instead",
-          "Description": "The [`tempdir`](https://crates.io/crates/tempdir) crate has been deprecated\nand the functionality is merged into [`tempfile`](https://crates.io/crates/tempfile).",
-          "Severity": "UNKNOWN",
-          "References": [
-            "https://github.com/rust-lang-deprecated/tempdir/pull/46"
+            "https://github.com/rust-ammonia/ammonia/pull/142"
           ]
         }
       ]

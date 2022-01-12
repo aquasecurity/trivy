@@ -39,6 +39,22 @@ https://developer.github.com/v3/#rate-limiting
 $ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
 ```
 
+### Maven rate limiting
+
+!!! error
+    ``` bash
+    $ trivy image ...
+    ...
+    status 403 Forbidden from http://search.maven.org/solrsearch/select
+    ```
+
+Trivy calls Maven API for better detection of JAR files, but many requests may exceed rate limiting.
+If it happens frequently, try the `--offline-scan` option to stop Trivy from making API requests.
+This option affects only vulnerability scanning. The vulnerability database and builtin policies are downloaded as usual.
+If you want to skip them as well, you can try `--skip-update` and `--skip-policy-update`.
+
+Note that a number of vulnerabilities might be fewer than without the `--offline-scan` option.
+
 ### Running in parallel takes same time as series run
 When running trivy on multiple images simultaneously, it will take same time as running trivy in series.  
 This is because of a limitation of boltdb.
@@ -53,11 +69,17 @@ Reference : [boltdb: Opening a database][boltdb].
 !!! error
     FATAL failed to download vulnerability DB
 
-If trivy is running behind corporate firewall try to whitelist urls below:
+If trivy is running behind corporate firewall, you have to add the following urls to your allowlist.
 
-- api.github.com
-- github.com
-- github-releases.githubusercontent.com
+- ghcr.io
+- pkg-containers.githubusercontent.com
+
+### Old DB schema
+
+!!! error
+    --skip-update cannot be specified with the old DB schema.
+
+Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow [the instruction of air-gapped environment][air-gapped].
 
 ## Homebrew
 ### Scope error
@@ -107,3 +129,5 @@ Try again with `--reset` option:
 ```
 $ trivy image --reset
 ```
+
+[air-gapped]: ../advanced/air-gap.md

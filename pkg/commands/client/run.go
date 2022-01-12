@@ -85,11 +85,11 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 	}
 
 	if err = pkgReport.Write(report, pkgReport.Option{
+		AppVersion:         opt.GlobalOption.AppVersion,
 		Format:             opt.Format,
 		Output:             opt.Output,
 		Severities:         opt.Severities,
 		OutputTemplate:     opt.Template,
-		Light:              false,
 		IncludeNonFailures: opt.IncludeNonFailures,
 		Trace:              opt.Trace,
 	}); err != nil {
@@ -143,7 +143,8 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
-		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, false)
+		noProgress := opt.Quiet || opt.NoProgress
+		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.CacheDir, noProgress, opt.SkipPolicyUpdate)
 		if err != nil {
 			return scanner.Scanner{}, nil, xerrors.Errorf("failed to initialize default policies: %w", err)
 		}
@@ -161,6 +162,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 		DisabledAnalyzers: disabledAnalyzers(opt),
 		SkipFiles:         opt.SkipFiles,
 		SkipDirs:          opt.SkipDirs,
+		Offline:           opt.OfflineScan,
 	}
 
 	if opt.Input != "" {

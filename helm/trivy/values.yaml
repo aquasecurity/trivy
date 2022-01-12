@@ -4,7 +4,9 @@ fullnameOverride: ""
 image:
   registry: docker.io
   repository: aquasec/trivy
-  tag: 0.21.0
+  # tag is an override of the image tag, which is by default set by the
+  # appVersion field in Chart.yaml.
+  tag: ""
   pullPolicy: IfNotPresent
   pullSecret: ""
 
