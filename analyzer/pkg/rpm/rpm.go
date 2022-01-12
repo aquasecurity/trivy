@@ -30,6 +30,20 @@ var requiredFiles = []string{
 }
 var errUnexpectedNameFormat = xerrors.New("unexpected name format")
 
+var osVendors = []string{
+	"Amazon Linux",   // Amazon Linux 1
+	"Amazon.com",     // Amazon Linux 2
+	"CentOS",         // CentOS
+	"Fedora Project", // Fedora
+	"Oracle America", // Oracle Linux
+	"Red Hat",        // Red Hat
+	"AlmaLinux",      // AlmaLinux
+	"CloudLinux",     // AlmaLinux
+	"VMware",         // Photon OS
+	"SUSE",           // SUSE Linux Enterprise
+	"openSUSE",       // openSUSE
+}
+
 type rpmPkgAnalyzer struct{}
 
 func (a rpmPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
@@ -104,9 +118,14 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 			}
 		}
 
-		files, err := pkg.InstalledFiles()
-		if err != nil {
-			return nil, nil, xerrors.Errorf("unable to get installed files: %w", err)
+		// Check if the package is vendor-provided.
+		// If the package is not provided by vendor, the installed files should not be skipped.
+		var files []string
+		if packageProvidedByVendor(pkg.Vendor) {
+			files, err = pkg.InstalledFiles()
+			if err != nil {
+				return nil, nil, xerrors.Errorf("unable to get installed files: %w", err)
+			}
 		}
 
 		p := types.Package{
@@ -170,4 +189,13 @@ func (a rpmPkgAnalyzer) Type() analyzer.Type {
 
 func (a rpmPkgAnalyzer) Version() int {
 	return version
+}
+
+func packageProvidedByVendor(pkgVendor string) bool {
+	for _, vendor := range osVendors {
+		if strings.HasPrefix(pkgVendor, vendor) {
+			return true
+		}
+	}
+	return false
 }
