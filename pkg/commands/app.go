@@ -16,7 +16,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/client"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -292,33 +291,6 @@ var (
 		&debugFlag,
 		&cacheDirFlag,
 	}
-
-	imageFlags = []cli.Flag{
-		&templateFlag,
-		&formatFlag,
-		&inputFlag,
-		&severityFlag,
-		&outputFlag,
-		&exitCodeFlag,
-		&skipDBUpdateFlag,
-		&downloadDBOnlyFlag,
-		&resetFlag,
-		&clearCacheFlag,
-		&noProgressFlag,
-		&ignoreUnfixedFlag,
-		&removedPkgsFlag,
-		&vulnTypeFlag,
-		&securityChecksFlag,
-		&ignoreFileFlag,
-		&timeoutFlag,
-		&lightFlag,
-		&ignorePolicy,
-		&listAllPackages,
-		&cacheBackendFlag,
-		&offlineScan,
-		stringSliceFlag(skipFiles),
-		stringSliceFlag(skipDirs),
-	}
 )
 
 // NewApp is the factory method to return Trivy CLI
@@ -333,10 +305,7 @@ func NewApp(version string) *cli.App {
 	app.ArgsUsage = "target"
 	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
 	app.EnableBashCompletion = true
-
-	flags := append(globalFlags, setHidden(imageFlags, true)...)
-
-	app.Flags = flags
+	app.Flags = globalFlags
 
 	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
 		app.Action = func(ctx *cli.Context) error {
@@ -352,11 +321,6 @@ func NewApp(version string) *cli.App {
 		return app
 	}
 
-	app.Action = func(ctx *cli.Context) error {
-		log.Logger.Warn("The root command will be removed. Please migrate to 'trivy image' command. See https://github.com/aquasecurity/trivy/discussions/1515")
-		return artifact.ImageRun(ctx)
-	}
-
 	app.Commands = []*cli.Command{
 		NewImageCommand(),
 		NewFilesystemCommand(),
@@ -370,37 +334,6 @@ func NewApp(version string) *cli.App {
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
 
 	return app
-}
-
-func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
-	var newFlags []cli.Flag
-	for _, flag := range flags {
-		var f cli.Flag
-		switch pf := flag.(type) {
-		case *cli.StringFlag:
-			stringFlag := *pf
-			stringFlag.Hidden = hidden
-			f = &stringFlag
-		case *cli.StringSliceFlag:
-			stringSliceFlag := *pf
-			stringSliceFlag.Hidden = hidden
-			f = &stringSliceFlag
-		case *cli.BoolFlag:
-			boolFlag := *pf
-			boolFlag.Hidden = hidden
-			f = &boolFlag
-		case *cli.IntFlag:
-			intFlag := *pf
-			intFlag.Hidden = hidden
-			f = &intFlag
-		case *cli.DurationFlag:
-			durationFlag := *pf
-			durationFlag.Hidden = hidden
-			f = &durationFlag
-		}
-		newFlags = append(newFlags, f)
-	}
-	return newFlags
 }
 
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
@@ -446,7 +379,32 @@ func NewImageCommand() *cli.Command {
 		ArgsUsage: "image_name",
 		Usage:     "scan an image",
 		Action:    artifact.ImageRun,
-		Flags:     imageFlags,
+		Flags: []cli.Flag{
+			&templateFlag,
+			&formatFlag,
+			&inputFlag,
+			&severityFlag,
+			&outputFlag,
+			&exitCodeFlag,
+			&skipDBUpdateFlag,
+			&downloadDBOnlyFlag,
+			&resetFlag,
+			&clearCacheFlag,
+			&noProgressFlag,
+			&ignoreUnfixedFlag,
+			&removedPkgsFlag,
+			&vulnTypeFlag,
+			&securityChecksFlag,
+			&ignoreFileFlag,
+			&timeoutFlag,
+			&lightFlag,
+			&ignorePolicy,
+			&listAllPackages,
+			&cacheBackendFlag,
+			&offlineScan,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+		},
 	}
 }
 
