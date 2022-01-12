@@ -21,24 +21,27 @@ func TestUnmarshal(t *testing.T) {
 			want: map[string]interface{}{
 				"resource": map[string]interface{}{
 					"aws_security_group_rule": map[string]interface{}{
-						"my-rule": map[string]interface{}{
+						"my-rule": []interface{}{map[string]interface{}{
 							"cidr_blocks": []interface{}{
 								"0.0.0.0/0",
 							},
 							"type": "ingress",
 						},
+						},
 					},
 					"azurerm_managed_disk": map[string]interface{}{
-						"source": map[string]interface{}{
-							"encryption_settings": map[string]interface{}{
+						"source": []interface{}{map[string]interface{}{
+							"encryption_settings": []interface{}{map[string]interface{}{
 								"enabled": "${var.enableEncryption}",
-							},
-						},
+							}},
+						}},
 					},
 				},
 				"variable": map[string]interface{}{
-					"enableEncryption": map[string]interface{}{
-						"default": false,
+					"enableEncryption": []interface{}{
+						map[string]interface{}{
+							"default": false,
+						},
 					},
 				},
 			},

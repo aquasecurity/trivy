@@ -63,12 +63,14 @@ func TestConfigAnalyzer_Analyze(t *testing.T) {
 						Content: map[string]interface{}{
 							"apiVersion": "apps/v1",
 							"kind":       "Deployment",
-							"metadata": map[string]interface{}{
-								"name": "hello-kubernetes",
-							},
-							"spec": map[string]interface{}{
-								"replicas": float64(4),
-							},
+							"metadata": []interface{}{
+								map[string]interface{}{
+									"name": "hello-kubernetes",
+								}},
+							"spec": []interface{}{
+								map[string]interface{}{
+									"replicas": float64(4),
+								}},
 						},
 					},
 				},
