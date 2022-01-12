@@ -246,11 +246,10 @@ func TestClientServerWithTemplate(t *testing.T) {
 			golden: "testdata/alpine-310.gitlab-codequality.golden",
 		},
 		{
-			name: "alpine 3.10 with sarif template",
+			name: "alpine 3.10 with sarif format",
 			args: csArgs{
-				Format:       "template",
-				TemplatePath: "@../contrib/sarif.tpl",
-				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
+				Format: "sarif",
+				Input:  "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.sarif.golden",
 		},
