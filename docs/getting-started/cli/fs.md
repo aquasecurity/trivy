@@ -9,7 +9,7 @@ USAGE:
 
 OPTIONS:
    --template value, -t value                     output template [$TRIVY_TEMPLATE]
-   --format value, -f value                       format (table, json, template) (default: "table") [$TRIVY_FORMAT]
+   --format value, -f value                       format (table, json, sarif, template) (default: "table") [$TRIVY_FORMAT]
    --severity value, -s value                     severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
    --output value, -o value                       output file name [$TRIVY_OUTPUT]
    --exit-code value                              Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
