@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/fanal/types"
+
 	"gotest.tools/assert"
 )
 
