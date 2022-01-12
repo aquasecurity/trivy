@@ -17,6 +17,15 @@ func TestNewPackageURL(t *testing.T) {
 		want string
 	}{
 		{
+			name: "maven package",
+			typ:  "jar",
+			pkg: types.Package{
+				Name:    "org.springframework:spring-core",
+				Version: "5.3.14",
+			},
+			want: "pkg:maven/org.springframework/spring-core@5.3.14",
+		},
+		{
 			name: "language package",
 			typ:  "yarn",
 			pkg: types.Package{
