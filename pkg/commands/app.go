@@ -286,6 +286,12 @@ var (
 		EnvVars: []string{"TRIVY_TRACE"},
 	}
 
+	insecureFlag = cli.BoolFlag{
+		Name:    "insecure",
+		Usage:   "enable tls insecure skip",
+		EnvVars: []string{"TRIVY_INSECURE"},
+	}
+
 	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
@@ -316,6 +322,7 @@ var (
 		&listAllPackages,
 		&cacheBackendFlag,
 		&offlineScan,
+		&insecureFlag,
 		stringSliceFlag(skipFiles),
 		stringSliceFlag(skipDirs),
 	}
@@ -550,6 +557,7 @@ func NewRepositoryCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&offlineScan,
+			&insecureFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},

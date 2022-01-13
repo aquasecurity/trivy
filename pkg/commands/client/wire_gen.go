@@ -26,7 +26,7 @@ import (
 func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
 	scannerScanner := client.NewProtobufClient(url)
 	clientScanner := client.NewScanner(customHeaders, scannerScanner)
-	dockerOption, err := types.GetDockerOption(timeout)
+	dockerOption, err := types.GetDockerOption(timeout, artifactOption.InsecureSkipTLS)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}

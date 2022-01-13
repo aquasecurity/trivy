@@ -204,7 +204,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		DisabledAnalyzers: disabledAnalyzers(opt),
 		SkipFiles:         opt.SkipFiles,
 		SkipDirs:          opt.SkipDirs,
-		InsecureSkipTLS:   types.InsecureSkipTLSForRepo(),
+		InsecureSkipTLS:   opt.InsecureSkipTLS,
 		Offline:           opt.OfflineScan,
 	}
 

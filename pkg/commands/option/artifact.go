@@ -11,9 +11,10 @@ import (
 
 // ArtifactOption holds the options for an artifact scanning
 type ArtifactOption struct {
-	Input      string
-	Timeout    time.Duration
-	ClearCache bool
+	Input           string
+	Timeout         time.Duration
+	ClearCache      bool
+	InsecureSkipTLS bool
 
 	SkipDirs    []string
 	SkipFiles   []string
@@ -26,12 +27,13 @@ type ArtifactOption struct {
 // NewArtifactOption is the factory method to return artifact option
 func NewArtifactOption(c *cli.Context) ArtifactOption {
 	return ArtifactOption{
-		Input:       c.String("input"),
-		Timeout:     c.Duration("timeout"),
-		ClearCache:  c.Bool("clear-cache"),
-		SkipFiles:   c.StringSlice("skip-files"),
-		SkipDirs:    c.StringSlice("skip-dirs"),
-		OfflineScan: c.Bool("offline-scan"),
+		Input:           c.String("input"),
+		Timeout:         c.Duration("timeout"),
+		ClearCache:      c.Bool("clear-cache"),
+		SkipFiles:       c.StringSlice("skip-files"),
+		SkipDirs:        c.StringSlice("skip-dirs"),
+		OfflineScan:     c.Bool("offline-scan"),
+		InsecureSkipTLS: c.Bool("insecure"),
 	}
 }
 
