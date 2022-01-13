@@ -65,10 +65,11 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	log.Logger.Debugf("AlmaLinux: os version: %s", osVer)
 	log.Logger.Debugf("AlmaLinux: the number of packages: %d", len(pkgs))
 
-	log.Logger.Info("Skip Modular Package because MODULARITYLABEL is not set and cannot be detected correctly. See also: https://bugs.almalinux.org/view.php?id=173")
 	var vulns []types.DetectedVulnerability
+	var skipPkgs []string
 	for _, pkg := range pkgs {
 		if strings.Contains(pkg.Release, ".module_el") {
+			skipPkgs = append(skipPkgs, pkg.Name)
 			continue
 		}
 		pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
@@ -94,6 +95,10 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 			}
 		}
 	}
+	if len(skipPkgs) > 0 {
+		log.Logger.Infof("Skipped detection of these packages: %q because modular packages cannot be detected correctly due to a bug in AlmaLinux. See also: https://bugs.almalinux.org/view.php?id=173", skipPkgs)
+	}
+
 	return vulns, nil
 }
 
