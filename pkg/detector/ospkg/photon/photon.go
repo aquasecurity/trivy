@@ -89,7 +89,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	return vulns, nil
 }
 
-// IsSupportedVersion checks is OSFamily can be scanned with Photon scanner
+// IsSupportedVersion checks if the OS version reached end-of-support.
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	eol, ok := eolDates[osVer]
 	if !ok {
