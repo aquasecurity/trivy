@@ -60,6 +60,30 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name:     "skip modular package",
+			fixtures: []string{"testdata/fixtures/modular.yaml"},
+			args: args{
+				osVer: "8.5",
+				pkgs: []ftypes.Package{
+					{
+						Name:            "nginx",
+						Epoch:           1,
+						Version:         "1.16.1",
+						Release:         "2.module+el8.4.0+543+efbf198b.0",
+						Arch:            "x86_64",
+						SrcName:         "nginx",
+						SrcEpoch:        1,
+						SrcVersion:      "1.16.1",
+						SrcRelease:      "2.module+el8.4.0+543+efbf198b.0",
+						Modularitylabel: "nginx:1.16:8040020210610090125:9f9e2e7e",
+						License:         "BSD",
+						Layer:           ftypes.Layer{},
+					},
+				},
+			},
+			want: nil,
+		},
+		{
 			name:     "Get returns an error",
 			fixtures: []string{"testdata/fixtures/invalid.yaml"},
 			args: args{
