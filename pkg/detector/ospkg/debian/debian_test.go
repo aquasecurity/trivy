@@ -1,6 +1,7 @@
 package debian_test
 
 import (
+	"sort"
 	"testing"
 	"time"
 
@@ -88,7 +89,7 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			wantErr: "failed to get Debian OVAL advisories",
+			wantErr: "failed to unmarshal advisory JSON",
 		},
 	}
 	for _, tt := range tests {
@@ -103,6 +104,10 @@ func TestScanner_Detect(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
+
+			sort.Slice(got, func(i, j int) bool {
+				return got[i].VulnerabilityID < got[j].VulnerabilityID
+			})
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})

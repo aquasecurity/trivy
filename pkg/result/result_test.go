@@ -247,7 +247,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 				refs:    []string{"https://github.com/rust-lang-deprecated/tempdir/pull/46"},
 				sources: []string{vulnerability.RustSec},
 			},
-			want: "https://rustsec.org/advisories/RUSTSEC-2018-0017",
+			want: "https://osv.dev/vulnerability/RUSTSEC-2018-0017",
 		},
 		{
 			name: "GHSA",
