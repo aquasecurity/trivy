@@ -287,7 +287,7 @@ var (
 
 	insecureFlag = cli.BoolFlag{
 		Name:    "insecure",
-		Usage:   "enable tls insecure skip",
+		Usage:   "allow insecure server connections when using SSL",
 		EnvVars: []string{"TRIVY_INSECURE"},
 	}
 
