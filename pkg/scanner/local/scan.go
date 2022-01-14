@@ -106,7 +106,7 @@ func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetai
 	var eosl bool
 	var results report.Results
 
-	if utils.StringInSlice(types.VulnTypeOS, options.VulnType) {
+	if options.ListAllPackages || utils.StringInSlice(types.VulnTypeOS, options.VulnType) {
 		result, detectedEosl, err := s.scanOSPkgs(target, detail, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
@@ -116,7 +116,7 @@ func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetai
 		eosl = detectedEosl
 	}
 
-	if utils.StringInSlice(types.VulnTypeLibrary, options.VulnType) {
+	if options.ListAllPackages || utils.StringInSlice(types.VulnTypeLibrary, options.VulnType) {
 		libResults, err := s.scanLibrary(detail.Applications, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
@@ -140,11 +140,21 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
 	}
 
-	result, eosl, err := s.detectVulnsInOSPkgs(target, detail.OS.Family, detail.OS.Name, pkgs)
+	artifactDetail := fmt.Sprintf("%s (%s %s)", target, detail.OS.Family, detail.OS.Name)
+	result := &report.Result{
+		Target: artifactDetail,
+		Class:  report.ClassOSPkg,
+		Type:   detail.OS.Family,
+	}
+
+	var eosl bool
+	vulns, eosl, err := s.detectVulnsInOSPkgs(target, detail.OS.Family, detail.OS.Name, pkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
-	} else if result == nil {
-		return nil, eosl, nil
+	}
+
+	if utils.StringInSlice(types.VulnTypeOS, options.VulnType) {
+		result.Vulnerabilities = vulns
 	}
 
 	if options.ListAllPackages {
@@ -154,10 +164,14 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 		result.Packages = pkgs
 	}
 
+	if result.Empty() {
+		return nil, false, nil
+	}
+
 	return result, eosl, nil
 }
 
-func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []ftypes.Package) (*report.Result, bool, error) {
+func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
 	if osFamily == "" {
 		return nil, false, nil
 	}
@@ -168,14 +182,7 @@ func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []fty
 		return nil, false, xerrors.Errorf("failed vulnerability detection of OS packages: %w", err)
 	}
 
-	artifactDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osName)
-	result := &report.Result{
-		Target:          artifactDetail,
-		Vulnerabilities: vulns,
-		Class:           report.ClassOSPkg,
-		Type:            osFamily,
-	}
-	return result, eosl, nil
+	return vulns, eosl, nil
 }
 
 func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOptions) (report.Results, error) {
@@ -197,33 +204,47 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 			printedTypes[app.Type] = struct{}{}
 		}
 
-		log.Logger.Debugf("Detecting library vulnerabilities, type: %s, path: %s", app.Type, app.FilePath)
-		vulns, err := library.Detect(app.Type, app.Libraries)
+		result, err := s.handleApp(app, options)
 		if err != nil {
-			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
+			return nil, err
 		}
-
-		target := app.FilePath
-		if t, ok := pkgTargets[app.Type]; ok && target == "" {
-			// When the file path is empty, we will overwrite it with the pre-defined value.
-			target = t
+		if result != nil && !result.Empty() {
+			results = append(results, *result)
 		}
-
-		libReport := report.Result{
-			Target:          target,
-			Vulnerabilities: vulns,
-			Class:           report.ClassLangPkg,
-			Type:            app.Type,
-		}
-		if options.ListAllPackages {
-			libReport.Packages = app.Libraries
-		}
-		results = append(results, libReport)
 	}
 	sort.Slice(results, func(i, j int) bool {
 		return results[i].Target < results[j].Target
 	})
 	return results, nil
+}
+
+func (s Scanner) handleApp(app ftypes.Application, options types.ScanOptions) (*report.Result, error) {
+	log.Logger.Debugf("Detecting library vulnerabilities, type: %s, path: %s", app.Type, app.FilePath)
+	vulns, err := library.Detect(app.Type, app.Libraries)
+	if err != nil {
+		return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
+	}
+
+	target := app.FilePath
+	if t, ok := pkgTargets[app.Type]; ok && target == "" {
+		// When the file path is empty, we will overwrite it with the pre-defined value.
+		target = t
+	}
+
+	libReport := report.Result{
+		Target: target,
+		Class:  report.ClassLangPkg,
+		Type:   app.Type,
+	}
+
+	if utils.StringInSlice(types.VulnTypeLibrary, options.VulnType) {
+		libReport.Vulnerabilities = vulns
+	}
+	if options.ListAllPackages {
+		libReport.Packages = app.Libraries
+	}
+
+	return &libReport, nil
 }
 
 func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) report.Results {

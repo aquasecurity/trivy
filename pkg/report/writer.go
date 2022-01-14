@@ -66,6 +66,13 @@ type Result struct {
 	Misconfigurations []types.DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
 }
 
+func (r Result) Empty() bool {
+	return len(r.Packages) == 0 &&
+		len(r.Vulnerabilities) == 0 &&
+		len(r.Misconfigurations) == 0 &&
+		(r.MisconfSummary == nil || r.MisconfSummary.Empty())
+}
+
 type MisconfSummary struct {
 	Successes  int
 	Failures   int
