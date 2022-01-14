@@ -1,8 +1,6 @@
 package types
 
 import (
-	"time"
-
 	"github.com/caarlos0/env/v6"
 	"golang.org/x/xerrors"
 
@@ -18,7 +16,7 @@ type DockerConfig struct {
 }
 
 // GetDockerOption returns the Docker scanning options using DockerConfig
-func GetDockerOption(timeout time.Duration, insecureTlsSkip bool) (types.DockerOption, error) {
+func GetDockerOption(insecureTlsSkip bool) (types.DockerOption, error) {
 	cfg := DockerConfig{}
 	if err := env.Parse(&cfg); err != nil {
 		return types.DockerOption{}, xerrors.Errorf("unable to parse environment variables: %w", err)
