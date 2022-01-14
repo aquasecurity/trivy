@@ -285,6 +285,12 @@ var (
 		EnvVars: []string{"TRIVY_TRACE"},
 	}
 
+	insecureFlag = cli.BoolFlag{
+		Name:    "insecure",
+		Usage:   "allow insecure server connections when using SSL",
+		EnvVars: []string{"TRIVY_INSECURE"},
+	}
+
 	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
@@ -402,6 +408,7 @@ func NewImageCommand() *cli.Command {
 			&listAllPackages,
 			&cacheBackendFlag,
 			&offlineScan,
+			&insecureFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
@@ -508,6 +515,7 @@ func NewRepositoryCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&offlineScan,
+			&insecureFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
