@@ -10,14 +10,9 @@ import (
 	"github.com/aquasecurity/fanal/applier"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	db2 "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
-	"github.com/aquasecurity/trivy/pkg/github"
-	"github.com/aquasecurity/trivy/pkg/indicator"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
-	"github.com/spf13/afero"
-	"k8s.io/utils/clock"
 )
 
 // Injectors from inject.go:
@@ -30,16 +25,4 @@ func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServ
 	client := result.NewClient(config)
 	scanServer := NewScanServer(scanner, client)
 	return scanServer
-}
-
-func initializeDBWorker(cacheDir string, quiet bool) dbWorker {
-	config := db.Config{}
-	client := github.NewClient()
-	progressBar := indicator.NewProgressBar(quiet)
-	realClock := clock.RealClock{}
-	fs := afero.NewOsFs()
-	metadata := db2.NewMetadata(fs, cacheDir)
-	dbClient := db2.NewClient(config, client, progressBar, realClock, metadata)
-	serverDbWorker := newDBWorker(dbClient)
-	return serverDbWorker
 }

@@ -99,6 +99,7 @@ message Vulnerability {
   google.protobuf.Timestamp last_modified_date   = 16;
   google.protobuf.Value     custom_advisory_data = 17;
   google.protobuf.Value     custom_vuln_data     = 18;
+  repeated string           vendor_ids           = 19;
 }
 
 message Layer {

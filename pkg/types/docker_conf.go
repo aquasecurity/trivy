@@ -29,7 +29,6 @@ func GetDockerOption(timeout time.Duration) (types.DockerOption, error) {
 		UserName:              cfg.UserName,
 		Password:              cfg.Password,
 		RegistryToken:         cfg.RegistryToken,
-		Timeout:               timeout,
 		InsecureSkipTLSVerify: cfg.Insecure,
 		NonSSL:                cfg.NonSSL,
 	}, nil
