@@ -205,6 +205,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		SkipFiles:         opt.SkipFiles,
 		SkipDirs:          opt.SkipDirs,
 		Offline:           opt.OfflineScan,
+		Quiet:             opt.Quiet,
 	}
 
 	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Timeout, artifactOpt, configScannerOptions)
