@@ -8,16 +8,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/afero"
 	"github.com/urfave/cli/v2"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/client"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
-	tdb "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -25,8 +23,8 @@ import (
 
 // VersionInfo holds the trivy DB version Info
 type VersionInfo struct {
-	Version         string       `json:",omitempty"`
-	VulnerabilityDB *db.Metadata `json:",omitempty"`
+	Version         string             `json:",omitempty"`
+	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
 }
 
 var (
@@ -42,7 +40,7 @@ var (
 		Name:    "format",
 		Aliases: []string{"f"},
 		Value:   "table",
-		Usage:   "format (table, json, template)",
+		Usage:   "format (table, json, sarif, template)",
 		EnvVars: []string{"TRIVY_FORMAT"},
 	}
 
@@ -182,9 +180,10 @@ var (
 		EnvVars: []string{"TRIVY_TIMEOUT"},
 	}
 
+	// TODO: remove this flag after a sufficient deprecation period.
 	lightFlag = cli.BoolFlag{
 		Name:    "light",
-		Usage:   "light mode: it's faster, but vulnerability descriptions and references are not displayed",
+		Usage:   "deprecated",
 		EnvVars: []string{"TRIVY_LIGHT"},
 	}
 
@@ -223,6 +222,12 @@ var (
 		Name:    "skip-dirs",
 		Usage:   "specify the directories where the traversal is skipped",
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
+	}
+
+	offlineScan = cli.BoolFlag{
+		Name:    "offline-scan",
+		Usage:   "do not issue API requests to identify dependencies",
+		EnvVars: []string{"TRIVY_OFFLINE_SCAN"},
 	}
 
 	// For misconfigurations
@@ -280,37 +285,17 @@ var (
 		EnvVars: []string{"TRIVY_TRACE"},
 	}
 
+	insecureFlag = cli.BoolFlag{
+		Name:    "insecure",
+		Usage:   "allow insecure server connections when using SSL",
+		EnvVars: []string{"TRIVY_INSECURE"},
+	}
+
 	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
 		&debugFlag,
 		&cacheDirFlag,
-	}
-
-	imageFlags = []cli.Flag{
-		&templateFlag,
-		&formatFlag,
-		&inputFlag,
-		&severityFlag,
-		&outputFlag,
-		&exitCodeFlag,
-		&skipDBUpdateFlag,
-		&downloadDBOnlyFlag,
-		&resetFlag,
-		&clearCacheFlag,
-		&noProgressFlag,
-		&ignoreUnfixedFlag,
-		&removedPkgsFlag,
-		&vulnTypeFlag,
-		&securityChecksFlag,
-		&ignoreFileFlag,
-		&timeoutFlag,
-		&lightFlag,
-		&ignorePolicy,
-		&listAllPackages,
-		&cacheBackendFlag,
-		stringSliceFlag(skipFiles),
-		stringSliceFlag(skipDirs),
 	}
 )
 
@@ -326,10 +311,22 @@ func NewApp(version string) *cli.App {
 	app.ArgsUsage = "target"
 	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
 	app.EnableBashCompletion = true
+	app.Flags = globalFlags
 
-	flags := append(globalFlags, setHidden(imageFlags, true)...)
+	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
+		app.Action = func(ctx *cli.Context) error {
+			return plugin.RunWithArgs(ctx.Context, runAsPlugin, ctx.Args().Slice())
+		}
+		app.HideVersion = true
+		app.HideHelp = true
+		app.HideHelpCommand = true
+		app.Flags = append(app.Flags, &cli.BoolFlag{
+			Name:    "help",
+			Aliases: []string{"h"},
+		})
+		return app
+	}
 
-	app.Flags = flags
 	app.Commands = []*cli.Command{
 		NewImageCommand(),
 		NewFilesystemCommand(),
@@ -342,59 +339,20 @@ func NewApp(version string) *cli.App {
 	}
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
 
-	runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN")
-	if runAsPlugin == "" {
-		app.Action = artifact.ImageRun
-	} else {
-		app.Action = func(ctx *cli.Context) error {
-			return plugin.RunWithArgs(ctx.Context, runAsPlugin, ctx.Args().Slice())
-		}
-	}
 	return app
 }
 
-func setHidden(flags []cli.Flag, hidden bool) []cli.Flag {
-	var newFlags []cli.Flag
-	for _, flag := range flags {
-		var f cli.Flag
-		switch pf := flag.(type) {
-		case *cli.StringFlag:
-			stringFlag := *pf
-			stringFlag.Hidden = hidden
-			f = &stringFlag
-		case *cli.StringSliceFlag:
-			stringSliceFlag := *pf
-			stringSliceFlag.Hidden = hidden
-			f = &stringSliceFlag
-		case *cli.BoolFlag:
-			boolFlag := *pf
-			boolFlag.Hidden = hidden
-			f = &boolFlag
-		case *cli.IntFlag:
-			intFlag := *pf
-			intFlag.Hidden = hidden
-			f = &intFlag
-		case *cli.DurationFlag:
-			durationFlag := *pf
-			durationFlag.Hidden = hidden
-			f = &durationFlag
-		}
-		newFlags = append(newFlags, f)
-	}
-	return newFlags
-}
-
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
-	var dbMeta *db.Metadata
+	var dbMeta *metadata.Metadata
 
-	metadata, _ := tdb.NewMetadata(afero.NewOsFs(), cacheDir).Get() // nolint: errcheck
-	if !metadata.UpdatedAt.IsZero() && !metadata.NextUpdate.IsZero() && metadata.Version != 0 {
-		dbMeta = &db.Metadata{
-			Version:      metadata.Version,
-			Type:         metadata.Type,
-			NextUpdate:   metadata.NextUpdate.UTC(),
-			UpdatedAt:    metadata.UpdatedAt.UTC(),
-			DownloadedAt: metadata.DownloadedAt.UTC(),
+	mc := metadata.NewClient(cacheDir)
+	meta, _ := mc.Get() // nolint: errcheck
+	if !meta.UpdatedAt.IsZero() && !meta.NextUpdate.IsZero() && meta.Version != 0 {
+		dbMeta = &metadata.Metadata{
+			Version:      meta.Version,
+			NextUpdate:   meta.NextUpdate.UTC(),
+			UpdatedAt:    meta.UpdatedAt.UTC(),
+			DownloadedAt: meta.DownloadedAt.UTC(),
 		}
 	}
 
@@ -408,20 +366,12 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 	default:
 		output := fmt.Sprintf("Version: %s\n", version)
 		if dbMeta != nil {
-			var dbType string
-			switch dbMeta.Type {
-			case db.TypeFull:
-				dbType = "Full"
-			case db.TypeLight:
-				dbType = "Light"
-			}
 			output += fmt.Sprintf(`Vulnerability DB:
-  Type: %s
   Version: %d
   UpdatedAt: %s
   NextUpdate: %s
   DownloadedAt: %s
-`, dbType, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC(), dbMeta.DownloadedAt.UTC())
+`, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC(), dbMeta.DownloadedAt.UTC())
 		}
 		fmt.Fprintf(outputWriter, output)
 	}
@@ -435,7 +385,33 @@ func NewImageCommand() *cli.Command {
 		ArgsUsage: "image_name",
 		Usage:     "scan an image",
 		Action:    artifact.ImageRun,
-		Flags:     imageFlags,
+		Flags: []cli.Flag{
+			&templateFlag,
+			&formatFlag,
+			&inputFlag,
+			&severityFlag,
+			&outputFlag,
+			&exitCodeFlag,
+			&skipDBUpdateFlag,
+			&downloadDBOnlyFlag,
+			&resetFlag,
+			&clearCacheFlag,
+			&noProgressFlag,
+			&ignoreUnfixedFlag,
+			&removedPkgsFlag,
+			&vulnTypeFlag,
+			&securityChecksFlag,
+			&ignoreFileFlag,
+			&timeoutFlag,
+			&lightFlag,
+			&ignorePolicy,
+			&listAllPackages,
+			&cacheBackendFlag,
+			&offlineScan,
+			&insecureFlag,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+		},
 	}
 }
 
@@ -444,7 +420,7 @@ func NewFilesystemCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "filesystem",
 		Aliases:   []string{"fs"},
-		ArgsUsage: "dir",
+		ArgsUsage: "path",
 		Usage:     "scan local filesystem for language-specific dependencies and config files",
 		Action:    artifact.FilesystemRun,
 		Flags: []cli.Flag{
@@ -465,6 +441,7 @@ func NewFilesystemCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
+			&offlineScan,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
@@ -499,6 +476,7 @@ func NewRootfsCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
+			&offlineScan,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
@@ -536,6 +514,8 @@ func NewRepositoryCommand() *cli.Command {
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
+			&offlineScan,
+			&insecureFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
@@ -564,11 +544,13 @@ func NewClientCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,
+			&noProgressFlag,
 			&ignorePolicy,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
 			&listAllPackages,
+			&offlineScan,
 
 			// original flags
 			&token,
@@ -668,11 +650,29 @@ func NewPluginCommand() *cli.Command {
 				Action:    plugin.Uninstall,
 			},
 			{
+				Name:    "list",
+				Aliases: []string{"l"},
+				Usage:   "list installed plugin",
+				Action:  plugin.List,
+			},
+			{
+				Name:      "info",
+				Usage:     "information about a plugin",
+				ArgsUsage: "PLUGIN_NAME",
+				Action:    plugin.Information,
+			},
+			{
 				Name:      "run",
 				Aliases:   []string{"r"},
 				Usage:     "run a plugin on the fly",
 				ArgsUsage: "PLUGIN_NAME [PLUGIN_OPTIONS]",
 				Action:    plugin.Run,
+			},
+			{
+				Name:      "update",
+				Usage:     "update an existing plugin",
+				ArgsUsage: "PLUGIN_NAME",
+				Action:    plugin.Update,
 			},
 		},
 	}

@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy-db/pkg/metadata"
 )
 
 func Test_showVersion(t *testing.T) {
@@ -35,7 +35,6 @@ func Test_showVersion(t *testing.T) {
 			},
 			expectedOutput: `Version: v1.2.3
 Vulnerability DB:
-  Type: Full
   Version: 42
   UpdatedAt: 2020-03-16 23:40:20 +0000 UTC
   NextUpdate: 2020-03-16 23:57:00 +0000 UTC
@@ -49,7 +48,7 @@ Vulnerability DB:
 				outputFormat: "json",
 				version:      "1.2.3",
 			},
-			expectedOutput: `{"Version":"1.2.3","VulnerabilityDB":{"Version":42,"Type":1,"NextUpdate":"2020-03-16T23:57:00Z","UpdatedAt":"2020-03-16T23:40:20Z","DownloadedAt":"2020-03-16T23:40:20Z"}}
+			expectedOutput: `{"Version":"1.2.3","VulnerabilityDB":{"Version":42,"NextUpdate":"2020-03-16T23:57:00Z","UpdatedAt":"2020-03-16T23:40:20Z","DownloadedAt":"2020-03-16T23:40:20Z"}}
 `,
 			createDB: true,
 		},
@@ -90,9 +89,8 @@ Vulnerability DB:
 				require.NoError(t, err)
 				metadataFile := filepath.Join(cacheDir, "db", "metadata.json")
 
-				b, err := json.Marshal(db.Metadata{
+				b, err := json.Marshal(metadata.Metadata{
 					Version:      42,
-					Type:         1,
 					NextUpdate:   time.Unix(1584403020, 0),
 					UpdatedAt:    time.Unix(1584402020, 0),
 					DownloadedAt: time.Unix(1584402020, 0),

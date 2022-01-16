@@ -123,6 +123,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
 			VulnerabilityId:    vuln.VulnerabilityID,
+			VendorIds:          vuln.VendorIDs,
 			PkgName:            vuln.PkgName,
 			InstalledVersion:   vuln.InstalledVersion,
 			FixedVersion:       vuln.FixedVersion,
@@ -222,6 +223,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 
 		vulns = append(vulns, types.DetectedVulnerability{
 			VulnerabilityID:  vuln.VulnerabilityId,
+			VendorIDs:        vuln.VendorIds,
 			PkgName:          vuln.PkgName,
 			InstalledVersion: vuln.InstalledVersion,
 			FixedVersion:     vuln.FixedVersion,
@@ -269,6 +271,9 @@ func ConvertFromRPCMisconfs(rpcMisconfs []*common.DetectedMisconfiguration) []ty
 
 // ConvertFromRPCLayer converts *common.Layer to fanal.Layer
 func ConvertFromRPCLayer(rpcLayer *common.Layer) ftypes.Layer {
+	if rpcLayer == nil {
+		return ftypes.Layer{}
+	}
 	return ftypes.Layer{
 		Digest: rpcLayer.Digest,
 		DiffID: rpcLayer.DiffId,

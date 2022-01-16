@@ -33,7 +33,9 @@
           "Namespace": "user.bar",
           "Query": "data.user.bar.deny",
           "Severity": "UNKNOWN",
-          "Status": "FAIL"
+          "Status": "FAIL",
+          "Layer": {},
+          "IacMetadata": {}
         },
         {
           "Type": "N/A",
@@ -43,7 +45,9 @@
           "Namespace": "user.foo",
           "Query": "data.user.foo.deny",
           "Severity": "UNKNOWN",
-          "Status": "FAIL"
+          "Status": "FAIL",
+          "Layer": {},
+          "IacMetadata": {}
         }
       ]
     }
