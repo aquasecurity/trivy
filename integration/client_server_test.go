@@ -211,6 +211,13 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/mariner-1.0.json.golden",
 		},
 		{
+			name: "archlinux",
+			args: csArgs{
+				Input: "testdata/fixtures/images/archlinux.tar.gz",
+			},
+			golden: "testdata/archlinux.json.golden",
+		},
+		{
 			name: "buxybox with Cargo.lock",
 			args: csArgs{
 				Input: "testdata/fixtures/images/busybox-with-lockfile.tar.gz",

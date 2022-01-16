@@ -1,0 +1,718 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "archlinux:latest",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "arch",
+      "Name": "Arch Linux"
+    },
+    "ImageID": "sha256:08cb19171ab6f169176d854097084b0fd83a3b71aba75a8b0509e86613886c65",
+    "DiffIDs": [
+      "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714",
+      "sha256:c0f2805cf8ff032ec04424c2e6f206275070b236d9e140dda423f0a1934d960d"
+    ],
+    "RepoTags": [
+      "archlinux:latest"
+    ],
+    "RepoDigests": [
+      "archlinux@sha256:a2ffaa734fd155e9528562f468eb6d754e2068324372f2f975af188fdd792816"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "container": "bba2258215f7fb91f5af74d3688110601fb238f479356e0c174f0f90b4aa6abe",
+      "created": "2022-01-10T21:20:07.876336491Z",
+      "docker_version": "20.10.7",
+      "history": [
+        {
+          "created": "2022-01-10T21:20:05Z",
+          "created_by": "/bin/sh -c #(nop) COPY dir:a378deed5b2d3070afb288f2b8ca149e640231a8410447adfa480fbab7c2d297 in / "
+        },
+        {
+          "created": "2022-01-10T21:20:07Z",
+          "created_by": "/bin/sh -c ldconfig"
+        },
+        {
+          "created": "2022-01-10T21:20:07Z",
+          "created_by": "/bin/sh -c #(nop)  ENV LANG=en_US.UTF-8",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-01-10T21:20:07Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"/usr/bin/bash\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714",
+          "sha256:c0f2805cf8ff032ec04424c2e6f206275070b236d9e140dda423f0a1934d960d"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/usr/bin/bash"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "LANG=en_US.UTF-8"
+        ],
+        "Image": "sha256:e85a64562f7d6ada24aa0c7ebbb2a3a294031f95953a3ed19f38f23e01b04c65"
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "archlinux:latest (arch Arch Linux)",
+      "Class": "os-pkgs",
+      "Type": "arch",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2016-4484",
+          "PkgName": "cryptsetup",
+          "InstalledVersion": "2.4.2-3",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-4484",
+          "Title": "dracut: Brute force attack on LUKS password decryption via initramfs",
+          "Description": "The Debian initrd script for the cryptsetup package 2:1.7.3-2 and earlier allows physically proximate attackers to gain shell access via many log in attempts with an invalid password.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-287"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+              "V3Vector": "CVSS:3.0/AV:P/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.2,
+              "V3Score": 6.8
+            },
+            "redhat": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+              "V3Vector": "CVSS:3.0/AV:P/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.2,
+              "V3Score": 6.8
+            }
+          },
+          "References": [
+            "http://hmarco.org/bugs/CVE-2016-4484/CVE-2016-4484_cryptsetup_initrd_shell.html",
+            "http://www.openwall.com/lists/oss-security/2016/11/14/13",
+            "http://www.openwall.com/lists/oss-security/2016/11/15/1",
+            "http://www.openwall.com/lists/oss-security/2016/11/15/4",
+            "http://www.openwall.com/lists/oss-security/2016/11/16/6",
+            "http://www.securityfocus.com/bid/94315",
+            "https://access.redhat.com/articles/2786581",
+            "https://gitlab.com/cryptsetup/cryptsetup/commit/ef8a7d82d8d3716ae9b58179590f7908981fa0cb"
+          ],
+          "PublishedDate": "2017-01-23T21:59:00Z",
+          "LastModifiedDate": "2017-01-26T02:59:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2021-33574",
+          "PkgName": "glibc",
+          "InstalledVersion": "2.33-5",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-33574",
+          "Title": "glibc: mq_notify does not handle separately allocated thread attributes",
+          "Description": "The mq_notify function in the GNU C Library (aka glibc) versions 2.32 and 2.33 has a use-after-free. It may use the notification thread attributes object (passed through its struct sigevent parameter) after it has been freed by the caller, leading to a denial of service (application crash) or possibly unspecified other impact.",
+          "Severity": "CRITICAL",
+          "CweIDs": [
+            "CWE-416"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.5,
+              "V3Score": 9.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 5.9
+            }
+          },
+          "References": [
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-33574",
+            "https://linux.oracle.com/cve/CVE-2021-33574.html",
+            "https://linux.oracle.com/errata/ELSA-2021-9560.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RBUUWUGXVILQXVWEOU7N42ICHPJNAEUP/",
+            "https://security.gentoo.org/glsa/202107-07",
+            "https://security.netapp.com/advisory/ntap-20210629-0005/",
+            "https://sourceware.org/bugzilla/show_bug.cgi?id=27896",
+            "https://sourceware.org/bugzilla/show_bug.cgi?id=27896#c1"
+          ],
+          "PublishedDate": "2021-05-25T22:15:00Z",
+          "LastModifiedDate": "2021-07-07T03:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2021-35942",
+          "PkgName": "glibc",
+          "InstalledVersion": "2.33-5",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-35942",
+          "Title": "glibc: Arbitrary read in wordexp()",
+          "Description": "The wordexp function in the GNU C Library (aka glibc) through 2.33 may crash or read arbitrary memory in parse_param (in posix/wordexp.c) when called with an untrusted, crafted pattern, potentially resulting in a denial of service or disclosure of information. This occurs because atoi was used but strtoul should have been used to ensure correct calculations.",
+          "Severity": "CRITICAL",
+          "CweIDs": [
+            "CWE-190"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:H",
+              "V2Score": 6.4,
+              "V3Score": 9.1
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:H",
+              "V3Score": 9.1
+            }
+          },
+          "References": [
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-35942",
+            "https://linux.oracle.com/cve/CVE-2021-35942.html",
+            "https://linux.oracle.com/errata/ELSA-2021-9560.html",
+            "https://security.netapp.com/advisory/ntap-20210827-0005/",
+            "https://sourceware.org/bugzilla/show_bug.cgi?id=28011",
+            "https://sourceware.org/git/?p=glibc.git;a=commit;h=5adda61f62b77384718b4c0d8336ade8f2b4b35c",
+            "https://sourceware.org/git/?p=glibc.git;a=commitdiff;h=5adda61f62b77384718b4c0d8336ade8f2b4b35c",
+            "https://sourceware.org/glibc/wiki/Security%20Exceptions"
+          ],
+          "PublishedDate": "2021-07-22T18:15:00Z",
+          "LastModifiedDate": "2021-09-21T18:16:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2020-29573",
+          "PkgName": "glibc",
+          "InstalledVersion": "2.33-5",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-29573",
+          "Title": "glibc: stack-based buffer overflow if the input to any of the printf family of functions is an 80-bit long double with a non-canonical bit pattern",
+          "Description": "sysdeps/i386/ldbl2mpn.c in the GNU C Library (aka glibc or libc6) before 2.23 on x86 targets has a stack-based buffer overflow if the input to any of the printf family of functions is an 80-bit long double with a non-canonical bit pattern, as seen when passing a \\x00\\x04\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x04 value to sprintf. NOTE: the issue does not affect glibc by default in 2016 or later (i.e., 2.23 or later) because of commits made in 2015 for inlining of C99 math functions through use of GCC built-ins. In other words, the reference to 2.23 is intentional despite the mention of \"Fixed for glibc 2.33\" in the 26649 reference.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V2Score": 5,
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://linux.oracle.com/cve/CVE-2020-29573.html",
+            "https://linux.oracle.com/errata/ELSA-2021-0348.html",
+            "https://security.gentoo.org/glsa/202101-20",
+            "https://security.netapp.com/advisory/ntap-20210122-0004/",
+            "https://sourceware.org/bugzilla/show_bug.cgi?id=26649",
+            "https://sourceware.org/pipermail/libc-alpha/2020-September/117779.html"
+          ],
+          "PublishedDate": "2020-12-06T00:15:00Z",
+          "LastModifiedDate": "2021-01-26T18:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2021-38604",
+          "PkgName": "glibc",
+          "InstalledVersion": "2.33-5",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-38604",
+          "Title": "glibc: NULL pointer dereference in helper_thread() in mq_notify.c while handling NOTIFY_REMOVED messages",
+          "Description": "In librt in the GNU C Library (aka glibc) through 2.34, sysdeps/unix/sysv/linux/mq_notify.c mishandles certain NOTIFY_REMOVED data, leading to a NULL pointer dereference. NOTE: this vulnerability was introduced as a side effect of the CVE-2021-33574 fix.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-476"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V2Score": 5,
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 5.9
+            }
+          },
+          "References": [
+            "https://blog.tuxcare.com/cve/tuxcare-team-identifies-cve-2021-38604-a-new-vulnerability-in-glibc",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-38604",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/GYEXYM37RCJWJ6B5KQUYQI4NZBDDYSXP/",
+            "https://security.netapp.com/advisory/ntap-20210909-0005/",
+            "https://sourceware.org/bugzilla/show_bug.cgi?id=28213",
+            "https://sourceware.org/git/?p=glibc.git;a=commit;h=4cc79c217744743077bf7a0ec5e0a4318f1e6641",
+            "https://sourceware.org/git/?p=glibc.git;a=commit;h=b805aebd42364fe696e417808a700fdb9800c9e8"
+          ],
+          "PublishedDate": "2021-08-12T16:15:00Z",
+          "LastModifiedDate": "2021-10-07T19:06:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2021-43396",
+          "PkgName": "glibc",
+          "InstalledVersion": "2.33-5",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-43396",
+          "Title": "glibc: conversion from ISO-2022-JP-3 with iconv may emit spurious NUL character on state reset",
+          "Description": "** DISPUTED ** In iconvdata/iso-2022-jp-3.c in the GNU C Library (aka glibc) 2.34, remote attackers can force iconv() to emit a spurious '\\0' character via crafted ISO-2022-JP-3 data that is accompanied by an internal state reset. This may affect data integrity in certain iconv() use cases. NOTE: the vendor states \"the bug cannot be invoked through user input and requires iconv to be invoked with a NULL inbuf, which ought to require a separate application bug to do so unintentionally. Hence there's no security impact to the bug.\"",
+          "Severity": "HIGH",
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:N",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+              "V2Score": 5,
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://blog.tuxcare.com/vulnerability/vulnerability-in-iconv-identified-by-tuxcare-team-cve-2021-43396",
+            "https://sourceware.org/bugzilla/show_bug.cgi?id=28524",
+            "https://sourceware.org/git/?p=glibc.git;a=commit;h=ff012870b2c02a62598c04daa1e54632e020fd7d"
+          ],
+          "PublishedDate": "2021-11-04T20:15:00Z",
+          "LastModifiedDate": "2021-11-17T14:12:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2021-27645",
+          "PkgName": "glibc",
+          "InstalledVersion": "2.33-5",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-27645",
+          "Title": "glibc: Use-after-free in addgetnetgrentX function in netgroupcache.c",
+          "Description": "The nameserver caching daemon (nscd) in the GNU C Library (aka glibc or libc6) 2.29 through 2.33, when processing a request for netgroup lookup, may crash due to a double-free, potentially resulting in degraded service or Denial of Service on the local system. This is related to netgroupcache.c.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-415"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:M/Au:N/C:N/I:N/A:P",
+              "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:N/I:N/A:L",
+              "V2Score": 1.9,
+              "V3Score": 2.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:N/I:N/A:L",
+              "V3Score": 2.5
+            }
+          },
+          "References": [
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-27645",
+            "https://linux.oracle.com/cve/CVE-2021-27645.html",
+            "https://linux.oracle.com/errata/ELSA-2021-9560.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/7LZNT6KTMCCWPWXEOGSHD3YLYZKUGMH5/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/I7TS26LIZSOBLGJEZMJX4PXT5BQDE2WS/",
+            "https://sourceware.org/bugzilla/show_bug.cgi?id=27462"
+          ],
+          "PublishedDate": "2021-02-24T15:15:00Z",
+          "LastModifiedDate": "2021-07-06T06:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2021-43618",
+          "PkgName": "gmp",
+          "InstalledVersion": "6.2.1-1",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-43618",
+          "Title": "gmp: Integer overflow and resultant buffer overflow via crafted input",
+          "Description": "GNU Multiple Precision Arithmetic Library (GMP) through 6.2.1 has an mpz/inp_raw.c integer overflow and resultant buffer overflow via crafted input, leading to a segmentation fault on 32-bit platforms.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-190"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V2Score": 5,
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 6.2
+            }
+          },
+          "References": [
+            "https://bugs.debian.org/994405",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-43618",
+            "https://gmplib.org/list-archives/gmp-bugs/2021-September/005077.html",
+            "https://gmplib.org/repo/gmp-6.2/rev/561a9c25298e",
+            "https://lists.debian.org/debian-lts-announce/2021/12/msg00001.html"
+          ],
+          "PublishedDate": "2021-11-15T04:15:00Z",
+          "LastModifiedDate": "2021-12-16T18:39:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2017-15088",
+          "PkgName": "krb5",
+          "InstalledVersion": "1.19.2-2",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-15088",
+          "Title": "krb5: Buffer overflow in get_matching_data()",
+          "Description": "plugins/preauth/pkinit/pkinit_crypto_openssl.c in MIT Kerberos 5 (aka krb5) through 1.15.2 mishandles Distinguished Name (DN) fields, which allows remote attackers to execute arbitrary code or cause a denial of service (buffer overflow and application crash) in situations involving untrusted X.509 data, related to the get_matching_data and X509_NAME_oneline_ex functions. NOTE: this has security relevance only in use cases outside of the MIT Kerberos distribution, e.g., the use of get_matching_data in KDC certauth plugin code that is specific to Red Hat.",
+          "Severity": "CRITICAL",
+          "CweIDs": [
+            "CWE-119"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.5,
+              "V3Score": 9.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:L/UI:R/S:U/C:H/I:H/A:H",
+              "V3Score": 7.1
+            }
+          },
+          "References": [
+            "http://www.securityfocus.com/bid/101594",
+            "https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=871698",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=1504045",
+            "https://github.com/krb5/krb5/commit/fbb687db1088ddd894d975996e5f6a4252b9a2b4",
+            "https://github.com/krb5/krb5/pull/707"
+          ],
+          "PublishedDate": "2017-11-23T17:29:00Z",
+          "LastModifiedDate": "2021-01-26T15:28:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2021-37750",
+          "PkgName": "krb5",
+          "InstalledVersion": "1.19.2-2",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-37750",
+          "Title": "krb5: NULL pointer dereference in process_tgs_req() in kdc/do_tgs_req.c via a FAST inner body that lacks server field",
+          "Description": "The Key Distribution Center (KDC) in MIT Kerberos 5 (aka krb5) before 1.18.5 and 1.19.x before 1.19.3 has a NULL pointer dereference in kdc/do_tgs_req.c via a FAST inner body that lacks a server field.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-476"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:S/C:N/I:N/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+              "V2Score": 4,
+              "V3Score": 6.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 6.5
+            }
+          },
+          "References": [
+            "https://github.com/krb5/krb5/commit/d775c95af7606a51bf79547a94fa52ddd1cb7f49",
+            "https://github.com/krb5/krb5/releases",
+            "https://linux.oracle.com/cve/CVE-2021-37750.html",
+            "https://linux.oracle.com/errata/ELSA-2021-4788.html",
+            "https://lists.debian.org/debian-lts-announce/2021/09/msg00019.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MFCLW7D46E4VCREKKH453T5DA4XOLHU2/",
+            "https://security.netapp.com/advisory/ntap-20210923-0002/",
+            "https://web.mit.edu/kerberos/advisories/"
+          ],
+          "PublishedDate": "2021-08-23T05:15:00Z",
+          "LastModifiedDate": "2021-10-07T19:06:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2021-36976",
+          "PkgName": "libarchive",
+          "InstalledVersion": "3.5.2-2",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-36976",
+          "Title": "libarchive: use-after-free in copy_string()",
+          "Description": "libarchive 3.4.1 through 3.5.1 has a use-after-free in copy_string (called from do_uncompress_block and process_block).",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-416"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+              "V2Score": 4.3,
+              "V3Score": 6.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+              "V3Score": 6.5
+            }
+          },
+          "References": [
+            "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=32375",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-36976",
+            "https://github.com/google/oss-fuzz-vulns/blob/main/vulns/libarchive/OSV-2021-557.yaml"
+          ],
+          "PublishedDate": "2021-07-20T07:15:00Z",
+          "LastModifiedDate": "2021-09-02T14:32:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2021-39537",
+          "PkgName": "ncurses",
+          "InstalledVersion": "6.3-1",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-39537",
+          "Title": "ncurses: heap-based buffer overflow in _nc_captoinfo() in captoinfo.c",
+          "Description": "An issue was discovered in ncurses through v6.2-1. _nc_captoinfo in captoinfo.c has a heap-based buffer overflow.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+              "V2Score": 6.8,
+              "V3Score": 8.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+              "V3Score": 5.5
+            }
+          },
+          "References": [
+            "http://cvsweb.netbsd.org/bsdweb.cgi/pkgsrc/devel/ncurses/patches/patch-ncurses_tinfo_captoinfo.c?rev=1.1\u0026content-type=text/x-cvsweb-markup",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2020-08/msg00006.html",
+            "https://lists.gnu.org/archive/html/bug-ncurses/2021-10/msg00023.html"
+          ],
+          "PublishedDate": "2021-09-20T16:15:00Z",
+          "LastModifiedDate": "2021-11-30T22:42:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2016-6309",
+          "PkgName": "openssl",
+          "InstalledVersion": "1.1.1.m-1",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-6309",
+          "Title": "openssl: Use After Free for large message sizes",
+          "Description": "statem/statem.c in OpenSSL 1.1.0a does not consider memory-block movement after a realloc call, which allows remote attackers to cause a denial of service (use-after-free) or possibly execute arbitrary code via a crafted TLS session.",
+          "Severity": "CRITICAL",
+          "CweIDs": [
+            "CWE-416"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:C/I:C/A:C",
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 10,
+              "V3Score": 9.8
+            },
+            "redhat": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:C/I:C/A:C",
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 9.3,
+              "V3Score": 9.8
+            }
+          },
+          "References": [
+            "http://kb.juniper.net/InfoCenter/index?page=content\u0026id=JSA10759",
+            "http://www-01.ibm.com/support/docview.wss?uid=swg21995039",
+            "http://www.oracle.com/technetwork/security-advisory/cpuapr2018-3678067.html",
+            "http://www.oracle.com/technetwork/security-advisory/cpujan2018-3236628.html",
+            "http://www.oracle.com/technetwork/security-advisory/cpujul2017-3236622.html",
+            "http://www.oracle.com/technetwork/security-advisory/cpuoct2016-2881722.html",
+            "http://www.securityfocus.com/bid/93177",
+            "http://www.securitytracker.com/id/1036885",
+            "https://bto.bluecoat.com/security-advisory/sa132",
+            "https://git.openssl.org/?p=openssl.git;a=commit;h=acacbfa7565c78d2273c0b2a2e5e803f44afefeb",
+            "https://support.hpe.com/hpsc/doc/public/display?docLocale=en_US\u0026docId=emr_na-hpesbhf03856en_us",
+            "https://www.openssl.org/news/secadv/20160926.txt",
+            "https://www.tenable.com/security/tns-2016-16",
+            "https://www.tenable.com/security/tns-2016-20"
+          ],
+          "PublishedDate": "2016-09-26T19:59:00Z",
+          "LastModifiedDate": "2018-07-12T01:29:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2021-4044",
+          "PkgName": "openssl",
+          "InstalledVersion": "1.1.1.m-1",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-4044",
+          "Title": "openssl: invalid handling of X509_verify_cert() internal errors in libssl",
+          "Description": "Internally libssl in OpenSSL calls X509_verify_cert() on the client side to verify a certificate supplied by a server. That function may return a negative return value to indicate an internal error (for example out of memory). Such a negative return value is mishandled by OpenSSL and will cause an IO function (such as SSL_connect() or SSL_do_handshake()) to not indicate success and a subsequent call to SSL_get_error() to return the value SSL_ERROR_WANT_RETRY_VERIFY. This return value is only supposed to be returned by OpenSSL if the application has previously called SSL_CTX_set_cert_verify_callback(). Since most applications do not do this the SSL_ERROR_WANT_RETRY_VERIFY return value from SSL_get_error() will be totally unexpected and applications may not behave correctly as a result. The exact behaviour will depend on the application but it could result in crashes, infinite loops or other similar incorrect responses. This issue is made more serious in combination with a separate bug in OpenSSL 3.0 that will cause X509_verify_cert() to indicate an internal error when processing a certificate chain. This will occur where a certificate does not include the Subject Alternative Name extension but where a Certificate Authority has enforced name constraints. This issue can occur even with valid chains. By combining the two issues an attacker could induce incorrect, application dependent behaviour. Fixed in OpenSSL 3.0.1 (Affected 3.0.0).",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-835"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V2Score": 5,
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://crates.io/crates/openssl-src",
+            "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=758754966791c537ea95241438454aa86f91f256",
+            "https://rustsec.org/advisories/RUSTSEC-2021-0129.html",
+            "https://security.netapp.com/advisory/ntap-20211229-0003/",
+            "https://www.openssl.org/news/secadv/20211214.txt"
+          ],
+          "PublishedDate": "2021-12-14T19:15:00Z",
+          "LastModifiedDate": "2021-12-29T21:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2016-7056",
+          "PkgName": "openssl",
+          "InstalledVersion": "1.1.1.m-1",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2016-7056",
+          "Title": "openssl: ECDSA P-256 timing attack key recovery",
+          "Description": "A timing attack flaw was found in OpenSSL 1.0.1u and before that could allow a malicious user with local access to recover ECDSA P-256 private keys.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-320"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:L/AC:L/Au:N/C:P/I:N/A:N",
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+              "V2Score": 2.1,
+              "V3Score": 5.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+              "V3Score": 5.5
+            }
+          },
+          "References": [
+            "http://rhn.redhat.com/errata/RHSA-2017-1415.html",
+            "http://www.securityfocus.com/bid/95375",
+            "http://www.securitytracker.com/id/1037575",
+            "https://access.redhat.com/errata/RHSA-2017:1413",
+            "https://access.redhat.com/errata/RHSA-2017:1414",
+            "https://access.redhat.com/errata/RHSA-2017:1801",
+            "https://access.redhat.com/errata/RHSA-2017:1802",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2016-7056",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-7056",
+            "https://eprint.iacr.org/2016/1195",
+            "https://eprint.iacr.org/2016/1195.pdf",
+            "https://ftp.openbsd.org/pub/OpenBSD/patches/5.9/common/033_libcrypto.patch.sig",
+            "https://ftp.openbsd.org/pub/OpenBSD/patches/6.0/common/016_libcrypto.patch.sig",
+            "https://git.openssl.org/?p=openssl.git;a=commit;h=8aed2a7548362e88e84a7feb795a3a97e8395008",
+            "https://people.canonical.com/~ubuntu-security/cve/2016/CVE-2016-7056.html",
+            "https://seclists.org/oss-sec/2017/q1/52",
+            "https://security-tracker.debian.org/tracker/CVE-2016-7056",
+            "https://ubuntu.com/security/notices/USN-3181-1",
+            "https://www.debian.org/security/2017/dsa-3773"
+          ],
+          "PublishedDate": "2018-09-10T16:29:00Z",
+          "LastModifiedDate": "2019-10-09T23:19:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2017-3737",
+          "PkgName": "openssl",
+          "InstalledVersion": "1.1.1.m-1",
+          "Layer": {
+            "DiffID": "sha256:36d5ed8d8632e2ac9dc5b46099163dca87723152f539a1b9a3b30db5e87c2714"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2017-3737",
+          "Title": "openssl: Read/write after SSL object in error state",
+          "Description": "OpenSSL 1.0.2 (starting from version 1.0.2b) introduced an \"error state\" mechanism. The intent was that if a fatal error occurred during a handshake then OpenSSL would move into the error state and would immediately fail if you attempted to continue the handshake. This works as designed for the explicit handshake functions (SSL_do_handshake(), SSL_accept() and SSL_connect()), however due to a bug it does not work correctly if SSL_read() or SSL_write() is called directly. In that scenario, if the handshake fails then a fatal error will be returned in the initial function call. If SSL_read()/SSL_write() is subsequently called by the application for the same SSL object then it will succeed and the data is passed without being decrypted/encrypted directly from the SSL/TLS record layer. In order to exploit this issue an application bug would have to be present that resulted in a call to SSL_read()/SSL_write() being issued after having already received a fatal error. OpenSSL version 1.0.2b-1.0.2m are affected. Fixed in OpenSSL 1.0.2n. OpenSSL 1.1.0 is not affected.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-125",
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+              "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V2Score": 4.3,
+              "V3Score": 5.9
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V3Score": 5.9
+            }
+          },
+          "References": [
+            "http://www.oracle.com/technetwork/security-advisory/cpuapr2018-3678067.html",
+            "http://www.oracle.com/technetwork/security-advisory/cpujan2018-3236628.html",
+            "http://www.oracle.com/technetwork/security-advisory/cpujul2018-4258247.html",
+            "http://www.securityfocus.com/bid/102103",
+            "http://www.securitytracker.com/id/1039978",
+            "https://access.redhat.com/errata/RHSA-2018:0998",
+            "https://access.redhat.com/errata/RHSA-2018:2185",
+            "https://access.redhat.com/errata/RHSA-2018:2186",
+            "https://access.redhat.com/errata/RHSA-2018:2187",
+            "https://cert-portal.siemens.com/productcert/pdf/ssa-179516.pdf",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-3737",
+            "https://github.com/openssl/openssl/commit/898fb884b706aaeb283de4812340bb0bde8476dc",
+            "https://linux.oracle.com/cve/CVE-2017-3737.html",
+            "https://linux.oracle.com/errata/ELSA-2018-0998.html",
+            "https://security.FreeBSD.org/advisories/FreeBSD-SA-17:12.openssl.asc",
+            "https://security.gentoo.org/glsa/201712-03",
+            "https://security.netapp.com/advisory/ntap-20171208-0001/",
+            "https://security.netapp.com/advisory/ntap-20180117-0002/",
+            "https://security.netapp.com/advisory/ntap-20180419-0002/",
+            "https://ubuntu.com/security/notices/USN-3512-1",
+            "https://www.debian.org/security/2017/dsa-4065",
+            "https://www.digitalmunition.me/2017/12/cve-2017-3737-openssl-security-bypass-vulnerability/",
+            "https://www.openssl.org/news/secadv/20171207.txt",
+            "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html",
+            "https://www.tenable.com/security/tns-2017-16"
+          ],
+          "PublishedDate": "2017-12-07T16:29:00Z",
+          "LastModifiedDate": "2019-10-03T00:03:00Z"
+        }
+      ]
+    }
+  ]
+}

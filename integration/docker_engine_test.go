@@ -183,6 +183,12 @@ func TestDockerEngine(t *testing.T) {
 			golden:   "testdata/mariner-1.0.json.golden",
 		},
 		{
+			name:     "archlinux",
+			imageTag: "archlinux:latest",
+			input:    "testdata/fixtures/images/archlinux.tar.gz",
+			golden:   "testdata/archlinux.json.golden",
+		},
+		{
 			name:     "busybox with Cargo.lock",
 			imageTag: "busy-cargo:latest",
 			input:    "testdata/fixtures/images/busybox-with-lockfile.tar.gz",

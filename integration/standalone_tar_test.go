@@ -232,6 +232,14 @@ func TestTar(t *testing.T) {
 			golden: "testdata/mariner-1.0.json.golden",
 		},
 		{
+			name: "archlinux",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/archlinux.tar.gz",
+			},
+			golden: "testdata/archlinux.json.golden",
+		},
+		{
 			name: "buxybox with Cargo.lock integration",
 			testArgs: args{
 				Format: "json",
