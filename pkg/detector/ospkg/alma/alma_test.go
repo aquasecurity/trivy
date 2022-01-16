@@ -60,6 +60,30 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name:     "skip modular package",
+			fixtures: []string{"testdata/fixtures/modular.yaml"},
+			args: args{
+				osVer: "8.4",
+				pkgs: []ftypes.Package{
+					{
+						Name:            "nginx",
+						Epoch:           1,
+						Version:         "1.14.1",
+						Release:         "8.module_el8.3.0+2165+af250afe.alma",
+						Arch:            "x86_64",
+						SrcName:         "nginx",
+						SrcEpoch:        1,
+						SrcVersion:      "1.14.1",
+						SrcRelease:      "8.module_el8.3.0+2165+af250afe.alma",
+						Modularitylabel: "nginx:1.14:8040020210610090123:9f9e2e7e", // actual: "", ref: https://bugs.almalinux.org/view.php?id=173
+						License:         "BSD",
+						Layer:           ftypes.Layer{},
+					},
+				},
+			},
+			want: nil,
+		},
+		{
 			name:     "Get returns an error",
 			fixtures: []string{"testdata/fixtures/invalid.yaml"},
 			args: args{
