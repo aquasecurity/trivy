@@ -420,7 +420,7 @@ func NewFilesystemCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "filesystem",
 		Aliases:   []string{"fs"},
-		ArgsUsage: "dir",
+		ArgsUsage: "path",
 		Usage:     "scan local filesystem for language-specific dependencies and config files",
 		Action:    artifact.FilesystemRun,
 		Flags: []cli.Flag{

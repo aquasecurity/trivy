@@ -61,11 +61,11 @@ func initializeArchiveScanner(ctx context.Context, filePath string, artifactCach
 	return scannerScanner, nil
 }
 
-func initializeFilesystemScanner(ctx context.Context, dir string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
+func initializeFilesystemScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	localScanner := local.NewScanner(applierApplier, detector)
-	artifactArtifact, err := local2.NewArtifact(dir, artifactCache, artifactOption, configScannerOption)
+	artifactArtifact, err := local2.NewArtifact(path, artifactCache, artifactOption, configScannerOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}

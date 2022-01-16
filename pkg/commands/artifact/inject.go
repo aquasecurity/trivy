@@ -30,7 +30,7 @@ func initializeArchiveScanner(ctx context.Context, filePath string, artifactCach
 	return scanner.Scanner{}, nil
 }
 
-func initializeFilesystemScanner(ctx context.Context, dir string, artifactCache cache.ArtifactCache,
+func initializeFilesystemScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache,
 	localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option,
 	configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneFilesystemSet)
