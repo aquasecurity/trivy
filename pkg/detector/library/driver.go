@@ -13,7 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
 	"github.com/aquasecurity/trivy/pkg/detector/library/maven"
 	"github.com/aquasecurity/trivy/pkg/detector/library/npm"
-	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -108,7 +107,7 @@ func newNpmDriver() Driver {
 
 func newPipDriver() Driver {
 	c := comparer.GenericComparer{}
-	return Aggregate(vulnerability.Pip, NewAdvisory(vulnerability.Pip, c), python.NewAdvisory(), ghsa.NewAdvisory(ecosystem.Pip, c))
+	return Aggregate(vulnerability.Pip, NewAdvisory(vulnerability.Pip, c), ghsa.NewAdvisory(ecosystem.Pip, c))
 }
 
 func newNugetDriver() Driver {

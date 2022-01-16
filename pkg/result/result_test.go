@@ -155,7 +155,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Severity:    dbTypes.SeverityCritical.String(),
 						References:  []string{"https://www.who.int/emergencies/diseases/novel-coronavirus-2019"},
 					},
-					SeveritySource: vulnerability.PythonSafetyDB,
+					SeveritySource: vulnerability.GHSAPip,
 					PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2019-0005",
 				},
 			},
