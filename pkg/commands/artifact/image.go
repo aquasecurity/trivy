@@ -2,7 +2,6 @@ package artifact
 
 import (
 	"context"
-	"time"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -12,11 +11,12 @@ import (
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/scanner"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func archiveScanner(ctx context.Context, input string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
-	timeout time.Duration, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (scanner.Scanner, func(), error) {
-	s, err := initializeArchiveScanner(ctx, input, ac, lac, timeout, artifactOpt, scannerOpt)
+	_ bool, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (scanner.Scanner, func(), error) {
+	s, err := initializeArchiveScanner(ctx, input, ac, lac, artifactOpt, scannerOpt)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 	}
@@ -24,8 +24,12 @@ func archiveScanner(ctx context.Context, input string, ac cache.ArtifactCache, l
 }
 
 func dockerScanner(ctx context.Context, imageName string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
-	timeout time.Duration, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeDockerScanner(ctx, imageName, ac, lac, timeout, artifactOpt, scannerOpt)
+	insecure bool, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (scanner.Scanner, func(), error) {
+	dockerOpt, err := types.GetDockerOption(insecure)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
+	s, cleanup, err := initializeDockerScanner(ctx, imageName, ac, lac, dockerOpt, artifactOpt, scannerOpt)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a docker scanner: %w", err)
 	}
