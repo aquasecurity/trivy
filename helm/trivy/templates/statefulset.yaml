@@ -74,7 +74,7 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.trivy.registryCredentialsExistingSecret }}
                   key: TRIVY_PASSWORD
-          {{- end -}}
+          {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "trivy.fullname" . }}
