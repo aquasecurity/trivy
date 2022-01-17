@@ -331,6 +331,7 @@ func getIgnoredIDs(ignoreFile string) []string {
 		// trivy must work even if no .trivyignore exist
 		return nil
 	}
+	log.Logger.Debugf("Found an ignore file %s", ignoreFile)
 
 	var ignoredIDs []string
 	scanner := bufio.NewScanner(f)
@@ -342,6 +343,9 @@ func getIgnoredIDs(ignoreFile string) []string {
 		}
 		ignoredIDs = append(ignoredIDs, line)
 	}
+
+	log.Logger.Debugf("These IDs will be ignored: %q", ignoredIDs)
+
 	return ignoredIDs
 }
 
