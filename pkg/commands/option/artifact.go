@@ -14,6 +14,7 @@ type ArtifactOption struct {
 	Input      string
 	Timeout    time.Duration
 	ClearCache bool
+	Insecure   bool
 
 	SkipDirs    []string
 	SkipFiles   []string
@@ -32,6 +33,7 @@ func NewArtifactOption(c *cli.Context) ArtifactOption {
 		SkipFiles:   c.StringSlice("skip-files"),
 		SkipDirs:    c.StringSlice("skip-dirs"),
 		OfflineScan: c.Bool("offline-scan"),
+		Insecure:    c.Bool("insecure"),
 	}
 }
 

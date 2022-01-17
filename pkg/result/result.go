@@ -103,7 +103,7 @@ func (c Client) detectSource(reportType string) []string {
 	case "nuget":
 		sources = []string{vulnerability.GHSANuget, vulnerability.GLAD}
 	case "pipenv", "poetry":
-		sources = []string{vulnerability.PythonSafetyDB, vulnerability.GHSAPip, vulnerability.GLAD}
+		sources = []string{vulnerability.GHSAPip, vulnerability.GLAD}
 	case "bundler":
 		sources = []string{vulnerability.RubySec, vulnerability.GHSARubygems, vulnerability.GLAD}
 	case "cargo":
