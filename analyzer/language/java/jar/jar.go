@@ -20,16 +20,16 @@ func init() {
 
 const version = 1
 
-var requiredExtensions = []string{".jar", ".war", ".ear"}
+var requiredExtensions = []string{".jar", ".war", ".ear", ".par"}
 
-// javaLibraryAnalyzer analyzes jar/war/ear files
+// javaLibraryAnalyzer analyzes jar/war/ear/par files
 type javaLibraryAnalyzer struct{}
 
 func (a javaLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	libs, err := jar.Parse(input.Content, input.Info.Size(),
 		jar.WithFilePath(input.FilePath), jar.WithOffline(input.Options.Offline))
 	if err != nil {
-		return nil, xerrors.Errorf("jar/war/ear parse error: %w", err)
+		return nil, xerrors.Errorf("jar/war/ear/par parse error: %w", err)
 	}
 
 	return language.ToAnalysisResult(types.Jar, input.FilePath, input.FilePath, libs), nil

@@ -20,7 +20,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 		wantErr   string
 	}{
 		{
-			name:      "happy path",
+			name:      "happy path (WAR file)",
 			inputFile: "testdata/test.war",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -36,6 +36,21 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 							{Name: "com.cronutils:cron-utils", FilePath: "testdata/test.war", Version: "9.1.2"},
 							{Name: "org.apache.commons:commons-lang3", FilePath: "testdata/test.war", Version: "3.11"},
 							{Name: "com.example:web-app", FilePath: "testdata/test.war", Version: "1.0-SNAPSHOT"},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path (PAR file)",
+			inputFile: "testdata/test.par",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Jar,
+						FilePath: "testdata/test.par",
+						Libraries: []types.Package{
+							{Name: "com.fasterxml.jackson.core:jackson-core", FilePath: "testdata/test.par", Version: "2.9.10"},
 						},
 					},
 				},
