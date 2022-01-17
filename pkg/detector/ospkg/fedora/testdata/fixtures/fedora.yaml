@@ -1,0 +1,7 @@
+- bucket: fedora 35
+  pairs:
+    - bucket: vim-minimal
+      pairs:
+        - key: CVE-2022-0158
+          value:
+            FixedVersion: "2:8.2.4068-1.fc35"
