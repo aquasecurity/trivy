@@ -107,7 +107,7 @@ func (c Client) detectSource(reportType string) []string {
 	case "bundler":
 		sources = []string{vulnerability.RubySec, vulnerability.GHSARubygems, vulnerability.GLAD}
 	case "cargo":
-		sources = []string{vulnerability.RustSec}
+		sources = []string{vulnerability.OSVCratesio}
 	case "composer":
 		sources = []string{vulnerability.PhpSecurityAdvisories, vulnerability.GHSAComposer, vulnerability.GLAD}
 	case ftypes.Jar:
@@ -140,7 +140,7 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, sources []string) st
 	case strings.HasPrefix(vulnID, "CVE-"):
 		return "https://avd.aquasec.com/nvd/" + strings.ToLower(vulnID)
 	case strings.HasPrefix(vulnID, "RUSTSEC-"):
-		return "https://rustsec.org/advisories/" + vulnID
+		return "https://osv.dev/vulnerability/" + vulnID
 	case strings.HasPrefix(vulnID, "GHSA-"):
 		return "https://github.com/advisories/" + vulnID
 	case strings.HasPrefix(vulnID, "TEMP-"):

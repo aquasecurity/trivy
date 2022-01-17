@@ -7,7 +7,6 @@ import (
 	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
-	"github.com/aquasecurity/trivy/pkg/detector/library/cargo"
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 	"github.com/aquasecurity/trivy/pkg/detector/library/composer"
 	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
@@ -97,7 +96,7 @@ func newComposerDriver() Driver {
 }
 
 func newCargoDriver() Driver {
-	return Aggregate(vulnerability.Cargo, NewAdvisory(vulnerability.Cargo, comparer.GenericComparer{}), cargo.NewAdvisory())
+	return Aggregate(vulnerability.Cargo, NewAdvisory(vulnerability.Cargo, comparer.GenericComparer{}))
 }
 
 func newNpmDriver() Driver {
