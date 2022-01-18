@@ -11,8 +11,8 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
@@ -49,6 +49,7 @@ func NewCache(c option.CacheOption) (Cache, error) {
 			options.TLSConfig = &tls.Config{
 				RootCAs:      caCert,
 				Certificates: []tls.Certificate{cert},
+				MinVersion:   tls.VersionTLS12,
 			}
 		}
 
