@@ -10,12 +10,25 @@ import (
 // CacheOption holds the options for cache
 type CacheOption struct {
 	CacheBackend string
+	RedisOption
+}
+
+// RedisOption holds the options for redis cache
+type RedisOption struct {
+	RedisCACert string
+	RedisCert   string
+	RedisKey    string
 }
 
 // NewCacheOption returns an instance of CacheOption
 func NewCacheOption(c *cli.Context) CacheOption {
 	return CacheOption{
 		CacheBackend: c.String("cache-backend"),
+		RedisOption: RedisOption{
+			RedisCACert: c.String("redis-ca"),
+			RedisCert:   c.String("redis-cert"),
+			RedisKey:    c.String("redis-key"),
+		},
 	}
 }
 
@@ -26,6 +39,12 @@ func (c *CacheOption) Init() error {
 	if !strings.HasPrefix(c.CacheBackend, "redis://") &&
 		c.CacheBackend != "fs" && c.CacheBackend != "" {
 		return xerrors.Errorf("unsupported cache backend: %s", c.CacheBackend)
+	}
+	// if one of redis option not nil, make sure CA, cert, and key provided
+	if (RedisOption{}) != c.RedisOption {
+		if c.RedisCACert == "" || c.RedisCert == "" || c.RedisKey == "" {
+			return xerrors.Errorf("you must provide CA, cert and key file path when using tls")
+		}
 	}
 	return nil
 }

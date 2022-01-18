@@ -94,7 +94,7 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 
 func initFSCache(c Option) (cache.Cache, error) {
 	utils.SetCacheDir(c.CacheDir)
-	cache, err := operation.NewCache(c.CacheBackend)
+	cache, err := operation.NewCache(c.CacheOption)
 	if err != nil {
 		return operation.Cache{}, xerrors.Errorf("unable to initialize the cache: %w", err)
 	}

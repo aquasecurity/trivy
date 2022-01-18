@@ -166,6 +166,27 @@ var (
 		EnvVars: []string{"TRIVY_CACHE_BACKEND"},
 	}
 
+	redisBackendCACert = cli.StringFlag{
+		Name:    "redis-ca",
+		Usage:   "redis ca file location, if using redis as cache backend",
+		EnvVars: []string{"TRIVY_REDIS_BACKEND_CA"},
+		Hidden:  true,
+	}
+
+	redisBackendCert = cli.StringFlag{
+		Name:    "redis-cert",
+		Usage:   "redis certificate file location, if using redis as cache backend",
+		EnvVars: []string{"TRIVY_REDIS_BACKEND_CERT"},
+		Hidden:  true,
+	}
+
+	redisBackendKey = cli.StringFlag{
+		Name:    "redis-key",
+		Usage:   "redis key file location, if using redis as cache backend",
+		EnvVars: []string{"TRIVY_REDIS_BACKEND_KEY"},
+		Hidden:  true,
+	}
+
 	ignoreFileFlag = cli.StringFlag{
 		Name:    "ignorefile",
 		Value:   result.DefaultIgnoreFile,
@@ -407,6 +428,9 @@ func NewImageCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&cacheBackendFlag,
+			&redisBackendCACert,
+			&redisBackendCert,
+			&redisBackendKey,
 			&offlineScan,
 			&insecureFlag,
 			stringSliceFlag(skipFiles),
@@ -437,6 +461,9 @@ func NewFilesystemCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
+			&redisBackendCACert,
+			&redisBackendCert,
+			&redisBackendKey,
 			&timeoutFlag,
 			&noProgressFlag,
 			&ignorePolicy,
@@ -472,6 +499,9 @@ func NewRootfsCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
+			&redisBackendCACert,
+			&redisBackendCert,
+			&redisBackendKey,
 			&timeoutFlag,
 			&noProgressFlag,
 			&ignorePolicy,
@@ -510,6 +540,9 @@ func NewRepositoryCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
+			&redisBackendCACert,
+			&redisBackendCert,
+			&redisBackendKey,
 			&timeoutFlag,
 			&noProgressFlag,
 			&ignorePolicy,
@@ -582,6 +615,9 @@ func NewServerCommand() *cli.Command {
 			&downloadDBOnlyFlag,
 			&resetFlag,
 			&cacheBackendFlag,
+			&redisBackendCACert,
+			&redisBackendCert,
+			&redisBackendKey,
 
 			// original flags
 			&token,

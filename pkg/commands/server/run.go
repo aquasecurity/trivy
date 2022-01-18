@@ -28,7 +28,7 @@ func run(c Config) (err error) {
 
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
-	cache, err := operation.NewCache(c.CacheBackend)
+	cache, err := operation.NewCache(c.CacheOption)
 	if err != nil {
 		return xerrors.Errorf("server cache error: %w", err)
 	}
