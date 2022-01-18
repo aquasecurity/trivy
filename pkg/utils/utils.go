@@ -5,7 +5,6 @@ import (
 	"crypto/x509"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -76,7 +75,7 @@ func GetTLSConfig(caCertPath, certPath, keyPath string) (*x509.CertPool, tls.Cer
 		return nil, tls.Certificate{}, err
 	}
 
-	caCert, err := ioutil.ReadFile(caCertPath)
+	caCert, err := os.ReadFile(caCertPath)
 	if err != nil {
 		return nil, tls.Certificate{}, err
 	}
