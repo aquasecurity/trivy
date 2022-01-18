@@ -170,18 +170,21 @@ var (
 		Name:    "redis-ca",
 		Usage:   "redis ca file location, if using redis as cache backend",
 		EnvVars: []string{"TRIVY_REDIS_BACKEND_CA"},
+		Hidden:  true,
 	}
 
 	redisBackendCert = cli.StringFlag{
 		Name:    "redis-cert",
 		Usage:   "redis certificate file location, if using redis as cache backend",
 		EnvVars: []string{"TRIVY_REDIS_BACKEND_CERT"},
+		Hidden:  true,
 	}
 
 	redisBackendKey = cli.StringFlag{
 		Name:    "redis-key",
 		Usage:   "redis key file location, if using redis as cache backend",
 		EnvVars: []string{"TRIVY_REDIS_BACKEND_KEY"},
+		Hidden:  true,
 	}
 
 	ignoreFileFlag = cli.StringFlag{
