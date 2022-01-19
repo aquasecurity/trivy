@@ -220,10 +220,8 @@ github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a h1:HbKu58rmZp
 github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a/go.mod h1:SGnFV6hVsYE877CKEZ6tDNTjaSXYUk6QqoIK6PrAtcc=
 github.com/alicebob/miniredis/v2 v2.17.0 h1:EwLdrIS50uczw71Jc7iVSxZluTKj5nfSP8n7ARRnJy0=
 github.com/alicebob/miniredis/v2 v2.17.0/go.mod h1:gquAfGbzn92jvtrSC69+6zZnwSODVXVpYDRaGhWaL6I=
-github.com/alicebob/miniredis/v2 v2.16.0 h1:ALkyFg7bSTEd1Mkrb4ppq4fnwjklA59dVtIehXCUZkU=
-github.com/alicebob/miniredis/v2 v2.16.0/go.mod h1:gquAfGbzn92jvtrSC69+6zZnwSODVXVpYDRaGhWaL6I=
-github.com/ankk13/fanal v0.0.0-20211222074102-f827fa7c4671 h1:7G49pY2eX0puQNMGtcNcX/xDFpqt+S1T4Tn6fDQ2RF8=
-github.com/ankk13/fanal v0.0.0-20211222074102-f827fa7c4671/go.mod h1:tfiYxqoK/3PDW8Ut3UnxP7rKqFaSw1X6owKjAHjM1NA=
+github.com/ankk13/fanal v0.0.0-20220119062937-a12ef4809731 h1:l2h9i0dS7NYImaVJBtecuSPJY3Q66iGV1/DGfwXPclE=
+github.com/ankk13/fanal v0.0.0-20220119062937-a12ef4809731/go.mod h1:pX1gW83tmnZtxElMPd31QU4Wm7hadcfsQAMM9N6OVsE=
 github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239 h1:kFOfPq6dUM1hTo4JG6LR5AXSUEsOjtdm0kw0FtQtMJA=
 github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239/go.mod h1:2FmKhYUyUczH0OGQWaF5ceTx0UBShxjsH6f8oGKYe2c=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=

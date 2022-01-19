@@ -2,7 +2,7 @@ module github.com/aquasecurity/trivy
 
 go 1.16
 
-replace github.com/aquasecurity/fanal => github.com/ankk13/fanal v0.0.0-20211222074102-f827fa7c4671
+replace github.com/aquasecurity/fanal => github.com/ankk13/fanal v0.0.0-20220119062937-a12ef4809731
 
 require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
