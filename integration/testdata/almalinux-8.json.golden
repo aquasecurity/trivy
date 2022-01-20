@@ -101,7 +101,8 @@
             "https://www.openssl.org/news/secadv/20210824.txt",
             "https://www.oracle.com/security-alerts/cpuoct2021.html",
             "https://www.tenable.com/security/tns-2021-16",
-            "https://www.tenable.com/security/tns-2022-02"
+            "https://www.tenable.com/security/tns-2022-02",
+            "https://access.redhat.com/hydra/rest/securitydata/cve/CVE-2021-3712.json"
           ],
           "PublishedDate": "2021-08-24T15:15:00Z",
           "LastModifiedDate": "2022-01-06T09:15:00Z"
