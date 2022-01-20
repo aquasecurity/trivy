@@ -62,6 +62,19 @@ spec:
           {{- end }}
           args:
             - server
+          {{- if .Values.trivy.registryCredentialsExistingSecret }}
+          env:
+            - name: TRIVY_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.trivy.registryCredentialsExistingSecret }}
+                  key: TRIVY_USERNAME
+            - name: TRIVY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.trivy.registryCredentialsExistingSecret }}
+                  key: TRIVY_PASSWORD
+          {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "trivy.fullname" . }}
