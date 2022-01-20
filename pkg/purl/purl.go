@@ -11,6 +11,22 @@ import (
 	"github.com/package-url/packageurl-go"
 )
 
+func NewOSPackageURL(t string, fos types.OS, pkg types.Package) packageurl.PackageURL {
+	qualifiers := parseQualifier(pkg)
+	qualifiers = append(qualifiers, packageurl.Qualifier{
+		Key:   "distro",
+		Value: fos.Name,
+	})
+	family := fos.Family
+
+	// SLES string has whitespace
+	if fos.Family == os.SLES {
+		family = "sles"
+	}
+
+	return *packageurl.NewPackageURL(purlType(t), family, pkg.Name, pkg.Version, qualifiers, "")
+}
+
 func NewPackageURL(t string, pkg types.Package) packageurl.PackageURL {
 	name := strings.ReplaceAll(pkg.Name, ":", "/")
 	index := strings.LastIndex(name, "/")
@@ -22,7 +38,7 @@ func NewPackageURL(t string, pkg types.Package) packageurl.PackageURL {
 		namespace = name[:index]
 		pkgName = name[index+1:]
 	}
-	purl := packageurl.NewPackageURL(purlType(t), namespace, pkgName, pkg.Version, parseQualifier(pkg), "")
+	purl := packageurl.NewPackageURL(purlType(t), namespace, pkgName, pkg.Version, nil, "")
 
 	return *purl
 }
