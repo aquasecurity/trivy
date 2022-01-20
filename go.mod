@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20220117141050-4586f4391cac
+	github.com/aquasecurity/fanal v0.0.0-20220119125236-26da77f6ec63
 	github.com/aquasecurity/go-dep-parser v0.0.0-20211224170007-df43bca6b6ff
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -33,7 +33,7 @@ require (
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/mitchellh/copystructure v1.1.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.5
-	github.com/open-policy-agent/opa v0.36.0
+	github.com/open-policy-agent/opa v0.36.1
 	github.com/owenrumney/go-sarif/v2 v2.0.17
 	github.com/spf13/afero v1.6.0
 	github.com/stretchr/objx v0.3.0 // indirect
@@ -41,7 +41,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.11.1
 	github.com/twitchtv/twirp v8.1.0+incompatible
 	github.com/urfave/cli/v2 v2.3.0
-	go.uber.org/zap v1.19.1
+	go.uber.org/zap v1.20.0
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
