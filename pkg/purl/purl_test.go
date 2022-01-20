@@ -34,6 +34,25 @@ func TestNewPackageURL(t *testing.T) {
 			},
 			want: "pkg:npm/%40xtuc/ieee754@1.2.0",
 		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			packageURL := NewPackageURL(tc.typ, tc.pkg)
+			assert.Equal(t, tc.want, packageURL.ToString(), tc.name)
+		})
+	}
+}
+
+func TestNewOSPackageURL(t *testing.T) {
+
+	testCases := []struct {
+		name string
+		typ  string
+		pkg  types.Package
+		fos  types.OS
+		want string
+	}{
 		{
 			name: "os package",
 			typ:  "redhat",
@@ -49,13 +68,17 @@ func TestNewPackageURL(t *testing.T) {
 				SrcEpoch:        0,
 				Modularitylabel: "",
 			},
-			want: "pkg:rpm/acl@2.2.53?release=1.el8&arch=aarch64&src_name=acl&src_version=2.2.53&src_release=1.el8",
+			fos: types.OS{
+				Family: "redhat",
+				Name:   "8",
+			},
+			want: "pkg:rpm/redhat/acl@2.2.53?release=1.el8&arch=aarch64&src_name=acl&src_version=2.2.53&src_release=1.el8&distro=8",
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			packageURL := NewPackageURL(tc.typ, tc.pkg)
+			packageURL := NewOSPackageURL(tc.typ, tc.fos, tc.pkg)
 			assert.Equal(t, tc.want, packageURL.ToString(), tc.name)
 		})
 	}
