@@ -94,7 +94,7 @@ func (c Client) detectSource(reportType string) []string {
 	switch reportType {
 	case vulnerability.Ubuntu, vulnerability.Alpine, vulnerability.RedHat, vulnerability.RedHatOVAL,
 		vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
-		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon, vulnerability.Alma:
+		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon, vulnerability.Alma, vulnerability.Rocky:
 		sources = []string{reportType}
 	case vulnerability.CentOS: // CentOS doesn't have its own so we use RedHat
 		sources = []string{vulnerability.RedHat}

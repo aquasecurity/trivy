@@ -1,0 +1,7 @@
+- bucket: rocky 8
+  pairs:
+    - bucket: openssl-libs
+      pairs:
+        - key: CVE-2021-3712
+          value:
+            FixedVersion: 1:1.1.1k-5.el8_5
