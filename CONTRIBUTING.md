@@ -19,7 +19,7 @@ Thank you for taking interest in contributing to Trivy!
 
 ### Title
 It is not that strict, but we use the title conventions in this repository.
-Each commit message doesn't have to follow the conventions as long as it is clear and descriptive since it will be squashed and merged
+Each commit message doesn't have to follow the conventions as long as it is clear and descriptive since it will be squashed and merged.
 
 #### Format of the title
 
@@ -65,6 +65,12 @@ fix(oracle): handle advisories with ksplice versions
 docs(misconf): add comparison with Conftest and TFsec
 ```
 
+```
+chore(deps): bump go.uber.org/zap from 1.19.1 to 1.20.0
+```
+
+**NOTE**: please do not use `chore(deps): update fanal` and something like that if you add new features or fix bugs in Trivy-related projects.
+The PR title should describe what the PR adds or fixes even though it just updates the dependency in Trivy.
 
 ### Unit tests
 Your PR must pass all the unit tests. You can test it as below.
@@ -81,7 +87,7 @@ $ make test-integration
 ```
 
 ### Documentation
-You can build the documents and view it at http://localhost:8000.
+You can build the documents as below and view it at http://localhost:8000.
 
 ```
 $ make mkdocs-serve
