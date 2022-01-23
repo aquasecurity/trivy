@@ -1,4 +1,4 @@
-package alma_test
+package rocky_test
 
 import (
 	"testing"
@@ -11,7 +11,7 @@ import (
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -29,32 +29,32 @@ func TestScanner_Detect(t *testing.T) {
 	}{
 		{
 			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/alma.yaml"},
+			fixtures: []string{"testdata/fixtures/rocky.yaml"},
 			args: args{
-				osVer: "8.4",
+				osVer: "8.5",
 				pkgs: []ftypes.Package{
 					{
-						Name:            "python3-libs",
+						Name:            "bpftool",
 						Epoch:           0,
-						Version:         "3.6.8",
-						Release:         "36.el8.alma",
+						Version:         "4.18.0",
+						Release:         "348.el8.0.3",
 						Arch:            "x86_64",
-						SrcName:         "python3",
+						SrcName:         "kernel",
 						SrcEpoch:        0,
-						SrcVersion:      "3.6.8",
-						SrcRelease:      "36.el8.alma",
+						SrcVersion:      "4.18.0",
+						SrcRelease:      "348.el8.0.3",
 						Modularitylabel: "",
-						License:         "Python",
+						License:         "GPLv2",
 						Layer:           ftypes.Layer{},
 					},
 				},
 			},
 			want: []types.DetectedVulnerability{
 				{
-					PkgName:          "python3-libs",
-					VulnerabilityID:  "CVE-2020-26116",
-					InstalledVersion: "3.6.8-36.el8.alma",
-					FixedVersion:     "3.6.8-37.el8.alma",
+					PkgName:          "bpftool",
+					VulnerabilityID:  "CVE-2021-20317",
+					InstalledVersion: "4.18.0-348.el8.0.3",
+					FixedVersion:     "4.18.0-348.2.1.el8_5",
 					Layer:            ftypes.Layer{},
 				},
 			},
@@ -63,19 +63,19 @@ func TestScanner_Detect(t *testing.T) {
 			name:     "skip modular package",
 			fixtures: []string{"testdata/fixtures/modular.yaml"},
 			args: args{
-				osVer: "8.4",
+				osVer: "8.5",
 				pkgs: []ftypes.Package{
 					{
 						Name:            "nginx",
 						Epoch:           1,
-						Version:         "1.14.1",
-						Release:         "8.module_el8.3.0+2165+af250afe.alma",
+						Version:         "1.16.1",
+						Release:         "2.module+el8.4.0+543+efbf198b.0",
 						Arch:            "x86_64",
 						SrcName:         "nginx",
 						SrcEpoch:        1,
-						SrcVersion:      "1.14.1",
-						SrcRelease:      "8.module_el8.3.0+2165+af250afe.alma",
-						Modularitylabel: "nginx:1.14:8040020210610090123:9f9e2e7e", // actual: "", ref: https://bugs.almalinux.org/view.php?id=173
+						SrcVersion:      "1.16.1",
+						SrcRelease:      "2.module+el8.4.0+543+efbf198b.0",
+						Modularitylabel: "nginx:1.16:8040020210610090125:9f9e2e7e",
 						License:         "BSD",
 						Layer:           ftypes.Layer{},
 					},
@@ -87,7 +87,7 @@ func TestScanner_Detect(t *testing.T) {
 			name:     "Get returns an error",
 			fixtures: []string{"testdata/fixtures/invalid.yaml"},
 			args: args{
-				osVer: "8.4",
+				osVer: "8.5",
 				pkgs: []ftypes.Package{
 					{
 						Name:       "jq",
@@ -97,7 +97,7 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			wantErr: "failed to get AlmaLinux advisories",
+			wantErr: "failed to get Rocky Linux advisories",
 		},
 	}
 	for _, tt := range tests {
@@ -105,7 +105,7 @@ func TestScanner_Detect(t *testing.T) {
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
-			s := alma.NewScanner()
+			s := rocky.NewScanner()
 			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.Error(t, err)
@@ -130,20 +130,20 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "alma 8.4",
+			name: "rocky 8.5",
 			now:  time.Date(2019, 3, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
-				osFamily: "alma",
-				osVer:    "8.4",
+				osFamily: "rocky",
+				osVer:    "8.5",
 			},
 			want: true,
 		},
 		{
-			name: "alma 8.4 with EOL",
-			now:  time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC),
+			name: "rocky 8.5 with EOL",
+			now:  time.Date(2029, 6, 1, 0, 0, 0, 0, time.UTC),
 			args: args{
-				osFamily: "alma",
-				osVer:    "8.4",
+				osFamily: "rocky",
+				osVer:    "8.5",
 			},
 			want: false,
 		},
@@ -151,7 +151,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			name: "unknown",
 			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
-				osFamily: "alma",
+				osFamily: "rocky",
 				osVer:    "unknown",
 			},
 			want: false,
@@ -159,7 +159,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := alma.NewScanner(alma.WithClock(fake.NewFakeClock(tt.now)))
+			s := rocky.NewScanner(rocky.WithClock(fake.NewFakeClock(tt.now)))
 			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
 		})

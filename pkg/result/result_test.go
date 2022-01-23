@@ -155,7 +155,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Severity:    dbTypes.SeverityCritical.String(),
 						References:  []string{"https://www.who.int/emergencies/diseases/novel-coronavirus-2019"},
 					},
-					SeveritySource: vulnerability.PythonSafetyDB,
+					SeveritySource: vulnerability.GHSAPip,
 					PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2019-0005",
 				},
 			},
@@ -245,9 +245,9 @@ func TestClient_getPrimaryURL(t *testing.T) {
 			args: args{
 				vulnID:  "RUSTSEC-2018-0017",
 				refs:    []string{"https://github.com/rust-lang-deprecated/tempdir/pull/46"},
-				sources: []string{vulnerability.RustSec},
+				sources: []string{vulnerability.OSVCratesio},
 			},
-			want: "https://rustsec.org/advisories/RUSTSEC-2018-0017",
+			want: "https://osv.dev/vulnerability/RUSTSEC-2018-0017",
 		},
 		{
 			name: "GHSA",

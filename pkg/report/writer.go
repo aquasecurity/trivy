@@ -2,6 +2,8 @@ package report
 
 import (
 	"io"
+	"path/filepath"
+	"strings"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -9,6 +11,7 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -93,6 +96,8 @@ type Option struct {
 	Output         io.Writer
 	Severities     []dbTypes.Severity
 	OutputTemplate string
+	Light          bool
+	AppVersion     string
 
 	// For misconfigurations
 	IncludeNonFailures bool
@@ -113,10 +118,18 @@ func Write(report Report, option Option) error {
 	case "json":
 		writer = &JSONWriter{Output: option.Output}
 	case "template":
+		// We keep `sarif.tpl` template working for backward compatibility for a while.
+		if strings.HasPrefix(option.OutputTemplate, "@") && filepath.Base(option.OutputTemplate) == "sarif.tpl" {
+			log.Logger.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--report sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
+			writer = SarifWriter{Output: option.Output, Version: option.AppVersion}
+			break
+		}
 		var err error
 		if writer, err = NewTemplateWriter(option.Output, option.OutputTemplate); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
+	case "sarif":
+		writer = SarifWriter{Output: option.Output, Version: option.AppVersion}
 	default:
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}

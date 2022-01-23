@@ -110,6 +110,12 @@ func TestDockerEngine(t *testing.T) {
 			testfile:       "testdata/fixtures/images/almalinux-8.tar.gz",
 		},
 		{
+			name:           "rocky linux 8",
+			imageTag:       "rockylinux:8",
+			testfile:       "testdata/fixtures/images/rockylinux-8.tar.gz",
+			wantOutputFile: "testdata/rockylinux-8.json.golden",
+		},
+		{
 			name:           "debian buster/10",
 			imageTag:       "debian:buster",
 			wantOutputFile: "testdata/debian-buster.json.golden",

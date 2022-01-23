@@ -94,7 +94,7 @@ func (c Client) detectSource(reportType string) []string {
 	switch reportType {
 	case vulnerability.Ubuntu, vulnerability.Alpine, vulnerability.RedHat, vulnerability.RedHatOVAL,
 		vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
-		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon, vulnerability.Alma:
+		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon, vulnerability.Alma, vulnerability.Rocky:
 		sources = []string{reportType}
 	case vulnerability.CentOS: // CentOS doesn't have its own so we use RedHat
 		sources = []string{vulnerability.RedHat}
@@ -103,11 +103,11 @@ func (c Client) detectSource(reportType string) []string {
 	case "nuget":
 		sources = []string{vulnerability.GHSANuget, vulnerability.GLAD}
 	case "pipenv", "poetry":
-		sources = []string{vulnerability.PythonSafetyDB, vulnerability.GHSAPip, vulnerability.GLAD}
+		sources = []string{vulnerability.GHSAPip, vulnerability.GLAD}
 	case "bundler":
 		sources = []string{vulnerability.RubySec, vulnerability.GHSARubygems, vulnerability.GLAD}
 	case "cargo":
-		sources = []string{vulnerability.RustSec}
+		sources = []string{vulnerability.OSVCratesio}
 	case "composer":
 		sources = []string{vulnerability.PhpSecurityAdvisories, vulnerability.GHSAComposer, vulnerability.GLAD}
 	case ftypes.Jar:
@@ -140,7 +140,7 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, sources []string) st
 	case strings.HasPrefix(vulnID, "CVE-"):
 		return "https://avd.aquasec.com/nvd/" + strings.ToLower(vulnID)
 	case strings.HasPrefix(vulnID, "RUSTSEC-"):
-		return "https://rustsec.org/advisories/" + vulnID
+		return "https://osv.dev/vulnerability/" + vulnID
 	case strings.HasPrefix(vulnID, "GHSA-"):
 		return "https://github.com/advisories/" + vulnID
 	case strings.HasPrefix(vulnID, "TEMP-"):
@@ -331,6 +331,7 @@ func getIgnoredIDs(ignoreFile string) []string {
 		// trivy must work even if no .trivyignore exist
 		return nil
 	}
+	log.Logger.Debugf("Found an ignore file %s", ignoreFile)
 
 	var ignoredIDs []string
 	scanner := bufio.NewScanner(f)
@@ -342,6 +343,9 @@ func getIgnoredIDs(ignoreFile string) []string {
 		}
 		ignoredIDs = append(ignoredIDs, line)
 	}
+
+	log.Logger.Debugf("These IDs will be ignored: %q", ignoredIDs)
+
 	return ignoredIDs
 }
 

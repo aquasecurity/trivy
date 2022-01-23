@@ -1,28 +1,28 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/images/almalinux-8.tar.gz",
+  "ArtifactName": "testdata/fixtures/images/rockylinux-8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
     "OS": {
-      "Family": "alma",
+      "Family": "rocky",
       "Name": "8.5"
     },
-    "ImageID": "sha256:4ca63ce1d8a90da2ed4f2d5e93e8e9db2f32d0fabf0718a2edebbe0e70826622",
+    "ImageID": "sha256:210996f98b856d7cd00496ddbe9412e73f1c714c95de09661e07b4e43648f9ab",
     "DiffIDs": [
-      "sha256:124d41c237c5e823577dda97e87cebaecce62d585c725d07e709ce410681de4d"
+      "sha256:65dbea0a4b39709e0a2cc8624fd99478e9f302c0a5661d7676d6d3bd3cb6d181"
     ],
     "ImageConfig": {
       "architecture": "amd64",
-      "container": "a467f67a48d469e1975b7414f33f2cf87121d4cc59d2ee029ea58e6b81774769",
-      "created": "2021-11-13T12:10:27.09871973Z",
+      "container": "16458df10693f731fae0492f791a5e4b725245c35cf28c7fca00982219d7bdf3",
+      "created": "2021-12-15T20:22:37.180885096Z",
       "docker_version": "20.10.7",
       "history": [
         {
-          "created": "2021-11-13T12:10:26.29818864Z",
-          "created_by": "/bin/sh -c #(nop) ADD file:2e002305ccb9d8a4dcef52509c4c50b9a15e76c9c49ca6abda3e0d7091c63fa7 in / "
+          "created": "2021-12-15T20:22:36Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:790b4c6a174560d4701baf59e884e7d07f50f0e193e545d6d5ed1d7390979d1a in / "
         },
         {
-          "created": "2021-11-13T12:10:27.09871973Z",
+          "created": "2021-12-15T20:22:37Z",
           "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/bash\"]",
           "empty_layer": true
         }
@@ -31,7 +31,7 @@
       "rootfs": {
         "type": "layers",
         "diff_ids": [
-          "sha256:124d41c237c5e823577dda97e87cebaecce62d585c725d07e709ce410681de4d"
+          "sha256:65dbea0a4b39709e0a2cc8624fd99478e9f302c0a5661d7676d6d3bd3cb6d181"
         ]
       },
       "config": {
@@ -41,15 +41,15 @@
         "Env": [
           "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         ],
-        "Image": "sha256:d38d2eac03bc19e080df596d6148863a0f8293f3a277a7524f378da79a1feb0f"
+        "Image": "sha256:b3d7893772a2427ad53224d9db4c70be399de0a28c09804ac0c5cb203ab0244e"
       }
     }
   },
   "Results": [
     {
-      "Target": "testdata/fixtures/images/almalinux-8.tar.gz (alma 8.5)",
+      "Target": "testdata/fixtures/images/rockylinux-8.tar.gz (rocky 8.5)",
       "Class": "os-pkgs",
-      "Type": "alma",
+      "Type": "rocky",
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2021-3712",
@@ -57,9 +57,9 @@
           "InstalledVersion": "1:1.1.1k-4.el8",
           "FixedVersion": "1:1.1.1k-5.el8_5",
           "Layer": {
-            "DiffID": "sha256:124d41c237c5e823577dda97e87cebaecce62d585c725d07e709ce410681de4d"
+            "DiffID": "sha256:65dbea0a4b39709e0a2cc8624fd99478e9f302c0a5661d7676d6d3bd3cb6d181"
           },
-          "SeveritySource": "alma",
+          "SeveritySource": "rocky",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-3712",
           "Title": "openssl: Read buffer overruns processing ASN.1 strings",
           "Description": "ASN.1 strings are represented internally within OpenSSL as an ASN1_STRING structure which contains a buffer holding the string data and a field holding the buffer length. This contrasts with normal C strings which are repesented as a buffer for the string data which is terminated with a NUL (0) byte. Although not a strict requirement, ASN.1 strings that are parsed using OpenSSL's own \"d2i\" functions (and other similar parsing functions) as well as any string whose value has been set with the ASN1_STRING_set() function will additionally NUL terminate the byte array in the ASN1_STRING structure. However, it is possible for applications to directly construct valid ASN1_STRING structures which do not NUL terminate the byte array by directly setting the \"data\" and \"length\" fields in the ASN1_STRING array. This can also happen by using the ASN1_STRING_set0() function. Numerous OpenSSL functions that print ASN.1 data have been found to assume that the ASN1_STRING byte array will be NUL terminated, even though this is not guaranteed for strings that have been directly constructed. Where an application requests an ASN.1 structure to be printed, and where that ASN.1 structure contains ASN1_STRINGs that have been directly constructed by the application without NUL terminating the \"data\" field, then a read buffer overrun can occur. The same thing can also occur during name constraints processing of certificates (for example if a certificate has been directly constructed by the application instead of loading it via the OpenSSL parsing functions, and the certificate contains non NUL terminated ASN1_STRING structures). It can also occur in the X509_get1_email(), X509_REQ_get1_email() and X509_get1_ocsp() functions. If a malicious actor can cause an application to directly construct an ASN1_STRING and then process it through one of the affected OpenSSL functions then this issue could be hit. This might result in a crash (causing a Denial of Service attack). It could also result in the disclosure of private memory contents (such as private keys, or sensitive plaintext). Fixed in OpenSSL 1.1.1l (Affected 1.1.1-1.1.1k). Fixed in OpenSSL 1.0.2za (Affected 1.0.2-1.0.2y).",
@@ -108,6 +108,11 @@
           "LastModifiedDate": "2022-01-06T09:15:00Z"
         }
       ]
+    },
+    {
+      "Target": "Python",
+      "Class": "lang-pkgs",
+      "Type": "python-pkg"
     }
   ]
 }

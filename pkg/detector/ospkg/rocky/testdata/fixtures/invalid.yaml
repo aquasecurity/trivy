@@ -1,6 +1,6 @@
-- bucket: debian 9
+- bucket: rocky 8
   pairs:
-    - bucket: apache2
+    - bucket: jq
       pairs:
         - key: CVE-2020-8177
           value:

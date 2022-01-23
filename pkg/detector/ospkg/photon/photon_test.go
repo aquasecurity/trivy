@@ -2,9 +2,11 @@ package photon_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	fake "k8s.io/utils/clock/testing"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -86,6 +88,54 @@ func TestScanner_Detect(t *testing.T) {
 				return
 			}
 			assert.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestScanner_IsSupportedVersion(t *testing.T) {
+	type args struct {
+		osFamily string
+		osVer    string
+	}
+	tests := []struct {
+		name string
+		now  time.Time
+		args args
+		want bool
+	}{
+		{
+			name: "photon 1.0",
+			now:  time.Date(2022, 1, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "photon",
+				osVer:    "1.0",
+			},
+			want: true,
+		},
+		{
+			name: "photon 1.0 EOL",
+			now:  time.Date(2022, 3, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "photon",
+				osVer:    "1.0",
+			},
+			want: false,
+		},
+		{
+			name: "unknown",
+			now:  time.Date(2022, 1, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "photon",
+				osVer:    "unknown",
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := photon.NewScanner(photon.WithClock(fake.NewFakeClock(tt.now)))
+			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
 		})
 	}

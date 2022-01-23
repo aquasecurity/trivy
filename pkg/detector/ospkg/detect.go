@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/oracle"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/photon"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/suse"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -39,6 +40,7 @@ var (
 		fos.Ubuntu:       ubuntu.NewScanner(),
 		fos.RedHat:       redhat.NewScanner(),
 		fos.CentOS:       redhat.NewScanner(),
+		fos.Rocky:        rocky.NewScanner(),
 		fos.Oracle:       oracle.NewScanner(),
 		fos.OpenSUSELeap: suse.NewScanner(suse.OpenSUSE),
 		fos.SLES:         suse.NewScanner(suse.SUSEEnterpriseLinux),

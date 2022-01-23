@@ -1,4 +1,4 @@
-package alma
+package rocky
 
 import (
 	"strings"
@@ -9,7 +9,7 @@ import (
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alma"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/rocky"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -18,8 +18,8 @@ import (
 var (
 	eolDates = map[string]time.Time{
 		// Source:
-		// https://wiki.almalinux.org/FAQ.html#how-long-will-cloudlinux-support-almalinux
-		"8": time.Date(2029, 12, 31, 23, 59, 59, 0, time.UTC),
+		// https://endoflife.date/rocky-linux
+		"8": time.Date(2029, 5, 31, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -35,9 +35,9 @@ func WithClock(clock clock.Clock) option {
 	}
 }
 
-// Scanner implements the AlmaLinux scanner
+// Scanner implements the Rocky Linux scanner
 type Scanner struct {
-	vs alma.VulnSrc
+	vs rocky.VulnSrc
 	*options
 }
 
@@ -51,31 +51,31 @@ func NewScanner(opts ...option) *Scanner {
 		opt(o)
 	}
 	return &Scanner{
-		vs:      alma.NewVulnSrc(),
+		vs:      rocky.NewVulnSrc(),
 		options: o,
 	}
 }
 
-// Detect vulnerabilities in package using AlmaLinux scanner
+// Detect vulnerabilities in package using Rocky Linux scanner
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.Logger.Info("Detecting AlmaLinux vulnerabilities...")
+	log.Logger.Info("Detecting Rocky Linux vulnerabilities...")
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
 	}
-	log.Logger.Debugf("AlmaLinux: os version: %s", osVer)
-	log.Logger.Debugf("AlmaLinux: the number of packages: %d", len(pkgs))
+	log.Logger.Debugf("Rocky Linux: os version: %s", osVer)
+	log.Logger.Debugf("Rocky Linux: the number of packages: %d", len(pkgs))
 
 	var vulns []types.DetectedVulnerability
 	var skipPkgs []string
 	for _, pkg := range pkgs {
-		if strings.Contains(pkg.Release, ".module_el") {
+		if pkg.Modularitylabel != "" {
 			skipPkgs = append(skipPkgs, pkg.Name)
 			continue
 		}
 		pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
 		advisories, err := s.vs.Get(osVer, pkgName)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to get AlmaLinux advisories: %w", err)
+			return nil, xerrors.Errorf("failed to get Rocky Linux advisories: %w", err)
 		}
 
 		installed := utils.FormatVersion(pkg)
@@ -96,13 +96,13 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 		}
 	}
 	if len(skipPkgs) > 0 {
-		log.Logger.Infof("Skipped detection of these packages: %q because modular packages cannot be detected correctly due to a bug in AlmaLinux. See also: https://bugs.almalinux.org/view.php?id=173", skipPkgs)
+		log.Logger.Infof("Skipped detection of these packages: %q because modular packages cannot be detected correctly due to a bug in Rocky Linux Errata. See also: https://forums.rockylinux.org/t/some-errata-missing-in-comparison-with-rhel-and-almalinux/3843", skipPkgs)
 	}
 
 	return vulns, nil
 }
 
-// IsSupportedVersion checks the OSFamily can be scanned using AlmaLinux scanner
+// IsSupportedVersion checks the OSFamily can be scanned using Rocky Linux scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]

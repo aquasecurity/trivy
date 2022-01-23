@@ -7,13 +7,11 @@ import (
 	ecosystem "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
-	"github.com/aquasecurity/trivy/pkg/detector/library/cargo"
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 	"github.com/aquasecurity/trivy/pkg/detector/library/composer"
 	"github.com/aquasecurity/trivy/pkg/detector/library/ghsa"
 	"github.com/aquasecurity/trivy/pkg/detector/library/maven"
 	"github.com/aquasecurity/trivy/pkg/detector/library/npm"
-	"github.com/aquasecurity/trivy/pkg/detector/library/python"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -98,7 +96,7 @@ func newComposerDriver() Driver {
 }
 
 func newCargoDriver() Driver {
-	return Aggregate(vulnerability.Cargo, NewAdvisory(vulnerability.Cargo, comparer.GenericComparer{}), cargo.NewAdvisory())
+	return Aggregate(vulnerability.Cargo, NewAdvisory(vulnerability.Cargo, comparer.GenericComparer{}))
 }
 
 func newNpmDriver() Driver {
@@ -108,7 +106,7 @@ func newNpmDriver() Driver {
 
 func newPipDriver() Driver {
 	c := comparer.GenericComparer{}
-	return Aggregate(vulnerability.Pip, NewAdvisory(vulnerability.Pip, c), python.NewAdvisory(), ghsa.NewAdvisory(ecosystem.Pip, c))
+	return Aggregate(vulnerability.Pip, NewAdvisory(vulnerability.Pip, c), ghsa.NewAdvisory(ecosystem.Pip, c))
 }
 
 func newNugetDriver() Driver {
