@@ -12,7 +12,7 @@ Thank you for taking interest in contributing to Trivy!
 4. Please add the associated Issue link in the PR description.
 2. Your PR is more likely to be accepted if it focuses on just one change.
 5. There's no need to add or tag reviewers.
-6. If a reviewer commented on your code or asked for changes, please remember to mark the discussion as resolved after you address it. PRs with unresolved issues should not be merged (even if the comment is unclear or requires no action from your side).
+6. If a reviewer commented on your code or asked for changes, please remember to respond with comment. Do not mark discussion as resolved. It's up to reviewer to mark it resolved (in case if suggested fix addresses problem properly). PRs with unresolved issues should not be merged (even if the comment is unclear or requires no action from your side).
 7. Please include a comment with the results before and after your change.
 8. Your PR is more likely to be accepted if it includes tests (We have not historically been very strict about tests, but we would like to improve this!).
 9. If your PR affects the user experience in some way, please update the README.md and the CLI help accordingly.
