@@ -1,7 +1,6 @@
 package rocky_test
 
 import (
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"testing"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -65,7 +65,7 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "skip modular package",
+			name:     "modular package",
 			fixtures: []string{"testdata/fixtures/modular.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "8.5",
@@ -86,7 +86,15 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			want: nil,
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "nginx",
+					VulnerabilityID:  "CVE-2021-23017",
+					InstalledVersion: "1:1.16.1-2.module+el8.4.0+543+efbf198b.0",
+					FixedVersion:     "1:1.16.1-2.module+el8.4.0+543+efbf198b.1",
+					Layer:            ftypes.Layer{},
+				},
+			},
 		},
 		{
 			name:     "Get returns an error",

@@ -66,12 +66,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	log.Logger.Debugf("Rocky Linux: the number of packages: %d", len(pkgs))
 
 	var vulns []types.DetectedVulnerability
-	var skipPkgs []string
 	for _, pkg := range pkgs {
-		if pkg.Modularitylabel != "" {
-			skipPkgs = append(skipPkgs, pkg.Name)
-			continue
-		}
 		pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
 		advisories, err := s.vs.Get(osVer, pkgName)
 		if err != nil {
@@ -95,9 +90,6 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				vulns = append(vulns, vuln)
 			}
 		}
-	}
-	if len(skipPkgs) > 0 {
-		log.Logger.Infof("Skipped detection of these packages: %q because modular packages cannot be detected correctly due to a bug in Rocky Linux Errata. See also: https://forums.rockylinux.org/t/some-errata-missing-in-comparison-with-rhel-and-almalinux/3843", skipPkgs)
 	}
 
 	return vulns, nil
