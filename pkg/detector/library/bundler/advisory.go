@@ -5,20 +5,14 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	bundlerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/bundler"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// VulnSrc defines the operation on bundler vulnerability
-type VulnSrc interface {
-	Get(pkgName string) ([]bundlerSrc.Advisory, error)
-}
-
 // Advisory implements the bundler VulnSrc
 type Advisory struct {
 	comparer RubyGemsComparer
-	vs       VulnSrc
+	vs       bundlerSrc.VulnSrc
 }
 
 // NewAdvisory is the factory method to return bundler.Advisory
@@ -38,11 +32,7 @@ func (a *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detect
 
 	var vulns []types.DetectedVulnerability
 	for _, advisory := range advisories {
-		adv := dbTypes.Advisory{
-			UnaffectedVersions: advisory.UnaffectedVersions,
-			PatchedVersions:    advisory.PatchedVersions,
-		}
-		if !a.comparer.IsVulnerable(pkgVer, adv) {
+		if !a.comparer.IsVulnerable(pkgVer, advisory) {
 			continue
 		}
 
@@ -51,6 +41,7 @@ func (a *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detect
 			PkgName:          strings.TrimSpace(pkgName),
 			InstalledVersion: pkgVer,
 			FixedVersion:     strings.Join(advisory.PatchedVersions, ", "),
+			DataSource:       advisory.DataSource,
 		}
 		vulns = append(vulns, vuln)
 	}

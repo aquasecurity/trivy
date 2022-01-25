@@ -1,0 +1,10 @@
+- bucket: data-source
+  pairs:
+    - key: GitHub Security Advisory Composer
+      value:
+        Name: "GitHub Security Advisory Composer"
+        URL: "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Acomposer"
+    - key: GitHub Security Advisory Nuget
+      value:
+        Name: "GitHub Security Advisory Nuget"
+        URL: "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Anuget"

@@ -5,7 +5,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/node"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -33,8 +32,7 @@ func (a *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detect
 
 	var vulns []types.DetectedVulnerability
 	for _, advisory := range advisories {
-		adv := convertToGenericAdvisory(advisory)
-		if !a.comparer.IsVulnerable(pkgVer, adv) {
+		if !a.comparer.IsVulnerable(pkgVer, advisory) {
 			continue
 		}
 
@@ -43,30 +41,16 @@ func (a *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detect
 			PkgName:          pkgName,
 			InstalledVersion: pkgVer,
 			FixedVersion:     createFixedVersions(advisory.PatchedVersions),
+			DataSource:       advisory.DataSource,
 		}
 		vulns = append(vulns, vuln)
 	}
 	return vulns, nil
 }
 
-func convertToGenericAdvisory(advisory node.Advisory) dbTypes.Advisory {
-	var vulnerable, patched []string
-	if advisory.VulnerableVersions != "" {
-		vulnerable = strings.Split(advisory.VulnerableVersions, "||")
-	}
-	if advisory.PatchedVersions != "" {
-		patched = strings.Split(advisory.PatchedVersions, "||")
-	}
-
-	return dbTypes.Advisory{
-		VulnerableVersions: vulnerable,
-		PatchedVersions:    patched,
-	}
-}
-
-func createFixedVersions(patchedVersions string) string {
+func createFixedVersions(patchedVersions []string) string {
 	var fixedVersions []string
-	for _, s := range strings.Split(patchedVersions, "||") {
+	for _, s := range patchedVersions {
 		fixedVersions = append(fixedVersions, strings.TrimSpace(s))
 	}
 	return strings.Join(fixedVersions, ", ")
