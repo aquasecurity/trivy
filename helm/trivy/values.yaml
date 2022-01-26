@@ -30,6 +30,9 @@ rbac:
   create: true
   pspEnabled: true
 
+sa:
+  create: true
+
 podSecurityContext:
   runAsUser: 65534
   runAsNonRoot: true
