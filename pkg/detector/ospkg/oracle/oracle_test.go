@@ -1,6 +1,7 @@
 package oracle
 
 import (
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"testing"
 	"time"
 
@@ -129,6 +130,10 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "curl",
 					InstalledVersion: "7.29.0-59.0.1.el7",
 					FixedVersion:     "7.29.0-59.0.1.el7_9.1",
+					DataSource: &dbTypes.DataSource{
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
 				},
 			},
 		},
@@ -197,6 +202,10 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "glibc",
 					InstalledVersion: "2:2.17-156.ksplice1.el7",
 					FixedVersion:     "2:2.17-157.ksplice1.el7_3.4",
+					DataSource: &dbTypes.DataSource{
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
 				},
 			},
 		},

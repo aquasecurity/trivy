@@ -1,6 +1,7 @@
 package alma_test
 
 import (
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"testing"
 	"time"
 
@@ -59,6 +60,10 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "3.6.8-36.el8.alma",
 					FixedVersion:     "3.6.8-37.el8.alma",
 					Layer:            ftypes.Layer{},
+					DataSource: &dbTypes.DataSource{
+						Name: "AlmaLinux Product Errata",
+						URL:  "https://errata.almalinux.org/",
+					},
 				},
 			},
 		},

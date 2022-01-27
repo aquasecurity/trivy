@@ -1,6 +1,7 @@
 package rocky_test
 
 import (
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"testing"
 	"time"
 
@@ -56,6 +57,10 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "4.18.0-348.el8.0.3",
 					FixedVersion:     "4.18.0-348.2.1.el8_5",
 					Layer:            ftypes.Layer{},
+					DataSource: &dbTypes.DataSource{
+						Name: "Rocky Linux updateinfo",
+						URL:  "https://download.rockylinux.org/pub/rocky/",
+					},
 				},
 			},
 		},

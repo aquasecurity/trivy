@@ -1,6 +1,7 @@
 package amazon_test
 
 import (
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"testing"
 	"time"
 
@@ -53,6 +54,10 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						Name: "Amazon Linux Security Center",
+						URL:  "https://alas.aws.amazon.com/",
+					},
 				},
 			},
 		},
@@ -79,6 +84,10 @@ func TestScanner_Detect(t *testing.T) {
 					FixedVersion:     "4.2.46-34.amzn2",
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						Name: "Amazon Linux Security Center",
+						URL:  "https://alas.aws.amazon.com/",
 					},
 				},
 			},

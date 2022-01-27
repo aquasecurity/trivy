@@ -1,6 +1,7 @@
 package ubuntu_test
 
 import (
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"sort"
 	"testing"
 	"time"
@@ -54,6 +55,10 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						Name: "Ubuntu CVE Tracker",
+						URL:  "https://git.launchpad.net/ubuntu-cve-tracker",
+					},
 				},
 				{
 					PkgName:          "wpa",
@@ -62,6 +67,10 @@ func TestScanner_Detect(t *testing.T) {
 					FixedVersion:     "2:2.9-1ubuntu4.3",
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						Name: "Ubuntu CVE Tracker",
+						URL:  "https://git.launchpad.net/ubuntu-cve-tracker",
 					},
 				},
 			},
