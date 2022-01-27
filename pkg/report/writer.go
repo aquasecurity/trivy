@@ -111,9 +111,7 @@ func Write(report Report, option Option) error {
 
 	//--list-all-pkgs option is available only with --format json.
 	// If user specifies --list-all-pkgs with other than --format json, we should warn it.
-	if option.ListAllPkgs && option.Format != "json" {
-		log.Logger.Warn(`"--list-all-pkgs" option is available only with "--format json".`)
-	}
+	listAllPkgsWarn(option.ListAllPkgs, option.Format)
 
 	switch option.Format {
 	case "table":
@@ -146,6 +144,12 @@ func Write(report Report, option Option) error {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
 	return nil
+}
+
+func listAllPkgsWarn(listAllPkgs bool, format string) {
+	if listAllPkgs && format != "json" {
+		log.Logger.Warn(`"--list-all-pkgs" option is available only with "--format json".`)
+	}
 }
 
 // Writer defines the result write operation
