@@ -94,6 +94,10 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 }
 
 func (c *ReportOption) populateVulnTypes() error {
+	if c.vulnType == "" {
+		return nil
+	}
+
 	for _, v := range strings.Split(c.vulnType, ",") {
 		if types.NewVulnType(v) == types.VulnTypeUnknown {
 			return xerrors.Errorf("unknown vulnerability type (%s)", v)
@@ -104,6 +108,10 @@ func (c *ReportOption) populateVulnTypes() error {
 }
 
 func (c *ReportOption) populateSecurityChecks() error {
+	if c.securityChecks == "" {
+		return nil
+	}
+
 	for _, v := range strings.Split(c.securityChecks, ",") {
 		if types.NewSecurityCheck(v) == types.SecurityCheckUnknown {
 			return xerrors.Errorf("unknown security check (%s)", v)

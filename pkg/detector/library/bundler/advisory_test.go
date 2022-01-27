@@ -3,12 +3,13 @@ package bundler_test
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -30,13 +31,20 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 				pkgName: "activesupport",
 				pkgVer:  "4.1.1",
 			},
-			fixtures: []string{"testdata/fixtures/gem.yaml"},
+			fixtures: []string{
+				"testdata/fixtures/gem.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			want: []types.DetectedVulnerability{
 				{
 					PkgName:          "activesupport",
 					InstalledVersion: "4.1.1",
 					VulnerabilityID:  "CVE-2015-3226",
 					FixedVersion:     ">= 4.2.2, ~> 4.1.11",
+					DataSource: &dbTypes.DataSource{
+						Name: "Ruby Advisory Database",
+						URL:  "https://github.com/rubysec/ruby-advisory-db",
+					},
 				},
 			},
 		},
@@ -72,10 +80,9 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
-			} else {
-				assert.NoError(t, err)
 			}
 
+			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

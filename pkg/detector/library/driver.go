@@ -87,7 +87,7 @@ func (d *Driver) Type() string {
 
 func newRubyGemsDriver() Driver {
 	c := bundler.RubyGemsComparer{}
-	return Aggregate(vulnerability.RubyGems, NewAdvisory(vulnerability.RubyGems, c), bundler.NewAdvisory(), ghsa.NewAdvisory(ecosystem.Rubygems, c))
+	return Aggregate(vulnerability.RubyGems, NewAdvisory(vulnerability.RubyGems, c), bundler.NewAdvisory(), ghsa.NewAdvisory(ecosystem.RubyGems, c))
 }
 
 func newComposerDriver() Driver {

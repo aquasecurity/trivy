@@ -31,7 +31,27 @@ var (
 		wire.Struct(new(Detector)),
 		wire.Bind(new(Operation), new(Detector)),
 	)
+
+	drivers = map[string]Driver{
+		fos.Alpine:       alpine.NewScanner(),
+		fos.Alma:         alma.NewScanner(),
+		fos.Amazon:       amazon.NewScanner(),
+		fos.Debian:       debian.NewScanner(),
+		fos.Ubuntu:       ubuntu.NewScanner(),
+		fos.RedHat:       redhat.NewScanner(),
+		fos.CentOS:       redhat.NewScanner(),
+		fos.Rocky:        rocky.NewScanner(),
+		fos.Oracle:       oracle.NewScanner(),
+		fos.OpenSUSELeap: suse.NewScanner(suse.OpenSUSE),
+		fos.SLES:         suse.NewScanner(suse.SUSEEnterpriseLinux),
+		fos.Photon:       photon.NewScanner(),
+	}
 )
+
+// RegisterDriver is defined for extensibility and not supposed to be used in Trivy.
+func RegisterDriver(name string, driver Driver) {
+	drivers[name] = driver
+}
 
 // Operation defines operation of OSpkg scan
 type Operation interface {
@@ -49,8 +69,8 @@ type Detector struct{}
 
 // Detect detects the vulnerabilities
 func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
-	driver := newDriver(osFamily, osName)
-	if driver == nil {
+	driver, err := newDriver(osFamily)
+	if err != nil {
 		return nil, false, ErrUnsupportedOS
 	}
 
@@ -64,33 +84,11 @@ func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []ftypes.
 	return vulns, eosl, nil
 }
 
-// nolint: gocyclo
-func newDriver(osFamily, osName string) Driver {
-	switch osFamily {
-	case fos.Alpine:
-		return alpine.NewScanner()
-	case fos.Alma:
-		return alma.NewScanner()
-	case fos.Debian:
-		return debian.NewScanner()
-	case fos.Ubuntu:
-		return ubuntu.NewScanner()
-	case fos.RedHat, fos.CentOS:
-		return redhat.NewScanner()
-	case fos.Rocky:
-		return rocky.NewScanner()
-	case fos.Amazon:
-		return amazon.NewScanner()
-	case fos.Oracle:
-		return oracle.NewScanner()
-	case fos.OpenSUSELeap:
-		return suse.NewScanner(suse.OpenSUSE)
-	case fos.SLES:
-		return suse.NewScanner(suse.SUSEEnterpriseLinux)
-	case fos.Photon:
-		return photon.NewScanner()
-	default:
-		log.Logger.Warnf("unsupported os : %s", osFamily)
-		return nil
+func newDriver(osFamily string) (Driver, error) {
+	if driver, ok := drivers[osFamily]; ok {
+		return driver, nil
 	}
+
+	log.Logger.Warnf("unsupported os : %s", osFamily)
+	return nil, ErrUnsupportedOS
 }
