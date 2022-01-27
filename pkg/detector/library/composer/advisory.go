@@ -6,7 +6,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	composerSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/composer"
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -36,19 +35,18 @@ func (s *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detect
 
 	var vulns []types.DetectedVulnerability
 	for _, advisory := range advisories {
-		var affectedVersions []string
 		var patchedVersions []string
-		for _, branch := range advisory.Branches {
-			for _, version := range branch.Versions {
-				if !strings.HasPrefix(version, "<=") && strings.HasPrefix(version, "<") {
-					patchedVersions = append(patchedVersions, strings.Trim(version, "<"))
+		for _, vulnerableRange := range advisory.VulnerableVersions {
+			// e.g. ">=5, <5.3.1"
+			for _, v := range strings.Split(vulnerableRange, ", ") {
+				// e.g. "<5.3.1"
+				if !strings.HasPrefix(v, "<=") && strings.HasPrefix(v, "<") {
+					patchedVersions = append(patchedVersions, strings.Trim(v, "<"))
 				}
 			}
-			affectedVersions = append(affectedVersions, strings.Join(branch.Versions, ", "))
 		}
 
-		adv := dbTypes.Advisory{VulnerableVersions: affectedVersions}
-		if !s.comparer.IsVulnerable(pkgVer, adv) {
+		if !s.comparer.IsVulnerable(pkgVer, advisory) {
 			continue
 		}
 
@@ -57,6 +55,7 @@ func (s *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detect
 			PkgName:          pkgName,
 			InstalledVersion: pkgVer,
 			FixedVersion:     strings.Join(patchedVersions, ", "),
+			DataSource:       advisory.DataSource,
 		}
 		vulns = append(vulns, vuln)
 	}

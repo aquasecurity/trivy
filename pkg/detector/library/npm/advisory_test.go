@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/library/npm"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -30,13 +31,20 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 				pkgName: "electron",
 				pkgVer:  "2.0.17",
 			},
-			fixtures: []string{"testdata/fixtures/npm.yaml"},
+			fixtures: []string{
+				"testdata/fixtures/npm.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			want: []types.DetectedVulnerability{
 				{
 					PkgName:          "electron",
 					InstalledVersion: "2.0.17",
 					VulnerabilityID:  "CVE-2019-5786",
 					FixedVersion:     "^2.0.18, ^3.0.16, ^3.1.6, ^4.0.8, ^5.0.0-beta.5",
+					DataSource: &dbTypes.DataSource{
+						Name: "Node.js Ecosystem Security Working Group",
+						URL:  "https://github.com/nodejs/security-wg",
+					},
 				},
 			},
 		},
@@ -79,10 +87,9 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
-			} else {
-				assert.NoError(t, err)
 			}
 
+			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
