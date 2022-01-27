@@ -3,4 +3,4 @@
     - key: rocky 8
       value:
         Name: "Rocky Linux updateinfo"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
+        URL: "https://download.rockylinux.org/pub/rocky/"
