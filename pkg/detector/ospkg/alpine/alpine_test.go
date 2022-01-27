@@ -30,7 +30,7 @@ func TestScanner_Detect(t *testing.T) {
 	}{
 		{
 			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/alpine.yaml"},
+			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "3.10.2",
 				pkgs: []ftypes.Package{
@@ -74,7 +74,7 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			name:     "contain rc",
-			fixtures: []string{"testdata/fixtures/alpine.yaml"},
+			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "3.10",
 				pkgs: []ftypes.Package{
@@ -97,7 +97,7 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			name:     "contain pre",
-			fixtures: []string{"testdata/fixtures/alpine.yaml"},
+			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "3.10",
 				pkgs: []ftypes.Package{
@@ -126,7 +126,7 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "3.10.2",
 				pkgs: []ftypes.Package{

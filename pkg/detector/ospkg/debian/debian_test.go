@@ -32,7 +32,7 @@ func TestScanner_Detect(t *testing.T) {
 	}{
 		{
 			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/debian.yaml"},
+			fixtures: []string{"testdata/fixtures/debian.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "9.1",
 				pkgs: []ftypes.Package{
@@ -74,7 +74,7 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			name:     "invalid bucket",
-			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "9.1",
 				pkgs: []ftypes.Package{

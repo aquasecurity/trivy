@@ -1,0 +1,6 @@
+- bucket: data-source
+  pairs:
+    - key: alpine 3.10
+      value:
+        Name: "Alpine Secdb"
+        URL: "https://secdb.alpinelinux.org/"

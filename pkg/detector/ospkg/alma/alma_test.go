@@ -28,8 +28,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/alma.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/alma.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.4",
 				pkgs: []ftypes.Package{
@@ -61,7 +64,7 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			name:     "skip modular package",
-			fixtures: []string{"testdata/fixtures/modular.yaml"},
+			fixtures: []string{"testdata/fixtures/modular.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "8.4",
 				pkgs: []ftypes.Package{
@@ -85,7 +88,7 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "8.4",
 				pkgs: []ftypes.Package{

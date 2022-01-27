@@ -1,0 +1,6 @@
+- bucket: data-source
+  pairs:
+    - key: alma 8
+      value:
+        Name: "AlmaLinux Product Errata"
+        URL:  "https://errata.almalinux.org/"

@@ -1,0 +1,10 @@
+- bucket: data-source
+  pairs:
+    - key: amazon linux 1
+      value:
+        Name: "Amazon Linux Security Center"
+        URL: "https://alas.aws.amazon.com/"
+    - key: amazon linux 2
+      value:
+        Name: "Amazon Linux Security Center"
+        URL: "https://alas.aws.amazon.com/"
