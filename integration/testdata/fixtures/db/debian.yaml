@@ -10,8 +10,6 @@
         - key: CVE-2019-1551
           value:
             State: postponed
-- bucket: debian oval 9
-  pairs:
     - bucket: e2fsprogs
       pairs:
         - key: CVE-2019-5094
@@ -33,8 +31,6 @@
         - key: CVE-2019-18276
           value:
             Severity: 1
-- bucket: debian oval 10
-  pairs:
     - bucket: libidn2
       pairs:
         - key: CVE-2019-18224

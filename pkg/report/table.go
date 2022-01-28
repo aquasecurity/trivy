@@ -19,9 +19,6 @@ type TableWriter struct {
 	Severities []dbTypes.Severity
 	Output     io.Writer
 
-	// For vulnerabilities
-	Light bool
-
 	// For misconfigurations
 	IncludeNonFailures bool
 	Trace              bool
@@ -103,10 +100,7 @@ func (tw TableWriter) summary(severityCount map[string]int) (int, []string) {
 }
 
 func (tw TableWriter) writeVulnerabilities(table *tablewriter.Table, vulns []types.DetectedVulnerability) map[string]int {
-	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version"}
-	if !tw.Light {
-		header = append(header, "Title")
-	}
+	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version", "Title"}
 	table.SetHeader(header)
 	severityCount := tw.setVulnerabilityRows(table, vulns)
 
@@ -156,14 +150,11 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 		var row []string
 		if tw.Output == os.Stdout {
 			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
-				v.InstalledVersion, v.FixedVersion}
+				v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
 		} else {
-			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion}
+			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
 		}
 
-		if !tw.Light {
-			row = append(row, strings.TrimSpace(title))
-		}
 		table.Append(row)
 	}
 	return severityCount

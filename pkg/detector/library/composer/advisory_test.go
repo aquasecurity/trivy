@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/library/composer"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -30,13 +31,20 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 				pkgName: "aws/aws-sdk-php",
 				pkgVer:  "3.2.0",
 			},
-			fixtures: []string{"testdata/fixtures/composer.yaml"},
+			fixtures: []string{
+				"testdata/fixtures/composer.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			want: []types.DetectedVulnerability{
 				{
 					PkgName:          "aws/aws-sdk-php",
 					InstalledVersion: "3.2.0",
 					VulnerabilityID:  "CVE-2015-5723",
 					FixedVersion:     "3.2.1",
+					DataSource: &dbTypes.DataSource{
+						Name: "PHP Security Advisories Database",
+						URL:  "https://github.com/FriendsOfPHP/security-advisories",
+					},
 				},
 			},
 		},

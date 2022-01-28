@@ -64,6 +64,9 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `replicaCount`                        | Number of Trivy Pods to run                                   | `1`            |
 | `trivy.debugMode`             | The flag to enable or disable Trivy debug mode                          | `false` |
 | `trivy.gitHubToken`           | The GitHub access token to download Trivy DB. More info: https://github.com/aquasecurity/trivy#github-rate-limiting                          |      |
+| `trivy.registryUsername`              | The username used to log in at dockerhub. More info: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/ |      |
+| `trivy.registryPassword`              | The password used to log in at dockerhub. More info: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/ |      |
+| `trivy.registryCredentialsExistingSecret` | Name of Secret containing dockerhub credentials. Alternative to the 2 parameters above, has precedence if set.                    |      |
 | `trivy.skipUpdate`            | The flag to enable or disable Trivy DB downloads from GitHub            | `false`        |
 | `trivy.cache.redis.enabled`           | Enable Redis as caching backend                                         | `false` |
 | `trivy.cache.redis.url`               | Specify redis connection url, e.g. redis://redis.redis.svc:6379         | `` |

@@ -168,6 +168,22 @@ func TestTar(t *testing.T) {
 			golden: "testdata/ubi-7.json.golden",
 		},
 		{
+			name: "almalinux 8",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/almalinux-8.tar.gz",
+			},
+			golden: "testdata/almalinux-8.json.golden",
+		},
+		{
+			name: "rocky linux 8",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/rockylinux-8.tar.gz",
+			},
+			golden: "testdata/rockylinux-8.json.golden",
+		},
+		{
 			name: "distroless base",
 			testArgs: args{
 				Format: "json",

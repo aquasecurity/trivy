@@ -141,6 +141,20 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/ubi-7.json.golden",
 		},
 		{
+			name: "almalinux 8",
+			args: csArgs{
+				Input: "testdata/fixtures/images/almalinux-8.tar.gz",
+			},
+			golden: "testdata/almalinux-8.json.golden",
+		},
+		{
+			name: "rocky linux 8",
+			args: csArgs{
+				Input: "testdata/fixtures/images/rockylinux-8.tar.gz",
+			},
+			golden: "testdata/rockylinux-8.json.golden",
+		},
+		{
 			name: "distroless base",
 			args: csArgs{
 				Input: "testdata/fixtures/images/distroless-base.tar.gz",
@@ -238,11 +252,10 @@ func TestClientServerWithTemplate(t *testing.T) {
 			golden: "testdata/alpine-310.gitlab-codequality.golden",
 		},
 		{
-			name: "alpine 3.10 with sarif template",
+			name: "alpine 3.10 with sarif format",
 			args: csArgs{
-				Format:       "template",
-				TemplatePath: "@../contrib/sarif.tpl",
-				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
+				Format: "sarif",
+				Input:  "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.sarif.golden",
 		},

@@ -28,7 +28,6 @@ var StandaloneSuperSet = wire.NewSet(
 
 // StandaloneDockerSet binds docker dependencies
 var StandaloneDockerSet = wire.NewSet(
-	types.GetDockerOption,
 	image.NewDockerImage,
 	aimage.NewArtifact,
 	StandaloneSuperSet,
@@ -63,7 +62,6 @@ var RemoteSuperSet = wire.NewSet(
 
 // RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
-	types.GetDockerOption,
 	image.NewDockerImage,
 	RemoteSuperSet,
 )

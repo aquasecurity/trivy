@@ -1,4 +1,4 @@
-- bucket: rust-advisory-db
+- bucket: cargo::Open Source Vulnerability
   pairs:
     - bucket: ammonia
       pairs:

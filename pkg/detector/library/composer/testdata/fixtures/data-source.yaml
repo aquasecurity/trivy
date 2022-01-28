@@ -1,0 +1,6 @@
+- bucket: data-source
+  pairs:
+    - key: php-security-advisories
+      value:
+        Name: "PHP Security Advisories Database"
+        URL: "https://github.com/FriendsOfPHP/security-advisories"

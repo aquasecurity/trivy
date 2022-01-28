@@ -12,8 +12,3 @@ func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServ
 	wire.Build(ScanSuperSet)
 	return &ScanServer{}
 }
-
-func initializeDBWorker(cacheDir string, quiet bool) dbWorker {
-	wire.Build(DBWorkerSuperSet)
-	return dbWorker{}
-}

@@ -30,7 +30,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 	}{
 		{
 			name:     "happy path, with only OS vulnerability but no vendor severity, no NVD",
-			fixtures: []string{"testdata/fixtures/full.yaml"},
+			fixtures: []string{"testdata/fixtures/vulnerability.yaml"},
 			args: args{
 				vulns: []types.DetectedVulnerability{
 					{VulnerabilityID: "CVE-2019-0001"},
@@ -54,7 +54,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 		},
 		{
 			name:     "happy path, with only OS vulnerability but no vendor severity, yes NVD",
-			fixtures: []string{"testdata/fixtures/full.yaml"},
+			fixtures: []string{"testdata/fixtures/vulnerability.yaml"},
 			args: args{
 				vulns: []types.DetectedVulnerability{
 					{VulnerabilityID: "CVE-2019-0002"},
@@ -79,7 +79,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 		},
 		{
 			name:     "happy path, with only OS vulnerability but no severity, no vendor severity, no NVD",
-			fixtures: []string{"testdata/fixtures/full.yaml"},
+			fixtures: []string{"testdata/fixtures/vulnerability.yaml"},
 			args: args{
 				vulns: []types.DetectedVulnerability{
 					{VulnerabilityID: "CVE-2019-0003"},
@@ -101,7 +101,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 		},
 		{
 			name:     "happy path, with only OS vulnerability, yes vendor severity, with both NVD and CVSS info",
-			fixtures: []string{"testdata/fixtures/full.yaml"},
+			fixtures: []string{"testdata/fixtures/vulnerability.yaml"},
 			args: args{
 				vulns: []types.DetectedVulnerability{
 					{VulnerabilityID: "CVE-2019-0004"},
@@ -138,49 +138,8 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 			},
 		},
 		{
-			name:     "happy path light db, with only OS vulnerability, yes vendor severity",
-			fixtures: []string{"testdata/fixtures/light.yaml"},
-			args: args{
-				vulns: []types.DetectedVulnerability{
-					{VulnerabilityID: "CVE-2020-0001"},
-				},
-				reportType: vulnerability.Ubuntu,
-			},
-			expectedVulnerabilities: []types.DetectedVulnerability{
-				{
-					VulnerabilityID: "CVE-2020-0001",
-					Vulnerability: dbTypes.Vulnerability{
-						Title:    "dos",
-						Severity: dbTypes.SeverityLow.String(),
-					},
-					SeveritySource: vulnerability.Ubuntu,
-					PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2020-0001",
-				},
-			},
-		},
-		{
-			name:     "happy path light db, with only OS vulnerability, no vendor severity",
-			fixtures: []string{"testdata/fixtures/light.yaml"},
-			args: args{
-				vulns: []types.DetectedVulnerability{
-					{VulnerabilityID: "CVE-2020-0002"},
-				},
-				reportType: vulnerability.Alpine,
-			},
-			expectedVulnerabilities: []types.DetectedVulnerability{
-				{
-					VulnerabilityID: "CVE-2020-0002",
-					Vulnerability: dbTypes.Vulnerability{
-						Title:    "dos",
-						Severity: dbTypes.SeverityUnknown.String(),
-					},
-					PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-0002",
-				},
-			},
-		},
-		{
 			name:     "happy path, with only library vulnerability",
-			fixtures: []string{"testdata/fixtures/full.yaml"},
+			fixtures: []string{"testdata/fixtures/vulnerability.yaml"},
 			args: args{
 				vulns: []types.DetectedVulnerability{
 					{VulnerabilityID: "CVE-2019-0005"},
@@ -196,14 +155,14 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Severity:    dbTypes.SeverityCritical.String(),
 						References:  []string{"https://www.who.int/emergencies/diseases/novel-coronavirus-2019"},
 					},
-					SeveritySource: vulnerability.PythonSafetyDB,
+					SeveritySource: vulnerability.GHSAPip,
 					PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2019-0005",
 				},
 			},
 		},
 		{
 			name:     "happy path, with package-specific severity",
-			fixtures: []string{"testdata/fixtures/full.yaml"},
+			fixtures: []string{"testdata/fixtures/vulnerability.yaml"},
 			args: args{
 				vulns: []types.DetectedVulnerability{
 					{
@@ -286,9 +245,9 @@ func TestClient_getPrimaryURL(t *testing.T) {
 			args: args{
 				vulnID:  "RUSTSEC-2018-0017",
 				refs:    []string{"https://github.com/rust-lang-deprecated/tempdir/pull/46"},
-				sources: []string{vulnerability.RustSec},
+				sources: []string{vulnerability.OSVCratesio},
 			},
-			want: "https://rustsec.org/advisories/RUSTSEC-2018-0017",
+			want: "https://osv.dev/vulnerability/RUSTSEC-2018-0017",
 		},
 		{
 			name: "GHSA",

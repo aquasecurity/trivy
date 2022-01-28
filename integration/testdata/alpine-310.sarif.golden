@@ -1,65 +1,70 @@
 {
-  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
   "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0-rtm.5.json",
   "runs": [
     {
       "tool": {
         "driver": {
-          "name": "Trivy",
-          "informationUri": "https://github.com/aquasecurity/trivy",
           "fullName": "Trivy Vulnerability Scanner",
-          "version": "0.15.0",
+          "informationUri": "https://github.com/aquasecurity/trivy",
+          "name": "Trivy",
           "rules": [
-                {
-                  "id": "CVE-2019-1549",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2019-1549"
-                  },
-                  "fullDescription": {
-                    "text": "openssl: information disclosure in fork()."
-                  },
-                  "defaultConfiguration": {
-                    "level": "warning"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1549",
-                  "help": {
-                    "text": "Vulnerability CVE-2019-1549\nOpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).\nSeverity: MEDIUM\nPackage: libcrypto1.1\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)",                    
-                    "markdown": "**Vulnerability CVE-2019-1549**\nOpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1d-r0|[CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)|\n"                    
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "MEDIUM"
-                    ],
-                    "precision": "very-high"
-                  }
-                },
-                {
-                  "id": "CVE-2019-1551",
-                  "name": "OsPackageVulnerability",
-                  "shortDescription": {
-                    "text": "CVE-2019-1551"
-                  },
-                  "fullDescription": {
-                    "text": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64."
-                  },
-                  "defaultConfiguration": {
-                    "level": "warning"
-                  },
-                  "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1551",
-                  "help": {
-                    "text": "Vulnerability CVE-2019-1551\nThere is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).\nSeverity: MEDIUM\nPackage: libcrypto1.1\nFixed Version: 1.1.1d-r2\nLink: [CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)",                    
-                    "markdown": "**Vulnerability CVE-2019-1551**\nThere is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|MEDIUM|libcrypto1.1|1.1.1d-r2|[CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)|\n"                    
-                  },
-                  "properties": {
-                    "tags": [
-                      "vulnerability",
-                      "MEDIUM"
-                    ],
-                    "precision": "very-high"
-                  }
-                }]
+            {
+              "id": "CVE-2019-1549",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2019-1549"
+              },
+              "fullDescription": {
+                "text": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c)."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1549",
+              "help": {
+                "text": "Vulnerability CVE-2019-1549\nSeverity: MEDIUM\nPackage: libssl1.1\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)\nOpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
+                "markdown": "**Vulnerability CVE-2019-1549**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|MEDIUM|libssl1.1|1.1.1d-r0|[CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)|\n\nOpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c)."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "5.3",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2019-1551",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "CVE-2019-1551"
+              },
+              "fullDescription": {
+                "text": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t)."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1551",
+              "help": {
+                "text": "Vulnerability CVE-2019-1551\nSeverity: MEDIUM\nPackage: libssl1.1\nFixed Version: 1.1.1d-r2\nLink: [CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)\nThere is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
+                "markdown": "**Vulnerability CVE-2019-1551**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|MEDIUM|libssl1.1|1.1.1d-r2|[CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)|\n\nThere is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t)."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "5.3",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "MEDIUM"
+                ]
+              }
+            }
+          ],
+          "version": "dev"
         }
       },
       "results": [
@@ -70,17 +75,19 @@
           "message": {
             "text": "Package: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nVulnerability CVE-2019-1549\nSeverity: MEDIUM\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)"
           },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "testdata/fixtures/images/alpine-310.tar.gz",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1
+                }
               }
             }
-          }]
+          ]
         },
         {
           "ruleId": "CVE-2019-1551",
@@ -89,17 +96,19 @@
           "message": {
             "text": "Package: libcrypto1.1\nInstalled Version: 1.1.1c-r0\nVulnerability CVE-2019-1551\nSeverity: MEDIUM\nFixed Version: 1.1.1d-r2\nLink: [CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)"
           },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "testdata/fixtures/images/alpine-310.tar.gz",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1
+                }
               }
             }
-          }]
+          ]
         },
         {
           "ruleId": "CVE-2019-1549",
@@ -108,17 +117,19 @@
           "message": {
             "text": "Package: libssl1.1\nInstalled Version: 1.1.1c-r0\nVulnerability CVE-2019-1549\nSeverity: MEDIUM\nFixed Version: 1.1.1d-r0\nLink: [CVE-2019-1549](https://avd.aquasec.com/nvd/cve-2019-1549)"
           },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "testdata/fixtures/images/alpine-310.tar.gz",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1
+                }
               }
             }
-          }]
+          ]
         },
         {
           "ruleId": "CVE-2019-1551",
@@ -127,18 +138,21 @@
           "message": {
             "text": "Package: libssl1.1\nInstalled Version: 1.1.1c-r0\nVulnerability CVE-2019-1551\nSeverity: MEDIUM\nFixed Version: 1.1.1d-r2\nLink: [CVE-2019-1551](https://avd.aquasec.com/nvd/cve-2019-1551)"
           },
-          "locations": [{
-            "physicalLocation": {
-              "artifactLocation": {
-                "uri": "testdata/fixtures/images/alpine-310.tar.gz",
-                "uriBaseId": "ROOTPATH"
-              },
-              "region" : {
-                "startLine": 1
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "testdata/fixtures/images/alpine-310.tar.gz",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1
+                }
               }
             }
-          }]
-        }],
+          ]
+        }
+      ],
       "columnKind": "utf16CodeUnits",
       "originalUriBaseIds": {
         "ROOTPATH": {

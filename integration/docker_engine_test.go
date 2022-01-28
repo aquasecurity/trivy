@@ -70,6 +70,18 @@ func TestDockerEngine(t *testing.T) {
 			golden:   "testdata/amazon-2.json.golden",
 		},
 		{
+			name:     "almalinux 8",
+			imageTag: "almalinux:8",
+			input:    "testdata/fixtures/images/almalinux-8.tar.gz",
+			golden:   "testdata/almalinux-8.json.golden",
+		},
+		{
+			name:     "rocky linux 8",
+			imageTag: "rockylinux:8",
+			input:    "testdata/fixtures/images/rockylinux-8.tar.gz",
+			golden:   "testdata/rockylinux-8.json.golden",
+		},
+		{
 			name:     "centos 6",
 			imageTag: "centos:6",
 			input:    "testdata/fixtures/images/centos-6.tar.gz",

@@ -2,14 +2,6 @@
   pairs:
     - bucket: apache2
       pairs:
-        - key: CVE-2021-31618
-          value:
-            FixedVersion: ""
-            Severity: 2
-- bucket: debian oval 9
-  pairs:
-    - bucket: apache2
-      pairs:
         - key: CVE-2012-3499
           value:
             FixedVersion: "2.2.22-13"
@@ -18,3 +10,7 @@
             FixedVersion: "2.4.25-1"
             VendorIDs:
               - DSA-4884-1
+        - key: CVE-2021-31618
+          value:
+            FixedVersion: ""
+            Severity: 2

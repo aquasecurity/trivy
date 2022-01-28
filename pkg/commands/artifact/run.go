@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"os"
-	"time"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -27,7 +26,7 @@ const defaultPolicyNamespace = "appshield"
 var errSkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanner defines the initialize function signature of scanner
-type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, time.Duration,
+type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, bool,
 	artifact.Option, config.ScannerOption) (scanner.Scanner, func(), error)
 
 // InitCache defines cache initializer
@@ -77,11 +76,11 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 	}
 
 	if err = pkgReport.Write(report, pkgReport.Option{
+		AppVersion:         opt.GlobalOption.AppVersion,
 		Format:             opt.Format,
 		Output:             opt.Output,
 		Severities:         opt.Severities,
 		OutputTemplate:     opt.Template,
-		Light:              opt.Light,
 		IncludeNonFailures: opt.IncludeNonFailures,
 		Trace:              opt.Trace,
 	}); err != nil {
@@ -95,7 +94,7 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 
 func initFSCache(c Option) (cache.Cache, error) {
 	utils.SetCacheDir(c.CacheDir)
-	cache, err := operation.NewCache(c.CacheBackend)
+	cache, err := operation.NewCache(c.CacheOption)
 	if err != nil {
 		return operation.Cache{}, xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
@@ -121,7 +120,7 @@ func initFSCache(c Option) (cache.Cache, error) {
 func initDB(c Option) error {
 	// download the database file
 	noProgress := c.Quiet || c.NoProgress
-	if err := operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.Light, c.SkipDBUpdate); err != nil {
+	if err := operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.SkipDBUpdate); err != nil {
 		return err
 	}
 
@@ -185,7 +184,8 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
-		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.SkipPolicyUpdate)
+		noProgress := opt.Quiet || opt.NoProgress
+		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.CacheDir, noProgress, opt.SkipPolicyUpdate)
 		if err != nil {
 			return pkgReport.Report{}, xerrors.Errorf("failed to initialize built-in policies: %w", err)
 		}
@@ -203,10 +203,12 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		DisabledAnalyzers: disabledAnalyzers(opt),
 		SkipFiles:         opt.SkipFiles,
 		SkipDirs:          opt.SkipDirs,
+		InsecureSkipTLS:   opt.Insecure,
 		Offline:           opt.OfflineScan,
+		Quiet:             opt.Quiet,
 	}
 
-	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Timeout, artifactOpt, configScannerOptions)
+	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Insecure, artifactOpt, configScannerOptions)
 	if err != nil {
 		return pkgReport.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}

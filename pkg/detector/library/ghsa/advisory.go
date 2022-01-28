@@ -5,20 +5,14 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// VulnSrc defines the operations on vulnerability source
-type VulnSrc interface {
-	Get(pkgName string) ([]ghsa.Advisory, error)
-}
-
 // Advisory implements VulnSrc
 type Advisory struct {
-	vs       VulnSrc
+	vs       ghsa.VulnSrc
 	comparer comparer.Comparer
 }
 
@@ -39,8 +33,7 @@ func (s *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detect
 
 	var vulns []types.DetectedVulnerability
 	for _, advisory := range advisories {
-		adv := dbTypes.Advisory{VulnerableVersions: advisory.VulnerableVersions}
-		if !s.comparer.IsVulnerable(pkgVer, adv) {
+		if !s.comparer.IsVulnerable(pkgVer, advisory) {
 			continue
 		}
 
@@ -49,6 +42,7 @@ func (s *Advisory) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detect
 			PkgName:          pkgName,
 			InstalledVersion: pkgVer,
 			FixedVersion:     strings.Join(advisory.PatchedVersions, ", "),
+			DataSource:       advisory.DataSource,
 		}
 		vulns = append(vulns, vuln)
 	}

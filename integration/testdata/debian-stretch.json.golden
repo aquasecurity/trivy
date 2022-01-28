@@ -81,7 +81,6 @@
           },
           "References": [
             "http://packetstormsecurity.com/files/155498/Bash-5.0-Patch-11-Privilege-Escalation.html",
-            "https://access.redhat.com/security/cve/CVE-2019-18276",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18276",
             "https://github.com/bminor/bash/commit/951bdaad7a18cc0dc1036bba86b18b90874d39ff",
             "https://linux.oracle.com/cve/CVE-2019-18276.html",
@@ -126,7 +125,6 @@
             }
           },
           "References": [
-            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
@@ -178,7 +176,6 @@
             }
           },
           "References": [
-            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
@@ -230,7 +227,6 @@
             }
           },
           "References": [
-            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
@@ -282,7 +278,6 @@
             }
           },
           "References": [
-            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",

@@ -14,6 +14,7 @@
       "check_name": "container_scanning",
       "categories": [ "Security" ],
       "description": "{{ .VulnerabilityID }}: {{ .Title }}",
+      "fingerprint": "{{ .VulnerabilityID | sha1sum }}",
       "content": {{ .Description | printf "%q" }},
       "severity": {{ if eq .Severity "LOW" -}}
                     "info"

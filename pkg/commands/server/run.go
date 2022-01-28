@@ -28,7 +28,7 @@ func run(c Config) (err error) {
 
 	// configure cache dir
 	utils.SetCacheDir(c.CacheDir)
-	cache, err := operation.NewCache(c.CacheBackend)
+	cache, err := operation.NewCache(c.CacheOption)
 	if err != nil {
 		return xerrors.Errorf("server cache error: %w", err)
 	}
@@ -40,7 +40,7 @@ func run(c Config) (err error) {
 	}
 
 	// download the database file
-	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, true, false, c.SkipDBUpdate); err != nil {
+	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, true, c.SkipDBUpdate); err != nil {
 		return err
 	}
 

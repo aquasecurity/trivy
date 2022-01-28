@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ghsaSrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/ghsa"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
@@ -41,13 +42,20 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 				pkgName: "symfony/symfony",
 				pkgVer:  "5.1.5-alpha",
 			},
-			fixtures: []string{"testdata/fixtures/ghsa.yaml"},
+			fixtures: []string{
+				"testdata/fixtures/ghsa.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			want: []types.DetectedVulnerability{
 				{
 					PkgName:          "symfony/symfony",
 					InstalledVersion: "5.1.5-alpha",
 					VulnerabilityID:  "CVE-2020-15094",
 					FixedVersion:     "5.1.5, 4.4.13",
+					DataSource: &dbTypes.DataSource{
+						Name: "GitHub Security Advisory Composer",
+						URL:  "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Acomposer",
+					},
 				},
 			},
 		},
@@ -61,13 +69,20 @@ func TestAdvisory_DetectVulnerabilities(t *testing.T) {
 				pkgName: "AWSSDK.Core",
 				pkgVer:  "3.5.1.30",
 			},
-			fixtures: []string{"testdata/fixtures/ghsa.yaml"},
+			fixtures: []string{
+				"testdata/fixtures/ghsa.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			want: []types.DetectedVulnerability{
 				{
 					PkgName:          "AWSSDK.Core",
 					InstalledVersion: "3.5.1.30",
 					VulnerabilityID:  "CVE-2020-99999",
 					FixedVersion:     "3.5.1.31",
+					DataSource: &dbTypes.DataSource{
+						Name: "GitHub Security Advisory Nuget",
+						URL:  "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Anuget",
+					},
 				},
 			},
 		},
