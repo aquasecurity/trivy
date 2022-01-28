@@ -183,6 +183,9 @@ func ConvertToRPCLayer(layer ftypes.Layer) *common.Layer {
 
 // ConvertToRPCDataSource returns common.DataSource
 func ConvertToRPCDataSource(ds *dbTypes.DataSource) *common.DataSource {
+	if ds == nil {
+		return nil
+	}
 	return &common.DataSource{
 		Name: ds.Name,
 		Url:  ds.URL,
