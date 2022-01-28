@@ -1,6 +1,7 @@
 package oracle
 
 import (
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"testing"
 	"time"
 
@@ -108,7 +109,7 @@ func TestScanner_Detect(t *testing.T) {
 	}{
 		{
 			name:     "detected",
-			fixtures: []string{"testdata/fixtures/oracle7.yaml"},
+			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{
@@ -129,12 +130,16 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "curl",
 					InstalledVersion: "7.29.0-59.0.1.el7",
 					FixedVersion:     "7.29.0-59.0.1.el7_9.1",
+					DataSource: &dbTypes.DataSource{
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
 				},
 			},
 		},
 		{
 			name:     "without ksplice",
-			fixtures: []string{"testdata/fixtures/oracle7.yaml"},
+			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{
@@ -153,7 +158,7 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			name:     "the installed version has ksplice2",
-			fixtures: []string{"testdata/fixtures/oracle7.yaml"},
+			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{
@@ -174,7 +179,7 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			name:     "with ksplice",
-			fixtures: []string{"testdata/fixtures/oracle7.yaml"},
+			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{
@@ -197,12 +202,16 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "glibc",
 					InstalledVersion: "2:2.17-156.ksplice1.el7",
 					FixedVersion:     "2:2.17-157.ksplice1.el7_3.4",
+					DataSource: &dbTypes.DataSource{
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
 				},
 			},
 		},
 		{
 			name:     "malformed",
-			fixtures: []string{"testdata/fixtures/invalid-type.yaml"},
+			fixtures: []string{"testdata/fixtures/invalid-type.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "7",
 				pkgs: []ftypes.Package{

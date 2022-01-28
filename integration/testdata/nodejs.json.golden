@@ -28,6 +28,10 @@
           "Layer": {},
           "SeveritySource": "nodejs-security-wg",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",
+          "DataSource": {
+            "Name": "GitHub Security Advisory Npm",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
+          },
           "Title": "jquery: Prototype pollution in object's prototype leading to denial of service, remote code execution, or property injection",
           "Description": "jQuery before 3.4.0, as used in Drupal, Backdrop CMS, and other products, mishandles jQuery.extend(true, {}, ...) because of Object.prototype pollution. If an unsanitized source object contained an enumerable __proto__ property, it could extend the native Object.prototype.",
           "Severity": "MEDIUM",
@@ -137,6 +141,10 @@
           "Layer": {},
           "SeveritySource": "ghsa-npm",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-10744",
+          "DataSource": {
+            "Name": "GitHub Security Advisory Npm",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
+          },
           "Title": "nodejs-lodash: prototype pollution in defaultsDeep function leading to modifying properties",
           "Description": "Versions of lodash lower than 4.17.12 are vulnerable to Prototype Pollution. The function defaultsDeep could be tricked into adding or modifying properties of Object.prototype using a constructor payload.",
           "Severity": "CRITICAL",

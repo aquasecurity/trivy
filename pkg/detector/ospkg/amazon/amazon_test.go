@@ -1,6 +1,7 @@
 package amazon_test
 
 import (
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"testing"
 	"time"
 
@@ -29,7 +30,7 @@ func TestScanner_Detect(t *testing.T) {
 	}{
 		{
 			name:     "amazon linux 1",
-			fixtures: []string{"testdata/fixtures/amazon.yaml"},
+			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "1.2",
 				pkgs: []ftypes.Package{
@@ -53,12 +54,16 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						Name: "Amazon Linux Security Center",
+						URL:  "https://alas.aws.amazon.com/",
+					},
 				},
 			},
 		},
 		{
 			name:     "amazon linux 2",
-			fixtures: []string{"testdata/fixtures/amazon.yaml"},
+			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "2",
 				pkgs: []ftypes.Package{
@@ -80,12 +85,16 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						Name: "Amazon Linux Security Center",
+						URL:  "https://alas.aws.amazon.com/",
+					},
 				},
 			},
 		},
 		{
 			name:     "empty version",
-			fixtures: []string{"testdata/fixtures/amazon.yaml"},
+			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "2",
 				pkgs: []ftypes.Package{
@@ -97,7 +106,7 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "1",
 				pkgs: []ftypes.Package{

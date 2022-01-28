@@ -1,6 +1,7 @@
 package rocky_test
 
 import (
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"testing"
 	"time"
 
@@ -29,7 +30,7 @@ func TestScanner_Detect(t *testing.T) {
 	}{
 		{
 			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/rocky.yaml"},
+			fixtures: []string{"testdata/fixtures/rocky.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "8.5",
 				pkgs: []ftypes.Package{
@@ -56,12 +57,16 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "4.18.0-348.el8.0.3",
 					FixedVersion:     "4.18.0-348.2.1.el8_5",
 					Layer:            ftypes.Layer{},
+					DataSource: &dbTypes.DataSource{
+						Name: "Rocky Linux updateinfo",
+						URL:  "https://download.rockylinux.org/pub/rocky/",
+					},
 				},
 			},
 		},
 		{
 			name:     "skip modular package",
-			fixtures: []string{"testdata/fixtures/modular.yaml"},
+			fixtures: []string{"testdata/fixtures/modular.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "8.5",
 				pkgs: []ftypes.Package{
@@ -85,7 +90,7 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "8.5",
 				pkgs: []ftypes.Package{

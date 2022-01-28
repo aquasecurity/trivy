@@ -100,6 +100,12 @@ message Vulnerability {
   google.protobuf.Value     custom_advisory_data = 17;
   google.protobuf.Value     custom_vuln_data     = 18;
   repeated string           vendor_ids           = 19;
+  DataSource                data_source          = 20;
+}
+
+message DataSource {
+  string name = 1;
+  string url  = 2;
 }
 
 message Layer {

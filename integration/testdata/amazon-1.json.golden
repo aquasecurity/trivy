@@ -62,6 +62,10 @@
           },
           "SeveritySource": "amazon",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
+          "DataSource": {
+            "Name": "Amazon Linux Security Center",
+            "URL": "https://alas.aws.amazon.com/"
+          },
           "Title": "curl: double free due to subsequent call of realloc()",
           "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
           "Severity": "MEDIUM",

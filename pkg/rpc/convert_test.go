@@ -238,6 +238,10 @@ func TestConvertToRpcVulns(t *testing.T) {
 							DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 						},
 						PrimaryURL: "https://avd.aquasec.com/nvd/CVE-2019-0001",
+						DataSource: &dbTypes.DataSource{
+							Name: "GitHub Security Advisory Maven",
+							URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+						},
 					},
 				},
 			},
@@ -266,6 +270,10 @@ func TestConvertToRpcVulns(t *testing.T) {
 					PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
 					PublishedDate:    timestamppb.New(fixedPublishedDate),
 					LastModifiedDate: timestamppb.New(fixedLastModifiedDate),
+					DataSource: &common.DataSource{
+						Name: "GitHub Security Advisory Maven",
+						Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+					},
 				},
 			},
 		},
@@ -288,6 +296,10 @@ func TestConvertToRpcVulns(t *testing.T) {
 							Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 							DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 						},
+						DataSource: &dbTypes.DataSource{
+							Name: "GitHub Security Advisory Maven",
+							URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+						},
 					},
 				},
 			},
@@ -305,6 +317,10 @@ func TestConvertToRpcVulns(t *testing.T) {
 					Layer: &common.Layer{
 						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+					},
+					DataSource: &common.DataSource{
+						Name: "GitHub Security Advisory Maven",
+						Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
 					},
 				},
 			},
@@ -363,6 +379,10 @@ func TestConvertFromRPCResults(t *testing.T) {
 							PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
 							PublishedDate:    timestamppb.New(fixedPublishedDate),
 							LastModifiedDate: timestamppb.New(fixedLastModifiedDate),
+							DataSource: &common.DataSource{
+								Name: "GitHub Security Advisory Maven",
+								Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+							},
 						},
 					},
 				}},
@@ -400,6 +420,10 @@ func TestConvertFromRPCResults(t *testing.T) {
 								References:       []string{"http://example.com"},
 								PublishedDate:    &fixedPublishedDate,
 								LastModifiedDate: &fixedLastModifiedDate,
+							},
+							DataSource: &dbTypes.DataSource{
+								Name: "GitHub Security Advisory Maven",
+								URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
 							},
 						},
 					},
