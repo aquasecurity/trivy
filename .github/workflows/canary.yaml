@@ -41,21 +41,15 @@ jobs:
 
       - name: Copy contribution files for upload
         run: |
-          mkdir dist/trivy_canary_build_darwin_amd64/contrib
-          cp {README.md,LICENSE} dist/trivy_canary_build_darwin_amd64
-          cp contrib/*.tpl dist/trivy_canary_build_darwin_amd64/contrib
-
-          mkdir dist/trivy_canary_build_darwin_arm64/contrib
-          cp {README.md,LICENSE} dist/trivy_canary_build_darwin_arm64
-          cp contrib/*.tpl dist/trivy_canary_build_darwin_arm64/contrib
-
-          mkdir dist/trivy_canary_build_linux_amd64/contrib
-          cp {README.md,LICENSE} dist/trivy_canary_build_linux_amd64
-          cp contrib/*.tpl dist/trivy_canary_build_linux_amd64/contrib
-
-          mkdir dist/trivy_canary_build_linux_arm64/contrib
-          cp {README.md,LICENSE} dist/trivy_canary_build_linux_arm64
-          cp contrib/*.tpl dist/trivy_canary_build_linux_arm64/contrib
+          DIRS=("trivy_canary_build_darwin_amd64" 
+                "trivy_canary_build_darwin_arm64" 
+                "trivy_canary_build_linux_amd64" 
+                "trivy_canary_build_linux_arm64")
+          for dir in ${DIRS[@]}; do
+            mkdir dist/$dir/contrib
+            cp {README.md,LICENSE} dist/$dir
+            cp contrib/*.tpl dist/$dir/contrib
+          done
 
       # Upload artifacts 
       - name: Upload artifacts (trivy_Linux-64bit)
