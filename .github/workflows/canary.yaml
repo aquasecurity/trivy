@@ -41,14 +41,10 @@ jobs:
 
       - name: Copy contribution files for upload
         run: |
-          DIRS=("trivy_canary_build_darwin_amd64" 
-                "trivy_canary_build_darwin_arm64" 
-                "trivy_canary_build_linux_amd64" 
-                "trivy_canary_build_linux_arm64")
-          for dir in ${DIRS[@]}; do
-            mkdir dist/$dir/contrib
-            cp {README.md,LICENSE} dist/$dir
-            cp contrib/*.tpl dist/$dir/contrib
+          for dir in dist/*/; do
+            mkdir $dir/contrib
+            cp {README.md,LICENSE} $dir
+            cp contrib/*.tpl $dir/contrib
           done
 
       # Upload artifacts 
