@@ -10,27 +10,27 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/getting-started/quickstart/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/advanced/private-registries/acr/">
       
       
         
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.8+insiders-4.7.0">
     
     
       
-        <title>Quick Start - Trivy</title>
+        <title>Requirements - Trivy</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.4dd4fcbf.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.4dd4fcbf.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.e6a45f82.min.css">
         
       
-      <link rel="preload" as="style" href="../../assets/stylesheets/vendor/mermaid.d607d465.min.css">
+      <link rel="preload" as="style" href="../../../assets/stylesheets/vendor/mermaid.d607d465.min.css">
       
     
     
@@ -43,7 +43,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -218,7 +218,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#quick-start" class="md-skip">
+        <a href="#requirements" class="md-skip">
           Skip to content
         </a>
       
@@ -238,9 +238,9 @@
 
 <header class="md-header md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../imgs/logo-white.svg" alt="logo">
+  <img src="../../../imgs/logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -256,7 +256,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Quick Start
+              Requirements
             
           </span>
         </div>
@@ -328,7 +328,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   HOME
@@ -344,15 +344,13 @@
   
     
     
-      
-    
   
   
     
     
     
       <li class="md-tabs__item">
-        <a href="../overview/" class="md-tabs__link md-tabs__link--active">
+        <a href="../../../getting-started/overview/" class="md-tabs__link">
           
   
   Getting started
@@ -383,7 +381,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../vulnerability/scanning/" class="md-tabs__link">
+        <a href="../../../vulnerability/scanning/" class="md-tabs__link">
           
   
     
@@ -419,7 +417,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../misconfiguration/" class="md-tabs__link">
+        <a href="../../../misconfiguration/" class="md-tabs__link">
           
   
     
@@ -447,7 +445,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../advanced/" class="md-tabs__link">
+        <a href="../../" class="md-tabs__link">
           
   
     
@@ -487,9 +485,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../imgs/logo-white.svg" alt="logo">
+  <img src="../../../imgs/logo-white.svg" alt="logo">
 
     </a>
     Trivy
@@ -518,7 +516,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -537,14 +535,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
       
       
       
@@ -572,7 +568,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../overview/" class="md-nav__link">
+      <a href="../../../getting-started/overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -591,7 +587,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../installation/" class="md-nav__link">
+      <a href="../../../getting-started/installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -608,28 +604,9 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Quick Start
-  </span>
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../getting-started/quickstart/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -637,40 +614,6 @@
   </span>
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#scan-image-for-vulnerabilities" class="md-nav__link">
-    Scan image for vulnerabilities
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#scan-directory-for-misconfigurations" class="md-nav__link">
-    Scan directory for misconfigurations
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -682,7 +625,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../troubleshooting/" class="md-nav__link">
+      <a href="../../../getting-started/troubleshooting/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -701,7 +644,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../further/" class="md-nav__link">
+      <a href="../../../getting-started/further/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -720,7 +663,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../credit/" class="md-nav__link">
+      <a href="../../../getting-started/credit/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -803,7 +746,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
+      <a href="../../../getting-started/cli/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -822,7 +765,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/image/" class="md-nav__link">
+      <a href="../../../getting-started/cli/image/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -841,7 +784,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/config/" class="md-nav__link">
+      <a href="../../../getting-started/cli/config/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -860,7 +803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/fs/" class="md-nav__link">
+      <a href="../../../getting-started/cli/fs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -879,7 +822,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/rootfs/" class="md-nav__link">
+      <a href="../../../getting-started/cli/rootfs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -898,7 +841,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/repo/" class="md-nav__link">
+      <a href="../../../getting-started/cli/repo/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -917,7 +860,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/client/" class="md-nav__link">
+      <a href="../../../getting-started/cli/client/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -936,7 +879,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/server/" class="md-nav__link">
+      <a href="../../../getting-started/cli/server/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1042,7 +985,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1061,7 +1004,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/image/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/image/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1080,7 +1023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/filesystem/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/filesystem/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1099,7 +1042,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/rootfs/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/rootfs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1118,7 +1061,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/git-repository/" class="md-nav__link">
+      <a href="../../../vulnerability/scanning/git-repository/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1177,7 +1120,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/detection/os/" class="md-nav__link">
+      <a href="../../../vulnerability/detection/os/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1196,7 +1139,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/detection/language/" class="md-nav__link">
+      <a href="../../../vulnerability/detection/language/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1215,7 +1158,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/detection/data-source/" class="md-nav__link">
+      <a href="../../../vulnerability/detection/data-source/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1234,7 +1177,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/detection/supported/" class="md-nav__link">
+      <a href="../../../vulnerability/detection/supported/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1293,7 +1236,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/examples/filter/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/filter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1312,7 +1255,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/examples/report/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/report/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1331,7 +1274,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/examples/db/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/db/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1350,7 +1293,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/examples/cache/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/cache/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1369,7 +1312,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/examples/others/" class="md-nav__link">
+      <a href="../../../vulnerability/examples/others/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1468,7 +1411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/" class="md-nav__link">
+      <a href="../../../misconfiguration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1487,7 +1430,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/iac/" class="md-nav__link">
+      <a href="../../../misconfiguration/iac/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1506,7 +1449,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/filesystem/" class="md-nav__link">
+      <a href="../../../misconfiguration/filesystem/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1565,7 +1508,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/policy/builtin/" class="md-nav__link">
+      <a href="../../../misconfiguration/policy/builtin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1584,7 +1527,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/policy/exceptions/" class="md-nav__link">
+      <a href="../../../misconfiguration/policy/exceptions/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1643,7 +1586,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/custom/" class="md-nav__link">
+      <a href="../../../misconfiguration/custom/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1662,7 +1605,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/custom/data/" class="md-nav__link">
+      <a href="../../../misconfiguration/custom/data/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1681,7 +1624,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/custom/combine/" class="md-nav__link">
+      <a href="../../../misconfiguration/custom/combine/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1700,7 +1643,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/custom/testing/" class="md-nav__link">
+      <a href="../../../misconfiguration/custom/testing/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1719,7 +1662,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/custom/debug/" class="md-nav__link">
+      <a href="../../../misconfiguration/custom/debug/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1738,7 +1681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/custom/examples/" class="md-nav__link">
+      <a href="../../../misconfiguration/custom/examples/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1797,7 +1740,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/options/policy/" class="md-nav__link">
+      <a href="../../../misconfiguration/options/policy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1816,7 +1759,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/options/filter/" class="md-nav__link">
+      <a href="../../../misconfiguration/options/filter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1835,7 +1778,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/options/report/" class="md-nav__link">
+      <a href="../../../misconfiguration/options/report/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1854,7 +1797,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/options/others/" class="md-nav__link">
+      <a href="../../../misconfiguration/options/others/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1913,7 +1856,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/comparison/conftest/" class="md-nav__link">
+      <a href="../../../misconfiguration/comparison/conftest/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1932,7 +1875,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/comparison/tfsec/" class="md-nav__link">
+      <a href="../../../misconfiguration/comparison/tfsec/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1951,7 +1894,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../misconfiguration/comparison/cfsec/" class="md-nav__link">
+      <a href="../../../misconfiguration/comparison/cfsec/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2017,7 +1960,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/" class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2036,7 +1979,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/plugins/" class="md-nav__link">
+      <a href="../../plugins/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2055,7 +1998,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/air-gap/" class="md-nav__link">
+      <a href="../../air-gap/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2107,7 +2050,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/" class="md-nav__link">
+      <a href="../../integrations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2126,7 +2069,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/github-actions/" class="md-nav__link">
+      <a href="../../integrations/github-actions/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2145,7 +2088,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/circleci/" class="md-nav__link">
+      <a href="../../integrations/circleci/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2164,7 +2107,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/travis-ci/" class="md-nav__link">
+      <a href="../../integrations/travis-ci/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2183,7 +2126,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/gitlab-ci/" class="md-nav__link">
+      <a href="../../integrations/gitlab-ci/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2202,7 +2145,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/bitbucket/" class="md-nav__link">
+      <a href="../../integrations/bitbucket/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2221,7 +2164,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/aws-codepipeline/" class="md-nav__link">
+      <a href="../../integrations/aws-codepipeline/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2240,7 +2183,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/integrations/aws-security-hub/" class="md-nav__link">
+      <a href="../../integrations/aws-security-hub/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2299,7 +2242,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
+      <a href="../../container/embed-in-dockerfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2318,7 +2261,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/container/unpacked-filesystem/" class="md-nav__link">
+      <a href="../../container/unpacked-filesystem/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2337,7 +2280,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/container/oci/" class="md-nav__link">
+      <a href="../../container/oci/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2356,7 +2299,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/container/podman/" class="md-nav__link">
+      <a href="../../container/podman/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2406,7 +2349,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/private-registries/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2425,7 +2368,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/private-registries/docker-hub/" class="md-nav__link">
+      <a href="../docker-hub/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2444,7 +2387,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/private-registries/ecr/" class="md-nav__link">
+      <a href="../ecr/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2463,7 +2406,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/private-registries/gcr/" class="md-nav__link">
+      <a href="../gcr/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2482,7 +2425,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/private-registries/self/" class="md-nav__link">
+      <a href="../self/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2548,7 +2491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/modes/standalone/" class="md-nav__link">
+      <a href="../../modes/standalone/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2567,7 +2510,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/modes/client-server/" class="md-nav__link">
+      <a href="../../modes/client-server/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2626,7 +2569,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/community/tools/" class="md-nav__link">
+      <a href="../../community/tools/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2645,7 +2588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/community/references/" class="md-nav__link">
+      <a href="../../community/references/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2704,7 +2647,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/contrib/help-wanted/" class="md-nav__link">
+      <a href="../../contrib/help-wanted/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2723,7 +2666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/contrib/triage/" class="md-nav__link">
+      <a href="../../contrib/triage/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2769,28 +2712,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#scan-image-for-vulnerabilities" class="md-nav__link">
-    Scan image for vulnerabilities
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#scan-directory-for-misconfigurations" class="md-nav__link">
-    Scan directory for misconfigurations
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -2803,68 +2724,25 @@
                 
 
 
-<h1 id="quick-start">Quick Start</h1>
-<h2 id="scan-image-for-vulnerabilities">Scan image for vulnerabilities</h2>
-<p>Simply specify an image name (and a tag).</p>
-<div class="highlight"><pre><span></span><code>$ trivy image [YOUR_IMAGE_NAME]
+<h1 id="requirements">Requirements</h1>
+<p>None, Trivy uses Azure SDK for Go. You don't need to install <code>az</code> command.</p>
+<h1 id="privileges">Privileges</h1>
+<p>Service principal must have the <code>AcrPull</code> permissions.</p>
+<h2 id="creation-of-a-service-principal">Creation of a service principal</h2>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SP_DATA</span><span class="o">=</span><span class="k">$(</span>az ad sp create-for-rbac --name TrivyTest --role AcrPull --scope <span class="s2">&quot;/subscriptions/&lt;subscription_id&gt;/resourceGroups/&lt;resource_group&gt;/providers/Microsoft.ContainerRegistry/registries/&lt;registry_name&gt;&quot;</span><span class="k">)</span>
 </code></pre></div>
-<p>For example:</p>
-<div class="highlight"><pre><span></span><code>$ trivy image python:3.4-alpine
+<h1 id="usage">Usage</h1>
+<div class="highlight"><pre><span></span><code><span class="c1"># must set TRIVY_USERNAME empty char</span>
+<span class="nb">export</span> AZURE_CLIENT_ID<span class="k">$(</span><span class="nb">echo</span> <span class="nv">$SP_DATA</span> <span class="p">|</span> jq -r .appId<span class="k">)</span>
+<span class="nb">export</span> AZURE_CLIENT_SECRET<span class="k">$(</span><span class="nb">echo</span> <span class="nv">$SP_DATA</span> <span class="p">|</span> jq -r .password<span class="k">)</span>
+<span class="nb">export</span> AZURE_TENANT_ID<span class="k">$(</span><span class="nb">echo</span> <span class="nv">$SP_DATA</span> <span class="p">|</span> jq -r .tenant<span class="k">)</span>
 </code></pre></div>
-<details>
-<summary>Result</summary>
-
-<div class="highlight"><pre><span></span><code>2019-05-16T01:20:43.180+0900    INFO    Updating vulnerability database...
-2019-05-16T01:20:53.029+0900    INFO    Detecting Alpine vulnerabilities...
-
-python:3.4-alpine3.9 (alpine 3.9.2)
-===================================
-Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
-
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| openssl | CVE-2019-1543    | MEDIUM   | 1.1.1a-r1         | 1.1.1b-r1     | openssl: ChaCha20-Poly1305     |
-|         |                  |          |                   |               | with long nonces               |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
+<h1 id="testing">Testing</h1>
+<p>You can test credentials in the following manner.</p>
+<div class="highlight"><pre><span></span><code>docker run -it --rm -v /tmp:/tmp<span class="se">\</span>
+  -e <span class="nv">AZURE_CLIENT_ID</span><span class="o">=</span><span class="si">${</span><span class="nv">AZURE_CLIENT_ID</span><span class="si">}</span> -e <span class="nv">AZURE_CLIENT_SECRET</span><span class="o">=</span><span class="si">${</span><span class="nv">AZURE_CLIENT_SECRET</span><span class="si">}</span> <span class="se">\</span>
+  -e <span class="nv">AZURE_TENANT_ID</span><span class="o">=</span><span class="si">${</span><span class="nv">AZURE_TENANT_ID</span><span class="si">}</span> aquasec/trivy image your_special_project.azurecr.io/your_special_image:your_special_tag
 </code></pre></div>
-
-</details>
-
-<p>For more details, see <a href="../../vulnerability/scanning/">here</a>.</p>
-<h2 id="scan-directory-for-misconfigurations">Scan directory for misconfigurations</h2>
-<p>Simply specify a directory containing IaC files such as Terraform and Dockerfile.</p>
-<div class="highlight"><pre><span></span><code>$ trivy config [YOUR_IAC_DIR]
-</code></pre></div>
-<p>For example:</p>
-<div class="highlight"><pre><span></span><code>$ ls build/
-Dockerfile
-$ trivy config ./build
-</code></pre></div>
-<details>
-<summary>Result</summary>
-
-<div class="highlight"><pre><span></span><code>2021-07-09T10:06:29.188+0300    INFO    Need to update the built-in policies
-2021-07-09T10:06:29.188+0300    INFO    Downloading the built-in policies...
-2021-07-09T10:06:30.520+0300    INFO    Detected config files: 1
-
-Dockerfile (dockerfile)
-=======================
-Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
-Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
-
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-|           TYPE            | MISCONF ID |        CHECK         | SEVERITY |                 MESSAGE                  |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-| Dockerfile Security Check |   DS002    | Image user is &#39;root&#39; |   HIGH   | Last USER command in                     |
-|                           |            |                      |          | Dockerfile should not be &#39;root&#39;          |
-|                           |            |                      |          | --&gt;avd.aquasec.com/appshield/ds002       |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-</code></pre></div>
-
-</details>
-
-<p>For more details, see <a href="../../misconfiguration/">here</a>.</p>
 
 
 
@@ -2878,41 +2756,6 @@ Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
       </main>
       
         <footer class="md-footer">
-  
-    <nav class="md-footer__inner md-grid" aria-label="Footer">
-      
-        
-        <a href="../installation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Installation" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              Installation
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../troubleshooting/" class="md-footer__link md-footer__link--next" aria-label="Next: Troubleshooting" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Troubleshooting
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -2930,10 +2773,10 @@ Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.f7fe2898.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.f7fe2898.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.7cc7e457.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.7cc7e457.min.js"></script>
       
     
   </body>
