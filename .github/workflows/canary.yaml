@@ -37,7 +37,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v2
         with:
           version: v0.183.0
-          args: build -f=canary.goreleaser.yaml --snapshot --rm-dist
+          args: build -f=goreleaser-canary.yml --snapshot --rm-dist
 
       - name: Copy contribution files for upload
         run: |
