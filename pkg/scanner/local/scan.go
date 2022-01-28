@@ -11,9 +11,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	_ "github.com/aquasecurity/fanal/analyzer/all"
 	"github.com/aquasecurity/fanal/applier"
-	_ "github.com/aquasecurity/fanal/hook/all"
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
@@ -22,6 +20,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
+
+	_ "github.com/aquasecurity/fanal/analyzer/all"
+	_ "github.com/aquasecurity/fanal/hook/all"
 )
 
 var (

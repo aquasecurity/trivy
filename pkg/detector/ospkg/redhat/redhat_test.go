@@ -1,22 +1,27 @@
 package redhat_test
 
 import (
-	"sort"
+	"os"
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/dbtest"
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
-
+	"github.com/stretchr/testify/require"
 	fake "k8s.io/utils/clock/testing"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/dbtest"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
+
+func TestMain(m *testing.M) {
+	log.InitLogger(false, false)
+	os.Exit(m.Run())
+}
 
 func TestScanner_Detect(t *testing.T) {
 	type args struct {
@@ -28,11 +33,14 @@ func TestScanner_Detect(t *testing.T) {
 		fixtures []string
 		args     args
 		want     []types.DetectedVulnerability
-		wantErr  string
+		wantErr  bool
 	}{
 		{
-			name:     "happy path: src pkg name is different from bin pkg name",
-			fixtures: []string{"testdata/fixtures/redhat.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
 			args: args{
 				osVer: "7.6",
 				pkgs: []ftypes.Package{
@@ -49,6 +57,9 @@ func TestScanner_Detect(t *testing.T) {
 						Layer: ftypes.Layer{
 							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 						},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-7-server-rpms"},
+						},
 					},
 				},
 			},
@@ -57,23 +68,24 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2017-5953",
 					PkgName:          "vim-minimal",
 					InstalledVersion: "2:7.4.160-5.el7",
-					Layer: ftypes.Layer{
-						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityLow.String(),
 					},
-				},
-				{
-					VulnerabilityID:  "CVE-2017-6350",
-					PkgName:          "vim-minimal",
-					InstalledVersion: "2:7.4.160-5.el7",
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 				},
 				{
 					VulnerabilityID:  "CVE-2019-12735",
+					VendorIDs:        []string{"RHSA-2019:1619"},
 					PkgName:          "vim-minimal",
 					InstalledVersion: "2:7.4.160-5.el7",
 					FixedVersion:     "2:7.4.160-6.el7_6",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
@@ -81,10 +93,13 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "happy path: src pkg name is the same as bin pkg name",
-			fixtures: []string{"testdata/fixtures/redhat.yaml"},
+			name: "happy path: multiple RHSA-IDs",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
 			args: args{
-				osVer: "7.3",
+				osVer: "7.5",
 				pkgs: []ftypes.Package{
 					{
 						Name:       "nss",
@@ -96,47 +111,102 @@ func TestScanner_Detect(t *testing.T) {
 						SrcVersion: "3.36.0",
 						SrcRelease: "7.4.160",
 						SrcEpoch:   0,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-7-server-rpms"},
+						},
 					},
 				},
 			},
 			want: []types.DetectedVulnerability{
 				{
-					VulnerabilityID:  "CVE-2015-2808",
+					VulnerabilityID:  "CVE-2019-17007",
+					VendorIDs:        []string{"RHSA-2021:0876"},
 					PkgName:          "nss",
 					InstalledVersion: "3.36.0-7.1.el7_6",
+					FixedVersion:     "3.36.0-9.el7_6",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
 				},
 				{
-					VulnerabilityID:  "CVE-2016-2183",
+					VulnerabilityID:  "CVE-2020-12403",
+					VendorIDs:        []string{"RHSA-2021:0538", "RHSA-2021:0876"},
 					PkgName:          "nss",
 					InstalledVersion: "3.36.0-7.1.el7_6",
-				},
-				{
-					VulnerabilityID:  "CVE-2018-12404",
-					PkgName:          "nss",
-					InstalledVersion: "3.36.0-7.1.el7_6",
-					FixedVersion:     "3.44.0-4.el7",
+					FixedVersion:     "3.53.1-17.el7_3",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
 				},
 			},
 		},
 		{
-			name:     "happy path: modular packages",
-			fixtures: []string{"testdata/fixtures/redhat.yaml"},
+			name: "no build info",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
+			args: args{
+				osVer: "8.3",
+				pkgs: []ftypes.Package{
+					{
+						Name:    "vim-minimal",
+						Version: "7.4.160",
+						Release: "5.el8",
+						Epoch:   2,
+						Arch:    "x86_64",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2019-12735",
+					VendorIDs:        []string{"RHSA-2019:1619"},
+					PkgName:          "vim-minimal",
+					InstalledVersion: "2:7.4.160-5.el8",
+					FixedVersion:     "2:7.4.160-7.el8_7",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			name: "modular packages",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
 			args: args{
 				osVer: "8.3",
 				pkgs: []ftypes.Package{
 					{
 						Name:            "php",
-						Version:         "7.2.24",
+						Version:         "7.2.10",
 						Release:         "1.module_el8.2.0+313+b04d0a66",
 						Arch:            "x86_64",
-						Epoch:           0,
 						SrcName:         "php",
-						SrcVersion:      "7.2.24",
+						SrcVersion:      "7.2.10",
 						SrcRelease:      "1.module_el8.2.0+313+b04d0a66",
-						SrcEpoch:        0,
 						Modularitylabel: "php:7.2:8020020200507003613:2c7ca891",
 						Layer: ftypes.Layer{
 							DiffID: "sha256:3e968ecc016e1b9aa19023798229bf2d25c813d1bf092533f38b056aff820524",
+						},
+						BuildInfo: &ftypes.BuildInfo{
+							Nvr:  "ubi8-init-container-8.0-7",
+							Arch: "x86_64",
 						},
 					},
 				},
@@ -144,9 +214,14 @@ func TestScanner_Detect(t *testing.T) {
 			want: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "CVE-2019-11043",
+					VendorIDs:        []string{"RHSA-2020:0322"},
 					PkgName:          "php",
-					InstalledVersion: "7.2.24-1.module_el8.2.0+313+b04d0a66",
-					FixedVersion:     "7.3.5-5.module+el8.1.0+4560+e0eee7d6",
+					InstalledVersion: "7.2.10-1.module_el8.2.0+313+b04d0a66",
+					FixedVersion:     "7.2.11-1.1.module+el8.0.0+4664+17bd8d65",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityCritical.String(),
+					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:3e968ecc016e1b9aa19023798229bf2d25c813d1bf092533f38b056aff820524",
 					},
@@ -154,23 +229,17 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "happy path: packages from remi repository are skipped",
-			fixtures: []string{"testdata/fixtures/redhat.yaml"},
+			name: "packages from remi repository are skipped",
 			args: args{
 				osVer: "7.6",
 				pkgs: []ftypes.Package{
 					{
-						Name:       "php",
-						Version:    "7.3.23",
-						Release:    "1.el7.remi",
-						Arch:       "x86_64",
-						Epoch:      0,
-						SrcName:    "php",
-						SrcVersion: "7.3.23",
-						SrcRelease: "1.el7.remi",
-						SrcEpoch:   0,
-						Layer: ftypes.Layer{
-							DiffID: "sha256:c27b3cf4d516baf5932d5df3a573c6a571ddace3ee2a577492292d2e849c112b",
+						Name:    "php",
+						Version: "7.3.23",
+						Release: "1.el7.remi",
+						Arch:    "x86_64",
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-7-server-rpms"},
 						},
 					},
 				},
@@ -178,38 +247,35 @@ func TestScanner_Detect(t *testing.T) {
 			want: []types.DetectedVulnerability(nil),
 		},
 		{
-			name:     "invalid bucket",
-			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			name: "broken value",
+			fixtures: []string{
+				"testdata/fixtures/invalid-type.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
 			args: args{
-				osVer: "6",
+				osVer: "7",
 				pkgs: []ftypes.Package{
 					{
-						Name:       "jq",
-						Version:    "3.36.0",
-						SrcName:    "jq",
-						SrcVersion: "3.36.0",
+						Name:    "nss",
+						Version: "3.36.0",
+						Release: "7.1.el7_6",
+						Arch:    "x86_64",
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-7-server-rpms"},
+						},
 					},
 				},
 			},
-			wantErr: "failed to get Red Hat advisories",
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_ = dbtest.InitDB(t, tt.fixtures)
-			defer db.Close()
+			dbtest.InitDB(t, tt.fixtures)
 
 			s := redhat.NewScanner()
 			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)
-			if tt.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
-			}
-			sort.Slice(got, func(i, j int) bool {
-				return got[i].VulnerabilityID < got[j].VulnerabilityID
-			})
-			assert.NoError(t, err)
+			require.Equal(t, tt.wantErr, err != nil, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

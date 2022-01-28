@@ -1,44 +1,33 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/images/centos-6.tar.gz",
+  "ArtifactName": "testdata/fixtures/images/centos-7.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
     "OS": {
       "Family": "centos",
-      "Name": "6.10",
-      "EOSL": true
+      "Name": "7.6.1810"
     },
-    "ImageID": "sha256:d0957ffdf8a2ea8c8925903862b65a1b6850dbb019f88d45e927d3d5a3fa0c31",
+    "ImageID": "sha256:9f38484d220fa527b1fb19747638497179500a1bed8bf0498eb788229229e6e1",
     "DiffIDs": [
-      "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
+      "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
     ],
     "ImageConfig": {
       "architecture": "amd64",
-      "author": "https://github.com/CentOS/sig-cloud-instance-images",
-      "container": "d519f3e5c41d16388d3fba0dac626427b21deb98cce150dee80c180b9baf9435",
-      "created": "2019-03-14T21:20:11.486358099Z",
+      "container": "958baf5225f586da9c70a21e911a0a875402dd22d83133d78b3b3aa6130e7892",
+      "created": "2019-03-14T21:19:53.361167852Z",
       "docker_version": "18.06.1-ce",
       "history": [
         {
-          "author": "https://github.com/CentOS/sig-cloud-instance-images",
-          "created": "2018-10-09T18:20:03.816986835Z",
-          "created_by": "/bin/sh -c #(nop)  MAINTAINER https://github.com/CentOS/sig-cloud-instance-images",
+          "created": "2019-03-14T21:19:52.66982152Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:074f2c974463ab38cf3532134e8ba2c91c9e346457713f2e8b8e2ac0ee9fd83d in / "
+        },
+        {
+          "created": "2019-03-14T21:19:53.099141434Z",
+          "created_by": "/bin/sh -c #(nop)  LABEL org.label-schema.schema-version=1.0 org.label-schema.name=CentOS Base Image org.label-schema.vendor=CentOS org.label-schema.license=GPLv2 org.label-schema.build-date=20190305",
           "empty_layer": true
         },
         {
-          "author": "https://github.com/CentOS/sig-cloud-instance-images",
-          "created": "2019-03-14T21:20:10.936939354Z",
-          "created_by": "/bin/sh -c #(nop) ADD file:0065316a41144e95bcb133567cc86816b8368a823cc067d741e06ded59849fd8 in / "
-        },
-        {
-          "author": "https://github.com/CentOS/sig-cloud-instance-images",
-          "created": "2019-03-14T21:20:11.322700622Z",
-          "created_by": "/bin/sh -c #(nop)  LABEL org.label-schema.schema-version=1.0 org.label-schema.name=CentOS Base Image org.label-schema.vendor=CentOS org.label-schema.license=GPLv2 org.label-schema.build-date=20181006",
-          "empty_layer": true
-        },
-        {
-          "author": "https://github.com/CentOS/sig-cloud-instance-images",
-          "created": "2019-03-14T21:20:11.486358099Z",
+          "created": "2019-03-14T21:19:53.361167852Z",
           "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/bash\"]",
           "empty_layer": true
         }
@@ -47,7 +36,7 @@
       "rootfs": {
         "type": "layers",
         "diff_ids": [
-          "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
+          "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
         ]
       },
       "config": {
@@ -57,9 +46,9 @@
         "Env": [
           "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         ],
-        "Image": "sha256:143abcd43bce45f4fd9ba51c7361051d7ea9e9e1eadb66e5c94a9c1b7754524f",
+        "Image": "sha256:294e8d8145287e70f07328cc09d840fad8980b801223321b983442f097aff0d8",
         "Labels": {
-          "org.label-schema.build-date": "20181006",
+          "org.label-schema.build-date": "20190305",
           "org.label-schema.license": "GPLv2",
           "org.label-schema.name": "CentOS Base Image",
           "org.label-schema.schema-version": "1.0",
@@ -71,59 +60,20 @@
   },
   "Results": [
     {
-      "Target": "testdata/fixtures/images/centos-6.tar.gz (centos 6.10)",
+      "Target": "testdata/fixtures/images/centos-7.tar.gz (centos 7.6.1810)",
       "Class": "os-pkgs",
       "Type": "centos",
       "Vulnerabilities": [
         {
-          "VulnerabilityID": "CVE-2020-29573",
-          "PkgName": "glibc",
-          "InstalledVersion": "2.12-1.212.el6",
-          "Layer": {
-            "DiffID": "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
-          },
-          "SeveritySource": "redhat",
-          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-29573",
-          "Title": "glibc: stack-based buffer overflow if the input to any of the printf family of functions is an 80-bit long double with a non-canonical bit pattern",
-          "Description": "sysdeps/i386/ldbl2mpn.c in the GNU C Library (aka glibc or libc6) before 2.23 on x86 targets has a stack-based buffer overflow if the input to any of the printf family of functions is an 80-bit long double with a non-canonical bit pattern, as seen when passing a \\x00\\x04\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x04 value to sprintf. NOTE: the issue does not affect glibc by default in 2016 or later (i.e., 2.23 or later) because of commits made in 2015 for inlining of C99 math functions through use of GCC built-ins. In other words, the reference to 2.23 is intentional despite the mention of \"Fixed for glibc 2.33\" in the 26649 reference.",
-          "Severity": "MEDIUM",
-          "CweIDs": [
-            "CWE-787"
-          ],
-          "CVSS": {
-            "nvd": {
-              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
-              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-              "V2Score": 5,
-              "V3Score": 7.5
-            },
-            "redhat": {
-              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
-              "V3Score": 7.5
-            }
-          },
-          "References": [
-            "https://access.redhat.com/security/cve/CVE-2020-29573",
-            "https://linux.oracle.com/cve/CVE-2020-29573.html",
-            "https://linux.oracle.com/errata/ELSA-2021-0348.html",
-            "https://security.gentoo.org/glsa/202101-20",
-            "https://security.netapp.com/advisory/ntap-20210122-0004/",
-            "https://sourceware.org/bugzilla/show_bug.cgi?id=26649",
-            "https://sourceware.org/pipermail/libc-alpha/2020-September/117779.html"
-          ],
-          "PublishedDate": "2020-12-06T00:15:00Z",
-          "LastModifiedDate": "2021-01-26T18:15:00Z"
-        },
-        {
           "VulnerabilityID": "CVE-2019-1559",
           "VendorIDs": [
-            "RHSA-2019:2471"
+            "RHSA-2019:2304"
           ],
-          "PkgName": "openssl",
-          "InstalledVersion": "1.0.1e-57.el6",
-          "FixedVersion": "1.0.1e-58.el6_10",
+          "PkgName": "openssl-libs",
+          "InstalledVersion": "1:1.0.2k-16.el7",
+          "FixedVersion": "1:1.0.2k-19.el7",
           "Layer": {
-            "DiffID": "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
+            "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
           },
           "SeveritySource": "redhat",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1559",
