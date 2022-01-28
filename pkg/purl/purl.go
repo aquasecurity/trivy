@@ -1,51 +1,108 @@
 package purl
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/report"
 
 	"github.com/package-url/packageurl-go"
 )
 
-func NewOSPackageURL(t string, fos types.OS, pkg types.Package) packageurl.PackageURL {
-	qualifiers := parseQualifier(pkg)
-	qualifiers = append(qualifiers, packageurl.Qualifier{
-		Key:   "distro",
-		Value: fos.Name,
-	})
-	family := fos.Family
+func NewPackageURL(t string, class report.ResultClass, fos types.OS, pkg types.Package) packageurl.PackageURL {
+	var purl *packageurl.PackageURL
 
-	// SLES string has whitespace
-	if fos.Family == os.SLES {
-		family = "sles"
+	switch class {
+	case report.ClassOSPkg:
+		qualifiers := parseQualifier(pkg, fos.Name)
+		family := fos.Family
+		version := fmt.Sprintf("%s-%s", pkg.Version, pkg.Release)
+
+		// SLES string has whitespace
+		if fos.Family == os.SLES {
+			family = "sles"
+		}
+
+		purl = packageurl.NewPackageURL(purlType(t), family, pkg.Name, version, qualifiers, "")
+	case report.ClassLangPkg:
+		name := pkg.Name
+		namespace := ""
+		switch t {
+		case string(analyzer.TypeJar), string(analyzer.TypePom):
+			namespace, name = parseMaven(name)
+		case string(analyzer.TypePythonPkg), string(analyzer.TypePip), string(analyzer.TypePipenv), string(analyzer.TypePoetry):
+			name = parsePyPI(name)
+		case string(analyzer.TypeComposer):
+			namespace, name = parseComposer(name)
+		case string(analyzer.TypeGoBinary), string(analyzer.TypeGoMod):
+			namespace, name = parseGolang(name)
+		case string(analyzer.TypeNpmPkgLock), string(analyzer.TypeNodePkg), string(analyzer.TypeYarn):
+			namespace, name = parseNpm(name)
+		}
+
+		purl = packageurl.NewPackageURL(purlType(t), namespace, name, pkg.Version, nil, "")
 	}
-
-	return *packageurl.NewPackageURL(purlType(t), family, pkg.Name, pkg.Version, qualifiers, "")
-}
-
-func NewPackageURL(t string, pkg types.Package) packageurl.PackageURL {
-	name := strings.ReplaceAll(pkg.Name, ":", "/")
-	index := strings.LastIndex(name, "/")
-
-	namespace := ""
-
-	pkgName := name
-	if index != -1 {
-		namespace = name[:index]
-		pkgName = name[index+1:]
-	}
-	purl := packageurl.NewPackageURL(purlType(t), namespace, pkgName, pkg.Version, nil, "")
 
 	return *purl
 }
 
+func parseMaven(pkgName string) (string, string) {
+	var namespace string
+	name := strings.ReplaceAll(pkgName, ":", "/")
+	index := strings.LastIndex(name, "/")
+	if index != -1 {
+		namespace = name[:index]
+		name = name[index+1:]
+	}
+	return namespace, name
+}
+
+func parseGolang(pkgName string) (string, string) {
+	var namespace string
+
+	name := strings.ToLower(pkgName)
+	index := strings.LastIndex(name, "/")
+	if index != -1 {
+		namespace = name[:index]
+		name = name[index+1:]
+	}
+	return namespace, name
+}
+
+func parsePyPI(pkgName string) string {
+	return strings.ToLower(strings.ReplaceAll(pkgName, "_", "-"))
+}
+
+func parseComposer(pkgName string) (string, string) {
+	var namespace, name string
+
+	index := strings.LastIndex(pkgName, "/")
+	if index != -1 {
+		namespace = pkgName[:index]
+		name = pkgName[index+1:]
+	}
+	return namespace, name
+}
+
+func parseNpm(pkgName string) (string, string) {
+	var namespace string
+
+	name := strings.ToLower(pkgName)
+	index := strings.LastIndex(pkgName, "/")
+	if index != -1 {
+		namespace = name[:index]
+		name = name[index+1:]
+	}
+	return namespace, name
+}
+
 func purlType(t string) string {
 	switch t {
-	case string(analyzer.TypeJar):
+	case string(analyzer.TypeJar), string(analyzer.TypePom):
 		return packageurl.TypeMaven
 	case string(analyzer.TypeBundler), string(analyzer.TypeGemSpec):
 		return packageurl.TypeGem
@@ -67,12 +124,12 @@ func purlType(t string) string {
 	return t
 }
 
-func parseQualifier(pkg types.Package) packageurl.Qualifiers {
+func parseQualifier(pkg types.Package, distro string) packageurl.Qualifiers {
 	qualifiers := packageurl.Qualifiers{}
-	if pkg.Release != "" {
+	if pkg.Arch != "" {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "release",
-			Value: pkg.Release,
+			Key:   "arch",
+			Value: pkg.Arch,
 		})
 	}
 	if pkg.Epoch != 0 {
@@ -81,34 +138,16 @@ func parseQualifier(pkg types.Package) packageurl.Qualifiers {
 			Value: strconv.Itoa(pkg.Epoch),
 		})
 	}
-	if pkg.Arch != "" {
+	if distro != "" {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "arch",
-			Value: pkg.Arch,
+			Key:   "distro",
+			Value: distro,
 		})
 	}
-	if pkg.SrcName != "" {
+	if pkg.FilePath != "" {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "src_name",
-			Value: pkg.SrcName,
-		})
-	}
-	if pkg.SrcVersion != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "src_version",
-			Value: pkg.SrcVersion,
-		})
-	}
-	if pkg.SrcRelease != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "src_release",
-			Value: pkg.SrcRelease,
-		})
-	}
-	if pkg.SrcEpoch != 0 {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "src_epoch",
-			Value: strconv.Itoa(pkg.SrcEpoch),
+			Key:   "file_path",
+			Value: pkg.FilePath,
 		})
 	}
 	if pkg.Modularitylabel != "" {
@@ -117,10 +156,28 @@ func parseQualifier(pkg types.Package) packageurl.Qualifiers {
 			Value: pkg.Modularitylabel,
 		})
 	}
-	if pkg.FilePath != "" {
+	if pkg.SrcName != "" {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "file_path",
-			Value: pkg.FilePath,
+			Key:   "src_name",
+			Value: pkg.SrcName,
+		})
+	}
+	if pkg.SrcEpoch != 0 {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "src_epoch",
+			Value: strconv.Itoa(pkg.SrcEpoch),
+		})
+	}
+	if pkg.SrcRelease != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "src_release",
+			Value: pkg.SrcRelease,
+		})
+	}
+	if pkg.SrcVersion != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "src_version",
+			Value: pkg.SrcVersion,
 		})
 	}
 	return qualifiers
