@@ -488,3 +488,56 @@ func TestConvertFromRPCResults(t *testing.T) {
 		})
 	}
 }
+
+func TestConvertToRPCDataSource(t *testing.T) {
+	tests := []struct {
+		name string
+		args *dbTypes.DataSource
+		want *common.DataSource
+	}{
+		{
+			name: "happy path",
+			args: &dbTypes.DataSource{
+				Name: "GitHub Security Advisory Maven",
+				URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+			},
+			want: &common.DataSource{
+				Name: "GitHub Security Advisory Maven",
+				Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertToRPCDataSource(tt.args)
+			assert.Equal(t, tt.want, got, tt.name)
+		})
+	}
+}
+
+func TestConvertFromRPCDataSource(t *testing.T) {
+	tests := []struct {
+		name string
+		args *common.DataSource
+		want *dbTypes.DataSource
+	}{
+		{
+			name: "happy path",
+			args: &common.DataSource{
+				Name: "GitHub Security Advisory Maven",
+				Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+			},
+			want: &dbTypes.DataSource{
+				Name: "GitHub Security Advisory Maven",
+				URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertFromRPCDataSource(tt.args)
+			assert.Equal(t, tt.want, got, tt.name)
+		})
+	}
+}
