@@ -1,6 +1,7 @@
 package photon_test
 
 import (
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"testing"
 	"time"
 
@@ -29,7 +30,7 @@ func TestScanner_Detect(t *testing.T) {
 	}{
 		{
 			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/photon.yaml"},
+			fixtures: []string{"testdata/fixtures/photon.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "1.0",
 				pkgs: []ftypes.Package{
@@ -55,12 +56,16 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						Name: "Photon OS CVE metadata",
+						URL:  "https://packages.vmware.com/photon/photon_cve_metadata/",
+					},
 				},
 			},
 		},
 		{
 			name:     "invalid bucket",
-			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "1.0",
 				pkgs: []ftypes.Package{

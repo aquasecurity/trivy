@@ -62,6 +62,10 @@
             "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
           },
           "PrimaryURL": "https://osv.dev/vulnerability/RUSTSEC-2019-0001",
+          "DataSource": {
+            "Name": "RustSec Advisory Database",
+            "URL": "https://github.com/RustSec/advisory-db"
+          },
           "Title": "Uncontrolled recursion leads to abort in HTML serialization",
           "Description": "Affected versions of this crate did use recursion for serialization of HTML\nDOM trees.\n\nThis allows an attacker to cause abort due to stack overflow by providing\na pathologically nested input.\n\nThe flaw was corrected by serializing the DOM tree iteratively instead.",
           "Severity": "UNKNOWN",
@@ -78,6 +82,10 @@
             "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
           },
           "PrimaryURL": "https://osv.dev/vulnerability/RUSTSEC-2021-0074",
+          "DataSource": {
+            "Name": "RustSec Advisory Database",
+            "URL": "https://github.com/RustSec/advisory-db"
+          },
           "Title": "Incorrect handling of embedded SVG and MathML leads to mutation XSS",
           "Description": "Affected versions of this crate did not account for namespace-related parsing\ndifferences between HTML, SVG, and MathML. Even if the `svg` and `math` elements\nare not allowed, the underlying HTML parser still treats them differently.\nRunning cleanup without accounting for these differing namespaces resulted in an \"impossible\"\nDOM, which appeared \"safe\" when examining the DOM tree, but when serialized and deserialized,\ncould be exploited to inject abitrary markup.\n\nTo exploit this, the application using this library must allow a tag that is parsed as raw text in HTML.\nThese [elements] are:\n\n* title\n* textarea\n* xmp\n* iframe\n* noembed\n* noframes\n* plaintext\n* noscript\n* style\n* script\n\nApplications that do not explicitly allow any of these tags should not be affected, since none are allowed by default.\n\n[elements]: https://github.com/servo/html5ever/blob/57eb334c0ffccc6f88d563419f0fbeef6ff5741c/html5ever/src/tree_builder/rules.rs",
           "Severity": "UNKNOWN",

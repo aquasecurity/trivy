@@ -32,7 +32,7 @@ func TestScanner_Detect(t *testing.T) {
 	}{
 		{
 			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/debian.yaml"},
+			fixtures: []string{"testdata/fixtures/debian.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "9.1",
 				pkgs: []ftypes.Package{
@@ -57,6 +57,10 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						Name: "Debian Security Tracker",
+						URL:  "https://salsa.debian.org/security-tracker-team/security-tracker",
+					},
 				},
 				{
 					PkgName:          "htpasswd",
@@ -69,12 +73,16 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						Name: "Debian Security Tracker",
+						URL:  "https://salsa.debian.org/security-tracker-team/security-tracker",
+					},
 				},
 			},
 		},
 		{
 			name:     "invalid bucket",
-			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "9.1",
 				pkgs: []ftypes.Package{

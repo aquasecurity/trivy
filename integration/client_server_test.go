@@ -102,45 +102,44 @@ func TestClientServer(t *testing.T) {
 			},
 			golden: "testdata/ubuntu-1804.json.golden",
 		},
-		// TODO :fix them after support for Red Hat OVALv2
-		//{
-		//	name: "centos 7 integration",
-		//	args: csArgs{
-		//		Input: "testdata/fixtures/images/centos-7.tar.gz",
-		//	},
-		//	golden: "testdata/centos-7.json.golden",
-		//},
-		//{
-		//	name: "centos 7 integration with --ignore-unfixed option",
-		//	args: csArgs{
-		//		IgnoreUnfixed: true,
-		//		Input:         "testdata/fixtures/images/centos-7.tar.gz",
-		//	},
-		//	golden: "testdata/centos-7-ignore-unfixed.json.golden",
-		//},
-		//{
-		//	name: "centos 7 integration with low and high severity",
-		//	args: csArgs{
-		//		IgnoreUnfixed: true,
-		//		Severity:      []string{"LOW", "HIGH"},
-		//		Input:         "testdata/fixtures/images/centos-7.tar.gz",
-		//	},
-		//	golden: "testdata/centos-7-low-high.json.golden",
-		//},
-		//{
-		//	name: "centos 6 integration",
-		//	args: csArgs{
-		//		Input: "testdata/fixtures/images/centos-6.tar.gz",
-		//	},
-		//	golden: "testdata/centos-6.json.golden",
-		//},
-		//{
-		//	name: "ubi 7 integration",
-		//	args: csArgs{
-		//		Input: "testdata/fixtures/images/ubi-7.tar.gz",
-		//	},
-		//	golden: "testdata/ubi-7.json.golden",
-		//},
+		{
+			name: "centos 7",
+			args: csArgs{
+				Input: "testdata/fixtures/images/centos-7.tar.gz",
+			},
+			golden: "testdata/centos-7.json.golden",
+		},
+		{
+			name: "centos 7 with --ignore-unfixed option",
+			args: csArgs{
+				IgnoreUnfixed: true,
+				Input:         "testdata/fixtures/images/centos-7.tar.gz",
+			},
+			golden: "testdata/centos-7-ignore-unfixed.json.golden",
+		},
+		{
+			name: "centos 7 with medium severity",
+			args: csArgs{
+				IgnoreUnfixed: true,
+				Severity:      []string{"MEDIUM"},
+				Input:         "testdata/fixtures/images/centos-7.tar.gz",
+			},
+			golden: "testdata/centos-7-medium.json.golden",
+		},
+		{
+			name: "centos 6",
+			args: csArgs{
+				Input: "testdata/fixtures/images/centos-6.tar.gz",
+			},
+			golden: "testdata/centos-6.json.golden",
+		},
+		{
+			name: "ubi 7",
+			args: csArgs{
+				Input: "testdata/fixtures/images/ubi-7.tar.gz",
+			},
+			golden: "testdata/ubi-7.json.golden",
+		},
 		{
 			name: "almalinux 8",
 			args: csArgs{

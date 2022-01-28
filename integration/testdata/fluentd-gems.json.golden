@@ -118,6 +118,10 @@
           },
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
+          "DataSource": {
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
           "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
           "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
           "Severity": "CRITICAL",
@@ -172,6 +176,10 @@
           },
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-8165",
+          "DataSource": {
+            "Name": "GitHub Security Advisory RubyGems",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Arubygems"
+          },
           "Title": "rubygem-activesupport: potentially unintended unmarshalling of user-provided objects in MemCacheStore and RedisCacheStore",
           "Description": "A deserialization of untrusted data vulnernerability exists in rails \u003c 5.2.4.3, rails \u003c 6.0.3.1 that can allow an attacker to unmarshal user-provided objects in MemCacheStore and RedisCacheStore potentially resulting in an RCE.",
           "Severity": "CRITICAL",

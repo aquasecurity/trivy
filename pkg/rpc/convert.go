@@ -140,6 +140,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			PublishedDate:      publishedDate,
 			CustomAdvisoryData: customAdvisoryData,
 			CustomVulnData:     customVulnData,
+			DataSource:         ConvertToRPCDataSource(vuln.DataSource),
 		})
 	}
 	return rpcVulns
@@ -177,6 +178,17 @@ func ConvertToRPCLayer(layer ftypes.Layer) *common.Layer {
 	return &common.Layer{
 		Digest: layer.Digest,
 		DiffId: layer.DiffID,
+	}
+}
+
+// ConvertToRPCDataSource returns common.DataSource
+func ConvertToRPCDataSource(ds *dbTypes.DataSource) *common.DataSource {
+	if ds == nil {
+		return nil
+	}
+	return &common.DataSource{
+		Name: ds.Name,
+		Url:  ds.URL,
 	}
 }
 
@@ -242,6 +254,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			SeveritySource: vuln.SeveritySource,
 			PrimaryURL:     vuln.PrimaryUrl,
 			Custom:         vuln.CustomAdvisoryData.AsInterface(),
+			DataSource:     ConvertFromRPCDataSource(vuln.DataSource),
 		})
 	}
 	return vulns
@@ -289,6 +302,17 @@ func ConvertFromRPCOS(rpcOS *common.OS) *ftypes.OS {
 		Family: rpcOS.Family,
 		Name:   rpcOS.Name,
 		Eosl:   rpcOS.Eosl,
+	}
+}
+
+// ConvertFromRPCDataSource converts *common.DataSource to *dbTypes.DataSource
+func ConvertFromRPCDataSource(ds *common.DataSource) *dbTypes.DataSource {
+	if ds == nil {
+		return nil
+	}
+	return &dbTypes.DataSource{
+		Name: ds.Name,
+		URL:  ds.Url,
 	}
 }
 

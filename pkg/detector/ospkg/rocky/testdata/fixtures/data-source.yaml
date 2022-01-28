@@ -1,0 +1,6 @@
+- bucket: data-source
+  pairs:
+    - key: rocky 8
+      value:
+        Name: "Rocky Linux updateinfo"
+        URL: "https://download.rockylinux.org/pub/rocky/"

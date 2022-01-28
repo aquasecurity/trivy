@@ -1,6 +1,7 @@
 package alpine_test
 
 import (
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"sort"
 	"testing"
 	"time"
@@ -30,7 +31,7 @@ func TestScanner_Detect(t *testing.T) {
 	}{
 		{
 			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/alpine.yaml"},
+			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "3.10.2",
 				pkgs: []ftypes.Package{
@@ -60,6 +61,10 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						Name: "Alpine Secdb",
+						URL:  "https://secdb.alpinelinux.org/",
+					},
 				},
 				{
 					PkgName:          "ansible",
@@ -69,12 +74,16 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						Name: "Alpine Secdb",
+						URL:  "https://secdb.alpinelinux.org/",
+					},
 				},
 			},
 		},
 		{
 			name:     "contain rc",
-			fixtures: []string{"testdata/fixtures/alpine.yaml"},
+			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "3.10",
 				pkgs: []ftypes.Package{
@@ -92,12 +101,16 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2020-1234",
 					InstalledVersion: "1.6-r0",
 					FixedVersion:     "1.6-r1",
+					DataSource: &dbTypes.DataSource{
+						Name: "Alpine Secdb",
+						URL:  "https://secdb.alpinelinux.org/",
+					},
 				},
 			},
 		},
 		{
 			name:     "contain pre",
-			fixtures: []string{"testdata/fixtures/alpine.yaml"},
+			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "3.10",
 				pkgs: []ftypes.Package{
@@ -121,12 +134,16 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						Name: "Alpine Secdb",
+						URL:  "https://secdb.alpinelinux.org/",
+					},
 				},
 			},
 		},
 		{
 			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "3.10.2",
 				pkgs: []ftypes.Package{
