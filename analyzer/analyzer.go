@@ -83,6 +83,9 @@ type AnalysisResult struct {
 	Configs              []types.Config
 	SystemInstalledFiles []string // A list of files installed by OS package manager
 
+	// For Red Hat
+	BuildInfo *types.BuildInfo
+
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []types.CustomResource
@@ -90,7 +93,7 @@ type AnalysisResult struct {
 
 func (r *AnalysisResult) isEmpty() bool {
 	return r.OS == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
-		len(r.Configs) == 0 && len(r.SystemInstalledFiles) == 0 && len(r.CustomResources) == 0
+		len(r.Configs) == 0 && len(r.SystemInstalledFiles) == 0 && r.BuildInfo == nil && len(r.CustomResources) == 0
 }
 
 func (r *AnalysisResult) Sort() {
@@ -147,6 +150,22 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	r.Configs = append(r.Configs, new.Configs...)
 
 	r.SystemInstalledFiles = append(r.SystemInstalledFiles, new.SystemInstalledFiles...)
+
+	if new.BuildInfo != nil {
+		if r.BuildInfo == nil {
+			r.BuildInfo = new.BuildInfo
+		} else {
+			// We don't need to merge build info here
+			// because there is theoretically only one file about build info in each layer.
+			if new.BuildInfo.Nvr != "" || new.BuildInfo.Arch != "" {
+				r.BuildInfo.Nvr = new.BuildInfo.Nvr
+				r.BuildInfo.Arch = new.BuildInfo.Arch
+			}
+			if len(new.BuildInfo.ContentSets) > 0 {
+				r.BuildInfo.ContentSets = new.BuildInfo.ContentSets
+			}
+		}
+	}
 
 	r.CustomResources = append(r.CustomResources, new.CustomResources...)
 }

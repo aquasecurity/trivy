@@ -14,11 +14,16 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	_ "github.com/aquasecurity/fanal/analyzer/all"
 	aos "github.com/aquasecurity/fanal/analyzer/os"
-	_ "github.com/aquasecurity/fanal/hook/all"
 	"github.com/aquasecurity/fanal/types"
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+
+	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
+	_ "github.com/aquasecurity/fanal/analyzer/language/ruby/bundler"
+	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
+	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
+	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
+	_ "github.com/aquasecurity/fanal/hook/all"
 )
 
 type mockConfigAnalyzer struct{}
@@ -453,72 +458,18 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 			name:     "happy path",
 			disabled: []analyzer.Type{},
 			want: map[string]int{
-				"alpine":     1,
-				"amazon":     1,
-				"apk":        1,
-				"bundler":    1,
-				"cargo":      1,
-				"centos":     1,
-				"rocky":      1,
-				"alma":       1,
-				"composer":   1,
-				"debian":     1,
-				"dpkg":       2,
-				"fedora":     1,
-				"gobinary":   1,
-				"gomod":      1,
-				"jar":        1,
-				"node-pkg":   1,
-				"npm":        1,
-				"nuget":      2,
-				"oracle":     1,
-				"photon":     1,
-				"pip":        1,
-				"pipenv":     1,
-				"poetry":     1,
-				"pom":        1,
-				"redhat":     1,
-				"rpm":        1,
-				"suse":       1,
-				"ubuntu":     1,
-				"yarn":       1,
-				"python-pkg": 1,
-				"gemspec":    1,
+				"alpine":  1,
+				"apk":     1,
+				"bundler": 1,
+				"ubuntu":  1,
 			},
 		},
 		{
 			name:     "disable analyzers",
 			disabled: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeUbuntu},
 			want: map[string]int{
-				"amazon":     1,
-				"apk":        1,
-				"bundler":    1,
-				"cargo":      1,
-				"centos":     1,
-				"rocky":      1,
-				"alma":       1,
-				"composer":   1,
-				"debian":     1,
-				"dpkg":       2,
-				"fedora":     1,
-				"gobinary":   1,
-				"gomod":      1,
-				"jar":        1,
-				"node-pkg":   1,
-				"npm":        1,
-				"nuget":      2,
-				"oracle":     1,
-				"photon":     1,
-				"pip":        1,
-				"pipenv":     1,
-				"poetry":     1,
-				"pom":        1,
-				"redhat":     1,
-				"rpm":        1,
-				"suse":       1,
-				"yarn":       1,
-				"python-pkg": 1,
-				"gemspec":    1,
+				"apk":     1,
+				"bundler": 1,
 			},
 		},
 	}

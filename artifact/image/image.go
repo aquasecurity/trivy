@@ -225,6 +225,9 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string) (types.BlobIn
 		SystemFiles:   result.SystemInstalledFiles,
 		OpaqueDirs:    opqDirs,
 		WhiteoutFiles: whFiles,
+
+		// For Red Hat
+		BuildInfo: result.BuildInfo,
 	}
 
 	// Call hooks to modify blob info
