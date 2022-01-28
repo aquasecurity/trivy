@@ -31,7 +31,6 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: ${{ env.GO_VERSION }}
-      id: go
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
