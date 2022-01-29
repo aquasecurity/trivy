@@ -4,5 +4,5 @@
       pairs:
         - key: CVE-2022-0158 
           value:
-            FixedVersion: 0:8.2.4081-1.cm1
+            FixedVersion: 0:8.2.4082-1.cm1
         - key: CVE-2022-0261

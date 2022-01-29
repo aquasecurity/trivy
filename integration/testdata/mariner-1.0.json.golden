@@ -1,0 +1,105 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/images/mariner-1.0.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "cbl-mariner",
+      "Name": "1.0.20220122"
+    },
+    "ImageID": "sha256:8cdcbf18341ed8afa5322e7b0077f8ef3f46896882c921df5f97c51b369f6767",
+    "DiffIDs": [
+      "sha256:4266328c97a194b2ca52ec83bc05496596303f5e9b244ffa99cf84763a487804"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "created": "2022-01-27T01:19:38.526301656Z",
+      "docker_version": "20.10.12",
+      "history": [
+        {
+          "created": "2022-01-27T01:19:38.526301656Z",
+          "comment": "Imported from -"
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:4266328c97a194b2ca52ec83bc05496596303f5e9b244ffa99cf84763a487804"
+        ]
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/mariner-1.0.tar.gz (cbl-mariner 1.0.20220122)",
+      "Class": "os-pkgs",
+      "Type": "cbl-mariner",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-0261",
+          "PkgName": "vim",
+          "InstalledVersion": "8.2.4081-1.cm1",
+          "Layer": {
+            "DiffID": "sha256:4266328c97a194b2ca52ec83bc05496596303f5e9b244ffa99cf84763a487804"
+          },
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-0261",
+          "Title": "CVE-2022-0261 affecting package vim 8.2.4081",
+          "Description": "Heap-based Buffer Overflow in GitHub repository vim/vim prior to 8.2.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-122"
+          ],
+          "References": [
+            "https://github.com/vim/vim/commit/9f8c304c8a390ade133bac29963dc8e56ab14cbc",
+            "https://huntr.dev/bounties/fa795954-8775-4f23-98c6-d4d4d3fe8a82",
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-0261"
+          ],
+          "PublishedDate": "2022-01-18T16:15:00Z",
+          "LastModifiedDate": "2022-01-18T16:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2022-0158",
+          "PkgName": "vim",
+          "InstalledVersion": "8.2.4081-1.cm1",
+          "FixedVersion": "8.2.4082-1.cm1",
+          "Layer": {
+            "DiffID": "sha256:4266328c97a194b2ca52ec83bc05496596303f5e9b244ffa99cf84763a487804"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-0158",
+          "Title": "vim: heap-based read buffer overflow in compile_get_env()",
+          "Description": "vim is vulnerable to Heap-based Buffer Overflow",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-122"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:N",
+              "V2Score": 4.3,
+              "V3Score": 3.3
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:N",
+              "V3Score": 3.3
+            }
+          },
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2022/01/15/1",
+            "https://access.redhat.com/security/cve/CVE-2022-0158",
+            "https://github.com/vim/vim/commit/5f25c3855071bd7e26255c68bf458b1b5cf92f39",
+            "https://huntr.dev/bounties/ac5d7005-07c6-4a0a-b251-ba9cdbf6738b",
+            "https://huntr.dev/bounties/ac5d7005-07c6-4a0a-b251-ba9cdbf6738b/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HD5S2FC2HF22A7XQXK2XXIR46EARVWIM/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-0158"
+          ],
+          "PublishedDate": "2022-01-10T16:15:00Z",
+          "LastModifiedDate": "2022-01-15T16:15:00Z"
+        }
+      ]
+    }
+  ]
+}

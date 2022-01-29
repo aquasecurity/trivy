@@ -53,6 +53,7 @@
           "References": [
             "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00034.html",
             "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00047.html",
+            "https://access.redhat.com/security/cve/CVE-2019-14806",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14806",
             "https://github.com/advisories/GHSA-gq9m-qvpx-68hc",
             "https://github.com/pallets/werkzeug/blob/7fef41b120327d3912fbe12fb64f1951496fcf3e/src/werkzeug/debug/__init__.py#L168",
@@ -95,6 +96,7 @@
             }
           },
           "References": [
+            "https://access.redhat.com/security/cve/CVE-2020-28724",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-28724",
             "https://github.com/advisories/GHSA-3p3h-qghp-hvh2",
             "https://github.com/pallets/flask/issues/1639",

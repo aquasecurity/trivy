@@ -90,6 +90,7 @@
           "References": [
             "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00008.html",
             "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00009.html",
+            "https://access.redhat.com/security/cve/CVE-2019-18224",
             "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
             "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c",

@@ -66,6 +66,7 @@
             "https://access.redhat.com/errata/RHSA-2019:2587",
             "https://access.redhat.com/errata/RHSA-2019:3023",
             "https://access.redhat.com/errata/RHSA-2019:3024",
+            "https://access.redhat.com/security/cve/CVE-2019-11358",
             "https://backdropcms.org/security/backdrop-sa-core-2019-009",
             "https://blog.jquery.com/2019/04/10/jquery-3-4-0-released/",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11358",
@@ -162,6 +163,7 @@
           },
           "References": [
             "https://access.redhat.com/errata/RHSA-2019:3024",
+            "https://access.redhat.com/security/cve/CVE-2019-10744",
             "https://github.com/advisories/GHSA-jf85-cpcp-j695",
             "https://github.com/lodash/lodash/pull/4336",
             "https://nvd.nist.gov/vuln/detail/CVE-2019-10744",
