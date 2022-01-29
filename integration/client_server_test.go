@@ -205,7 +205,7 @@ func TestClientServer(t *testing.T) {
 		},
 		{
 			name: "CBL-Mariner 1.0",
-			testArgs: args{
+			args: csArgs{
 				Input: "testdata/fixtures/images/mariner-1.0.tar.gz",
 			},
 			golden: "testdata/mariner-1.0.json.golden",
