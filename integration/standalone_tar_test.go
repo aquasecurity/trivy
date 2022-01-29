@@ -216,12 +216,20 @@ func TestTar(t *testing.T) {
 			golden: "testdata/opensuse-leap-151.json.golden",
 		},
 		{
-			name: "photon 3.0 integration",
+			name: "photon 3.0",
 			testArgs: args{
 				Format: "json",
 				Input:  "testdata/fixtures/images/photon-30.tar.gz",
 			},
 			golden: "testdata/photon-30.json.golden",
+		},
+		{
+			name: "CBL-Mariner 1.0",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/mariner-1.0.tar.gz",
+			},
+			golden: "testdata/mariner-1.0.json.golden",
 		},
 		{
 			name: "buxybox with Cargo.lock integration",
