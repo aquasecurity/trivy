@@ -22,6 +22,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/fanal/analyzer/os/amazonlinux"
 	_ "github.com/aquasecurity/fanal/analyzer/os/debian"
+	_ "github.com/aquasecurity/fanal/analyzer/os/mariner"
 	_ "github.com/aquasecurity/fanal/analyzer/os/photon"
 	_ "github.com/aquasecurity/fanal/analyzer/os/redhatbase"
 	_ "github.com/aquasecurity/fanal/analyzer/os/suse"
