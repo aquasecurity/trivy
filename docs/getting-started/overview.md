@@ -58,9 +58,6 @@ See [Integrations][integrations] for details.
 
 Please see [LICENSE][license] for Trivy licensing information.
 
-!!! note
-    Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only.
-
 [vuln]: ../vulnerability/scanning/index.md
 [misconf]: ../misconfiguration/index.md
 [container]: ../vulnerability/scanning/image.md
