@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// Scanner implements the AlmaLinux scanner
+// Scanner implements the CBL-Mariner scanner
 type Scanner struct {
 	vs mariner.VulnSrc
 }
