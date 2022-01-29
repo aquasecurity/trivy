@@ -85,16 +85,21 @@
           },
           "References": [
             "http://www.openwall.com/lists/oss-security/2021/08/26/2",
+            "https://access.redhat.com/hydra/rest/securitydata/cve/CVE-2021-3712.json",
+            "https://access.redhat.com/security/cve/CVE-2021-3712",
+            "https://crates.io/crates/openssl-src",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-3712",
             "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=94d23fcff9b2a7a8368dfe52214d5c2569882c11",
             "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=ccb0a11145ee72b042d10593a64eaf9e8a55ec12",
             "https://kc.mcafee.com/corporate/index?page=content\u0026id=SB10366",
             "https://linux.oracle.com/cve/CVE-2021-3712.html",
-            "https://linux.oracle.com/errata/ELSA-2021-9632.html",
+            "https://linux.oracle.com/errata/ELSA-2022-9023.html",
             "https://lists.apache.org/thread.html/r18995de860f0e63635f3008fd2a6aca82394249476d21691e7c59c9e@%3Cdev.tomcat.apache.org%3E",
             "https://lists.apache.org/thread.html/rad5d9f83f0d11fb3f8bb148d179b8a9ad7c6a17f18d70e5805a713d1@%3Cdev.tomcat.apache.org%3E",
             "https://lists.debian.org/debian-lts-announce/2021/09/msg00014.html",
             "https://lists.debian.org/debian-lts-announce/2021/09/msg00021.html",
+            "https://nvd.nist.gov/vuln/detail/CVE-2021-3712",
+            "https://rustsec.org/advisories/RUSTSEC-2021-0098.html",
             "https://security.netapp.com/advisory/ntap-20210827-0010/",
             "https://ubuntu.com/security/notices/USN-5051-1",
             "https://ubuntu.com/security/notices/USN-5051-2",
@@ -105,8 +110,7 @@
             "https://www.openssl.org/news/secadv/20210824.txt",
             "https://www.oracle.com/security-alerts/cpuoct2021.html",
             "https://www.tenable.com/security/tns-2021-16",
-            "https://www.tenable.com/security/tns-2022-02",
-            "https://access.redhat.com/hydra/rest/securitydata/cve/CVE-2021-3712.json"
+            "https://www.tenable.com/security/tns-2022-02"
           ],
           "PublishedDate": "2021-08-24T15:15:00Z",
           "LastModifiedDate": "2022-01-06T09:15:00Z"

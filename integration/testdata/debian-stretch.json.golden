@@ -91,6 +91,7 @@
             "https://linux.oracle.com/cve/CVE-2019-18276.html",
             "https://linux.oracle.com/errata/ELSA-2021-1679.html",
             "https://lists.apache.org/thread.html/rf9fa47ab66495c78bb4120b0754dd9531ca2ff0430f6685ac9b07772@%3Cdev.mina.apache.org%3E",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-18276",
             "https://security.gentoo.org/glsa/202105-34",
             "https://security.netapp.com/advisory/ntap-20200430-0003/",
             "https://www.youtube.com/watch?v=-wGtxJ8opa8"
@@ -134,12 +135,14 @@
             }
           },
           "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
             "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-5094",
             "https://seclists.org/bugtraq/2019/Sep/58",
             "https://security.gentoo.org/glsa/202003-05",
             "https://security.netapp.com/advisory/ntap-20200115-0002/",
@@ -189,12 +192,14 @@
             }
           },
           "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
             "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-5094",
             "https://seclists.org/bugtraq/2019/Sep/58",
             "https://security.gentoo.org/glsa/202003-05",
             "https://security.netapp.com/advisory/ntap-20200115-0002/",
@@ -244,12 +249,14 @@
             }
           },
           "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
             "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-5094",
             "https://seclists.org/bugtraq/2019/Sep/58",
             "https://security.gentoo.org/glsa/202003-05",
             "https://security.netapp.com/advisory/ntap-20200115-0002/",
@@ -299,12 +306,14 @@
             }
           },
           "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
             "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-5094",
             "https://seclists.org/bugtraq/2019/Sep/58",
             "https://security.gentoo.org/glsa/202003-05",
             "https://security.netapp.com/advisory/ntap-20200115-0002/",

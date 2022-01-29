@@ -177,6 +177,12 @@ func TestDockerEngine(t *testing.T) {
 			golden:   "testdata/photon-30.json.golden",
 		},
 		{
+			name:     "CBL-Mariner 1.0",
+			imageTag: "cblmariner.azurecr.io/base/core:1.0",
+			input:    "testdata/fixtures/images/mariner-1.0.tar.gz",
+			golden:   "testdata/mariner-1.0.json.golden",
+		},
+		{
 			name:     "busybox with Cargo.lock",
 			imageTag: "busy-cargo:latest",
 			input:    "testdata/fixtures/images/busybox-with-lockfile.tar.gz",

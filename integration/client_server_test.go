@@ -204,6 +204,13 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/photon-30.json.golden",
 		},
 		{
+			name: "CBL-Mariner 1.0",
+			args: csArgs{
+				Input: "testdata/fixtures/images/mariner-1.0.tar.gz",
+			},
+			golden: "testdata/mariner-1.0.json.golden",
+		},
+		{
 			name: "buxybox with Cargo.lock",
 			args: csArgs{
 				Input: "testdata/fixtures/images/busybox-with-lockfile.tar.gz",

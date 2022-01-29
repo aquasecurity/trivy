@@ -99,6 +99,7 @@
             "https://linux.oracle.com/cve/CVE-2019-18276.html",
             "https://linux.oracle.com/errata/ELSA-2021-1679.html",
             "https://lists.apache.org/thread.html/rf9fa47ab66495c78bb4120b0754dd9531ca2ff0430f6685ac9b07772@%3Cdev.mina.apache.org%3E",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-18276",
             "https://security.gentoo.org/glsa/202105-34",
             "https://security.netapp.com/advisory/ntap-20200430-0003/",
             "https://www.youtube.com/watch?v=-wGtxJ8opa8"
@@ -236,6 +237,7 @@
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/Y3IVFGSERAZLNJCK35TEM2R4726XIH3Z/",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ZBEV5QGDRFUZDMNECFXUSN5FMYOZDE4V/",
             "https://nodejs.org/en/blog/vulnerability/november-2018-security-releases/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2018-0734",
             "https://security.netapp.com/advisory/ntap-20181105-0002/",
             "https://security.netapp.com/advisory/ntap-20190118-0002/",
             "https://security.netapp.com/advisory/ntap-20190423-0002/",

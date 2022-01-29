@@ -88,6 +88,7 @@
           "References": [
             "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
             "http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html",
+            "https://access.redhat.com/security/cve/CVE-2019-1551",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551",
             "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f",
             "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f1c5eea8a817075d31e43f5876993c6710238c98",
@@ -154,6 +155,7 @@
           "References": [
             "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
             "http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html",
+            "https://access.redhat.com/security/cve/CVE-2019-1551",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551",
             "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f",
             "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f1c5eea8a817075d31e43f5876993c6710238c98",
