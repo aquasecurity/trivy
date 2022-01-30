@@ -52,21 +52,14 @@ func TestDriver_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "non-prefix buckets",
+			name:     "non-prefixed buckets",
 			fixtures: []string{"testdata/fixtures/php-without-prefix.yaml"},
 			libType:  ftypes.Composer,
 			args: args{
 				pkgName: "symfony/symfony",
 				pkgVer:  "4.2.6",
 			},
-			want: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-2019-10909",
-					PkgName:          "symfony/symfony",
-					InstalledVersion: "4.2.6",
-					FixedVersion:     "4.2.7",
-				},
-			},
+			want: nil,
 		},
 		{
 			name: "no patched versions in the advisory",
@@ -125,6 +118,16 @@ func TestDriver_Detect(t *testing.T) {
 				pkgVer:  "4.4.7",
 			},
 		},
+		{
+			name:     "malformed JSON",
+			fixtures: []string{"testdata/fixtures/invalid-type.yaml"},
+			libType:  ftypes.Composer,
+			args: args{
+				pkgName: "symfony/symfony",
+				pkgVer:  "5.1.5",
+			},
+			wantErr: "failed to unmarshal advisory JSON",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -135,16 +138,15 @@ func TestDriver_Detect(t *testing.T) {
 			driver, err := library.NewDriver(tt.libType)
 			require.NoError(t, err)
 
-			got, err := driver.Detect(tt.args.pkgName, tt.args.pkgVer)
-			switch {
-			case tt.wantErr != "":
-				require.NotNil(t, err)
+			got, err := driver.DetectVulnerabilities(tt.args.pkgName, tt.args.pkgVer)
+			if tt.wantErr != "" {
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
-			default:
-				assert.NoError(t, err)
+				return
 			}
 
 			// Compare
+			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
