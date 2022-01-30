@@ -286,13 +286,23 @@ func TestClientServerWithTemplate(t *testing.T) {
 		},
 	}
 
+	report.CustomTemplateFuncMap = map[string]interface{}{
+		"now": func() time.Time {
+			return time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
+		},
+		"date": func(format string, t time.Time) string {
+			return t.Format(format)
+		},
+	}
+
+	t.Cleanup(func() {
+		report.CustomTemplateFuncMap = map[string]interface{}{}
+	})
+
 	app, addr, cacheDir := setup(t, setupOptions{})
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			report.Now = func() time.Time {
-				return time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
-			}
 			t.Setenv("AWS_REGION", "test-region")
 			t.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			osArgs, outputFile := setupClient(t, tt.args, addr, cacheDir, tt.golden)
@@ -382,7 +392,7 @@ func TestClientServerWithRedis(t *testing.T) {
 
 	// Set up Trivy server
 	app, addr, cacheDir := setup(t, setupOptions{cacheBackend: addr})
-	defer os.RemoveAll(cacheDir)
+	t.Cleanup(func() { os.RemoveAll(cacheDir) })
 
 	// Test parameters
 	testArgs := csArgs{

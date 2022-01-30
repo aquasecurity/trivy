@@ -51,7 +51,7 @@
       }
       a.toggle-more-links { cursor: pointer; }
     </style>
-    <title>testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2) - Trivy Report - 2020-08-10T07:28:17.000958601Z</title>
+    <title>testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2) - Trivy Report - 2020-08-10 07:28:17.000958601 +0000 UTC </title>
     <script>
       window.onload = function() {
         document.querySelectorAll('td.links').forEach(function(linkCell) {
@@ -81,7 +81,7 @@
     </script>
   </head>
   <body>
-    <h1>testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2) - Trivy Report - 2020-08-10T07:28:17.000958601Z</h1>
+    <h1>testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2) - Trivy Report - 2020-08-10 07:28:17.000958601 +0000 UTC</h1>
     <table>
       <tr class="group-header"><th colspan="6">alpine</th></tr>
       <tr class="sub-header">
