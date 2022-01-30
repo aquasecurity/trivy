@@ -140,7 +140,7 @@
           "InstalledVersion": "4.17.4",
           "FixedVersion": "4.17.12",
           "Layer": {},
-          "SeveritySource": "ghsa-npm",
+          "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-10744",
           "DataSource": {
             "Name": "GitHub Security Advisory Npm",

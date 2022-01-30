@@ -148,7 +148,7 @@ func (c Client) detectSource(reportType string) []dbTypes.SourceID {
 	case ftypes.Jar, ftypes.Pom:
 		sources = []dbTypes.SourceID{vulnerability.GHSA, vulnerability.GLAD}
 	case ftypes.Npm, ftypes.Yarn, ftypes.NodePkg, ftypes.JavaScript:
-		sources = []dbTypes.SourceID{vulnerability.GHSA, vulnerability.NodejsSecurityWg}
+		sources = []dbTypes.SourceID{vulnerability.NodejsSecurityWg, vulnerability.GHSA}
 	case ftypes.NuGet:
 		sources = []dbTypes.SourceID{vulnerability.GHSA}
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:
