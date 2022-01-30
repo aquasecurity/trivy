@@ -1,7 +1,6 @@
 package oracle
 
 import (
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"testing"
 	"time"
 
@@ -12,7 +11,9 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -131,6 +132,7 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "7.29.0-59.0.1.el7",
 					FixedVersion:     "7.29.0-59.0.1.el7_9.1",
 					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.OracleOVAL,
 						Name: "Oracle Linux OVAL definitions",
 						URL:  "https://linux.oracle.com/security/oval/",
 					},
@@ -203,6 +205,7 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "2:2.17-156.ksplice1.el7",
 					FixedVersion:     "2:2.17-157.ksplice1.el7_3.4",
 					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.OracleOVAL,
 						Name: "Oracle Linux OVAL definitions",
 						URL:  "https://linux.oracle.com/security/oval/",
 					},

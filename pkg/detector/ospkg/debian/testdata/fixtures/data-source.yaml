@@ -2,5 +2,6 @@
   pairs:
     - key: debian 9
       value:
+        ID: "debian"
         Name: "Debian Security Tracker"
         URL: "https://salsa.debian.org/security-tracker-team/security-tracker"

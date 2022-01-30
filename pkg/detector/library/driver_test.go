@@ -9,6 +9,7 @@ import (
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -45,6 +46,7 @@ func TestDriver_Detect(t *testing.T) {
 					InstalledVersion: "4.2.6",
 					FixedVersion:     "4.2.7",
 					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GLAD,
 						Name: "GitLab Advisory Database Community",
 						URL:  "https://gitlab.com/gitlab-org/advisories-community",
 					},
@@ -79,6 +81,7 @@ func TestDriver_Detect(t *testing.T) {
 					InstalledVersion: "4.4.6",
 					FixedVersion:     "4.4.7",
 					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.PhpSecurityAdvisories,
 						Name: "PHP Security Advisories Database",
 						URL:  "https://github.com/FriendsOfPHP/security-advisories",
 					},
@@ -103,6 +106,7 @@ func TestDriver_Detect(t *testing.T) {
 					InstalledVersion: "4.1.1",
 					FixedVersion:     ">= 4.2.2, ~> 4.1.11",
 					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RubySec,
 						Name: "Ruby Advisory Database",
 						URL:  "https://github.com/rubysec/ruby-advisory-db",
 					},
