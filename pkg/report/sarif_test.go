@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -47,12 +48,12 @@ func TestReportWriter_Sarif(t *testing.T) {
 								Title:       "foobar",
 								Description: "baz",
 								Severity:    "HIGH",
-								CVSS: map[string]dbTypes.CVSS{
-									"nvd": {
+								CVSS: map[dbTypes.SourceID]dbTypes.CVSS{
+									vulnerability.NVD: {
 										V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
 										V3Score:  9.8,
 									},
-									"redhat": {
+									vulnerability.RedHat: {
 										V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
 										V3Score:  7.5,
 									},

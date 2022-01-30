@@ -12,6 +12,7 @@ import (
 	"github.com/open-policy-agent/opa/rego"
 	"golang.org/x/xerrors"
 
+	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -28,7 +29,7 @@ const (
 )
 
 var (
-	primaryURLPrefixes = map[string][]string{
+	primaryURLPrefixes = map[dbTypes.SourceID][]string{
 		vulnerability.Debian:           {"http://www.debian.org", "https://www.debian.org"},
 		vulnerability.Ubuntu:           {"http://www.ubuntu.com", "https://usn.ubuntu.com"},
 		vulnerability.RedHat:           {"https://access.redhat.com"},
@@ -37,6 +38,43 @@ var (
 		vulnerability.OracleOVAL:       {"http://linux.oracle.com/errata", "https://linux.oracle.com/errata"},
 		vulnerability.NodejsSecurityWg: {"https://www.npmjs.com", "https://hackerone.com"},
 		vulnerability.RubySec:          {"https://groups.google.com"},
+	}
+
+	osSources = map[string]dbTypes.SourceID{
+		// Alpine Linux
+		fos.Alpine: vulnerability.Alpine,
+
+		// AlmaLinux
+		fos.Alma: vulnerability.Alma,
+
+		// Amazon Linux
+		fos.Amazon: vulnerability.Amazon,
+
+		// CBL-Mariner
+		fos.CBLMariner: vulnerability.CBLMariner,
+
+		// Debian/Ubuntu
+		fos.Debian: vulnerability.Debian,
+		fos.Ubuntu: vulnerability.Ubuntu,
+
+		// Red Hat
+		fos.CentOS: vulnerability.RedHat, // CentOS doesn't have its own so we use RedHat
+		fos.RedHat: vulnerability.RedHat,
+
+		// Oracle Linux
+		fos.Oracle: vulnerability.OracleOVAL,
+
+		// SUSE
+		fos.OpenSUSE:           vulnerability.OpenSuseCVRF,
+		fos.OpenSUSELeap:       vulnerability.OpenSuseCVRF,
+		fos.OpenSUSETumbleweed: vulnerability.OpenSuseCVRF,
+		fos.SLES:               vulnerability.OpenSuseCVRF,
+
+		// Photon OS
+		fos.Photon: vulnerability.Photon,
+
+		// Rocky Linux
+		fos.Rocky: vulnerability.Rocky,
 	}
 )
 
@@ -89,34 +127,37 @@ func (c Client) FillVulnerabilityInfo(vulns []types.DetectedVulnerability, repor
 		vulns[i].Vulnerability.VendorSeverity = nil // Remove VendorSeverity from Results
 	}
 }
-func (c Client) detectSource(reportType string) []string {
-	var sources []string
+
+func (c Client) detectSource(reportType string) []dbTypes.SourceID {
+	// OS packages
+	if src, ok := osSources[reportType]; ok {
+		return []dbTypes.SourceID{src}
+	}
+
+	// Language-specific packages
+	var sources []dbTypes.SourceID
 	switch reportType {
-	case vulnerability.Ubuntu, vulnerability.Alpine, vulnerability.RedHat, vulnerability.RedHatOVAL,
-		vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
-		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon, vulnerability.Alma, vulnerability.Rocky:
-		sources = []string{reportType}
-	case vulnerability.CentOS: // CentOS doesn't have its own so we use RedHat
-		sources = []string{vulnerability.RedHat}
-	case "npm", "yarn":
-		sources = []string{vulnerability.NodejsSecurityWg, vulnerability.GHSANpm, vulnerability.GLAD}
-	case "nuget":
-		sources = []string{vulnerability.GHSANuget, vulnerability.GLAD}
-	case "pipenv", "poetry":
-		sources = []string{vulnerability.GHSAPip, vulnerability.GLAD}
-	case "bundler":
-		sources = []string{vulnerability.RubySec, vulnerability.GHSARubygems, vulnerability.GLAD}
-	case "cargo":
-		sources = []string{vulnerability.OSVCratesio}
-	case "composer":
-		sources = []string{vulnerability.PhpSecurityAdvisories, vulnerability.GHSAComposer, vulnerability.GLAD}
-	case ftypes.Jar:
-		sources = []string{vulnerability.GHSAMaven, vulnerability.GLAD}
+	case ftypes.Bundler, ftypes.GemSpec:
+		sources = []dbTypes.SourceID{vulnerability.RubySec, vulnerability.GHSA}
+	case ftypes.Cargo:
+		sources = []dbTypes.SourceID{vulnerability.OSV}
+	case ftypes.Composer:
+		sources = []dbTypes.SourceID{vulnerability.PhpSecurityAdvisories, vulnerability.GHSA}
+	case ftypes.GoBinary, ftypes.GoMod:
+		sources = []dbTypes.SourceID{vulnerability.GoVulnDB}
+	case ftypes.Jar, ftypes.Pom:
+		sources = []dbTypes.SourceID{vulnerability.GHSA, vulnerability.GLAD}
+	case ftypes.Npm, ftypes.Yarn, ftypes.NodePkg, ftypes.JavaScript:
+		sources = []dbTypes.SourceID{vulnerability.GHSA, vulnerability.NodejsSecurityWg}
+	case ftypes.NuGet:
+		sources = []dbTypes.SourceID{vulnerability.GHSA}
+	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:
+		sources = []dbTypes.SourceID{vulnerability.GHSA}
 	}
 	return sources
 }
 
-func (c Client) getVendorSeverity(vuln *dbTypes.Vulnerability, sources []string) (string, string) {
+func (c Client) getVendorSeverity(vuln *dbTypes.Vulnerability, sources []dbTypes.SourceID) (string, dbTypes.SourceID) {
 	for _, source := range sources {
 		if vs, ok := vuln.VendorSeverity[source]; ok {
 			return vs.String(), source
@@ -135,7 +176,7 @@ func (c Client) getVendorSeverity(vuln *dbTypes.Vulnerability, sources []string)
 	return vuln.Severity, ""
 }
 
-func (c Client) getPrimaryURL(vulnID string, refs []string, sources []string) string {
+func (c Client) getPrimaryURL(vulnID string, refs []string, sources []dbTypes.SourceID) string {
 	switch {
 	case strings.HasPrefix(vulnID, "CVE-"):
 		return "https://avd.aquasec.com/nvd/" + strings.ToLower(vulnID)

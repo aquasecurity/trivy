@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -35,7 +36,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 				vulns: []types.DetectedVulnerability{
 					{VulnerabilityID: "CVE-2019-0001"},
 				},
-				reportType: vulnerability.RedHat,
+				reportType: fos.RedHat,
 			},
 			expectedVulnerabilities: []types.DetectedVulnerability{
 				{
@@ -59,7 +60,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 				vulns: []types.DetectedVulnerability{
 					{VulnerabilityID: "CVE-2019-0002"},
 				},
-				reportType: vulnerability.Ubuntu,
+				reportType: fos.Ubuntu,
 			},
 			expectedVulnerabilities: []types.DetectedVulnerability{
 				{
@@ -84,7 +85,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 				vulns: []types.DetectedVulnerability{
 					{VulnerabilityID: "CVE-2019-0003"},
 				},
-				reportType: vulnerability.Ubuntu,
+				reportType: fos.Ubuntu,
 			},
 			expectedVulnerabilities: []types.DetectedVulnerability{
 				{
@@ -106,7 +107,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 				vulns: []types.DetectedVulnerability{
 					{VulnerabilityID: "CVE-2019-0004"},
 				},
-				reportType: vulnerability.CentOS,
+				reportType: fos.CentOS,
 			},
 			expectedVulnerabilities: []types.DetectedVulnerability{
 				{
@@ -117,7 +118,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Severity:    dbTypes.SeverityLow.String(),
 						CweIDs:      []string{"CWE-311"},
 						References:  []string{"http://example.com"},
-						CVSS: map[string]dbTypes.CVSS{
+						CVSS: map[dbTypes.SourceID]dbTypes.CVSS{
 							vulnerability.NVD: {
 								V2Vector: "AV:N/AC:L/Au:N/C:P/I:P/A:P",
 								V2Score:  4.5,
@@ -155,7 +156,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Severity:    dbTypes.SeverityCritical.String(),
 						References:  []string{"https://www.who.int/emergencies/diseases/novel-coronavirus-2019"},
 					},
-					SeveritySource: vulnerability.GHSAPip,
+					SeveritySource: vulnerability.GHSA,
 					PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2019-0005",
 				},
 			},
@@ -173,7 +174,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						},
 					},
 				},
-				reportType: vulnerability.Debian,
+				reportType: fos.Debian,
 			},
 			expectedVulnerabilities: []types.DetectedVulnerability{
 				{
@@ -224,7 +225,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 	type args struct {
 		vulnID  string
 		refs    []string
-		sources []string
+		sources []dbTypes.SourceID
 	}
 	tests := []struct {
 		name string
@@ -236,7 +237,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 			args: args{
 				vulnID:  "CVE-2014-8484",
 				refs:    []string{"http://linux.oracle.com/cve/CVE-2014-8484.html"},
-				sources: []string{vulnerability.OracleOVAL},
+				sources: []dbTypes.SourceID{vulnerability.OracleOVAL},
 			},
 			want: "https://avd.aquasec.com/nvd/cve-2014-8484",
 		},
@@ -245,7 +246,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 			args: args{
 				vulnID:  "RUSTSEC-2018-0017",
 				refs:    []string{"https://github.com/rust-lang-deprecated/tempdir/pull/46"},
-				sources: []string{vulnerability.OSVCratesio},
+				sources: []dbTypes.SourceID{vulnerability.OSV},
 			},
 			want: "https://osv.dev/vulnerability/RUSTSEC-2018-0017",
 		},
@@ -254,7 +255,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 			args: args{
 				vulnID:  "GHSA-28fw-88hq-6jmm",
 				refs:    []string{},
-				sources: []string{vulnerability.PhpSecurityAdvisories},
+				sources: []dbTypes.SourceID{vulnerability.PhpSecurityAdvisories},
 			},
 			want: "https://github.com/advisories/GHSA-28fw-88hq-6jmm",
 		},
@@ -263,7 +264,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 			args: args{
 				vulnID:  "TEMP-0841856-B18BAF",
 				refs:    []string{},
-				sources: []string{vulnerability.DebianOVAL},
+				sources: []dbTypes.SourceID{vulnerability.Debian},
 			},
 			want: "https://security-tracker.debian.org/tracker/TEMP-0841856-B18BAF",
 		},
@@ -276,7 +277,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 					"https://github.com/lodash/lodash/pull/4759",
 					"https://www.npmjs.com/advisories/1523",
 				},
-				sources: []string{vulnerability.NodejsSecurityWg},
+				sources: []dbTypes.SourceID{vulnerability.NodejsSecurityWg},
 			},
 			want: "https://www.npmjs.com/advisories/1523",
 		},
@@ -288,7 +289,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 					"http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00076.html",
 					"https://www.suse.com/support/security/rating/",
 				},
-				sources: []string{vulnerability.OpenSuseCVRF},
+				sources: []dbTypes.SourceID{vulnerability.OpenSuseCVRF},
 			},
 			want: "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00076.html",
 		},
