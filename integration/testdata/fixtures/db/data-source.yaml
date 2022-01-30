@@ -1,26 +1,26 @@
 - bucket: data-source
   pairs:
-    - key: GitHub Security Advisory Composer
+    - key: "composer::GitHub Security Advisory Composer"
       value:
         Name: "GitHub Security Advisory Composer"
         URL: "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Acomposer"
-    - key: GitHub Security Advisory Maven
+    - key: "maven::GitHub Security Advisory Maven"
       value:
         Name: "GitHub Security Advisory Maven"
         URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven"
-    - key: GitHub Security Advisory Npm
+    - key: "npm::GitHub Security Advisory Npm"
       value:
         Name: "GitHub Security Advisory Npm"
         URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
-    - key: GitHub Security Advisory Nuget
+    - key: "nuget::GitHub Security Advisory Nuget"
       value:
         Name: "GitHub Security Advisory Nuget"
         URL: "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Anuget"
-    - key: GitHub Security Advisory Pip
+    - key: "pip::GitHub Security Advisory Pip"
       value:
         Name: "GitHub Security Advisory Pip"
         URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
-    - key: GitHub Security Advisory RubyGems
+    - key: "rubygems::GitHub Security Advisory RubyGems"
       value:
         Name: "GitHub Security Advisory RubyGems"
         URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Arubygems"
