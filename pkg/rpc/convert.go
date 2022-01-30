@@ -8,7 +8,6 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -34,6 +33,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			SrcEpoch:   int32(pkg.SrcEpoch),
 			License:    pkg.License,
 			Layer:      ConvertToRPCLayer(pkg.Layer),
+			FilePath:   pkg.FilePath,
 		})
 	}
 	return rpcPkgs
@@ -55,35 +55,10 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			SrcEpoch:   int(pkg.SrcEpoch),
 			License:    pkg.License,
 			Layer:      ConvertFromRPCLayer(pkg.Layer),
+			FilePath:   pkg.FilePath,
 		})
 	}
 	return pkgs
-}
-
-// ConvertFromRPCLibraries returns list of Fanal library
-func ConvertFromRPCLibraries(rpcLibs []*common.Library) []ftypes.Package {
-	var pkgs []ftypes.Package
-	for _, l := range rpcLibs {
-		pkgs = append(pkgs, ftypes.Package{
-			Name:    l.Name,
-			Version: l.Version,
-			License: l.License,
-		})
-	}
-	return pkgs
-}
-
-// ConvertToRPCLibraries returns list of libraries
-func ConvertToRPCLibraries(libs []deptypes.Library) []*common.Library {
-	var rpcLibs []*common.Library
-	for _, l := range libs {
-		rpcLibs = append(rpcLibs, &common.Library{
-			Name:    l.Name,
-			Version: l.Version,
-			License: l.License,
-		})
-	}
-	return rpcLibs
 }
 
 // ConvertToRPCVulns returns common.Vulnerability
@@ -337,7 +312,7 @@ func ConvertFromRPCApplications(rpcApps []*common.Application) []ftypes.Applicat
 		apps = append(apps, ftypes.Application{
 			Type:      rpcApp.Type,
 			FilePath:  rpcApp.FilePath,
-			Libraries: ConvertFromRPCLibraries(rpcApp.Libraries),
+			Libraries: ConvertFromRPCPkgs(rpcApp.Libraries),
 		})
 	}
 	return apps
@@ -450,18 +425,10 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 
 	var applications []*common.Application
 	for _, app := range blobInfo.Applications {
-		var libs []*common.Library
-		for _, lib := range app.Libraries {
-			libs = append(libs, &common.Library{
-				Name:    lib.Name,
-				Version: lib.Version,
-				License: lib.License,
-			})
-		}
 		applications = append(applications, &common.Application{
 			Type:      app.Type,
 			FilePath:  app.FilePath,
-			Libraries: libs,
+			Libraries: ConvertToRPCPkgs(app.Libraries),
 		})
 	}
 
