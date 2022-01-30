@@ -119,6 +119,7 @@
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
           "DataSource": {
+            "ID": "debian",
             "Name": "Debian Security Tracker",
             "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
           },
@@ -178,6 +179,7 @@
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-8165",
           "DataSource": {
+            "ID": "ghsa",
             "Name": "GitHub Security Advisory RubyGems",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Arubygems"
           },

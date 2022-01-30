@@ -63,6 +63,7 @@
           "SeveritySource": "amazon",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
           "DataSource": {
+            "ID": "amazon",
             "Name": "Amazon Linux Security Center",
             "URL": "https://alas.aws.amazon.com/"
           },

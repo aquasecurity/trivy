@@ -187,6 +187,7 @@ func ConvertToRPCDataSource(ds *dbTypes.DataSource) *common.DataSource {
 		return nil
 	}
 	return &common.DataSource{
+		Id:   string(ds.ID),
 		Name: ds.Name,
 		Url:  ds.URL,
 	}
@@ -311,6 +312,7 @@ func ConvertFromRPCDataSource(ds *common.DataSource) *dbTypes.DataSource {
 		return nil
 	}
 	return &dbTypes.DataSource{
+		ID:   dbTypes.SourceID(ds.Id),
 		Name: ds.Name,
 		URL:  ds.Url,
 	}

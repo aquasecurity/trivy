@@ -58,7 +58,14 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/vulnerability.yaml"},
 			args: args{
 				vulns: []types.DetectedVulnerability{
-					{VulnerabilityID: "CVE-2019-0002"},
+					{
+						VulnerabilityID: "CVE-2019-0002",
+						DataSource: &dbTypes.DataSource{
+							ID:   vulnerability.Ubuntu,
+							Name: "Ubuntu CVE Tracker",
+							URL:  "https://git.launchpad.net/ubuntu-cve-tracker",
+						},
+					},
 				},
 				reportType: fos.Ubuntu,
 			},
@@ -75,6 +82,11 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 					},
 					SeveritySource: vulnerability.NVD,
 					PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2019-0002",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Ubuntu,
+						Name: "Ubuntu CVE Tracker",
+						URL:  "https://git.launchpad.net/ubuntu-cve-tracker",
+					},
 				},
 			},
 		},
@@ -83,7 +95,14 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/vulnerability.yaml"},
 			args: args{
 				vulns: []types.DetectedVulnerability{
-					{VulnerabilityID: "CVE-2019-0003"},
+					{
+						VulnerabilityID: "CVE-2019-0003",
+						DataSource: &dbTypes.DataSource{
+							ID:   vulnerability.Ubuntu,
+							Name: "Ubuntu CVE Tracker",
+							URL:  "https://git.launchpad.net/ubuntu-cve-tracker",
+						},
+					},
 				},
 				reportType: fos.Ubuntu,
 			},
@@ -97,6 +116,11 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						References:  []string{"http://example.com"},
 					},
 					PrimaryURL: "https://avd.aquasec.com/nvd/cve-2019-0003",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Ubuntu,
+						Name: "Ubuntu CVE Tracker",
+						URL:  "https://git.launchpad.net/ubuntu-cve-tracker",
+					},
 				},
 			},
 		},
@@ -105,7 +129,14 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/vulnerability.yaml"},
 			args: args{
 				vulns: []types.DetectedVulnerability{
-					{VulnerabilityID: "CVE-2019-0004"},
+					{
+						VulnerabilityID: "CVE-2019-0004",
+						DataSource: &dbTypes.DataSource{
+							ID:   vulnerability.RedHat,
+							Name: "Red Hat OVAL v2",
+							URL:  "https://www.redhat.com/security/data/oval/v2/",
+						},
+					},
 				},
 				reportType: fos.CentOS,
 			},
@@ -135,6 +166,11 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 					},
 					SeveritySource: vulnerability.RedHat,
 					PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2019-0004",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHat,
+						Name: "Red Hat OVAL v2",
+						URL:  "https://www.redhat.com/security/data/oval/v2/",
+					},
 				},
 			},
 		},
@@ -143,7 +179,14 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/vulnerability.yaml"},
 			args: args{
 				vulns: []types.DetectedVulnerability{
-					{VulnerabilityID: "CVE-2019-0005"},
+					{
+						VulnerabilityID: "CVE-2019-0005",
+						DataSource: &dbTypes.DataSource{
+							ID:   vulnerability.GHSA,
+							Name: "GitHub Security Advisory Pip",
+							URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip",
+						},
+					},
 				},
 				reportType: ftypes.Poetry,
 			},
@@ -158,6 +201,11 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 					},
 					SeveritySource: vulnerability.GHSA,
 					PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2019-0005",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GHSA,
+						Name: "GitHub Security Advisory Pip",
+						URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip",
+					},
 				},
 			},
 		},
@@ -223,9 +271,9 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 
 func TestClient_getPrimaryURL(t *testing.T) {
 	type args struct {
-		vulnID  string
-		refs    []string
-		sources []dbTypes.SourceID
+		vulnID string
+		refs   []string
+		source dbTypes.SourceID
 	}
 	tests := []struct {
 		name string
@@ -235,36 +283,36 @@ func TestClient_getPrimaryURL(t *testing.T) {
 		{
 			name: "CVE-ID",
 			args: args{
-				vulnID:  "CVE-2014-8484",
-				refs:    []string{"http://linux.oracle.com/cve/CVE-2014-8484.html"},
-				sources: []dbTypes.SourceID{vulnerability.OracleOVAL},
+				vulnID: "CVE-2014-8484",
+				refs:   []string{"http://linux.oracle.com/cve/CVE-2014-8484.html"},
+				source: vulnerability.OracleOVAL,
 			},
 			want: "https://avd.aquasec.com/nvd/cve-2014-8484",
 		},
 		{
 			name: "RUSTSEC",
 			args: args{
-				vulnID:  "RUSTSEC-2018-0017",
-				refs:    []string{"https://github.com/rust-lang-deprecated/tempdir/pull/46"},
-				sources: []dbTypes.SourceID{vulnerability.OSV},
+				vulnID: "RUSTSEC-2018-0017",
+				refs:   []string{"https://github.com/rust-lang-deprecated/tempdir/pull/46"},
+				source: vulnerability.OSV,
 			},
 			want: "https://osv.dev/vulnerability/RUSTSEC-2018-0017",
 		},
 		{
 			name: "GHSA",
 			args: args{
-				vulnID:  "GHSA-28fw-88hq-6jmm",
-				refs:    []string{},
-				sources: []dbTypes.SourceID{vulnerability.PhpSecurityAdvisories},
+				vulnID: "GHSA-28fw-88hq-6jmm",
+				refs:   []string{},
+				source: vulnerability.PhpSecurityAdvisories,
 			},
 			want: "https://github.com/advisories/GHSA-28fw-88hq-6jmm",
 		},
 		{
 			name: "Debian temp vulnerability",
 			args: args{
-				vulnID:  "TEMP-0841856-B18BAF",
-				refs:    []string{},
-				sources: []dbTypes.SourceID{vulnerability.Debian},
+				vulnID: "TEMP-0841856-B18BAF",
+				refs:   []string{},
+				source: vulnerability.Debian,
 			},
 			want: "https://security-tracker.debian.org/tracker/TEMP-0841856-B18BAF",
 		},
@@ -277,7 +325,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 					"https://github.com/lodash/lodash/pull/4759",
 					"https://www.npmjs.com/advisories/1523",
 				},
-				sources: []dbTypes.SourceID{vulnerability.NodejsSecurityWg},
+				source: vulnerability.NodejsSecurityWg,
 			},
 			want: "https://www.npmjs.com/advisories/1523",
 		},
@@ -289,7 +337,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 					"http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00076.html",
 					"https://www.suse.com/support/security/rating/",
 				},
-				sources: []dbTypes.SourceID{vulnerability.OpenSuseCVRF},
+				source: vulnerability.SuseCVRF,
 			},
 			want: "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00076.html",
 		},
@@ -297,7 +345,7 @@ func TestClient_getPrimaryURL(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := Client{}
-			got := c.getPrimaryURL(tt.args.vulnID, tt.args.refs, tt.args.sources)
+			got := c.getPrimaryURL(tt.args.vulnID, tt.args.refs, tt.args.source)
 			assert.Equal(t, tt.want, got)
 		})
 	}

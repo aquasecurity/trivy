@@ -62,6 +62,7 @@
           "SeveritySource": "rocky",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-3712",
           "DataSource": {
+            "ID": "rocky",
             "Name": "Rocky Linux updateinfo",
             "URL": "https://download.rockylinux.org/pub/rocky/"
           },

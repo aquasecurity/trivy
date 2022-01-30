@@ -72,6 +72,7 @@
           "SeveritySource": "oracle-oval",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3823",
           "DataSource": {
+            "ID": "oracle-oval",
             "Name": "Oracle Linux OVAL definitions",
             "URL": "https://linux.oracle.com/security/oval/"
           },
@@ -126,6 +127,7 @@
           "SeveritySource": "oracle-oval",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5436",
           "DataSource": {
+            "ID": "oracle-oval",
             "Name": "Oracle Linux OVAL definitions",
             "URL": "https://linux.oracle.com/security/oval/"
           },
