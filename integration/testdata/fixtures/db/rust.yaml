@@ -2,11 +2,11 @@
   pairs:
     - bucket: ammonia
       pairs:
-        - key: RUSTSEC-2019-0001
+        - key: CVE-2019-15542
           value:
             PatchedVersions:
               - ">= 2.1.0"
-        - key: RUSTSEC-2021-0074
+        - key: CVE-2021-38193
           value:
             PatchedVersions:
               - ">= 3.1.0"
