@@ -125,6 +125,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			VulnerabilityId:    vuln.VulnerabilityID,
 			VendorIds:          vuln.VendorIDs,
 			PkgName:            vuln.PkgName,
+			PkgPath:            vuln.PkgPath,
 			InstalledVersion:   vuln.InstalledVersion,
 			FixedVersion:       vuln.FixedVersion,
 			Title:              vuln.Title,
@@ -237,6 +238,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			VulnerabilityID:  vuln.VulnerabilityId,
 			VendorIDs:        vuln.VendorIds,
 			PkgName:          vuln.PkgName,
+			PkgPath:          vuln.PkgPath,
 			InstalledVersion: vuln.InstalledVersion,
 			FixedVersion:     vuln.FixedVersion,
 			Vulnerability: dbTypes.Vulnerability{
