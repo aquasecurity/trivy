@@ -5,5 +5,5 @@ type ScanOptions struct {
 	VulnType            []string
 	SecurityChecks      []string
 	ScanRemovedPackages bool
-	ListAllPackages     bool
+	ListPackages        bool
 }

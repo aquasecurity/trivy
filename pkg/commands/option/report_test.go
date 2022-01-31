@@ -24,7 +24,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 		severities     string
 		IgnoreFile     string
 		IgnoreUnfixed  bool
-		listAllPksgs   bool
+		listPkgs       bool
 		ExitCode       int
 		VulnType       []string
 		Output         *os.File
@@ -79,7 +79,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 				vulnType:       "os,library",
 				securityChecks: "vuln",
 				Format:         "cyclonedx",
-				listAllPksgs:   true,
+				listPkgs:       true,
 			},
 			args: []string{"centos:7"},
 			want: ReportOption{
@@ -88,22 +88,22 @@ func TestReportReportConfig_Init(t *testing.T) {
 				SecurityChecks: []string{types.SecurityCheckVulnerability},
 				Format:         "cyclonedx",
 				Output:         os.Stdout,
-				ListAllPkgs:    true,
+				ListPkgs:       true,
 			},
 		},
 		{
-			name: "happy path with an cyclonedx option list-all-pkgs is false",
+			name: "happy path with an cyclonedx option list-pkgs is false",
 			fields: fields{
 				severities:     "CRITICAL",
 				vulnType:       "os,library",
 				securityChecks: "vuln",
 				Format:         "cyclonedx",
-				listAllPksgs:   false,
+				listPkgs:       false,
 				debug:          true,
 			},
 			args: []string{"centos:7"},
 			logs: []string{
-				"'--format cyclonedx' automatically enables '--list-all-pkgs'.",
+				"'--format cyclonedx' automatically enables '--list-pkgs'.",
 				"Severities: CRITICAL",
 			},
 			want: ReportOption{
@@ -112,7 +112,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 				SecurityChecks: []string{types.SecurityCheckVulnerability},
 				Format:         "cyclonedx",
 				Output:         os.Stdout,
-				ListAllPkgs:    true,
+				ListPkgs:       true,
 			},
 		},
 		{
@@ -178,17 +178,17 @@ func TestReportReportConfig_Init(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid option combination: --list-all-pkgs with --format table",
+			name: "invalid option combination: --list-pkgs with --format table",
 			fields: fields{
 				Format:         "table",
 				severities:     "LOW",
 				vulnType:       "os",
 				securityChecks: "vuln",
-				listAllPksgs:   true,
+				listPkgs:       true,
 			},
 			args: []string{"centos:7"},
 			logs: []string{
-				`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`,
+				`"--list-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`,
 			},
 			want: ReportOption{
 				Format:         "table",
@@ -196,7 +196,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 				Severities:     []dbTypes.Severity{dbTypes.SeverityLow},
 				VulnType:       []string{types.VulnTypeOS},
 				SecurityChecks: []string{types.SecurityCheckVulnerability},
-				ListAllPkgs:    true,
+				ListPkgs:       true,
 			},
 		},
 	}
@@ -223,7 +223,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 				IgnoreFile:     tt.fields.IgnoreFile,
 				IgnoreUnfixed:  tt.fields.IgnoreUnfixed,
 				ExitCode:       tt.fields.ExitCode,
-				ListAllPkgs:    tt.fields.listAllPksgs,
+				ListPkgs:       tt.fields.listPkgs,
 				Output:         tt.fields.Output,
 			}
 			err := c.Init(os.Stdout, logger.Sugar())

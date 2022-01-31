@@ -157,7 +157,7 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 		return nil, eosl, nil
 	}
 
-	if options.ListAllPackages {
+	if options.ListPackages {
 		sort.Slice(pkgs, func(i, j int) bool {
 			return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
 		})
@@ -225,7 +225,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 			Class:           types.ClassLangPkg,
 			Type:            app.Type,
 		}
-		if options.ListAllPackages {
+		if options.ListPackages {
 			libReport.Packages = app.Libraries
 		}
 		results = append(results, libReport)

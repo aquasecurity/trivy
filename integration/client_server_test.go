@@ -36,7 +36,7 @@ type csArgs struct {
 	Input             string
 	ClientToken       string
 	ClientTokenHeader string
-	ListAllPackages   bool
+	ListPackages      bool
 	Target            string
 }
 

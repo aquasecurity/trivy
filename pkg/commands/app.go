@@ -227,10 +227,10 @@ var (
 		EnvVars: []string{"TRIVY_IGNORE_POLICY"},
 	}
 
-	listAllPackages = cli.BoolFlag{
-		Name:    "list-all-pkgs",
+	listPackages = cli.BoolFlag{
+		Name:    "list-pkgs",
 		Usage:   "enabling the option will output all packages regardless of vulnerability",
-		EnvVars: []string{"TRIVY_LIST_ALL_PKGS"},
+		EnvVars: []string{"TRIVY_LIST_PKGS"},
 	}
 
 	skipFiles = cli.StringSliceFlag{
@@ -448,7 +448,7 @@ func NewImageCommand() *cli.Command {
 			&timeoutFlag,
 			&lightFlag,
 			&ignorePolicy,
-			&listAllPackages,
+			&listPackages,
 			&cacheBackendFlag,
 			&redisBackendCACert,
 			&redisBackendCert,
@@ -490,7 +490,7 @@ func NewFilesystemCommand() *cli.Command {
 			&timeoutFlag,
 			&noProgressFlag,
 			&ignorePolicy,
-			&listAllPackages,
+			&listPackages,
 			&offlineScan,
 			&dbRepositoryFlag,
 			stringSliceFlag(skipFiles),
@@ -537,7 +537,7 @@ func NewRootfsCommand() *cli.Command {
 			&timeoutFlag,
 			&noProgressFlag,
 			&ignorePolicy,
-			&listAllPackages,
+			&listPackages,
 			&offlineScan,
 			&dbRepositoryFlag,
 			stringSliceFlag(skipFiles),
@@ -580,7 +580,7 @@ func NewRepositoryCommand() *cli.Command {
 			&noProgressFlag,
 			&quietFlag,
 			&ignorePolicy,
-			&listAllPackages,
+			&listPackages,
 			&offlineScan,
 			&insecureFlag,
 			&dbRepositoryFlag,
@@ -617,7 +617,7 @@ func NewClientCommand() *cli.Command {
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
-			&listAllPackages,
+			&listPackages,
 			&offlineScan,
 			&insecureFlag,
 

@@ -71,9 +71,9 @@ func (s Scanner) Scan(target, artifactKey string, blobKeys []string, options typ
 			ArtifactId: artifactKey,
 			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
-				VulnType:        options.VulnType,
-				SecurityChecks:  options.SecurityChecks,
-				ListAllPackages: options.ListAllPackages,
+				VulnType:       options.VulnType,
+				SecurityChecks: options.SecurityChecks,
+				ListPackages:   options.ListPackages,
 			},
 		})
 		return err

@@ -35,7 +35,7 @@ type ReportOption struct {
 	SecurityChecks []string
 	Output         io.Writer
 	Severities     []dbTypes.Severity
-	ListAllPkgs    bool
+	ListPkgs       bool
 }
 
 // NewReportOption is the factory method to return ReportOption
@@ -52,7 +52,7 @@ func NewReportOption(c *cli.Context) ReportOption {
 		IgnoreFile:     c.String("ignorefile"),
 		IgnoreUnfixed:  c.Bool("ignore-unfixed"),
 		ExitCode:       c.Int("exit-code"),
-		ListAllPkgs:    c.Bool("list-all-pkgs"),
+		ListPkgs:       c.Bool("list-pkgs"),
 	}
 }
 
@@ -70,14 +70,14 @@ func (c *ReportOption) Init(output io.Writer, logger *zap.SugaredLogger) error {
 		}
 	}
 
-	// "--list-all-pkgs" option is unavailable with "--format table".
-	// If user specifies "--list-all-pkgs" with "--format table", we should warn it.
-	if c.ListAllPkgs && c.Format == "table" {
-		logger.Warn(`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`)
+	// "--list-pkgs" option is unavailable with "--format table".
+	// If user specifies "--list-pkgs" with "--format table", we should warn it.
+	if c.ListPkgs && c.Format == "table" {
+		logger.Warn(`"--list-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`)
 	}
 
-	if c.forceListAllPkgs(logger) {
-		c.ListAllPkgs = true
+	if c.forceListPkgs(logger) {
+		c.ListPkgs = true
 	}
 
 	c.Severities = splitSeverity(logger, c.severities)
@@ -136,9 +136,9 @@ func (c *ReportOption) populateSecurityChecks() error {
 	return nil
 }
 
-func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
-	if c.Format == "cyclonedx" && !c.ListAllPkgs {
-		logger.Debugf("'--format cyclonedx' automatically enables '--list-all-pkgs'.")
+func (c *ReportOption) forceListPkgs(logger *zap.SugaredLogger) bool {
+	if c.Format == "cyclonedx" && !c.ListPkgs {
+		logger.Debugf("'--format cyclonedx' automatically enables '--list-pkgs'.")
 		return true
 	}
 	return false

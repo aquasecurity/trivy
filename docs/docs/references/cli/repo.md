@@ -25,7 +25,7 @@ OPTIONS:
    --no-progress               suppress progress bar (default: false) [$TRIVY_NO_PROGRESS]
    --quiet, -q                      suppress progress bar and log output (default: false) [$TRIVY_QUIET]
    --ignore-policy value       specify the Rego file to evaluate each vulnerability [$TRIVY_IGNORE_POLICY]
-   --list-all-pkgs             enabling the option will output all packages regardless of vulnerability (default: false) [$TRIVY_LIST_ALL_PKGS]
+   --list-pkgs                 enabling the option will output all packages regardless of vulnerability (default: false) [$TRIVY_LIST_PKGS]
    --offline-scan              do not issue API requests to identify dependencies (default: false) [$TRIVY_OFFLINE_SCAN]
    --skip-files value          specify the file path to skip traversal [$TRIVY_SKIP_FILES]
    --skip-dirs value           specify the directory where the traversal is skipped [$TRIVY_SKIP_DIRS]

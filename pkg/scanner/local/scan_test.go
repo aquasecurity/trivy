@@ -157,9 +157,9 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType:        []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks:  []string{types.SecurityCheckVulnerability},
-					ListAllPackages: true,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					ListPackages:   true,
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
