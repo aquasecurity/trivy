@@ -104,8 +104,9 @@ message Vulnerability {
 }
 
 message DataSource {
-  string name = 1;
-  string url  = 2;
+  string id   = 1;
+  string name = 2;
+  string url  = 3;
 }
 
 message Layer {

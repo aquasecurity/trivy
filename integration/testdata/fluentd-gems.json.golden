@@ -119,6 +119,7 @@
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
           "DataSource": {
+            "ID": "debian",
             "Name": "Debian Security Tracker",
             "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
           },
@@ -175,15 +176,16 @@
           "Layer": {
             "DiffID": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
           },
-          "SeveritySource": "nvd",
+          "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-8165",
           "DataSource": {
+            "ID": "ghsa",
             "Name": "GitHub Security Advisory RubyGems",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Arubygems"
           },
           "Title": "rubygem-activesupport: potentially unintended unmarshalling of user-provided objects in MemCacheStore and RedisCacheStore",
           "Description": "A deserialization of untrusted data vulnernerability exists in rails \u003c 5.2.4.3, rails \u003c 6.0.3.1 that can allow an attacker to unmarshal user-provided objects in MemCacheStore and RedisCacheStore potentially resulting in an RCE.",
-          "Severity": "CRITICAL",
+          "Severity": "HIGH",
           "CweIDs": [
             "CWE-502"
           ],

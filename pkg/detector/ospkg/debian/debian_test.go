@@ -58,6 +58,7 @@ func TestScanner_Detect(t *testing.T) {
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Debian,
 						Name: "Debian Security Tracker",
 						URL:  "https://salsa.debian.org/security-tracker-team/security-tracker",
 					},
@@ -74,6 +75,7 @@ func TestScanner_Detect(t *testing.T) {
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Debian,
 						Name: "Debian Security Tracker",
 						URL:  "https://salsa.debian.org/security-tracker-team/security-tracker",
 					},

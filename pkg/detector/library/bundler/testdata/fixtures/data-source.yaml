@@ -1,6 +1,0 @@
-- bucket: data-source
-  pairs:
-    - key: ruby-advisory-db
-      value:
-        Name: "Ruby Advisory Database"
-        URL:  "https://github.com/rubysec/ruby-advisory-db"

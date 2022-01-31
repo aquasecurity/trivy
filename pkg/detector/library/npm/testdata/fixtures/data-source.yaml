@@ -1,6 +1,0 @@
-- bucket: data-source
-  pairs:
-    - key: nodejs-security-wg
-      value:
-        Name: "Node.js Ecosystem Security Working Group"
-        URL:  "https://github.com/nodejs/security-wg"

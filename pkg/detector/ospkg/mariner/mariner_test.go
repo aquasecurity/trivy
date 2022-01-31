@@ -3,13 +3,13 @@ package mariner_test
 import (
 	"testing"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/mariner"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -59,6 +59,7 @@ func TestScanner_Detect(t *testing.T) {
 					FixedVersion:     "9.16.15-1.cm1",
 					Layer:            ftypes.Layer{},
 					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.CBLMariner,
 						Name: "CBL-Mariner Vulnerability Data",
 						URL:  "https://github.com/microsoft/CBL-MarinerVulnerabilityData",
 					},
@@ -96,6 +97,7 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "8.2.4081-1.cm1",
 					Layer:            ftypes.Layer{},
 					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.CBLMariner,
 						Name: "CBL-Mariner Vulnerability Data",
 						URL:  "https://github.com/microsoft/CBL-MarinerVulnerabilityData",
 					},

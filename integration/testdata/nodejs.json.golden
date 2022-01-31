@@ -26,9 +26,10 @@
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
           "Layer": {},
-          "SeveritySource": "nodejs-security-wg",
+          "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",
           "DataSource": {
+            "ID": "ghsa",
             "Name": "GitHub Security Advisory Npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
@@ -140,9 +141,10 @@
           "InstalledVersion": "4.17.4",
           "FixedVersion": "4.17.12",
           "Layer": {},
-          "SeveritySource": "ghsa-npm",
+          "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-10744",
           "DataSource": {
+            "ID": "ghsa",
             "Name": "GitHub Security Advisory Npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },

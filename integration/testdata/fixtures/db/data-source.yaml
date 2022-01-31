@@ -1,382 +1,141 @@
 - bucket: data-source
   pairs:
-    - key: GitHub Security Advisory Composer
+    - key: "composer::GitHub Security Advisory Composer"
       value:
+        ID: "ghsa"
         Name: "GitHub Security Advisory Composer"
         URL: "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Acomposer"
-    - key: GitHub Security Advisory Maven
+    - key: "maven::GitHub Security Advisory Maven"
       value:
+        ID: "ghsa"
         Name: "GitHub Security Advisory Maven"
         URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven"
-    - key: GitHub Security Advisory Npm
+    - key: "npm::GitHub Security Advisory Npm"
       value:
+        ID: "ghsa"
         Name: "GitHub Security Advisory Npm"
         URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
-    - key: GitHub Security Advisory Nuget
+    - key: "nuget::GitHub Security Advisory Nuget"
       value:
+        ID: "ghsa"
         Name: "GitHub Security Advisory Nuget"
         URL: "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Anuget"
-    - key: GitHub Security Advisory Pip
+    - key: "pip::GitHub Security Advisory Pip"
       value:
+        ID: "ghsa"
         Name: "GitHub Security Advisory Pip"
         URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
-    - key: GitHub Security Advisory RubyGems
+    - key: "rubygems::GitHub Security Advisory RubyGems"
       value:
+        ID: "ghsa"
         Name: "GitHub Security Advisory RubyGems"
         URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Arubygems"
-    - key: Oracle Linux 5
-      value:
-        Name: "Oracle Linux OVAL definitions"
-        URL: "https://linux.oracle.com/security/oval/"
-    - key: Oracle Linux 6
-      value:
-        Name: "Oracle Linux OVAL definitions"
-        URL: "https://linux.oracle.com/security/oval/"
-    - key: Oracle Linux 7
-      value:
-        Name: "Oracle Linux OVAL definitions"
-        URL: "https://linux.oracle.com/security/oval/"
     - key: Oracle Linux 8
       value:
+        ID: "oracle-oval"
         Name: "Oracle Linux OVAL definitions"
         URL: "https://linux.oracle.com/security/oval/"
-    - key: Photon OS 1.0
-      value:
-        Name: "Photon OS CVE metadata"
-        URL: "https://packages.vmware.com/photon/photon_cve_metadata/"
-    - key: Photon OS 2.0
-      value:
-        Name: "Photon OS CVE metadata"
-        URL: "https://packages.vmware.com/photon/photon_cve_metadata/"
     - key: Photon OS 3.0
       value:
+        ID: "photon"
         Name: "Photon OS CVE metadata"
         URL: "https://packages.vmware.com/photon/photon_cve_metadata/"
-    - key: Photon OS 4.0
-      value:
-        Name: "Photon OS CVE metadata"
-        URL: "https://packages.vmware.com/photon/photon_cve_metadata/"
-    - key: SUSE Linux Enterprise 11
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 11-PUBCLOUD
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 11.1
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 11.2
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 11.3
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 11.4
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 12
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 12.1
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 12.2
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 12.3
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 12.4
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 12.5
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 15
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 15-ESPOS
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 15.1
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 15.2
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 15.3
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 15.4
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 5.0
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: SUSE Linux Enterprise 5.1
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
     - key: alma 8
       value:
+        ID: "alma"
         Name: "AlmaLinux Product Errata"
         URL:  "https://errata.almalinux.org/"
-    - key: alpine 3.10
-      value:
-        Name: "Alpine Secdb"
-        URL: "https://secdb.alpinelinux.org/"
-    - key: alpine 3.11
-      value:
-        Name: "Alpine Secdb"
-        URL: "https://secdb.alpinelinux.org/"
-    - key: alpine 3.12
-      value:
-        Name: "Alpine Secdb"
-        URL: "https://secdb.alpinelinux.org/"
-    - key: alpine 3.13
-      value:
-        Name: "Alpine Secdb"
-        URL: "https://secdb.alpinelinux.org/"
-    - key: alpine 3.14
-      value:
-        Name: "Alpine Secdb"
-        URL: "https://secdb.alpinelinux.org/"
-    - key: alpine 3.15
-      value:
-        Name: "Alpine Secdb"
-        URL: "https://secdb.alpinelinux.org/"
-    - key: alpine 3.2
-      value:
-        Name: "Alpine Secdb"
-        URL: "https://secdb.alpinelinux.org/"
-    - key: alpine 3.3
-      value:
-        Name: "Alpine Secdb"
-        URL: "https://secdb.alpinelinux.org/"
-    - key: alpine 3.4
-      value:
-        Name: "Alpine Secdb"
-        URL: "https://secdb.alpinelinux.org/"
-    - key: alpine 3.5
-      value:
-        Name: "Alpine Secdb"
-        URL: "https://secdb.alpinelinux.org/"
-    - key: alpine 3.6
-      value:
-        Name: "Alpine Secdb"
-        URL: "https://secdb.alpinelinux.org/"
-    - key: alpine 3.7
-      value:
-        Name: "Alpine Secdb"
-        URL: "https://secdb.alpinelinux.org/"
-    - key: alpine 3.8
-      value:
-        Name: "Alpine Secdb"
-        URL: "https://secdb.alpinelinux.org/"
     - key: alpine 3.9
       value:
+        ID: "alpine"
+        Name: "Alpine Secdb"
+        URL: "https://secdb.alpinelinux.org/"
+    - key: alpine 3.10
+      value:
+        ID: "alpine"
         Name: "Alpine Secdb"
         URL: "https://secdb.alpinelinux.org/"
     - key: amazon linux 1
       value:
+        ID: "amazon"
         Name: "Amazon Linux Security Center"
         URL: "https://alas.aws.amazon.com/"
     - key: amazon linux 2
       value:
+        ID: "amazon"
         Name: "Amazon Linux Security Center"
         URL: "https://alas.aws.amazon.com/"
-    - key: archlinux
-      value:
-        Name: "Arch Linux Vulnerable issues"
-        URL: "https://security.archlinux.org/"
     - key: cargo::Open Source Vulnerability
       value:
         Name: "RustSec Advisory Database"
         URL:  "https://github.com/RustSec/advisory-db"
     - key: debian 10
       value:
-        Name: "Debian Security Tracker"
-        URL: "https://salsa.debian.org/security-tracker-team/security-tracker"
-    - key: debian 11
-      value:
-        Name: "Debian Security Tracker"
-        URL: "https://salsa.debian.org/security-tracker-team/security-tracker"
-    - key: debian 12
-      value:
-        Name: "Debian Security Tracker"
-        URL: "https://salsa.debian.org/security-tracker-team/security-tracker"
-    - key: debian 7
-      value:
-        Name: "Debian Security Tracker"
-        URL: "https://salsa.debian.org/security-tracker-team/security-tracker"
-    - key: debian 8
-      value:
+        ID: "debian"
         Name: "Debian Security Tracker"
         URL: "https://salsa.debian.org/security-tracker-team/security-tracker"
     - key: debian 9
       value:
+        ID: "debian"
         Name: "Debian Security Tracker"
         URL: "https://salsa.debian.org/security-tracker-team/security-tracker"
     - key: go::GitLab Advisory Database Community
       value:
+        ID: "glad"
         Name: "GitLab Advisory Database Community"
         URL:  "https://gitlab.com/gitlab-org/advisories-community"
     - key: go::The Go Vulnerability Database
       value:
+        ID: "go-vulndb"
         Name: "The Go Vulnerability Database"
         URL:  "https://github.com/golang/vulndb"
     - key: maven::GitLab Advisory Database Community
       value:
+        ID: "glad"
         Name: "GitLab Advisory Database Community"
         URL:  "https://gitlab.com/gitlab-org/advisories-community"
-    - key: nodejs-security-wg
+    - key: npm::nodejs-security-wg
       value:
+        ID: "nodejs-security-wg"
         Name: "Node.js Ecosystem Security Working Group"
         URL:  "https://github.com/nodejs/security-wg"
     - key: openSUSE Leap 15.0
       value:
+        ID: "suse-cvrf"
         Name: "SUSE CVRF"
         URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
     - key: openSUSE Leap 15.1
       value:
+        ID: "suse-cvrf"
         Name: "SUSE CVRF"
         URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: openSUSE Leap 15.2
+    - key: composer::php-security-advisories
       value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: openSUSE Leap 15.3
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: openSUSE Leap 15.4
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: openSUSE Leap 42.1
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: openSUSE Leap 42.2
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: openSUSE Leap 42.3
-      value:
-        Name: "SUSE CVRF"
-        URL: "https://ftp.suse.com/pub/projects/security/cvrf/"
-    - key: php-security-advisories
-      value:
+        ID: "php-security-advisories"
         Name: "PHP Security Advisories Database"
         URL: "https://github.com/FriendsOfPHP/security-advisories"
     - key: pip::Open Source Vulnerability
       value:
+        ID: "osv"
         Name: "Python Packaging Advisory Database"
         URL: "https://github.com/pypa/advisory-db"
     - key: rocky 8
       value:
+        ID: "rocky"
         Name: "Rocky Linux updateinfo"
         URL: "https://download.rockylinux.org/pub/rocky/"
-    - key: ruby-advisory-db
+    - key: rubygems::ruby-advisory-db
       value:
+        ID: "ruby-advisory-db"
         Name: "Ruby Advisory Database"
         URL:  "https://github.com/rubysec/ruby-advisory-db"
-    - key: ubuntu 12.04
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 12.10
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 13.04
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 13.10
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 14.04
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 14.10
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 15.04
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 15.10
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 16.04
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 16.10
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 17.04
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 17.10
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
     - key: ubuntu 18.04
       value:
+        ID: "ubuntu"
         Name: "Ubuntu CVE Tracker"
         URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 18.10
+    - key: CBL-Mariner 1.0
       value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 19.04
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 19.10
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 20.04
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 20.10
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 21.04
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
-    - key: ubuntu 21.10
-      value:
-        Name: "Ubuntu CVE Tracker"
-        URL: "https://git.launchpad.net/ubuntu-cve-tracker"
+        ID:   "cbl-mariner"
+        Name: "CBL-Mariner Vulnerability Data"
+        URL:  "https://github.com/microsoft/CBL-MarinerVulnerabilityData"

@@ -26,9 +26,10 @@
           "InstalledVersion": "0.11",
           "FixedVersion": "0.15.3",
           "Layer": {},
-          "SeveritySource": "nvd",
+          "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14806",
           "DataSource": {
+            "ID": "ghsa",
             "Name": "GitHub Security Advisory Pip",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
           },
@@ -71,9 +72,10 @@
           "InstalledVersion": "0.11",
           "FixedVersion": "0.11.6",
           "Layer": {},
-          "SeveritySource": "nvd",
+          "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-28724",
           "DataSource": {
+            "ID": "ghsa",
             "Name": "GitHub Security Advisory Pip",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
           },

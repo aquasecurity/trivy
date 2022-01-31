@@ -1,4 +1,4 @@
-package bundler_test
+package rubygems_test
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/detector/library/bundler"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/rubygems"
 )
 
 func TestRubyGemsComparer_IsVulnerable(t *testing.T) {
@@ -94,7 +94,7 @@ func TestRubyGemsComparer_IsVulnerable(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := bundler.RubyGemsComparer{}
+			r := rubygems.Comparer{}
 			got := r.IsVulnerable(tt.args.currentVersion, tt.args.advisory)
 			assert.Equal(t, tt.want, got)
 		})

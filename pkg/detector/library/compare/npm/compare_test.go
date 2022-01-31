@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/detector/library/npm"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 )
 
 func TestNpmComparer_IsVulnerable(t *testing.T) {

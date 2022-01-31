@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/analyzer"
+	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -51,7 +51,7 @@ func TestScanner_Scan(t *testing.T) {
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
 						OS: &ftypes.OS{
-							Family: "alpine",
+							Family: fos.Alpine,
 							Name:   "3.11",
 						},
 						Packages: []ftypes.Package{
@@ -127,7 +127,7 @@ func TestScanner_Scan(t *testing.T) {
 						},
 					},
 					Class: report.ClassOSPkg,
-					Type:  vulnerability.Alpine,
+					Type:  fos.Alpine,
 				},
 				{
 					Target: "/app/Gemfile.lock",
@@ -277,7 +277,7 @@ func TestScanner_Scan(t *testing.T) {
 						},
 					},
 					Class: report.ClassOSPkg,
-					Type:  vulnerability.Alpine,
+					Type:  fos.Alpine,
 				},
 				{
 					Target: "/app/Gemfile.lock",
@@ -421,7 +421,7 @@ func TestScanner_Scan(t *testing.T) {
 				{
 					Target: "alpine:latest (alpine 3.11)",
 					Class:  report.ClassOSPkg,
-					Type:   vulnerability.Alpine,
+					Type:   fos.Alpine,
 				},
 				{
 					Target: "/app/Gemfile.lock",
@@ -931,10 +931,9 @@ func TestScanner_Scan(t *testing.T) {
 				require.NotNil(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
 
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.wantResults, gotResults)
 			assert.Equal(t, tt.wantOS, gotOS)
 

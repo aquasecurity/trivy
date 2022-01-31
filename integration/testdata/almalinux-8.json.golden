@@ -62,6 +62,7 @@
           "SeveritySource": "alma",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-3712",
           "DataSource": {
+            "ID": "alma",
             "Name": "AlmaLinux Product Errata",
             "URL": "https://errata.almalinux.org/"
           },

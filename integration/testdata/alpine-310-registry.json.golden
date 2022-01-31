@@ -71,6 +71,7 @@
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1549",
           "DataSource": {
+            "ID": "alpine",
             "Name": "Alpine Secdb",
             "URL": "https://secdb.alpinelinux.org/"
           },
@@ -129,6 +130,7 @@
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1551",
           "DataSource": {
+            "ID": "alpine",
             "Name": "Alpine Secdb",
             "URL": "https://secdb.alpinelinux.org/"
           },
@@ -197,6 +199,7 @@
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1549",
           "DataSource": {
+            "ID": "alpine",
             "Name": "Alpine Secdb",
             "URL": "https://secdb.alpinelinux.org/"
           },
@@ -255,6 +258,7 @@
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1551",
           "DataSource": {
+            "ID": "alpine",
             "Name": "Alpine Secdb",
             "URL": "https://secdb.alpinelinux.org/"
           },
