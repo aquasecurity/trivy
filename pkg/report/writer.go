@@ -96,7 +96,6 @@ type Option struct {
 	Output         io.Writer
 	Severities     []dbTypes.Severity
 	OutputTemplate string
-	Light          bool
 	AppVersion     string
 
 	// For misconfigurations
