@@ -83,7 +83,6 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		OutputTemplate:     opt.Template,
 		IncludeNonFailures: opt.IncludeNonFailures,
 		Trace:              opt.Trace,
-		ListAllPkgs:        opt.ListAllPkgs,
 	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}

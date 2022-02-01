@@ -102,17 +102,11 @@ type Option struct {
 	// For misconfigurations
 	IncludeNonFailures bool
 	Trace              bool
-	ListAllPkgs        bool
 }
 
 // Write writes the result to output, format as passed in argument
 func Write(report Report, option Option) error {
 	var writer Writer
-
-	//--list-all-pkgs option is available only with --format json.
-	// If user specifies --list-all-pkgs with other than --format json, we should warn it.
-	listAllPkgsWarn(option.ListAllPkgs, option.Format)
-
 	switch option.Format {
 	case "table":
 		writer = &TableWriter{
@@ -144,12 +138,6 @@ func Write(report Report, option Option) error {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
 	return nil
-}
-
-func listAllPkgsWarn(listAllPkgs bool, format string) {
-	if listAllPkgs && format != "json" {
-		log.Logger.Warn(`"--list-all-pkgs" option is available only with "--format json".`)
-	}
 }
 
 // Writer defines the result write operation

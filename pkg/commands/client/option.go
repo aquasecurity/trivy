@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // Option holds the Trivy client options
@@ -75,6 +76,12 @@ func (c *Option) Init() (err error) {
 
 	if err = c.ArtifactOption.Init(c.Context, c.Logger); err != nil {
 		return err
+	}
+
+	//--list-all-pkgs option is available only with --format json.
+	// If user specifies --list-all-pkgs with other than --format json, we should warn it.
+	if c.ListAllPkgs && c.Format != "json" {
+		log.Logger.Warn(`"--list-all-pkgs" option is available only with "--format json".`)
 	}
 
 	return nil
