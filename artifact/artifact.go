@@ -15,7 +15,7 @@ type Option struct {
 	DisabledHooks     []hook.Type
 	SkipFiles         []string
 	SkipDirs          []string
-	Quiet             bool
+	NoProgress        bool
 	Offline           bool
 	InsecureSkipTLS   bool
 }

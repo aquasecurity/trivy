@@ -44,8 +44,8 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 		InsecureSkipTLS: artifactOpt.InsecureSkipTLS,
 	}
 
-	// suppress clone output if quiet
-	if artifactOpt.Quiet {
+	// suppress clone output if noProgress
+	if artifactOpt.NoProgress {
 		cloneOptions.Progress = nil
 	}
 

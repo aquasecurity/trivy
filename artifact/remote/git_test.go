@@ -36,9 +36,9 @@ func TestNewArtifact(t *testing.T) {
 	defer ts.Close()
 
 	type args struct {
-		rawurl string
-		c      cache.ArtifactCache
-		quiet  bool
+		rawurl     string
+		c          cache.ArtifactCache
+		noProgress bool
 	}
 	tests := []struct {
 		name    string
@@ -48,34 +48,34 @@ func TestNewArtifact(t *testing.T) {
 		{
 			name: "happy path",
 			args: args{
-				rawurl: ts.URL + "/test.git",
-				c:      nil,
-				quiet:  false,
+				rawurl:     ts.URL + "/test.git",
+				c:          nil,
+				noProgress: false,
 			},
 		},
 		{
-			name: "happy quiet",
+			name: "happy noProgress",
 			args: args{
-				rawurl: ts.URL + "/test.git",
-				c:      nil,
-				quiet:  true,
+				rawurl:     ts.URL + "/test.git",
+				c:          nil,
+				noProgress: true,
 			},
 		},
 		{
 			name: "sad path",
 			args: args{
-				rawurl: ts.URL + "/unknown.git",
-				c:      nil,
-				quiet:  false,
+				rawurl:     ts.URL + "/unknown.git",
+				c:          nil,
+				noProgress: false,
 			},
 			wantErr: true,
 		},
 		{
 			name: "invalid url",
 			args: args{
-				rawurl: "ht tp://foo.com",
-				c:      nil,
-				quiet:  false,
+				rawurl:     "ht tp://foo.com",
+				c:          nil,
+				noProgress: false,
 			},
 			wantErr: true,
 		},
@@ -83,7 +83,8 @@ func TestNewArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{Quiet: tt.args.quiet}, config.ScannerOption{})
+			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c,
+				artifact.Option{NoProgress: tt.args.noProgress}, config.ScannerOption{})
 			assert.Equal(t, tt.wantErr, err != nil)
 			defer cleanup()
 		})
