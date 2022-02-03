@@ -545,6 +545,7 @@ func NewRepositoryCommand() *cli.Command {
 			&redisBackendKey,
 			&timeoutFlag,
 			&noProgressFlag,
+			&quietFlag,
 			&ignorePolicy,
 			&listAllPackages,
 			&offlineScan,
