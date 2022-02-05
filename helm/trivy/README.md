@@ -67,6 +67,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `trivy.registryUsername`              | The username used to log in at dockerhub. More info: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/ |      |
 | `trivy.registryPassword`              | The password used to log in at dockerhub. More info: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/ |      |
 | `trivy.registryCredentialsExistingSecret` | Name of Secret containing dockerhub credentials. Alternative to the 2 parameters above, has precedence if set.                    |      |
+| `trivy.serviceAccount.annotations`        | Additional annotations to add to the Kubernetes service account resource |     |
 | `trivy.skipUpdate`            | The flag to enable or disable Trivy DB downloads from GitHub            | `false`        |
 | `trivy.cache.redis.enabled`           | Enable Redis as caching backend                                         | `false` |
 | `trivy.cache.redis.url`               | Specify redis connection url, e.g. redis://redis.redis.svc:6379         | `` |
