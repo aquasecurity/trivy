@@ -39,18 +39,15 @@ type CycloneDXWriter struct {
 
 // Write writes the results in CycloneDX format
 func (cw CycloneDXWriter) Write(report Report) error {
-	bom, err := ConvertToBom(report, cw.Version)
-	if err != nil {
-		return xerrors.Errorf("failed to convert to bom: %w", err)
-	}
-	if err = cdx.NewBOMEncoder(cw.Output, cdx.BOMFileFormatJSON).Encode(bom); err != nil {
+	bom := ConvertToBom(report, cw.Version)
+	if err := cdx.NewBOMEncoder(cw.Output, cdx.BOMFileFormatJSON).Encode(bom); err != nil {
 		return xerrors.Errorf("failed to encode bom: %w", err)
 	}
 
 	return nil
 }
 
-func ConvertToBom(r Report, version string) (*cdx.BOM, error) {
+func ConvertToBom(r Report, version string) *cdx.BOM {
 	bom := cdx.NewBOM()
 	bom.Metadata = &cdx.Metadata{
 		Timestamp: Now().UTC().Format(time.RFC3339Nano),
@@ -74,10 +71,7 @@ func ConvertToBom(r Report, version string) (*cdx.BOM, error) {
 
 		componentDependencies := []cdx.Dependency{}
 		for _, pkg := range result.Packages {
-			pkgComponent, err := pkgToComponent(result.Type, result.Class, r.Metadata.OS, pkg)
-			if err != nil {
-				return nil, xerrors.Errorf("failed to package to component: %w", err)
-			}
+			pkgComponent := pkgToComponent(result.Type, result.Class, r.Metadata.OS, pkg)
 
 			if _, ok := libraryUniqMap[pkgComponent.PackageURL]; !ok {
 				libraryUniqMap[pkgComponent.PackageURL] = struct{}{}
@@ -98,10 +92,10 @@ func ConvertToBom(r Report, version string) (*cdx.BOM, error) {
 		bom.Dependencies = &dependencies
 	}
 
-	return bom, nil
+	return bom
 }
 
-func pkgToComponent(t string, c ResultClass, o *types.OS, pkg types.Package) (cdx.Component, error) {
+func pkgToComponent(t string, c ResultClass, o *types.OS, pkg types.Package) cdx.Component {
 	pu := purl.NewPackageURL(t, o, pkg)
 	properties := parseProperties(pkg)
 	component := cdx.Component{
@@ -119,7 +113,7 @@ func pkgToComponent(t string, c ResultClass, o *types.OS, pkg types.Package) (cd
 		}
 	}
 
-	return component, nil
+	return component
 }
 
 func reportToComponent(r Report) *cdx.Component {

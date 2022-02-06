@@ -280,8 +280,7 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			bom, err := report.ConvertToBom(tc.inputReport, "cyclonedx")
-			assert.NoError(t, err, tc.name)
+			bom := report.ConvertToBom(tc.inputReport, "cyclonedx")
 			assert.Equal(t, tc.expectedSBOM, bom)
 		})
 	}
