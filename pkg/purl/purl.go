@@ -8,27 +8,12 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/report"
 
 	"github.com/package-url/packageurl-go"
 )
 
-func NewPackageURL(t string, class report.ResultClass, fos types.OS, pkg types.Package) packageurl.PackageURL {
-	var purl *packageurl.PackageURL
-
-	switch class {
-	case report.ClassOSPkg:
-		qualifiers := parseQualifier(pkg, fos.Name)
-		family := fos.Family
-		version := fmt.Sprintf("%s-%s", pkg.Version, pkg.Release)
-
-		// SLES string has whitespace
-		if fos.Family == os.SLES {
-			family = "sles"
-		}
-
-		purl = packageurl.NewPackageURL(purlType(t), family, pkg.Name, version, qualifiers, "")
-	case report.ClassLangPkg:
+func NewPackageURL(t string, fos *types.OS, pkg types.Package) packageurl.PackageURL {
+	if fos == nil {
 		name := pkg.Name
 		namespace := ""
 		switch t {
@@ -43,11 +28,19 @@ func NewPackageURL(t string, class report.ResultClass, fos types.OS, pkg types.P
 		case string(analyzer.TypeNpmPkgLock), string(analyzer.TypeNodePkg), string(analyzer.TypeYarn):
 			namespace, name = parseNpm(name)
 		}
+		return *packageurl.NewPackageURL(purlType(t), namespace, name, pkg.Version, nil, "")
 
-		purl = packageurl.NewPackageURL(purlType(t), namespace, name, pkg.Version, nil, "")
 	}
 
-	return *purl
+	qualifiers := parseQualifier(pkg, fos.Name)
+	family := fos.Family
+	version := fmt.Sprintf("%s-%s", pkg.Version, pkg.Release)
+
+	// SLES string has whitespace
+	if fos.Family == os.SLES {
+		family = "sles"
+	}
+	return *packageurl.NewPackageURL(purlType(t), family, pkg.Name, version, qualifiers, "")
 }
 
 func parseMaven(pkgName string) (string, string) {
