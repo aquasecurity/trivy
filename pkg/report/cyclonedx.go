@@ -3,11 +3,9 @@ package report
 import (
 	"io"
 	"strconv"
-	"strings"
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/types"
@@ -103,22 +101,12 @@ func ConvertToBom(r Report, version string) (*cdx.BOM, error) {
 }
 
 func pkgToComponent(t string, c ResultClass, o *types.OS, pkg types.Package) (cdx.Component, error) {
-	var pu packageurl.PackageURL
-	switch c {
-	case ClassOSPkg:
-		pu = purl.NewPackageURL(t, o, pkg)
-	case ClassLangPkg:
-		pu = purl.NewPackageURL(t, nil, pkg)
-	}
-	version := pkg.Version
-	if pkg.Release != "" {
-		version = strings.Join([]string{pkg.Version, pkg.Release}, "-")
-	}
+	pu := purl.NewPackageURL(t, o, pkg)
 	properties := parseProperties(pkg)
 	component := cdx.Component{
 		Type:       cdx.ComponentTypeLibrary,
 		Name:       pkg.Name,
-		Version:    version,
+		Version:    pu.Version,
 		BOMRef:     pu.ToString(),
 		PackageURL: pu.ToString(),
 		Properties: &properties,
