@@ -4,8 +4,9 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/fanal/types"
+	"github.com/package-url/packageurl-go"
 
-	"gotest.tools/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewPackageURL(t *testing.T) {
@@ -15,7 +16,7 @@ func TestNewPackageURL(t *testing.T) {
 		typ  string
 		pkg  types.Package
 		fos  *types.OS
-		want string
+		want packageurl.PackageURL
 	}{
 		{
 			name: "maven package",
@@ -24,7 +25,12 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "org.springframework:spring-core",
 				Version: "5.3.14",
 			},
-			want: "pkg:maven/org.springframework/spring-core@5.3.14",
+			want: packageurl.PackageURL{
+				Type:      "maven",
+				Namespace: "org.springframework",
+				Name:      "spring-core",
+				Version:   "5.3.14",
+			},
 		},
 		{
 			name: "yarn package",
@@ -33,7 +39,25 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "@xtuc/ieee754",
 				Version: "1.2.0",
 			},
-			want: "pkg:npm/%40xtuc/ieee754@1.2.0",
+			want: packageurl.PackageURL{
+				Type:      "npm",
+				Namespace: "@xtuc",
+				Name:      "ieee754",
+				Version:   "1.2.0",
+			},
+		},
+		{
+			name: "yarn package with non-namespace",
+			typ:  "yarn",
+			pkg: types.Package{
+				Name:    "lodash",
+				Version: "4.17.21",
+			},
+			want: packageurl.PackageURL{
+				Type:    "npm",
+				Name:    "lodash",
+				Version: "4.17.21",
+			},
 		},
 		{
 			name: "pypi package",
@@ -42,7 +66,11 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "Django_test",
 				Version: "1.2.0",
 			},
-			want: "pkg:pypi/django-test@1.2.0",
+			want: packageurl.PackageURL{
+				Type:    "pypi",
+				Name:    "django-test",
+				Version: "1.2.0",
+			},
 		},
 		{
 			name: "composer package",
@@ -51,7 +79,12 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "symfony/contracts",
 				Version: "v1.0.2",
 			},
-			want: "pkg:composer/symfony/contracts@v1.0.2",
+			want: packageurl.PackageURL{
+				Type:      "composer",
+				Namespace: "symfony",
+				Name:      "contracts",
+				Version:   "v1.0.2",
+			},
 		},
 		{
 			name: "golang package",
@@ -60,7 +93,12 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "github.com/go-sql-driver/Mysql",
 				Version: "v1.5.0",
 			},
-			want: "pkg:golang/github.com/go-sql-driver/mysql@v1.5.0",
+			want: packageurl.PackageURL{
+				Type:      "golang",
+				Namespace: "github.com/go-sql-driver",
+				Name:      "mysql",
+				Version:   "v1.5.0",
+			},
 		},
 		{
 			name: "os package",
@@ -81,14 +119,41 @@ func TestNewPackageURL(t *testing.T) {
 				Family: "redhat",
 				Name:   "8",
 			},
-			want: "pkg:rpm/redhat/acl@2.2.53-1.el8?arch=aarch64&distro=8&src_name=acl&src_release=1.el8&src_version=2.2.53",
+			want: packageurl.PackageURL{
+				Type:      "rpm",
+				Namespace: "redhat",
+				Name:      "acl",
+				Version:   "2.2.53-1.el8",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "arch",
+						Value: "aarch64",
+					},
+					{
+						Key:   "src_name",
+						Value: "acl",
+					},
+					{
+						Key:   "src_release",
+						Value: "1.el8",
+					},
+					{
+						Key:   "src_version",
+						Value: "2.2.53",
+					},
+					{
+						Key:   "distro",
+						Value: "redhat-8",
+					},
+				},
+			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			packageURL := NewPackageURL(tc.typ, tc.fos, tc.pkg)
-			assert.Equal(t, tc.want, packageURL.ToString(), tc.name)
+			assert.Equal(t, tc.want, packageURL, tc.name)
 		})
 	}
 }

@@ -8,39 +8,89 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/os"
 	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 
 	"github.com/package-url/packageurl-go"
 )
 
 func NewPackageURL(t string, fos *types.OS, pkg types.Package) packageurl.PackageURL {
-	if fos == nil {
-		name := pkg.Name
-		namespace := ""
-		switch t {
-		case string(analyzer.TypeJar), string(analyzer.TypePom):
-			namespace, name = parseMaven(name)
-		case string(analyzer.TypePythonPkg), string(analyzer.TypePip), string(analyzer.TypePipenv), string(analyzer.TypePoetry):
-			name = parsePyPI(name)
-		case string(analyzer.TypeComposer):
-			namespace, name = parseComposer(name)
-		case string(analyzer.TypeGoBinary), string(analyzer.TypeGoMod):
-			namespace, name = parseGolang(name)
-		case string(analyzer.TypeNpmPkgLock), string(analyzer.TypeNodePkg), string(analyzer.TypeYarn):
-			namespace, name = parseNpm(name)
-		}
-		return *packageurl.NewPackageURL(purlType(t), namespace, name, pkg.Version, nil, "")
-
+	ptype := purlType(t)
+	var qualifiers packageurl.Qualifiers
+	if fos != nil {
+		qualifiers = parseQualifier(pkg, fos.Name)
 	}
 
-	qualifiers := parseQualifier(pkg, fos.Name)
-	family := fos.Family
-	version := fmt.Sprintf("%s-%s", pkg.Version, pkg.Release)
+	name := pkg.Name
+	version := utils.FormatVersion(pkg)
+	namespace := ""
 
+	switch ptype {
+	case packageurl.TypeRPM:
+		ns, qs := parseRPM(fos, pkg.Modularitylabel)
+		namespace = ns
+		qualifiers = append(qualifiers, qs...)
+	case packageurl.TypeDebian:
+		qualifiers = append(qualifiers, parseDeb(fos)...)
+		namespace = fos.Family
+	case string(analyzer.TypeApk): // TODO: replace with packageurl.TypeApk
+		qualifiers = append(qualifiers, parseApk(fos)...)
+		namespace = fos.Family
+	case packageurl.TypeMaven:
+		namespace, name = parseMaven(name)
+	case packageurl.TypePyPi:
+		name = parsePyPI(name)
+	case packageurl.TypeComposer:
+		namespace, name = parseComposer(name)
+	case packageurl.TypeGolang:
+		namespace, name = parseGolang(name)
+	case packageurl.TypeNPM:
+		namespace, name = parseNpm(name)
+	}
+	return *packageurl.NewPackageURL(ptype, namespace, name, version, qualifiers, "")
+}
+
+func parseApk(fos *types.OS) packageurl.Qualifiers {
+	return packageurl.Qualifiers{
+		{
+			Key:   "distro",
+			Value: fos.Name,
+		},
+	}
+}
+
+func parseDeb(fos *types.OS) packageurl.Qualifiers {
+	distro := fmt.Sprintf("%s-%s", fos.Family, fos.Name)
+	return packageurl.Qualifiers{
+		{
+			Key:   "distro",
+			Value: distro,
+		},
+	}
+}
+
+func parseRPM(fos *types.OS, modularityLabel string) (string, packageurl.Qualifiers) {
 	// SLES string has whitespace
+	family := fos.Family
 	if fos.Family == os.SLES {
 		family = "sles"
 	}
-	return *packageurl.NewPackageURL(purlType(t), family, pkg.Name, version, qualifiers, "")
+
+	distro := fmt.Sprintf("%s-%s", family, fos.Name)
+
+	qualifiers := packageurl.Qualifiers{
+		{
+			Key:   "distro",
+			Value: distro,
+		},
+	}
+
+	if modularityLabel != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "modularitylabel",
+			Value: modularityLabel,
+		})
+	}
+	return family, qualifiers
 }
 
 func parseMaven(pkgName string) (string, string) {
@@ -108,7 +158,7 @@ func purlType(t string) string {
 	case os.Alpine:
 		return string(analyzer.TypeApk)
 	case os.Debian, os.Ubuntu:
-		return string(analyzer.TypeDpkg)
+		return packageurl.TypeDebian
 	case os.RedHat, os.CentOS, os.Rocky, os.Alma,
 		os.Amazon, os.Fedora, os.Oracle, os.OpenSUSE,
 		os.OpenSUSELeap, os.OpenSUSETumbleweed, os.SLES, os.Photon:
@@ -129,24 +179,6 @@ func parseQualifier(pkg types.Package, distro string) packageurl.Qualifiers {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "epoch",
 			Value: strconv.Itoa(pkg.Epoch),
-		})
-	}
-	if distro != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "distro",
-			Value: distro,
-		})
-	}
-	if pkg.FilePath != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "file_path",
-			Value: pkg.FilePath,
-		})
-	}
-	if pkg.Modularitylabel != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "modularitylabel",
-			Value: pkg.Modularitylabel,
 		})
 	}
 	if pkg.SrcName != "" {
