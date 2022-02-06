@@ -80,6 +80,7 @@ func ConvertToBom(r Report, version string) (*cdx.BOM, error) {
 			}
 
 			if _, ok := libraryUniqMap[pkgComponent.PackageURL]; !ok {
+				libraryUniqMap[pkgComponent.PackageURL] = struct{}{}
 				componets = append(componets, pkgComponent)
 			}
 			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})

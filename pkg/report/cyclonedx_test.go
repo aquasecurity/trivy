@@ -60,6 +60,39 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						},
 					},
 					{
+						Target: "app/subproject/Gemfile.lock",
+						Class:  report.ClassLangPkg,
+						Type:   "bundler",
+						Packages: []types.Package{
+							{
+								Name:            "actioncable",
+								Version:         "7.0.0",
+								Release:         "",
+								Epoch:           0,
+								Arch:            "",
+								SrcName:         "",
+								SrcVersion:      "",
+								SrcRelease:      "",
+								SrcEpoch:        0,
+								Modularitylabel: "",
+								License:         "",
+							},
+							{
+								Name:            "actioncontroller",
+								Version:         "7.0.0",
+								Release:         "",
+								Epoch:           0,
+								Arch:            "",
+								SrcName:         "",
+								SrcVersion:      "",
+								SrcRelease:      "",
+								SrcEpoch:        0,
+								Modularitylabel: "",
+								License:         "",
+							},
+						},
+					},
+					{
 						Target: "app/Gemfile.lock",
 						Class:  report.ClassLangPkg,
 						Type:   "bundler",
@@ -131,7 +164,7 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 					},
 					{
 						BOMRef:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
-						Type:    "library",
+						Type:    cdx.ComponentTypeLibrary,
 						Name:    "acl",
 						Version: "2.2.53-1.el8",
 						Licenses: &cdx.Licenses{
@@ -162,9 +195,9 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:  "app/Gemfile.lock",
-						Type:    "application",
-						Name:    "app/Gemfile.lock",
+						BOMRef:  "app/subproject/Gemfile.lock",
+						Type:    cdx.ComponentTypeApplication,
+						Name:    "app/subproject/Gemfile.lock",
 						Version: "",
 						Properties: &[]cdx.Property{
 							{
@@ -179,11 +212,35 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 					},
 					{
 						BOMRef:     "pkg:gem/actioncable@7.0.0",
-						Type:       "library",
+						Type:       cdx.ComponentTypeLibrary,
 						Name:       "actioncable",
 						Version:    "7.0.0",
 						PackageURL: "pkg:gem/actioncable@7.0.0",
 						Properties: &[]cdx.Property{},
+					},
+					{
+						BOMRef:     "pkg:gem/actioncontroller@7.0.0",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "actioncontroller",
+						Version:    "7.0.0",
+						PackageURL: "pkg:gem/actioncontroller@7.0.0",
+						Properties: &[]cdx.Property{},
+					},
+					{
+						BOMRef:  "app/Gemfile.lock",
+						Type:    cdx.ComponentTypeApplication,
+						Name:    "app/Gemfile.lock",
+						Version: "",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "bundler",
+							},
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+						},
 					},
 				},
 				Dependencies: &[]cdx.Dependency{
@@ -192,6 +249,17 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						Dependencies: &[]cdx.Dependency{
 							{
 								Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+							},
+						},
+					},
+					{
+						Ref: "app/subproject/Gemfile.lock",
+						Dependencies: &[]cdx.Dependency{
+							{
+								Ref: "pkg:gem/actioncable@7.0.0",
+							},
+							{
+								Ref: "pkg:gem/actioncontroller@7.0.0",
 							},
 						},
 					},
