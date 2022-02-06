@@ -15,6 +15,7 @@ import (
 
 func NewPackageURL(t string, fos *types.OS, pkg types.Package) packageurl.PackageURL {
 	ptype := purlType(t)
+
 	var qualifiers packageurl.Qualifiers
 	if fos != nil {
 		qualifiers = parseQualifier(pkg, fos.Name)
@@ -179,30 +180,6 @@ func parseQualifier(pkg types.Package, distro string) packageurl.Qualifiers {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "epoch",
 			Value: strconv.Itoa(pkg.Epoch),
-		})
-	}
-	if pkg.SrcName != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "src_name",
-			Value: pkg.SrcName,
-		})
-	}
-	if pkg.SrcEpoch != 0 {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "src_epoch",
-			Value: strconv.Itoa(pkg.SrcEpoch),
-		})
-	}
-	if pkg.SrcRelease != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "src_release",
-			Value: pkg.SrcRelease,
-		})
-	}
-	if pkg.SrcVersion != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "src_version",
-			Value: pkg.SrcVersion,
 		})
 	}
 	return qualifiers
