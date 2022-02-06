@@ -36,7 +36,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/open-policy-agent/opa v0.36.1
 	github.com/owenrumney/go-sarif/v2 v2.0.17
-	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a // indirect
+	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
 	github.com/spf13/afero v1.6.0
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
@@ -48,6 +48,5 @@ require (
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
-	gotest.tools v2.2.0+incompatible
 	k8s.io/utils v0.0.0-20201110183641-67b214c5f920
 )
