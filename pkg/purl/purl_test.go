@@ -130,18 +130,6 @@ func TestNewPackageURL(t *testing.T) {
 						Value: "aarch64",
 					},
 					{
-						Key:   "src_name",
-						Value: "acl",
-					},
-					{
-						Key:   "src_release",
-						Value: "1.el8",
-					},
-					{
-						Key:   "src_version",
-						Value: "2.2.53",
-					},
-					{
 						Key:   "distro",
 						Value: "redhat-8",
 					},
