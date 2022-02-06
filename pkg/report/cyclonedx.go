@@ -35,12 +35,14 @@ const (
 type CycloneDXWriter struct {
 	Output  io.Writer
 	Version string
+	Format  cdx.BOMFileFormat
 }
 
 // Write writes the results in CycloneDX format
 func (cw CycloneDXWriter) Write(report Report) error {
 	bom := ConvertToBom(report, cw.Version)
-	if err := cdx.NewBOMEncoder(cw.Output, cdx.BOMFileFormatJSON).Encode(bom); err != nil {
+
+	if err := cdx.NewBOMEncoder(cw.Output, cw.Format).Encode(bom); err != nil {
 		return xerrors.Errorf("failed to encode bom: %w", err)
 	}
 

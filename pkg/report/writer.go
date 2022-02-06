@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	cdx "github.com/CycloneDX/cyclonedx-go"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/xerrors"
 
@@ -117,7 +118,8 @@ func Write(report Report, option Option) error {
 	case "json":
 		writer = &JSONWriter{Output: option.Output}
 	case "cyclonedx":
-		writer = &CycloneDXWriter{Output: option.Output, Version: option.AppVersion}
+		// TODO: support xml format option with cyclonedx writer
+		writer = &CycloneDXWriter{Output: option.Output, Version: option.AppVersion, Format: cdx.BOMFileFormatJSON}
 	case "template":
 		// We keep `sarif.tpl` template working for backward compatibility for a while.
 		if strings.HasPrefix(option.OutputTemplate, "@") && filepath.Base(option.OutputTemplate) == "sarif.tpl" {
