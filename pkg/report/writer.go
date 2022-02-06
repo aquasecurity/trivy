@@ -134,6 +134,7 @@ func Write(report Report, option Option) error {
 	default:
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}
+
 	if err := writer.Write(report); err != nil {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
