@@ -130,14 +130,14 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=8.3.2011&src_name=acl&src_release=1.el8&src_version=2.2.53",
+						BOMRef:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
 						Type:    "library",
 						Name:    "acl",
 						Version: "2.2.53-1.el8",
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{Expression: "GPLv2+"},
 						},
-						PackageURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=8.3.2011&src_name=acl&src_release=1.el8&src_version=2.2.53",
+						PackageURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:Release",
@@ -191,7 +191,7 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						Ref: "rails:latest (centos 8.3.2011)",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=8.3.2011&src_name=acl&src_release=1.el8&src_version=2.2.53",
+								Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
 							},
 						},
 					},
