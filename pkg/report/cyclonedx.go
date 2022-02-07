@@ -6,6 +6,7 @@ import (
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/google/uuid"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/types"
@@ -33,10 +34,23 @@ const (
 
 // CycloneDXWriter implements result Writer
 type CycloneDXWriter struct {
-	Output  io.Writer
-	Version string
-	Format  cdx.BOMFileFormat
+	Output        io.Writer
+	Version       string
+	Format        cdx.BOMFileFormat
+	UUIDGenerator UUIDGenerator
 }
+
+type UUIDGenerator interface {
+	New() uuid.UUID
+}
+
+type UUID struct{}
+
+func (u *UUID) New() uuid.UUID {
+	return uuid.New()
+}
+
+var GenUUID UUIDGenerator = &UUID{}
 
 // Write writes the results in CycloneDX format
 func (cw CycloneDXWriter) Write(report Report) error {
@@ -51,6 +65,7 @@ func (cw CycloneDXWriter) Write(report Report) error {
 
 func ConvertToBom(r Report, version string) *cdx.BOM {
 	bom := cdx.NewBOM()
+	bom.SerialNumber = GenUUID.New().URN()
 	bom.Metadata = &cdx.Metadata{
 		Timestamp: Now().UTC().Format(time.RFC3339Nano),
 		Tools: &[]cdx.Tool{

@@ -7,6 +7,7 @@ import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -116,10 +117,11 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 			},
 
 			expectedSBOM: &cdx.BOM{
-				XMLNS:       "http://cyclonedx.org/schema/bom/1.3",
-				BOMFormat:   "CycloneDX",
-				SpecVersion: "1.3",
-				Version:     1,
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.3",
+				BOMFormat:    "CycloneDX",
+				SpecVersion:  "1.3",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-ed576c5a672e",
+				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30.000000005Z",
 					Tools: &[]cdx.Tool{
@@ -278,10 +280,17 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 	report.Now = func() time.Time {
 		return time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC)
 	}
+	report.GenUUID = mockUUIDGenerator{}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			bom := report.ConvertToBom(tc.inputReport, "cyclonedx")
 			assert.Equal(t, tc.expectedSBOM, bom)
 		})
 	}
+}
+
+type mockUUIDGenerator struct{}
+
+func (m mockUUIDGenerator) New() uuid.UUID {
+	return uuid.Must(uuid.Parse("3ff14136-e09f-4df9-80ea-ed576c5a672e"))
 }
