@@ -15,7 +15,6 @@ require (
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
 	github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492
 	github.com/aquasecurity/trivy-db v0.0.0-20220130223604-df65ebde46f4
-	github.com/bits-and-blooms/bitset v1.2.1 // indirect
 	github.com/caarlos0/env/v6 v6.0.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.3
@@ -27,7 +26,6 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/goccy/go-yaml v1.8.2 // indirect
-	github.com/gogo/googleapis v1.4.1 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-containerregistry v0.7.1-0.20211214010025-a65b7844a475
 	github.com/google/wire v0.4.0
@@ -42,7 +40,6 @@ require (
 	github.com/moby/sys/mountinfo v0.6.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/open-policy-agent/opa v0.36.1
-	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/opencontainers/runc v1.1.0 // indirect
 	github.com/owenrumney/go-sarif/v2 v2.0.17
 	github.com/spf13/afero v1.6.0
