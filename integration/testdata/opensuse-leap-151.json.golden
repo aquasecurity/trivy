@@ -68,7 +68,10 @@
           "Layer": {
             "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
           },
+          "SeveritySource": "suse-cvrf",
+          "PrimaryURL": "https://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
           "DataSource": {
+            "ID": "suse-cvrf",
             "Name": "SUSE CVRF",
             "URL": "https://ftp.suse.com/pub/projects/security/cvrf/"
           },
@@ -88,7 +91,10 @@
           "Layer": {
             "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
           },
+          "SeveritySource": "suse-cvrf",
+          "PrimaryURL": "https://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
           "DataSource": {
+            "ID": "suse-cvrf",
             "Name": "SUSE CVRF",
             "URL": "https://ftp.suse.com/pub/projects/security/cvrf/"
           },

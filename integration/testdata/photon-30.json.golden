@@ -73,6 +73,7 @@
           "SeveritySource": "photon",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18276",
           "DataSource": {
+            "ID": "photon",
             "Name": "Photon OS CVE metadata",
             "URL": "https://packages.vmware.com/photon/photon_cve_metadata/"
           },
@@ -121,6 +122,7 @@
           "SeveritySource": "photon",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
           "DataSource": {
+            "ID": "photon",
             "Name": "Photon OS CVE metadata",
             "URL": "https://packages.vmware.com/photon/photon_cve_metadata/"
           },
@@ -176,6 +178,7 @@
           "SeveritySource": "photon",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
           "DataSource": {
+            "ID": "photon",
             "Name": "Photon OS CVE metadata",
             "URL": "https://packages.vmware.com/photon/photon_cve_metadata/"
           },

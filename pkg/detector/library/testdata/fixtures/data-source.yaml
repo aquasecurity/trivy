@@ -2,13 +2,16 @@
   pairs:
     - key: composer::GitLab Advisory Database Community
       value:
+        ID: "glad"
         Name: "GitLab Advisory Database Community"
         URL:  "https://gitlab.com/gitlab-org/advisories-community"
     - key: composer::php-security-advisories
       value:
+        ID: "php-security-advisories"
         Name: "PHP Security Advisories Database"
         URL:  "https://github.com/FriendsOfPHP/security-advisories"
     - key: rubygems::ruby-advisory-db
       value:
+        ID: "ruby-advisory-db"
         Name: "Ruby Advisory Database"
         URL:  "https://github.com/rubysec/ruby-advisory-db"

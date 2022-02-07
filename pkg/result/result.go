@@ -12,7 +12,6 @@ import (
 	"github.com/open-policy-agent/opa/rego"
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -28,11 +27,10 @@ const (
 )
 
 var (
-	primaryURLPrefixes = map[string][]string{
+	primaryURLPrefixes = map[dbTypes.SourceID][]string{
 		vulnerability.Debian:           {"http://www.debian.org", "https://www.debian.org"},
 		vulnerability.Ubuntu:           {"http://www.ubuntu.com", "https://usn.ubuntu.com"},
 		vulnerability.RedHat:           {"https://access.redhat.com"},
-		vulnerability.OpenSuseCVRF:     {"http://lists.opensuse.org", "https://lists.opensuse.org"},
 		vulnerability.SuseCVRF:         {"http://lists.opensuse.org", "https://lists.opensuse.org"},
 		vulnerability.OracleOVAL:       {"http://linux.oracle.com/errata", "https://linux.oracle.com/errata"},
 		vulnerability.NodejsSecurityWg: {"https://www.npmjs.com", "https://hackerone.com"},
@@ -66,11 +64,14 @@ func (c Client) FillVulnerabilityInfo(vulns []types.DetectedVulnerability, repor
 			continue
 		}
 
-		// Detect which data source should be used.
-		sources := c.detectSource(reportType)
+		// Detect the data source
+		var source dbTypes.SourceID
+		if vulns[i].DataSource != nil {
+			source = vulns[i].DataSource.ID
+		}
 
 		// Select the severity according to the detected source.
-		severity, severitySource := c.getVendorSeverity(&vuln, sources)
+		severity, severitySource := c.getVendorSeverity(&vuln, source)
 
 		// The vendor might provide package-specific severity like Debian.
 		// For example, CVE-2015-2328 in Debian has "unimportant" for mongodb and "low" for pcre3.
@@ -85,42 +86,14 @@ func (c Client) FillVulnerabilityInfo(vulns []types.DetectedVulnerability, repor
 
 		vulns[i].Severity = severity
 		vulns[i].SeveritySource = severitySource
-		vulns[i].PrimaryURL = c.getPrimaryURL(vulnID, vuln.References, sources)
+		vulns[i].PrimaryURL = c.getPrimaryURL(vulnID, vuln.References, source)
 		vulns[i].Vulnerability.VendorSeverity = nil // Remove VendorSeverity from Results
 	}
 }
-func (c Client) detectSource(reportType string) []string {
-	var sources []string
-	switch reportType {
-	case vulnerability.Ubuntu, vulnerability.Alpine, vulnerability.RedHat, vulnerability.RedHatOVAL,
-		vulnerability.Debian, vulnerability.DebianOVAL, vulnerability.Fedora, vulnerability.Amazon,
-		vulnerability.OracleOVAL, vulnerability.SuseCVRF, vulnerability.OpenSuseCVRF, vulnerability.Photon, vulnerability.Alma, vulnerability.Rocky:
-		sources = []string{reportType}
-	case vulnerability.CentOS: // CentOS doesn't have its own so we use RedHat
-		sources = []string{vulnerability.RedHat}
-	case "npm", "yarn":
-		sources = []string{vulnerability.NodejsSecurityWg, vulnerability.GHSANpm, vulnerability.GLAD}
-	case "nuget":
-		sources = []string{vulnerability.GHSANuget, vulnerability.GLAD}
-	case "pipenv", "poetry":
-		sources = []string{vulnerability.GHSAPip, vulnerability.GLAD}
-	case "bundler":
-		sources = []string{vulnerability.RubySec, vulnerability.GHSARubygems, vulnerability.GLAD}
-	case "cargo":
-		sources = []string{vulnerability.OSVCratesio}
-	case "composer":
-		sources = []string{vulnerability.PhpSecurityAdvisories, vulnerability.GHSAComposer, vulnerability.GLAD}
-	case ftypes.Jar:
-		sources = []string{vulnerability.GHSAMaven, vulnerability.GLAD}
-	}
-	return sources
-}
 
-func (c Client) getVendorSeverity(vuln *dbTypes.Vulnerability, sources []string) (string, string) {
-	for _, source := range sources {
-		if vs, ok := vuln.VendorSeverity[source]; ok {
-			return vs.String(), source
-		}
+func (c Client) getVendorSeverity(vuln *dbTypes.Vulnerability, source dbTypes.SourceID) (string, dbTypes.SourceID) {
+	if vs, ok := vuln.VendorSeverity[source]; ok {
+		return vs.String(), source
 	}
 
 	// Try NVD as a fallback if it exists
@@ -135,7 +108,7 @@ func (c Client) getVendorSeverity(vuln *dbTypes.Vulnerability, sources []string)
 	return vuln.Severity, ""
 }
 
-func (c Client) getPrimaryURL(vulnID string, refs []string, sources []string) string {
+func (c Client) getPrimaryURL(vulnID string, refs []string, source dbTypes.SourceID) string {
 	switch {
 	case strings.HasPrefix(vulnID, "CVE-"):
 		return "https://avd.aquasec.com/nvd/" + strings.ToLower(vulnID)
@@ -147,13 +120,11 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, sources []string) st
 		return "https://security-tracker.debian.org/tracker/" + vulnID
 	}
 
-	for _, source := range sources {
-		prefixes := primaryURLPrefixes[source]
-		for _, pre := range prefixes {
-			for _, ref := range refs {
-				if strings.HasPrefix(ref, pre) {
-					return ref
-				}
+	prefixes := primaryURLPrefixes[source]
+	for _, pre := range prefixes {
+		for _, ref := range refs {
+			if strings.HasPrefix(ref, pre) {
+				return ref
 			}
 		}
 	}

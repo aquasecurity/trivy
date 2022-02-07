@@ -1,4 +1,4 @@
-package comparer_test
+package compare_test
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/detector/library/comparer"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 )
 
 func TestGenericComparer_IsVulnerable(t *testing.T) {
@@ -108,7 +108,7 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := comparer.GenericComparer{}
+			v := compare.GenericComparer{}
 			got := v.IsVulnerable(tt.args.ver, tt.args.advisory)
 			assert.Equal(t, tt.want, got)
 		})

@@ -1,7 +1,6 @@
 package alpine_test
 
 import (
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"sort"
 	"testing"
 	"time"
@@ -12,6 +11,8 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -62,6 +63,7 @@ func TestScanner_Detect(t *testing.T) {
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Alpine,
 						Name: "Alpine Secdb",
 						URL:  "https://secdb.alpinelinux.org/",
 					},
@@ -75,6 +77,7 @@ func TestScanner_Detect(t *testing.T) {
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Alpine,
 						Name: "Alpine Secdb",
 						URL:  "https://secdb.alpinelinux.org/",
 					},
@@ -102,6 +105,7 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "1.6-r0",
 					FixedVersion:     "1.6-r1",
 					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Alpine,
 						Name: "Alpine Secdb",
 						URL:  "https://secdb.alpinelinux.org/",
 					},
@@ -135,6 +139,7 @@ func TestScanner_Detect(t *testing.T) {
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Alpine,
 						Name: "Alpine Secdb",
 						URL:  "https://secdb.alpinelinux.org/",
 					},

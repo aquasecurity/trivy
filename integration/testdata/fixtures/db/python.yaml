@@ -1,4 +1,4 @@
-- bucket: GitHub Security Advisory Pip
+- bucket: "pip::GitHub Security Advisory Pip"
   pairs:
     - bucket: werkzeug
       pairs:

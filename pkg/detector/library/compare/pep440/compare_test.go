@@ -1,4 +1,4 @@
-package python_test
+package pep440_test
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/detector/library/python"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 )
 
 func TestPep440Comparer_IsVulnerable(t *testing.T) {
@@ -108,7 +108,7 @@ func TestPep440Comparer_IsVulnerable(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := python.Pep440Comparer{}
+			c := pep440.Comparer{}
 			got := c.IsVulnerable(tt.args.currentVersion, tt.args.advisory)
 			assert.Equal(t, tt.want, got)
 		})

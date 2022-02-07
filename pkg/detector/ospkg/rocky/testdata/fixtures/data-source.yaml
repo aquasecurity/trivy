@@ -2,5 +2,6 @@
   pairs:
     - key: rocky 8
       value:
+        ID: "rocky"
         Name: "Rocky Linux updateinfo"
         URL: "https://download.rockylinux.org/pub/rocky/"

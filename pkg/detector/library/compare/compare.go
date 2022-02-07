@@ -1,4 +1,4 @@
-package comparer
+package compare
 
 import (
 	"strings"

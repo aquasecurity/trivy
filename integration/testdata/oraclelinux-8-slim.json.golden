@@ -69,15 +69,16 @@
           "Layer": {
             "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
           },
-          "SeveritySource": "nvd",
+          "SeveritySource": "oracle-oval",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3823",
           "DataSource": {
+            "ID": "oracle-oval",
             "Name": "Oracle Linux OVAL definitions",
             "URL": "https://linux.oracle.com/security/oval/"
           },
           "Title": "curl: SMTP end-of-response out-of-bounds read",
           "Description": "libcurl versions from 7.34.0 to before 7.64.0 are vulnerable to a heap out-of-bounds read in the code handling the end-of-response for SMTP. If the buffer passed to `smtp_endofresp()` isn't NUL terminated and contains no character ending the parsed number, and `len` is set to 5, then the `strtol()` call reads beyond the allocated buffer. The read contents will not be returned to the caller.",
-          "Severity": "HIGH",
+          "Severity": "MEDIUM",
           "CweIDs": [
             "CWE-125"
           ],
@@ -123,15 +124,16 @@
           "Layer": {
             "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
           },
-          "SeveritySource": "nvd",
+          "SeveritySource": "oracle-oval",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5436",
           "DataSource": {
+            "ID": "oracle-oval",
             "Name": "Oracle Linux OVAL definitions",
             "URL": "https://linux.oracle.com/security/oval/"
           },
           "Title": "curl: TFTP receive heap buffer overflow in tftp_receive_packet() function",
           "Description": "A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution in libcurl versions 7.19.4 through 7.64.1.",
-          "Severity": "HIGH",
+          "Severity": "MEDIUM",
           "CweIDs": [
             "CWE-787"
           ],

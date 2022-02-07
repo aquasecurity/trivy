@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -288,7 +289,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 			args: args{rpcResults: []*scanner.Result{
 				{
 					Target: "alpine:3.10",
-					Type:   vulnerability.Alpine,
+					Type:   fos.Alpine,
 					Vulnerabilities: []*common.Vulnerability{
 						{
 							VulnerabilityId:  "CVE-2019-0001",
@@ -298,7 +299,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 							Title:            "DoS",
 							Description:      "Denial of Service",
 							Severity:         common.Severity_MEDIUM,
-							SeveritySource:   vulnerability.NVD,
+							SeveritySource:   string(vulnerability.NVD),
 							CweIds:           []string{"CWE-123", "CWE-456"},
 							Cvss: map[string]*common.CVSS{
 								"redhat": {
@@ -327,7 +328,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 			want: []report.Result{
 				{
 					Target: "alpine:3.10",
-					Type:   vulnerability.Alpine,
+					Type:   fos.Alpine,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2019-0001",
@@ -372,7 +373,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 			args: args{rpcResults: []*scanner.Result{
 				{
 					Target: "alpine:3.10",
-					Type:   vulnerability.Alpine,
+					Type:   fos.Alpine,
 					Vulnerabilities: []*common.Vulnerability{
 						{
 							VulnerabilityId:  "CVE-2019-0001",
@@ -382,7 +383,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 							Title:            "DoS",
 							Description:      "Denial of Service",
 							Severity:         common.Severity_MEDIUM,
-							SeveritySource:   vulnerability.NVD,
+							SeveritySource:   string(vulnerability.NVD),
 							CweIds:           []string{"CWE-123", "CWE-456"},
 							Cvss: map[string]*common.CVSS{
 								"redhat": {
@@ -407,7 +408,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 			want: []report.Result{
 				{
 					Target: "alpine:3.10",
-					Type:   vulnerability.Alpine,
+					Type:   fos.Alpine,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2019-0001",
