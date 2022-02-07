@@ -13,6 +13,39 @@ import (
 	"github.com/package-url/packageurl-go"
 )
 
+func NewPackageURLForOCI(name, repoURL, arch, imageID string, tags []string) packageurl.PackageURL {
+	var namespace, tag string
+	index := strings.LastIndex(name, "/")
+	if index != -1 {
+		namespace = name[:index]
+		name = name[index+1:]
+	}
+
+	if len(tags) > 0 {
+		tag = tags[0]
+	}
+	var qualifiers packageurl.Qualifiers
+	ss := strings.Split(tag, ":") // RepoTag has "centos:latest"
+	if len(ss) == 2 {
+		qualifiers = append(qualifiers,
+			packageurl.Qualifier{
+				Key:   "tag",
+				Value: ss[1],
+			},
+		)
+	}
+	if arch != "" {
+		qualifiers = append(qualifiers,
+			packageurl.Qualifier{
+				Key:   "arch",
+				Value: arch,
+			},
+		)
+	}
+
+	return *packageurl.NewPackageURL(packageurl.TypeOCI, namespace, name, imageID, qualifiers, "")
+}
+
 func NewPackageURL(t string, fos *types.OS, pkg types.Package) packageurl.PackageURL {
 	ptype := purlType(t)
 
