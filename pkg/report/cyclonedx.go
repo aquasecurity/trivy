@@ -157,6 +157,8 @@ func reportToComponent(r Report) *cdx.Component {
 	switch r.ArtifactType {
 	case types.ArtifactContainerImage:
 		component.Type = cdx.ComponentTypeContainer
+		component.BOMRef = purl.NewPackageURLForOCI(r.ArtifactName, "", r.Metadata.ImageConfig.Architecture, r.Metadata.ImageID, r.Metadata.RepoTags).String()
+		component.PackageURL = purl.NewPackageURLForOCI(r.ArtifactName, "", r.Metadata.ImageConfig.Architecture, r.Metadata.ImageID, r.Metadata.RepoTags).String()
 	case types.ArtifactFilesystem, types.ArtifactRemoteRepository:
 		component.Type = cdx.ComponentTypeApplication
 	}

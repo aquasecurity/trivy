@@ -36,8 +36,9 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						Name:   "8.3.2011",
 						Eosl:   true,
 					},
-					RepoTags:    []string{},
-					RepoDigests: []string{},
+					ImageID:     "sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
+					RepoTags:    []string{"rails:latest"},
+					RepoDigests: []string{"centos@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177"},
 				},
 				Results: report.Results{
 					{
@@ -132,9 +133,11 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						},
 					},
 					Component: &cdx.Component{
-						Type:    cdx.ComponentTypeContainer,
-						Name:    "rails:latest",
-						Version: "8.3.2011",
+						Type:       cdx.ComponentTypeContainer,
+						BOMRef:     "pkg:oci/rails:latest@sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6?tag=latest",
+						PackageURL: "pkg:oci/rails:latest@sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6?tag=latest",
+						Name:       "rails:latest",
+						Version:    "8.3.2011",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:SchemaVersion",
@@ -143,6 +146,14 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:Size",
 								Value: "1024",
+							},
+							{
+								Name:  "aquasecurity:trivy:Digest",
+								Value: "centos@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177",
+							},
+							{
+								Name:  "aquasecurity:trivy:Tag",
+								Value: "rails:latest",
 							},
 						},
 					},
