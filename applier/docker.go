@@ -1,6 +1,7 @@
 package applier
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -100,17 +101,28 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		}
 
 		for _, pkgInfo := range layer.PackageInfos {
-			nestedMap.SetByString(pkgInfo.FilePath, sep, pkgInfo)
+			key := fmt.Sprintf("%s/type:ospkg", pkgInfo.FilePath)
+			nestedMap.SetByString(key, sep, pkgInfo)
 		}
 		for _, app := range layer.Applications {
-			nestedMap.SetByString(app.FilePath, sep, app)
+			key := fmt.Sprintf("%s/type:%s", app.FilePath, app.Type)
+			nestedMap.SetByString(key, sep, app)
 		}
 		for _, config := range layer.Misconfigurations {
 			config.Layer = types.Layer{
 				Digest: layer.Digest,
 				DiffID: layer.DiffID,
 			}
-			nestedMap.SetByString(config.FilePath, sep, config)
+			key := fmt.Sprintf("%s/type:config", config.FilePath)
+			nestedMap.SetByString(key, sep, config)
+		}
+		for _, customResource := range layer.CustomResources {
+			key := fmt.Sprintf("%s/custom:%s", customResource.FilePath, customResource.Type)
+			customResource.Layer = types.Layer{
+				Digest: layer.Digest,
+				DiffID: layer.DiffID,
+			}
+			nestedMap.SetByString(key, sep, customResource)
 		}
 	}
 
@@ -122,6 +134,8 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			mergedLayer.Applications = append(mergedLayer.Applications, v)
 		case types.Misconfiguration:
 			mergedLayer.Misconfigurations = append(mergedLayer.Misconfigurations, v)
+		case types.CustomResource:
+			mergedLayer.CustomResources = append(mergedLayer.CustomResources, v)
 		}
 		return nil
 	})

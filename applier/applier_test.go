@@ -12,6 +12,10 @@ import (
 	"github.com/aquasecurity/fanal/types"
 )
 
+type dummyData struct {
+	data string
+}
+
 func TestApplier_ApplyLayers(t *testing.T) {
 	type args struct {
 		imageID  string
@@ -157,7 +161,8 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				},
 				Applications: []types.Application{
 					{
-						Type: "composer", FilePath: "php-app/composer.lock",
+						Type:     "composer",
+						FilePath: "php-app/composer.lock",
 						Libraries: []types.Package{
 							{
 								Name:    "guzzlehttp/guzzle",
@@ -445,7 +450,8 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				},
 				Applications: []types.Application{
 					{
-						Type: "composer", FilePath: "php-app/composer.lock",
+						Type:     "composer",
+						FilePath: "php-app/composer.lock",
 						Libraries: []types.Package{
 							{
 								Name:    "guzzlehttp/guzzle",
@@ -500,6 +506,174 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			},
 			wantErr: "no packages detected",
 		},
+		{
+			name: "happy path with custom resources",
+			args: args{
+				imageID: "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e",
+				layerIDs: []string{
+					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+				},
+			},
+			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
+				{
+					Args: cache.LocalArtifactCacheGetBlobArgs{
+						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					Returns: cache.LocalArtifactCacheGetBlobReturns{
+						BlobInfo: types.BlobInfo{
+							SchemaVersion: 1,
+							Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+							PackageInfos: []types.PackageInfo{
+								{
+									FilePath: "var/lib/dpkg/status.d/tzdata",
+									Packages: []types.Package{
+										{
+											Name:       "tzdata",
+											Version:    "2019a-0+deb9u1",
+											SrcName:    "tzdata",
+											SrcVersion: "2019a-0+deb9u1",
+										},
+									},
+								},
+							},
+							CustomResources: []types.CustomResource{
+								{
+									Type:     "type-A",
+									FilePath: "var/lib/dpkg/status.d/tzdata",
+									Data: dummyData{
+										data: "Common Package type-A var/lib/dpkg/status.d/tzdata",
+									},
+								},
+								{
+									Type:     "type-B",
+									FilePath: "var/lib/dpkg/status.d/tzdata",
+									Data: dummyData{
+										data: "Common Package type-B, overidden in next layer",
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					Args: cache.LocalArtifactCacheGetBlobArgs{
+						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					},
+					Returns: cache.LocalArtifactCacheGetBlobReturns{
+						BlobInfo: types.BlobInfo{
+							SchemaVersion: 1,
+							Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+							DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+							Applications: []types.Application{
+								{
+									Type:     "composer",
+									FilePath: "php-app/composer.lock",
+									Libraries: []types.Package{
+										{
+											Name:    "guzzlehttp/guzzle",
+											Version: "6.2.0",
+										},
+										{
+											Name:    "symfony/process",
+											Version: "v4.2.7",
+										},
+									},
+								},
+							},
+							CustomResources: []types.CustomResource{
+								{
+									Type:     "type-A",
+									FilePath: "php-app/composer.lock",
+									Data: dummyData{
+										data: "Common Application type-A php-app/composer.lock",
+									},
+								},
+								{
+									Type:     "type-B",
+									FilePath: "var/lib/dpkg/status.d/tzdata",
+									Data: dummyData{
+										data: "Type B application which replaces earlier detected resource",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				Packages: []types.Package{
+					{
+						Name: "tzdata", Version: "2019a-0+deb9u1", SrcName: "tzdata", SrcVersion: "2019a-0+deb9u1",
+						Layer: types.Layer{
+							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+						},
+					},
+				},
+				Applications: []types.Application{
+					{
+						Type:     "composer",
+						FilePath: "php-app/composer.lock",
+						Libraries: []types.Package{
+							{
+								Name:    "guzzlehttp/guzzle",
+								Version: "6.2.0",
+								Layer: types.Layer{
+									Digest: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+								},
+							},
+							{
+								Name:    "symfony/process",
+								Version: "v4.2.7",
+								Layer: types.Layer{
+									Digest: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+								},
+							},
+						},
+					},
+				},
+				CustomResources: []types.CustomResource{
+					{
+						Type:     "type-A",
+						FilePath: "php-app/composer.lock",
+						Layer: types.Layer{
+							Digest: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+						},
+						Data: dummyData{
+							data: "Common Application type-A php-app/composer.lock",
+						},
+					},
+					{
+						Type:     "type-A",
+						FilePath: "var/lib/dpkg/status.d/tzdata",
+						Layer: types.Layer{
+							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+						},
+						Data: dummyData{
+							data: "Common Package type-A var/lib/dpkg/status.d/tzdata",
+						},
+					},
+					{
+						Type:     "type-B",
+						FilePath: "var/lib/dpkg/status.d/tzdata",
+						Layer: types.Layer{
+							Digest: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+						},
+						Data: dummyData{
+							data: "Type B application which replaces earlier detected resource",
+						},
+					},
+				},
+			},
+			wantErr: "unknown OS",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -525,6 +699,14 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					return app.Libraries[i].Name < app.Libraries[j].Name
 				})
 			}
+
+			sort.Slice(got.CustomResources, func(i, j int) bool {
+				if got.CustomResources[i].FilePath == got.CustomResources[j].FilePath {
+					return got.CustomResources[i].Type < got.CustomResources[j].Type
+				}
+				return got.CustomResources[i].FilePath < got.CustomResources[j].FilePath
+			})
+
 			assert.Equal(t, tt.want, got)
 			c.AssertExpectations(t)
 		})
