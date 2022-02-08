@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
 	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -238,6 +239,10 @@ func TestConvertToRpcVulns(t *testing.T) {
 							DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 						},
 						PrimaryURL: "https://avd.aquasec.com/nvd/CVE-2019-0001",
+						DataSource: &dbTypes.DataSource{
+							Name: "GitHub Security Advisory Maven",
+							URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+						},
 					},
 				},
 			},
@@ -266,6 +271,10 @@ func TestConvertToRpcVulns(t *testing.T) {
 					PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
 					PublishedDate:    timestamppb.New(fixedPublishedDate),
 					LastModifiedDate: timestamppb.New(fixedLastModifiedDate),
+					DataSource: &common.DataSource{
+						Name: "GitHub Security Advisory Maven",
+						Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+					},
 				},
 			},
 		},
@@ -288,6 +297,10 @@ func TestConvertToRpcVulns(t *testing.T) {
 							Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 							DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 						},
+						DataSource: &dbTypes.DataSource{
+							Name: "GitHub Security Advisory Maven",
+							URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+						},
 					},
 				},
 			},
@@ -305,6 +318,10 @@ func TestConvertToRpcVulns(t *testing.T) {
 					Layer: &common.Layer{
 						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+					},
+					DataSource: &common.DataSource{
+						Name: "GitHub Security Advisory Maven",
+						Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
 					},
 				},
 			},
@@ -335,7 +352,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 			args: args{rpcResults: []*scanner.Result{
 				{
 					Target: "alpine:3.10",
-					Type:   vulnerability.Alpine,
+					Type:   fos.Alpine,
 					Vulnerabilities: []*common.Vulnerability{
 						{
 							VulnerabilityId:  "CVE-2019-0001",
@@ -345,7 +362,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 							Title:            "DoS",
 							Description:      "Denial of Service",
 							Severity:         common.Severity_MEDIUM,
-							SeveritySource:   vulnerability.NVD,
+							SeveritySource:   string(vulnerability.NVD),
 							CweIds:           []string{"CWE-123", "CWE-456"},
 							Cvss: map[string]*common.CVSS{
 								"redhat": {
@@ -363,6 +380,10 @@ func TestConvertFromRPCResults(t *testing.T) {
 							PrimaryUrl:       "https://avd.aquasec.com/nvd/CVE-2019-0001",
 							PublishedDate:    timestamppb.New(fixedPublishedDate),
 							LastModifiedDate: timestamppb.New(fixedLastModifiedDate),
+							DataSource: &common.DataSource{
+								Name: "GitHub Security Advisory Maven",
+								Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+							},
 						},
 					},
 				}},
@@ -370,7 +391,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 			want: []report.Result{
 				{
 					Target: "alpine:3.10",
-					Type:   vulnerability.Alpine,
+					Type:   fos.Alpine,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2019-0001",
@@ -401,6 +422,10 @@ func TestConvertFromRPCResults(t *testing.T) {
 								PublishedDate:    &fixedPublishedDate,
 								LastModifiedDate: &fixedLastModifiedDate,
 							},
+							DataSource: &dbTypes.DataSource{
+								Name: "GitHub Security Advisory Maven",
+								URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+							},
 						},
 					},
 				},
@@ -411,7 +436,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 			args: args{rpcResults: []*scanner.Result{
 				{
 					Target: "alpine:3.10",
-					Type:   vulnerability.Alpine,
+					Type:   fos.Alpine,
 					Vulnerabilities: []*common.Vulnerability{
 						{
 							VulnerabilityId:  "CVE-2019-0001",
@@ -421,7 +446,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 							Title:            "DoS",
 							Description:      "Denial of Service",
 							Severity:         common.Severity_MEDIUM,
-							SeveritySource:   vulnerability.NVD,
+							SeveritySource:   string(vulnerability.NVD),
 							CweIds:           []string{"CWE-123", "CWE-456"},
 							Cvss: map[string]*common.CVSS{
 								"redhat": {
@@ -446,7 +471,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 			want: []report.Result{
 				{
 					Target: "alpine:3.10",
-					Type:   vulnerability.Alpine,
+					Type:   fos.Alpine,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2019-0001",

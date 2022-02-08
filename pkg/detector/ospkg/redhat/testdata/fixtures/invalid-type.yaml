@@ -1,0 +1,7 @@
+- bucket: Red Hat
+  pairs:
+    - bucket: nss
+      pairs:
+        - key: RHSA-2021:0538
+          value:
+            Entries: broken

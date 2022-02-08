@@ -96,7 +96,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 		}
 		cvssMap := make(map[string]*common.CVSS) // This is needed because protobuf generates a map[string]*CVSS type
 		for vendor, vendorSeverity := range vuln.CVSS {
-			cvssMap[vendor] = &common.CVSS{
+			cvssMap[string(vendor)] = &common.CVSS{
 				V2Vector: vendorSeverity.V2Vector,
 				V3Vector: vendorSeverity.V3Vector,
 				V2Score:  vendorSeverity.V2Score,
@@ -133,13 +133,14 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			References:         vuln.References,
 			Layer:              ConvertToRPCLayer(vuln.Layer),
 			Cvss:               cvssMap,
-			SeveritySource:     vuln.SeveritySource,
+			SeveritySource:     string(vuln.SeveritySource),
 			CweIds:             vuln.CweIDs,
 			PrimaryUrl:         vuln.PrimaryURL,
 			LastModifiedDate:   lastModifiedDate,
 			PublishedDate:      publishedDate,
 			CustomAdvisoryData: customAdvisoryData,
 			CustomVulnData:     customVulnData,
+			DataSource:         ConvertToRPCDataSource(vuln.DataSource),
 		})
 	}
 	return rpcVulns
@@ -180,6 +181,18 @@ func ConvertToRPCLayer(layer ftypes.Layer) *common.Layer {
 	}
 }
 
+// ConvertToRPCDataSource returns common.DataSource
+func ConvertToRPCDataSource(ds *dbTypes.DataSource) *common.DataSource {
+	if ds == nil {
+		return nil
+	}
+	return &common.DataSource{
+		Id:   string(ds.ID),
+		Name: ds.Name,
+		Url:  ds.URL,
+	}
+}
+
 // ConvertFromRPCResults converts scanner.Result to report.Result
 func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
 	var results []report.Result
@@ -203,7 +216,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 		severity := dbTypes.Severity(vuln.Severity)
 		cvssMap := make(dbTypes.VendorCVSS) // This is needed because protobuf generates a map[string]*CVSS type
 		for vendor, vendorSeverity := range vuln.Cvss {
-			cvssMap[vendor] = dbTypes.CVSS{
+			cvssMap[dbTypes.SourceID(vendor)] = dbTypes.CVSS{
 				V2Vector: vendorSeverity.V2Vector,
 				V3Vector: vendorSeverity.V3Vector,
 				V2Score:  vendorSeverity.V2Score,
@@ -239,9 +252,10 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				Custom:           vuln.CustomVulnData.AsInterface(),
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
-			SeveritySource: vuln.SeveritySource,
+			SeveritySource: dbTypes.SourceID(vuln.SeveritySource),
 			PrimaryURL:     vuln.PrimaryUrl,
 			Custom:         vuln.CustomAdvisoryData.AsInterface(),
+			DataSource:     ConvertFromRPCDataSource(vuln.DataSource),
 		})
 	}
 	return vulns
@@ -289,6 +303,18 @@ func ConvertFromRPCOS(rpcOS *common.OS) *ftypes.OS {
 		Family: rpcOS.Family,
 		Name:   rpcOS.Name,
 		Eosl:   rpcOS.Eosl,
+	}
+}
+
+// ConvertFromRPCDataSource converts *common.DataSource to *dbTypes.DataSource
+func ConvertFromRPCDataSource(ds *common.DataSource) *dbTypes.DataSource {
+	if ds == nil {
+		return nil
+	}
+	return &dbTypes.DataSource{
+		ID:   dbTypes.SourceID(ds.Id),
+		Name: ds.Name,
+		URL:  ds.Url,
 	}
 }
 

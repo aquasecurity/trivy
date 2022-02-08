@@ -47,7 +47,7 @@ func TestScanServer_Scan(t *testing.T) {
 	}{
 		{
 			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/vulnerability.yaml"},
+			fixtures: []string{"testdata/fixtures/vulnerability.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				in: &rpcScanner.ScanRequest{
 					Target:     "alpine:3.11",
@@ -75,6 +75,10 @@ func TestScanServer_Scan(t *testing.T) {
 									Vulnerability: dbTypes.Vulnerability{
 										LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
 										PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
+									},
+									DataSource: &dbTypes.DataSource{
+										Name: "DOS vulnerabilities",
+										URL:  "https://vuld-db-example.com/",
 									},
 								},
 							},
@@ -116,6 +120,10 @@ func TestScanServer_Scan(t *testing.T) {
 								},
 								PublishedDate: &timestamp.Timestamp{
 									Seconds: 978310860,
+								},
+								DataSource: &common.DataSource{
+									Name: "DOS vulnerabilities",
+									Url:  "https://vuld-db-example.com/",
 								},
 							},
 						},

@@ -1,0 +1,9 @@
+- bucket: CBL-Mariner 1.0
+  pairs:
+    - bucket: bind
+      pairs:
+        - key: CVE-2021-25219
+          value:
+            FixedVersion:
+              - foo
+              - bar

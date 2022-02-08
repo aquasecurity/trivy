@@ -1,0 +1,73 @@
+- bucket: Red Hat
+  pairs:
+    - bucket: bash
+      pairs:
+        - key: CVE-2019-18276
+          value:
+            Entries:
+              - Affected:
+                  - 596
+                  - 597
+                  - 598
+                  - 601
+                  - 602
+                  - 869
+                  - 870
+                  - 924
+                Cves:
+                  - Severity: 1.0
+    - bucket: openssl
+      pairs:
+        - key: RHSA-2019:2304
+          value:
+            Entries:
+              - Affected:
+                  - 859
+                  - 860
+                  - 862
+                  - 869
+                Cves:
+                  - ID: CVE-2018-0734
+                    Severity: 1.0
+                  - ID: CVE-2019-1559
+                    Severity: 2.0
+                FixedVersion: 1:1.0.2k-19.el7
+        - key: RHSA-2019:2471
+          value:
+            Entries:
+              - Affected:
+                  - 855
+                  - 857
+                  - 858
+                  - 924
+                Cves:
+                  - ID: CVE-2019-1559
+                    Severity: 2.0
+                FixedVersion: 0:1.0.1e-58.el6_10
+    - bucket: openssl-libs
+      pairs:
+        - key: RHSA-2019:2304
+          value:
+            Entries:
+              - Affected:
+                  - 859
+                  - 860
+                  - 862
+                  - 869
+                Cves:
+                  - ID: CVE-2018-0734
+                    Severity: 1.0
+                  - ID: CVE-2019-1559
+                    Severity: 2.0
+                FixedVersion: 1:1.0.2k-19.el7
+    - bucket: glibc
+      pairs:
+        - key: CVE-2020-29573
+          value:
+            Entries:
+              - Affected:
+                  - 596
+                  - 857
+                  - 858
+                Cves:
+                  - Severity: 2.0
