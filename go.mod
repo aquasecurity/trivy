@@ -26,7 +26,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
-	github.com/knqyf263/go-rpmdb v0.0.0-20211216113947-1369b2ee40b7
+	github.com/knqyf263/go-rpmdb v0.0.0-20220209103220-0f7a6d951a6d
 	github.com/knqyf263/nested v0.0.1
 	github.com/kylelemons/godebug v1.1.0
 	github.com/mitchellh/mapstructure v1.4.3
@@ -87,7 +87,6 @@ require (
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-git/gcfg v1.5.0 // indirect
 	github.com/go-git/go-billy/v5 v5.3.1 // indirect
-	github.com/go-restruct/restruct v0.0.0-20191227155143-5734170a48a1 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gofrs/uuid v4.0.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
@@ -104,9 +103,11 @@ require (
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20201106050909-4977a11b4351 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/liamg/jfather v0.0.2 // indirect
+	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.12 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
@@ -120,6 +121,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 // indirect
+	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
@@ -139,6 +141,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba // indirect
+	golang.org/x/tools v0.1.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
 	google.golang.org/grpc v1.43.0 // indirect
@@ -146,4 +149,14 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	lukechampine.com/uint128 v1.1.1 // indirect
+	modernc.org/cc/v3 v3.35.22 // indirect
+	modernc.org/ccgo/v3 v3.15.1 // indirect
+	modernc.org/libc v1.14.1 // indirect
+	modernc.org/mathutil v1.4.1 // indirect
+	modernc.org/memory v1.0.5 // indirect
+	modernc.org/opt v0.1.1 // indirect
+	modernc.org/sqlite v1.14.5 // indirect
+	modernc.org/strutil v1.1.1 // indirect
+	modernc.org/token v1.0.0 // indirect
 )
