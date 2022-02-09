@@ -13,7 +13,6 @@ builds:
       - darwin
       - linux
       - freebsd
-      - openbsd
     goarch:
       - amd64
       - 386
