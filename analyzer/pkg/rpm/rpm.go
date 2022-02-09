@@ -20,28 +20,39 @@ func init() {
 	analyzer.RegisterAnalyzer(&rpmPkgAnalyzer{})
 }
 
-const version = 1
+const version = 2
 
-var requiredFiles = []string{
-	"usr/lib/sysimage/rpm/Packages.db",
-	"usr/lib/sysimage/rpm/Packages",
-	"var/lib/rpm/Packages.db",
-	"var/lib/rpm/Packages",
-}
-var errUnexpectedNameFormat = xerrors.New("unexpected name format")
+var (
+	requiredFiles = []string{
+		// Berkeley DB
+		"usr/lib/sysimage/rpm/Packages",
+		"var/lib/rpm/Packages",
+
+		// NDB
+		"usr/lib/sysimage/rpm/Packages.db",
+		"var/lib/rpm/Packages.db",
+
+		// SQLite3
+		"usr/lib/sysimage/rpm/rpmdb.sqlite",
+		"var/lib/rpm/rpmdb.sqlite",
+	}
+
+	errUnexpectedNameFormat = xerrors.New("unexpected name format")
+)
 
 var osVendors = []string{
-	"Amazon Linux",   // Amazon Linux 1
-	"Amazon.com",     // Amazon Linux 2
-	"CentOS",         // CentOS
-	"Fedora Project", // Fedora
-	"Oracle America", // Oracle Linux
-	"Red Hat",        // Red Hat
-	"AlmaLinux",      // AlmaLinux
-	"CloudLinux",     // AlmaLinux
-	"VMware",         // Photon OS
-	"SUSE",           // SUSE Linux Enterprise
-	"openSUSE",       // openSUSE
+	"Amazon Linux",          // Amazon Linux 1
+	"Amazon.com",            // Amazon Linux 2
+	"CentOS",                // CentOS
+	"Fedora Project",        // Fedora
+	"Oracle America",        // Oracle Linux
+	"Red Hat",               // Red Hat
+	"AlmaLinux",             // AlmaLinux
+	"CloudLinux",            // AlmaLinux
+	"VMware",                // Photon OS
+	"SUSE",                  // SUSE Linux Enterprise
+	"openSUSE",              // openSUSE
+	"Microsoft Corporation", // CBL-Mariner
 }
 
 type rpmPkgAnalyzer struct{}
@@ -97,7 +108,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 	//   old version: rpm -qa --qf "%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{SOURCERPM} %{ARCH}\n"
 	pkgList, err := db.ListPackages()
 	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to list packages", err)
+		return nil, nil, xerrors.Errorf("failed to list packages: %w", err)
 	}
 
 	var pkgs []types.Package
