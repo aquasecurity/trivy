@@ -25,14 +25,14 @@ type TableWriter struct {
 }
 
 // Write writes the result on standard output
-func (tw TableWriter) Write(report Report) error {
+func (tw TableWriter) Write(report types.Report) error {
 	for _, result := range report.Results {
 		tw.write(result)
 	}
 	return nil
 }
 
-func (tw TableWriter) write(result Result) {
+func (tw TableWriter) write(result types.Result) {
 	table := tablewriter.NewWriter(tw.Output)
 
 	var severityCount map[string]int
@@ -45,7 +45,7 @@ func (tw TableWriter) write(result Result) {
 	total, summaries := tw.summary(severityCount)
 
 	target := result.Target
-	if result.Class != ClassOSPkg {
+	if result.Class != types.ClassOSPkg {
 		target += fmt.Sprintf(" (%s)", result.Type)
 	}
 
@@ -198,7 +198,7 @@ func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.
 	return severityCount
 }
 
-func (tw TableWriter) outputTrace(result Result) {
+func (tw TableWriter) outputTrace(result types.Result) {
 	blue := color.New(color.FgBlue).SprintFunc()
 	green := color.New(color.FgGreen).SprintfFunc()
 	red := color.New(color.FgRed).SprintfFunc()

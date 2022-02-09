@@ -14,7 +14,6 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -364,7 +363,7 @@ func TestClient_Filter(t *testing.T) {
 		name               string
 		args               args
 		wantVulns          []types.DetectedVulnerability
-		wantMisconfSummary *report.MisconfSummary
+		wantMisconfSummary *types.MisconfSummary
 		wantMisconfs       []types.DetectedMisconfiguration
 	}{
 		{
@@ -476,7 +475,7 @@ func TestClient_Filter(t *testing.T) {
 					},
 				},
 			},
-			wantMisconfSummary: &report.MisconfSummary{
+			wantMisconfSummary: &types.MisconfSummary{
 				Successes:  0,
 				Failures:   1,
 				Exceptions: 0,

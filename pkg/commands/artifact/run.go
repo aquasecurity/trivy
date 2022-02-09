@@ -167,7 +167,7 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 }
 
 func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, cacheClient cache.Cache) (
-	pkgReport.Report, error) {
+	types.Report, error) {
 	target := opt.Target
 	if opt.Input != "" {
 		target = opt.Input
@@ -187,7 +187,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		noProgress := opt.Quiet || opt.NoProgress
 		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.CacheDir, noProgress, opt.SkipPolicyUpdate)
 		if err != nil {
-			return pkgReport.Report{}, xerrors.Errorf("failed to initialize built-in policies: %w", err)
+			return types.Report{}, xerrors.Errorf("failed to initialize built-in policies: %w", err)
 		}
 
 		configScannerOptions = config.ScannerOption{
@@ -210,18 +210,18 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 
 	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Insecure, artifactOpt, configScannerOptions)
 	if err != nil {
-		return pkgReport.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
+		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
 	defer cleanup()
 
 	report, err := s.ScanArtifact(ctx, scanOptions)
 	if err != nil {
-		return pkgReport.Report{}, xerrors.Errorf("image scan failed: %w", err)
+		return types.Report{}, xerrors.Errorf("image scan failed: %w", err)
 	}
 	return report, nil
 }
 
-func filter(ctx context.Context, opt Option, report pkgReport.Report) (pkgReport.Report, error) {
+func filter(ctx context.Context, opt Option, report types.Report) (types.Report, error) {
 	resultClient := initializeResultClient()
 	results := report.Results
 	for i := range results {
@@ -229,7 +229,7 @@ func filter(ctx context.Context, opt Option, report pkgReport.Report) (pkgReport
 		vulns, misconfSummary, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
 			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
-			return pkgReport.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
+			return types.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
 		results[i].Vulnerabilities = vulns
 		results[i].Misconfigurations = misconfs
@@ -238,7 +238,7 @@ func filter(ctx context.Context, opt Option, report pkgReport.Report) (pkgReport
 	return report, nil
 }
 
-func exit(c Option, results pkgReport.Results) {
+func exit(c Option, results types.Results) {
 	if c.ExitCode != 0 && results.Failed() {
 		os.Exit(c.ExitCode)
 	}
