@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/aquasecurity/trivy/pkg/types"
 	"golang.org/x/xerrors"
 )
 
@@ -14,7 +15,7 @@ type JSONWriter struct {
 }
 
 // Write writes the results in JSON format
-func (jw JSONWriter) Write(report Report) error {
+func (jw JSONWriter) Write(report types.Report) error {
 	output, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {
 		return xerrors.Errorf("failed to marshal json: %w", err)

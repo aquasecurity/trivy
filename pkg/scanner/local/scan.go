@@ -17,7 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 
@@ -65,7 +64,7 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector) Scanner {
 }
 
 // Scan scans the artifact and return results.
-func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, options types.ScanOptions) (report.Results, *ftypes.OS, error) {
+func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
 	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
@@ -78,11 +77,11 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	}
 
 	var eosl bool
-	var results report.Results
+	var results types.Results
 
 	// Scan OS packages and language-specific dependencies
 	if utils.StringInSlice(types.SecurityCheckVulnerability, options.SecurityChecks) {
-		var vulnResults report.Results
+		var vulnResults types.Results
 		vulnResults, eosl, err = s.checkVulnerabilities(target, artifactDetail, options)
 		if err != nil {
 			return nil, nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
@@ -103,9 +102,9 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 }
 
 func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
-	report.Results, bool, error) {
+	types.Results, bool, error) {
 	var eosl bool
-	var results report.Results
+	var results types.Results
 
 	if utils.StringInSlice(types.VulnTypeOS, options.VulnType) {
 		result, detectedEosl, err := s.scanOSPkgs(target, detail, options)
@@ -129,7 +128,7 @@ func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetai
 }
 
 func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
-	*report.Result, bool, error) {
+	*types.Result, bool, error) {
 	if detail.OS == nil {
 		log.Logger.Debug("Detected OS: unknown")
 		return nil, false, nil
@@ -158,7 +157,7 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 	return result, eosl, nil
 }
 
-func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []ftypes.Package) (*report.Result, bool, error) {
+func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []ftypes.Package) (*types.Result, bool, error) {
 	if osFamily == "" {
 		return nil, false, nil
 	}
@@ -170,22 +169,22 @@ func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []fty
 	}
 
 	artifactDetail := fmt.Sprintf("%s (%s %s)", target, osFamily, osName)
-	result := &report.Result{
+	result := &types.Result{
 		Target:          artifactDetail,
 		Vulnerabilities: vulns,
-		Class:           report.ClassOSPkg,
+		Class:           types.ClassOSPkg,
 		Type:            osFamily,
 	}
 	return result, eosl, nil
 }
 
-func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOptions) (report.Results, error) {
+func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOptions) (types.Results, error) {
 	log.Logger.Infof("Number of language-specific files: %d", len(apps))
 	if len(apps) == 0 {
 		return nil, nil
 	}
 
-	var results report.Results
+	var results types.Results
 	printedTypes := map[string]struct{}{}
 	for _, app := range apps {
 		if len(app.Libraries) == 0 {
@@ -210,10 +209,10 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 			target = t
 		}
 
-		libReport := report.Result{
+		libReport := types.Result{
 			Target:          target,
 			Vulnerabilities: vulns,
-			Class:           report.ClassLangPkg,
+			Class:           types.ClassLangPkg,
 			Type:            app.Type,
 		}
 		if options.ListAllPackages {
@@ -227,9 +226,9 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 	return results, nil
 }
 
-func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) report.Results {
+func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) types.Results {
 	log.Logger.Infof("Detected config files: %d", len(misconfs))
-	var results report.Results
+	var results types.Results
 	for _, misconf := range misconfs {
 		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
 
@@ -248,9 +247,9 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusException, misconf.Layer))
 		}
 
-		results = append(results, report.Result{
+		results = append(results, types.Result{
 			Target:            misconf.FilePath,
-			Class:             report.ClassConfig,
+			Class:             types.ClassConfig,
 			Type:              misconf.FileType,
 			Misconfigurations: detected,
 		})

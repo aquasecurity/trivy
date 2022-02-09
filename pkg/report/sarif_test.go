@@ -26,16 +26,16 @@ func getIntPointer(i int) *int {
 func TestReportWriter_Sarif(t *testing.T) {
 	tests := []struct {
 		name        string
-		input       report.Results
+		input       types.Results
 		wantRules   []*sarif.ReportingDescriptor
 		wantResults []*sarif.Result
 	}{
 		{
 			name: "report with vulnerabilities",
-			input: report.Results{
+			input: types.Results{
 				{
 					Target: "test",
-					Class:  report.ClassOSPkg,
+					Class:  types.ClassOSPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-0001",
@@ -110,10 +110,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 		},
 		{
 			name: "report with misconfigurations",
-			input: report.Results{
+			input: types.Results{
 				{
 					Target: "test",
-					Class:  report.ClassConfig,
+					Class:  types.ClassConfig,
 					Misconfigurations: []types.DetectedMisconfiguration{
 						{
 							Type:       "Kubernetes Security Check",
@@ -231,7 +231,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			sarifWritten := bytes.Buffer{}
-			err := report.Write(report.Report{Results: tt.input}, report.Option{
+			err := report.Write(types.Report{Results: tt.input}, report.Option{
 				Format: "sarif",
 				Output: &sarifWritten,
 			})
