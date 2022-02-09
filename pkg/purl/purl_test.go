@@ -4,19 +4,23 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/fanal/types"
+	ttypes "github.com/aquasecurity/trivy/pkg/types"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/package-url/packageurl-go"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewPackageURL(t *testing.T) {
 
 	testCases := []struct {
-		name string
-		typ  string
-		pkg  types.Package
-		fos  *types.OS
-		want packageurl.PackageURL
+		name     string
+		typ      string
+		pkg      types.Package
+		metadata ttypes.Metadata
+		want     packageurl.PackageURL
+		wantErr  string
 	}{
 		{
 			name: "maven package",
@@ -115,9 +119,12 @@ func TestNewPackageURL(t *testing.T) {
 				SrcEpoch:        0,
 				Modularitylabel: "",
 			},
-			fos: &types.OS{
-				Family: "redhat",
-				Name:   "8",
+
+			metadata: ttypes.Metadata{
+				OS: &types.OS{
+					Family: "redhat",
+					Name:   "8",
+				},
 			},
 			want: packageurl.PackageURL{
 				Type:      "rpm",
@@ -136,11 +143,65 @@ func TestNewPackageURL(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "container",
+			typ:  "oci",
+			metadata: ttypes.Metadata{
+				RepoTags: []string{
+					"cblmariner2preview.azurecr.io/base/core:2.0.20220124-amd64",
+				},
+				RepoDigests: []string{
+					"cblmariner2preview.azurecr.io/base/core@sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+					"cblmariner2preview.azurecr.io/base/core@sha256:016bb1f5735e43b2738cd3fd1979b62608fe1727132b2506c17ba0e1f6a6ed8a",
+				},
+				ImageConfig: v1.ConfigFile{
+					Architecture: "amd64",
+				},
+			},
+			want: packageurl.PackageURL{
+				Type:      "oci",
+				Namespace: "",
+				Name:      "core",
+				Version:   "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "repository_url",
+						Value: "cblmariner2preview.azurecr.io/base/core",
+					},
+					{
+						Key:   "arch",
+						Value: "amd64",
+					},
+				},
+			},
+		},
+		{
+			name: "sad path",
+			typ:  "oci",
+			metadata: ttypes.Metadata{
+				RepoTags: []string{
+					"cblmariner2preview.azurecr.io/base/core:2.0.20220124-amd64",
+				},
+				RepoDigests: []string{
+					"sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+				},
+				ImageConfig: v1.ConfigFile{
+					Architecture: "amd64",
+				},
+			},
+			wantErr: "failed to parse digest",
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			packageURL := NewPackageURL(tc.typ, tc.fos, tc.pkg)
+			packageURL, err := NewPackageURL(tc.typ, tc.metadata, tc.pkg)
+			if tc.wantErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tc.wantErr)
+				return
+			}
+			assert.NoError(t, err)
 			assert.Equal(t, tc.want, packageURL, tc.name)
 		})
 	}
