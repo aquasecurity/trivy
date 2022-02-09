@@ -25,6 +25,11 @@ builds:
     ignore:
       - goos: darwin
         goarch: 386
+      # modernc.org/sqlite doesn't support the following pairs
+      - goos: freebsd
+        goarch: arm
+      - goos: freebsd
+        goarch: arm64
 
 release:
     extra_files:
