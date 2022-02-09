@@ -5,22 +5,23 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/os"
-	"github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
-	ttypes "github.com/aquasecurity/trivy/pkg/types"
 	cn "github.com/google/go-containerregistry/pkg/name"
+	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
-	"github.com/package-url/packageurl-go"
+	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/fanal/analyzer/os"
+	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
 	TypeOCI = "oci"
 )
 
-func NewPackageURL(t string, metadata ttypes.Metadata, pkg types.Package) (packageurl.PackageURL, error) {
+// nolint: gocyclo
+func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (packageurl.PackageURL, error) {
 	ptype := purlType(t)
 
 	var qualifiers packageurl.Qualifiers
@@ -32,7 +33,6 @@ func NewPackageURL(t string, metadata ttypes.Metadata, pkg types.Package) (packa
 	version := utils.FormatVersion(pkg)
 	namespace := ""
 
-	var err error
 	switch ptype {
 	case packageurl.TypeRPM:
 		ns, qs := parseRPM(metadata.OS, pkg.Modularitylabel)
@@ -55,44 +55,42 @@ func NewPackageURL(t string, metadata ttypes.Metadata, pkg types.Package) (packa
 	case packageurl.TypeNPM:
 		namespace, name = parseNpm(name)
 	case packageurl.TypeOCI:
-		name, version, qualifiers, err = parseContainer(metadata)
-		if err != nil {
-			return packageurl.PackageURL{}, xerrors.Errorf("failed to parse container: %w", err)
-		}
+		return parseOCI(metadata)
 	}
 
 	return *packageurl.NewPackageURL(ptype, namespace, name, version, qualifiers, ""), nil
 }
 
-func parseContainer(metadata ttypes.Metadata) (name, version string, qualifiers packageurl.Qualifiers, err error) {
+func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 	if len(metadata.RepoDigests) == 0 {
-		return "", "", packageurl.Qualifiers{}, err
+		return packageurl.PackageURL{}, xerrors.New("repository digests empty error")
 	}
 
 	digest, err := cn.NewDigest(metadata.RepoDigests[0])
 	if err != nil {
-		return "", "", nil, xerrors.Errorf("failed to parse digest: %w", err)
+		return packageurl.PackageURL{}, xerrors.Errorf("failed to parse digest: %w", err)
 	}
-	name = strings.ToLower(digest.RepositoryStr())
+
+	name := strings.ToLower(digest.RepositoryStr())
 	index := strings.LastIndex(name, "/")
 	if index != -1 {
 		name = name[index+1:]
 	}
-	qualifiers = append(qualifiers,
+	qualifiers := packageurl.Qualifiers{
 		packageurl.Qualifier{
 			Key:   "repository_url",
-			Value: fmt.Sprintf("%s/%s", digest.RegistryStr(), digest.RepositoryStr()),
+			Value: digest.Repository.Name(),
 		},
 		packageurl.Qualifier{
 			Key:   "arch",
 			Value: metadata.ImageConfig.Architecture,
 		},
-	)
+	}
 
-	return name, digest.DigestStr(), qualifiers, nil
+	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
 }
 
-func parseApk(fos *types.OS) packageurl.Qualifiers {
+func parseApk(fos *ftypes.OS) packageurl.Qualifiers {
 	return packageurl.Qualifiers{
 		{
 			Key:   "distro",
@@ -101,7 +99,7 @@ func parseApk(fos *types.OS) packageurl.Qualifiers {
 	}
 }
 
-func parseDeb(fos *types.OS) packageurl.Qualifiers {
+func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
 	distro := fmt.Sprintf("%s-%s", fos.Family, fos.Name)
 	return packageurl.Qualifiers{
 		{
@@ -111,7 +109,7 @@ func parseDeb(fos *types.OS) packageurl.Qualifiers {
 	}
 }
 
-func parseRPM(fos *types.OS, modularityLabel string) (string, packageurl.Qualifiers) {
+func parseRPM(fos *ftypes.OS, modularityLabel string) (string, packageurl.Qualifiers) {
 	// SLES string has whitespace
 	family := fos.Family
 	if fos.Family == os.SLES {
@@ -212,7 +210,7 @@ func purlType(t string) string {
 	return t
 }
 
-func parseQualifier(pkg types.Package, distro string) packageurl.Qualifiers {
+func parseQualifier(pkg ftypes.Package, distro string) packageurl.Qualifiers {
 	qualifiers := packageurl.Qualifiers{}
 	if pkg.Arch != "" {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
