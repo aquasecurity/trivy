@@ -42,6 +42,7 @@ require (
 	github.com/open-policy-agent/opa v0.36.1
 	github.com/opencontainers/runc v1.1.0 // indirect
 	github.com/owenrumney/go-sarif/v2 v2.0.17
+	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
 	github.com/spf13/afero v1.6.0
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
