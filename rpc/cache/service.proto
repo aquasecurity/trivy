@@ -59,11 +59,3 @@ message MissingBlobsResponse {
   bool            missing_artifact = 1;
   repeated string missing_blob_ids = 2;
 }
-
-message GetBlobRequest {
-  string blob_id = 1;
-}
-
-message GetBlobResponse {
-  BlobInfo blob_info = 1;
-}

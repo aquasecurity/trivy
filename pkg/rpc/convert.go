@@ -221,7 +221,7 @@ func ConvertFromRPCCustomResources(rpcCustomResources []*common.CustomResource) 
 				Digest: res.Layer.Digest,
 				DiffID: res.Layer.DiffId,
 			},
-			Data: res.Info,
+			Data: res.Data,
 		})
 	}
 	return resources
@@ -499,7 +499,7 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 
 	var customResources []*common.CustomResource
 	for _, res := range blobInfo.CustomResources {
-		info, err := structpb.NewValue(res.Data)
+		data, err := structpb.NewValue(res.Data)
 		if err != nil {
 
 		} else {
@@ -510,7 +510,7 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 					Digest: res.Layer.Digest,
 					DiffId: res.Layer.DiffID,
 				},
-				Info: info,
+				Data: data,
 			})
 		}
 	}

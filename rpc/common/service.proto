@@ -133,5 +133,5 @@ message CustomResource {
   string                 type     = 1;
   string                 filepath = 2;
   Layer                  layer    = 3;
-  google.protobuf.Value  info     = 4;
+  google.protobuf.Value  data     = 4;
 }
