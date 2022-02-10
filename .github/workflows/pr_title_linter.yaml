@@ -9,6 +9,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Go pull request message linter
-        uses: masahiro331/go-commitlinter@0.1.1
+        uses: masahiro331/go-commitlinter@0.1.2
         env:
           TITLE: ${{ github.event.pull_request.title }}
