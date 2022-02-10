@@ -165,8 +165,8 @@ func TestReportWriter_Template(t *testing.T) {
 			}
 			os.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			got := bytes.Buffer{}
-			inputReport := report.Report{
-				Results: report.Results{
+			inputReport := types.Report{
+				Results: types.Results{
 					{
 						Target:          "foojunit",
 						Type:            "test",
@@ -203,8 +203,8 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
 			template, err := os.ReadFile(templateFile)
 			require.NoError(t, err, tc.name)
 
-			inputReport := report.Report{
-				Results: report.Results{
+			inputReport := types.Report{
+				Results: types.Results{
 					{
 						Target:          tc.target,
 						Type:            "footype",

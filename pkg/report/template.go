@@ -14,6 +14,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // CustomTemplateFuncMap is used to overwrite existing functions for testing.
@@ -70,7 +71,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 }
 
 // Write writes result
-func (tw TemplateWriter) Write(report Report) error {
+func (tw TemplateWriter) Write(report types.Report) error {
 	err := tw.Template.Execute(tw.Output, report.Results)
 	if err != nil {
 		return xerrors.Errorf("failed to write with template: %w", err)

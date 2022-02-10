@@ -13,7 +13,6 @@ import (
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/common"
 	"github.com/aquasecurity/trivy/rpc/scanner"
@@ -99,7 +98,7 @@ func TestScanner_Scan(t *testing.T) {
 		fields          fields
 		args            args
 		scanExpectation scanExpectation
-		wantResults     report.Results
+		wantResults     types.Results
 		wantOS          *ftypes.OS
 		wantEosl        bool
 		wantErr         string
@@ -183,7 +182,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 			},
-			wantResults: report.Results{
+			wantResults: types.Results{
 				{
 					Target: "alpine:3.11",
 					Vulnerabilities: []types.DetectedVulnerability{

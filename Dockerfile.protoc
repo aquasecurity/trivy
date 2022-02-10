@@ -1,0 +1,12 @@
+FROM golang:1.17
+
+# Install protoc (cf. http://google.github.io/proto-lens/installing-protoc.html)
+ENV PROTOC_ZIP=protoc-3.19.1-linux-x86_64.zip
+RUN apt-get update && apt-get install -y unzip
+RUN curl --retry 5 -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.19.1/$PROTOC_ZIP \
+    && unzip -o $PROTOC_ZIP -d /usr/local bin/protoc \
+    && unzip -o $PROTOC_ZIP -d /usr/local 'include/*' \ 
+    && rm -f $PROTOC_ZIP
+
+RUN go install github.com/twitchtv/twirp/protoc-gen-twirp@v8.1.0
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27.1
