@@ -152,10 +152,10 @@ func TestReportWriter_Template(t *testing.T) {
 			expected: `Critical: 2, High: 1`,
 		},
 		{
-			name:          "happy path: env var parsing and getCurrentTime",
+			name:          "happy path: env var parsing",
 			detectedVulns: []types.DetectedVulnerability{},
-			template:      `{{ toLower (getEnv "AWS_ACCOUNT_ID") }} {{ getCurrentTime }}`,
-			expected:      `123456789012 2020-08-10T07:28:17.000958601Z`,
+			template:      `{{ lower (env "AWS_ACCOUNT_ID") }}`,
+			expected:      `123456789012`,
 		},
 	}
 	for _, tc := range testCases {
@@ -165,8 +165,8 @@ func TestReportWriter_Template(t *testing.T) {
 			}
 			os.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			got := bytes.Buffer{}
-			inputReport := report.Report{
-				Results: report.Results{
+			inputReport := types.Report{
+				Results: types.Results{
 					{
 						Target:          "foojunit",
 						Type:            "test",
@@ -203,8 +203,8 @@ func TestReportWriter_Template_SARIF(t *testing.T) {
 			template, err := os.ReadFile(templateFile)
 			require.NoError(t, err, tc.name)
 
-			inputReport := report.Report{
-				Results: report.Results{
+			inputReport := types.Report{
+				Results: types.Results{
 					{
 						Target:          tc.target,
 						Type:            "footype",

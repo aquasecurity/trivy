@@ -19,23 +19,20 @@ type TableWriter struct {
 	Severities []dbTypes.Severity
 	Output     io.Writer
 
-	// For vulnerabilities
-	Light bool
-
 	// For misconfigurations
 	IncludeNonFailures bool
 	Trace              bool
 }
 
 // Write writes the result on standard output
-func (tw TableWriter) Write(report Report) error {
+func (tw TableWriter) Write(report types.Report) error {
 	for _, result := range report.Results {
 		tw.write(result)
 	}
 	return nil
 }
 
-func (tw TableWriter) write(result Result) {
+func (tw TableWriter) write(result types.Result) {
 	table := tablewriter.NewWriter(tw.Output)
 
 	var severityCount map[string]int
@@ -48,7 +45,7 @@ func (tw TableWriter) write(result Result) {
 	total, summaries := tw.summary(severityCount)
 
 	target := result.Target
-	if result.Class != ClassOSPkg {
+	if result.Class != types.ClassOSPkg {
 		target += fmt.Sprintf(" (%s)", result.Type)
 	}
 
@@ -103,10 +100,7 @@ func (tw TableWriter) summary(severityCount map[string]int) (int, []string) {
 }
 
 func (tw TableWriter) writeVulnerabilities(table *tablewriter.Table, vulns []types.DetectedVulnerability) map[string]int {
-	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version"}
-	if !tw.Light {
-		header = append(header, "Title")
-	}
+	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version", "Title"}
 	table.SetHeader(header)
 	severityCount := tw.setVulnerabilityRows(table, vulns)
 
@@ -156,14 +150,11 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 		var row []string
 		if tw.Output == os.Stdout {
 			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
-				v.InstalledVersion, v.FixedVersion}
+				v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
 		} else {
-			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion}
+			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
 		}
 
-		if !tw.Light {
-			row = append(row, strings.TrimSpace(title))
-		}
 		table.Append(row)
 	}
 	return severityCount
@@ -207,7 +198,7 @@ func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.
 	return severityCount
 }
 
-func (tw TableWriter) outputTrace(result Result) {
+func (tw TableWriter) outputTrace(result types.Result) {
 	blue := color.New(color.FgBlue).SprintFunc()
 	green := color.New(color.FgGreen).SprintfFunc()
 	red := color.New(color.FgRed).SprintfFunc()

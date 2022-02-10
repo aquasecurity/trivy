@@ -13,19 +13,22 @@ builds:
       - darwin
       - linux
       - freebsd
-      - openbsd
     goarch:
       - amd64
       - 386
       - arm
       - arm64
-      - ppc64le
       - s390x
     goarm:
       - 7
     ignore:
       - goos: darwin
         goarch: 386
+      # modernc.org/sqlite doesn't support the following pairs
+      - goos: freebsd
+        goarch: arm
+      - goos: freebsd
+        goarch: arm64
 
 release:
     extra_files:

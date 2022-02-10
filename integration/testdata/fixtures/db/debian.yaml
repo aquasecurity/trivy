@@ -1,0 +1,40 @@
+- bucket: debian 9
+  pairs:
+    - bucket: bash
+      pairs:
+        - key: CVE-2019-18276
+          value:
+            Severity: 1.0
+    - bucket: openssl
+      pairs:
+        - key: CVE-2019-1551
+          value:
+            State: postponed
+    - bucket: e2fsprogs
+      pairs:
+        - key: CVE-2019-5094
+          value:
+            FixedVersion: 1.43.4-2+deb9u1
+            VendorIDs:
+              - DSA-4535-1
+    - bucket: openssl
+      pairs:
+        - key: CVE-2019-1563
+          value:
+            FixedVersion: 1.1.0l-1~deb9u1
+            VendorIDs:
+              - DSA-4539-1
+- bucket: debian 10
+  pairs:
+    - bucket: bash
+      pairs:
+        - key: CVE-2019-18276
+          value:
+            Severity: 1
+    - bucket: libidn2
+      pairs:
+        - key: CVE-2019-18224
+          value:
+            FixedVersion: 2.0.5-1+deb10u1
+            VendorIDs:
+              - DSA-4613-1

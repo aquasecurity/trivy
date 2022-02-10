@@ -1,0 +1,14 @@
+- bucket: ubuntu 18.04
+  pairs:
+    - bucket: bash
+      pairs:
+        - key: CVE-2016-9401
+          value:
+            FixedVersion: 4.4-5ubuntu1
+        - key: CVE-2019-18276
+          value: {}
+    - bucket: e2fsprogs
+      pairs:
+        - key: CVE-2019-5094
+          value:
+            FixedVersion: 1.44.1-1ubuntu1.2

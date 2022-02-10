@@ -1,0 +1,20 @@
+- bucket: maven::GitHub Security Advisory Maven
+  pairs:
+    - bucket: com.fasterxml.jackson.core:jackson-databind
+      pairs:
+        - key: CVE-2020-9548
+          value:
+            PatchedVersions:
+              - 2.9.10.4
+            VulnerableVersions:
+              - ">= 2.0.0, <= 2.9.10.3"
+- bucket: maven::GitLab Advisory Database Community
+  pairs:
+    - bucket: com.fasterxml.jackson.core:jackson-databind
+      pairs:
+        - key: CVE-2021-20190
+          value:
+            PatchedVersions:
+              - 2.9.10.7
+            VulnerableVersions:
+              - "[2.9.0,2.9.10.7)"

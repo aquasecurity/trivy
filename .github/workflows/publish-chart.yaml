@@ -36,7 +36,7 @@ jobs:
           python-version: 3.7
       - name: Setup Chart Linting
         id: lint
-        uses: helm/chart-testing-action@5f16c27cf7a4fa9c776ff73734df3909b2b65127 #v2.1.0
+        uses: helm/chart-testing-action@6b64532d456fa490a3da177fbd181ac4c8192b58 #v2.1.0
       - name: Setup Kubernetes cluster (KIND)
         uses: helm/kind-action@94729529f85113b88f4f819c17ce61382e6d8478 #v1.2.0
         with:
@@ -46,7 +46,7 @@ jobs:
         run: ct lint-and-install --validate-maintainers=false --charts helm/trivy
       - name: Run chart-testing (Ingress enabled)
         run: |
-          sed -i -e '97s,false,'true',g' ./helm/trivy/values.yaml
+          sed -i -e '117s,false,'true',g' ./helm/trivy/values.yaml
           ct lint-and-install --validate-maintainers=false --charts helm/trivy
 
   publish-chart:

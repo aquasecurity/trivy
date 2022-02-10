@@ -2,12 +2,16 @@ package photon_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	fake "k8s.io/utils/clock/testing"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/photon"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -27,7 +31,7 @@ func TestScanner_Detect(t *testing.T) {
 	}{
 		{
 			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/photon.yaml"},
+			fixtures: []string{"testdata/fixtures/photon.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "1.0",
 				pkgs: []ftypes.Package{
@@ -53,12 +57,17 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Photon,
+						Name: "Photon OS CVE metadata",
+						URL:  "https://packages.vmware.com/photon/photon_cve_metadata/",
+					},
 				},
 			},
 		},
 		{
 			name:     "invalid bucket",
-			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "1.0",
 				pkgs: []ftypes.Package{
@@ -86,6 +95,54 @@ func TestScanner_Detect(t *testing.T) {
 				return
 			}
 			assert.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestScanner_IsSupportedVersion(t *testing.T) {
+	type args struct {
+		osFamily string
+		osVer    string
+	}
+	tests := []struct {
+		name string
+		now  time.Time
+		args args
+		want bool
+	}{
+		{
+			name: "photon 1.0",
+			now:  time.Date(2022, 1, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "photon",
+				osVer:    "1.0",
+			},
+			want: true,
+		},
+		{
+			name: "photon 1.0 EOL",
+			now:  time.Date(2022, 3, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "photon",
+				osVer:    "1.0",
+			},
+			want: false,
+		},
+		{
+			name: "unknown",
+			now:  time.Date(2022, 1, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "photon",
+				osVer:    "unknown",
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := photon.NewScanner(photon.WithClock(fake.NewFakeClock(tt.now)))
+			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
 		})
 	}
