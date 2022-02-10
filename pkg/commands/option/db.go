@@ -33,7 +33,7 @@ func (c *DBOption) Init() (err error) {
 		return xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
 	}
 	if c.Light {
-		log.Logger.Warn("'--light' option is deprecated and will be removed")
+		log.Logger.Warn("'--light' option is deprecated and will be removed. See also: https://github.com/aquasecurity/trivy/discussions/1649")
 	}
 	return nil
 }

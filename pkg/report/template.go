@@ -3,17 +3,22 @@ package report
 import (
 	"bytes"
 	"encoding/xml"
-	"fmt"
 	"html"
 	"io"
 	"os"
 	"strings"
 	"text/template"
-	"time"
 
 	"github.com/Masterminds/sprig"
 	"golang.org/x/xerrors"
+
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
+
+// CustomTemplateFuncMap is used to overwrite existing functions for testing.
+var CustomTemplateFuncMap = map[string]interface{}{}
 
 // TemplateWriter write result in custom format defined by user's template
 type TemplateWriter struct {
@@ -35,7 +40,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 	templateFuncMap["escapeXML"] = func(input string) string {
 		escaped := &bytes.Buffer{}
 		if err := xml.EscapeText(escaped, []byte(input)); err != nil {
-			fmt.Printf("error while escapeString to XML: %v", err.Error())
+			log.Logger.Error("error while escapeString to XML: %s", err)
 			return input
 		}
 		return escaped.String()
@@ -46,18 +51,18 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 		}
 		return input
 	}
-	templateFuncMap["toLower"] = func(input string) string {
-		return strings.ToLower(input)
-	}
 	templateFuncMap["escapeString"] = func(input string) string {
 		return html.EscapeString(input)
 	}
-	templateFuncMap["getEnv"] = func(key string) string {
-		return os.Getenv(key)
+	templateFuncMap["sourceID"] = func(input string) dbTypes.SourceID {
+		return dbTypes.SourceID(input)
 	}
-	templateFuncMap["getCurrentTime"] = func() string {
-		return Now().UTC().Format(time.RFC3339Nano)
+
+	// Overwrite functions
+	for k, v := range CustomTemplateFuncMap {
+		templateFuncMap[k] = v
 	}
+
 	tmpl, err := template.New("output template").Funcs(templateFuncMap).Parse(outputTemplate)
 	if err != nil {
 		return nil, xerrors.Errorf("error parsing template: %w", err)
@@ -66,7 +71,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 }
 
 // Write writes result
-func (tw TemplateWriter) Write(report Report) error {
+func (tw TemplateWriter) Write(report types.Report) error {
 	err := tw.Template.Execute(tw.Output, report.Results)
 	if err != nil {
 		return xerrors.Errorf("failed to write with template: %w", err)

@@ -81,7 +81,7 @@ type Scanner struct {
 // Driver defines operations of scanner
 type Driver interface {
 	Scan(target string, artifactKey string, blobKeys []string, options types.ScanOptions) (
-		results report.Results, osFound *ftypes.OS, err error)
+		results types.Results, osFound *ftypes.OS, err error)
 }
 
 // NewScanner is the factory method of Scanner
@@ -90,15 +90,15 @@ func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
 }
 
 // ScanArtifact scans the artifacts and returns results
-func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (report.Report, error) {
+func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (types.Report, error) {
 	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {
-		return report.Report{}, xerrors.Errorf("failed analysis: %w", err)
+		return types.Report{}, xerrors.Errorf("failed analysis: %w", err)
 	}
 
 	results, osFound, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
-		return report.Report{}, xerrors.Errorf("scan failed: %w", err)
+		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 
 	if osFound != nil && osFound.Eosl {
@@ -111,11 +111,11 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 		removeLayer(results)
 	}
 
-	return report.Report{
+	return types.Report{
 		SchemaVersion: report.SchemaVersion,
 		ArtifactName:  artifactInfo.Name,
 		ArtifactType:  artifactInfo.Type,
-		Metadata: report.Metadata{
+		Metadata: types.Metadata{
 			OS:          osFound,
 			ImageID:     artifactInfo.ImageMetadata.ID,
 			DiffIDs:     artifactInfo.ImageMetadata.DiffIDs,
@@ -127,7 +127,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (r
 	}, nil
 }
 
-func removeLayer(results report.Results) {
+func removeLayer(results types.Results) {
 	for i := range results {
 		result := results[i]
 

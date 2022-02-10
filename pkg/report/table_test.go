@@ -14,13 +14,13 @@ import (
 func TestReportWriter_Table(t *testing.T) {
 	testCases := []struct {
 		name               string
-		results            report.Results
+		results            types.Results
 		expectedOutput     string
 		includeNonFailures bool
 	}{
 		{
 			name: "happy path full",
-			results: report.Results{
+			results: types.Results{
 				{
 					Target: "test",
 					Vulnerabilities: []types.DetectedVulnerability{
@@ -49,7 +49,7 @@ func TestReportWriter_Table(t *testing.T) {
 		},
 		{
 			name: "no title for vuln and missing primary link",
-			results: report.Results{
+			results: types.Results{
 				{
 					Target: "test",
 					Vulnerabilities: []types.DetectedVulnerability{
@@ -75,7 +75,7 @@ func TestReportWriter_Table(t *testing.T) {
 		},
 		{
 			name: "long title for vuln",
-			results: report.Results{
+			results: types.Results{
 				{
 					Target: "test",
 					Vulnerabilities: []types.DetectedVulnerability{
@@ -104,7 +104,7 @@ func TestReportWriter_Table(t *testing.T) {
 		},
 		{
 			name: "happy path misconfigurations",
-			results: report.Results{
+			results: types.Results{
 				{
 					Target: "test",
 					Misconfigurations: []types.DetectedMisconfiguration{
@@ -143,7 +143,7 @@ func TestReportWriter_Table(t *testing.T) {
 		{
 			name:               "happy path misconfigurations with successes",
 			includeNonFailures: true,
-			results: report.Results{
+			results: types.Results{
 				{
 					Target: "test",
 					Misconfigurations: []types.DetectedMisconfiguration{
@@ -187,7 +187,7 @@ func TestReportWriter_Table(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tableWritten := bytes.Buffer{}
-			err := report.Write(report.Report{Results: tc.results}, report.Option{
+			err := report.Write(types.Report{Results: tc.results}, report.Option{
 				Format:             "table",
 				Output:             &tableWritten,
 				IncludeNonFailures: tc.includeNonFailures,

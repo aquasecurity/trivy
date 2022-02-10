@@ -102,45 +102,44 @@ func TestClientServer(t *testing.T) {
 			},
 			golden: "testdata/ubuntu-1804.json.golden",
 		},
-		// TODO :fix them after support for Red Hat OVALv2
-		//{
-		//	name: "centos 7 integration",
-		//	args: csArgs{
-		//		Input: "testdata/fixtures/images/centos-7.tar.gz",
-		//	},
-		//	golden: "testdata/centos-7.json.golden",
-		//},
-		//{
-		//	name: "centos 7 integration with --ignore-unfixed option",
-		//	args: csArgs{
-		//		IgnoreUnfixed: true,
-		//		Input:         "testdata/fixtures/images/centos-7.tar.gz",
-		//	},
-		//	golden: "testdata/centos-7-ignore-unfixed.json.golden",
-		//},
-		//{
-		//	name: "centos 7 integration with low and high severity",
-		//	args: csArgs{
-		//		IgnoreUnfixed: true,
-		//		Severity:      []string{"LOW", "HIGH"},
-		//		Input:         "testdata/fixtures/images/centos-7.tar.gz",
-		//	},
-		//	golden: "testdata/centos-7-low-high.json.golden",
-		//},
-		//{
-		//	name: "centos 6 integration",
-		//	args: csArgs{
-		//		Input: "testdata/fixtures/images/centos-6.tar.gz",
-		//	},
-		//	golden: "testdata/centos-6.json.golden",
-		//},
-		//{
-		//	name: "ubi 7 integration",
-		//	args: csArgs{
-		//		Input: "testdata/fixtures/images/ubi-7.tar.gz",
-		//	},
-		//	golden: "testdata/ubi-7.json.golden",
-		//},
+		{
+			name: "centos 7",
+			args: csArgs{
+				Input: "testdata/fixtures/images/centos-7.tar.gz",
+			},
+			golden: "testdata/centos-7.json.golden",
+		},
+		{
+			name: "centos 7 with --ignore-unfixed option",
+			args: csArgs{
+				IgnoreUnfixed: true,
+				Input:         "testdata/fixtures/images/centos-7.tar.gz",
+			},
+			golden: "testdata/centos-7-ignore-unfixed.json.golden",
+		},
+		{
+			name: "centos 7 with medium severity",
+			args: csArgs{
+				IgnoreUnfixed: true,
+				Severity:      []string{"MEDIUM"},
+				Input:         "testdata/fixtures/images/centos-7.tar.gz",
+			},
+			golden: "testdata/centos-7-medium.json.golden",
+		},
+		{
+			name: "centos 6",
+			args: csArgs{
+				Input: "testdata/fixtures/images/centos-6.tar.gz",
+			},
+			golden: "testdata/centos-6.json.golden",
+		},
+		{
+			name: "ubi 7",
+			args: csArgs{
+				Input: "testdata/fixtures/images/ubi-7.tar.gz",
+			},
+			golden: "testdata/ubi-7.json.golden",
+		},
 		{
 			name: "almalinux 8",
 			args: csArgs{
@@ -203,6 +202,13 @@ func TestClientServer(t *testing.T) {
 				Input: "testdata/fixtures/images/photon-30.tar.gz",
 			},
 			golden: "testdata/photon-30.json.golden",
+		},
+		{
+			name: "CBL-Mariner 1.0",
+			args: csArgs{
+				Input: "testdata/fixtures/images/mariner-1.0.tar.gz",
+			},
+			golden: "testdata/mariner-1.0.json.golden",
 		},
 		{
 			name: "buxybox with Cargo.lock",
@@ -280,13 +286,23 @@ func TestClientServerWithTemplate(t *testing.T) {
 		},
 	}
 
+	report.CustomTemplateFuncMap = map[string]interface{}{
+		"now": func() time.Time {
+			return time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
+		},
+		"date": func(format string, t time.Time) string {
+			return t.Format(format)
+		},
+	}
+
+	t.Cleanup(func() {
+		report.CustomTemplateFuncMap = map[string]interface{}{}
+	})
+
 	app, addr, cacheDir := setup(t, setupOptions{})
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			report.Now = func() time.Time {
-				return time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
-			}
 			t.Setenv("AWS_REGION", "test-region")
 			t.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			osArgs, outputFile := setupClient(t, tt.args, addr, cacheDir, tt.golden)
@@ -376,7 +392,7 @@ func TestClientServerWithRedis(t *testing.T) {
 
 	// Set up Trivy server
 	app, addr, cacheDir := setup(t, setupOptions{cacheBackend: addr})
-	defer os.RemoveAll(cacheDir)
+	t.Cleanup(func() { os.RemoveAll(cacheDir) })
 
 	// Test parameters
 	testArgs := csArgs{

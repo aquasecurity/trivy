@@ -190,7 +190,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	return s, cleanup, nil
 }
 
-func exit(c Option, results pkgReport.Results) {
+func exit(c Option, results types.Results) {
 	if c.ExitCode != 0 {
 		for _, result := range results {
 			if len(result.Vulnerabilities) > 0 {

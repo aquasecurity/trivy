@@ -4,7 +4,7 @@ package trivy.cache.v1;
 option  go_package = "github.com/aquasecurity/trivy/rpc/cache;cache";
 
 import "google/protobuf/timestamp.proto";
-import "github.com/aquasecurity/trivy/rpc/common/service.proto";
+import "rpc/common/service.proto";
 import "google/protobuf/empty.proto";
 
 service Cache {

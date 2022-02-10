@@ -62,6 +62,11 @@
           },
           "SeveritySource": "amazon",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5481",
+          "DataSource": {
+            "ID": "amazon",
+            "Name": "Amazon Linux Security Center",
+            "URL": "https://alas.aws.amazon.com/"
+          },
           "Title": "curl: double free due to subsequent call of realloc()",
           "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
           "Severity": "MEDIUM",
@@ -83,6 +88,7 @@
           "References": [
             "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00048.html",
             "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00055.html",
+            "https://access.redhat.com/security/cve/CVE-2019-5481",
             "https://curl.haxx.se/docs/CVE-2019-5481.html",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5481",
             "https://linux.oracle.com/cve/CVE-2019-5481.html",
