@@ -7,6 +7,7 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Go pull request message linter
         uses: masahiro331/go-commitlinter@0.1.1
         env:
