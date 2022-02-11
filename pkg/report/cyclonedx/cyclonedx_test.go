@@ -23,9 +23,9 @@ import (
 
 func TestWriter_Write(t *testing.T) {
 	testCases := []struct {
-		name         string
-		inputReport  types.Report
-		expectedSBOM *cdx.BOM
+		name        string
+		inputReport types.Report
+		wantSBOM    *cdx.BOM
 	}{
 		{
 			name: "happy path for container scan",
@@ -96,7 +96,7 @@ func TestWriter_Write(t *testing.T) {
 					},
 				},
 			},
-			expectedSBOM: &cdx.BOM{
+			wantSBOM: &cdx.BOM{
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  "1.3",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
@@ -315,7 +315,7 @@ func TestWriter_Write(t *testing.T) {
 					},
 				},
 			},
-			expectedSBOM: &cdx.BOM{
+			wantSBOM: &cdx.BOM{
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  "1.3",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
@@ -440,7 +440,7 @@ func TestWriter_Write(t *testing.T) {
 					},
 				},
 			},
-			expectedSBOM: &cdx.BOM{
+			wantSBOM: &cdx.BOM{
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  "1.3",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
@@ -535,7 +535,7 @@ func TestWriter_Write(t *testing.T) {
 					},
 				},
 			},
-			expectedSBOM: &cdx.BOM{
+			wantSBOM: &cdx.BOM{
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  "1.3",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
@@ -604,7 +604,7 @@ func TestWriter_Write(t *testing.T) {
 				Results:       types.Results{},
 			},
 
-			expectedSBOM: &cdx.BOM{
+			wantSBOM: &cdx.BOM{
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  "1.3",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
@@ -661,7 +661,7 @@ func TestWriter_Write(t *testing.T) {
 			err = json.NewDecoder(output).Decode(&got)
 			require.NoError(t, err)
 
-			assert.Equal(t, *tc.expectedSBOM, got)
+			assert.Equal(t, *tc.wantSBOM, got)
 		})
 	}
 }
