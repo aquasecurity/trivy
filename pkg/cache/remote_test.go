@@ -135,9 +135,8 @@ func TestRemoteCache_PutArtifact(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c, err := cache.NewRemoteCache(cache.RemoteURL(ts.URL), cache.Insecure(false), tt.args.customHeaders)
-			assert.NoError(t, err, tt.name)
-			err = c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
+			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), cache.Insecure(false), tt.args.customHeaders)
+			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -197,9 +196,8 @@ func TestRemoteCache_PutBlob(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c, err := cache.NewRemoteCache(cache.RemoteURL(ts.URL), cache.Insecure(false), tt.args.customHeaders)
-			assert.NoError(t, err, tt.name)
-			err = c.PutBlob(tt.args.diffID, tt.args.layerInfo)
+			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), cache.Insecure(false), tt.args.customHeaders)
+			err := c.PutBlob(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -276,8 +274,7 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c, err := cache.NewRemoteCache(cache.RemoteURL(ts.URL), cache.Insecure(false), tt.args.customHeaders)
-			assert.NoError(t, err, tt.name)
+			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), cache.Insecure(false), tt.args.customHeaders)
 			gotMissingImage, gotMissingLayerIDs, err := c.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
@@ -293,36 +290,49 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 	}
 }
 
-func TestRemoteCache_TLSInsecure(t *testing.T) {
+func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
+	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	defer ts.Close()
+
 	type args struct {
-		remoteUrl string
+		imageID   string
+		imageInfo types.ArtifactInfo
 		insecure  bool
 	}
-
 	tests := []struct {
 		name    string
 		args    args
 		wantErr string
 	}{
 		{
-			name: "happy path - insecure",
+			name: "happy path",
 			args: args{
-				remoteUrl: "https://www.example.com",
+				imageID:   "",
+				imageInfo: types.ArtifactInfo{},
 				insecure:  true,
 			},
 		},
 		{
-			name: "happy path - secure",
+			name: "sad path",
 			args: args{
-				remoteUrl: "https://www.example.com",
+				imageID:   "",
+				imageInfo: types.ArtifactInfo{},
 				insecure:  false,
 			},
+			wantErr: "certificate signed by unknown authority",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := cache.NewRemoteCache(cache.RemoteURL(tt.args.remoteUrl), cache.Insecure(tt.args.insecure), http.Header{})
-			assert.NoError(t, err, tt.name)
+			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), cache.Insecure(tt.args.insecure), nil)
+			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
+			if tt.wantErr != "" {
+				require.NotNil(t, err, tt.name)
+				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				return
+			} else {
+				assert.NoError(t, err, tt.name)
+			}
 		})
 	}
 }

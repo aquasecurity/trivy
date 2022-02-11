@@ -3,6 +3,8 @@ package client
 import (
 	"context"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
@@ -284,10 +286,13 @@ func TestScanner_Scan(t *testing.T) {
 	}
 }
 
-func TestScanner_Insecure(t *testing.T) {
+func TestScanner_ScanServerInsecure(t *testing.T) {
+	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	defer ts.Close()
+
 	type args struct {
-		remoteUrl string
-		insecure  bool
+		request  *scanner.ScanRequest
+		insecure bool
 	}
 	tests := []struct {
 		name    string
@@ -295,24 +300,34 @@ func TestScanner_Insecure(t *testing.T) {
 		wantErr string
 	}{
 		{
-			name: "happy path: insecure",
+			name: "happy path",
 			args: args{
-				remoteUrl: "https://www.example.com",
-				insecure:  true,
+				request:  &scanner.ScanRequest{},
+				insecure: true,
 			},
 		},
 		{
-			name: "happy path: secure",
+			name: "sad path",
 			args: args{
-				remoteUrl: "https://www.example.com",
-				insecure:  false,
+				request:  &scanner.ScanRequest{},
+				insecure: false,
 			},
+			wantErr: "certificate signed by unknown authority",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := NewProtobufClient(RemoteURL(tt.args.remoteUrl), Insecure(tt.args.insecure))
-			require.NoError(t, err, tt.name)
+
+			s := NewProtobufClient(RemoteURL(ts.URL), Insecure(tt.args.insecure))
+			_, err := s.Scan(context.Background(), tt.args.request)
+
+			if tt.wantErr != "" {
+				require.NotNil(t, err, tt.name)
+				require.Contains(t, err.Error(), tt.wantErr, tt.name)
+				return
+			} else {
+				require.NoError(t, err, tt.name)
+			}
 		})
 	}
 }
