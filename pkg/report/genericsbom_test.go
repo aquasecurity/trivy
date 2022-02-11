@@ -16,56 +16,15 @@ import (
 func TestReportWriter_gSBOM(t *testing.T) {
 	testCases := []struct {
 		name   string
-		report report.Report
+		report types.Report
 		want   map[string]report.GsbomManifest
 	}{
 		{
-			name: "happy path - vuls",
-			report: report.Report{
-				SchemaVersion: 2,
-				ArtifactName:  "alpine:3.14",
-				Results: report.Results{
-					{
-						Target: "yarn.lock",
-						Class:  "lang-pkgs",
-						Type:   "yarn",
-						Vulnerabilities: []types.DetectedVulnerability{
-							{
-								VulnerabilityID:  "CVE-2020-0001",
-								PkgName:          "foo",
-								InstalledVersion: "1.2.3",
-								FixedVersion:     "3.4.5",
-								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
-								Vulnerability: dbTypes.Vulnerability{
-									Title:       "foobar",
-									Description: "baz",
-									Severity:    "HIGH",
-								},
-							},
-						},
-					},
-				},
-			},
-			want: map[string]report.GsbomManifest{
-				"yarn.lock": {
-					Name: "yarn",
-					File: &report.GsbomFile{
-						SrcLocation: "yarn.lock",
-					},
-					Resolved: map[string]report.GsbomPackage{
-						"foo": {
-							Purl: "pkg:npm/foo@1.2.3",
-						},
-					},
-				},
-			},
-		},
-		{
 			name: "happy path - packages",
-			report: report.Report{
+			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "alpine:3.14",
-				Results: report.Results{
+				Results: types.Results{
 					{
 						Target: "yarn.lock",
 						Class:  "lang-pkgs",
@@ -105,10 +64,10 @@ func TestReportWriter_gSBOM(t *testing.T) {
 					},
 					Resolved: map[string]report.GsbomPackage{
 						"@xtuc/ieee754": {
-							Purl: "pkg:npm/@xtuc%2Fieee754@1.2.0",
+							Purl: "pkg:npm/%40xtuc/ieee754@1.2.0",
 						},
 						"@xtuc/long": {
-							Purl: "pkg:npm/@xtuc%2Flong@4.2.2",
+							Purl: "pkg:npm/%40xtuc/long@4.2.2",
 						},
 					},
 				},
@@ -116,10 +75,10 @@ func TestReportWriter_gSBOM(t *testing.T) {
 		},
 		{
 			name: "happy path - maven",
-			report: report.Report{
+			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "my-java-app",
-				Results: report.Results{
+				Results: types.Results{
 					{
 						Target: "pom.xml",
 						Class:  "lang-pkgs",

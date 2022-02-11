@@ -55,6 +55,9 @@ func (c *Option) Init() error {
 	if err := c.ArtifactOption.Init(c.Context, c.Logger); err != nil {
 		return err
 	}
+	if c.Format == "gsbom" {
+		c.ListAllPkgs = true
+	}
 
 	return nil
 }

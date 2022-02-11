@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"strings"
 	"time"
 
-	"github.com/package-url/packageurl-go"
+	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"golang.org/x/xerrors"
 )
 
@@ -47,9 +48,8 @@ type Gsbom struct {
 type GsbomWriter struct {
 	Output io.Writer
 }
-type depsRslvr func(result Result) map[string]GsbomPackage
 
-func (gsbmw GsbomWriter) Write(report Report) error {
+func (gsbmw GsbomWriter) Write(report types.Report) error {
 	gsbom := &Gsbom{}
 
 	gsbom.Scanned = time.Now().Format(time.RFC3339)
@@ -62,18 +62,28 @@ func (gsbmw GsbomWriter) Write(report Report) error {
 		manifest := GsbomManifest{}
 		manifest.Name = result.Type
 		//show path for languages only
-		if result.Class == ClassLangPkg {
+		if result.Class == types.ClassLangPkg {
 			manifest.File = &GsbomFile{
 				SrcLocation: result.Target,
 			}
 		}
-		var resolver depsRslvr
-		if result.Packages != nil {
-			resolver = resolvedFromPackages
-		} else {
-			resolver = resolvedFromVulns
+		if result.Packages == nil {
+			return xerrors.Errorf("unable to find packages")
 		}
-		manifest.Resolved = resolver(result)
+
+		resolved := make(map[string]GsbomPackage)
+
+		for _, pkg := range result.Packages {
+			var err error
+			gsbompkg := GsbomPackage{}
+			gsbompkg.Purl, err = buildPurl(result.Type, pkg)
+			if err != nil {
+
+			}
+			resolved[pkg.Name] = gsbompkg
+		}
+
+		manifest.Resolved = resolved
 		manifests[result.Target] = manifest
 	}
 
@@ -89,53 +99,11 @@ func (gsbmw GsbomWriter) Write(report Report) error {
 	}
 	return nil
 }
-func buildPurl(pkgName, version, pkgType string) string {
-	purlPackageType := toPurlType(pkgType)
-	var purlNs string
-	//Maven groupid is purl namespace
-	if purlPackageType == "maven" {
-		parts := strings.Split(pkgName, ":")
-		purlNs = parts[0]
-		pkgName = parts[1]
+func buildPurl(t string, pkg ftypes.Package) (string, error) {
+	packageUrl, err := purl.NewPackageURL(t, types.Metadata{}, pkg)
+	if err != nil {
+		return "", err
 	}
-	return packageurl.NewPackageURL(purlPackageType, purlNs, pkgName, version, nil, "").ToString()
-}
-
-var resolvedFromVulns = func(result Result) map[string]GsbomPackage {
-	resolved := make(map[string]GsbomPackage)
-	for _, vuln := range result.Vulnerabilities {
-		pkg := GsbomPackage{}
-		pkg.Purl = buildPurl(vuln.PkgName, vuln.InstalledVersion, result.Type)
-		resolved[vuln.PkgName] = pkg
-	}
-	return resolved
-}
-var resolvedFromPackages = func(result Result) map[string]GsbomPackage {
-	resolved := make(map[string]GsbomPackage)
-	for _, pkg := range result.Packages {
-		gsbompkg := GsbomPackage{}
-		gsbompkg.Purl = buildPurl(pkg.Name, pkg.Version, result.Type)
-		resolved[pkg.Name] = gsbompkg
-	}
-	return resolved
-}
-
-func toPurlType(ecosystem string) string {
-	switch strings.ToLower(ecosystem) {
-	case "go":
-		return "golang"
-	case "gradle", "pom":
-		return "maven"
-	case "yarn":
-		return "npm"
-	case "packagist":
-		return "composer"
-	case "pip", "pipenv", "poetry":
-		return "pypi"
-	case "bundler", "rubygems":
-		return "gem"
-	default:
-		return ecosystem
-	}
+	return packageUrl.ToString(), nil
 
 }
