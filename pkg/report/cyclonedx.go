@@ -31,27 +31,18 @@ const (
 	PropertySrcEpoch        = Namespace + "SrcEpoch"
 	PropertyModularitylabel = Namespace + "Modularitylabel"
 	PropertyFilePath        = Namespace + "FilePath"
+	PropertyLayerDigest     = Namespace + "LayerDigest"
+	PropertyLayerDiffID     = Namespace + "LayerDiffID"
 )
 
 // CycloneDXWriter implements result Writer
 type CycloneDXWriter struct {
-	Output        io.Writer
-	Version       string
-	Format        cdx.BOMFileFormat
-	UUIDGenerator UUIDGenerator
+	Output  io.Writer
+	Version string
+	Format  cdx.BOMFileFormat
 }
 
-type UUIDGenerator interface {
-	New() uuid.UUID
-}
-
-type UUID struct{}
-
-func (u *UUID) New() uuid.UUID {
-	return uuid.New()
-}
-
-var GenUUID UUIDGenerator = &UUID{}
+var New = uuid.New
 
 // Write writes the results in CycloneDX format
 func (cw CycloneDXWriter) Write(report types.Report) error {
@@ -69,10 +60,10 @@ func (cw CycloneDXWriter) Write(report types.Report) error {
 
 func ConvertToBom(r types.Report, version string) (*cdx.BOM, error) {
 	bom := cdx.NewBOM()
-	bom.SerialNumber = GenUUID.New().URN()
-	component, err := reportToComponent(r)
+	bom.SerialNumber = New().URN()
+	metadataComponent, err := reportToComponent(r)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse report: %w", err)
+		return nil, xerrors.Errorf("failed to parse metadata component: %w", err)
 	}
 	bom.Metadata = &cdx.Metadata{
 		Timestamp: Now().UTC().Format(time.RFC3339Nano),
@@ -83,30 +74,35 @@ func ConvertToBom(r types.Report, version string) (*cdx.BOM, error) {
 				Version: version,
 			},
 		},
-		Component: component,
+		Component: metadataComponent,
 	}
 
 	libraryUniqMap := map[string]struct{}{}
 
-	componets := []cdx.Component{}
-	dependencies := []cdx.Dependency{}
-	metadataDependencies := []cdx.Dependency{}
+	var components []cdx.Component
+	var dependencies []cdx.Dependency
+	var metadataDependencies []cdx.Dependency
 	for _, result := range r.Results {
 		resultComponent := resultToComponent(result, r.Metadata.OS)
-		componets = append(componets, resultComponent)
+		components = append(components, resultComponent)
 
-		componentDependencies := []cdx.Dependency{}
+		var componentDependencies []cdx.Dependency
 		for _, pkg := range result.Packages {
-			pkgComponent, err := pkgToComponent(result.Type, result.Class, r.Metadata, pkg)
+			pkgComponent, err := pkgToComponent(result.Type, r.Metadata, pkg)
 			if err != nil {
 				return nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
 
 			if _, ok := libraryUniqMap[pkgComponent.PackageURL]; !ok {
 				libraryUniqMap[pkgComponent.PackageURL] = struct{}{}
-				componets = append(componets, pkgComponent)
+				components = append(components, pkgComponent)
 			}
-			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
+
+			if pkg.FilePath != "" {
+				metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
+			} else {
+				componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
+			}
 		}
 
 		dependencies = append(dependencies,
@@ -118,7 +114,7 @@ func ConvertToBom(r types.Report, version string) (*cdx.BOM, error) {
 		cdx.Dependency{Ref: bom.Metadata.Component.BOMRef, Dependencies: &metadataDependencies},
 	)
 
-	bom.Components = &componets
+	bom.Components = &components
 	if len(dependencies) != 0 {
 		bom.Dependencies = &dependencies
 	}
@@ -126,7 +122,7 @@ func ConvertToBom(r types.Report, version string) (*cdx.BOM, error) {
 	return bom, nil
 }
 
-func pkgToComponent(t string, c types.ResultClass, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
+func pkgToComponent(t string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
 	pu, err := purl.NewPackageURL(t, meta, pkg)
 	if err != nil {
 		return cdx.Component{}, xerrors.Errorf("failed to new package purl: %w", err)
@@ -183,25 +179,21 @@ func reportToComponent(r types.Report) (*cdx.Component, error) {
 		component.PackageURL = p.ToString()
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
 		component.Type = cdx.ComponentTypeApplication
-		component.BOMRef = GenUUID.New().String()
+		component.BOMRef = New().String()
 	}
-
-	if r.Metadata.OS != nil {
-		component.Version = r.Metadata.OS.Name
-		for _, d := range r.Metadata.RepoDigests {
-			properties = append(properties, cdx.Property{
-				Name:  PropertyDigest,
-				Value: d,
-			})
-		}
-		for _, t := range r.Metadata.RepoTags {
-			properties = append(properties, cdx.Property{
-				Name:  PropertyTag,
-				Value: t,
-			})
-		}
-		component.Properties = &properties
+	for _, d := range r.Metadata.RepoDigests {
+		properties = append(properties, cdx.Property{
+			Name:  PropertyDigest,
+			Value: d,
+		})
 	}
+	for _, t := range r.Metadata.RepoTags {
+		properties = append(properties, cdx.Property{
+			Name:  PropertyTag,
+			Value: t,
+		})
+	}
+	component.Properties = &properties
 
 	return component, nil
 }
@@ -223,18 +215,18 @@ func resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Component {
 
 	switch r.Class {
 	case types.ClassOSPkg:
-		component.BOMRef = GenUUID.New().String()
+		component.BOMRef = New().String()
 		if osFound != nil {
 			component.Name = osFound.Family
 			component.Version = osFound.Name
 		}
 		component.Type = cdx.ComponentTypeOS
 	case types.ClassLangPkg:
-		component.BOMRef = r.Target
+		component.BOMRef = New().String()
 		component.Type = cdx.ComponentTypeApplication
 	case types.ClassConfig:
 		// TODO: Config support
-		component.BOMRef = r.Target
+		component.BOMRef = New().String()
 		component.Type = cdx.ComponentTypeFile
 	}
 
@@ -242,28 +234,12 @@ func resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Component {
 }
 
 func parseProperties(pkg ftypes.Package) []cdx.Property {
-	properties := []cdx.Property{}
+	var properties []cdx.Property
 	if pkg.FilePath != "" {
 		properties = append(properties,
 			cdx.Property{
 				Name:  PropertyFilePath,
 				Value: pkg.FilePath,
-			},
-		)
-	}
-	if pkg.Release != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertyRelease,
-				Value: pkg.Release,
-			},
-		)
-	}
-	if pkg.Epoch != 0 {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertyEpoch,
-				Value: strconv.Itoa(pkg.Epoch),
 			},
 		)
 	}
@@ -312,6 +288,22 @@ func parseProperties(pkg ftypes.Package) []cdx.Property {
 			cdx.Property{
 				Name:  PropertyModularitylabel,
 				Value: pkg.Modularitylabel,
+			},
+		)
+	}
+	if pkg.Layer.Digest != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertyLayerDigest,
+				Value: pkg.Layer.Digest,
+			},
+		)
+	}
+	if pkg.Layer.DiffID != "" {
+		properties = append(properties,
+			cdx.Property{
+				Name:  PropertyLayerDiffID,
+				Value: pkg.Layer.DiffID,
 			},
 		)
 	}

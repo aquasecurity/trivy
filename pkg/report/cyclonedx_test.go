@@ -292,7 +292,6 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						},
 					},
 					{
-
 						Ref: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
 						Dependencies: &[]cdx.Dependency{
 							{
@@ -484,7 +483,10 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 	report.Now = func() time.Time {
 		return time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC)
 	}
-	report.GenUUID = mockUUIDGenerator{}
+	report.New = func() uuid.UUID {
+		return uuid.Must(uuid.Parse("3ff14136-e09f-4df9-80ea-ed576c5a672e"))
+	}
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			bom, err := report.ConvertToBom(tc.inputReport, "cyclonedx")
@@ -492,10 +494,4 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 			assert.Equal(t, tc.expectedSBOM, bom)
 		})
 	}
-}
-
-type mockUUIDGenerator struct{}
-
-func (m mockUUIDGenerator) New() uuid.UUID {
-	return uuid.Must(uuid.Parse("3ff14136-e09f-4df9-80ea-ed576c5a672e"))
 }
