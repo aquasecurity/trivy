@@ -19,7 +19,6 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -63,7 +62,7 @@ func TestScanServer_Scan(t *testing.T) {
 					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				},
 				Returns: scanner.DriverScanReturns{
-					Results: report.Results{
+					Results: types.Results{
 						{
 							Target: "alpine:3.11 (alpine 3.11)",
 							Vulnerabilities: []types.DetectedVulnerability{

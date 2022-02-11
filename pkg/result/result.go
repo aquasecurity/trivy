@@ -16,7 +16,6 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -134,7 +133,7 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, source dbTypes.Sourc
 // Filter filter out the vulnerabilities
 func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
 	severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool, ignoreFile, policyFile string) (
-	[]types.DetectedVulnerability, *report.MisconfSummary, []types.DetectedMisconfiguration, error) {
+	[]types.DetectedVulnerability, *types.MisconfSummary, []types.DetectedMisconfiguration, error) {
 	ignoredIDs := getIgnoredIDs(ignoreFile)
 
 	filteredVulns := filterVulnerabilities(vulns, severities, ignoreUnfixed, ignoredIDs)
@@ -185,9 +184,9 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 }
 
 func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,
-	includeNonFailures bool, ignoredIDs []string) (*report.MisconfSummary, []types.DetectedMisconfiguration) {
+	includeNonFailures bool, ignoredIDs []string) (*types.MisconfSummary, []types.DetectedMisconfiguration) {
 	var filtered []types.DetectedMisconfiguration
-	summary := new(report.MisconfSummary)
+	summary := new(types.MisconfSummary)
 
 	for _, misconf := range misconfs {
 		// Filter misconfigurations by severity
@@ -216,7 +215,7 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 	return summary, filtered
 }
 
-func summarize(status types.MisconfStatus, summary *report.MisconfSummary) {
+func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 	switch status {
 	case types.StatusFailure:
 		summary.Failures++

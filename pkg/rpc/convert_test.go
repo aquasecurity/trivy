@@ -11,7 +11,6 @@ import (
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/common"
 	"github.com/aquasecurity/trivy/rpc/scanner"
@@ -282,7 +281,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []report.Result
+		want []types.Result
 	}{
 		{
 			name: "happy path",
@@ -325,7 +324,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 					},
 				}},
 			},
-			want: []report.Result{
+			want: []types.Result{
 				{
 					Target: "alpine:3.10",
 					Type:   fos.Alpine,
@@ -405,7 +404,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 					},
 				}},
 			},
-			want: []report.Result{
+			want: []types.Result{
 				{
 					Target: "alpine:3.10",
 					Type:   fos.Alpine,

@@ -11,7 +11,6 @@ import (
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/report"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
 )
@@ -45,7 +44,7 @@ func NewScanner(customHeaders CustomHeaders, s rpc.Scanner) Scanner {
 }
 
 // Scan scans the image
-func (s Scanner) Scan(target, artifactKey string, blobKeys []string, options types.ScanOptions) (report.Results, *ftypes.OS, error) {
+func (s Scanner) Scan(target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
 	ctx := WithCustomHeaders(context.Background(), http.Header(s.customHeaders))
 
 	var res *rpc.ScanResponse
