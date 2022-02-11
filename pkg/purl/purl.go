@@ -2,7 +2,6 @@ package purl
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	cn "github.com/google/go-containerregistry/pkg/name"
@@ -86,8 +85,14 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 }
 
 func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
+	qualifiers := packageurl.Qualifiers{
+		packageurl.Qualifier{
+			Key:   "arch",
+			Value: metadata.ImageConfig.Architecture,
+		},
+	}
 	if len(metadata.RepoDigests) == 0 {
-		return packageurl.PackageURL{}, xerrors.New("repository digests empty error")
+		return *packageurl.NewPackageURL("", "", "", "", nil, ""), nil
 	}
 
 	digest, err := cn.NewDigest(metadata.RepoDigests[0])
@@ -100,16 +105,12 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 	if index != -1 {
 		name = name[index+1:]
 	}
-	qualifiers := packageurl.Qualifiers{
+	qualifiers = append(qualifiers,
 		packageurl.Qualifier{
 			Key:   "repository_url",
 			Value: digest.Repository.Name(),
 		},
-		packageurl.Qualifier{
-			Key:   "arch",
-			Value: metadata.ImageConfig.Architecture,
-		},
-	}
+	)
 
 	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
 }
@@ -240,12 +241,6 @@ func parseQualifier(pkg ftypes.Package, distro string) packageurl.Qualifiers {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "arch",
 			Value: pkg.Arch,
-		})
-	}
-	if pkg.Epoch != 0 {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "epoch",
-			Value: strconv.Itoa(pkg.Epoch),
 		})
 	}
 	return qualifiers

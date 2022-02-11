@@ -16,27 +16,30 @@ import (
 )
 
 const (
-	Namespace               = "aquasecurity:trivy:"
-	PropertyType            = Namespace + "Type"
-	PropertyClass           = Namespace + "Class"
-	PropertySchemaVersion   = Namespace + "SchemaVersion"
-	PropertySize            = Namespace + "Size"
-	PropertyDigest          = Namespace + "Digest"
-	PropertyTag             = Namespace + "Tag"
-	PropertyRelease         = Namespace + "Release"
-	PropertyEpoch           = Namespace + "Epoch"
-	PropertyArch            = Namespace + "Arch"
-	PropertySrcName         = Namespace + "SrcName"
-	PropertySrcVersion      = Namespace + "SrcVersion"
-	PropertySrcRelease      = Namespace + "SrcRelease"
-	PropertySrcEpoch        = Namespace + "SrcEpoch"
-	PropertyModularitylabel = Namespace + "Modularitylabel"
-	PropertyFilePath        = Namespace + "FilePath"
-	PropertyLayerDigest     = Namespace + "LayerDigest"
-	PropertyLayerDiffID     = Namespace + "LayerDiffID"
+	Namespace = "aquasecurity:trivy:"
+
+	PropertySchemaVersion = "SchemaVersion"
+	PropertyType          = "Type"
+	PropertyClass         = "Class"
+
+	// Image properties
+	PropertySize       = "Size"
+	PropertyImageID    = "ImageID"
+	PropertyRepoDigest = "RepoDigest"
+	PropertyRepoTag    = "RepoTag"
+
+	// Package properties
+	PropertySrcName         = "SrcName"
+	PropertySrcVersion      = "SrcVersion"
+	PropertySrcRelease      = "SrcRelease"
+	PropertySrcEpoch        = "SrcEpoch"
+	PropertyModularitylabel = "Modularitylabel"
+	PropertyFilePath        = "FilePath"
+	PropertyLayerDigest     = "LayerDigest"
+	PropertyLayerDiffID     = "LayerDiffID"
 )
 
-// Writer implements result Writer
+// Writer implements result report.Writer
 type Writer struct {
 	output  io.Writer
 	version string
@@ -137,9 +140,6 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 	var metadataDependencies []cdx.Dependency
 	libraryUniqMap := map[string]struct{}{}
 	for _, result := range r.Results {
-		resultComponent := cw.resultToComponent(result, r.Metadata.OS)
-		components = append(components, resultComponent)
-
 		var componentDependencies []cdx.Dependency
 		for _, pkg := range result.Packages {
 			pkgComponent, err := cw.pkgToComponent(result.Type, r.Metadata, pkg)
@@ -159,6 +159,9 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar {
 			metadataDependencies = append(metadataDependencies, componentDependencies...)
 		} else {
+			resultComponent := cw.resultToComponent(result, r.Metadata.OS)
+			components = append(components, resultComponent)
+
 			dependencies = append(dependencies,
 				cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
 			)
@@ -202,19 +205,11 @@ func (cw *Writer) reportToComponent(r types.Report) (*cdx.Component, error) {
 	}
 
 	properties := []cdx.Property{
-		{
-			Name:  PropertySchemaVersion,
-			Value: strconv.Itoa(r.SchemaVersion),
-		},
+		property(PropertySchemaVersion, strconv.Itoa(r.SchemaVersion)),
 	}
 
 	if r.Metadata.Size != 0 {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertySize,
-				Value: strconv.FormatInt(r.Metadata.Size, 10),
-			},
-		)
+		properties = appendProperties(properties, PropertySize, strconv.FormatInt(r.Metadata.Size, 10))
 	}
 
 	switch r.ArtifactType {
@@ -224,27 +219,27 @@ func (cw *Writer) reportToComponent(r types.Report) (*cdx.Component, error) {
 		if err != nil {
 			return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
 		}
+		properties = appendProperties(properties, PropertyImageID, r.Metadata.ImageID)
 
-		component.BOMRef = p.ToString()
-		component.PackageURL = p.ToString()
+		if p.Type == "" {
+			component.BOMRef = cw.newUUID().String()
+		} else {
+			component.BOMRef = p.ToString()
+			component.PackageURL = p.ToString()
+		}
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
 		component.Type = cdx.ComponentTypeApplication
 		component.BOMRef = cw.newUUID().String()
 	}
 
 	for _, d := range r.Metadata.RepoDigests {
-		properties = append(properties, cdx.Property{
-			Name:  PropertyDigest,
-			Value: d,
-		})
+		properties = appendProperties(properties, PropertyRepoDigest, d)
 	}
 
 	for _, t := range r.Metadata.RepoTags {
-		properties = append(properties, cdx.Property{
-			Name:  PropertyTag,
-			Value: t,
-		})
+		properties = appendProperties(properties, PropertyRepoTag, t)
 	}
+
 	component.Properties = &properties
 
 	return component, nil
@@ -254,14 +249,8 @@ func (cw Writer) resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Compo
 	component := cdx.Component{
 		Name: r.Target,
 		Properties: &[]cdx.Property{
-			{
-				Name:  PropertyType,
-				Value: r.Type,
-			},
-			{
-				Name:  PropertyClass,
-				Value: string(r.Class),
-			},
+			property(PropertyType, r.Type),
+			property(PropertyClass, string(r.Class)),
 		},
 	}
 
@@ -287,78 +276,38 @@ func (cw Writer) resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Compo
 
 func parseProperties(pkg ftypes.Package) []cdx.Property {
 	var properties []cdx.Property
-	if pkg.FilePath != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertyFilePath,
-				Value: pkg.FilePath,
-			},
-		)
+
+	props := []struct {
+		name  string
+		value string
+	}{
+		{PropertyFilePath, pkg.FilePath},
+		{PropertySrcName, pkg.SrcName},
+		{PropertySrcVersion, pkg.SrcVersion},
+		{PropertySrcRelease, pkg.SrcRelease},
+		{PropertySrcEpoch, strconv.Itoa(pkg.SrcEpoch)},
+		{PropertyModularitylabel, pkg.Modularitylabel},
+		{PropertyLayerDigest, pkg.Layer.Digest},
+		{PropertyLayerDiffID, pkg.Layer.DiffID},
 	}
-	if pkg.Arch != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertyArch,
-				Value: pkg.Arch,
-			},
-		)
-	}
-	if pkg.SrcName != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertySrcName,
-				Value: pkg.SrcName,
-			},
-		)
-	}
-	if pkg.SrcVersion != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertySrcVersion,
-				Value: pkg.SrcVersion,
-			},
-		)
-	}
-	if pkg.SrcRelease != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertySrcRelease,
-				Value: pkg.SrcRelease,
-			},
-		)
-	}
-	if pkg.SrcEpoch != 0 {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertySrcEpoch,
-				Value: strconv.Itoa(pkg.SrcEpoch),
-			},
-		)
-	}
-	if pkg.Modularitylabel != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertyModularitylabel,
-				Value: pkg.Modularitylabel,
-			},
-		)
-	}
-	if pkg.Layer.Digest != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertyLayerDigest,
-				Value: pkg.Layer.Digest,
-			},
-		)
-	}
-	if pkg.Layer.DiffID != "" {
-		properties = append(properties,
-			cdx.Property{
-				Name:  PropertyLayerDiffID,
-				Value: pkg.Layer.DiffID,
-			},
-		)
+
+	for _, prop := range props {
+		properties = appendProperties(properties, prop.name, prop.value)
 	}
 
 	return properties
+}
+
+func appendProperties(properties []cdx.Property, key, value string) []cdx.Property {
+	if value == "" || (key == PropertySrcEpoch && value == "0") {
+		return properties
+	}
+	return append(properties, property(key, value))
+}
+
+func property(key, value string) cdx.Property {
+	return cdx.Property{
+		Name:  Namespace + key,
+		Value: value,
+	}
 }
