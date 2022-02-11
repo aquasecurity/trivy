@@ -1,8 +1,13 @@
-package report_test
+package cyclonedx_test
 
 import (
+	"bytes"
+	"encoding/json"
 	"testing"
 	"time"
+
+	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
+	fake "k8s.io/utils/clock/testing"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -15,13 +20,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type mockClock struct{}
-
-func (m mockClock) Now() time.Time {
-	return time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC)
-}
-
-func TestReportWriter_CycloneDX(t *testing.T) {
+func TestWriter_Write(t *testing.T) {
 	testCases := []struct {
 		name         string
 		inputReport  types.Report
@@ -228,6 +227,10 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 								Name:  "aquasecurity:trivy:Class",
 								Value: "lang-pkgs",
 							},
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "app/subproject/Gemfile.lock",
+							},
 						},
 					},
 					{
@@ -237,6 +240,35 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 						Version:    "7.0.0",
 						PackageURL: "pkg:gem/actioncable@7.0.0",
 						Properties: &[]cdx.Property{},
+					},
+					{
+						BOMRef:  "",
+						Type:    cdx.ComponentTypeApplication,
+						Name:    "Node.js",
+						Version: "",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "bundler",
+							},
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:gem/actioncable@7.0.0",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "actioncable",
+						Version:    "7.0.0",
+						PackageURL: "pkg:gem/actioncable@7.0.0",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "FilePath",
+								Value: "node_modules/actionable/package.json",
+							},
+						},
 					},
 					{
 						BOMRef:     "pkg:gem/actioncontroller@7.0.0",
@@ -481,21 +513,25 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 			},
 		},
 	}
-	report.Now = func() time.Time {
-		return time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC)
+
+	clock := fake.NewFakeClock(time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+	newUUID := func() uuid.UUID {
+		return uuid.Must(uuid.Parse("3ff14136-e09f-4df9-80ea-ed576c5a672e"))
 	}
-	report.GenUUID = mockUUIDGenerator{}
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			bom, err := report.ConvertToBom(tc.inputReport, "cyclonedx")
+			output := bytes.NewBuffer(nil)
+			writer := cyclonedx.NewWriter(output, "dev", cyclonedx.WithClock(clock), cyclonedx.WithUUID(newUUID))
+
+			err := writer.Write(tc.inputReport)
 			require.NoError(t, err)
-			assert.Equal(t, tc.expectedSBOM, bom)
+
+			var got cdx.BOM
+			err = json.NewDecoder(output).Decode(&got)
+			require.NoError(t, err)
+
+			assert.Equal(t, tc.expectedSBOM, got)
 		})
 	}
-}
-
-type mockUUIDGenerator struct{}
-
-func (m mockUUIDGenerator) New() uuid.UUID {
-	return uuid.Must(uuid.Parse("3ff14136-e09f-4df9-80ea-ed576c5a672e"))
 }

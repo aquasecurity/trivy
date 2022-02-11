@@ -1,4 +1,4 @@
-package report
+package cyclonedx
 
 import (
 	"io"
@@ -8,6 +8,7 @@ import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/google/uuid"
 	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -33,47 +34,81 @@ const (
 	PropertyFilePath        = Namespace + "FilePath"
 )
 
-// CycloneDXWriter implements result Writer
-type CycloneDXWriter struct {
-	Output        io.Writer
-	Version       string
-	Format        cdx.BOMFileFormat
-	UUIDGenerator UUIDGenerator
+// Writer implements result Writer
+type Writer struct {
+	output  io.Writer
+	version string
+	*options
 }
 
-type UUIDGenerator interface {
-	New() uuid.UUID
+type newUUID func() uuid.UUID
+
+type options struct {
+	format  cdx.BOMFileFormat
+	clock   clock.Clock
+	newUUID newUUID
 }
 
-type UUID struct{}
+type option func(*options)
 
-func (u *UUID) New() uuid.UUID {
-	return uuid.New()
+func WithFormat(format cdx.BOMFileFormat) option {
+	return func(opts *options) {
+		opts.format = format
+	}
 }
 
-var GenUUID UUIDGenerator = &UUID{}
+func WithClock(clock clock.Clock) option {
+	return func(opts *options) {
+		opts.clock = clock
+	}
+}
+
+func WithNewUUID(newUUID newUUID) option {
+	return func(opts *options) {
+		opts.newUUID = newUUID
+	}
+}
+
+func NewWriter(output io.Writer, version string, opts ...option) Writer {
+	o := &options{
+		format:  cdx.BOMFileFormatJSON,
+		clock:   clock.RealClock{},
+		newUUID: uuid.New,
+	}
+
+	for _, opt := range opts {
+		opt(o)
+	}
+
+	return Writer{
+		output:  output,
+		version: version,
+		options: o,
+	}
+}
 
 // Write writes the results in CycloneDX format
-func (cw CycloneDXWriter) Write(report types.Report) error {
-	bom, err := ConvertToBom(report, cw.Version)
+func (cw Writer) Write(report types.Report) error {
+	bom, err := convertToBom(report, cw.version)
 	if err != nil {
 		return xerrors.Errorf("failed to convert bom: %w", err)
 	}
 
-	if err := cdx.NewBOMEncoder(cw.Output, cw.Format).Encode(bom); err != nil {
+	if err := cdx.NewBOMEncoder(cw.output, cw.format).Encode(bom); err != nil {
 		return xerrors.Errorf("failed to encode bom: %w", err)
 	}
 
 	return nil
 }
 
-func ConvertToBom(r types.Report, version string) (*cdx.BOM, error) {
+func convertToBom(r types.Report, version string) (*cdx.BOM, error) {
 	bom := cdx.NewBOM()
 	bom.SerialNumber = GenUUID.New().URN()
 	component, err := reportToComponent(r)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse report: %w", err)
 	}
+
 	bom.Metadata = &cdx.Metadata{
 		Timestamp: Now().UTC().Format(time.RFC3339Nano),
 		Tools: &[]cdx.Tool{
@@ -88,14 +123,15 @@ func ConvertToBom(r types.Report, version string) (*cdx.BOM, error) {
 
 	libraryUniqMap := map[string]struct{}{}
 
-	componets := []cdx.Component{}
-	dependencies := []cdx.Dependency{}
-	metadataDependencies := []cdx.Dependency{}
+	var componets []cdx.Component
+	var dependencies []cdx.Dependency
+	var metadataDependencies []cdx.Dependency
+
 	for _, result := range r.Results {
 		resultComponent := resultToComponent(result, r.Metadata.OS)
 		componets = append(componets, resultComponent)
 
-		componentDependencies := []cdx.Dependency{}
+		var componentDependencies []cdx.Dependency
 		for _, pkg := range result.Packages {
 			pkgComponent, err := pkgToComponent(result.Type, result.Class, r.Metadata, pkg)
 			if err != nil {
@@ -109,19 +145,24 @@ func ConvertToBom(r types.Report, version string) (*cdx.BOM, error) {
 			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
 		}
 
-		dependencies = append(dependencies,
-			cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
-		)
-		metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
+		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg || result.Type == ftypes.GoBinary ||
+			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar {
+			metadataDependencies = append(metadataDependencies, componentDependencies...)
+		} else {
+			dependencies = append(dependencies,
+				cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
+			)
+
+			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
+		}
 	}
+
 	dependencies = append(dependencies,
 		cdx.Dependency{Ref: bom.Metadata.Component.BOMRef, Dependencies: &metadataDependencies},
 	)
 
 	bom.Components = &componets
-	if len(dependencies) != 0 {
-		bom.Dependencies = &dependencies
-	}
+	bom.Dependencies = &dependencies
 
 	return bom, nil
 }
@@ -186,22 +227,20 @@ func reportToComponent(r types.Report) (*cdx.Component, error) {
 		component.BOMRef = GenUUID.New().String()
 	}
 
-	if r.Metadata.OS != nil {
-		component.Version = r.Metadata.OS.Name
-		for _, d := range r.Metadata.RepoDigests {
-			properties = append(properties, cdx.Property{
-				Name:  PropertyDigest,
-				Value: d,
-			})
-		}
-		for _, t := range r.Metadata.RepoTags {
-			properties = append(properties, cdx.Property{
-				Name:  PropertyTag,
-				Value: t,
-			})
-		}
-		component.Properties = &properties
+	for _, d := range r.Metadata.RepoDigests {
+		properties = append(properties, cdx.Property{
+			Name:  PropertyDigest,
+			Value: d,
+		})
 	}
+
+	for _, t := range r.Metadata.RepoTags {
+		properties = append(properties, cdx.Property{
+			Name:  PropertyTag,
+			Value: t,
+		})
+	}
+	component.Properties = &properties
 
 	return component, nil
 }
