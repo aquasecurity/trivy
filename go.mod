@@ -39,7 +39,7 @@ require (
 	github.com/mitchellh/copystructure v1.1.1 // indirect
 	github.com/moby/sys/mountinfo v0.6.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5
-	github.com/open-policy-agent/opa v0.36.1
+	github.com/open-policy-agent/opa v0.37.2
 	github.com/opencontainers/runc v1.1.0 // indirect
 	github.com/owenrumney/go-sarif/v2 v2.0.17
 	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
@@ -54,7 +54,6 @@ require (
 	golang.org/x/sys v0.0.0-20220204135822-1c1b9b1eba6a // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/genproto v0.0.0-20220204002441-d6cc3cc0770e // indirect
-	google.golang.org/grpc v1.44.0 // indirect
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
