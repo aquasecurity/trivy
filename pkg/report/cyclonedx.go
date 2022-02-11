@@ -90,6 +90,7 @@ func ConvertToBom(r types.Report, version string) (*cdx.BOM, error) {
 
 	componets := []cdx.Component{}
 	dependencies := []cdx.Dependency{}
+	metadataDependencies := []cdx.Dependency{}
 	for _, result := range r.Results {
 		resultComponent := resultToComponent(result, r.Metadata.OS)
 		componets = append(componets, resultComponent)
@@ -108,12 +109,14 @@ func ConvertToBom(r types.Report, version string) (*cdx.BOM, error) {
 			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
 		}
 
-		if len(componentDependencies) != 0 {
-			dependencies = append(dependencies,
-				cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
-			)
-		}
+		dependencies = append(dependencies,
+			cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
+		)
+		metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
 	}
+	dependencies = append(dependencies,
+		cdx.Dependency{Ref: bom.Metadata.Component.BOMRef, Dependencies: &metadataDependencies},
+	)
 
 	bom.Components = &componets
 	if len(dependencies) != 0 {
@@ -180,6 +183,7 @@ func reportToComponent(r types.Report) (*cdx.Component, error) {
 		component.PackageURL = p.ToString()
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
 		component.Type = cdx.ComponentTypeApplication
+		component.BOMRef = GenUUID.New().String()
 	}
 
 	if r.Metadata.OS != nil {

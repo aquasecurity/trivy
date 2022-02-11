@@ -28,7 +28,7 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 		expectedSBOM *cdx.BOM
 	}{
 		{
-			name: "happy path",
+			name: "happy path for container scan",
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "rails:latest",
@@ -290,6 +290,192 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 								Ref: "pkg:gem/actioncable@7.0.0",
 							},
 						},
+					},
+					{
+
+						Ref: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
+						Dependencies: &[]cdx.Dependency{
+							{
+								Ref: "3ff14136-e09f-4df9-80ea-ed576c5a672e",
+							},
+							{
+								Ref: "app/subproject/Gemfile.lock",
+							},
+							{
+								Ref: "app/Gemfile.lock",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy path for fs scan",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "github.com/masahiro331/CVE-2021-41098",
+				ArtifactType:  ftypes.ArtifactFilesystem,
+				Results: types.Results{
+					{
+						Target: "Gemfile.lock",
+						Class:  types.ClassLangPkg,
+						Type:   "bundler",
+						Packages: []ftypes.Package{
+							{
+								Name:    "actioncable",
+								Version: "6.1.4.1",
+							},
+							{
+								Name:    "actionmailbox",
+								Version: "6.1.4.1",
+							},
+							{
+								Name:    "actionmailer",
+								Version: "6.1.4.1",
+							},
+							{
+								Name:    "nokogiri",
+								Version: "1.12.4",
+							},
+						},
+					},
+				},
+			},
+
+			expectedSBOM: &cdx.BOM{
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.3",
+				BOMFormat:    "CycloneDX",
+				SpecVersion:  "1.3",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-ed576c5a672e",
+				Version:      1,
+				Metadata: &cdx.Metadata{
+					Timestamp: "2021-08-25T12:20:30.000000005Z",
+					Tools: &[]cdx.Tool{
+						{
+							Name:    "trivy",
+							Vendor:  "aquasecurity",
+							Version: "cyclonedx",
+						},
+					},
+					Component: &cdx.Component{
+						Type:   cdx.ComponentTypeApplication,
+						Name:   "github.com/masahiro331/CVE-2021-41098",
+						BOMRef: "3ff14136-e09f-4df9-80ea-ed576c5a672e",
+					},
+				},
+				Components: &[]cdx.Component{
+					{
+						BOMRef: "Gemfile.lock",
+						Type:   cdx.ComponentTypeApplication,
+						Name:   "Gemfile.lock",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "bundler",
+							},
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:gem/actioncable@6.1.4.1",
+						Type:       "library",
+						Name:       "actioncable",
+						Version:    "6.1.4.1",
+						PackageURL: "pkg:gem/actioncable@6.1.4.1",
+						Properties: &[]cdx.Property{},
+					},
+					{
+						BOMRef:     "pkg:gem/actionmailbox@6.1.4.1",
+						Type:       "library",
+						Name:       "actionmailbox",
+						Version:    "6.1.4.1",
+						PackageURL: "pkg:gem/actionmailbox@6.1.4.1",
+						Properties: &[]cdx.Property{},
+					},
+					{
+						BOMRef:     "pkg:gem/actionmailer@6.1.4.1",
+						Type:       "library",
+						Name:       "actionmailer",
+						Version:    "6.1.4.1",
+						PackageURL: "pkg:gem/actionmailer@6.1.4.1",
+						Properties: &[]cdx.Property{},
+					},
+					{
+						BOMRef:     "pkg:gem/nokogiri@1.12.4",
+						Type:       "library",
+						Name:       "nokogiri",
+						Version:    "1.12.4",
+						PackageURL: "pkg:gem/nokogiri@1.12.4",
+						Properties: &[]cdx.Property{},
+					},
+				},
+				Dependencies: &[]cdx.Dependency{
+					{
+						Ref: "Gemfile.lock",
+						Dependencies: &[]cdx.Dependency{
+							{
+								Ref: "pkg:gem/actioncable@6.1.4.1",
+							},
+							{
+								Ref: "pkg:gem/actionmailbox@6.1.4.1",
+							},
+							{
+								Ref: "pkg:gem/actionmailer@6.1.4.1",
+							},
+							{
+								Ref: "pkg:gem/nokogiri@1.12.4",
+							},
+						},
+					},
+					{
+						Ref: "3ff14136-e09f-4df9-80ea-ed576c5a672e",
+						Dependencies: &[]cdx.Dependency{
+							{
+								Ref: "Gemfile.lock",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy path empty",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "https://github.com/masahiro331/CVE-2020-8165",
+				ArtifactType:  ftypes.ArtifactRemoteRepository,
+				Results:       types.Results{},
+			},
+
+			expectedSBOM: &cdx.BOM{
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.3",
+				BOMFormat:    "CycloneDX",
+				SpecVersion:  "1.3",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-ed576c5a672e",
+				Version:      1,
+				Metadata: &cdx.Metadata{
+					Timestamp: "2021-08-25T12:20:30.000000005Z",
+					Tools: &[]cdx.Tool{
+						{
+							Name:    "trivy",
+							Vendor:  "aquasecurity",
+							Version: "cyclonedx",
+						},
+					},
+					Component: &cdx.Component{
+						Type:   cdx.ComponentTypeApplication,
+						Name:   "empty/path",
+						BOMRef: "3ff14136-e09f-4df9-80ea-ed576c5a672e",
+					},
+				},
+				Components: &[]cdx.Component{},
+				Dependencies: &[]cdx.Dependency{
+					{
+						Ref:          "3ff14136-e09f-4df9-80ea-ed576c5a672e",
+						Dependencies: &[]cdx.Dependency{},
 					},
 				},
 			},
