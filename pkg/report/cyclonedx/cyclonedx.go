@@ -90,7 +90,7 @@ func NewWriter(output io.Writer, version string, opts ...option) Writer {
 }
 
 // Write writes the results in CycloneDX format
-func (cw *Writer) Write(report types.Report) error {
+func (cw Writer) Write(report types.Report) error {
 	bom, err := cw.convertToBom(report, cw.version)
 	if err != nil {
 		return xerrors.Errorf("failed to convert bom: %w", err)
@@ -123,11 +123,19 @@ func (cw *Writer) convertToBom(r types.Report, version string) (*cdx.BOM, error)
 		Component: metadataComponent,
 	}
 
-	libraryUniqMap := map[string]struct{}{}
+	bom.Components, bom.Dependencies, err = cw.parseComponents(r, bom.Metadata.Component.BOMRef)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse components: %w", err)
+	}
 
+	return bom, nil
+}
+
+func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, error) {
 	var components []cdx.Component
 	var dependencies []cdx.Dependency
 	var metadataDependencies []cdx.Dependency
+	libraryUniqMap := map[string]struct{}{}
 	for _, result := range r.Results {
 		resultComponent := cw.resultToComponent(result, r.Metadata.OS)
 		components = append(components, resultComponent)
@@ -136,19 +144,15 @@ func (cw *Writer) convertToBom(r types.Report, version string) (*cdx.BOM, error)
 		for _, pkg := range result.Packages {
 			pkgComponent, err := cw.pkgToComponent(result.Type, r.Metadata, pkg)
 			if err != nil {
-				return nil, xerrors.Errorf("failed to parse pkg: %w", err)
+				return nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
 
-			if _, ok := libraryUniqMap[pkgComponent.PackageURL]; !ok {
-				libraryUniqMap[pkgComponent.PackageURL] = struct{}{}
+			if _, ok := libraryUniqMap[pkgComponent.BOMRef]; !ok {
+				libraryUniqMap[pkgComponent.BOMRef] = struct{}{}
 				components = append(components, pkgComponent)
 			}
 
-			if pkg.FilePath != "" {
-				metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
-			} else {
-				componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
-			}
+			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
 		}
 
 		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg || result.Type == ftypes.GoBinary ||
@@ -158,19 +162,14 @@ func (cw *Writer) convertToBom(r types.Report, version string) (*cdx.BOM, error)
 			dependencies = append(dependencies,
 				cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
 			)
-
 			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
 		}
 	}
 
 	dependencies = append(dependencies,
-		cdx.Dependency{Ref: bom.Metadata.Component.BOMRef, Dependencies: &metadataDependencies},
+		cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies},
 	)
-
-	bom.Components = &components
-	bom.Dependencies = &dependencies
-
-	return bom, nil
+	return &components, &dependencies, nil
 }
 
 func (cw *Writer) pkgToComponent(t string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
@@ -183,7 +182,7 @@ func (cw *Writer) pkgToComponent(t string, meta types.Metadata, pkg ftypes.Packa
 		Type:       cdx.ComponentTypeLibrary,
 		Name:       pkg.Name,
 		Version:    pu.Version,
-		BOMRef:     pu.ToString(),
+		BOMRef:     pu.BOMRef(),
 		PackageURL: pu.ToString(),
 		Properties: &properties,
 	}

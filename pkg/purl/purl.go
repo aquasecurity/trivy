@@ -20,8 +20,25 @@ const (
 	TypeOCI = "oci"
 )
 
+type PackageURL struct {
+	packageurl.PackageURL
+	FilePath string
+}
+
+func (purl PackageURL) BOMRef() string {
+	if purl.FilePath != "" {
+		purl.Qualifiers = append(purl.Qualifiers,
+			packageurl.Qualifier{
+				Key:   "file_path",
+				Value: purl.FilePath,
+			},
+		)
+	}
+	return purl.PackageURL.String()
+}
+
 // nolint: gocyclo
-func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (packageurl.PackageURL, error) {
+func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (PackageURL, error) {
 	ptype := purlType(t)
 
 	var qualifiers packageurl.Qualifiers
@@ -55,10 +72,17 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (packa
 	case packageurl.TypeNPM:
 		namespace, name = parseNpm(name)
 	case packageurl.TypeOCI:
-		return parseOCI(metadata)
+		purl, err := parseOCI(metadata)
+		if err != nil {
+			return PackageURL{}, err
+		}
+		return PackageURL{PackageURL: purl}, nil
 	}
 
-	return *packageurl.NewPackageURL(ptype, namespace, name, version, qualifiers, ""), nil
+	return PackageURL{
+		PackageURL: *packageurl.NewPackageURL(ptype, namespace, name, version, qualifiers, ""),
+		FilePath:   pkg.FilePath,
+	}, nil
 }
 
 func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
