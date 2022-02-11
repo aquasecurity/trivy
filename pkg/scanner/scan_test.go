@@ -10,7 +10,6 @@ import (
 
 	"github.com/aquasecurity/fanal/artifact"
 	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -23,7 +22,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 		args               args
 		inspectExpectation artifact.ArtifactInspectExpectation
 		scanExpectation    DriverScanExpectation
-		want               report.Report
+		want               types.Report
 		wantErr            string
 	}{
 		{
@@ -58,7 +57,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					Options:  types.ScanOptions{VulnType: []string{"os"}},
 				},
 				Returns: DriverScanReturns{
-					Results: report.Results{
+					Results: types.Results{
 						{
 							Target: "alpine:3.11",
 							Vulnerabilities: []types.DetectedVulnerability{
@@ -94,11 +93,11 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					},
 				},
 			},
-			want: report.Report{
+			want: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "alpine:3.11",
 				ArtifactType:  ftypes.ArtifactContainerImage,
-				Metadata: report.Metadata{
+				Metadata: types.Metadata{
 					OS: &ftypes.OS{
 						Family: "alpine",
 						Name:   "3.10",
@@ -109,7 +108,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 					RepoTags:    []string{"alpine:3.11"},
 					RepoDigests: []string{"alpine@sha256:0bd0e9e03a022c3b0226667621da84fc9bf562a9056130424b5bfbd8bcb0397f"},
 				},
-				Results: report.Results{
+				Results: types.Results{
 					{
 						Target: "alpine:3.11",
 						Vulnerabilities: []types.DetectedVulnerability{

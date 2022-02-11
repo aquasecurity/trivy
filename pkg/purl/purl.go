@@ -5,53 +5,28 @@ import (
 	"strconv"
 	"strings"
 
+	cn "github.com/google/go-containerregistry/pkg/name"
+	"github.com/package-url/packageurl-go"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/os"
-	"github.com/aquasecurity/fanal/types"
+	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
-
-	"github.com/package-url/packageurl-go"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func NewPackageURLForOCI(name, repoURL, arch, imageID string, tags []string) packageurl.PackageURL {
-	var namespace, tag string
-	index := strings.LastIndex(name, "/")
-	if index != -1 {
-		namespace = name[:index]
-		name = name[index+1:]
-	}
+const (
+	TypeOCI = "oci"
+)
 
-	if len(tags) > 0 {
-		tag = tags[0]
-	}
-	var qualifiers packageurl.Qualifiers
-	ss := strings.Split(tag, ":") // RepoTag has "centos:latest"
-	if len(ss) == 2 {
-		qualifiers = append(qualifiers,
-			packageurl.Qualifier{
-				Key:   "tag",
-				Value: ss[1],
-			},
-		)
-	}
-	if arch != "" {
-		qualifiers = append(qualifiers,
-			packageurl.Qualifier{
-				Key:   "arch",
-				Value: arch,
-			},
-		)
-	}
-
-	return *packageurl.NewPackageURL(packageurl.TypeOCI, namespace, name, imageID, qualifiers, "")
-}
-
-func NewPackageURL(t string, fos *types.OS, pkg types.Package) packageurl.PackageURL {
+// nolint: gocyclo
+func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (packageurl.PackageURL, error) {
 	ptype := purlType(t)
 
 	var qualifiers packageurl.Qualifiers
-	if fos != nil {
-		qualifiers = parseQualifier(pkg, fos.Name)
+	if metadata.OS != nil {
+		qualifiers = parseQualifier(pkg, metadata.OS.Name)
 	}
 
 	name := pkg.Name
@@ -60,15 +35,15 @@ func NewPackageURL(t string, fos *types.OS, pkg types.Package) packageurl.Packag
 
 	switch ptype {
 	case packageurl.TypeRPM:
-		ns, qs := parseRPM(fos, pkg.Modularitylabel)
+		ns, qs := parseRPM(metadata.OS, pkg.Modularitylabel)
 		namespace = ns
 		qualifiers = append(qualifiers, qs...)
 	case packageurl.TypeDebian:
-		qualifiers = append(qualifiers, parseDeb(fos)...)
-		namespace = fos.Family
+		qualifiers = append(qualifiers, parseDeb(metadata.OS)...)
+		namespace = metadata.OS.Family
 	case string(analyzer.TypeApk): // TODO: replace with packageurl.TypeApk
-		qualifiers = append(qualifiers, parseApk(fos)...)
-		namespace = fos.Family
+		qualifiers = append(qualifiers, parseApk(metadata.OS)...)
+		namespace = metadata.OS.Family
 	case packageurl.TypeMaven:
 		namespace, name = parseMaven(name)
 	case packageurl.TypePyPi:
@@ -79,11 +54,43 @@ func NewPackageURL(t string, fos *types.OS, pkg types.Package) packageurl.Packag
 		namespace, name = parseGolang(name)
 	case packageurl.TypeNPM:
 		namespace, name = parseNpm(name)
+	case packageurl.TypeOCI:
+		return parseOCI(metadata)
 	}
-	return *packageurl.NewPackageURL(ptype, namespace, name, version, qualifiers, "")
+
+	return *packageurl.NewPackageURL(ptype, namespace, name, version, qualifiers, ""), nil
 }
 
-func parseApk(fos *types.OS) packageurl.Qualifiers {
+func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
+	if len(metadata.RepoDigests) == 0 {
+		return packageurl.PackageURL{}, xerrors.New("repository digests empty error")
+	}
+
+	digest, err := cn.NewDigest(metadata.RepoDigests[0])
+	if err != nil {
+		return packageurl.PackageURL{}, xerrors.Errorf("failed to parse digest: %w", err)
+	}
+
+	name := strings.ToLower(digest.RepositoryStr())
+	index := strings.LastIndex(name, "/")
+	if index != -1 {
+		name = name[index+1:]
+	}
+	qualifiers := packageurl.Qualifiers{
+		packageurl.Qualifier{
+			Key:   "repository_url",
+			Value: digest.Repository.Name(),
+		},
+		packageurl.Qualifier{
+			Key:   "arch",
+			Value: metadata.ImageConfig.Architecture,
+		},
+	}
+
+	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
+}
+
+func parseApk(fos *ftypes.OS) packageurl.Qualifiers {
 	return packageurl.Qualifiers{
 		{
 			Key:   "distro",
@@ -92,7 +99,7 @@ func parseApk(fos *types.OS) packageurl.Qualifiers {
 	}
 }
 
-func parseDeb(fos *types.OS) packageurl.Qualifiers {
+func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
 	distro := fmt.Sprintf("%s-%s", fos.Family, fos.Name)
 	return packageurl.Qualifiers{
 		{
@@ -102,7 +109,7 @@ func parseDeb(fos *types.OS) packageurl.Qualifiers {
 	}
 }
 
-func parseRPM(fos *types.OS, modularityLabel string) (string, packageurl.Qualifiers) {
+func parseRPM(fos *ftypes.OS, modularityLabel string) (string, packageurl.Qualifiers) {
 	// SLES string has whitespace
 	family := fos.Family
 	if fos.Family == os.SLES {
@@ -197,11 +204,13 @@ func purlType(t string) string {
 		os.Amazon, os.Fedora, os.Oracle, os.OpenSUSE,
 		os.OpenSUSELeap, os.OpenSUSETumbleweed, os.SLES, os.Photon:
 		return packageurl.TypeRPM
+	case TypeOCI:
+		return packageurl.TypeOCI
 	}
 	return t
 }
 
-func parseQualifier(pkg types.Package, distro string) packageurl.Qualifiers {
+func parseQualifier(pkg ftypes.Package, distro string) packageurl.Qualifiers {
 	qualifiers := packageurl.Qualifiers{}
 	if pkg.Arch != "" {
 		qualifiers = append(qualifiers, packageurl.Qualifier{

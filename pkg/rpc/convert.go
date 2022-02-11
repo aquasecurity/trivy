@@ -11,7 +11,6 @@ import (
 	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/cache"
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -193,15 +192,15 @@ func ConvertToRPCDataSource(ds *dbTypes.DataSource) *common.DataSource {
 	}
 }
 
-// ConvertFromRPCResults converts scanner.Result to report.Result
-func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
-	var results []report.Result
+// ConvertFromRPCResults converts scanner.Result to types.Result
+func ConvertFromRPCResults(rpcResults []*scanner.Result) []types.Result {
+	var results []types.Result
 	for _, result := range rpcResults {
-		results = append(results, report.Result{
+		results = append(results, types.Result{
 			Target:            result.Target,
 			Vulnerabilities:   ConvertFromRPCVulns(result.Vulnerabilities),
 			Misconfigurations: ConvertFromRPCMisconfs(result.Misconfigurations),
-			Class:             report.ResultClass(result.Class),
+			Class:             types.ResultClass(result.Class),
 			Type:              result.Type,
 			Packages:          ConvertFromRPCPkgs(result.Packages),
 		})
@@ -518,8 +517,8 @@ func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.Miss
 	}
 }
 
-// ConvertToRPCScanResponse converts report.Result to ScanResponse
-func ConvertToRPCScanResponse(results report.Results, fos *ftypes.OS) *scanner.ScanResponse {
+// ConvertToRPCScanResponse converts types.Result to ScanResponse
+func ConvertToRPCScanResponse(results types.Results, fos *ftypes.OS) *scanner.ScanResponse {
 	var rpcResults []*scanner.Result
 	for _, result := range results {
 		rpcResults = append(rpcResults, &scanner.Result{

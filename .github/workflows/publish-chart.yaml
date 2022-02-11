@@ -46,7 +46,7 @@ jobs:
         run: ct lint-and-install --validate-maintainers=false --charts helm/trivy
       - name: Run chart-testing (Ingress enabled)
         run: |
-          sed -i -e '97s,false,'true',g' ./helm/trivy/values.yaml
+          sed -i -e '117s,false,'true',g' ./helm/trivy/values.yaml
           ct lint-and-install --validate-maintainers=false --charts helm/trivy
 
   publish-chart:

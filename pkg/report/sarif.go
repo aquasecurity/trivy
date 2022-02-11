@@ -106,7 +106,7 @@ func getRuleIndex(id string, indexes map[string]int) int {
 	}
 }
 
-func (sw SarifWriter) Write(report Report) error {
+func (sw SarifWriter) Write(report types.Report) error {
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
@@ -174,11 +174,11 @@ func (sw SarifWriter) Write(report Report) error {
 
 func toSarifRuleName(class string) string {
 	switch class {
-	case ClassOSPkg:
+	case types.ClassOSPkg:
 		return sarifOsPackageVulnerability
-	case ClassLangPkg:
+	case types.ClassLangPkg:
 		return sarifLanguageSpecificVulnerability
-	case ClassConfig:
+	case types.ClassConfig:
 		return sarifConfigFiles
 	default:
 		return sarifUnknownIssue

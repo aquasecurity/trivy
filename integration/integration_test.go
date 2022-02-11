@@ -19,7 +19,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
-	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -85,14 +85,14 @@ func waitPort(ctx context.Context, addr string) error {
 	}
 }
 
-func readReport(t *testing.T, filePath string) report.Report {
+func readReport(t *testing.T, filePath string) types.Report {
 	t.Helper()
 
 	f, err := os.Open(filePath)
 	require.NoError(t, err, filePath)
 	defer f.Close()
 
-	var res report.Report
+	var res types.Report
 	err = json.NewDecoder(f).Decode(&res)
 	require.NoError(t, err, filePath)
 

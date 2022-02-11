@@ -3,7 +3,7 @@ syntax = "proto3";
 package trivy.scanner.v1;
 option  go_package = "github.com/aquasecurity/trivy/rpc/scanner;scanner";
 
-import "github.com/aquasecurity/trivy/rpc/common/service.proto";
+import "rpc/common/service.proto";
 
 service Scanner {
   rpc Scan(ScanRequest) returns (ScanResponse);
