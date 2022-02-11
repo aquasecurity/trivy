@@ -9,6 +9,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -41,7 +42,10 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 					},
 					ImageID:     "sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
 					RepoTags:    []string{"rails:latest"},
-					RepoDigests: []string{"centos@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177"},
+					RepoDigests: []string{"rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177"},
+					ImageConfig: v1.ConfigFile{
+						Architecture: "arm64",
+					},
 				},
 				Results: types.Results{
 					{
@@ -137,8 +141,8 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 					},
 					Component: &cdx.Component{
 						Type:       cdx.ComponentTypeContainer,
-						BOMRef:     "pkg:oci/rails:latest@sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6?tag=latest",
-						PackageURL: "pkg:oci/rails:latest@sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6?tag=latest",
+						BOMRef:     "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
+						PackageURL: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
 						Name:       "rails:latest",
 						Version:    "8.3.2011",
 						Properties: &[]cdx.Property{
@@ -152,7 +156,7 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 							},
 							{
 								Name:  "aquasecurity:trivy:Digest",
-								Value: "centos@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177",
+								Value: "rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177",
 							},
 							{
 								Name:  "aquasecurity:trivy:Tag",
@@ -163,7 +167,7 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:  "rails:latest (centos 8.3.2011)",
+						BOMRef:  "3ff14136-e09f-4df9-80ea-ed576c5a672e",
 						Type:    cdx.ComponentTypeOS,
 						Name:    "centos",
 						Version: "8.3.2011",
@@ -261,7 +265,7 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "rails:latest (centos 8.3.2011)",
+						Ref: "3ff14136-e09f-4df9-80ea-ed576c5a672e",
 						Dependencies: &[]cdx.Dependency{
 							{
 								Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",

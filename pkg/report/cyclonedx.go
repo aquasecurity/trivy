@@ -204,8 +204,7 @@ func reportToComponent(r types.Report) (*cdx.Component, error) {
 
 func resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Component {
 	component := cdx.Component{
-		Name:   r.Target,
-		BOMRef: r.Target,
+		Name: r.Target,
 		Properties: &[]cdx.Property{
 			{
 				Name:  PropertyType,
@@ -220,15 +219,18 @@ func resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Component {
 
 	switch r.Class {
 	case types.ClassOSPkg:
+		component.BOMRef = GenUUID.New().String()
 		if osFound != nil {
 			component.Name = osFound.Family
 			component.Version = osFound.Name
 		}
 		component.Type = cdx.ComponentTypeOS
 	case types.ClassLangPkg:
+		component.BOMRef = r.Target
 		component.Type = cdx.ComponentTypeApplication
 	case types.ClassConfig:
 		// TODO: Config support
+		component.BOMRef = r.Target
 		component.Type = cdx.ComponentTypeFile
 	}
 
