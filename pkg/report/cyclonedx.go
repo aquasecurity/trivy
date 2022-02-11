@@ -9,8 +9,9 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/types"
+	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -53,8 +54,11 @@ func (u *UUID) New() uuid.UUID {
 var GenUUID UUIDGenerator = &UUID{}
 
 // Write writes the results in CycloneDX format
-func (cw CycloneDXWriter) Write(report Report) error {
-	bom := ConvertToBom(report, cw.Version)
+func (cw CycloneDXWriter) Write(report types.Report) error {
+	bom, err := ConvertToBom(report, cw.Version)
+	if err != nil {
+		return xerrors.Errorf("failed to convert bom: %w", err)
+	}
 
 	if err := cdx.NewBOMEncoder(cw.Output, cw.Format).Encode(bom); err != nil {
 		return xerrors.Errorf("failed to encode bom: %w", err)
@@ -63,9 +67,13 @@ func (cw CycloneDXWriter) Write(report Report) error {
 	return nil
 }
 
-func ConvertToBom(r Report, version string) *cdx.BOM {
+func ConvertToBom(r types.Report, version string) (*cdx.BOM, error) {
 	bom := cdx.NewBOM()
 	bom.SerialNumber = GenUUID.New().URN()
+	component, err := reportToComponent(r)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse report: %w", err)
+	}
 	bom.Metadata = &cdx.Metadata{
 		Timestamp: Now().UTC().Format(time.RFC3339Nano),
 		Tools: &[]cdx.Tool{
@@ -75,7 +83,7 @@ func ConvertToBom(r Report, version string) *cdx.BOM {
 				Version: version,
 			},
 		},
-		Component: reportToComponent(r),
+		Component: component,
 	}
 
 	libraryUniqMap := map[string]struct{}{}
@@ -88,7 +96,10 @@ func ConvertToBom(r Report, version string) *cdx.BOM {
 
 		componentDependencies := []cdx.Dependency{}
 		for _, pkg := range result.Packages {
-			pkgComponent := pkgToComponent(result.Type, result.Class, r.Metadata.OS, pkg)
+			pkgComponent, err := pkgToComponent(result.Type, result.Class, r.Metadata, pkg)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to parse pkg: %w", err)
+			}
 
 			if _, ok := libraryUniqMap[pkgComponent.PackageURL]; !ok {
 				libraryUniqMap[pkgComponent.PackageURL] = struct{}{}
@@ -109,11 +120,14 @@ func ConvertToBom(r Report, version string) *cdx.BOM {
 		bom.Dependencies = &dependencies
 	}
 
-	return bom
+	return bom, nil
 }
 
-func pkgToComponent(t string, c ResultClass, o *types.OS, pkg types.Package) cdx.Component {
-	pu := purl.NewPackageURL(t, o, pkg)
+func pkgToComponent(t string, c types.ResultClass, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
+	pu, err := purl.NewPackageURL(t, meta, pkg)
+	if err != nil {
+		return cdx.Component{}, xerrors.Errorf("failed to new package purl: %w", err)
+	}
 	properties := parseProperties(pkg)
 	component := cdx.Component{
 		Type:       cdx.ComponentTypeLibrary,
@@ -130,10 +144,10 @@ func pkgToComponent(t string, c ResultClass, o *types.OS, pkg types.Package) cdx
 		}
 	}
 
-	return component
+	return component, nil
 }
 
-func reportToComponent(r Report) *cdx.Component {
+func reportToComponent(r types.Report) (*cdx.Component, error) {
 	component := &cdx.Component{
 		Name: r.ArtifactName,
 	}
@@ -155,11 +169,16 @@ func reportToComponent(r Report) *cdx.Component {
 	}
 
 	switch r.ArtifactType {
-	case types.ArtifactContainerImage:
+	case ftypes.ArtifactContainerImage:
 		component.Type = cdx.ComponentTypeContainer
-		component.BOMRef = purl.NewPackageURLForOCI(r.ArtifactName, "", r.Metadata.ImageConfig.Architecture, r.Metadata.ImageID, r.Metadata.RepoTags).String()
-		component.PackageURL = purl.NewPackageURLForOCI(r.ArtifactName, "", r.Metadata.ImageConfig.Architecture, r.Metadata.ImageID, r.Metadata.RepoTags).String()
-	case types.ArtifactFilesystem, types.ArtifactRemoteRepository:
+		p, err := purl.NewPackageURL(purl.TypeOCI, r.Metadata, ftypes.Package{})
+		if err != nil {
+			return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
+		}
+
+		component.BOMRef = p.ToString()
+		component.PackageURL = p.ToString()
+	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
 		component.Type = cdx.ComponentTypeApplication
 	}
 
@@ -180,10 +199,10 @@ func reportToComponent(r Report) *cdx.Component {
 		component.Properties = &properties
 	}
 
-	return component
+	return component, nil
 }
 
-func resultToComponent(r Result, osFound *types.OS) cdx.Component {
+func resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Component {
 	component := cdx.Component{
 		Name:   r.Target,
 		BOMRef: r.Target,
@@ -200,15 +219,15 @@ func resultToComponent(r Result, osFound *types.OS) cdx.Component {
 	}
 
 	switch r.Class {
-	case ClassOSPkg:
+	case types.ClassOSPkg:
 		if osFound != nil {
 			component.Name = osFound.Family
 			component.Version = osFound.Name
 		}
 		component.Type = cdx.ComponentTypeOS
-	case ClassLangPkg:
+	case types.ClassLangPkg:
 		component.Type = cdx.ComponentTypeApplication
-	case ClassConfig:
+	case types.ClassConfig:
 		// TODO: Config support
 		component.Type = cdx.ComponentTypeFile
 	}
@@ -216,7 +235,7 @@ func resultToComponent(r Result, osFound *types.OS) cdx.Component {
 	return component
 }
 
-func parseProperties(pkg types.Package) []cdx.Property {
+func parseProperties(pkg ftypes.Package) []cdx.Property {
 	properties := []cdx.Property{}
 	if pkg.FilePath != "" {
 		properties = append(properties,

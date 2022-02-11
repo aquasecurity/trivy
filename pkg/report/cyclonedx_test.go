@@ -4,11 +4,14 @@ import (
 	"testing"
 	"time"
 
-	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/aquasecurity/fanal/types"
+	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
+
+	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type mockClock struct{}
@@ -20,18 +23,18 @@ func (m mockClock) Now() time.Time {
 func TestReportWriter_CycloneDX(t *testing.T) {
 	testCases := []struct {
 		name         string
-		inputReport  report.Report
+		inputReport  types.Report
 		expectedSBOM *cdx.BOM
 	}{
 		{
 			name: "happy path",
-			inputReport: report.Report{
+			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "rails:latest",
-				ArtifactType:  types.ArtifactContainerImage,
-				Metadata: report.Metadata{
+				ArtifactType:  ftypes.ArtifactContainerImage,
+				Metadata: types.Metadata{
 					Size: 1024,
-					OS: &types.OS{
+					OS: &ftypes.OS{
 						Family: "centos",
 						Name:   "8.3.2011",
 						Eosl:   true,
@@ -40,12 +43,12 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 					RepoTags:    []string{"rails:latest"},
 					RepoDigests: []string{"centos@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177"},
 				},
-				Results: report.Results{
+				Results: types.Results{
 					{
 						Target: "rails:latest (centos 8.3.2011)",
-						Class:  report.ClassOSPkg,
+						Class:  types.ClassOSPkg,
 						Type:   "centos",
-						Packages: []types.Package{
+						Packages: []ftypes.Package{
 							{
 								Name:            "acl",
 								Version:         "2.2.53",
@@ -63,9 +66,9 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 					},
 					{
 						Target: "app/subproject/Gemfile.lock",
-						Class:  report.ClassLangPkg,
+						Class:  types.ClassLangPkg,
 						Type:   "bundler",
-						Packages: []types.Package{
+						Packages: []ftypes.Package{
 							{
 								Name:            "actioncable",
 								Version:         "7.0.0",
@@ -96,9 +99,9 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 					},
 					{
 						Target: "app/Gemfile.lock",
-						Class:  report.ClassLangPkg,
+						Class:  types.ClassLangPkg,
 						Type:   "bundler",
-						Packages: []types.Package{
+						Packages: []ftypes.Package{
 							{
 								Name:            "actioncable",
 								Version:         "7.0.0",
@@ -294,7 +297,8 @@ func TestReportWriter_CycloneDX(t *testing.T) {
 	report.GenUUID = mockUUIDGenerator{}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			bom := report.ConvertToBom(tc.inputReport, "cyclonedx")
+			bom, err := report.ConvertToBom(tc.inputReport, "cyclonedx")
+			require.NoError(t, err)
 			assert.Equal(t, tc.expectedSBOM, bom)
 		})
 	}
