@@ -1,4 +1,4 @@
-package report
+package cyclonedx
 
 import (
 	"io"
@@ -8,6 +8,7 @@ import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/google/uuid"
 	"golang.org/x/xerrors"
+	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -35,38 +36,83 @@ const (
 	PropertyLayerDiffID     = Namespace + "LayerDiffID"
 )
 
-// CycloneDXWriter implements result Writer
-type CycloneDXWriter struct {
-	Output  io.Writer
-	Version string
-	Format  cdx.BOMFileFormat
+// Writer implements result Writer
+type Writer struct {
+	output  io.Writer
+	version string
+	*options
 }
 
-var New = uuid.New
+type newUUID func() uuid.UUID
+
+type options struct {
+	format  cdx.BOMFileFormat
+	clock   clock.Clock
+	newUUID newUUID
+}
+
+type option func(*options)
+
+func WithFormat(format cdx.BOMFileFormat) option {
+	return func(opts *options) {
+		opts.format = format
+	}
+}
+
+func WithClock(clock clock.Clock) option {
+	return func(opts *options) {
+		opts.clock = clock
+	}
+}
+
+func WithNewUUID(newUUID newUUID) option {
+	return func(opts *options) {
+		opts.newUUID = newUUID
+	}
+}
+
+func NewWriter(output io.Writer, version string, opts ...option) Writer {
+	o := &options{
+		format:  cdx.BOMFileFormatJSON,
+		clock:   clock.RealClock{},
+		newUUID: uuid.New,
+	}
+
+	for _, opt := range opts {
+		opt(o)
+	}
+
+	return Writer{
+		output:  output,
+		version: version,
+		options: o,
+	}
+}
 
 // Write writes the results in CycloneDX format
-func (cw CycloneDXWriter) Write(report types.Report) error {
-	bom, err := ConvertToBom(report, cw.Version)
+func (cw *Writer) Write(report types.Report) error {
+	bom, err := cw.convertToBom(report, cw.version)
 	if err != nil {
 		return xerrors.Errorf("failed to convert bom: %w", err)
 	}
 
-	if err := cdx.NewBOMEncoder(cw.Output, cw.Format).Encode(bom); err != nil {
+	if err := cdx.NewBOMEncoder(cw.output, cw.format).Encode(bom); err != nil {
 		return xerrors.Errorf("failed to encode bom: %w", err)
 	}
 
 	return nil
 }
 
-func ConvertToBom(r types.Report, version string) (*cdx.BOM, error) {
+func (cw *Writer) convertToBom(r types.Report, version string) (*cdx.BOM, error) {
 	bom := cdx.NewBOM()
-	bom.SerialNumber = New().URN()
-	metadataComponent, err := reportToComponent(r)
+	bom.SerialNumber = cw.options.newUUID().URN()
+	metadataComponent, err := cw.reportToComponent(r)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse metadata component: %w", err)
 	}
+
 	bom.Metadata = &cdx.Metadata{
-		Timestamp: Now().UTC().Format(time.RFC3339Nano),
+		Timestamp: cw.clock.Now().UTC().Format(time.RFC3339Nano),
 		Tools: &[]cdx.Tool{
 			{
 				Vendor:  "aquasecurity",
@@ -83,12 +129,12 @@ func ConvertToBom(r types.Report, version string) (*cdx.BOM, error) {
 	var dependencies []cdx.Dependency
 	var metadataDependencies []cdx.Dependency
 	for _, result := range r.Results {
-		resultComponent := resultToComponent(result, r.Metadata.OS)
+		resultComponent := cw.resultToComponent(result, r.Metadata.OS)
 		components = append(components, resultComponent)
 
 		var componentDependencies []cdx.Dependency
 		for _, pkg := range result.Packages {
-			pkgComponent, err := pkgToComponent(result.Type, r.Metadata, pkg)
+			pkgComponent, err := cw.pkgToComponent(result.Type, r.Metadata, pkg)
 			if err != nil {
 				return nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
@@ -105,24 +151,29 @@ func ConvertToBom(r types.Report, version string) (*cdx.BOM, error) {
 			}
 		}
 
-		dependencies = append(dependencies,
-			cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
-		)
-		metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
+		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg || result.Type == ftypes.GoBinary ||
+			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar {
+			metadataDependencies = append(metadataDependencies, componentDependencies...)
+		} else {
+			dependencies = append(dependencies,
+				cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
+			)
+
+			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
+		}
 	}
+
 	dependencies = append(dependencies,
 		cdx.Dependency{Ref: bom.Metadata.Component.BOMRef, Dependencies: &metadataDependencies},
 	)
 
 	bom.Components = &components
-	if len(dependencies) != 0 {
-		bom.Dependencies = &dependencies
-	}
+	bom.Dependencies = &dependencies
 
 	return bom, nil
 }
 
-func pkgToComponent(t string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
+func (cw *Writer) pkgToComponent(t string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
 	pu, err := purl.NewPackageURL(t, meta, pkg)
 	if err != nil {
 		return cdx.Component{}, xerrors.Errorf("failed to new package purl: %w", err)
@@ -146,7 +197,7 @@ func pkgToComponent(t string, meta types.Metadata, pkg ftypes.Package) (cdx.Comp
 	return component, nil
 }
 
-func reportToComponent(r types.Report) (*cdx.Component, error) {
+func (cw *Writer) reportToComponent(r types.Report) (*cdx.Component, error) {
 	component := &cdx.Component{
 		Name: r.ArtifactName,
 	}
@@ -179,14 +230,16 @@ func reportToComponent(r types.Report) (*cdx.Component, error) {
 		component.PackageURL = p.ToString()
 	case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository:
 		component.Type = cdx.ComponentTypeApplication
-		component.BOMRef = New().String()
+		component.BOMRef = cw.newUUID().String()
 	}
+
 	for _, d := range r.Metadata.RepoDigests {
 		properties = append(properties, cdx.Property{
 			Name:  PropertyDigest,
 			Value: d,
 		})
 	}
+
 	for _, t := range r.Metadata.RepoTags {
 		properties = append(properties, cdx.Property{
 			Name:  PropertyTag,
@@ -198,7 +251,7 @@ func reportToComponent(r types.Report) (*cdx.Component, error) {
 	return component, nil
 }
 
-func resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Component {
+func (cw Writer) resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Component {
 	component := cdx.Component{
 		Name: r.Target,
 		Properties: &[]cdx.Property{
@@ -215,18 +268,18 @@ func resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Component {
 
 	switch r.Class {
 	case types.ClassOSPkg:
-		component.BOMRef = New().String()
+		component.BOMRef = cw.newUUID().String()
 		if osFound != nil {
 			component.Name = osFound.Family
 			component.Version = osFound.Name
 		}
 		component.Type = cdx.ComponentTypeOS
 	case types.ClassLangPkg:
-		component.BOMRef = New().String()
+		component.BOMRef = cw.newUUID().String()
 		component.Type = cdx.ComponentTypeApplication
 	case types.ClassConfig:
 		// TODO: Config support
-		component.BOMRef = New().String()
+		component.BOMRef = cw.newUUID().String()
 		component.Type = cdx.ComponentTypeFile
 	}
 
