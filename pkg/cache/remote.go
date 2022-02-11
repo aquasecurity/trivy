@@ -33,7 +33,7 @@ func NewRemoteCache(url RemoteURL, insecure Insecure, customHeaders http.Header)
 	httpClient := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: bool(insecure),
+				InsecureSkipVerify: bool(insecure), //nolint:gosec
 			},
 		},
 	}
