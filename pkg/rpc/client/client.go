@@ -32,7 +32,7 @@ func NewProtobufClient(remoteURL RemoteURL, insecure Insecure) rpc.Scanner {
 	httpClient := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: bool(insecure), //nolint:gosec
+				InsecureSkipVerify: bool(insecure),
 			},
 		},
 	}

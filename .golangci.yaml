@@ -57,6 +57,9 @@ issues:
         - gosec
       text: "G204: Subprocess launched with variable"
     - linters:
+        - gosec
+      text: "G402: TLS InsecureSkipVerify may be true"
+    - linters:
         - errcheck
       text: "Close` is not checked"
     - linters:
