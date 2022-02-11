@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"crypto/tls"
 	"net/http"
 
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -27,15 +28,16 @@ type RemoteURL string
 type Insecure bool
 
 // NewProtobufClient is the factory method to return RPC scanner
-func NewProtobufClient(remoteURL RemoteURL, insecure Insecure) (rpc.Scanner, error) {
-	httpTransport := http.DefaultTransport.(*http.Transport).Clone()
-	httpTransport.TLSClientConfig.InsecureSkipVerify = bool(insecure)
-
+func NewProtobufClient(remoteURL RemoteURL, insecure Insecure) rpc.Scanner {
 	httpClient := &http.Client{
-		Transport: httpTransport,
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: bool(insecure),
+			},
+		},
 	}
 
-	return rpc.NewScannerProtobufClient(string(remoteURL), httpClient), nil
+	return rpc.NewScannerProtobufClient(string(remoteURL), httpClient)
 }
 
 // CustomHeaders for holding HTTP headers

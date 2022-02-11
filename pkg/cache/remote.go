@@ -2,6 +2,7 @@ package cache
 
 import (
 	"context"
+	"crypto/tls"
 	"net/http"
 
 	"golang.org/x/xerrors"
@@ -26,18 +27,19 @@ type RemoteURL string
 type Insecure bool
 
 // NewRemoteCache is the factory method for RemoteCache
-func NewRemoteCache(url RemoteURL, insecure Insecure, customHeaders http.Header) (cache.ArtifactCache, error) {
+func NewRemoteCache(url RemoteURL, insecure Insecure, customHeaders http.Header) cache.ArtifactCache {
 	ctx := client.WithCustomHeaders(context.Background(), customHeaders)
 
-	httpTransport := http.DefaultTransport.(*http.Transport).Clone()
-	httpTransport.TLSClientConfig.InsecureSkipVerify = bool(insecure)
-
 	httpClient := &http.Client{
-		Transport: httpTransport,
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: bool(insecure),
+			},
+		},
 	}
 
 	c := rpcCache.NewCacheProtobufClient(string(url), httpClient)
-	return &RemoteCache{ctx: ctx, client: c}, nil
+	return &RemoteCache{ctx: ctx, client: c}
 }
 
 // PutArtifact sends artifact to remote client
