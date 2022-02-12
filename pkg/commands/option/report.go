@@ -66,6 +66,9 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 			logger.Warnf("--template is ignored because --format %s is specified. Use --template option with --format template option.", c.Format)
 		}
 	}
+	if c.Format == "template" && c.Template == "" {
+		logger.Warn("--format template is ignored because --template not is specified. Specify --template option when you use --format template.")
+	}
 	if c.Format == "cyclonedx" && !c.ListAllPkgs {
 		logger.Debugf("--cyclonedx is --list-all-pkgs option required. Enable the list-all-pkgs option", c.Format)
 		c.ListAllPkgs = true
