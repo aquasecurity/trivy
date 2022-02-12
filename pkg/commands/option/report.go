@@ -57,25 +57,24 @@ func NewReportOption(c *cli.Context) ReportOption {
 
 // Init initializes the ReportOption
 func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
-	var err error
-
 	if c.Template != "" {
 		if c.Format == "" {
 			logger.Warn("--template is ignored because --format template is not specified. Use --template option with --format template option.")
 		} else if c.Format != "template" {
 			logger.Warnf("--template is ignored because --format %s is specified. Use --template option with --format template option.", c.Format)
 		}
+	} else {
+		if c.Format == "template" {
+			logger.Warn("--format template is ignored because --template not is specified. Specify --template option when you use --format template.")
+		}
 	}
-	if c.Format == "template" && c.Template == "" {
-		logger.Warn("--format template is ignored because --template not is specified. Specify --template option when you use --format template.")
-	}
-	if c.Format == "cyclonedx" && !c.ListAllPkgs {
-		logger.Debugf("--cyclonedx is --list-all-pkgs option required. Enable the list-all-pkgs option", c.Format)
-		c.ListAllPkgs = true
+	if !c.ListAllPkgs {
+		c.ListAllPkgs = c.forceListAllPkgs(logger)
 	}
 
 	c.Severities = splitSeverity(logger, c.severities)
 
+	var err error
 	if err = c.populateVulnTypes(); err != nil {
 		return xerrors.Errorf("vuln type: %w", err)
 	}
@@ -97,6 +96,14 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 	}
 
 	return nil
+}
+
+func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
+	if c.Format == "cyclonedx" {
+		logger.Warnf("--format cyclonedx is requires the --list-all-pkgs option. Forces the --list-all-pkgs option to be enabled.")
+		return true
+	}
+	return false
 }
 
 func (c *ReportOption) populateVulnTypes() error {

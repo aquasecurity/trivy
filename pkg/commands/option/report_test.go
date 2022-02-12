@@ -24,6 +24,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 		severities     string
 		IgnoreFile     string
 		IgnoreUnfixed  bool
+		listAllPksgs   bool
 		ExitCode       int
 		VulnType       []string
 		Output         *os.File
@@ -68,6 +69,47 @@ func TestReportReportConfig_Init(t *testing.T) {
 				VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
 				SecurityChecks: []string{types.SecurityCheckConfig},
 				Output:         os.Stdout,
+			},
+		},
+		{
+			name: "happy path with an cyclonedx",
+			fields: fields{
+				severities:     "CRITICAL",
+				vulnType:       "os,library",
+				securityChecks: "vuln",
+				Format:         "cyclonedx",
+				listAllPksgs:   true,
+			},
+			args: []string{"centos:7"},
+			want: ReportOption{
+				Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+				VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+				SecurityChecks: []string{types.SecurityCheckVulnerability},
+				Format:         "cyclonedx",
+				Output:         os.Stdout,
+				ListAllPkgs:    true,
+			},
+		},
+		{
+			name: "happy path with an cyclonedx option list-all-pkgs is false",
+			fields: fields{
+				severities:     "CRITICAL",
+				vulnType:       "os,library",
+				securityChecks: "vuln",
+				Format:         "cyclonedx",
+				listAllPksgs:   false,
+			},
+			args: []string{"centos:7"},
+			logs: []string{
+				"--format cyclonedx is requires the --list-all-pkgs option. Forces the --list-all-pkgs option to be enabled.",
+			},
+			want: ReportOption{
+				Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+				VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+				SecurityChecks: []string{types.SecurityCheckVulnerability},
+				Format:         "cyclonedx",
+				Output:         os.Stdout,
+				ListAllPkgs:    true,
 			},
 		},
 		{
@@ -151,6 +193,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 				IgnoreFile:     tt.fields.IgnoreFile,
 				IgnoreUnfixed:  tt.fields.IgnoreUnfixed,
 				ExitCode:       tt.fields.ExitCode,
+				ListAllPkgs:    tt.fields.listAllPksgs,
 				Output:         tt.fields.Output,
 			}
 
