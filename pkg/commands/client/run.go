@@ -138,7 +138,7 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 }
 
 func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func(), error) {
-	remoteCache := cache.NewRemoteCache(cache.RemoteURL(opt.RemoteAddr), cache.Insecure(opt.Insecure), opt.CustomHeaders)
+	remoteCache := cache.NewRemoteCache(opt.RemoteAddr, opt.CustomHeaders, opt.Insecure)
 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
