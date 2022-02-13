@@ -307,7 +307,7 @@ func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
 		{
 			name: "happy path",
 			args: args{
-				imageID:   "",
+				imageID:   "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 				imageInfo: types.ArtifactInfo{},
 				insecure:  true,
 			},
@@ -315,7 +315,7 @@ func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
 		{
 			name: "sad path",
 			args: args{
-				imageID:   "",
+				imageID:   "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
 				imageInfo: types.ArtifactInfo{},
 				insecure:  false,
 			},
@@ -327,12 +327,11 @@ func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
 			c := cache.NewRemoteCache(ts.URL, nil, tt.args.insecure)
 			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
 				return
-			} else {
-				assert.NoError(t, err, tt.name)
 			}
+			assert.NoError(t, err, tt.name)
 		})
 	}
 }

@@ -322,12 +322,11 @@ func TestScanner_ScanServerInsecure(t *testing.T) {
 			_, err := s.Scan(context.Background(), tt.args.request)
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
-				require.Contains(t, err.Error(), tt.wantErr, tt.name)
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
+			require.NoError(t, err)
 		})
 	}
 }
