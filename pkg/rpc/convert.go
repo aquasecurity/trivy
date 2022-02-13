@@ -203,9 +203,27 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []types.Result {
 			Class:             types.ResultClass(result.Class),
 			Type:              result.Type,
 			Packages:          ConvertFromRPCPkgs(result.Packages),
+			CustomResources:   ConvertFromRPCCustomResources(result.CustomResources),
 		})
 	}
 	return results
+}
+
+// ConvertFromRPCCustomResources converts array of cache.CustomResource to fanal.CustomResource
+func ConvertFromRPCCustomResources(rpcCustomResources []*common.CustomResource) []ftypes.CustomResource {
+	var resources []ftypes.CustomResource
+	for _, res := range rpcCustomResources {
+		resources = append(resources, ftypes.CustomResource{
+			Type:     res.Type,
+			FilePath: res.FilePath,
+			Layer: ftypes.Layer{
+				Digest: res.Layer.Digest,
+				DiffID: res.Layer.DiffId,
+			},
+			Data: res.Data,
+		})
+	}
+	return resources
 }
 
 // ConvertFromRPCVulns converts []*common.Vulnerability to []types.DetectedVulnerability
@@ -402,6 +420,7 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		Misconfigurations: ConvertFromRPCMisconfigurations(req.BlobInfo.Misconfigurations),
 		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
 		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
+		CustomResources:   ConvertFromRPCCustomResources(req.BlobInfo.CustomResources),
 	}
 }
 
@@ -477,6 +496,24 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 
 	}
 
+	var customResources []*common.CustomResource
+	for _, res := range blobInfo.CustomResources {
+		data, err := structpb.NewValue(res.Data)
+		if err != nil {
+
+		} else {
+			customResources = append(customResources, &common.CustomResource{
+				Type:     res.Type,
+				FilePath: res.FilePath,
+				Layer: &common.Layer{
+					Digest: res.Layer.Digest,
+					DiffId: res.Layer.DiffID,
+				},
+				Data: data,
+			})
+		}
+	}
+
 	return &cache.PutBlobRequest{
 		DiffId: diffID,
 		BlobInfo: &cache.BlobInfo{
@@ -489,6 +526,7 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 			Misconfigurations: misconfigurations,
 			OpaqueDirs:        blobInfo.OpaqueDirs,
 			WhiteoutFiles:     blobInfo.WhiteoutFiles,
+			CustomResources:   customResources,
 		},
 	}
 }

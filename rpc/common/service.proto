@@ -128,3 +128,10 @@ message CVSS {
   double v2_score  = 3;
   double v3_score  = 4;
 }
+
+message CustomResource {
+  string                type      = 1;
+  string                file_path = 2;
+  Layer                 layer     = 3;
+  google.protobuf.Value data      = 4;
+}
