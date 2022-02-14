@@ -29,6 +29,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 		VulnType       []string
 		Output         *os.File
 		Severities     []dbTypes.Severity
+		debug          bool
 	}
 	tests := []struct {
 		name    string
@@ -98,10 +99,12 @@ func TestReportReportConfig_Init(t *testing.T) {
 				securityChecks: "vuln",
 				Format:         "cyclonedx",
 				listAllPksgs:   false,
+				debug:          true,
 			},
 			args: []string{"centos:7"},
 			logs: []string{
-				"--format cyclonedx is requires the --list-all-pkgs option. Forces the --list-all-pkgs option to be enabled.",
+				"'--format cyclonedx' must be specified with '--list-all-pkgs'. Forces the '--list-all-pkgs' option to be enabled.",
+				"Severities: CRITICAL",
 			},
 			want: ReportOption{
 				Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
@@ -122,7 +125,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 			},
 			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--template is ignored because --format template is not specified. Use --template option with --format template option.",
+				"'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.",
 			},
 			want: ReportOption{
 				Output:         os.Stdout,
@@ -143,7 +146,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 			},
 			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--template is ignored because --format json is specified. Use --template option with --format template option.",
+				"'--template' is ignored because '--format json' is specified. Use '--template' option with '--format template' option.",
 			},
 			want: ReportOption{
 				Format:         "json",
@@ -164,7 +167,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 			},
 			args: []string{"gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
+				"'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.",
 			},
 			want: ReportOption{
 				Format:         "template",
@@ -177,7 +180,12 @@ func TestReportReportConfig_Init(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			core, obs := observer.New(zap.InfoLevel)
+			level := zap.InfoLevel
+			if tt.fields.debug {
+				level = zap.DebugLevel
+			}
+
+			core, obs := observer.New(level)
 			logger := zap.New(core)
 
 			set := flag.NewFlagSet("test", 0)
@@ -196,7 +204,6 @@ func TestReportReportConfig_Init(t *testing.T) {
 				ListAllPkgs:    tt.fields.listAllPksgs,
 				Output:         tt.fields.Output,
 			}
-
 			err := c.Init(logger.Sugar())
 
 			// tests log messages

@@ -59,17 +59,17 @@ func NewReportOption(c *cli.Context) ReportOption {
 func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 	if c.Template != "" {
 		if c.Format == "" {
-			logger.Warn("--template is ignored because --format template is not specified. Use --template option with --format template option.")
+			logger.Warn("'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.")
 		} else if c.Format != "template" {
-			logger.Warnf("--template is ignored because --format %s is specified. Use --template option with --format template option.", c.Format)
+			logger.Warnf("'--template' is ignored because '--format %s' is specified. Use '--template' option with '--format template' option.", c.Format)
 		}
 	} else {
 		if c.Format == "template" {
 			logger.Warn("'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.")
 		}
 	}
-	if !c.ListAllPkgs {
-		c.ListAllPkgs = c.forceListAllPkgs(logger)
+	if c.forceListAllPkgs(logger) {
+		c.ListAllPkgs = true
 	}
 
 	c.Severities = splitSeverity(logger, c.severities)
@@ -96,14 +96,6 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 	}
 
 	return nil
-}
-
-func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
-	if c.Format == "cyclonedx" {
-		logger.Warnf("--format cyclonedx is requires the --list-all-pkgs option. Forces the --list-all-pkgs option to be enabled.")
-		return true
-	}
-	return false
 }
 
 func (c *ReportOption) populateVulnTypes() error {
@@ -145,4 +137,12 @@ func splitSeverity(logger *zap.SugaredLogger, severity string) []dbTypes.Severit
 		severities = append(severities, severity)
 	}
 	return severities
+}
+
+func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
+	if c.Format == "cyclonedx" && !c.ListAllPkgs {
+		logger.Debugf("'--format cyclonedx' must be specified with '--list-all-pkgs'. Forces the '--list-all-pkgs' option to be enabled.")
+		return true
+	}
+	return false
 }
