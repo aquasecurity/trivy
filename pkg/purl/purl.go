@@ -85,12 +85,6 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 }
 
 func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
-	qualifiers := packageurl.Qualifiers{
-		packageurl.Qualifier{
-			Key:   "arch",
-			Value: metadata.ImageConfig.Architecture,
-		},
-	}
 	if len(metadata.RepoDigests) == 0 {
 		return *packageurl.NewPackageURL("", "", "", "", nil, ""), nil
 	}
@@ -105,12 +99,16 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 	if index != -1 {
 		name = name[index+1:]
 	}
-	qualifiers = append(qualifiers,
+	qualifiers := packageurl.Qualifiers{
 		packageurl.Qualifier{
 			Key:   "repository_url",
 			Value: digest.Repository.Name(),
 		},
-	)
+		packageurl.Qualifier{
+			Key:   "arch",
+			Value: metadata.ImageConfig.Architecture,
+		},
+	}
 
 	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
 }
