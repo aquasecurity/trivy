@@ -65,7 +65,7 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 		}
 	} else {
 		if c.Format == "template" {
-			logger.Warn("--format template is ignored because --template not is specified. Specify --template option when you use --format template.")
+			logger.Warn("'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.")
 		}
 	}
 	if !c.ListAllPkgs {

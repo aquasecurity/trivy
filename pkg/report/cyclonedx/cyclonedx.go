@@ -39,7 +39,7 @@ const (
 	PropertyLayerDiffID     = "LayerDiffID"
 )
 
-// Writer implements result report.Writer
+// Writer implements report.Writer
 type Writer struct {
 	output  io.Writer
 	version string
