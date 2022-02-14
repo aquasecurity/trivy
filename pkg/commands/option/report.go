@@ -1,6 +1,7 @@
 package option
 
 import (
+	"io"
 	"os"
 	"strings"
 
@@ -32,7 +33,7 @@ type ReportOption struct {
 	// these variables are populated by Init()
 	VulnType       []string
 	SecurityChecks []string
-	Output         *os.File
+	Output         io.Writer
 	Severities     []dbTypes.Severity
 }
 
@@ -50,6 +51,7 @@ func NewReportOption(c *cli.Context) ReportOption {
 		IgnoreFile:     c.String("ignorefile"),
 		IgnoreUnfixed:  c.Bool("ignore-unfixed"),
 		ExitCode:       c.Int("exit-code"),
+		Output:         c.App.Writer,
 	}
 }
 
@@ -83,10 +85,12 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 	c.vulnType = ""
 	c.securityChecks = ""
 
-	c.Output = os.Stdout
-	if c.output != "" {
-		if c.Output, err = os.Create(c.output); err != nil {
-			return xerrors.Errorf("failed to create an output file: %w", err)
+	if c.Output == nil {
+		c.Output = os.Stdout
+		if c.output != "" {
+			if c.Output, err = os.Create(c.output); err != nil {
+				return xerrors.Errorf("failed to create an output file: %w", err)
+			}
 		}
 	}
 
