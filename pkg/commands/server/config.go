@@ -13,6 +13,8 @@ type Config struct {
 	option.CacheOption
 
 	Listen      string
+	Cert        string
+	Key         string
 	Token       string
 	TokenHeader string
 }
@@ -27,6 +29,8 @@ func NewConfig(c *cli.Context) Config {
 		CacheOption:  option.NewCacheOption(c),
 
 		Listen:      c.String("listen"),
+		Cert:        c.Path("server-cert"),
+		Key:         c.Path("server-key"),
 		Token:       c.String("token"),
 		TokenHeader: c.String("token-header"),
 	}

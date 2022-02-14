@@ -52,6 +52,6 @@ func run(c Config) (err error) {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 
-	server := rpcServer.NewServer(c.AppVersion, c.Listen, c.CacheDir, c.Token, c.TokenHeader)
+	server := rpcServer.NewServer(c.AppVersion, c.Listen, c.Cert, c.Key, c.CacheDir, c.Token, c.TokenHeader)
 	return server.ListenAndServe(cache)
 }

@@ -28,16 +28,20 @@ const updateInterval = 1 * time.Hour
 type Server struct {
 	appVersion  string
 	addr        string
+	cert        string
+	key         string
 	cacheDir    string
 	token       string
 	tokenHeader string
 }
 
 // NewServer returns an instance of Server
-func NewServer(appVersion, addr, cacheDir, token, tokenHeader string) Server {
+func NewServer(appVersion, addr, cert, key, cacheDir, token, tokenHeader string) Server {
 	return Server{
 		appVersion:  appVersion,
 		addr:        addr,
+		cert:        cert,
+		key:         key,
 		cacheDir:    cacheDir,
 		token:       token,
 		tokenHeader: tokenHeader,
@@ -62,6 +66,10 @@ func (s Server) ListenAndServe(serverCache cache.Cache) error {
 
 	mux := newServeMux(serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader)
 	log.Logger.Infof("Listening %s...", s.addr)
+
+	if s.cert != "" && s.key != "" {
+		return http.ListenAndServeTLS(s.addr, s.cert, s.key, mux)
+	}
 
 	return http.ListenAndServe(s.addr, mux)
 }

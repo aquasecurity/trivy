@@ -631,6 +631,16 @@ func NewServerCommand() *cli.Command {
 				Usage:   "listen address",
 				EnvVars: []string{"TRIVY_LISTEN"},
 			},
+			&cli.StringFlag{
+				Name:    "server-cert",
+				Usage:   "server certificate file location",
+				EnvVars: []string{"TRIVY_SERVER_CERT"},
+			},
+			&cli.StringFlag{
+				Name:    "server-key",
+				Usage:   "server key file location",
+				EnvVars: []string{"TRIVY_SERVER_KEY"},
+			},
 		},
 	}
 }
