@@ -183,12 +183,12 @@ func TestNewPackageURL(t *testing.T) {
 					Version:   "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
 					Qualifiers: packageurl.Qualifiers{
 						{
-							Key:   "arch",
-							Value: "amd64",
-						},
-						{
 							Key:   "repository_url",
 							Value: "cblmariner2preview.azurecr.io/base/core",
+						},
+						{
+							Key:   "arch",
+							Value: "amd64",
 						},
 					},
 				},
@@ -238,12 +238,12 @@ func TestNewPackageURL(t *testing.T) {
 					Version:   "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
 					Qualifiers: packageurl.Qualifiers{
 						{
-							Key:   "arch",
-							Value: "amd64",
-						},
-						{
 							Key:   "repository_url",
 							Value: "index.docker.io/library/alpine",
+						},
+						{
+							Key:   "arch",
+							Value: "amd64",
 						},
 					},
 				},
