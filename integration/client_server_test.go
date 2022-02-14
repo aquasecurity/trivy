@@ -331,6 +331,7 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 		args                  csArgs
 		wantComponentsCount   int
 		wantDependenciesCount int
+		wantDependsOnCount    []int
 	}{
 		{
 			name: "fluentd with RubyGems with CycloneDX format",
@@ -340,6 +341,10 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 			},
 			wantComponentsCount:   161,
 			wantDependenciesCount: 2,
+			wantDependsOnCount: []int{
+				105,
+				56,
+			},
 		},
 	}
 
@@ -361,6 +366,9 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 
 			assert.EqualValues(t, tt.wantComponentsCount, len(*got.Components))
 			assert.EqualValues(t, tt.wantDependenciesCount, len(*got.Dependencies))
+			for i, dep := range *got.Dependencies {
+				assert.EqualValues(t, tt.wantDependsOnCount[i], len(*dep.Dependencies))
+			}
 		})
 	}
 }
