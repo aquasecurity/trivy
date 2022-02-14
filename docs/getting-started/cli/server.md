@@ -15,5 +15,7 @@ OPTIONS:
    --token value          for authentication [$TRIVY_TOKEN]
    --token-header value   specify a header name for token (default: "Trivy-Token") [$TRIVY_TOKEN_HEADER]
    --listen value         listen address (default: "localhost:4954") [$TRIVY_LISTEN]
+   --server-cert value    server certificate file location [$TRIVY_SERVER_CERT]
+   --server-key value     server key file location [$TRIVY_SERVER_KEY]
    --help, -h             show help (default: false)
 ```
