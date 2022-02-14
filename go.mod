@@ -47,7 +47,7 @@ require (
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/testcontainers/testcontainers-go v0.11.1
-	github.com/twitchtv/twirp v8.1.0+incompatible
+	github.com/twitchtv/twirp v8.1.1+incompatible
 	github.com/urfave/cli/v2 v2.3.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
