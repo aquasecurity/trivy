@@ -3,6 +3,7 @@ package option
 import (
 	"io"
 	"os"
+	"reflect"
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -85,14 +86,12 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 	c.vulnType = ""
 	c.securityChecks = ""
 
-	if c.Output == nil {
-		c.Output = os.Stdout
-		if c.output != "" {
-			if c.Output, err = os.Create(c.output); err != nil {
-				return xerrors.Errorf("failed to create an output file: %w", err)
-			}
-		}
+	var output io.Writer
+	if output, err = extractOutputByOptions(c); err != nil {
+		return err
 	}
+
+	c.Output = output
 
 	return nil
 }
@@ -136,4 +135,34 @@ func splitSeverity(logger *zap.SugaredLogger, severity string) []dbTypes.Severit
 		severities = append(severities, severity)
 	}
 	return severities
+}
+
+func extractOutputByOptions(c *ReportOption) (io.Writer, error) {
+	var err error
+
+	if hasGivenOutput(c.Output) {
+		return c.Output, err
+	}
+
+	var output io.Writer
+	output = os.Stdout
+	if c.output != "" {
+		if output, err = os.Create(c.output); err != nil {
+			return nil, xerrors.Errorf("failed to create an output file: %w", err)
+		}
+	}
+
+	return output, err
+}
+
+func hasGivenOutput(w io.Writer) bool {
+	if w == nil {
+		return false
+	}
+	switch reflect.TypeOf(w).Kind() {
+	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
+		return !reflect.ValueOf(w).IsNil()
+	}
+
+	return true
 }
