@@ -140,7 +140,7 @@ func splitSeverity(logger *zap.SugaredLogger, severity string) []dbTypes.Severit
 func extractOutputByOptions(c *ReportOption) (io.Writer, error) {
 	var err error
 
-	if hasGivenOutput(c.Output) {
+	if hasGivenOutputWriter(c) {
 		return c.Output, err
 	}
 
@@ -155,13 +155,13 @@ func extractOutputByOptions(c *ReportOption) (io.Writer, error) {
 	return output, err
 }
 
-func hasGivenOutput(w io.Writer) bool {
-	if w == nil {
+func hasGivenOutputWriter(ro *ReportOption) bool {
+	if ro.Output == nil || ro.output != "" {
 		return false
 	}
-	switch reflect.TypeOf(w).Kind() {
+	switch reflect.TypeOf(ro.Output).Kind() {
 	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
-		return !reflect.ValueOf(w).IsNil()
+		return !reflect.ValueOf(ro.Output).IsNil()
 	}
 
 	return true
