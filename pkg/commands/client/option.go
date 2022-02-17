@@ -77,9 +77,7 @@ func (c *Option) Init() (err error) {
 		return err
 	}
 
-	if c.Format == "gsbom" {
-		c.ListAllPkgs = true
-	}
+	c.ImageOption.InitByFormat(c.Format, c.Logger)
 
 	return nil
 }

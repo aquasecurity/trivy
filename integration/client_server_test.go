@@ -284,6 +284,14 @@ func TestClientServerWithTemplate(t *testing.T) {
 			},
 			golden: "testdata/alpine-310.html.golden",
 		},
+		{
+			name: "alpine 3.10 with generic sbom format",
+			args: csArgs{
+				Format: "gsbom",
+				Input:  "testdata/fixtures/images/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.gsbom.golden",
+		},
 	}
 
 	report.CustomTemplateFuncMap = map[string]interface{}{

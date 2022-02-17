@@ -1,0 +1,53 @@
+{
+  "detector": "trivy",
+  "scanned": "2020-08-10T07:28:17Z",
+  "manifests": {
+    "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)": {
+      "name": "alpine",
+      "resolved": {
+        "alpine-baselayout": {
+          "purl": "pkg:apk/alpine-baselayout@3.1.2-r0"
+        },
+        "alpine-keys": {
+          "purl": "pkg:apk/alpine-keys@2.1-r2"
+        },
+        "apk-tools": {
+          "purl": "pkg:apk/apk-tools@2.10.4-r2"
+        },
+        "busybox": {
+          "purl": "pkg:apk/busybox@1.30.1-r2"
+        },
+        "ca-certificates-cacert": {
+          "purl": "pkg:apk/ca-certificates-cacert@20190108-r0"
+        },
+        "libc-utils": {
+          "purl": "pkg:apk/libc-utils@0.7.1-r0"
+        },
+        "libcrypto1.1": {
+          "purl": "pkg:apk/libcrypto1.1@1.1.1c-r0"
+        },
+        "libssl1.1": {
+          "purl": "pkg:apk/libssl1.1@1.1.1c-r0"
+        },
+        "libtls-standalone": {
+          "purl": "pkg:apk/libtls-standalone@2.9.1-r0"
+        },
+        "musl": {
+          "purl": "pkg:apk/musl@1.1.22-r3"
+        },
+        "musl-utils": {
+          "purl": "pkg:apk/musl-utils@1.1.22-r3"
+        },
+        "scanelf": {
+          "purl": "pkg:apk/scanelf@1.2.3-r0"
+        },
+        "ssl_client": {
+          "purl": "pkg:apk/ssl_client@1.30.1-r2"
+        },
+        "zlib": {
+          "purl": "pkg:apk/zlib@1.2.11-r1"
+        }
+      }
+    }
+  }
+}

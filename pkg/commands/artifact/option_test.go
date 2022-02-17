@@ -133,6 +133,47 @@ func TestOption_Init(t *testing.T) {
 			},
 		},
 		{
+			name: "Generic sbom and list all packages",
+			args: []string{"--format", "gsbom", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			logs: []string{
+				"--format gsbom is specified, all packages will be returned.",
+			},
+			want: Option{
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Format:         "gsbom",
+				},
+				ArtifactOption: option.ArtifactOption{
+					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
+				},
+				ImageOption: option.ImageOption{
+					ListAllPkgs: true,
+				},
+			},
+		},
+		{
+			name: "json and list all packages",
+			args: []string{"--format", "json", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			want: Option{
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Format:         "json",
+				},
+				ArtifactOption: option.ArtifactOption{
+					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
+				},
+				ImageOption: option.ImageOption{
+					ListAllPkgs: false,
+				},
+			},
+		},
+		{
 			name: "invalid option combination: --format template without --template",
 			args: []string{"--format", "template", "--severity", "MEDIUM", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{

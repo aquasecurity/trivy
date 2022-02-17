@@ -6,10 +6,11 @@ import (
 	"io"
 	"time"
 
+	"golang.org/x/xerrors"
+
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"golang.org/x/xerrors"
 )
 
 type GsbomPackage struct {
@@ -52,7 +53,8 @@ type GsbomWriter struct {
 func (gsbmw GsbomWriter) Write(report types.Report) error {
 	gsbom := &Gsbom{}
 
-	gsbom.Scanned = time.Now().Format(time.RFC3339)
+	//use now() method that can be overwritten while integration tests run
+	gsbom.Scanned = CustomTemplateFuncMap["now"].(func() time.Time)().Format(time.RFC3339)
 	gsbom.Detector = "trivy"
 
 	//TODO optionally add git information
@@ -78,7 +80,7 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 			gsbompkg := GsbomPackage{}
 			gsbompkg.Purl, err = buildPurl(result.Type, pkg)
 			if err != nil {
-
+				return xerrors.Errorf("unable to build purl: %w for the package: %s", err, pkg.Name)
 			}
 			resolved[pkg.Name] = gsbompkg
 		}
