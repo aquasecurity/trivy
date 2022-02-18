@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <h3><a href="https://aquasecurity.github.io/trivy/">Documentation</a> </h3>
+  <a href="https://aquasecurity.github.io/trivy/">Documentation</a>
 </p>
 
 <p align="center">
@@ -40,7 +40,7 @@ In addition, `Trivy` scans Infrastructure as Code (IaC) files such as Terraform,
 
 # Installation
 
-All installation options are listed in the [documentation.](https://aquasecurity.github.io/trivy/latest/getting-started/installation/)
+All installation options are listed in the [documentation.](https://aquasecurity.github.io/trivy/latest/tutorials/installation/)
 
 # Quick Start
 ## Scan Image for Vulnerabilities
