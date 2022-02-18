@@ -38,7 +38,7 @@ See [Integrations][integrations] for details.
     - The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish in single seconds.
     - Unlike other scanners that take long to fetch vulnerability information (~10 minutes) on the first run, and encourage you to maintain a durable vulnerability database, Trivy is stateless and requires no maintenance or preparation.
 - Easy installation
-    - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](installation.md))
+    - `apt-get install`, `yum install` and `brew install` is possible (See [Installation](tutorials/installation.md))
     - **No pre-requisites** such as installation of DB, libraries, etc.
 - High accuracy
     - **Especially Alpine Linux and RHEL/CentOS**
@@ -58,23 +58,23 @@ See [Integrations][integrations] for details.
 
 Please see [LICENSE][license] for Trivy licensing information.
 
-[vuln]: ../vulnerability/scanning/index.md
-[misconf]: ../misconfiguration/index.md
-[container]: ../vulnerability/scanning/image.md
-[rootfs]: ../vulnerability/scanning/rootfs.md
-[filesystem]: ../vulnerability/scanning/filesystem.md
-[repo]: ../vulnerability/scanning/git-repository.md
+[vuln]: how-to-guides/vulnerability/scanning/index.md
+[misconf]: how-to-guides/misconfiguration/index.md
+[container]: how-to-guides/vulnerability/scanning/image.md
+[rootfs]: how-to-guides/vulnerability/scanning/rootfs.md
+[filesystem]: how-to-guides/vulnerability/scanning/filesystem.md
+[repo]: how-to-guides/vulnerability/scanning/git-repository.md
 
-[standalone]: ../advanced/modes/standalone.md
-[client-server]: ../advanced/modes/client-server.md
-[integrations]: ../advanced/integrations/index.md
+[standalone]: how-to-guides/modes/standalone.md
+[client-server]: how-to-guides/modes/client-server.md
+[integrations]: how-to-guides/integrations/index.md
 
-[os]: ../vulnerability/detection/os.md
-[lang]: ../vulnerability/detection/language.md
+[os]: how-to-guides/vulnerability/detection/os.md
+[lang]: how-to-guides/vulnerability/detection/language.md
 
-[builtin]: ../misconfiguration/policy/builtin.md
-[quickstart]: quickstart.md
-[podman]: ../advanced/container/podman.md
+[builtin]: how-to-guides/misconfiguration/policy/builtin.md
+[quickstart]: tutorials/getting-started.md
+[podman]: how-to-guides/container/podman.md
 
 [oci]: https://github.com/opencontainers/image-spec
 [license]:  https://github.com/aquasecurity/trivy/blob/main/LICENSE

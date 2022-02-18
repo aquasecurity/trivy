@@ -7,101 +7,102 @@ repo_url: https://github.com/aquasecurity/trivy
 edit_uri: ""
 
 nav:
-  - HOME: index.md
-  - Docs:
-      - Overview: getting-started/overview.md
-      - Tutorials:
-          - Getting started: tutorials/quickstart.md
-          - Installation: tutorials/installation.md
-      - How To Guides:
-          - Container Image:
-              - Embed in Dockerfile: how-to-guides/container/embed-in-dockerfile.md
-              - Unpacked container image filesystem: how-to-guides/container/unpacked-filesystem.md
-              - OCI Image: how-to-guides/container/oci.md
-              - Podman: how-to-guides/container/podman.md
-          - Air-Gapped Environment: how-to-guides/air-gap.md
-          - Integrations:
-              - Overview: how-to-guides/integrations/index.md
-              - GitHub Actions: how-to-guides/integrations/github-actions.md
-              - CircleCI: how-to-guides/integrations/circleci.md
-              - Travis CI: how-to-guides/integrations/travis-ci.md
-              - GitLab CI: how-to-guides/integrations/gitlab-ci.md
-              - Bitbucket Pipelines: how-to-guides/integrations/bitbucket.md
-              - AWS CodePipeline: how-to-guides/integrations/aws-codepipeline.md
-              - AWS Security Hub: how-to-guides/integrations/aws-security-hub.md
-          - Private Docker Registries:
-              - Overview: how-to-guides/private-registries/index.md
-              - Docker Hub: how-to-guides/private-registries/docker-hub.md
-              - AWS ECR (Elastic Container Registry): how-to-guides/private-registries/ecr.md
-              - GCR (Google Container Registry): how-to-guides/private-registries/gcr.md
-              - ACR (Azure Container Registry): how-to-guides/private-registries/acr.md
-              - Self-Hosted: how-to-guides/private-registries/self.md
-          - Modes:
-              - Standalone: how-to-guides/modes/standalone.md
-              - Client/Server: how-to-guides/modes/client-server.md
-          - Vulnerability:
-              - Scanning:
-                   - Overview: how-to-guides/vulnerability/scanning/index.md
-                   - Container Image: how-to-guides/vulnerability/scanning/image.md
-                   - Filesystem: how-to-guides/vulnerability/scanning/filesystem.md
-                   - Rootfs: how-to-guides/vulnerability/scanning/rootfs.md
-                   - Git Repository: how-to-guides/vulnerability/scanning/git-repository.md
-              - Detection:
-                   - OS Packages: how-to-guides/vulnerability/detection/os.md
-                   - Language-specific Packages: vhow-to-guides/ulnerability/detection/language.md
-                   - Data Sources: how-to-guides/vulnerability/detection/data-source.md
-                   - Supported: how-to-guides/vulnerability/detection/supported.md
-                   - Examples:
-                   - Vulnerability Filtering: how-to-guides/vulnerability/examples/filter.md
-                   - Report Formats: how-to-guides/vulnerability/examples/report.md
-                   - Vulnerability DB: how-to-guides/vulnerability/examples/db.md
-                   - Cache: how-to-guides/vulnerability/examples/cache.md
-                   - Others: how-to-guides/vulnerability/examples/others.md
-          - Misconfiguration:
-              - Scanning:
-                  - Overview: how-to-guides/misconfiguration/index.md
-                  - Infrastructure as Code: how-to-guides/misconfiguration/iac.md
-                  - Filesystem: how-to-guides/misconfiguration/filesystem.md
-              - Policy:
-                  - Built-in Policies: how-to-guides/misconfiguration/policy/builtin.md
-                  - Exceptions: how-to-guides/misconfiguration/policy/exceptions.md
-              - Custom Policies:
-                  - Overview: how-to-guides/misconfiguration/custom/index.md
-                  - Data: how-to-guides/misconfiguration/custom/data.md
-                  - Combine: how-to-guides/misconfiguration/custom/combine.md
-                  - Testing: how-to-guides/misconfiguration/custom/testing.md
-                  - Debugging Policies: how-to-guides/misconfiguration/custom/debug.md
-                  - Examples: how-to-guides/misconfiguration/custom/examples.md
-              - Options:
-                  - Policy: how-to-guides/misconfiguration/options/policy.md
-                  - Filtering: how-to-guides/misconfiguration/options/filter.md
-                  - Report Formats: how-to-guides/misconfiguration/options/report.md
-                  - Others: how-to-guides/misconfiguration/options/others.md
-      - Explanations:
-          - Overview: explanations/index.md
-      - References:
-          - CLI:
-              - Overview:  references/cli/index.md
-              - Image:  references/cli/image.md
-              - Config:  references/cli/config.md
-              - Filesystem:  references/cli/fs.md
-              - Rootfs:  references/cli/rootfs.md
-              - Repository:  references/cli/repo.md
-              - Client: references/cli/client.md
-              - Server:  references/cli/server.md
-          - Troubleshooting: references/troubleshooting.md
-  - Community:
-      - How to contribute:
-          - Help Wanted: community/contrib/help-wanted.md
-          - Triage: community/contrib/triage.md
-      - Tools: community/tools.md
-      - References: community/references.md
-      - CKS Reference: community/cks.md
-      - Credits: community/credit.md
-  - Comparison:
-      - vs Conftest: comparison/conftest.md
-      - vs tfsec: comparison/tfsec.md
-      - vs cfsec: comparison/cfsec.md
+    - HOME: index.md
+    - Docs:
+        - Overview: overview.md
+        - Tutorials:
+            - Getting started: tutorials/getting-started.md
+            - Installation: tutorials/installation.md
+        - How To Guides:
+            - Container Image:
+                - Embed in Dockerfile: how-to-guides/container/embed-in-dockerfile.md
+                - Unpacked container image filesystem: how-to-guides/container/unpacked-filesystem.md
+                - OCI Image: how-to-guides/container/oci.md
+                - Podman: how-to-guides/container/podman.md
+            - Integrations:
+                - Overview: how-to-guides/integrations/index.md
+                - GitHub Actions: how-to-guides/integrations/github-actions.md
+                - CircleCI: how-to-guides/integrations/circleci.md
+                - Travis CI: how-to-guides/integrations/travis-ci.md
+                - GitLab CI: how-to-guides/integrations/gitlab-ci.md
+                - Bitbucket Pipelines: how-to-guides/integrations/bitbucket.md
+                - AWS CodePipeline: how-to-guides/integrations/aws-codepipeline.md
+                - AWS Security Hub: how-to-guides/integrations/aws-security-hub.md
+            - Private Docker Registries:
+                - Overview: how-to-guides/private-registries/index.md
+                - Docker Hub: how-to-guides/private-registries/docker-hub.md
+                - AWS ECR (Elastic Container Registry): how-to-guides/private-registries/ecr.md
+                - GCR (Google Container Registry): how-to-guides/private-registries/gcr.md
+                - ACR (Azure Container Registry): how-to-guides/private-registries/acr.md
+                - Self-Hosted: how-to-guides/private-registries/self.md
+            - Modes:
+                - Standalone: how-to-guides/modes/standalone.md
+                - Client/Server: how-to-guides/modes/client-server.md
+            - Air-Gapped Environment: how-to-guides/air-gap.md
+            - Vulnerability:
+                - Scanning:
+                    - Overview: how-to-guides/vulnerability/scanning/index.md
+                    - Container Image: how-to-guides/vulnerability/scanning/image.md
+                    - Filesystem: how-to-guides/vulnerability/scanning/filesystem.md
+                    - Rootfs: how-to-guides/vulnerability/scanning/rootfs.md
+                    - Git Repository: how-to-guides/vulnerability/scanning/git-repository.md
+                - Detection:
+                    - OS Packages: how-to-guides/vulnerability/detection/os.md
+                    - Language-specific Packages: how-to-guides/vulnerability/detection/language.md
+                    - Data Sources: how-to-guides/vulnerability/detection/data-source.md
+                    - Supported: how-to-guides/vulnerability/detection/supported.md
+                - Examples:
+                    - Vulnerability Filtering: how-to-guides/vulnerability/examples/filter.md
+                    - Report Formats: how-to-guides/vulnerability/examples/report.md
+                    - Vulnerability DB: how-to-guides/vulnerability/examples/db.md
+                    - Cache: how-to-guides/vulnerability/examples/cache.md
+                    - Others: how-to-guides/vulnerability/examples/others.md
+            - Misconfiguration:
+                - Scanning:
+                    - Overview: how-to-guides/misconfiguration/index.md
+                    - Infrastructure as Code: how-to-guides/misconfiguration/iac.md
+                    - Filesystem: how-to-guides/misconfiguration/filesystem.md
+                - Policy:
+                    - Built-in Policies: how-to-guides/misconfiguration/policy/builtin.md
+                    - Exceptions: how-to-guides/misconfiguration/policy/exceptions.md
+                - Custom Policies:
+                    - Overview: how-to-guides/misconfiguration/custom/index.md
+                    - Data: how-to-guides/misconfiguration/custom/data.md
+                    - Combine: how-to-guides/misconfiguration/custom/combine.md
+                    - Testing: how-to-guides/misconfiguration/custom/testing.md
+                    - Debugging Policies: how-to-guides/misconfiguration/custom/debug.md
+                    - Examples: how-to-guides/misconfiguration/custom/examples.md
+                - Options:
+                    - Policy: how-to-guides/misconfiguration/options/policy.md
+                    - Filtering: how-to-guides/misconfiguration/options/filter.md
+                    - Report Formats: how-to-guides/misconfiguration/options/report.md
+                    - Others: how-to-guides/misconfiguration/options/others.md
+        - Explanations:
+            - Overview: explanations/index.md
+        - References:
+            - CLI:
+                - Overview:  references/cli/index.md
+                - Image:  references/cli/image.md
+                - Config:  references/cli/config.md
+                - Filesystem:  references/cli/fs.md
+                - Rootfs:  references/cli/rootfs.md
+                - Repository:  references/cli/repo.md
+                - Client: references/cli/client.md
+                - Server:  references/cli/server.md
+                - Plugins: references/cli/plugins.md
+            - Troubleshooting: references/troubleshooting.md
+    - Community:
+        - How to contribute:
+            - Help Wanted: community/contrib/help-wanted.md
+            - Triage: community/contrib/triage.md
+        - Tools: community/tools.md
+        - References: community/references.md
+        - CKS Reference: community/cks.md
+        - Credits: community/credit.md
+    - Comparison:
+        - vs Conftest: comparison/conftest.md
+        - vs tfsec: comparison/tfsec.md
+        - vs cfsec: comparison/cfsec.md
 
 theme:
     name: material

@@ -12,7 +12,6 @@ There are external blogs and evaluations.
 - [Open Source CVE Scanner Round-Up: Clair vs Anchore vs Trivy][round-up]
 - [Docker Image Security: Static Analysis Tool Comparison – Anchore Engine vs Clair vs Trivy][tool-comparison]
 
-
 ## Links
 - [Research Spike: evaluate Trivy for scanning running containers][gitlab]
 - [Istio evaluates scanners][istio]

@@ -130,4 +130,4 @@ Try again with `--reset` option:
 $ trivy image --reset
 ```
 
-[air-gapped]: ../advanced/air-gap.md
+[air-gapped]: ../how-to-guides/air-gap.md
