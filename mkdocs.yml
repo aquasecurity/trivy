@@ -58,26 +58,27 @@ nav:
                    - Cache: how-to-guides/vulnerability/examples/cache.md
                    - Others: how-to-guides/vulnerability/examples/others.md
           - Misconfiguration:
-               - Scanning:
+              - Scanning:
                   - Overview: how-to-guides/misconfiguration/index.md
                   - Infrastructure as Code: how-to-guides/misconfiguration/iac.md
                   - Filesystem: how-to-guides/misconfiguration/filesystem.md
-                - Policy:
-                    - Built-in Policies: how-to-guides/misconfiguration/policy/builtin.md
-                   - Exceptions: how-to-guides/misconfiguration/policy/exceptions.md
-                - Custom Policies:
-                   - Overview: how-to-guides/misconfiguration/custom/index.md
-                   - Data: how-to-guides/misconfiguration/custom/data.md
-                   - Combine: how-to-guides/misconfiguration/custom/combine.md
-                   - Testing: how-to-guides/misconfiguration/custom/testing.md
-                   - Debugging Policies: how-to-guides/misconfiguration/custom/debug.md
-                   - Examples: how-to-guides/misconfiguration/custom/examples.md
-                 - Options:
-                   - Policy: how-to-guides/misconfiguration/options/policy.md
-                   - Filtering: how-to-guides/misconfiguration/options/filter.md
-                   - Report Formats: how-to-guides/misconfiguration/options/report.md
-                   - Others: how-to-guides/misconfiguration/options/others.md
+              - Policy:
+                  - Built-in Policies: how-to-guides/misconfiguration/policy/builtin.md
+                  - Exceptions: how-to-guides/misconfiguration/policy/exceptions.md
+              - Custom Policies:
+                  - Overview: how-to-guides/misconfiguration/custom/index.md
+                  - Data: how-to-guides/misconfiguration/custom/data.md
+                  - Combine: how-to-guides/misconfiguration/custom/combine.md
+                  - Testing: how-to-guides/misconfiguration/custom/testing.md
+                  - Debugging Policies: how-to-guides/misconfiguration/custom/debug.md
+                  - Examples: how-to-guides/misconfiguration/custom/examples.md
+              - Options:
+                  - Policy: how-to-guides/misconfiguration/options/policy.md
+                  - Filtering: how-to-guides/misconfiguration/options/filter.md
+                  - Report Formats: how-to-guides/misconfiguration/options/report.md
+                  - Others: how-to-guides/misconfiguration/options/others.md
       - Explanations:
+          - Overview: explanations/index.md
       - References:
           - CLI:
               - Overview:  references/cli/index.md
