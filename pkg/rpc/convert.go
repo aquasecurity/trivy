@@ -11,7 +11,6 @@ import (
 	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/cache"
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -96,7 +95,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 		}
 		cvssMap := make(map[string]*common.CVSS) // This is needed because protobuf generates a map[string]*CVSS type
 		for vendor, vendorSeverity := range vuln.CVSS {
-			cvssMap[vendor] = &common.CVSS{
+			cvssMap[string(vendor)] = &common.CVSS{
 				V2Vector: vendorSeverity.V2Vector,
 				V3Vector: vendorSeverity.V3Vector,
 				V2Score:  vendorSeverity.V2Score,
@@ -123,6 +122,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
 			VulnerabilityId:    vuln.VulnerabilityID,
+			VendorIds:          vuln.VendorIDs,
 			PkgName:            vuln.PkgName,
 			InstalledVersion:   vuln.InstalledVersion,
 			FixedVersion:       vuln.FixedVersion,
@@ -132,13 +132,14 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			References:         vuln.References,
 			Layer:              ConvertToRPCLayer(vuln.Layer),
 			Cvss:               cvssMap,
-			SeveritySource:     vuln.SeveritySource,
+			SeveritySource:     string(vuln.SeveritySource),
 			CweIds:             vuln.CweIDs,
 			PrimaryUrl:         vuln.PrimaryURL,
 			LastModifiedDate:   lastModifiedDate,
 			PublishedDate:      publishedDate,
 			CustomAdvisoryData: customAdvisoryData,
 			CustomVulnData:     customVulnData,
+			DataSource:         ConvertToRPCDataSource(vuln.DataSource),
 		})
 	}
 	return rpcVulns
@@ -179,20 +180,50 @@ func ConvertToRPCLayer(layer ftypes.Layer) *common.Layer {
 	}
 }
 
-// ConvertFromRPCResults converts scanner.Result to report.Result
-func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
-	var results []report.Result
+// ConvertToRPCDataSource returns common.DataSource
+func ConvertToRPCDataSource(ds *dbTypes.DataSource) *common.DataSource {
+	if ds == nil {
+		return nil
+	}
+	return &common.DataSource{
+		Id:   string(ds.ID),
+		Name: ds.Name,
+		Url:  ds.URL,
+	}
+}
+
+// ConvertFromRPCResults converts scanner.Result to types.Result
+func ConvertFromRPCResults(rpcResults []*scanner.Result) []types.Result {
+	var results []types.Result
 	for _, result := range rpcResults {
-		results = append(results, report.Result{
+		results = append(results, types.Result{
 			Target:            result.Target,
 			Vulnerabilities:   ConvertFromRPCVulns(result.Vulnerabilities),
 			Misconfigurations: ConvertFromRPCMisconfs(result.Misconfigurations),
-			Class:             report.ResultClass(result.Class),
+			Class:             types.ResultClass(result.Class),
 			Type:              result.Type,
 			Packages:          ConvertFromRPCPkgs(result.Packages),
+			CustomResources:   ConvertFromRPCCustomResources(result.CustomResources),
 		})
 	}
 	return results
+}
+
+// ConvertFromRPCCustomResources converts array of cache.CustomResource to fanal.CustomResource
+func ConvertFromRPCCustomResources(rpcCustomResources []*common.CustomResource) []ftypes.CustomResource {
+	var resources []ftypes.CustomResource
+	for _, res := range rpcCustomResources {
+		resources = append(resources, ftypes.CustomResource{
+			Type:     res.Type,
+			FilePath: res.FilePath,
+			Layer: ftypes.Layer{
+				Digest: res.Layer.Digest,
+				DiffID: res.Layer.DiffId,
+			},
+			Data: res.Data,
+		})
+	}
+	return resources
 }
 
 // ConvertFromRPCVulns converts []*common.Vulnerability to []types.DetectedVulnerability
@@ -202,7 +233,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 		severity := dbTypes.Severity(vuln.Severity)
 		cvssMap := make(dbTypes.VendorCVSS) // This is needed because protobuf generates a map[string]*CVSS type
 		for vendor, vendorSeverity := range vuln.Cvss {
-			cvssMap[vendor] = dbTypes.CVSS{
+			cvssMap[dbTypes.SourceID(vendor)] = dbTypes.CVSS{
 				V2Vector: vendorSeverity.V2Vector,
 				V3Vector: vendorSeverity.V3Vector,
 				V2Score:  vendorSeverity.V2Score,
@@ -222,6 +253,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 
 		vulns = append(vulns, types.DetectedVulnerability{
 			VulnerabilityID:  vuln.VulnerabilityId,
+			VendorIDs:        vuln.VendorIds,
 			PkgName:          vuln.PkgName,
 			InstalledVersion: vuln.InstalledVersion,
 			FixedVersion:     vuln.FixedVersion,
@@ -237,9 +269,10 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				Custom:           vuln.CustomVulnData.AsInterface(),
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
-			SeveritySource: vuln.SeveritySource,
+			SeveritySource: dbTypes.SourceID(vuln.SeveritySource),
 			PrimaryURL:     vuln.PrimaryUrl,
 			Custom:         vuln.CustomAdvisoryData.AsInterface(),
+			DataSource:     ConvertFromRPCDataSource(vuln.DataSource),
 		})
 	}
 	return vulns
@@ -287,6 +320,18 @@ func ConvertFromRPCOS(rpcOS *common.OS) *ftypes.OS {
 		Family: rpcOS.Family,
 		Name:   rpcOS.Name,
 		Eosl:   rpcOS.Eosl,
+	}
+}
+
+// ConvertFromRPCDataSource converts *common.DataSource to *dbTypes.DataSource
+func ConvertFromRPCDataSource(ds *common.DataSource) *dbTypes.DataSource {
+	if ds == nil {
+		return nil
+	}
+	return &dbTypes.DataSource{
+		ID:   dbTypes.SourceID(ds.Id),
+		Name: ds.Name,
+		URL:  ds.Url,
 	}
 }
 
@@ -375,6 +420,7 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		Misconfigurations: ConvertFromRPCMisconfigurations(req.BlobInfo.Misconfigurations),
 		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
 		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
+		CustomResources:   ConvertFromRPCCustomResources(req.BlobInfo.CustomResources),
 	}
 }
 
@@ -450,6 +496,24 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 
 	}
 
+	var customResources []*common.CustomResource
+	for _, res := range blobInfo.CustomResources {
+		data, err := structpb.NewValue(res.Data)
+		if err != nil {
+
+		} else {
+			customResources = append(customResources, &common.CustomResource{
+				Type:     res.Type,
+				FilePath: res.FilePath,
+				Layer: &common.Layer{
+					Digest: res.Layer.Digest,
+					DiffId: res.Layer.DiffID,
+				},
+				Data: data,
+			})
+		}
+	}
+
 	return &cache.PutBlobRequest{
 		DiffId: diffID,
 		BlobInfo: &cache.BlobInfo{
@@ -462,6 +526,7 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 			Misconfigurations: misconfigurations,
 			OpaqueDirs:        blobInfo.OpaqueDirs,
 			WhiteoutFiles:     blobInfo.WhiteoutFiles,
+			CustomResources:   customResources,
 		},
 	}
 }
@@ -490,8 +555,8 @@ func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.Miss
 	}
 }
 
-// ConvertToRPCScanResponse converts report.Result to ScanResponse
-func ConvertToRPCScanResponse(results report.Results, fos *ftypes.OS) *scanner.ScanResponse {
+// ConvertToRPCScanResponse converts types.Result to ScanResponse
+func ConvertToRPCScanResponse(results types.Results, fos *ftypes.OS) *scanner.ScanResponse {
 	var rpcResults []*scanner.Result
 	for _, result := range results {
 		rpcResults = append(rpcResults, &scanner.Result{

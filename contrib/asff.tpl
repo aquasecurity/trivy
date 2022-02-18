@@ -19,12 +19,12 @@
     {
         "SchemaVersion": "2018-10-08",
         "Id": "{{ $target }}/{{ .VulnerabilityID }}",
-        "ProductArn": "arn:aws:securityhub:{{ getEnv "AWS_REGION" }}::product/aquasecurity/aquasecurity",
+        "ProductArn": "arn:aws:securityhub:{{ env "AWS_REGION" }}::product/aquasecurity/aquasecurity",
         "GeneratorId": "Trivy",
-        "AwsAccountId": "{{ getEnv "AWS_ACCOUNT_ID" }}",
+        "AwsAccountId": "{{ env "AWS_ACCOUNT_ID" }}",
         "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-        "CreatedAt": "{{ getCurrentTime }}",
-        "UpdatedAt": "{{ getCurrentTime }}",
+        "CreatedAt": "{{ now | date "2006-01-02T15:04:05.999999999Z07:00" }}",
+        "UpdatedAt": "{{ now | date "2006-01-02T15:04:05.999999999Z07:00" }}",
         "Severity": {
             "Label": "{{ $severity }}"
         },
@@ -42,7 +42,7 @@
                 "Type": "Container",
                 "Id": "{{ $target }}",
                 "Partition": "aws",
-                "Region": "{{ getEnv "AWS_REGION" }}",
+                "Region": "{{ env "AWS_REGION" }}",
                 "Details": {
                     "Container": { "ImageName": "{{ $target }}" },
                     "Other": {
@@ -51,10 +51,10 @@
                         "PkgName": "{{ .PkgName }}",
                         "Installed Package": "{{ .InstalledVersion }}",
                         "Patched Package": "{{ .FixedVersion }}",
-                        "NvdCvssScoreV3": "{{ (index .CVSS "nvd").V3Score }}",
-                        "NvdCvssVectorV3": "{{ (index .CVSS "nvd").V3Vector }}",
-                        "NvdCvssScoreV2": "{{ (index .CVSS "nvd").V2Score }}",
-                        "NvdCvssVectorV2": "{{ (index .CVSS "nvd").V2Vector }}"
+                        "NvdCvssScoreV3": "{{ (index .CVSS (sourceID "nvd")).V3Score }}",
+                        "NvdCvssVectorV3": "{{ (index .CVSS (sourceID "nvd")).V3Vector }}",
+                        "NvdCvssScoreV2": "{{ (index .CVSS (sourceID "nvd")).V2Score }}",
+                        "NvdCvssVectorV2": "{{ (index .CVSS (sourceID "nvd")).V2Vector }}"
                     }
                 }
             }

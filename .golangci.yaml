@@ -19,6 +19,10 @@ linters-settings:
     locale: US
   goimports:
     local-prefixes: github.com/aquasecurity
+  gosec:
+    excludes:
+      - G204
+      - G402
 
 linters:
   disable-all: true
@@ -53,9 +57,6 @@ issues:
     - linters:
         - gosec
       text: "Deferring unsafe method"
-    - linters:
-        - gosec
-      text: "G204: Subprocess launched with variable"
     - linters:
         - errcheck
       text: "Close` is not checked"

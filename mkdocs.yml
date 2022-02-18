@@ -90,6 +90,7 @@ nav:
               - Docker Hub: advanced/private-registries/docker-hub.md
               - AWS ECR (Elastic Container Registry): advanced/private-registries/ecr.md
               - GCR (Google Container Registry): advanced/private-registries/gcr.md
+              - ACR (Azure Container Registry): advanced/private-registries/acr.md
               - Self-Hosted: advanced/private-registries/self.md
       - Modes:
           - Standalone: advanced/modes/standalone.md

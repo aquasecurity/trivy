@@ -1,0 +1,37 @@
+- bucket: "rubygems::GitHub Security Advisory RubyGems"
+  pairs:
+    - bucket: activesupport
+      pairs:
+        - key: CVE-2015-3226
+          value:
+            PatchedVersions:
+              - 3.2.22.5
+              - 4.2.2
+              - 4.1.11
+            VulnerableVersions:
+              - ">= 3.0.0, <= 3.2.22.4"
+              - ">= 4.2.0, < 4.2.2"
+              - ">= 4.1.0, < 4.1.11"
+        - key: CVE-2015-3227
+          value:
+            PatchedVersions:
+              - 4.2.2
+              - 4.1.11
+            VulnerableVersions:
+              - ">= 4.2.0, < 4.2.2"
+              - < 4.1.11
+        - key: CVE-2020-8165
+          value:
+            PatchedVersions:
+              - 6.0.3.1
+              - 5.2.4.3
+            VulnerableVersions:
+              - ">= 6.0.0, <= 6.0.3"
+              - ">= 5.0.0, <= 5.2.4.2"
+    - bucket: http_parser
+      pairs:
+        - key: CVE-2020-9999
+          value:
+            VulnerableVersions:
+              - ">= 0"
+

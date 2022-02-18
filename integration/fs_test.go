@@ -46,6 +46,14 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/pip.json.golden",
 		},
 		{
+			name: "pom",
+			args: args{
+				securityChecks: "vuln",
+				input:          "testdata/fixtures/fs/pom",
+			},
+			golden: "testdata/pom.json.golden",
+		},
+		{
 			name: "dockerfile",
 			args: args{
 				securityChecks: "config",
@@ -85,12 +93,12 @@ func TestFilesystem(t *testing.T) {
 	}
 
 	// Set up testing DB
-	cacheDir := gunzipDB(t)
+	cacheDir := initDB(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := []string{"trivy", "--cache-dir", cacheDir, "fs", "--skip-db-update", "--skip-policy-update",
-				"--format", "json", "--security-checks", tt.args.securityChecks}
+				"--format", "json", "--offline-scan", "--security-checks", tt.args.securityChecks}
 
 			if len(tt.args.policyPaths) != 0 {
 				for _, policyPath := range tt.args.policyPaths {
@@ -105,9 +113,7 @@ func TestFilesystem(t *testing.T) {
 			}
 
 			if len(tt.args.severity) != 0 {
-				osArgs = append(osArgs,
-					[]string{"--severity", strings.Join(tt.args.severity, ",")}...,
-				)
+				osArgs = append(osArgs, "--severity", strings.Join(tt.args.severity, ","))
 			}
 
 			if len(tt.args.ignoreIDs) != 0 {
@@ -134,10 +140,7 @@ func TestFilesystem(t *testing.T) {
 			assert.Nil(t, app.Run(osArgs))
 
 			// Compare want and got
-			want := readReport(t, tt.golden)
-			got := readReport(t, outputFile)
-
-			assert.Equal(t, want, got)
+			compareReports(t, tt.golden, outputFile)
 		})
 	}
 }

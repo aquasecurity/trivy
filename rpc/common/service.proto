@@ -99,6 +99,14 @@ message Vulnerability {
   google.protobuf.Timestamp last_modified_date   = 16;
   google.protobuf.Value     custom_advisory_data = 17;
   google.protobuf.Value     custom_vuln_data     = 18;
+  repeated string           vendor_ids           = 19;
+  DataSource                data_source          = 20;
+}
+
+message DataSource {
+  string id   = 1;
+  string name = 2;
+  string url  = 3;
 }
 
 message Layer {
@@ -119,4 +127,11 @@ message CVSS {
   string v3_vector = 2;
   double v2_score  = 3;
   double v3_score  = 4;
+}
+
+message CustomResource {
+  string                type      = 1;
+  string                file_path = 2;
+  Layer                 layer     = 3;
+  google.protobuf.Value data      = 4;
 }

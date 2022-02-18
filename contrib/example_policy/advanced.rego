@@ -5,30 +5,42 @@ import data.lib.trivy
 default ignore = false
 
 nvd_v3_vector = v {
-	v := input.CVSS.nvd.v3
+	v := input.CVSS.nvd.V3Vector
+}
+
+redhat_v3_vector = v {
+	v := input.CVSS.redhat.V3Vector
 }
 
 # Ignore a vulnerability which requires high privilege
 ignore {
-	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
-	cvss_vector.PrivilegesRequired == "High"
+	nvd_cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
+	nvd_cvss_vector.PrivilegesRequired == "High"
+
+        # Check against RedHat scores as well as NVD
+	redhat_cvss_vector := trivy.parse_cvss_vector_v3(redhat_v3_vector)
+	redhat_cvss_vector.PrivilegesRequired == "High"
 }
 
 # Ignore a vulnerability which requires user interaction
 ignore {
-	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
-	cvss_vector.UserInteraction == "Required"
+	nvd_cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
+	nvd_cvss_vector.UserInteraction == "Required"
+
+        # Check against RedHat scores as well as NVD
+	redhat_cvss_vector := trivy.parse_cvss_vector_v3(redhat_v3_vector)
+	redhat_cvss_vector.UserInteraction == "Required"
 }
 
 ignore {
 	input.PkgName == "openssl"
 
 	# Split CVSSv3 vector
-	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
+	nvd_cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
 
 	# Evaluate Attack Vector
 	ignore_attack_vectors := {"Physical", "Local"}
-	cvss_vector.AttackVector == ignore_attack_vectors[_]
+	nvd_cvss_vector.AttackVector == ignore_attack_vectors[_]
 }
 
 ignore {
@@ -50,11 +62,11 @@ ignore {
 	input.PkgName == "bash"
 
 	# Split CVSSv3 vector
-	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
+	nvd_cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
 
 	# Evaluate Attack Vector
 	ignore_attack_vectors := {"Physical", "Local", "Adjacent"}
-	cvss_vector.AttackVector == ignore_attack_vectors[_]
+	nvd_cvss_vector.AttackVector == ignore_attack_vectors[_]
 
 	# Evaluate severity
 	input.Severity == {"LOW", "MEDIUM", "HIGH"}[_]
@@ -64,11 +76,11 @@ ignore {
 	input.PkgName == "django"
 
 	# Split CVSSv3 vector
-	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
+	nvd_cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
 
 	# Evaluate Attack Vector
 	ignore_attack_vectors := {"Physical", "Local"}
-	cvss_vector.AttackVector == ignore_attack_vectors[_]
+	nvd_cvss_vector.AttackVector == ignore_attack_vectors[_]
 
 	# Evaluate severity
 	input.Severity == {"LOW", "MEDIUM"}[_]
@@ -86,7 +98,7 @@ ignore {
 	input.PkgName == "jquery"
 
 	# Split CVSSv3 vector
-	cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
+	nvd_cvss_vector := trivy.parse_cvss_vector_v3(nvd_v3_vector)
 
 	# Evaluate CWE-ID
 	deny_cwe_ids := {"CWE-79"} # XSS

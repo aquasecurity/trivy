@@ -11,6 +11,6 @@ __rego_input__ := {"selector": [{"type": "hcl"}]}
 
 deny[msg] {
 	input.environment == "dev"
-	contains(input.service.http[name].listen_addr, "0.0.0.0")
+	contains(input.service.http[name][_].listen_addr, "0.0.0.0")
 	msg = sprintf("'%s' listens on 0.0.0.0 in dev environment", [name])
 }
