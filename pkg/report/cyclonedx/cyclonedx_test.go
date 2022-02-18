@@ -42,6 +42,7 @@ func TestWriter_Write(t *testing.T) {
 					},
 					ImageID:     "sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
 					RepoTags:    []string{"rails:latest"},
+					DiffIDs:     []string{"sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a"},
 					RepoDigests: []string{"rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177"},
 					ImageConfig: v1.ConfigFile{
 						Architecture: "arm64",
@@ -131,6 +132,10 @@ func TestWriter_Write(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:RepoDigest",
 								Value: "rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177",
+							},
+							{
+								Name:  "aquasecurity:trivy:DiffID",
+								Value: "sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
 							},
 							{
 								Name:  "aquasecurity:trivy:RepoTag",

@@ -26,6 +26,7 @@ const (
 	PropertySize       = "Size"
 	PropertyImageID    = "ImageID"
 	PropertyRepoDigest = "RepoDigest"
+	PropertyDiffID     = "DiffID"
 	PropertyRepoTag    = "RepoTag"
 
 	// Package properties
@@ -235,7 +236,9 @@ func (cw *Writer) reportToComponent(r types.Report) (*cdx.Component, error) {
 	for _, d := range r.Metadata.RepoDigests {
 		properties = appendProperties(properties, PropertyRepoDigest, d)
 	}
-
+	for _, d := range r.Metadata.DiffIDs {
+		properties = appendProperties(properties, PropertyDiffID, d)
+	}
 	for _, t := range r.Metadata.RepoTags {
 		properties = appendProperties(properties, PropertyRepoTag, t)
 	}
