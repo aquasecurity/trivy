@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://aquasecurity.github.io/trivy/">Documentation</a> 
+  <h3><a href="https://aquasecurity.github.io/trivy/">Documentation</a> </h3>
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@ Scanner for vulnerabilities in container images, file systems, and Git repositor
 ![Docker Pulls][docker-pulls]
 
 
-# Abstract
+# Overview
 `Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues.
 `Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and language-specific packages (Bundler, Composer, npm, yarn, etc.).
 In addition, `Trivy` scans Infrastructure as Code (IaC) files such as Terraform, Dockerfile and Kubernetes, to detect potential configuration issues that expose your deployments to the risk of attack.
@@ -37,6 +37,10 @@ In addition, `Trivy` scans Infrastructure as Code (IaC) files such as Terraform,
 <p align="center">
   <img src="docs/imgs/misconf-demo.gif" width="1000" alt="Misconfiguration Detection">
 </p>
+
+# Installation
+
+All installation options are listed in the [documentation.](https://aquasecurity.github.io/trivy/latest/getting-started/installation/)
 
 # Quick Start
 ## Scan Image for Vulnerabilities
@@ -189,6 +193,8 @@ Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 # Integrations
 - [GitHub Actions][action]
 - [Visual Studio Code][vscode]
+
+More Integrations are listed in the [documentation.](https://aquasecurity.github.io/trivy/latest/advanced/integrations/)
 
 # Documentation
 The official documentation, which provides detailed installation, configuration, and quick start guides, is available at https://aquasecurity.github.io/trivy/.

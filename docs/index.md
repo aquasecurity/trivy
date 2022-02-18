@@ -17,7 +17,6 @@ All you need to do for scanning is to specify a target such as an image name of 
     <img src="imgs/overview.png" width="800">
 </div>
 
-
 <div style="text-align: center; margin-top: 150px">
     <h1 id="demo">Demo</h1>
 </div>
