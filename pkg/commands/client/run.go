@@ -32,8 +32,13 @@ func Run(cliCtx *cli.Context) error {
 	ctx, cancel := context.WithTimeout(cliCtx.Context, opt.Timeout)
 	defer cancel()
 
-	// Disable the lock file scanning
-	opt.DisabledAnalyzers = analyzer.TypeLockfiles
+	if opt.FileSystem {
+		// Disable the individual package scanning
+		opt.DisabledAnalyzers = analyzer.TypeIndividualPkgs
+	} else {
+		// Disable the lock file scanning
+		opt.DisabledAnalyzers = analyzer.TypeLockfiles
+	}
 
 	err = runWithTimeout(ctx, opt)
 	if xerrors.Is(err, context.DeadlineExceeded) {
@@ -173,6 +178,15 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 			return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 		}
 		return s, func() {}, nil
+	}
+
+	if opt.FileSystem {
+		s, cleanup, err := initializeFilesystemScanner(ctx, opt.Target, remoteCache, client.CustomHeaders(opt.CustomHeaders),
+			client.RemoteURL(opt.RemoteAddr), client.Insecure(opt.Insecure), artifactOpt, configScannerOptions)
+		if err != nil {
+			return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
+		}
+		return s, cleanup, nil
 	}
 
 	// Scan an image in Docker Engine or Docker Registry

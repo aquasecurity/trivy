@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/artifact"
 	image2 "github.com/aquasecurity/fanal/artifact/image"
+	"github.com/aquasecurity/fanal/artifact/local"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/image"
 	"github.com/aquasecurity/fanal/types"
@@ -21,6 +22,18 @@ import (
 )
 
 // Injectors from inject.go:
+
+func initializeFilesystemScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, insecure client.Insecure, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
+	scannerScanner := client.NewProtobufClient(url, insecure)
+	clientScanner := client.NewScanner(customHeaders, scannerScanner)
+	artifactArtifact, err := local.NewArtifact(path, artifactCache, artifactOption, configScannerOption)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
+	scanner2 := scanner.NewScanner(clientScanner, artifactArtifact)
+	return scanner2, func() {
+	}, nil
+}
 
 func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, insecure client.Insecure, dockerOpt types.DockerOption, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
 	scannerScanner := client.NewProtobufClient(url, insecure)

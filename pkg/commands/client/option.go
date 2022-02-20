@@ -32,6 +32,7 @@ type Option struct {
 	customHeaders []string
 	// this field is populated in Init()
 	CustomHeaders http.Header
+	FileSystem    bool
 }
 
 // NewOption is the factory method for Option
@@ -52,6 +53,7 @@ func NewOption(c *cli.Context) (Option, error) {
 		token:          c.String("token"),
 		tokenHeader:    c.String("token-header"),
 		customHeaders:  c.StringSlice("custom-headers"),
+		FileSystem:     c.Bool("filesystem"),
 	}, nil
 }
 

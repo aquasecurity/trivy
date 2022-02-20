@@ -602,6 +602,11 @@ func NewClientCommand() *cli.Command {
 				Usage:   "custom headers",
 				EnvVars: []string{"TRIVY_CUSTOM_HEADERS"},
 			},
+			&cli.BoolFlag{
+				Name:  "filesystem",
+				Value: false,
+				Usage: "scan local filesystem",
+			},
 		},
 	}
 }
