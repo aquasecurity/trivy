@@ -97,12 +97,12 @@
         <th colspan=2>Vulnerabilities found:</th>
       </tr>
       <tr class="sub-header">
-        <th>Package</th>
+        <th>Package Name</th>
         <th>Vulnerability ID</th>
         <th>Severity</th>
-        <th>Installed Version</th>
-        <th>Fixed Version</th>
-        <th>Links</th>
+        <th>Installed<br>Version</th>
+        <th>Fixed<br>Version</th>
+        <th>Related Links</th>
       </tr>
         {{- range .Vulnerabilities }}
       <tr class="severity-{{ escapeXML .Vulnerability.Severity }}">
