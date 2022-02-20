@@ -2,16 +2,15 @@ package client
 
 import (
 	"context"
+	"crypto/tls"
 	"net/http"
-
-	ftypes "github.com/aquasecurity/fanal/types"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/report"
+	ftypes "github.com/aquasecurity/fanal/types"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
 )
@@ -25,9 +24,20 @@ var SuperSet = wire.NewSet(
 // RemoteURL for RPC remote host
 type RemoteURL string
 
+// Insecure for RPC remote host
+type Insecure bool
+
 // NewProtobufClient is the factory method to return RPC scanner
-func NewProtobufClient(remoteURL RemoteURL) rpc.Scanner {
-	return rpc.NewScannerProtobufClient(string(remoteURL), &http.Client{})
+func NewProtobufClient(remoteURL RemoteURL, insecure Insecure) rpc.Scanner {
+	httpClient := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: bool(insecure),
+			},
+		},
+	}
+
+	return rpc.NewScannerProtobufClient(string(remoteURL), httpClient)
 }
 
 // CustomHeaders for holding HTTP headers
@@ -45,7 +55,7 @@ func NewScanner(customHeaders CustomHeaders, s rpc.Scanner) Scanner {
 }
 
 // Scan scans the image
-func (s Scanner) Scan(target, artifactKey string, blobKeys []string, options types.ScanOptions) (report.Results, *ftypes.OS, error) {
+func (s Scanner) Scan(target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
 	ctx := WithCustomHeaders(context.Background(), http.Header(s.customHeaders))
 
 	var res *rpc.ScanResponse

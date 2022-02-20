@@ -19,7 +19,7 @@ jobs:
             curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
       - run:
           name: Scan the local image with trivy
-          command: trivy --exit-code 0 --no-progress trivy-ci-test:${CIRCLE_SHA1}
+          command: trivy image --exit-code 0 --no-progress trivy-ci-test:${CIRCLE_SHA1}
 workflows:
   version: 2
   release:

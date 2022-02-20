@@ -2,6 +2,7 @@ package operation
 
 import (
 	"context"
+	"crypto/tls"
 	"os"
 	"strings"
 
@@ -11,6 +12,7 @@ import (
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
@@ -30,13 +32,27 @@ type Cache struct {
 }
 
 // NewCache is the factory method for Cache
-func NewCache(backend string) (Cache, error) {
-	if strings.HasPrefix(backend, "redis://") {
-		log.Logger.Infof("Redis cache: %s", backend)
-		options, err := redis.ParseURL(backend)
+func NewCache(c option.CacheOption) (Cache, error) {
+	if strings.HasPrefix(c.CacheBackend, "redis://") {
+		log.Logger.Infof("Redis cache: %s", c.CacheBackend)
+		options, err := redis.ParseURL(c.CacheBackend)
 		if err != nil {
 			return Cache{}, err
 		}
+
+		if (option.RedisOption{}) != c.RedisOption {
+			caCert, cert, err := utils.GetTLSConfig(c.RedisCACert, c.RedisCert, c.RedisKey)
+			if err != nil {
+				return Cache{}, err
+			}
+
+			options.TLSConfig = &tls.Config{
+				RootCAs:      caCert,
+				Certificates: []tls.Certificate{cert},
+				MinVersion:   tls.VersionTLS12,
+			}
+		}
+
 		redisCache := cache.NewRedisCache(options)
 		return Cache{Cache: redisCache}, nil
 	}

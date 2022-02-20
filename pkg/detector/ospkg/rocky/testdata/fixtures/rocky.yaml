@@ -1,0 +1,10 @@
+- bucket: rocky 8
+  pairs:
+    - bucket: bpftool
+      pairs:
+        - key: CVE-2021-0129
+          value:
+            FixedVersion: "4.18.0-348.el8.0.2"
+        - key: CVE-2021-20317
+          value:
+            FixedVersion: "4.18.0-348.2.1.el8_5"

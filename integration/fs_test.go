@@ -46,6 +46,14 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/pip.json.golden",
 		},
 		{
+			name: "pom",
+			args: args{
+				securityChecks: "vuln",
+				input:          "testdata/fixtures/fs/pom",
+			},
+			golden: "testdata/pom.json.golden",
+		},
+		{
 			name: "dockerfile",
 			args: args{
 				securityChecks: "config",
@@ -90,7 +98,7 @@ func TestFilesystem(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := []string{"trivy", "--cache-dir", cacheDir, "fs", "--skip-db-update", "--skip-policy-update",
-				"--format", "json", "--security-checks", tt.args.securityChecks}
+				"--format", "json", "--offline-scan", "--security-checks", tt.args.securityChecks}
 
 			if len(tt.args.policyPaths) != 0 {
 				for _, policyPath := range tt.args.policyPaths {

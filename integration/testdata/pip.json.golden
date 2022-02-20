@@ -26,8 +26,13 @@
           "InstalledVersion": "0.11",
           "FixedVersion": "0.15.3",
           "Layer": {},
-          "SeveritySource": "nvd",
+          "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14806",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
           "Title": "python-werkzeug: insufficient debugger PIN randomness vulnerability",
           "Description": "Pallets Werkzeug before 0.15.3, when used with Docker, has insufficient debugger PIN randomness because Docker containers share the same machine id.",
           "Severity": "HIGH",
@@ -49,6 +54,7 @@
           "References": [
             "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00034.html",
             "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00047.html",
+            "https://access.redhat.com/security/cve/CVE-2019-14806",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14806",
             "https://github.com/advisories/GHSA-gq9m-qvpx-68hc",
             "https://github.com/pallets/werkzeug/blob/7fef41b120327d3912fbe12fb64f1951496fcf3e/src/werkzeug/debug/__init__.py#L168",
@@ -66,8 +72,13 @@
           "InstalledVersion": "0.11",
           "FixedVersion": "0.11.6",
           "Layer": {},
-          "SeveritySource": "nvd",
+          "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-28724",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
           "Title": "python-werkzeug: open redirect via double slash in the URL",
           "Description": "Open redirect vulnerability in werkzeug before 0.11.6 via a double slash in the URL.",
           "Severity": "MEDIUM",
@@ -87,6 +98,7 @@
             }
           },
           "References": [
+            "https://access.redhat.com/security/cve/CVE-2020-28724",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-28724",
             "https://github.com/advisories/GHSA-3p3h-qghp-hvh2",
             "https://github.com/pallets/flask/issues/1639",

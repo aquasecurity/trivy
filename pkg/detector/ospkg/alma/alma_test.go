@@ -10,6 +10,8 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -28,8 +30,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/alma.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/alma.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.4",
 				pkgs: []ftypes.Package{
@@ -56,12 +61,41 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "3.6.8-36.el8.alma",
 					FixedVersion:     "3.6.8-37.el8.alma",
 					Layer:            ftypes.Layer{},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Alma,
+						Name: "AlmaLinux Product Errata",
+						URL:  "https://errata.almalinux.org/",
+					},
 				},
 			},
 		},
 		{
+			name:     "skip modular package",
+			fixtures: []string{"testdata/fixtures/modular.yaml", "testdata/fixtures/data-source.yaml"},
+			args: args{
+				osVer: "8.4",
+				pkgs: []ftypes.Package{
+					{
+						Name:            "nginx",
+						Epoch:           1,
+						Version:         "1.14.1",
+						Release:         "8.module_el8.3.0+2165+af250afe.alma",
+						Arch:            "x86_64",
+						SrcName:         "nginx",
+						SrcEpoch:        1,
+						SrcVersion:      "1.14.1",
+						SrcRelease:      "8.module_el8.3.0+2165+af250afe.alma",
+						Modularitylabel: "nginx:1.14:8040020210610090123:9f9e2e7e", // actual: "", ref: https://bugs.almalinux.org/view.php?id=173
+						License:         "BSD",
+						Layer:           ftypes.Layer{},
+					},
+				},
+			},
+			want: nil,
+		},
+		{
 			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "8.4",
 				pkgs: []ftypes.Package{

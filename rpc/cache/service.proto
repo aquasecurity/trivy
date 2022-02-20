@@ -4,7 +4,7 @@ package trivy.cache.v1;
 option  go_package = "github.com/aquasecurity/trivy/rpc/cache;cache";
 
 import "google/protobuf/timestamp.proto";
-import "github.com/aquasecurity/trivy/rpc/common/service.proto";
+import "rpc/common/service.proto";
 import "google/protobuf/empty.proto";
 
 service Cache {
@@ -37,6 +37,7 @@ message BlobInfo {
   repeated string                  whiteout_files    = 6;
   string                           digest            = 7;
   string                           diff_id           = 8;
+  repeated common.CustomResource custom_resources    = 10;
 }
 
 message PutBlobRequest {

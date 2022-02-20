@@ -85,6 +85,7 @@ func runWithTimeout(ctx context.Context, opt Option) error {
 	}
 
 	if err = pkgReport.Write(report, pkgReport.Option{
+		AppVersion:         opt.GlobalOption.AppVersion,
 		Format:             opt.Format,
 		Output:             opt.Output,
 		Severities:         opt.Severities,
@@ -137,7 +138,7 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 }
 
 func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func(), error) {
-	remoteCache := cache.NewRemoteCache(cache.RemoteURL(opt.RemoteAddr), opt.CustomHeaders)
+	remoteCache := cache.NewRemoteCache(opt.RemoteAddr, opt.CustomHeaders, opt.Insecure)
 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
@@ -167,7 +168,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	if opt.Input != "" {
 		// Scan tar file
 		s, err := initializeArchiveScanner(ctx, opt.Input, remoteCache, client.CustomHeaders(opt.CustomHeaders),
-			client.RemoteURL(opt.RemoteAddr), opt.Timeout, artifactOpt, configScannerOptions)
+			client.RemoteURL(opt.RemoteAddr), client.Insecure(opt.Insecure), artifactOpt, configScannerOptions)
 		if err != nil {
 			return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 		}
@@ -175,8 +176,13 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	}
 
 	// Scan an image in Docker Engine or Docker Registry
+	dockerOpt, err := types.GetDockerOption(opt.Insecure)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
+
 	s, cleanup, err := initializeDockerScanner(ctx, opt.Target, remoteCache, client.CustomHeaders(opt.CustomHeaders),
-		client.RemoteURL(opt.RemoteAddr), opt.Timeout, artifactOpt, configScannerOptions)
+		client.RemoteURL(opt.RemoteAddr), client.Insecure(opt.Insecure), dockerOpt, artifactOpt, configScannerOptions)
 	if err != nil {
 		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the docker scanner: %w", err)
 	}
@@ -184,7 +190,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	return s, cleanup, nil
 }
 
-func exit(c Option, results pkgReport.Results) {
+func exit(c Option, results types.Results) {
 	if c.ExitCode != 0 {
 		for _, result := range results {
 			if len(result.Vulnerabilities) > 0 {

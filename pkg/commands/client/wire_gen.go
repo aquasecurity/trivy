@@ -13,24 +13,19 @@ import (
 	image2 "github.com/aquasecurity/fanal/artifact/image"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/image"
+	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
-	"github.com/aquasecurity/trivy/pkg/types"
-	"time"
 )
 
 // Injectors from inject.go:
 
-func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
-	scannerScanner := client.NewProtobufClient(url)
+func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, insecure client.Insecure, dockerOpt types.DockerOption, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
+	scannerScanner := client.NewProtobufClient(url, insecure)
 	clientScanner := client.NewScanner(customHeaders, scannerScanner)
-	dockerOption, err := types.GetDockerOption(timeout)
-	if err != nil {
-		return scanner.Scanner{}, nil, err
-	}
-	typesImage, cleanup, err := image.NewDockerImage(ctx, imageName, dockerOption)
+	typesImage, cleanup, err := image.NewDockerImage(ctx, imageName, dockerOpt)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -45,8 +40,8 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 	}, nil
 }
 
-func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, timeout time.Duration, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, error) {
-	scannerScanner := client.NewProtobufClient(url)
+func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, insecure client.Insecure, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, error) {
+	scannerScanner := client.NewProtobufClient(url, insecure)
 	clientScanner := client.NewScanner(customHeaders, scannerScanner)
 	typesImage, err := image.NewArchiveImage(filePath)
 	if err != nil {

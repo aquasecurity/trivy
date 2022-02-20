@@ -22,7 +22,7 @@ See [Integrations][integrations] for details.
 ## Features
 
 - Comprehensive vulnerability detection
-    - [OS packages][os] (Alpine, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
+    - [OS packages][os] (Alpine, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
     - [**Language-specific packages**][lang] (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, Maven, and Go)
 - Detect IaC misconfigurations
     - A wide variety of [built-in policies][builtin] are provided **out of the box**:
@@ -57,9 +57,6 @@ See [Integrations][integrations] for details.
     - remote git repository
 
 Please see [LICENSE][license] for Trivy licensing information.
-
-!!! note
-    Trivy uses vulnerability information from a variety of sources, some of which are licensed for non-commercial use only.
 
 [vuln]: ../vulnerability/scanning/index.md
 [misconf]: ../misconfiguration/index.md

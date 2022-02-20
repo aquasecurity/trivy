@@ -80,6 +80,11 @@
           },
           "SeveritySource": "ubuntu",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
+          "DataSource": {
+            "ID": "ubuntu",
+            "Name": "Ubuntu CVE Tracker",
+            "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+          },
           "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
           "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
           "Severity": "MEDIUM",
@@ -99,12 +104,14 @@
             }
           },
           "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
             "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-5094",
             "https://seclists.org/bugtraq/2019/Sep/58",
             "https://security.gentoo.org/glsa/202003-05",
             "https://security.netapp.com/advisory/ntap-20200115-0002/",
@@ -128,6 +135,11 @@
           },
           "SeveritySource": "ubuntu",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
+          "DataSource": {
+            "ID": "ubuntu",
+            "Name": "Ubuntu CVE Tracker",
+            "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+          },
           "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
           "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
           "Severity": "MEDIUM",
@@ -147,12 +159,14 @@
             }
           },
           "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
             "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-5094",
             "https://seclists.org/bugtraq/2019/Sep/58",
             "https://security.gentoo.org/glsa/202003-05",
             "https://security.netapp.com/advisory/ntap-20200115-0002/",
@@ -176,6 +190,11 @@
           },
           "SeveritySource": "ubuntu",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
+          "DataSource": {
+            "ID": "ubuntu",
+            "Name": "Ubuntu CVE Tracker",
+            "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+          },
           "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
           "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
           "Severity": "MEDIUM",
@@ -195,12 +214,14 @@
             }
           },
           "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
             "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-5094",
             "https://seclists.org/bugtraq/2019/Sep/58",
             "https://security.gentoo.org/glsa/202003-05",
             "https://security.netapp.com/advisory/ntap-20200115-0002/",
@@ -224,6 +245,11 @@
           },
           "SeveritySource": "ubuntu",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5094",
+          "DataSource": {
+            "ID": "ubuntu",
+            "Name": "Ubuntu CVE Tracker",
+            "URL": "https://git.launchpad.net/ubuntu-cve-tracker"
+          },
           "Title": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
           "Description": "An exploitable code execution vulnerability exists in the quota file functionality of E2fsprogs 1.45.3. A specially crafted ext4 partition can cause an out-of-bounds write on the heap, resulting in code execution. An attacker can corrupt a partition to trigger this vulnerability.",
           "Severity": "MEDIUM",
@@ -243,12 +269,14 @@
             }
           },
           "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-5094",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5094",
             "https://linux.oracle.com/cve/CVE-2019-5094.html",
             "https://linux.oracle.com/errata/ELSA-2020-4011.html",
             "https://lists.debian.org/debian-lts-announce/2019/09/msg00029.html",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/2AKETJ6BREDUHRWQTV35SPGG5C6H7KSI/",
             "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/6DOBCYQKCTTWXBLMUPJ5TX3FY7JNCOKY/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-5094",
             "https://seclists.org/bugtraq/2019/Sep/58",
             "https://security.gentoo.org/glsa/202003-05",
             "https://security.netapp.com/advisory/ntap-20200115-0002/",

@@ -124,55 +124,49 @@ func TestTar(t *testing.T) {
 			},
 			golden: "testdata/ubuntu-1804-ignore-unfixed.json.golden",
 		},
-		// TODO: it will be fixed after support for Red Hat OVALv2
-		//{
-		//	name: "centos 7 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Format:  "json",
-		//		Input:   "testdata/fixtures/images/centos-7.tar.gz",
-		//	},
-		//	golden: "testdata/centos-7.json.golden",
-		//},
-		//{
-		//	name: "centos 7 integration with --ignore-unfixed option",
-		//	testArgs: args{
-		//		Version:       "dev",
-		//		IgnoreUnfixed: true,
-		//		Format:        "json",
-		//		Input:         "testdata/fixtures/images/centos-7.tar.gz",
-		//	},
-		//	golden: "testdata/centos-7-ignore-unfixed.json.golden",
-		//},
-		//{
-		//	name: "centos 7 integration with low and high severity",
-		//	testArgs: args{
-		//		Version:       "dev",
-		//		IgnoreUnfixed: true,
-		//		Severity:      []string{"LOW", "HIGH"},
-		//		Format:        "json",
-		//		Input:         "testdata/fixtures/images/centos-7.tar.gz",
-		//	},
-		//	golden: "testdata/centos-7-low-high.json.golden",
-		//},
-		//{
-		//	name: "centos 6 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Format:  "json",
-		//		Input:   "testdata/fixtures/images/centos-6.tar.gz",
-		//	},
-		//	golden: "testdata/centos-6.json.golden",
-		//},
-		//{
-		//	name: "ubi 7 integration",
-		//	testArgs: args{
-		//		Version: "dev",
-		//		Format:  "json",
-		//		Input:   "testdata/fixtures/images/ubi-7.tar.gz",
-		//	},
-		//	golden: "testdata/ubi-7.json.golden",
-		//},
+		{
+			name: "centos 7",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/centos-7.tar.gz",
+			},
+			golden: "testdata/centos-7.json.golden",
+		},
+		{
+			name: "centos 7with --ignore-unfixed option",
+			testArgs: args{
+				IgnoreUnfixed: true,
+				Format:        "json",
+				Input:         "testdata/fixtures/images/centos-7.tar.gz",
+			},
+			golden: "testdata/centos-7-ignore-unfixed.json.golden",
+		},
+		{
+			name: "centos 7 with medium severity",
+			testArgs: args{
+				IgnoreUnfixed: true,
+				Severity:      []string{"MEDIUM"},
+				Format:        "json",
+				Input:         "testdata/fixtures/images/centos-7.tar.gz",
+			},
+			golden: "testdata/centos-7-medium.json.golden",
+		},
+		{
+			name: "centos 6",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/centos-6.tar.gz",
+			},
+			golden: "testdata/centos-6.json.golden",
+		},
+		{
+			name: "ubi 7",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/ubi-7.tar.gz",
+			},
+			golden: "testdata/ubi-7.json.golden",
+		},
 		{
 			name: "almalinux 8",
 			testArgs: args{
@@ -180,6 +174,14 @@ func TestTar(t *testing.T) {
 				Input:  "testdata/fixtures/images/almalinux-8.tar.gz",
 			},
 			golden: "testdata/almalinux-8.json.golden",
+		},
+		{
+			name: "rocky linux 8",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/rockylinux-8.tar.gz",
+			},
+			golden: "testdata/rockylinux-8.json.golden",
 		},
 		{
 			name: "distroless base",
@@ -214,12 +216,20 @@ func TestTar(t *testing.T) {
 			golden: "testdata/opensuse-leap-151.json.golden",
 		},
 		{
-			name: "photon 3.0 integration",
+			name: "photon 3.0",
 			testArgs: args{
 				Format: "json",
 				Input:  "testdata/fixtures/images/photon-30.tar.gz",
 			},
 			golden: "testdata/photon-30.json.golden",
+		},
+		{
+			name: "CBL-Mariner 1.0",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/mariner-1.0.tar.gz",
+			},
+			golden: "testdata/mariner-1.0.json.golden",
 		},
 		{
 			name: "buxybox with Cargo.lock integration",

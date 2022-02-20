@@ -13,7 +13,7 @@
       "type": "issue",
       "check_name": "container_scanning",
       "categories": [ "Security" ],
-      "description": "{{ .VulnerabilityID }}: {{ .Title }}",
+      "description": {{ list .VulnerabilityID .Title | join ": " | printf "%q" }},
       "fingerprint": "{{ .VulnerabilityID | sha1sum }}",
       "content": {{ .Description | printf "%q" }},
       "severity": {{ if eq .Severity "LOW" -}}
