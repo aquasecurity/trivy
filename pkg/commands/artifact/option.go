@@ -60,7 +60,7 @@ func (c *Option) Init() error {
 }
 
 func (c *Option) initPreScanOptions() error {
-	if err := c.ReportOption.Init(c.Logger); err != nil {
+	if err := c.ReportOption.Init(c.Context.App.Writer, c.Logger); err != nil {
 		return err
 	}
 	if err := c.DBOption.Init(); err != nil {

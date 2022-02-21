@@ -3,7 +3,6 @@ package option
 import (
 	"io"
 	"os"
-	"reflect"
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -52,12 +51,11 @@ func NewReportOption(c *cli.Context) ReportOption {
 		IgnoreFile:     c.String("ignorefile"),
 		IgnoreUnfixed:  c.Bool("ignore-unfixed"),
 		ExitCode:       c.Int("exit-code"),
-		Output:         c.App.Writer,
 	}
 }
 
 // Init initializes the ReportOption
-func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
+func (c *ReportOption) Init(output io.Writer, logger *zap.SugaredLogger) error {
 	var err error
 
 	if c.Template != "" {
@@ -86,9 +84,11 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 	c.vulnType = ""
 	c.securityChecks = ""
 
-	var output io.Writer
-	if output, err = extractOutputByOptions(c); err != nil {
-		return err
+	// The output is os.Stdout by default
+	if c.output != "" {
+		if output, err = os.Create(c.output); err != nil {
+			return xerrors.Errorf("failed to create an output file: %w", err)
+		}
 	}
 
 	c.Output = output
@@ -135,34 +135,4 @@ func splitSeverity(logger *zap.SugaredLogger, severity string) []dbTypes.Severit
 		severities = append(severities, severity)
 	}
 	return severities
-}
-
-func extractOutputByOptions(c *ReportOption) (io.Writer, error) {
-	var err error
-
-	if hasGivenOutputWriter(c) {
-		return c.Output, err
-	}
-
-	var output io.Writer
-	output = os.Stdout
-	if c.output != "" {
-		if output, err = os.Create(c.output); err != nil {
-			return nil, xerrors.Errorf("failed to create an output file: %w", err)
-		}
-	}
-
-	return output, err
-}
-
-func hasGivenOutputWriter(ro *ReportOption) bool {
-	if ro.Output == nil || ro.output != "" {
-		return false
-	}
-	switch reflect.TypeOf(ro.Output).Kind() {
-	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
-		return !reflect.ValueOf(ro.Output).IsNil()
-	}
-
-	return true
 }
