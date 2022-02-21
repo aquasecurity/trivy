@@ -32,7 +32,7 @@ func Run(cliCtx *cli.Context) error {
 	ctx, cancel := context.WithTimeout(cliCtx.Context, opt.Timeout)
 	defer cancel()
 
-	if opt.FileSystem {
+	if opt.ScanFileSystem {
 		// Disable the individual package scanning
 		opt.DisabledAnalyzers = analyzer.TypeIndividualPkgs
 	} else {
@@ -180,7 +180,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 		return s, func() {}, nil
 	}
 
-	if opt.FileSystem {
+	if opt.ScanFileSystem {
 		s, cleanup, err := initializeFilesystemScanner(ctx, opt.Target, remoteCache, client.CustomHeaders(opt.CustomHeaders),
 			client.RemoteURL(opt.RemoteAddr), client.Insecure(opt.Insecure), artifactOpt, configScannerOptions)
 		if err != nil {
