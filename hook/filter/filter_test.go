@@ -71,8 +71,20 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 							},
 						},
 					},
+					{
+						Type:     types.GoBinary,
+						FilePath: "usr/local/bin/goBinariryFile",
+						Libraries: []types.Package{
+							{
+								Name:     "cloud.google.com/go",
+								Version:  "v0.81.0",
+								FilePath: "",
+							},
+						},
+					},
 				},
 				SystemFiles: []string{
+					"/",
 					"/usr/bin/pydoc",
 					"/usr/bin/python",
 					"/usr/bin/python2",
@@ -127,6 +139,16 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 								Name:     "pycurl",
 								Version:  "7.19.0",
 								FilePath: "usr/lib64/python2.7/site-packages/pycurl-7.19.0-py2.7.egg-info",
+							},
+						},
+					},
+					{
+						Type:     types.GoBinary,
+						FilePath: "usr/local/bin/goBinariryFile",
+						Libraries: []types.Package{
+							{
+								Name:    "cloud.google.com/go",
+								Version: "v0.81.0",
 							},
 						},
 					},
