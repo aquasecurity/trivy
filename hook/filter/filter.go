@@ -42,7 +42,12 @@ func (h systemFileFilterHook) Hook(blob *types.BlobInfo) error {
 	var systemFiles []string
 	for _, file := range append(blob.SystemFiles, defaultSystemFiles...) {
 		// Trim leading slashes to be the same format as the path in container images.
-		systemFiles = append(systemFiles, strings.TrimPrefix(file, "/"))
+		systemFile := strings.TrimPrefix(file, "/")
+		// We should check the root filepath ("/") and ignore it.
+		// Otherwise libraries with an empty filePath will be removed.
+		if systemFile != "" {
+			systemFiles = append(systemFiles, systemFile)
+		}
 	}
 
 	var apps []types.Application
