@@ -3,11 +3,12 @@ package scanner
 import (
 	"context"
 	_ "embed"
+	"log"
 	"path/filepath"
 
-	cfExternal "github.com/aquasecurity/cfsec/pkg/externalscan"
 	"github.com/aquasecurity/defsec/rules"
-	tfExternal "github.com/aquasecurity/tfsec/pkg/externalscan"
+	cfExternal "github.com/aquasecurity/defsec/scanners/cloudformation/scanner"
+	tfExternal "github.com/aquasecurity/tfsec/pkg/scanner"
 	"github.com/open-policy-agent/opa/rego"
 	"golang.org/x/xerrors"
 
@@ -24,21 +25,32 @@ type Scanner struct {
 	engine     *policy.Engine
 
 	// for Terraform
-	tfscanner *tfExternal.ExternalScanner
+	tfscanner *tfExternal.Scanner
 
 	// for CloudFormation
-	cfScanner *cfExternal.ExternalScanner
+	cfScanner *cfExternal.Scanner
 }
 
 func New(rootDir string, namespaces, policyPaths, dataPaths []string, trace bool) (Scanner, error) {
+
+	tfOptions := []tfExternal.Option{
+		tfExternal.OptionIncludePassed(true),
+	}
+
+	cfOptions := []cfExternal.Option{
+		cfExternal.OptionIncludePassed(),
+	}
+
+	if trace {
+		tfOptions = append(tfOptions, tfExternal.OptionWithDebugWriter(log.Writer()))
+		cfOptions = append(cfOptions, cfExternal.OptionWithDebug(log.Writer()))
+	}
+
 	scanner := Scanner{
 		rootDir:    rootDir,
 		namespaces: namespaces,
-		tfscanner: tfExternal.NewExternalScanner(
-			tfExternal.OptionIncludePassed(),
-			tfExternal.OptionDebugEnabled(trace),
-		),
-		cfScanner: cfExternal.NewExternalScanner(cfExternal.OptionIncludePassed()),
+		tfscanner:  tfExternal.New(tfOptions...),
+		cfScanner:  cfExternal.New(cfOptions...),
 	}
 
 	if len(namespaces) > 0 && len(policyPaths) > 0 {
@@ -75,14 +87,14 @@ func (s Scanner) ScanConfigs(ctx context.Context, files []types.Config) ([]types
 	misconfs = append(misconfs, results...)
 
 	// Scan terraform files by TFSec
-	results, err = s.scanTerraformByTFSec(tfFiles)
+	results, err = s.scanTerraform(tfFiles)
 	if err != nil {
 		return nil, xerrors.Errorf("scan terraform error: %w", err)
 	}
 	misconfs = append(misconfs, results...)
 
 	// Scan CloudFormation files by CFSec
-	results, err = s.scanCloudFormationByCFSec(cfFiles)
+	results, err = s.scanCloudFormation(cfFiles)
 	if err != nil {
 		return nil, xerrors.Errorf("scan cloudformation error: %w", err)
 	}
@@ -118,75 +130,78 @@ func (s Scanner) scanConfigsByRego(ctx context.Context, files []types.Config) ([
 	return misconfs, nil
 }
 
-func (s Scanner) scanCloudFormationByCFSec(files []types.Config) ([]types.Misconfiguration, error) {
+func (s Scanner) scanCloudFormation(files []types.Config) ([]types.Misconfiguration, error) {
 	if len(files) == 0 {
 		return nil, nil
 	}
 
 	misConfs := map[string]types.Misconfiguration{}
+
+	rootDir, err := filepath.Abs(s.rootDir)
+	if err != nil {
+		return nil, xerrors.Errorf("filepath abs (%s): %w", s.rootDir, err)
+	}
 	for _, file := range files {
-		results, err := s.cfScanner.Scan(file.FilePath)
+		err := s.cfScanner.AddPath(file.FilePath)
 		if err != nil {
 			return nil, xerrors.Errorf("cloudformation scan error: %w", err)
 		}
-		rootDir, err := filepath.Abs(s.rootDir)
+	}
+
+	results, err := s.cfScanner.Scan()
+	if err != nil {
+		return nil, xerrors.Errorf("cloudformation scan error: %w", err)
+	}
+	for _, result := range results {
+		flattened := result.Flatten()
+
+		misconfResult := types.MisconfResult{
+			Message: result.Description(),
+			PolicyMetadata: types.PolicyMetadata{
+				ID:                 flattened.RuleID,
+				Type:               "Cloudformation Security Check",
+				Title:              flattened.RuleSummary,
+				Description:        flattened.Impact,
+				Severity:           string(flattened.Severity),
+				RecommendedActions: flattened.Resolution,
+				References:         flattened.Links,
+			},
+			IacMetadata: types.IacMetadata{
+				Resource:  flattened.Resource,
+				Provider:  flattened.RuleProvider.DisplayName(),
+				Service:   flattened.RuleService,
+				StartLine: flattened.Location.StartLine,
+				EndLine:   flattened.Location.EndLine,
+			},
+		}
+
+		filename := flattened.Location.Filename
+		filePath, err := filepath.Rel(rootDir, filename)
 		if err != nil {
-			return nil, xerrors.Errorf("filepath abs (%s): %w", s.rootDir, err)
+			return nil, xerrors.Errorf("filepath rel, root: [%s], result: [%s] %w", rootDir, filename, err)
 		}
 
-		for _, result := range results {
-			misconfResult := types.MisconfResult{
-				Message: result.Description,
-				PolicyMetadata: types.PolicyMetadata{
-					ID:                 result.RuleID,
-					Type:               "Cloudformation Security Check powered by cfsec",
-					Title:              result.RuleSummary,
-					Description:        result.Impact,
-					Severity:           string(result.Severity),
-					RecommendedActions: result.Resolution,
-					References:         result.Links,
-				},
-				IacMetadata: types.IacMetadata{
-					Resource:  result.Resource,
-					Provider:  result.RuleProvider.DisplayName(),
-					Service:   result.RuleService,
-					StartLine: result.Location.StartLine,
-					EndLine:   result.Location.EndLine,
-				},
+		misconf, ok := misConfs[filePath]
+		if !ok {
+			misconf = types.Misconfiguration{
+				FileType: types.CloudFormation,
+				FilePath: filePath,
 			}
-
-			filename := result.Location.Filename
-			if filename == "" {
-				filename = file.FilePath
-			}
-
-			filePath, err := filepath.Rel(rootDir, filename)
-			if err != nil {
-				return nil, xerrors.Errorf("filepath rel, root: [%s], result: [%s] %w", rootDir, file.FilePath, err)
-			}
-
-			misconf, ok := misConfs[filePath]
-			if !ok {
-				misconf = types.Misconfiguration{
-					FileType: types.CloudFormation,
-					FilePath: filePath,
-				}
-			}
-
-			if result.Status == rules.StatusPassed {
-				misconf.Successes = append(misconf.Successes, misconfResult)
-			} else {
-				misconf.Failures = append(misconf.Failures, misconfResult)
-			}
-			misConfs[filePath] = misconf
 		}
+
+		if flattened.Status == rules.StatusPassed {
+			misconf.Successes = append(misconf.Successes, misconfResult)
+		} else {
+			misconf.Failures = append(misconf.Failures, misconfResult)
+		}
+		misConfs[filePath] = misconf
 	}
 
 	return types.ToMisconfigurations(misConfs), nil
 }
 
-// scanTerraformByTFSec scans terraform files by using tfsec/tfsec
-func (s Scanner) scanTerraformByTFSec(files []types.Config) ([]types.Misconfiguration, error) {
+// scanTerraform scans terraform files by using tfsec/tfsec
+func (s Scanner) scanTerraform(files []types.Config) ([]types.Misconfiguration, error) {
 	if len(files) == 0 {
 		return nil, nil
 	}
@@ -196,7 +211,7 @@ func (s Scanner) scanTerraformByTFSec(files []types.Config) ([]types.Misconfigur
 			return nil, xerrors.Errorf("terraform path error: %w", err)
 		}
 	}
-	results, err := s.tfscanner.Scan()
+	results, _, err := s.tfscanner.Scan()
 	if err != nil {
 		return nil, xerrors.Errorf("terraform scan error: %w", err)
 	}
@@ -207,27 +222,29 @@ func (s Scanner) scanTerraformByTFSec(files []types.Config) ([]types.Misconfigur
 	}
 
 	misconfs := map[string]types.Misconfiguration{}
+
 	for _, result := range results {
+		flattened := result.Flatten()
 		misconfResult := types.MisconfResult{
-			Message: result.Description,
+			Message: flattened.Description,
 			PolicyMetadata: types.PolicyMetadata{
-				ID:                 result.RuleID,
-				Type:               "Terraform Security Check powered by tfsec",
-				Title:              result.RuleSummary,
-				Description:        result.Impact,
-				Severity:           string(result.Severity),
-				RecommendedActions: result.Resolution,
-				References:         result.Links,
+				ID:                 flattened.RuleID,
+				Type:               "Terraform Security Check",
+				Title:              flattened.RuleSummary,
+				Description:        flattened.Impact,
+				Severity:           string(flattened.Severity),
+				RecommendedActions: flattened.Resolution,
+				References:         flattened.Links,
 			},
 			IacMetadata: types.IacMetadata{
-				Resource:  result.Resource,
-				Provider:  result.RuleProvider.DisplayName(),
-				Service:   result.RuleService,
-				StartLine: result.Location.StartLine,
-				EndLine:   result.Location.EndLine,
+				Resource:  flattened.Resource,
+				Provider:  flattened.RuleProvider.DisplayName(),
+				Service:   flattened.RuleService,
+				StartLine: flattened.Location.StartLine,
+				EndLine:   flattened.Location.EndLine,
 			},
 		}
-		filePath, err := filepath.Rel(rootDir, result.Range().Filename)
+		filePath, err := filepath.Rel(rootDir, flattened.Location.Filename)
 		if err != nil {
 			return nil, xerrors.Errorf("filepath rel: %w", err)
 		}
@@ -240,7 +257,7 @@ func (s Scanner) scanTerraformByTFSec(files []types.Config) ([]types.Misconfigur
 			}
 		}
 
-		if result.Passed() {
+		if flattened.Status == rules.StatusPassed {
 			misconf.Successes = append(misconf.Successes, misconfResult)
 		} else {
 			misconf.Failures = append(misconf.Failures, misconfResult)
