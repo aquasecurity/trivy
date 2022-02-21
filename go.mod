@@ -28,7 +28,7 @@ require (
 	github.com/goccy/go-yaml v1.8.2 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-containerregistry v0.7.1-0.20211214010025-a65b7844a475
-	github.com/google/wire v0.4.0
+	github.com/google/wire v0.5.0
 	github.com/hashicorp/go-getter v1.5.11
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/klauspost/compress v1.14.2 // indirect
@@ -59,3 +59,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 	k8s.io/utils v0.0.0-20201110183641-67b214c5f920
 )
+
+// To resolve CVE-2021-3538. Note that it is used only for testing.
+replace github.com/satori/go.uuid v1.2.0 => github.com/satori/go.uuid v1.2.1-0.20181016170032-d91630c85102
