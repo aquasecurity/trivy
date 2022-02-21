@@ -1,0 +1,4 @@
+# Accept the risk
+
+# github.com/satori/go.uuid uses only for tests. the binary file doesn't contain this library.
+CVE-2021-3538
