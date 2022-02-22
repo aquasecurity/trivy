@@ -359,6 +359,7 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 
 			f, err := os.Open(outputFile)
 			require.NoError(t, err)
+			defer f.Close()
 
 			var got cdx.BOM
 			err = json.NewDecoder(f).Decode(&got)
