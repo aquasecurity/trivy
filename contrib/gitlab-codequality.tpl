@@ -35,5 +35,37 @@
       }
     }
     {{- end -}}
+    {{- range .Misconfigurations -}}
+    {{- if $t_first -}}
+      {{- $t_first = false -}}
+    {{ else -}}
+      ,
+    {{- end }}
+    {
+      "type": "issue",
+      "check_name": "container_scanning",
+      "categories": [ "Security" ],
+      "description": {{ list .ID .Title | join ": " | printf "%q" }},
+      "fingerprint": "{{ join .ID $target | sha1sum }}",
+      "content": {{ .Description | printf "%q" }},
+      "severity": {{ if eq .Severity "LOW" -}}
+                    "info"
+                  {{- else if eq .Severity "MEDIUM" -}}
+                    "minor"
+                  {{- else if eq .Severity "HIGH" -}}
+                    "major"
+                  {{- else if eq .Severity "CRITICAL" -}}
+                    "critical"
+                  {{-  else -}}
+                    "info"
+                  {{- end }},
+      "location": {
+        "path": "{{ $target }}",
+        "lines": {
+          "begin": {{ .IacMetadata.StartLine }}
+        }
+      }
+    }
+    {{- end -}}
   {{- end }}
 ]
