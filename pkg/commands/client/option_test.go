@@ -139,45 +139,6 @@ func TestConfig_Init(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path with list-all-pkgs warning",
-			args: []string{"--format", "table", "--list-all-pkgs", "centos:7"},
-			logs: []string{
-				`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`,
-			},
-			want: Option{
-				ReportOption: option.ReportOption{
-					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
-					Format:         "table",
-					Output:         os.Stdout,
-					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability},
-					ListAllPkgs:    true,
-				},
-				ArtifactOption: option.ArtifactOption{
-					Target: "centos:7",
-				},
-				CustomHeaders: http.Header{},
-			},
-		},
-		{
-			name: "happy path without list-all-pkgs warning",
-			args: []string{"--format", "json", "--list-all-pkgs", "centos:7"},
-			want: Option{
-				ReportOption: option.ReportOption{
-					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
-					Format:         "json",
-					Output:         os.Stdout,
-					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability},
-					ListAllPkgs:    true,
-				},
-				ArtifactOption: option.ArtifactOption{
-					Target: "centos:7",
-				},
-				CustomHeaders: http.Header{},
-			},
-		},
-		{
 			name: "invalid option combination: --template enabled without --format",
 			args: []string{"--template", "@contrib/gitlab.tpl", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
@@ -277,7 +238,6 @@ func TestConfig_Init(t *testing.T) {
 			set.Bool("quiet", false, "")
 			set.Bool("no-progress", false, "")
 			set.Bool("clear-cache", false, "")
-			set.Bool("list-all-pkgs", false, "")
 			set.String("severity", "CRITICAL", "")
 			set.String("vuln-type", "os,library", "")
 			set.String("security-checks", "vuln", "")
