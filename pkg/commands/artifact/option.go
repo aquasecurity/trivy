@@ -58,7 +58,7 @@ func (c *Option) Init() error {
 
 	// "--list-all-pkgs" option is unavailable with "--format table".
 	// If user specifies "--list-all-pkgs" with "--format table", we should warn it.
-	if c.ListAllPkgs && c.Format != "json" {
+	if c.ListAllPkgs && c.Format == "table" {
 		c.Logger.Warn(`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`)
 	}
 
