@@ -42,7 +42,7 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 
 	var qualifiers packageurl.Qualifiers
 	if metadata.OS != nil {
-		qualifiers = parseQualifier(pkg, metadata.OS.Name)
+		qualifiers = parseQualifier(pkg)
 	}
 
 	name := pkg.Name
@@ -233,7 +233,7 @@ func purlType(t string) string {
 	return t
 }
 
-func parseQualifier(pkg ftypes.Package, distro string) packageurl.Qualifiers {
+func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 	qualifiers := packageurl.Qualifiers{}
 	if pkg.Arch != "" {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
