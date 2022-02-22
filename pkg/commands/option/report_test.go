@@ -177,6 +177,28 @@ func TestReportReportConfig_Init(t *testing.T) {
 				SecurityChecks: []string{types.SecurityCheckVulnerability},
 			},
 		},
+		{
+			name: "invalid option combination: --list-all-pkgs with --format table",
+			fields: fields{
+				Format:         "table",
+				severities:     "LOW",
+				vulnType:       "os",
+				securityChecks: "vuln",
+				listAllPksgs:   true,
+			},
+			args: []string{"centos:7"},
+			logs: []string{
+				`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`,
+			},
+			want: ReportOption{
+				Format:         "table",
+				Output:         os.Stdout,
+				Severities:     []dbTypes.Severity{dbTypes.SeverityLow},
+				VulnType:       []string{types.VulnTypeOS},
+				SecurityChecks: []string{types.SecurityCheckVulnerability},
+				ListAllPkgs:    true,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
