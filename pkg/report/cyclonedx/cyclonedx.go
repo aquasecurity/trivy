@@ -139,7 +139,6 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 	var components []cdx.Component
 	var dependencies []cdx.Dependency
 	var metadataDependencies []cdx.Dependency
-	libraryUniqMap := map[string]struct{}{}
 	for _, result := range r.Results {
 		var componentDependencies []cdx.Dependency
 		for _, pkg := range result.Packages {
@@ -148,11 +147,7 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 				return nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
 
-			if _, ok := libraryUniqMap[pkgComponent.BOMRef]; !ok {
-				libraryUniqMap[pkgComponent.BOMRef] = struct{}{}
-				components = append(components, pkgComponent)
-			}
-
+			components = append(components, pkgComponent)
 			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
 		}
 
