@@ -185,6 +185,8 @@ Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
   - **Suitable for CI** such as GitHub Actions, Jenkins, GitLab CI, etc.
 - Support multiple targets
   - container image, local filesystem and remote git repository
+- Supply chain security (SBOM support)
+  - Support CycloneDX
 
 # Integrations
 - [GitHub Actions][action]

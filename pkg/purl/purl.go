@@ -2,7 +2,6 @@ package purl
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	cn "github.com/google/go-containerregistry/pkg/name"
@@ -20,15 +19,36 @@ const (
 	TypeOCI = "oci"
 )
 
-// nolint: gocyclo
-func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (packageurl.PackageURL, error) {
-	ptype := purlType(t)
+type PackageURL struct {
+	packageurl.PackageURL
+	FilePath string
+}
 
+func (purl PackageURL) BOMRef() string {
+	// 'bom-ref' must be unique within BOM, but PURLs may conflict
+	// when the same packages are installed in an artifact.
+	// In that case, we prefer to make PURLs unique by adding file paths,
+	// rather than using UUIDs, even if it is not PURL technically.
+	// ref. https://cyclonedx.org/use-cases/#dependency-graph
+	if purl.FilePath != "" {
+		purl.Qualifiers = append(purl.Qualifiers,
+			packageurl.Qualifier{
+				Key:   "file_path",
+				Value: purl.FilePath,
+			},
+		)
+	}
+	return purl.PackageURL.String()
+}
+
+// nolint: gocyclo
+func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (PackageURL, error) {
 	var qualifiers packageurl.Qualifiers
 	if metadata.OS != nil {
-		qualifiers = parseQualifier(pkg, metadata.OS.Name)
+		qualifiers = parseQualifier(pkg)
 	}
 
+	ptype := purlType(t)
 	name := pkg.Name
 	version := utils.FormatVersion(pkg)
 	namespace := ""
@@ -41,7 +61,7 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (packa
 	case packageurl.TypeDebian:
 		qualifiers = append(qualifiers, parseDeb(metadata.OS)...)
 		namespace = metadata.OS.Family
-	case string(analyzer.TypeApk): // TODO: replace with packageurl.TypeApk
+	case string(analyzer.TypeApk): // TODO: replace with packageurl.TypeApk once they add it.
 		qualifiers = append(qualifiers, parseApk(metadata.OS)...)
 		namespace = metadata.OS.Family
 	case packageurl.TypeMaven:
@@ -55,15 +75,23 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (packa
 	case packageurl.TypeNPM:
 		namespace, name = parseNpm(name)
 	case packageurl.TypeOCI:
-		return parseOCI(metadata)
+		purl, err := parseOCI(metadata)
+		if err != nil {
+			return PackageURL{}, err
+		}
+		return PackageURL{PackageURL: purl}, nil
 	}
 
-	return *packageurl.NewPackageURL(ptype, namespace, name, version, qualifiers, ""), nil
+	return PackageURL{
+		PackageURL: *packageurl.NewPackageURL(ptype, namespace, name, version, qualifiers, ""),
+		FilePath:   pkg.FilePath,
+	}, nil
 }
 
+// ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#oci
 func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 	if len(metadata.RepoDigests) == 0 {
-		return packageurl.PackageURL{}, xerrors.New("repository digests empty error")
+		return *packageurl.NewPackageURL("", "", "", "", nil, ""), nil
 	}
 
 	digest, err := cn.NewDigest(metadata.RepoDigests[0])
@@ -99,6 +127,7 @@ func parseApk(fos *ftypes.OS) packageurl.Qualifiers {
 	}
 }
 
+// ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#deb
 func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
 	distro := fmt.Sprintf("%s-%s", fos.Family, fos.Name)
 	return packageurl.Qualifiers{
@@ -109,6 +138,7 @@ func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
 	}
 }
 
+// ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#rpm
 func parseRPM(fos *ftypes.OS, modularityLabel string) (string, packageurl.Qualifiers) {
 	// SLES string has whitespace
 	family := fos.Family
@@ -117,7 +147,6 @@ func parseRPM(fos *ftypes.OS, modularityLabel string) (string, packageurl.Qualif
 	}
 
 	distro := fmt.Sprintf("%s-%s", family, fos.Name)
-
 	qualifiers := packageurl.Qualifiers{
 		{
 			Key:   "distro",
@@ -134,54 +163,36 @@ func parseRPM(fos *ftypes.OS, modularityLabel string) (string, packageurl.Qualif
 	return family, qualifiers
 }
 
+// ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#maven
 func parseMaven(pkgName string) (string, string) {
-	var namespace string
+	// The group id is the "namespace" and the artifact id is the "name".
 	name := strings.ReplaceAll(pkgName, ":", "/")
-	index := strings.LastIndex(name, "/")
-	if index != -1 {
-		namespace = name[:index]
-		name = name[index+1:]
-	}
-	return namespace, name
+	return parsePkgName(name)
 }
 
+// ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#golang
 func parseGolang(pkgName string) (string, string) {
-	var namespace string
-
 	name := strings.ToLower(pkgName)
-	index := strings.LastIndex(name, "/")
-	if index != -1 {
-		namespace = name[:index]
-		name = name[index+1:]
-	}
-	return namespace, name
+	return parsePkgName(name)
 }
 
+// ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#pypi
 func parsePyPI(pkgName string) string {
+	// PyPi treats - and _ as the same character and is not case-sensitive.
+	// Therefore a Pypi package name must be lowercased and underscore "_" replaced with a dash "-".
 	return strings.ToLower(strings.ReplaceAll(pkgName, "_", "-"))
 }
 
+// ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#composer
 func parseComposer(pkgName string) (string, string) {
-	var namespace, name string
-
-	index := strings.LastIndex(pkgName, "/")
-	if index != -1 {
-		namespace = pkgName[:index]
-		name = pkgName[index+1:]
-	}
-	return namespace, name
+	return parsePkgName(pkgName)
 }
 
+// ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#npm
 func parseNpm(pkgName string) (string, string) {
-	var namespace string
-
+	// the name must be lowercased
 	name := strings.ToLower(pkgName)
-	index := strings.LastIndex(pkgName, "/")
-	if index != -1 {
-		namespace = name[:index]
-		name = name[index+1:]
-	}
-	return namespace, name
+	return parsePkgName(name)
 }
 
 func purlType(t string) string {
@@ -210,7 +221,7 @@ func purlType(t string) string {
 	return t
 }
 
-func parseQualifier(pkg ftypes.Package, distro string) packageurl.Qualifiers {
+func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 	qualifiers := packageurl.Qualifiers{}
 	if pkg.Arch != "" {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
@@ -218,11 +229,16 @@ func parseQualifier(pkg ftypes.Package, distro string) packageurl.Qualifiers {
 			Value: pkg.Arch,
 		})
 	}
-	if pkg.Epoch != 0 {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "epoch",
-			Value: strconv.Itoa(pkg.Epoch),
-		})
-	}
 	return qualifiers
+}
+
+func parsePkgName(name string) (string, string) {
+	var namespace string
+	index := strings.LastIndex(name, "/")
+	if index != -1 {
+		namespace = name[:index]
+		name = name[index+1:]
+	}
+	return namespace, name
+
 }

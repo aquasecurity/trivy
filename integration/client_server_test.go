@@ -5,6 +5,7 @@ package integration
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"testing"
 	"time"
 
+	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -32,6 +34,7 @@ type csArgs struct {
 	Input             string
 	ClientToken       string
 	ClientTokenHeader string
+	ListAllPackages   bool
 }
 
 func TestClientServer(t *testing.T) {
@@ -318,6 +321,55 @@ func TestClientServerWithTemplate(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.EqualValues(t, string(want), string(got))
+		})
+	}
+}
+
+func TestClientServerWithCycloneDX(t *testing.T) {
+	tests := []struct {
+		name                  string
+		args                  csArgs
+		wantComponentsCount   int
+		wantDependenciesCount int
+		wantDependsOnCount    []int
+	}{
+		{
+			name: "fluentd with RubyGems with CycloneDX format",
+			args: csArgs{
+				Format: "cyclonedx",
+				Input:  "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
+			},
+			wantComponentsCount:   161,
+			wantDependenciesCount: 2,
+			wantDependsOnCount: []int{
+				105,
+				56,
+			},
+		},
+	}
+
+	app, addr, cacheDir := setup(t, setupOptions{})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			osArgs, outputFile := setupClient(t, tt.args, addr, cacheDir, "")
+
+			// Run Trivy client
+			err := app.Run(osArgs)
+			require.NoError(t, err)
+
+			f, err := os.Open(outputFile)
+			require.NoError(t, err)
+			defer f.Close()
+
+			var got cdx.BOM
+			err = json.NewDecoder(f).Decode(&got)
+			require.NoError(t, err)
+
+			assert.EqualValues(t, tt.wantComponentsCount, len(*got.Components))
+			assert.EqualValues(t, tt.wantDependenciesCount, len(*got.Dependencies))
+			for i, dep := range *got.Dependencies {
+				assert.EqualValues(t, tt.wantDependsOnCount[i], len(*dep.Dependencies))
+			}
 		})
 	}
 }

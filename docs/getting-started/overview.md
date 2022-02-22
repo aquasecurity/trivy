@@ -55,6 +55,8 @@ See [Integrations][integrations] for details.
         - An image directory compliant with [OCI Image Format][oci]
     - local filesystem and rootfs
     - remote git repository
+- SBOM (Software Bill of Materials) support
+    - CycloneDX 
 
 Please see [LICENSE][license] for Trivy licensing information.
 
