@@ -175,7 +175,7 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg || result.Type == ftypes.GoBinary ||
 			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar {
 			// If a package is language-specific package that isn't associated with a lock file,
-			// it will be dependent of a component under "metadata".
+			// it will be a dependency of a component under "metadata".
 			// e.g.
 			//   Container component (alpine:3.15) ----------------------- #1
 			//     -> Library component (npm package, express-4.17.3) ---- #2
@@ -186,7 +186,7 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 			// Dependency graph from #1 to #2
 			metadataDependencies = append(metadataDependencies, componentDependencies...)
 		} else {
-			// If a package is OS package, it will be dependent of "Operating System" component.
+			// If a package is OS package, it will be a dependency of "Operating System" component.
 			// e.g.
 			//   Container component (alpine:3.15) --------------------- #1
 			//     -> Operating System Component (Alpine Linux 3.15) --- #2
@@ -195,7 +195,7 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 			//       -> etc.
 			//
 			// Else if a package is language-specific package associated with a lock file,
-			// it will be dependent of "Application" component.
+			// it will be a dependency of "Application" component.
 			// e.g.
 			//   Container component (alpine:3.15) ------------------------ #1
 			//     -> Application component (/app/package-lock.json) ------ #2
