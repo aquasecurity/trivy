@@ -59,7 +59,7 @@ func (c *Option) Init() error {
 	//--list-all-pkgs option is available only with --format json.
 	// If user specifies --list-all-pkgs with other than --format json, we should warn it.
 	if c.ListAllPkgs && c.Format != "json" {
-		c.Logger.Warn(`"--list-all-pkgs" option is available only with "--format json".`)
+		c.Logger.Warn(`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`)
 	}
 
 	return nil

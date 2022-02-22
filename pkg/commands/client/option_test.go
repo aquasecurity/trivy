@@ -142,7 +142,7 @@ func TestConfig_Init(t *testing.T) {
 			name: "happy path with list-all-pkgs warning",
 			args: []string{"--format", "table", "--list-all-pkgs", "centos:7"},
 			logs: []string{
-				"\"--list-all-pkgs\" option is available only with \"--format json\".",
+				`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`,
 			},
 			want: Option{
 				ReportOption: option.ReportOption{
