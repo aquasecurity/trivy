@@ -1,4 +1,4 @@
-- bucket: GitHub Security Advisory Npm
+- bucket: "npm::GitHub Security Advisory Npm"
   pairs:
     - bucket: jquery
       pairs:

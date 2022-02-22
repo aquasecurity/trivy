@@ -65,6 +65,11 @@
           },
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18224",
+          "DataSource": {
+            "ID": "debian",
+            "Name": "Debian Security Tracker",
+            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+          },
           "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
           "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
           "Severity": "CRITICAL",
@@ -86,6 +91,7 @@
           "References": [
             "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00008.html",
             "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00009.html",
+            "https://access.redhat.com/security/cve/CVE-2019-18224",
             "https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=12420",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18224",
             "https://github.com/libidn/libidn2/commit/e4d1558aa2c1c04a05066ee8600f37603890ba8c",

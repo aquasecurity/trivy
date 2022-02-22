@@ -1,4 +1,4 @@
-- bucket: GitHub Security Advisory Rubygems
+- bucket: "rubygems::GitHub Security Advisory RubyGems"
   pairs:
     - bucket: activesupport
       pairs:

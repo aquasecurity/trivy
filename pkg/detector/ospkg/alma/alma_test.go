@@ -10,6 +10,8 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -28,8 +30,11 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/alma.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				"testdata/fixtures/alma.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.4",
 				pkgs: []ftypes.Package{
@@ -56,12 +61,17 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "3.6.8-36.el8.alma",
 					FixedVersion:     "3.6.8-37.el8.alma",
 					Layer:            ftypes.Layer{},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Alma,
+						Name: "AlmaLinux Product Errata",
+						URL:  "https://errata.almalinux.org/",
+					},
 				},
 			},
 		},
 		{
 			name:     "skip modular package",
-			fixtures: []string{"testdata/fixtures/modular.yaml"},
+			fixtures: []string{"testdata/fixtures/modular.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "8.4",
 				pkgs: []ftypes.Package{
@@ -85,7 +95,7 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				osVer: "8.4",
 				pkgs: []ftypes.Package{

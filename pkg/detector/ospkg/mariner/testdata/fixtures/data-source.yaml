@@ -1,0 +1,14 @@
+- bucket: data-source
+  pairs:
+    - key: CBL-Mariner 1.0
+      value:
+        ID: "cbl-mariner"
+        Name: "CBL-Mariner Vulnerability Data"
+        URL:  "https://github.com/microsoft/CBL-MarinerVulnerabilityData"
+- bucket: data-source
+  pairs:
+    - key: CBL-Mariner 2.0
+      value:
+        ID: "cbl-mariner"
+        Name: "CBL-Mariner Vulnerability Data"
+        URL:  "https://github.com/microsoft/CBL-MarinerVulnerabilityData"

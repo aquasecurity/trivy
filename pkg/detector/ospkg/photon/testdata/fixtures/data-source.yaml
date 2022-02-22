@@ -1,0 +1,7 @@
+- bucket: data-source
+  pairs:
+    - key: Photon OS 1.0
+      value:
+        ID: "photon"
+        Name: "Photon OS CVE metadata"
+        URL: "https://packages.vmware.com/photon/photon_cve_metadata/"

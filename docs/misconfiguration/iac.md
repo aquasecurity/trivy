@@ -111,7 +111,7 @@ Failures: 9 (HIGH: 6, CRITICAL: 1)
 +                                          +            +                                          +          +--------------------------------------------------------+
 |                                          |            |                                          |          | Resource                                               |
 |                                          |            |                                          |          | 'aws_api_gateway_domain_name.missing_security_policy'  |
-|                                          |            |                                          |          | should include security_policy (defauls to outdated    |
+|                                          |            |                                          |          | should include security_policy (defaults to outdated   |
 |                                          |            |                                          |          | SSL/TLS policy). -->tfsec.dev/docs/aws/AWS025/         |
 +                                          +            +                                          +          +--------------------------------------------------------+
 |                                          |            |                                          |          | Resource                                               |

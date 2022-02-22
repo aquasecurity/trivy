@@ -309,6 +309,7 @@ var (
 	insecureFlag = cli.BoolFlag{
 		Name:    "insecure",
 		Usage:   "allow insecure server connections when using SSL",
+		Value:   false,
 		EnvVars: []string{"TRIVY_INSECURE"},
 	}
 
@@ -545,6 +546,7 @@ func NewRepositoryCommand() *cli.Command {
 			&redisBackendKey,
 			&timeoutFlag,
 			&noProgressFlag,
+			&quietFlag,
 			&ignorePolicy,
 			&listAllPackages,
 			&offlineScan,
@@ -584,6 +586,7 @@ func NewClientCommand() *cli.Command {
 			stringSliceFlag(configPolicy),
 			&listAllPackages,
 			&offlineScan,
+			&insecureFlag,
 
 			// original flags
 			&token,

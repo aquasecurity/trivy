@@ -77,7 +77,7 @@ container_scanning:
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
     - time trivy image --clear-cache
     # update vulnerabilities db
-    - time trivy --download-db-only --no-progress --cache-dir .trivycache/
+    - time trivy --cache-dir .trivycache/ image --download-db-only --no-progress
     # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
     - time trivy --cache-dir .trivycache/ image --exit-code 0 --no-progress --format template --template "@/contrib/gitlab.tpl"
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$FULL_IMAGE_NAME"

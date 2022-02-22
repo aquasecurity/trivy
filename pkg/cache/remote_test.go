@@ -135,7 +135,7 @@ func TestRemoteCache_PutArtifact(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), tt.args.customHeaders)
+			c := cache.NewRemoteCache(ts.URL, tt.args.customHeaders, false)
 			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
@@ -196,7 +196,7 @@ func TestRemoteCache_PutBlob(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), tt.args.customHeaders)
+			c := cache.NewRemoteCache(ts.URL, tt.args.customHeaders, false)
 			err := c.PutBlob(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
@@ -274,7 +274,7 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(cache.RemoteURL(ts.URL), tt.args.customHeaders)
+			c := cache.NewRemoteCache(ts.URL, tt.args.customHeaders, false)
 			gotMissingImage, gotMissingLayerIDs, err := c.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
@@ -286,6 +286,52 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 
 			assert.Equal(t, tt.wantMissingImage, gotMissingImage)
 			assert.Equal(t, tt.wantMissingLayerIDs, gotMissingLayerIDs)
+		})
+	}
+}
+
+func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
+	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	defer ts.Close()
+
+	type args struct {
+		imageID   string
+		imageInfo types.ArtifactInfo
+		insecure  bool
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr string
+	}{
+		{
+			name: "happy path",
+			args: args{
+				imageID:   "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
+				imageInfo: types.ArtifactInfo{},
+				insecure:  true,
+			},
+		},
+		{
+			name: "sad path",
+			args: args{
+				imageID:   "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
+				imageInfo: types.ArtifactInfo{},
+				insecure:  false,
+			},
+			wantErr: "certificate signed by unknown authority",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := cache.NewRemoteCache(ts.URL, nil, tt.args.insecure)
+			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
+			if tt.wantErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
+			}
+			assert.NoError(t, err, tt.name)
 		})
 	}
 }

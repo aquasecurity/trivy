@@ -70,6 +70,11 @@
           },
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1549",
+          "DataSource": {
+            "ID": "alpine",
+            "Name": "Alpine Secdb",
+            "URL": "https://secdb.alpinelinux.org/"
+          },
           "Title": "openssl: information disclosure in fork()",
           "Description": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
           "Severity": "MEDIUM",
@@ -89,6 +94,7 @@
             }
           },
           "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-1549",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549",
             "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1b0fe00e2704b5e20334a16d3c9099d1ba2ef1be",
             "https://linux.oracle.com/cve/CVE-2019-1549.html",
@@ -123,6 +129,11 @@
           },
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1551",
+          "DataSource": {
+            "ID": "alpine",
+            "Name": "Alpine Secdb",
+            "URL": "https://secdb.alpinelinux.org/"
+          },
           "Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
           "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
           "Severity": "MEDIUM",
@@ -144,6 +155,7 @@
           "References": [
             "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
             "http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html",
+            "https://access.redhat.com/security/cve/CVE-2019-1551",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551",
             "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f",
             "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f1c5eea8a817075d31e43f5876993c6710238c98",
@@ -186,6 +198,11 @@
           },
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1549",
+          "DataSource": {
+            "ID": "alpine",
+            "Name": "Alpine Secdb",
+            "URL": "https://secdb.alpinelinux.org/"
+          },
           "Title": "openssl: information disclosure in fork()",
           "Description": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
           "Severity": "MEDIUM",
@@ -205,6 +222,7 @@
             }
           },
           "References": [
+            "https://access.redhat.com/security/cve/CVE-2019-1549",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1549",
             "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=1b0fe00e2704b5e20334a16d3c9099d1ba2ef1be",
             "https://linux.oracle.com/cve/CVE-2019-1549.html",
@@ -239,6 +257,11 @@
           },
           "SeveritySource": "nvd",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1551",
+          "DataSource": {
+            "ID": "alpine",
+            "Name": "Alpine Secdb",
+            "URL": "https://secdb.alpinelinux.org/"
+          },
           "Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
           "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
           "Severity": "MEDIUM",
@@ -260,6 +283,7 @@
           "References": [
             "http://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
             "http://packetstormsecurity.com/files/155754/Slackware-Security-Advisory-openssl-Updates.html",
+            "https://access.redhat.com/security/cve/CVE-2019-1551",
             "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551",
             "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=419102400a2811582a7a3d4a4e317d72e5ce0a8f",
             "https://git.openssl.org/gitweb/?p=openssl.git;a=commitdiff;h=f1c5eea8a817075d31e43f5876993c6710238c98",

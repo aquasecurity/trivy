@@ -1,6 +1,7 @@
 package option
 
 import (
+	"io"
 	"os"
 	"strings"
 
@@ -32,7 +33,7 @@ type ReportOption struct {
 	// these variables are populated by Init()
 	VulnType       []string
 	SecurityChecks []string
-	Output         *os.File
+	Output         io.Writer
 	Severities     []dbTypes.Severity
 }
 
@@ -54,7 +55,7 @@ func NewReportOption(c *cli.Context) ReportOption {
 }
 
 // Init initializes the ReportOption
-func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
+func (c *ReportOption) Init(output io.Writer, logger *zap.SugaredLogger) error {
 	var err error
 
 	if c.Template != "" {
@@ -83,17 +84,23 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 	c.vulnType = ""
 	c.securityChecks = ""
 
-	c.Output = os.Stdout
+	// The output is os.Stdout by default
 	if c.output != "" {
-		if c.Output, err = os.Create(c.output); err != nil {
+		if output, err = os.Create(c.output); err != nil {
 			return xerrors.Errorf("failed to create an output file: %w", err)
 		}
 	}
+
+	c.Output = output
 
 	return nil
 }
 
 func (c *ReportOption) populateVulnTypes() error {
+	if c.vulnType == "" {
+		return nil
+	}
+
 	for _, v := range strings.Split(c.vulnType, ",") {
 		if types.NewVulnType(v) == types.VulnTypeUnknown {
 			return xerrors.Errorf("unknown vulnerability type (%s)", v)
@@ -104,6 +111,10 @@ func (c *ReportOption) populateVulnTypes() error {
 }
 
 func (c *ReportOption) populateSecurityChecks() error {
+	if c.securityChecks == "" {
+		return nil
+	}
+
 	for _, v := range strings.Split(c.securityChecks, ",") {
 		if types.NewSecurityCheck(v) == types.SecurityCheckUnknown {
 			return xerrors.Errorf("unknown security check (%s)", v)

@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/mariner"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/oracle"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/photon"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
@@ -36,6 +37,7 @@ var (
 		fos.Alpine:       alpine.NewScanner(),
 		fos.Alma:         alma.NewScanner(),
 		fos.Amazon:       amazon.NewScanner(),
+		fos.CBLMariner:   mariner.NewScanner(),
 		fos.Debian:       debian.NewScanner(),
 		fos.Ubuntu:       ubuntu.NewScanner(),
 		fos.RedHat:       redhat.NewScanner(),
