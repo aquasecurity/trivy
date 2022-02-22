@@ -158,26 +158,14 @@ func parseRPM(fos *ftypes.OS, modularityLabel string) (string, packageurl.Qualif
 }
 
 func parseMaven(pkgName string) (string, string) {
-	var namespace string
+	// The group id is the "namespace" and the artifact id is the "name".
 	name := strings.ReplaceAll(pkgName, ":", "/")
-	index := strings.LastIndex(name, "/")
-	if index != -1 {
-		namespace = name[:index]
-		name = name[index+1:]
-	}
-	return namespace, name
+	return parsePkgName(name)
 }
 
 func parseGolang(pkgName string) (string, string) {
-	var namespace string
-
 	name := strings.ToLower(pkgName)
-	index := strings.LastIndex(name, "/")
-	if index != -1 {
-		namespace = name[:index]
-		name = name[index+1:]
-	}
-	return namespace, name
+	return parsePkgName(name)
 }
 
 func parsePyPI(pkgName string) string {
@@ -185,26 +173,12 @@ func parsePyPI(pkgName string) string {
 }
 
 func parseComposer(pkgName string) (string, string) {
-	var namespace, name string
-
-	index := strings.LastIndex(pkgName, "/")
-	if index != -1 {
-		namespace = pkgName[:index]
-		name = pkgName[index+1:]
-	}
-	return namespace, name
+	return parsePkgName(pkgName)
 }
 
 func parseNpm(pkgName string) (string, string) {
-	var namespace string
-
 	name := strings.ToLower(pkgName)
-	index := strings.LastIndex(pkgName, "/")
-	if index != -1 {
-		namespace = name[:index]
-		name = name[index+1:]
-	}
-	return namespace, name
+	return parsePkgName(name)
 }
 
 func purlType(t string) string {
@@ -242,4 +216,15 @@ func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 		})
 	}
 	return qualifiers
+}
+
+func parsePkgName(name string) (string, string) {
+	var namespace string
+	index := strings.LastIndex(name, "/")
+	if index != -1 {
+		namespace = name[:index]
+		name = name[index+1:]
+	}
+	return namespace, name
+
 }
