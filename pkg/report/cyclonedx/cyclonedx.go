@@ -157,7 +157,7 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 			//    |
 			//    |    Application component (/app2/package-lock.json)
 			//    |    |
-			//    +----+----> Library component (npm package, express-4.17.3)
+			//    └----┴----> Library component (npm package, express-4.17.3)
 			//
 			if _, ok := libraryUniqMap[pkgComponent.BOMRef]; !ok {
 				libraryUniqMap[pkgComponent.BOMRef] = struct{}{}
