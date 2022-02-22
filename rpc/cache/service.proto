@@ -37,6 +37,7 @@ message BlobInfo {
   repeated string                  whiteout_files    = 6;
   string                           digest            = 7;
   string                           diff_id           = 8;
+  repeated common.CustomResource custom_resources    = 10;
 }
 
 message PutBlobRequest {

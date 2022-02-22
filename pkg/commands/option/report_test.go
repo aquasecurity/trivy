@@ -204,7 +204,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 				ListAllPkgs:    tt.fields.listAllPksgs,
 				Output:         tt.fields.Output,
 			}
-			err := c.Init(logger.Sugar())
+			err := c.Init(os.Stdout, logger.Sugar())
 
 			// tests log messages
 			var gotMessages []string

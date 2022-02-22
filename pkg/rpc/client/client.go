@@ -2,15 +2,15 @@ package client
 
 import (
 	"context"
+	"crypto/tls"
 	"net/http"
-
-	ftypes "github.com/aquasecurity/fanal/types"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/fanal/types"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
 )
@@ -24,9 +24,20 @@ var SuperSet = wire.NewSet(
 // RemoteURL for RPC remote host
 type RemoteURL string
 
+// Insecure for RPC remote host
+type Insecure bool
+
 // NewProtobufClient is the factory method to return RPC scanner
-func NewProtobufClient(remoteURL RemoteURL) rpc.Scanner {
-	return rpc.NewScannerProtobufClient(string(remoteURL), &http.Client{})
+func NewProtobufClient(remoteURL RemoteURL, insecure Insecure) rpc.Scanner {
+	httpClient := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: bool(insecure),
+			},
+		},
+	}
+
+	return rpc.NewScannerProtobufClient(string(remoteURL), httpClient)
 }
 
 // CustomHeaders for holding HTTP headers

@@ -138,7 +138,7 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 }
 
 func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func(), error) {
-	remoteCache := cache.NewRemoteCache(cache.RemoteURL(opt.RemoteAddr), opt.CustomHeaders)
+	remoteCache := cache.NewRemoteCache(opt.RemoteAddr, opt.CustomHeaders, opt.Insecure)
 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
@@ -168,7 +168,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	if opt.Input != "" {
 		// Scan tar file
 		s, err := initializeArchiveScanner(ctx, opt.Input, remoteCache, client.CustomHeaders(opt.CustomHeaders),
-			client.RemoteURL(opt.RemoteAddr), artifactOpt, configScannerOptions)
+			client.RemoteURL(opt.RemoteAddr), client.Insecure(opt.Insecure), artifactOpt, configScannerOptions)
 		if err != nil {
 			return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 		}
@@ -182,7 +182,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 	}
 
 	s, cleanup, err := initializeDockerScanner(ctx, opt.Target, remoteCache, client.CustomHeaders(opt.CustomHeaders),
-		client.RemoteURL(opt.RemoteAddr), dockerOpt, artifactOpt, configScannerOptions)
+		client.RemoteURL(opt.RemoteAddr), client.Insecure(opt.Insecure), dockerOpt, artifactOpt, configScannerOptions)
 	if err != nil {
 		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the docker scanner: %w", err)
 	}

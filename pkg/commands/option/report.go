@@ -1,6 +1,7 @@
 package option
 
 import (
+	"io"
 	"os"
 	"strings"
 
@@ -32,7 +33,7 @@ type ReportOption struct {
 	// these variables are populated by Init()
 	VulnType       []string
 	SecurityChecks []string
-	Output         *os.File
+	Output         io.Writer
 	Severities     []dbTypes.Severity
 	ListAllPkgs    bool
 }
@@ -56,7 +57,7 @@ func NewReportOption(c *cli.Context) ReportOption {
 }
 
 // Init initializes the ReportOption
-func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
+func (c *ReportOption) Init(output io.Writer, logger *zap.SugaredLogger) error {
 	if c.Template != "" {
 		if c.Format == "" {
 			logger.Warn("'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.")
@@ -68,18 +69,18 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 			logger.Warn("'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.")
 		}
 	}
+
 	if c.forceListAllPkgs(logger) {
 		c.ListAllPkgs = true
 	}
 
 	c.Severities = splitSeverity(logger, c.severities)
 
-	var err error
-	if err = c.populateVulnTypes(); err != nil {
+	if err := c.populateVulnTypes(); err != nil {
 		return xerrors.Errorf("vuln type: %w", err)
 	}
 
-	if err = c.populateSecurityChecks(); err != nil {
+	if err := c.populateSecurityChecks(); err != nil {
 		return xerrors.Errorf("security checks: %w", err)
 	}
 
@@ -88,12 +89,15 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 	c.vulnType = ""
 	c.securityChecks = ""
 
-	c.Output = os.Stdout
+	// The output is os.Stdout by default
 	if c.output != "" {
-		if c.Output, err = os.Create(c.output); err != nil {
+		var err error
+		if output, err = os.Create(c.output); err != nil {
 			return xerrors.Errorf("failed to create an output file: %w", err)
 		}
 	}
+
+	c.Output = output
 
 	return nil
 }
@@ -126,6 +130,14 @@ func (c *ReportOption) populateSecurityChecks() error {
 	return nil
 }
 
+func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
+	if c.Format == "cyclonedx" && !c.ListAllPkgs {
+		logger.Debugf("'--format cyclonedx' must be specified with '--list-all-pkgs'. Forces the '--list-all-pkgs' option to be enabled.")
+		return true
+	}
+	return false
+}
+
 func splitSeverity(logger *zap.SugaredLogger, severity string) []dbTypes.Severity {
 	logger.Debugf("Severities: %s", severity)
 	var severities []dbTypes.Severity
@@ -137,12 +149,4 @@ func splitSeverity(logger *zap.SugaredLogger, severity string) []dbTypes.Severit
 		severities = append(severities, severity)
 	}
 	return severities
-}
-
-func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
-	if c.Format == "cyclonedx" && !c.ListAllPkgs {
-		logger.Debugf("'--format cyclonedx' must be specified with '--list-all-pkgs'. Forces the '--list-all-pkgs' option to be enabled.")
-		return true
-	}
-	return false
 }

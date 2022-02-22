@@ -106,6 +106,9 @@ trivy:
     redis:
       enabled: false
       url: ""  # e.g. redis://redis.redis.svc:6379
+  serviceAccount:
+    annotations: {}
+      # eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
 
 service:
   # type Kubernetes service type
