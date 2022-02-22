@@ -106,12 +106,10 @@ func TestOption_Init(t *testing.T) {
 					Output:         os.Stdout,
 					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					ListAllPkgs:    true,
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "centos:7",
-				},
-				ImageOption: option.ImageOption{
-					ListAllPkgs: true,
 				},
 			},
 		},
@@ -125,12 +123,10 @@ func TestOption_Init(t *testing.T) {
 					Output:         os.Stdout,
 					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					ListAllPkgs:    true,
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "centos:7",
-				},
-				ImageOption: option.ImageOption{
-					ListAllPkgs: true,
 				},
 			},
 		},
