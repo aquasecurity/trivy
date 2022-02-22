@@ -40,7 +40,7 @@ const (
 	PropertyLayerDiffID     = "LayerDiffID"
 )
 
-// Writer implements report.Writer
+// Writer implements types.Writer
 type Writer struct {
 	output  io.Writer
 	version string
@@ -100,7 +100,7 @@ func (cw Writer) Write(report types.Report) error {
 		return xerrors.Errorf("failed to convert bom: %w", err)
 	}
 
-	if err := cdx.NewBOMEncoder(cw.output, cw.format).Encode(bom); err != nil {
+	if err = cdx.NewBOMEncoder(cw.output, cw.format).Encode(bom); err != nil {
 		return xerrors.Errorf("failed to encode bom: %w", err)
 	}
 
@@ -147,20 +147,57 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 				return nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
 
+			// For components
+			// ref. https://cyclonedx.org/use-cases/#inventory
 			components = append(components, pkgComponent)
+
+			// For dependency graph
+			// ref. https://cyclonedx.org/use-cases/#dependency-graph
+			//
+			// TODO: All packages are flattened at the moment. We should construct dependency tree.
 			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
 		}
 
 		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg || result.Type == ftypes.GoBinary ||
 			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar {
+			// If a package is language-specific package that isn't associated with a lock file,
+			// it will be dependent of a component under "metadata".
+			// e.g.
+			//   Container Component (alpine:3.15) ----------------------- #1
+			//     -> Library Component (npm package, express-4.17.3) ---- #2
+			//     -> Library Component (python package, django-4.0.2) --- #2
+			//     -> etc.
+			// ref. https://cyclonedx.org/use-cases/#inventory
+
+			// Dependency graph from #1 to #2
 			metadataDependencies = append(metadataDependencies, componentDependencies...)
 		} else {
+			// If a package is OS package, it will be dependent of "Operating System" component.
+			// e.g.
+			//   Container Component (alpine:3.15) --------------------- #1
+			//     -> Operating System Component (Alpine Linux 3.15) --- #2
+			//       -> Library Component (bash-4.12) ------------------ #3
+			//       -> Library Component (vim-8.2)   ------------------ #3
+			//       -> etc.
+			//
+			// Else if a package is language-specific package associated with a lock file,
+			// it will be dependent of "Application" component.
+			// e.g.
+			//   Container Component (alpine:3.15) ------------------------ #1
+			//     -> Application Component (/app/package-lock.json) ------ #2
+			//       -> Library Component (npm package, express-4.17.3) --- #3
+			//       -> Library Component (npm package, lodash-4.17.21) --- #3
+			//       -> etc.
+
 			resultComponent := cw.resultToComponent(result, r.Metadata.OS)
 			components = append(components, resultComponent)
 
+			// Dependency graph from #2 to #3
 			dependencies = append(dependencies,
 				cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
 			)
+
+			// Dependency graph from #1 to #2
 			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
 		}
 	}
@@ -254,6 +291,8 @@ func (cw Writer) resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Compo
 
 	switch r.Class {
 	case types.ClassOSPkg:
+		// UUID needs to be generated since Operating System Component cannot generate PURL.
+		// https://cyclonedx.org/use-cases/#known-vulnerabilities
 		component.BOMRef = cw.newUUID().String()
 		if osFound != nil {
 			component.Name = osFound.Family
@@ -261,6 +300,8 @@ func (cw Writer) resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Compo
 		}
 		component.Type = cdx.ComponentTypeOS
 	case types.ClassLangPkg:
+		// UUID needs to be generated since Application Component cannot generate PURL.
+		// https://cyclonedx.org/use-cases/#known-vulnerabilities
 		component.BOMRef = cw.newUUID().String()
 		component.Type = cdx.ComponentTypeApplication
 	case types.ClassConfig:
@@ -273,8 +314,6 @@ func (cw Writer) resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Compo
 }
 
 func parseProperties(pkg ftypes.Package) []cdx.Property {
-	var properties []cdx.Property
-
 	props := []struct {
 		name  string
 		value string
@@ -289,6 +328,7 @@ func parseProperties(pkg ftypes.Package) []cdx.Property {
 		{PropertyLayerDiffID, pkg.Layer.DiffID},
 	}
 
+	var properties []cdx.Property
 	for _, prop := range props {
 		properties = appendProperties(properties, prop.name, prop.value)
 	}
