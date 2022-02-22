@@ -139,6 +139,7 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 	var components []cdx.Component
 	var dependencies []cdx.Dependency
 	var metadataDependencies []cdx.Dependency
+	libraryUniqMap := map[string]struct{}{}
 	for _, result := range r.Results {
 		var componentDependencies []cdx.Dependency
 		for _, pkg := range result.Packages {
@@ -147,14 +148,27 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 				return nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
 
-			// For components
-			// ref. https://cyclonedx.org/use-cases/#inventory
-			components = append(components, pkgComponent)
-
-			// For dependency graph
-			// ref. https://cyclonedx.org/use-cases/#dependency-graph
+			// When multiple lock files have the same dependency with the same name and version,
+			// "bom-ref" (PURL technically) of Library components may conflict.
+			// In that case, only one Library component will be added and
+			// some Application components will refer to the same component.
+			// e.g.
+			//    Application component (/app1/package-lock.json)
+			//    |
+			//    |  Application component (/app2/package-lock.json)
+			//    |  |
+			//    |-----> Library component (npm package, express-4.17.3)
 			//
-			// TODO: All packages are flattened at the moment. We should construct dependency tree.
+			if _, ok := libraryUniqMap[pkgComponent.BOMRef]; !ok {
+				libraryUniqMap[pkgComponent.BOMRef] = struct{}{}
+
+				// For components
+				// ref. https://cyclonedx.org/use-cases/#inventory
+				//
+				// TODO: All packages are flattened at the moment. We should construct dependency tree.
+				components = append(components, pkgComponent)
+			}
+
 			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
 		}
 
@@ -163,9 +177,9 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 			// If a package is language-specific package that isn't associated with a lock file,
 			// it will be dependent of a component under "metadata".
 			// e.g.
-			//   Container Component (alpine:3.15) ----------------------- #1
-			//     -> Library Component (npm package, express-4.17.3) ---- #2
-			//     -> Library Component (python package, django-4.0.2) --- #2
+			//   Container component (alpine:3.15) ----------------------- #1
+			//     -> Library component (npm package, express-4.17.3) ---- #2
+			//     -> Library component (python package, django-4.0.2) --- #2
 			//     -> etc.
 			// ref. https://cyclonedx.org/use-cases/#inventory
 
@@ -174,19 +188,19 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 		} else {
 			// If a package is OS package, it will be dependent of "Operating System" component.
 			// e.g.
-			//   Container Component (alpine:3.15) --------------------- #1
+			//   Container component (alpine:3.15) --------------------- #1
 			//     -> Operating System Component (Alpine Linux 3.15) --- #2
-			//       -> Library Component (bash-4.12) ------------------ #3
-			//       -> Library Component (vim-8.2)   ------------------ #3
+			//       -> Library component (bash-4.12) ------------------ #3
+			//       -> Library component (vim-8.2)   ------------------ #3
 			//       -> etc.
 			//
 			// Else if a package is language-specific package associated with a lock file,
 			// it will be dependent of "Application" component.
 			// e.g.
-			//   Container Component (alpine:3.15) ------------------------ #1
-			//     -> Application Component (/app/package-lock.json) ------ #2
-			//       -> Library Component (npm package, express-4.17.3) --- #3
-			//       -> Library Component (npm package, lodash-4.17.21) --- #3
+			//   Container component (alpine:3.15) ------------------------ #1
+			//     -> Application component (/app/package-lock.json) ------ #2
+			//       -> Library component (npm package, express-4.17.3) --- #3
+			//       -> Library component (npm package, lodash-4.17.21) --- #3
 			//       -> etc.
 
 			resultComponent := cw.resultToComponent(result, r.Metadata.OS)
