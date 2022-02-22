@@ -103,7 +103,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 			},
 			args: []string{"centos:7"},
 			logs: []string{
-				"'--format cyclonedx' must be specified with '--list-all-pkgs'. Forces the '--list-all-pkgs' option to be enabled.",
+				"'--format cyclonedx' automatically enables '--list-all-pkgs'.",
 				"Severities: CRITICAL",
 			},
 			want: ReportOption{
