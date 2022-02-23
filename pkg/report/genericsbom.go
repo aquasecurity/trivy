@@ -50,6 +50,10 @@ type GsbomWriter struct {
 	Output io.Writer
 }
 
+func init() {
+	CustomTemplateFuncMap["now"] = time.Now
+}
+
 func (gsbmw GsbomWriter) Write(report types.Report) error {
 	gsbom := &Gsbom{}
 

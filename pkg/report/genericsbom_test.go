@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -117,10 +116,6 @@ func TestReportWriter_gSBOM(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		saved := report.CustomTemplateFuncMap
-		report.CustomTemplateFuncMap = configureTestFuncMap()
-		defer func() { report.CustomTemplateFuncMap = saved }()
-
 		t.Run(tc.name, func(t *testing.T) {
 			jw := report.GsbomWriter{}
 			gsbomWritten := bytes.Buffer{}
@@ -140,10 +135,5 @@ func TestReportWriter_gSBOM(t *testing.T) {
 
 			assert.Equal(t, tc.want, got.Manifests, tc.name)
 		})
-	}
-}
-func configureTestFuncMap() map[string]interface{} {
-	return map[string]interface{}{
-		"now": time.Now,
 	}
 }
