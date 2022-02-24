@@ -38,6 +38,7 @@ var (
 		"11":  time.Date(2026, 8, 14, 23, 59, 59, 0, time.UTC),
 		"12":  time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 	}
+	latestDebianVersion = "12"
 )
 
 type options struct {
@@ -117,25 +118,65 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				}
 			}
 
-			// It means unfixed vulnerability. We don't have to compare versions.
-			if adv.FixedVersion == "" {
-				vulns = append(vulns, vuln)
-				continue
-			}
-
-			var fixedVersion version.Version
-			fixedVersion, err = version.NewVersion(adv.FixedVersion)
+			// Check if there is a latest (probably unstable) patch for the specific vulnerability
+			latestPatch, err := s.hasAvailableFixedVersion(adv.VulnerabilityID, pkg.Name)
 			if err != nil {
-				log.Logger.Debugf("Debian advisory package version error: %s", err)
+				return nil, xerrors.Errorf("failed to check latest fixed version: %w", err)
+			}
+
+			if latestPatch != "" {
+				vuln.LatestPatch = latestPatch
+			}
+
+			// If advisory does not propose a fix, and there isn't a latestPatch available: nothing to do, it is vulnerable.
+			if adv.FixedVersion == "" && vuln.LatestPatch == "" {
+				vulns = append(vulns, vuln)
 				continue
 			}
 
-			if installedVersion.LessThan(fixedVersion) {
-				vulns = append(vulns, vuln)
+			// Checking first if advisory propose a patch
+			if adv.FixedVersion != "" {
+				fixedVersion, err := version.NewVersion(adv.FixedVersion)
+				if err != nil {
+					log.Logger.Debugf("Debian fixed version error: %s", err)
+					continue
+				}
+				// If is lower than installed, it is vulnerable anyway
+				if installedVersion.LessThan(fixedVersion) {
+					vulns = append(vulns, vuln)
+					continue
+				}
+			}
+
+			if vuln.LatestPatch != "" && adv.FixedVersion == "" {
+				latestPatchVersion, err := version.NewVersion(vuln.LatestPatch)
+				if err != nil {
+					log.Logger.Debugf("Debian latest patch version error: %s", err)
+					continue
+				}
+				if installedVersion.LessThan(latestPatchVersion) {
+					vulns = append(vulns, vuln)
+					continue
+				}
 			}
 		}
 	}
 	return vulns, nil
+}
+
+func (s *Scanner) hasAvailableFixedVersion(vulnerabilityID string, pkgName string) (string, error) {
+	advisories, err := s.vs.Get(latestDebianVersion, pkgName)
+	if err != nil {
+		return "", xerrors.Errorf("failed to get debian advisories: %w", err)
+	}
+	for _, adv := range advisories {
+		if adv.VulnerabilityID == vulnerabilityID {
+			if adv.FixedVersion != "" {
+				return adv.FixedVersion, nil
+			}
+		}
+	}
+	return "", nil
 }
 
 // IsSupportedVersion checks is OSFamily can be scanned using Debian
