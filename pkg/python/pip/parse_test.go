@@ -40,6 +40,10 @@ func TestParse(t *testing.T) {
 			file: "testdata/requirements_hash.txt",
 			want: requirementsHash,
 		},
+		{
+			file: "testdata/requirements_hyphens.txt",
+			want: requirementsHyphens,
+		},
 	}
 
 	for _, v := range vectors {

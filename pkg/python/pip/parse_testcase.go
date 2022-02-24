@@ -39,4 +39,9 @@ var (
 		{"FooProject", "1.2", ""},
 		{"Jinja2", "3.0.0", ""},
 	}
+
+	requirementsHyphens = []types.Library{
+		{"oauth2-client", "4.0.0", ""},
+		{"python-gitlab", "2.0.0", ""},
+	}
 )

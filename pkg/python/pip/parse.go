@@ -42,7 +42,7 @@ func Parse(r io.Reader) ([]types.Library, error) {
 }
 
 func rStripByKey(line string, key string) string {
-	if pos := strings.IndexAny(line, key); pos >= 0 {
+	if pos := strings.Index(line, key); pos >= 0 {
 		line = strings.TrimRightFunc((line)[:pos], unicode.IsSpace)
 	}
 	return line
