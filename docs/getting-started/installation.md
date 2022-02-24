@@ -124,7 +124,6 @@ Example:
 === "macOS"
 
     ``` bash
-    yay -Sy trivy-bin
     docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} python:3.4-alpine
     ```
 
