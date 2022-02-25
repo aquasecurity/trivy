@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"time"
 
 	"golang.org/x/xerrors"
@@ -33,12 +34,17 @@ type GsbomManifest struct {
 
 type GsbomJob struct {
 	Name string `json:"name,omitempty"`
-	Id   int    `json:"id,omitempty"`
+	Id   string `json:"id,omitempty"`
+}
+type GsbomDetector struct {
+	Name    string `json:"name,omitempty"`
+	Version string `json:"version,omitempty"`
+	Url     string `json:"url,omitempty"`
 }
 
 type Gsbom struct {
 	Version   int                      `json:"version,omitempty"`
-	Detector  string                   `json:"detector,omitempty"`
+	Detector  GsbomDetector            `json:"detector,omitempty"`
 	Ref       string                   `json:"ref,omitempty"`
 	Sha       string                   `json:"sha,omitempty"`
 	Job       *GsbomJob                `json:"job,omitempty"`
@@ -47,7 +53,8 @@ type Gsbom struct {
 }
 
 type GsbomWriter struct {
-	Output io.Writer
+	Output  io.Writer
+	Version string
 }
 
 func init() {
@@ -59,9 +66,21 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 
 	//use now() method that can be overwritten while integration tests run
 	gsbom.Scanned = CustomTemplateFuncMap["now"].(func() time.Time)().Format(time.RFC3339)
-	gsbom.Detector = "trivy"
+	gsbom.Detector = GsbomDetector{
+		Name:    "trivy",
+		Version: gsbmw.Version,
+		Url:     "https://github.com/aquasecurity/trivy",
+	}
+	gsbom.Version = 1 // The version of the repository snapshot submission. It's not clear what value to set
 
-	//TODO optionally add git information
+	gsbom.Ref = os.Getenv("GITHUB_REF")
+	gsbom.Sha = os.Getenv("GITHUB_SHA")
+
+	gsbom.Job = &GsbomJob{
+		Name: os.Getenv("GITHUB_JOB"),
+		Id:   os.Getenv("GITHUB_RUN_ID"),
+	}
+
 	manifests := make(map[string]GsbomManifest)
 
 	for _, result := range report.Results {

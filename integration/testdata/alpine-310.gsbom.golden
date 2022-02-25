@@ -1,5 +1,11 @@
 {
-  "detector": "trivy",
+  "version": 1,
+  "detector": {
+    "name": "trivy",
+    "version": "dev",
+    "url": "https://github.com/aquasecurity/trivy"
+  },
+  "job": {},
   "scanned": "2020-08-10T07:28:17Z",
   "manifests": {
     "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)": {

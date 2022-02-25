@@ -46,7 +46,7 @@ func Write(report types.Report, option Option) error {
 	case "json":
 		writer = &JSONWriter{Output: option.Output}
 	case "gsbom":
-		writer = &GsbomWriter{Output: option.Output}
+		writer = &GsbomWriter{Output: option.Output, Version: option.AppVersion}
 	case "template":
 		// We keep `sarif.tpl` template working for backward compatibility for a while.
 		if strings.HasPrefix(option.OutputTemplate, "@") && filepath.Base(option.OutputTemplate) == "sarif.tpl" {
