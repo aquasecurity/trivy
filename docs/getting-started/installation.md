@@ -118,7 +118,7 @@ Example:
 === "Linux"
 
     ``` bash
-    docker run --rm -v [YOUR_CACHE_DIR]:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} [YOUR_IMAGE_NAME]
+    docker run --rm -v [YOUR_CACHE_DIR]:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} image [YOUR_IMAGE_NAME]
     ```
 
 === "macOS"
