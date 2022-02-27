@@ -22,6 +22,7 @@ func TestFilesystem(t *testing.T) {
 		ignoreIDs      []string
 		policyPaths    []string
 		namespaces     []string
+		listAllPkgs    bool
 		input          string
 	}
 	tests := []struct {
@@ -41,6 +42,7 @@ func TestFilesystem(t *testing.T) {
 			name: "pip",
 			args: args{
 				securityChecks: "vuln",
+				listAllPkgs:    true,
 				input:          "testdata/fixtures/fs/pip",
 			},
 			golden: "testdata/pip.json.golden",
@@ -127,6 +129,10 @@ func TestFilesystem(t *testing.T) {
 			outputFile := filepath.Join(t.TempDir(), "output.json")
 			if *update {
 				outputFile = tt.golden
+			}
+
+			if tt.args.listAllPkgs {
+				osArgs = append(osArgs, "--list-all-pkgs")
 			}
 
 			osArgs = append(osArgs, "--output", outputFile)
