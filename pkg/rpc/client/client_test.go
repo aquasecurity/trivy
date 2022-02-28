@@ -3,6 +3,8 @@ package client
 import (
 	"context"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
@@ -280,6 +282,51 @@ func TestScanner_Scan(t *testing.T) {
 
 			assert.Equal(t, tt.wantResults, gotResults)
 			assert.Equal(t, tt.wantOS, gotOS)
+		})
+	}
+}
+
+func TestScanner_ScanServerInsecure(t *testing.T) {
+	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	defer ts.Close()
+
+	type args struct {
+		request  *scanner.ScanRequest
+		insecure bool
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr string
+	}{
+		{
+			name: "happy path",
+			args: args{
+				request:  &scanner.ScanRequest{},
+				insecure: true,
+			},
+		},
+		{
+			name: "sad path",
+			args: args{
+				request:  &scanner.ScanRequest{},
+				insecure: false,
+			},
+			wantErr: "certificate signed by unknown authority",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			s := NewProtobufClient(RemoteURL(ts.URL), Insecure(tt.args.insecure))
+			_, err := s.Scan(context.Background(), tt.args.request)
+
+			if tt.wantErr != "" {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
 		})
 	}
 }

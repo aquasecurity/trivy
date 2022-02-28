@@ -69,7 +69,7 @@ func (c *Option) Init() (err error) {
 		c.CustomHeaders.Set(c.tokenHeader, c.token)
 	}
 
-	if err = c.ReportOption.Init(c.Logger); err != nil {
+	if err = c.ReportOption.Init(c.Context.App.Writer, c.Logger); err != nil {
 		return err
 	}
 

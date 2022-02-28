@@ -143,29 +143,59 @@ dockers:
       - "--platform=linux/arm64"
     extra_files:
     - contrib/
+  - image_templates:
+      - "docker.io/aquasec/trivy:{{ .Version }}-s390x"
+      - "docker.io/aquasec/trivy:latest-s390x"
+      - "ghcr.io/aquasecurity/trivy:{{ .Version }}-s390x"
+      - "ghcr.io/aquasecurity/trivy:latest-s390x"
+      - "public.ecr.aws/aquasecurity/trivy:latest-s390x"
+      - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}-s390x"
+    use: buildx
+    goos: linux
+    goarch: s390x
+    ids:
+      - trivy
+    build_flag_templates:
+      - "--label=org.label-schema.schema-version=1.0"
+      - "--label=org.label-schema.name={{ .ProjectName }}"
+      - "--label=org.label-schema.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.label-schema.vendor=Aqua Security"
+      - "--label=org.label-schema.version={{ .Version }}"
+      - "--label=org.label-schema.build-date={{ .Date }}"
+      - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
+      - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
+      - "--platform=linux/s390x"
+    extra_files:
+    - contrib/
 
 docker_manifests:
   - name_template: 'aquasec/trivy:{{ .Version }}'
     image_templates:
     - 'aquasec/trivy:{{ .Version }}-amd64'
     - 'aquasec/trivy:{{ .Version }}-arm64'
+    - 'aquasec/trivy:{{ .Version }}-s390x'
   - name_template: 'ghcr.io/aquasecurity/trivy:{{ .Version }}'
     image_templates:
     - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-amd64'
     - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-arm64'
+    - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-s390x'
   - name_template: 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}'
     image_templates:
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-amd64'
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-arm64'
+    - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-s390x'
   - name_template: 'aquasec/trivy:latest'
     image_templates:
     - 'aquasec/trivy:{{ .Version }}-amd64'
     - 'aquasec/trivy:{{ .Version }}-arm64'
+    - 'aquasec/trivy:{{ .Version }}-s390x'
   - name_template: 'ghcr.io/aquasecurity/trivy:latest'
     image_templates:
     - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-amd64'
     - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-arm64'
+    - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-s390x'
   - name_template: 'public.ecr.aws/aquasecurity/trivy:latest'
     image_templates: 
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-amd64'
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-arm64'
+    - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-s390x'

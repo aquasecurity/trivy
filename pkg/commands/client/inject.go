@@ -18,14 +18,14 @@ import (
 )
 
 func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders,
-	url client.RemoteURL, dockerOpt types.DockerOption, artifactOption artifact.Option, configScannerOption config.ScannerOption) (
+	url client.RemoteURL, insecure client.Insecure, dockerOpt types.DockerOption, artifactOption artifact.Option, configScannerOption config.ScannerOption) (
 	scanner.Scanner, func(), error) {
 	wire.Build(scanner.RemoteDockerSet)
 	return scanner.Scanner{}, nil, nil
 }
 
 func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
-	customHeaders client.CustomHeaders, url client.RemoteURL, artifactOption artifact.Option,
+	customHeaders client.CustomHeaders, url client.RemoteURL, insecure client.Insecure, artifactOption artifact.Option,
 	configScannerOption config.ScannerOption) (scanner.Scanner, error) {
 	wire.Build(scanner.RemoteArchiveSet)
 	return scanner.Scanner{}, nil

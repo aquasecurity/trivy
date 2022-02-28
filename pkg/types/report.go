@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
+	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
 	ftypes "github.com/aquasecurity/fanal/types"
 )
@@ -48,6 +48,7 @@ type Result struct {
 	Vulnerabilities   []DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
 	MisconfSummary    *MisconfSummary            `json:"MisconfSummary,omitempty"`
 	Misconfigurations []DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
+	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
 }
 
 type MisconfSummary struct {
