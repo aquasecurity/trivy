@@ -145,12 +145,10 @@ func TestOption_Init(t *testing.T) {
 					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 					Format:         "gsbom",
+					ListAllPkgs:    true,
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
-				},
-				ImageOption: option.ImageOption{
-					ListAllPkgs: true,
 				},
 			},
 		},
@@ -164,12 +162,10 @@ func TestOption_Init(t *testing.T) {
 					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 					Format:         "json",
+					ListAllPkgs:    false,
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
-				},
-				ImageOption: option.ImageOption{
-					ListAllPkgs: false,
 				},
 			},
 		},

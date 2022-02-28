@@ -77,8 +77,6 @@ func (c *Option) Init() (err error) {
 		return err
 	}
 
-	c.ImageOption.InitByFormat(c.Format, c.Logger)
-
 	return nil
 }
 
