@@ -304,6 +304,20 @@ func TestClientServerWithTemplate(t *testing.T) {
 		"date": func(format string, t time.Time) string {
 			return t.Format(format)
 		},
+		"getenv": func(name string) string {
+			switch name {
+			case "GITHUB_REF":
+				return "/ref/feature-1"
+			case "GITHUB_SHA":
+				return "39da54a1ff04120a31df8cbc94ce9ede251d21a3"
+			case "GITHUB_JOB":
+				return "integration"
+			case "GITHUB_RUN_ID":
+				return "1910764383"
+			default:
+				return ""
+			}
+		},
 	}
 
 	t.Cleanup(func() {

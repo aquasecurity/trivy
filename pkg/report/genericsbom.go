@@ -59,9 +59,11 @@ type GsbomWriter struct {
 
 func init() {
 	CustomTemplateFuncMap["now"] = time.Now
+	CustomTemplateFuncMap["getenv"] = os.Getenv
 }
 
 func (gsbmw GsbomWriter) Write(report types.Report) error {
+	getenv := CustomTemplateFuncMap["getenv"].(func(string) string)
 	gsbom := &Gsbom{}
 
 	//use now() method that can be overwritten while integration tests run
@@ -73,12 +75,12 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 	}
 	gsbom.Version = 1 // The version of the repository snapshot submission. It's not clear what value to set
 
-	gsbom.Ref = os.Getenv("GITHUB_REF")
-	gsbom.Sha = os.Getenv("GITHUB_SHA")
+	gsbom.Ref = getenv("GITHUB_REF")
+	gsbom.Sha = getenv("GITHUB_SHA")
 
 	gsbom.Job = &GsbomJob{
-		Name: os.Getenv("GITHUB_JOB"),
-		Id:   os.Getenv("GITHUB_RUN_ID"),
+		Name: getenv("GITHUB_JOB"),
+		Id:   getenv("GITHUB_RUN_ID"),
 	}
 
 	manifests := make(map[string]GsbomManifest)
