@@ -63,7 +63,10 @@ func init() {
 }
 
 func (gsbmw GsbomWriter) Write(report types.Report) error {
-	getenv := CustomTemplateFuncMap["getenv"].(func(string) string)
+	getenv, ok := CustomTemplateFuncMap["getenv"].(func(string) string)
+	if !ok {
+		return xerrors.Errorf("invalid getenv reference")
+	}
 	gsbom := &Gsbom{}
 
 	//use now() method that can be overwritten while integration tests run
