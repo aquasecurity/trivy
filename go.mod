@@ -14,7 +14,7 @@ require (
 	github.com/aquasecurity/go-dep-parser v0.0.0-20220224134419-e4f58c60089e
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aquasecurity/tfsec v1.4.1
-	github.com/aws/aws-sdk-go v1.42.51
+	github.com/aws/aws-sdk-go v1.43.8
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/go-git/go-git/v5 v5.4.2
@@ -43,7 +43,7 @@ require (
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20220208233918-bba287dce954 // indirect
 	golang.org/x/mod v0.5.1
-	golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d // indirect
+	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
