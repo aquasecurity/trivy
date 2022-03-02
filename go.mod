@@ -9,8 +9,8 @@ require (
 	github.com/Microsoft/hcsshim v0.9.2 // indirect
 	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20220225095822-ef150f781751
-	github.com/aquasecurity/go-dep-parser v0.0.0-20220224134419-e4f58c60089e
+	github.com/aquasecurity/fanal v0.0.0-20220302151637-0570589bca94
+	github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -52,7 +52,6 @@ require (
 	github.com/twitchtv/twirp v8.1.1+incompatible
 	github.com/urfave/cli/v2 v2.3.0
 	go.uber.org/zap v1.21.0
-	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
 	golang.org/x/sys v0.0.0-20220204135822-1c1b9b1eba6a // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/genproto v0.0.0-20220204002441-d6cc3cc0770e // indirect
