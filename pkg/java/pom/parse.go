@@ -302,26 +302,20 @@ func (p parser) parseDependencies(deps []pomDependency, props map[string]string,
 }
 
 func (p parser) mergeDependencies(parent, child []artifact, exclusions map[string]struct{}) []artifact {
-	unique := map[string]artifact{}
-	for _, d := range child {
-		if _, ok := exclusions[d.Name()]; ok {
-			continue
-		}
-		unique[d.Name()] = d
-	}
-	for _, d := range parent {
-		if _, ok := exclusions[d.Name()]; ok {
-			continue
-		}
-		if _, ok := unique[d.Name()]; !ok {
-			unique[d.Name()] = d
-		}
-	}
-
 	var deps []artifact
-	for _, d := range unique {
+	unique := map[string]struct{}{}
+
+	for _, d := range append(parent, child...) {
+		if _, ok := exclusions[d.Name()]; ok {
+			continue
+		}
+		if _, ok := unique[d.Name()]; ok {
+			continue
+		}
+		unique[d.Name()] = struct{}{}
 		deps = append(deps, d)
 	}
+
 	return deps
 }
 

@@ -161,6 +161,29 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "soft requirement with transitive dependencies",
+			inputFile: filepath.Join("testdata", "soft-requirement-with-transitive-dependencies", "pom.xml"),
+			local:     true,
+			want: []types.Library{
+				{
+					Name:    "com.example:soft-transitive",
+					Version: "1.0.0",
+				},
+				{
+					Name:    "org.example:example-api",
+					Version: "2.0.0",
+				},
+				{
+					Name:    "org.example:example-dependency",
+					Version: "1.2.3",
+				},
+				{
+					Name:    "org.example:example-dependency2",
+					Version: "2.3.4",
+				},
+			},
+		},
+		{
 			name:      "hard requirement for the specified version",
 			inputFile: filepath.Join("testdata", "hard-requirement", "pom.xml"),
 			local:     true,
