@@ -246,10 +246,10 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/defsec v0.12.1 h1:QZI94PCiprRiX0775tO05R4uREVOI5s2g3K6q0hZnoI=
-github.com/aquasecurity/defsec v0.12.1/go.mod h1:ePT+j44TFfUwgIZ6yx5FPHgYk2aTXAqsMf/WnE78ujg=
-github.com/aquasecurity/fanal v0.0.0-20220303080309-254063f95ea0 h1:SjIpBQZq91OiZYbefabLWHZLKlgtwIPAffEysoEB01I=
-github.com/aquasecurity/fanal v0.0.0-20220303080309-254063f95ea0/go.mod h1:10t6nMrMS3ei0bP/3UCyKukxDiMyR1BX9/osAxX/CwU=
+github.com/aquasecurity/defsec v0.14.0 h1:zkiD0OKr1WCkuCVKd4IlW4GPSO1dMVx/f9R7gE3ifK8=
+github.com/aquasecurity/defsec v0.14.0/go.mod h1:ePT+j44TFfUwgIZ6yx5FPHgYk2aTXAqsMf/WnE78ujg=
+github.com/aquasecurity/fanal v0.0.0-20220303131110-677831c145ce h1:dSwkYTvQG34juVxAZJaOHIE4EwLS/haRY1GuDNLj7Ug=
+github.com/aquasecurity/fanal v0.0.0-20220303131110-677831c145ce/go.mod h1:uoj6ep+2TaMFIwZa/+CYXevheZ0AXKtoihG25XZhBB4=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988 h1:Hd6q0/VF/bC/MT1K/63W2u5ChRIy6cPSQk0YbJ3Vcb8=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988/go.mod h1:XxIz2s4UymZBcg9WwAc2km77lFt9rVE/LmKJe2YVOtY=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -263,8 +263,8 @@ github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492 h1:rcEG5HI
 github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516 h1:moQmzbpLo5dxHQCyEhqzizsDSNrNhn/7uRTCZzo4A1o=
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516/go.mod h1:gTd97VdQ0rg8Mkiic3rPgNOQdprZ7feTAhiD5mGQjgM=
-github.com/aquasecurity/tfsec v1.4.1 h1:16D4PinI+ROeqUQmkTuNWpcAIgUsJeF2QhUSKe4ZZPI=
-github.com/aquasecurity/tfsec v1.4.1/go.mod h1:P1/ziiQ/L5/bRS6m7OtgXyv4bHi99gn+HpMqpkHvuJQ=
+github.com/aquasecurity/tfsec v1.5.0 h1:on44QOHN2P1aP8reCBQXBxZPGRe/fJ9DcS3Aj7qfjaQ=
+github.com/aquasecurity/tfsec v1.5.0/go.mod h1:0b1UnsTa71YAhGfb7ecjCGh9+O/1gkGmq6ZTEwrKz70=
 github.com/aquasecurity/trivy-db v0.0.0-20220130223604-df65ebde46f4 h1:w/cU+uNDHHzMKLNpiohoHvPTtd1mi6Dyih4pqV6FLxQ=
 github.com/aquasecurity/trivy-db v0.0.0-20220130223604-df65ebde46f4/go.mod h1:BOulYmf+l2bd+Bjo3tTsdnbWCsh5UsJn1MqdiZzmm/Q=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
@@ -990,7 +990,6 @@ github.com/hashicorp/golang-lru v0.5.3/go.mod h1:iADmTwqILo4mZ8BN3D2Q6+9jd8WM5uG
 github.com/hashicorp/golang-lru v0.5.4/go.mod h1:iADmTwqILo4mZ8BN3D2Q6+9jd8WM5uGBxy+E8yxSoD4=
 github.com/hashicorp/hcl v1.0.0 h1:0Anlzjpi4vEasTeNFn2mLJgTSwt0+6sfsiTG8qcWGx4=
 github.com/hashicorp/hcl v1.0.0/go.mod h1:E5yfLk+7swimpb2L/Alb/PJmXilQ/rhwaUYs4T20WEQ=
-github.com/hashicorp/hcl/v2 v2.9.1/go.mod h1:FwWsfWEjyV/CMj8s/gqAuiviY72rJ1/oayI9WftqcKg=
 github.com/hashicorp/hcl/v2 v2.11.1 h1:yTyWcXcm9XB0TEkyU/JCRU6rYy4K+mgLtzn2wlrJbcc=
 github.com/hashicorp/hcl/v2 v2.11.1/go.mod h1:FwWsfWEjyV/CMj8s/gqAuiviY72rJ1/oayI9WftqcKg=
 github.com/hashicorp/logutils v1.0.0/go.mod h1:QIAnNjmIWmVIIkWDTG1z5v++HQmx9WQRO+LraFDTW64=
@@ -1586,8 +1585,8 @@ github.com/tj/go-kinesis v0.0.0-20171128231115-08b17f58cb1b/go.mod h1:/yhzCV0xPf
 github.com/tj/go-spin v1.1.0/go.mod h1:Mg1mzmePZm4dva8Qz60H2lHwmJ2loum4VIrLgVnKwh4=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
-github.com/tmccombs/hcl2json v0.3.3 h1:+DLNYqpWE0CsOQiEZu+OZm5ZBImake3wtITYxQ8uLFQ=
-github.com/tmccombs/hcl2json v0.3.3/go.mod h1:Y2chtz2x9bAeRTvSibVRVgbLJhLJXKlUeIvjeVdnm4w=
+github.com/tmccombs/hcl2json v0.3.4 h1:pYzRaHVTJu6TfFumACORClRtsK431eeuv7WjNNLjT90=
+github.com/tmccombs/hcl2json v0.3.4/go.mod h1:l3Aq9eUyhC+0v26BH08BZHeyWEtOYcFtbu2i5Ryywig=
 github.com/tommy-muehle/go-mnd v1.1.1/go.mod h1:dSUh0FtTP8VhvkL1S+gUR1OKd9ZnSaozuI6r3m6wOig=
 github.com/tommy-muehle/go-mnd v1.3.1-0.20200224220436-e6f9a994e8fa/go.mod h1:dSUh0FtTP8VhvkL1S+gUR1OKd9ZnSaozuI6r3m6wOig=
 github.com/tonistiigi/fsutil v0.0.0-20201103201449-0834f99b7b85/go.mod h1:a7cilN64dG941IOXfhJhlH0qB92hxJ9A1ewrdUmJ6xo=
@@ -1668,7 +1667,6 @@ github.com/yvasiyarov/newrelic_platform_go v0.0.0-20140908184405-b21fdbd4370f/go
 github.com/zclconf/go-cty v1.0.0/go.mod h1:xnAOWiHeOqg2nWS62VtQ7pbOu17FtxJNW8RLEih+O3s=
 github.com/zclconf/go-cty v1.2.0/go.mod h1:hOPWgoHbaTUnI5k4D2ld+GRpFJSCe6bCM7m1q/N4PQ8=
 github.com/zclconf/go-cty v1.8.0/go.mod h1:vVKLxnk3puL4qRAv72AO+W99LUD4da90g3uUAzyuvAk=
-github.com/zclconf/go-cty v1.8.1/go.mod h1:vVKLxnk3puL4qRAv72AO+W99LUD4da90g3uUAzyuvAk=
 github.com/zclconf/go-cty v1.10.0 h1:mp9ZXQeIcN8kAwuqorjH+Q+njbJKjLrvB2yIh4q7U+0=
 github.com/zclconf/go-cty v1.10.0/go.mod h1:vVKLxnk3puL4qRAv72AO+W99LUD4da90g3uUAzyuvAk=
 github.com/zclconf/go-cty-debug v0.0.0-20191215020915-b22d67c1ba0b/go.mod h1:ZRKQfBXbGkpdV6QMzT3rU1kSTAnfu1dO8dPKjYprgj8=
