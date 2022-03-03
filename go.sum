@@ -248,10 +248,10 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.12.1 h1:QZI94PCiprRiX0775tO05R4uREVOI5s2g3K6q0hZnoI=
 github.com/aquasecurity/defsec v0.12.1/go.mod h1:ePT+j44TFfUwgIZ6yx5FPHgYk2aTXAqsMf/WnE78ujg=
-github.com/aquasecurity/fanal v0.0.0-20220225095822-ef150f781751 h1:5/MrYu8gbHZsNSN2FmCWtIqtE9UZudkdH8RkX28UCIo=
-github.com/aquasecurity/fanal v0.0.0-20220225095822-ef150f781751/go.mod h1:IDIXfsyFi+lhoKtwrbE4HPku72dizwopUsQ4XRz4aXo=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220224134419-e4f58c60089e h1:NXHfUPuyfZOurJJtnEFo0JlFopMNlPgID3BpgEwoTUU=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220224134419-e4f58c60089e/go.mod h1:XxIz2s4UymZBcg9WwAc2km77lFt9rVE/LmKJe2YVOtY=
+github.com/aquasecurity/fanal v0.0.0-20220303080309-254063f95ea0 h1:SjIpBQZq91OiZYbefabLWHZLKlgtwIPAffEysoEB01I=
+github.com/aquasecurity/fanal v0.0.0-20220303080309-254063f95ea0/go.mod h1:10t6nMrMS3ei0bP/3UCyKukxDiMyR1BX9/osAxX/CwU=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988 h1:Hd6q0/VF/bC/MT1K/63W2u5ChRIy6cPSQk0YbJ3Vcb8=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988/go.mod h1:XxIz2s4UymZBcg9WwAc2km77lFt9rVE/LmKJe2YVOtY=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798 h1:eveqE9ivrt30CJ7dOajOfBavhZ4zPqHcZe/4tKp0alc=
@@ -290,8 +290,8 @@ github.com/aws/aws-sdk-go v1.25.11/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpi
 github.com/aws/aws-sdk-go v1.27.0/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go v1.27.1/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go v1.31.6/go.mod h1:5zCpMtNQVjRREroY7sYe8lOMRSxkhG6MZveU8YkpAk0=
-github.com/aws/aws-sdk-go v1.42.51 h1:PRxXC/0+8x2gK1WjgKwzFBubokGrJCc0N70iKPAY8UM=
-github.com/aws/aws-sdk-go v1.42.51/go.mod h1:OGr6lGMAKGlG9CVrYnWYDKIyb829c6EVBRjxqjmPepc=
+github.com/aws/aws-sdk-go v1.43.8 h1:8a/M9C4l5CxFNM6IuNx4F1p+ITJEX12VxWxUQo61cbc=
+github.com/aws/aws-sdk-go v1.43.8/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
 github.com/aws/aws-sdk-go-v2 v0.18.0/go.mod h1:JWVYvqSMppoMJC0x5wdwiImzgXTI9FuZwxzkQq9wy+g=
 github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59/go.mod h1:q/89r3U2H7sSsE2t6Kca0lfwTK8JdoNGS/yzM/4iH5I=
 github.com/benbjohnson/clock v1.1.0 h1:Q92kusRqC1XV2MjkWETPvjJVqKetz1OzxZB7mHJLju8=
@@ -1912,7 +1912,6 @@ golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f/go.mod h1:9nx3DQGgdP8bBQD5qx
 golang.org/x/net v0.0.0-20211111083644-e5c967477495/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/net v0.0.0-20211118161319-6a13c67c3ce4/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
-golang.org/x/net v0.0.0-20211216030914-fe4d6282115f/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd h1:O7DYs+zxREGLKzKoMQrtrEacpb0ZVXA5rIwylE2Xchk=
 golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd/go.mod h1:CfG3xpIq0wQ8r1q4Su4UZFWDARRcnwPjda9FqA0JpMk=
