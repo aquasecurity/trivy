@@ -18,9 +18,9 @@ import (
 
 func TestMain(m *testing.M) {
 	imagePaths := map[string]string{
-		"index.docker.io/library/alpine:3.10": "../../test/testdata/alpine-310.tar.gz",
-		"index.docker.io/library/alpine:3.11": "../../test/testdata/alpine-311.tar.gz",
-		"gcr.io/distroless/base:latest":       "../../test/testdata/distroless.tar.gz",
+		"alpine:3.10":            "../../test/testdata/alpine-310.tar.gz",
+		"alpine:3.11":            "../../test/testdata/alpine-311.tar.gz",
+		"gcr.io/distroless/base": "../../test/testdata/distroless.tar.gz",
 	}
 
 	// for Docker
