@@ -10,7 +10,7 @@ require (
 	github.com/BurntSushi/toml v1.0.0
 	github.com/GoogleCloudPlatform/docker-credential-gcr v1.5.0
 	github.com/alicebob/miniredis/v2 v2.18.0
-	github.com/aquasecurity/defsec v0.12.1
+	github.com/aquasecurity/defsec v0.14.0
 	github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aquasecurity/tfsec v1.4.1
