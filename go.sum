@@ -248,8 +248,11 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.12.1 h1:QZI94PCiprRiX0775tO05R4uREVOI5s2g3K6q0hZnoI=
 github.com/aquasecurity/defsec v0.12.1/go.mod h1:ePT+j44TFfUwgIZ6yx5FPHgYk2aTXAqsMf/WnE78ujg=
+github.com/aquasecurity/defsec v0.14.0/go.mod h1:ePT+j44TFfUwgIZ6yx5FPHgYk2aTXAqsMf/WnE78ujg=
 github.com/aquasecurity/fanal v0.0.0-20220303080309-254063f95ea0 h1:SjIpBQZq91OiZYbefabLWHZLKlgtwIPAffEysoEB01I=
 github.com/aquasecurity/fanal v0.0.0-20220303080309-254063f95ea0/go.mod h1:10t6nMrMS3ei0bP/3UCyKukxDiMyR1BX9/osAxX/CwU=
+github.com/aquasecurity/fanal v0.0.0-20220303131110-677831c145ce h1:dSwkYTvQG34juVxAZJaOHIE4EwLS/haRY1GuDNLj7Ug=
+github.com/aquasecurity/fanal v0.0.0-20220303131110-677831c145ce/go.mod h1:uoj6ep+2TaMFIwZa/+CYXevheZ0AXKtoihG25XZhBB4=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988 h1:Hd6q0/VF/bC/MT1K/63W2u5ChRIy6cPSQk0YbJ3Vcb8=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988/go.mod h1:XxIz2s4UymZBcg9WwAc2km77lFt9rVE/LmKJe2YVOtY=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -265,6 +268,7 @@ github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516 h1:moQmzbp
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516/go.mod h1:gTd97VdQ0rg8Mkiic3rPgNOQdprZ7feTAhiD5mGQjgM=
 github.com/aquasecurity/tfsec v1.4.1 h1:16D4PinI+ROeqUQmkTuNWpcAIgUsJeF2QhUSKe4ZZPI=
 github.com/aquasecurity/tfsec v1.4.1/go.mod h1:P1/ziiQ/L5/bRS6m7OtgXyv4bHi99gn+HpMqpkHvuJQ=
+github.com/aquasecurity/tfsec v1.5.0/go.mod h1:0b1UnsTa71YAhGfb7ecjCGh9+O/1gkGmq6ZTEwrKz70=
 github.com/aquasecurity/trivy-db v0.0.0-20220130223604-df65ebde46f4 h1:w/cU+uNDHHzMKLNpiohoHvPTtd1mi6Dyih4pqV6FLxQ=
 github.com/aquasecurity/trivy-db v0.0.0-20220130223604-df65ebde46f4/go.mod h1:BOulYmf+l2bd+Bjo3tTsdnbWCsh5UsJn1MqdiZzmm/Q=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
@@ -1588,6 +1592,7 @@ github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tmccombs/hcl2json v0.3.3 h1:+DLNYqpWE0CsOQiEZu+OZm5ZBImake3wtITYxQ8uLFQ=
 github.com/tmccombs/hcl2json v0.3.3/go.mod h1:Y2chtz2x9bAeRTvSibVRVgbLJhLJXKlUeIvjeVdnm4w=
+github.com/tmccombs/hcl2json v0.3.4/go.mod h1:l3Aq9eUyhC+0v26BH08BZHeyWEtOYcFtbu2i5Ryywig=
 github.com/tommy-muehle/go-mnd v1.1.1/go.mod h1:dSUh0FtTP8VhvkL1S+gUR1OKd9ZnSaozuI6r3m6wOig=
 github.com/tommy-muehle/go-mnd v1.3.1-0.20200224220436-e6f9a994e8fa/go.mod h1:dSUh0FtTP8VhvkL1S+gUR1OKd9ZnSaozuI6r3m6wOig=
 github.com/tonistiigi/fsutil v0.0.0-20201103201449-0834f99b7b85/go.mod h1:a7cilN64dG941IOXfhJhlH0qB92hxJ9A1ewrdUmJ6xo=
