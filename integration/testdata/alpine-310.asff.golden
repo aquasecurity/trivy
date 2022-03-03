@@ -1,182 +1,184 @@
-[
-    {
-        "SchemaVersion": "2018-10-08",
-        "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1549",
-        "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
-        "GeneratorId": "Trivy",
-        "AwsAccountId": "123456789012",
-        "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
-        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
-        "Severity": {
-            "Label": "MEDIUM"
-        },
-        "Title": "Trivy found a vulnerability to CVE-2019-1549 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-        "Description": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
-        "Remediation": {
-            "Recommendation": {
-                "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "https://avd.aquasec.com/nvd/cve-2019-1549"
-            }
-        },
-        "ProductFields": { "Product Name": "Trivy" },
-        "Resources": [
-            {
-                "Type": "Container",
-                "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-                "Partition": "aws",
-                "Region": "test-region",
-                "Details": {
-                    "Container": { "ImageName": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)" },
-                    "Other": {
-                        "CVE ID": "CVE-2019-1549",
-                        "CVE Title": "openssl: information disclosure in fork()",
-                        "PkgName": "libcrypto1.1",
-                        "Installed Package": "1.1.1c-r0",
-                        "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "5.3",
-                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
-                        "NvdCvssScoreV2": "5",
-                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
+{
+    "Findings": [
+        {
+            "SchemaVersion": "2018-10-08",
+            "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1549",
+            "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
+            "GeneratorId": "Trivy",
+            "AwsAccountId": "123456789012",
+            "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
+            "CreatedAt": "2020-08-10T07:28:17.000958601Z",
+            "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
+            "Severity": {
+                "Label": "MEDIUM"
+            },
+            "Title": "Trivy found a vulnerability to CVE-2019-1549 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
+            "Description": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "More information on this vulnerability is provided in the hyperlink",
+                    "Url": "https://avd.aquasec.com/nvd/cve-2019-1549"
+                }
+            },
+            "ProductFields": { "Product Name": "Trivy" },
+            "Resources": [
+                {
+                    "Type": "Container",
+                    "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
+                    "Partition": "aws",
+                    "Region": "test-region",
+                    "Details": {
+                        "Container": { "ImageName": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)" },
+                        "Other": {
+                            "CVE ID": "CVE-2019-1549",
+                            "CVE Title": "openssl: information disclosure in fork()",
+                            "PkgName": "libcrypto1.1",
+                            "Installed Package": "1.1.1c-r0",
+                            "Patched Package": "1.1.1d-r0",
+                            "NvdCvssScoreV3": "5.3",
+                            "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                            "NvdCvssScoreV2": "5",
+                            "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
+                        }
                     }
                 }
-            }
-        ],
-        "RecordState": "ACTIVE"
-    },
-    {
-        "SchemaVersion": "2018-10-08",
-        "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1551",
-        "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
-        "GeneratorId": "Trivy",
-        "AwsAccountId": "123456789012",
-        "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
-        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
-        "Severity": {
-            "Label": "MEDIUM"
+            ],
+            "RecordState": "ACTIVE"
         },
-        "Title": "Trivy found a vulnerability to CVE-2019-1551 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-        "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
-        "Remediation": {
-            "Recommendation": {
-                "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "https://avd.aquasec.com/nvd/cve-2019-1551"
-            }
-        },
-        "ProductFields": { "Product Name": "Trivy" },
-        "Resources": [
-            {
-                "Type": "Container",
-                "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-                "Partition": "aws",
-                "Region": "test-region",
-                "Details": {
-                    "Container": { "ImageName": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)" },
-                    "Other": {
-                        "CVE ID": "CVE-2019-1551",
-                        "CVE Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
-                        "PkgName": "libcrypto1.1",
-                        "Installed Package": "1.1.1c-r0",
-                        "Patched Package": "1.1.1d-r2",
-                        "NvdCvssScoreV3": "5.3",
-                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
-                        "NvdCvssScoreV2": "5",
-                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
+        {
+            "SchemaVersion": "2018-10-08",
+            "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1551",
+            "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
+            "GeneratorId": "Trivy",
+            "AwsAccountId": "123456789012",
+            "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
+            "CreatedAt": "2020-08-10T07:28:17.000958601Z",
+            "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
+            "Severity": {
+                "Label": "MEDIUM"
+            },
+            "Title": "Trivy found a vulnerability to CVE-2019-1551 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
+            "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "More information on this vulnerability is provided in the hyperlink",
+                    "Url": "https://avd.aquasec.com/nvd/cve-2019-1551"
+                }
+            },
+            "ProductFields": { "Product Name": "Trivy" },
+            "Resources": [
+                {
+                    "Type": "Container",
+                    "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
+                    "Partition": "aws",
+                    "Region": "test-region",
+                    "Details": {
+                        "Container": { "ImageName": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)" },
+                        "Other": {
+                            "CVE ID": "CVE-2019-1551",
+                            "CVE Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
+                            "PkgName": "libcrypto1.1",
+                            "Installed Package": "1.1.1c-r0",
+                            "Patched Package": "1.1.1d-r2",
+                            "NvdCvssScoreV3": "5.3",
+                            "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                            "NvdCvssScoreV2": "5",
+                            "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
+                        }
                     }
                 }
-            }
-        ],
-        "RecordState": "ACTIVE"
-    },
-    {
-        "SchemaVersion": "2018-10-08",
-        "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1549",
-        "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
-        "GeneratorId": "Trivy",
-        "AwsAccountId": "123456789012",
-        "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
-        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
-        "Severity": {
-            "Label": "MEDIUM"
+            ],
+            "RecordState": "ACTIVE"
         },
-        "Title": "Trivy found a vulnerability to CVE-2019-1549 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-        "Description": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
-        "Remediation": {
-            "Recommendation": {
-                "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "https://avd.aquasec.com/nvd/cve-2019-1549"
-            }
-        },
-        "ProductFields": { "Product Name": "Trivy" },
-        "Resources": [
-            {
-                "Type": "Container",
-                "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-                "Partition": "aws",
-                "Region": "test-region",
-                "Details": {
-                    "Container": { "ImageName": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)" },
-                    "Other": {
-                        "CVE ID": "CVE-2019-1549",
-                        "CVE Title": "openssl: information disclosure in fork()",
-                        "PkgName": "libssl1.1",
-                        "Installed Package": "1.1.1c-r0",
-                        "Patched Package": "1.1.1d-r0",
-                        "NvdCvssScoreV3": "5.3",
-                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
-                        "NvdCvssScoreV2": "5",
-                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
+        {
+            "SchemaVersion": "2018-10-08",
+            "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1549",
+            "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
+            "GeneratorId": "Trivy",
+            "AwsAccountId": "123456789012",
+            "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
+            "CreatedAt": "2020-08-10T07:28:17.000958601Z",
+            "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
+            "Severity": {
+                "Label": "MEDIUM"
+            },
+            "Title": "Trivy found a vulnerability to CVE-2019-1549 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
+            "Description": "OpenSSL 1.1.1 introduced a rewritten random number generator (RNG). This was intended to include protection in the event of a fork() system call in order to ensure that the parent and child processes did not share the same RNG state. However this protection was not being used in the default case. A partial mitigation for this issue is that the output from a high precision timer is mixed into the RNG state so the likelihood of a parent and child process sharing state is significantly reduced. If an application already calls OPENSSL_init_crypto() explicitly using OPENSSL_INIT_ATFORK then this problem does not occur at all. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c).",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "More information on this vulnerability is provided in the hyperlink",
+                    "Url": "https://avd.aquasec.com/nvd/cve-2019-1549"
+                }
+            },
+            "ProductFields": { "Product Name": "Trivy" },
+            "Resources": [
+                {
+                    "Type": "Container",
+                    "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
+                    "Partition": "aws",
+                    "Region": "test-region",
+                    "Details": {
+                        "Container": { "ImageName": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)" },
+                        "Other": {
+                            "CVE ID": "CVE-2019-1549",
+                            "CVE Title": "openssl: information disclosure in fork()",
+                            "PkgName": "libssl1.1",
+                            "Installed Package": "1.1.1c-r0",
+                            "Patched Package": "1.1.1d-r0",
+                            "NvdCvssScoreV3": "5.3",
+                            "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                            "NvdCvssScoreV2": "5",
+                            "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
+                        }
                     }
                 }
-            }
-        ],
-        "RecordState": "ACTIVE"
-    },
-    {
-        "SchemaVersion": "2018-10-08",
-        "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1551",
-        "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
-        "GeneratorId": "Trivy",
-        "AwsAccountId": "123456789012",
-        "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
-        "CreatedAt": "2020-08-10T07:28:17.000958601Z",
-        "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
-        "Severity": {
-            "Label": "MEDIUM"
+            ],
+            "RecordState": "ACTIVE"
         },
-        "Title": "Trivy found a vulnerability to CVE-2019-1551 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-        "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
-        "Remediation": {
-            "Recommendation": {
-                "Text": "More information on this vulnerability is provided in the hyperlink",
-                "Url": "https://avd.aquasec.com/nvd/cve-2019-1551"
-            }
-        },
-        "ProductFields": { "Product Name": "Trivy" },
-        "Resources": [
-            {
-                "Type": "Container",
-                "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-                "Partition": "aws",
-                "Region": "test-region",
-                "Details": {
-                    "Container": { "ImageName": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)" },
-                    "Other": {
-                        "CVE ID": "CVE-2019-1551",
-                        "CVE Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
-                        "PkgName": "libssl1.1",
-                        "Installed Package": "1.1.1c-r0",
-                        "Patched Package": "1.1.1d-r2",
-                        "NvdCvssScoreV3": "5.3",
-                        "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
-                        "NvdCvssScoreV2": "5",
-                        "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
+        {
+            "SchemaVersion": "2018-10-08",
+            "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)/CVE-2019-1551",
+            "ProductArn": "arn:aws:securityhub:test-region::product/aquasecurity/aquasecurity",
+            "GeneratorId": "Trivy",
+            "AwsAccountId": "123456789012",
+            "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
+            "CreatedAt": "2020-08-10T07:28:17.000958601Z",
+            "UpdatedAt": "2020-08-10T07:28:17.000958601Z",
+            "Severity": {
+                "Label": "MEDIUM"
+            },
+            "Title": "Trivy found a vulnerability to CVE-2019-1551 in container testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
+            "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "More information on this vulnerability is provided in the hyperlink",
+                    "Url": "https://avd.aquasec.com/nvd/cve-2019-1551"
+                }
+            },
+            "ProductFields": { "Product Name": "Trivy" },
+            "Resources": [
+                {
+                    "Type": "Container",
+                    "Id": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
+                    "Partition": "aws",
+                    "Region": "test-region",
+                    "Details": {
+                        "Container": { "ImageName": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)" },
+                        "Other": {
+                            "CVE ID": "CVE-2019-1551",
+                            "CVE Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
+                            "PkgName": "libssl1.1",
+                            "Installed Package": "1.1.1c-r0",
+                            "Patched Package": "1.1.1d-r2",
+                            "NvdCvssScoreV3": "5.3",
+                            "NvdCvssVectorV3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+                            "NvdCvssScoreV2": "5",
+                            "NvdCvssVectorV2": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
+                        }
                     }
                 }
-            }
-        ],
-        "RecordState": "ACTIVE"
-    }
-]
+            ],
+            "RecordState": "ACTIVE"
+        }
+    ]
+}
