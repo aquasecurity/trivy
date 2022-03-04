@@ -15,9 +15,9 @@ done
 rm -r conf
 mkdir conf
 
-for release in ${UBUNTU_RELEASES[@]}; do
-  echo "Origin: knqyf263.github.io/trivy-repo/deb
-Label: github.io/knqyf263
+for release in ${DEBIAN_RELEASES[@]} ${UBUNTU_RELEASES[@]}; do
+  echo "Origin: aquasecurity.github.io/trivy-repo/deb
+Label: github.io/aquasecurity
 Codename: $release
 Architectures: i386 amd64 arm64
 Components: main
