@@ -4,7 +4,7 @@
 *.dll
 *.so
 *.dylib
-trivy
+/trivy
 
 ## chart release
 .cr-release-packages
