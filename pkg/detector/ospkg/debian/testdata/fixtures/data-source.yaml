@@ -5,3 +5,8 @@
         ID: "debian"
         Name: "Debian Security Tracker"
         URL: "https://salsa.debian.org/security-tracker-team/security-tracker"
+    - key: debian 12
+      value:
+        ID: "debian"
+        Name: "Debian Testing Security Tracker"
+        URL: "https://salsa.debian.org/security-tracker-team/security-tracker"

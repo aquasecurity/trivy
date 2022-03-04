@@ -1,5 +1,14 @@
 - bucket: debian 9
   pairs:
+    - bucket: libgcrypt20
+      pairs:
+        - key: CVE-2021-33560
+          value:
+            FixedVersion: ""
+        - key: CVE-2018-6829
+          value:
+            FixedVersion: ""
+
     - bucket: apache2
       pairs:
         - key: CVE-2012-3499
@@ -14,3 +23,13 @@
           value:
             FixedVersion: ""
             Severity: 2
+- bucket: debian 12
+  pairs:
+    - bucket: libgcrypt20
+      pairs:
+        - key: CVE-2021-33560
+          value:
+            FixedVersion: "1.9.4-2"
+        - key: CVE-2018-6829
+          value:
+            FixedVersion: ""

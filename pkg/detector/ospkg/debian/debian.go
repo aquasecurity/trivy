@@ -119,7 +119,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 			}
 
 			// Check if there is a latest (probably unstable) patch for the specific vulnerability
-			latestPatch, err := s.hasAvailableFixedVersion(adv.VulnerabilityID, pkg.Name)
+			latestPatch, err := s.hasAvailableFixedVersion(adv.VulnerabilityID, pkg.SrcName)
 			if err != nil {
 				return nil, xerrors.Errorf("failed to check latest fixed version: %w", err)
 			}

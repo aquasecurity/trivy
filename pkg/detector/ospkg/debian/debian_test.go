@@ -83,6 +83,55 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name:     "latestPatch",
+			fixtures: []string{"testdata/fixtures/debian.yaml", "testdata/fixtures/data-source.yaml"},
+			args: args{
+				osVer: "9.1",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "libgcrypt20",
+						Version:    "1.8.7-6",
+						SrcName:    "libgcrypt20",
+						SrcVersion: "1.8.7-6",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "libgcrypt20",
+					VulnerabilityID:  "CVE-2018-6829",
+					InstalledVersion: "1.8.7-6",
+					FixedVersion:     "",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Debian,
+						Name: "Debian Security Tracker",
+						URL:  "https://salsa.debian.org/security-tracker-team/security-tracker",
+					},
+				},
+				{
+					PkgName:          "libgcrypt20",
+					VulnerabilityID:  "CVE-2021-33560",
+					InstalledVersion: "1.8.7-6",
+					FixedVersion:     "",
+					LatestPatch:      "1.9.4-2",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Debian,
+						Name: "Debian Security Tracker",
+						URL:  "https://salsa.debian.org/security-tracker-team/security-tracker",
+					},
+				},
+			},
+		},
+		{
 			name:     "invalid bucket",
 			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
